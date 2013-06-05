@@ -75,13 +75,29 @@ print.netmeta <- function(x,
   
   if (details){
 
-    cat("Original data:\n\n")
+    cat(paste("Original data",
+              ifelse(any(x$narms>2),
+                     " (with adjusted standard errors for multi-arm studies)",
+                     ""),
+              ":\n\n", sep=""))
     
     res <- cbind(treat1=x$treat1,
                  treat2=x$treat2,
                  TE=format.TE(round(x$TE, digits), na=TRUE),
-                 seTE=format(round(x$seTE, digits)))
-    
+                 seTE=format(round(x$seTE, digits)),
+                 studlab=x$studlab)
+    ##
+    if (any(x$narms>2)){
+      tdata1 <- data.frame(studlab=as.character(x$studies),
+                           narms=x$narms)
+      res <- merge(res, tdata1,
+                   by="studlab", all.x=TRUE, all.y=FALSE,
+                   sort=FALSE)
+      res$multiarm <- ifelse(res$narms>2, "*", "")
+      res$studlab <- NULL
+      res <- as.matrix(res)
+    }
+    ##
     dimnames(res)[[1]] <- x$studlab
     
     prmatrix(res[order(sortvar),], quote=FALSE, right=TRUE)

@@ -55,11 +55,9 @@ prepare <- function(TE, seTE,
   ## Determining number of arms and adjusting weights of
   ## multi-armed studies
   ##
-  print(data)
   for (s in sl){
     subgraph <- data[data$studlab==s,]
     subgraph$narms <- (1+sqrt(8*dim(subgraph)[1]+1))/2
-    print(subgraph)
     if (dim(subgraph)[1] > 1)
       subgraph$w.fixed <- 1/multiarm(1/subgraph$w.fixed)$v ## Reciprocal new weights
     newdata <- rbind(newdata, subgraph)

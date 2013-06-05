@@ -32,10 +32,50 @@ netmeta <- function(TE, seTE,
   else
     studlab <- seq(along=TE)
   
+  if (is.character(treat1) & is.character(treat2)){
+    tlevs <- sort(unique(c(treat1, treat2)))
+    treat1 <- factor(treat1, levels=tlevs)
+    treat2 <- factor(treat2, levels=tlevs)
+    print(levels(treat1))
+    print(levels(treat2))
+  }
+  
+  ##
+  ## TODO - Check factor variables / levels
+  ##
+  if (FALSE){
+    if ((is.factor(treat1) & !is.factor(treat2)) |
+        (!is.factor(treat1) & is.factor(treat2)))
+      stop("Both arguments 'treat1' and 'treat2' must be factor variables (if at all)")
+    ##
+    if (is.factor(treat1) & is.factor(treat2)){
+      if (length(levels(treat1))!=length(levels(treat2)))
+        warning("Factors 'treat1' and 'treat2' must have the same levels")
+      if (!all(levels(treat1)==levels(treat2)))
+        warning("Factors 'treat1' and 'treat2' must have the same levels")
+    }
+  }
+  
+  ##
+  ## TODO - Do not reorder factor variables ...
+  ##
   if (is.factor(treat1))
     treat1 <- as.character(treat1)
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
+  
+  ##
+  ## Check for correct treatment order within comparison
+  ##
+  wo <- treat1 > treat2
+  ##
+  if (any(wo)){
+    warning("Wrong order: treat1 > treat2")
+    TE[wo] <- -TE[wo]
+    ttreat1 <- treat1
+    treat1[wo] <- treat2[wo]
+    treat2[wo] <- ttreat1[wo]
+  }
   
   ##
   ## Check for levels of confidence interval
