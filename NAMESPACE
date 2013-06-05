@@ -1,0 +1,13 @@
+export(netmeta,
+       as.data.frame.netmeta, print.netmeta,
+       summary.netmeta, print.summary.netmeta,
+       forest.netmeta)
+
+# not visible:
+# network, prepare, multiarm, matitle, forest
+
+S3method(as.data.frame, netmeta)
+S3method(print, netmeta)
+S3method(summary, netmeta)
+S3method(print, summary.netmeta)
+S3method(forest, netmeta)

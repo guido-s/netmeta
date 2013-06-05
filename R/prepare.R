@@ -1,0 +1,77 @@
+prepare <- function(TE, seTE,
+                    treat1, treat2,
+                    studlab, data=NULL){
+
+  if (is.null(data)) data <- sys.frame(sys.parent())
+  ##
+  ## Catch TE, treat1, treat2, seTE, studlab from data:
+  ##
+  mf <- match.call()
+  mf$data <- NULL
+  mf[[1]] <- as.name("data.frame")
+  mf <- eval(mf, data)
+
+  TE <- mf$TE
+  treat1 <- mf$treat1
+  treat2 <- mf$treat2
+  seTE <- mf$seTE
+  ##
+  if (length(mf$studlab)!=0){
+    if (is.factor(mf$studlab))
+      studlab <- as.character(mf$studlab)
+  }
+  else
+    studlab <- seq(along=TE)
+
+  w.fixed <- 1/seTE^2
+
+  if (is.factor(treat1))
+    treat1 <- as.character(treat1)
+  if (is.factor(treat2))
+    treat2 <- as.character(treat2)
+  data <- data.frame(studlab,
+                     treat1, treat2,
+                     treat1.pos=NA, treat2.pos=NA,
+                     TE, seTE, w.fixed,
+                     narms=NA, stringsAsFactors=FALSE)
+  ##
+  ## Ordering data set
+  ##
+  o <- order(data$studlab, data$treat1,
+             data$treat2)
+  ##
+  data <- data[o,]
+  ##
+  ## Adapt numbers to treatment IDs
+  ##
+  names.treat <- sort(unique(c(data$treat1, data$treat2)))
+  data$treat1.pos <- match(data$treat1, names.treat)
+  data$treat2.pos <- match(data$treat2, names.treat)
+
+  newdata <- data[1,][-1,]
+  ##
+  sl <- unique(data$studlab)
+  ##
+  ## Determining number of arms and adjusting weights of
+  ## multi-armed studies
+  ##
+  print(data)
+  for (s in sl){
+    subgraph <- data[data$studlab==s,]
+    subgraph$narms <- (1+sqrt(8*dim(subgraph)[1]+1))/2
+    print(subgraph)
+    if (dim(subgraph)[1] > 1)
+      subgraph$w.fixed <- 1/multiarm(1/subgraph$w.fixed)$v ## Reciprocal new weights
+    newdata <- rbind(newdata, subgraph)
+  }
+  res <- newdata
+  ##
+  if (is.factor(res$treat1))
+    res$treat1 <- as.character(res$treat1)
+  if (is.factor(res$treat2))
+    res$treat2 <- as.character(res$treat2)
+  ##
+  res$order <- o
+  ##
+  res
+}

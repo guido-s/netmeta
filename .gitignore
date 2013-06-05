@@ -1,0 +1,8 @@
+*~
+*.bak
+kenscore.o
+meta.so
+src-x86_64
+.Rbuildignore
+.Rhistory
+.DS_Store
