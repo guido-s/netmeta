@@ -81,19 +81,22 @@ print.netmeta <- function(x,
                      ""),
               ":\n\n", sep=""))
     
-    res <- cbind(treat1=x$treat1,
-                 treat2=x$treat2,
-                 TE=format.TE(round(x$TE, digits), na=TRUE),
-                 seTE=format(round(x$seTE, digits)),
-                 studlab=x$studlab)
+    res <- data.frame(treat1=x$treat1,
+                      treat2=x$treat2,
+                      TE=format.TE(round(x$TE, digits), na=TRUE),
+                      seTE=format(round(x$seTE, digits)),
+                      studlab=x$studlab)
     ##
     if (any(x$narms>2)){
       tdata1 <- data.frame(studlab=as.character(x$studies),
                            narms=x$narms)
+      res$OrDeR <- 1:dim(res)[[1]]
       res <- merge(res, tdata1,
                    by="studlab", all.x=TRUE, all.y=FALSE,
                    sort=FALSE)
+      res <- res[order(res$OrDeR),]
       res$multiarm <- ifelse(res$narms>2, "*", "")
+      res$OrDeR <- NULL
       res$studlab <- NULL
       res <- as.matrix(res)
     }

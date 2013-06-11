@@ -1,6 +1,6 @@
 Package: netmeta
 Title: Network meta-analysis with R
-Version: 0.1-3
+Version: 0.1-4
 Depends: R (>= 2.13.1), meta
 Author: Gerta Ruecker <ruecker@imbi.uni-freiburg.de>, Guido Schwarzer <sc@imbi.uni-freiburg.de>
 Maintainer: Guido Schwarzer <sc@imbi.uni-freiburg.de>
