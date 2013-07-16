@@ -1,11 +1,12 @@
 netmeta <- function(TE, seTE,
                     treat1, treat2,
-                    studlab, data=NULL,
+                    studlab, data=NULL, subset=NULL,
                     sm="",
                     level=0.95, level.comb=0.95,
                     comb.fixed=TRUE, comb.random=FALSE,
                     reference.group="",
                     all.treatments=NULL,
+                    tau.preset=NULL,
                     title="",
                     warn=TRUE
                     ){
@@ -15,29 +16,54 @@ netmeta <- function(TE, seTE,
   ## Catch TE, treat1, treat2, seTE, studlab from data:
   ##
   mf <- match.call()
-  mf$sm <- mf$level <- mf$level.comb <- NULL
-  mf$data <- NULL
+  mf$data <- mf$subset <- mf$sm <- NULL
+  mf$level <- mf$level.comb <- NULL
+  mf$comb.fixed <- mf$comb.random <- mf$reference.group <- NULL
+  mf$all.treatments <- mf$tau.preset <- NULL
+  mf$title <- mf$warn <- NULL
   mf[[1]] <- as.name("data.frame")
   mf <- eval(mf, data)
-
-  TE <- mf$TE
+  ##
+  ## Catch subset (possibly) from data:
+  ##
+  mf2 <- match.call()
+  mf2$TE <- mf2$seTE <- mf2$treat1 <- mf2$treat2 <- NULL
+  mf2$studlab <- NULL
+  mf2$data <- mf2$sm <- NULL
+  mf2$level <- mf2$level.comb <- NULL
+  mf2$comb.fixed <- mf2$comb.random <- mf2$reference.group <- NULL
+  mf2$all.treatments <- mf2$tau.preset <- NULL
+  mf2$title <- mf2$warn <- NULL
+  mf2[[1]] <- as.name("data.frame")
+  ##
+  mf2 <- eval(mf2, data)
+  ##
+  if (!is.null(mf2$subset))
+    if ((is.logical(mf2$subset) & (sum(mf2$subset) > length(mf$TE))) ||
+        (length(mf2$subset) > length(mf$TE)))
+      stop("Length of subset is larger than number of comparisons.")
+    else
+      mf <- mf[mf2$subset,]
+  
+  
+  TE     <- mf$TE
+  seTE   <- mf$seTE
   treat1 <- mf$treat1
   treat2 <- mf$treat2
-  seTE <- mf$seTE
   ##
   if (length(mf$studlab)!=0){
     if (is.factor(mf$studlab))
       studlab <- as.character(mf$studlab)
   }
-  else
+  else{
+    warning("No information given for argument 'studlab'. Assuming that comparison are from independent studies.")
     studlab <- seq(along=TE)
+  }
   
   if (is.character(treat1) & is.character(treat2)){
     tlevs <- sort(unique(c(treat1, treat2)))
     treat1 <- factor(treat1, levels=tlevs)
     treat2 <- factor(treat2, levels=tlevs)
-    print(levels(treat1))
-    print(levels(treat2))
   }
   
   ##
@@ -70,7 +96,7 @@ netmeta <- function(TE, seTE,
   wo <- treat1 > treat2
   ##
   if (any(wo)){
-    warning("Wrong order: treat1 > treat2")
+    warning("Treatments within a comparison have been re-sorted in increasing order.")
     TE[wo] <- -TE[wo]
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]
@@ -112,53 +138,113 @@ netmeta <- function(TE, seTE,
   studies <- tdata$studies
   narms <- tdata$narms                 
   ##
-  ##
   ## Network meta-analysis based on prepared data set
   ##
-  res <- network(p0$TE, sqrt(1/p0$w.fixed),
-                 p0$treat1, p0$treat2,
-                 p0$treat1.pos, p0$treat2.pos,
-                 p0$narms, p0$studlab,
-                 sm=sm,
-                 level=level, level.comb=level.comb,
-                 comb.fixed=comb.fixed, comb.random=comb.random)
-
+  ## Fixed effect model
+  ##
+  res.f <- network(p0$TE, sqrt(1/p0$w.fixed),
+                   p0$treat1, p0$treat2,
+                   p0$treat1.pos, p0$treat2.pos,
+                   p0$narms, p0$studlab,
+                   sm=sm,
+                   level=level, level.comb=level.comb)
+  ##
+  ## Random effects model
+  ##
+  if (is.null(tau.preset))
+    tau <- res.f$tau
+  else
+    tau <- tau.preset
+  ##
+  res.r <- network(p0$TE, sqrt(1/p0$w.fixed + tau^2),
+                   p0$treat1, p0$treat2,
+                   p0$treat1.pos, p0$treat2.pos,
+                   p0$narms, p0$studlab,
+                   sm=sm,
+                   level=level, level.comb=level.comb)
+  
+  
   o <- order(p0$order)
   ##
-  res$studlab <- res$studlab[o]
-  res$treat1 <- res$treat1[o]
-  res$treat2 <- res$treat2[o]
-  ##
-  res$TE <- res$TE[o]
-  res$seTE <- res$seTE[o]
-  ##
-  res$TE.nma.fixed <- res$TE.nma.fixed[o]
-  res$seTE.nma.fixed <- res$seTE.nma.fixed[o]
-  res$lower.nma.fixed <- res$lower.nma.fixed[o]
-  res$upper.nma.fixed <- res$upper.nma.fixed[o]
-  ##
-  res$leverage.fixed <- res$leverage.fixed[o]
-  res$w.fixed <- res$w.fixed[o]
-  res$w.random <- res$w.random[o]
-  ##
-  res$Q.fixed <- res$Q.fixed[o]
-  ##
-  res$treat1.pos <- res$treat1.pos[o]
-  res$treat2.pos <- res$treat2.pos[o]
-  ##
-  res$studies <- studies
-  res$narms <- narms
-  ##
-  res$G.matrix <- res$G.matrix[o,o]
-  res$H.matrix <- res$H.matrix[o,o]
-  
-  res$all.treatments <- all.treatments
-  res$reference.group <- reference.group
-  ##
-  res$title <- title
-  ##
-  res$warn <- warn
-  res$version <- packageDescription("netmeta")$Version
+  res <- list(
+              studlab=res.f$studlab[o],
+              treat1=res.f$treat1[o],
+              treat2=res.f$treat2[o],
+              ##
+              TE=res.f$TE[o],
+              seTE=res.f$seTE[o],
+              ##
+              studies=studies,
+              narms=narms,
+              ##
+              TE.nma.fixed=res.f$TE.nma[o],
+              seTE.nma.fixed=res.f$seTE.nma[o],
+              lower.nma.fixed=res.f$lower.nma[o],
+              upper.nma.fixed=res.f$upper.nma[o],
+              ##
+              leverage.fixed=res.f$leverage[o],
+              w.fixed=res.f$w.pooled[o],
+              ##
+              TE.fixed=res.f$TE.pooled,
+              seTE.fixed=res.f$seTE.pooled,
+              lower.fixed=res.f$lower.pooled,
+              upper.fixed=res.f$upper.pooled,
+              zval.fixed=res.f$zval.pooled,
+              pval.fixed=res.f$pval.pooled,
+              ##
+              Q.fixed=res.f$Q.pooled[o],
+              ##
+              TE.nma.random=res.r$TE.nma[o],
+              seTE.nma.random=res.r$seTE.nma[o],
+              lower.nma.random=res.r$lower.nma[o],
+              upper.nma.random=res.r$upper.nma[o],
+              ##
+              w.random=res.r$w.pooled[o],
+              ##
+              TE.random=res.r$TE.pooled,
+              seTE.random=res.r$seTE.pooled,
+              lower.random=res.r$lower.pooled,
+              upper.random=res.r$upper.pooled,
+              zval.random=res.r$zval.pooled,
+              pval.random=res.r$pval.pooled,
+              ##
+              treat1.pos=res.f$treat1.pos[o],
+              treat2.pos=res.f$treat2.pos[o],
+              ##
+              k=res.f$k,
+              m=res.f$m,
+              Q=res.f$Q,
+              df=res.f$df,
+              pval.Q=res.f$pval.Q,
+              I2=res.f$I2,
+              tau=res.f$tau,
+              Q.heterogeneity=res.f$Q.heterogeneity,
+              Q.inconsistency=res.f$Q.inconsistency,
+              ##
+              sm=sm,
+              level=level,
+              level.comb=level.comb,
+              comb.fixed=comb.fixed,
+              comb.random=comb.random,
+              ##
+              A.matrix=res.f$A.matrix,
+              L.matrix=res.f$L.matrix,
+              Lplus.matrix=res.f$Lplus.matrix,
+              Q.matrix=res.f$Q.matrix,
+              ##
+              G.matrix=res.f$G.matrix[o,o],
+              H.matrix=res.f$H.matrix[o,o],
+              ##
+              Q.decomp=res.f$Q.decomp,
+              ##
+              all.treatments=all.treatments,
+              reference.group=reference.group,
+              ##
+              title=title,
+              ##
+              warn=warn,
+              version=packageDescription("netmeta")$Version
+              )
   
   class(res) <- "netmeta"
   

@@ -115,19 +115,34 @@ print.netmeta <- function(x,
   
   tsum <- summary(x, level=level, level.comb=level.comb, warn=FALSE)
   ##
-  TE    <- tsum$comparison.nma.fixed$TE
-  lowTE <- tsum$comparison.nma.fixed$lower
-  uppTE <- tsum$comparison.nma.fixed$upper
+  TE.f    <- tsum$comparison.nma.fixed$TE
+  lowTE.f <- tsum$comparison.nma.fixed$lower
+  uppTE.f <- tsum$comparison.nma.fixed$upper
   ##
   if (!logscale & (sm == "RR" | sm == "OR" | sm == "HR")){
-    TE    <- exp(TE)
-    lowTE <- exp(lowTE)
-    uppTE <- exp(uppTE)
+    TE.f    <- exp(TE.f)
+    lowTE.f <- exp(lowTE.f)
+    uppTE.f <- exp(uppTE.f)
   }
   ##
-  TE <- round(TE, digits)
-  lowTE <- round(lowTE, digits)
-  uppTE <- round(uppTE, digits)
+  TE.f <- round(TE.f, digits)
+  lowTE.f <- round(lowTE.f, digits)
+  uppTE.f <- round(uppTE.f, digits)
+  ##
+  ##
+  TE.r    <- tsum$comparison.nma.random$TE
+  lowTE.r <- tsum$comparison.nma.random$lower
+  uppTE.r <- tsum$comparison.nma.random$upper
+  ##
+  if (!logscale & (sm == "RR" | sm == "OR" | sm == "HR")){
+    TE.r    <- exp(TE.r)
+    lowTE.r <- exp(lowTE.r)
+    uppTE.r <- exp(uppTE.r)
+  }
+  ##
+  TE.r <- round(TE.r, digits)
+  lowTE.r <- round(lowTE.r, digits)
+  uppTE.r <- round(uppTE.r, digits)
   
   if (comb.fixed)
     if (sum(x$w.fixed)>0)
@@ -140,25 +155,44 @@ print.netmeta <- function(x,
     else w.random.p <- x$w.random
     
 
-  res <- cbind(x$treat1, x$treat2,
-               format.TE(TE, na=TRUE),
-               p.ci(format(lowTE), format(uppTE)),
-               if (comb.fixed) format(w.fixed.p),
-               if (comb.fixed) format(round(x$Q.fixed, 2)),
-               if (comb.fixed) format(round(x$leverage.fixed, 2)))
-  dimnames(res) <-
+  res.f <- cbind(x$treat1, x$treat2,
+                 format.TE(TE.f, na=TRUE),
+                 p.ci(format(lowTE.f), format(uppTE.f)),
+                 if (comb.fixed) format(w.fixed.p),
+                 if (comb.fixed) format(round(x$Q.fixed, 2)),
+                 if (comb.fixed) format(round(x$leverage.fixed, 2)))
+  dimnames(res.f) <-
     list(x$studlab, c("treat1", "treat2",
                       sm.lab, ci.lab,
                       if (comb.fixed) "%W",
                       if (comb.fixed) "Q",
                       if (comb.fixed) "leverage"))
   
-  cat("Data utilised in network meta-analysis (fixed effect model):\n\n")
+  res.r <- cbind(x$treat1, x$treat2,
+                 format.TE(TE.r, na=TRUE),
+                 p.ci(format(lowTE.r), format(uppTE.r)),
+                 if (comb.random) format(w.random.p))
+  dimnames(res.r) <-
+    list(x$studlab, c("treat1", "treat2",
+                      sm.lab, ci.lab,
+                      if (comb.random) "%W"))
   
-  prmatrix(res[order(sortvar),], quote=FALSE, right=TRUE)
-
-  cat("\n")
   
+  if (comb.fixed){
+    cat("Data utilised in network meta-analysis (fixed effect model):\n\n")
+    
+    prmatrix(res.f[order(sortvar),], quote=FALSE, right=TRUE)
+    
+    cat("\n")
+  }
+  
+  if (comb.random){
+    cat("Data utilised in network meta-analysis (random effects model):\n\n")
+    
+    prmatrix(res.r[order(sortvar),], quote=FALSE, right=TRUE)
+    
+    cat("\n")
+  }
   
   if (reference.group!="" & missing(all.treatments))
     all.treatments <- FALSE

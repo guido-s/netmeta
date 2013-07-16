@@ -143,10 +143,7 @@ print.summary.netmeta <- function(x,
     }
     
     if (comb.random){
-      if (comb.fixed)
-        cat("\n\n")
-      ##
-      cat("Random effects model\n\nTreatment estimate (sm='", sm.lab, "'):\n", sep="")
+      cat("\nRandom effects model\n\nTreatment estimate (sm='", sm.lab, "'):\n", sep="")
       print(TE.random)
       cat("\nLower ", 100*x$random$level, "%-confidence limit:\n", sep="")
       print(lowTE.random)

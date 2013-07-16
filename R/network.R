@@ -4,8 +4,7 @@ network <- function(TE, seTE,
                     narms, studlab,
                     data=NULL,
                     sm="",
-                    level=0.95, level.comb=0.95,
-                    comb.fixed, comb.random){
+                    level=0.95, level.comb=0.95){
   
   if (is.null(data)) data <- sys.frame(sys.parent())
   ##
@@ -58,11 +57,11 @@ network <- function(TE, seTE,
   if (level.comb <= 0 | level.comb >= 1)
     stop("parameter 'level.comb': no valid level.comb for confidence interval")
   
-  w.fixed <- 1/seTE^2
+  w.pooled <- 1/seTE^2
   
   m <- length(TE)                        ## Number of pairwise comparisons (edges)
   n <- length(unique(c(treat1, treat2))) ## Number of treatments (vertices)
-  W <- diag(w.fixed)                     ## Weighted degree diagonal matrix
+  W <- diag(w.pooled)                    ## Weighted degree diagonal matrix
   df1 <- 2*sum(1/narms)                  ## Sum of degrees of freedom per study
   
   ##
@@ -146,11 +145,10 @@ network <- function(TE, seTE,
   Q <- as.vector(t(TE-v)%*%W%*%(TE-v))
   df <- df1-(n-1)
   ##
-  ## Heterogeneity variance and random effects weights
+  ## Heterogeneity variance
   ##
-  tau2 <- max(0, (Q-df)/sum(w.fixed*(1-V*w.fixed)))
+  tau2 <- max(0, (Q-df)/sum(w.pooled*(1-V*w.pooled)))
   tau <- sqrt(tau2)
-  w.random <- 1/(1/w.fixed+tau2)
   ##
   ## Decomposition of total Q into parts from pairwise meta-analyses
   ## and residual inconsistency
@@ -158,7 +156,7 @@ network <- function(TE, seTE,
   Q.matrix <- matrix(0, nrow=n, ncol=n)
   n.pairwise <- 0
   data <- data.frame(treat1.pos, treat2.pos,
-                     TE, w.fixed,
+                     TE, w.pooled,
                      stringsAsFactors=FALSE)
   ##
   for (i in 1:(n-1)) {
@@ -168,7 +166,7 @@ network <- function(TE, seTE,
         sub <- data[(data$treat1.pos==i & data$treat2.pos==j) |
                     (data$treat1.pos==j & data$treat2.pos==i),]
         l <- nrow(sub)
-        Q.matrix[i,j] <- metagen(TE=sub$TE, seTE=1/sqrt(sub$w.fixed))$Q
+        Q.matrix[i,j] <- metagen(TE=sub$TE, seTE=1/sqrt(sub$w.pooled))$Q
       }
     }
   }
@@ -197,22 +195,22 @@ network <- function(TE, seTE,
                          df=dfs,
                          pval.Q=1-pchisq(q, dfs))
   
-  TE.fixed <- all
-  seTE.fixed <- sqrt(R)
+  TE.pooled <- all
+  seTE.pooled <- sqrt(R)
   ##
-  ci.fixed <- meta:::ci(all, sqrt(R), level=level.comb)
+  ci.pooled <- meta:::ci(all, sqrt(R), level=level.comb)
   ##
-  lower.fixed <- ci.fixed$lower
-  upper.fixed <- ci.fixed$upper
-  zval.fixed <- ci.fixed$z
-  pval.fixed <- ci.fixed$p
+  lower.pooled <- ci.pooled$lower
+  upper.pooled <- ci.pooled$upper
+  zval.pooled <- ci.pooled$z
+  pval.pooled <- ci.pooled$p
   ##
-  rownames(TE.fixed) <- colnames(TE.fixed) <- names.treat
-  rownames(seTE.fixed) <- colnames(seTE.fixed) <- names.treat
-  rownames(lower.fixed) <- colnames(lower.fixed) <- names.treat
-  rownames(upper.fixed) <- colnames(upper.fixed) <- names.treat
-  rownames(zval.fixed) <- colnames(zval.fixed) <- names.treat
-  rownames(pval.fixed) <- colnames(pval.fixed) <- names.treat
+  rownames(TE.pooled) <- colnames(TE.pooled) <- names.treat
+  rownames(seTE.pooled) <- colnames(seTE.pooled) <- names.treat
+  rownames(lower.pooled) <- colnames(lower.pooled) <- names.treat
+  rownames(upper.pooled) <- colnames(upper.pooled) <- names.treat
+  rownames(zval.pooled) <- colnames(zval.pooled) <- names.treat
+  rownames(pval.pooled) <- colnames(pval.pooled) <- names.treat
 
   A.matrix <- A
   L.matrix <- L
@@ -232,43 +230,29 @@ network <- function(TE, seTE,
   
   ## Contribution of individual studies to Q
   ##
-  Q.fixed <- w.fixed*(TE-v)^2
+  Q.pooled <- w.pooled*(TE-v)^2
   
   
   res <- list(
               studlab=studlab,
               treat1=treat1, treat2=treat2,
               TE=TE, seTE=seTE,
-              TE.nma.fixed=v,
-              seTE.nma.fixed=sqrt(V),
-              lower.nma.fixed=ci.v$lower,
-              upper.nma.fixed=ci.v$upper,
-              TE.nma.random=NA,
-              seTE.nma.random=NA,
-              lower.nma.random=NA,
-              upper.nma.random=NA,
-              leverage.fixed=diag(GW),
-              leverage.random=NA,
-              w.fixed=w.fixed,
-              Q.fixed=Q.fixed,
-              w.random=w.random,
-              ##Q.random=Q.random,
+              TE.nma=v,
+              seTE.nma=sqrt(V),
+              lower.nma=ci.v$lower,
+              upper.nma=ci.v$upper,
+              leverage=diag(GW),
+              w.pooled=w.pooled,
+              Q.pooled=Q.pooled,
               treat1.pos=treat1.pos,
               treat2.pos=treat2.pos,
               ##
-              TE.fixed=TE.fixed,
-              seTE.fixed=seTE.fixed,
-              lower.fixed=lower.fixed,
-              upper.fixed=upper.fixed,
-              zval.fixed=zval.fixed,
-              pval.fixed=pval.fixed,
-              ##
-              TE.random=NA,
-              seTE.random=NA,
-              lower.random=NA,
-              upper.random=NA,
-              zval.random=NA,
-              pval.random=NA,
+              TE.pooled=TE.pooled,
+              seTE.pooled=seTE.pooled,
+              lower.pooled=lower.pooled,
+              upper.pooled=upper.pooled,
+              zval.pooled=zval.pooled,
+              pval.pooled=pval.pooled,
               ##
               k=length(unique(studlab)),
               m=length(TE),
@@ -283,8 +267,6 @@ network <- function(TE, seTE,
               sm=sm,
               level=level,
               level.comb=level.comb,
-              comb.fixed=comb.fixed,
-              comb.random=comb.random,
               ##
               A.matrix=A.matrix,
               L.matrix=L.matrix,

@@ -25,6 +25,8 @@ summary.netmeta <- function(object,
   ci.comp <- ci(object$TE, object$seTE, level)
   ci.comp.nma.fixed <- ci(object$TE.nma.fixed,
                           object$seTE.nma.fixed, level)
+  ci.comp.nma.random <- ci(object$TE.nma.random,
+                           object$seTE.nma.random, level)
   ci.f <- ci(object$TE.fixed , object$seTE.fixed , level.comb)
   ci.r <- ci(object$TE.random, object$seTE.random, level.comb)
   
@@ -36,11 +38,16 @@ summary.netmeta <- function(object,
   ci.comp.nma.fixed$treat1 <- object$treat1
   ci.comp.nma.fixed$treat2 <- object$treat2
   ci.comp.nma.fixed$leverage <- object$leverage.fixed
+  ##
+  ci.comp.nma.random$studlab <- object$studlab
+  ci.comp.nma.random$treat1 <- object$treat1
+  ci.comp.nma.random$treat2 <- object$treat2
   
   
   res <- list(
               comparison=ci.comp,
               comparison.nma.fixed=ci.comp.nma.fixed,
+              comparison.nma.random=ci.comp.nma.random,
               fixed=ci.f, random=ci.r,
               studies=object$studies,
               narms=object$narms,

@@ -62,22 +62,43 @@ data(example1)
 
 example1$se.effect <- sqrt(1/example1$weight)
 
+## Fixed effect model (default)
+##
 nm <- netmeta(effect, se.effect, treat1, treat2, author,
               data=example1)
+nm
+
+## Random effects model
+##
+nm <- netmeta(effect, se.effect, treat1, treat2, author,
+              data=example1, comb.fixed=FALSE, comb.random=TRUE)
+nm
+
+## Fixed effect and random effects model
+##
+nm <- netmeta(effect, se.effect, treat1, treat2, author,
+              data=example1, comb.random=TRUE)
 nm
 
 
 data(thromb2)
 
-nm <- netmeta(logor, selogor, treat1, treat2,
-              data=thromb2, sm="logOR")
-as.data.frame(nm)
+nm2 <- netmeta(logor, selogor, treat1, treat2,
+               data=thromb2, sm="logOR")
+as.data.frame(nm2)
 
 
 data(thromb)
 
-nm <- netmeta(logor, selogor, treat1, treat2,
-              data=thromb, sm="logOR")
-as.data.frame(nm)
+nm3 <- netmeta(logor, selogor, treat1, treat2,
+               data=thromb, sm="logOR")
+as.data.frame(nm3)
+
+## Fixed effect and random effects model
+##
+nm3 <- netmeta(logor, selogor, treat1, treat2,
+               data=thromb, sm="logOR", comb.random=TRUE)
+nm3
+summary(nm3)
 
 }
