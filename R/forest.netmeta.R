@@ -1,16 +1,27 @@
 forest.netmeta <- function(x,
                            reference.group=x$reference.group,
-                           pooled="fixed",
+                           pooled=ifelse(x$comb.random, "random", "fixed"),
+                           comb.random=x$comb.random,
                            leftcols="studlab",
                            leftlabs="Treatment",
+                           smlab=NULL,
                            ...){
 
   if (!inherits(x, "netmeta"))
     stop("Argument 'x' must be an object of class \"netmeta\"")
-
+  
   if (pooled=="fixed"){
-    TE    <- x$TE.fixed
-    seTE  <- x$seTE.fixed
+    TE   <- x$TE.fixed
+    seTE <- x$seTE.fixed
+    if (is.null(smlab))
+      smlab <- "Fixed Effect Model"
+  }
+  ##
+  if (pooled=="random"){
+    TE   <- x$TE.random
+    seTE <- x$seTE.random
+    if (is.null(smlab))
+      smlab <- "Random Effects Model"
   }
   
   if (all(colnames(TE)!=reference.group))
@@ -22,13 +33,14 @@ forest.netmeta <- function(x,
   seTE.b <- seTE[,colnames(seTE)==reference.group]
 
   m1 <- metagen(TE.b, seTE.b, sm=x$sm,
-                studlab=colnames(TE))
+                studlab=colnames(TE), warn=FALSE)
 
   meta:::forest(m1,
                 comb.fixed=FALSE, comb.random=FALSE,
                 hetstat=FALSE,
                 leftcols=leftcols,
                 leftlabs=leftlabs,
+                smlab=smlab,
                 ...)
 
   invisible(NULL)
