@@ -2,11 +2,10 @@ print.netmeta <- function(x,
                           sortvar,
                           level=x$level, level.comb=x$level.comb,
                           comb.fixed=x$comb.fixed, comb.random=x$comb.random,
-                          details=TRUE, ma=TRUE,
-                          logscale=FALSE,
-                          digits=max(4, .Options$digits - 3),
-                          all.treatments=x$all.treatments,
                           reference.group=x$reference.group,
+                          all.treatments=x$all.treatments,
+                          details=TRUE, ma=TRUE, logscale=FALSE,
+                          digits=max(4, .Options$digits - 3),
                           ...
                           ){
   

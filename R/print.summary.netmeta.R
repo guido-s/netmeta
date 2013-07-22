@@ -1,11 +1,11 @@
 print.summary.netmeta <- function(x,
-                                  digits=max(3, .Options$digits - 3),
-                                  logscale=FALSE,
-                                  all.treatments=x$all.treatments,
-                                  reference.group=x$reference.group,
                                   comb.fixed=x$comb.fixed,
                                   comb.random=x$comb.random,
+                                  reference.group=x$reference.group,
+                                  all.treatments=x$all.treatments,
+                                  logscale=FALSE,
                                   header=TRUE,
+                                  digits=max(3, .Options$digits - 3),
                                   ...){
   
   

@@ -56,7 +56,8 @@ netmeta <- function(TE, seTE,
       studlab <- as.character(mf$studlab)
   }
   else{
-    warning("No information given for argument 'studlab'. Assuming that comparison are from independent studies.")
+    if (warn)
+      warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
     studlab <- seq(along=TE)
   }
   
@@ -96,7 +97,8 @@ netmeta <- function(TE, seTE,
   wo <- treat1 > treat2
   ##
   if (any(wo)){
-    warning("Treatments within a comparison have been re-sorted in increasing order.")
+    if (warn)
+      warning("Treatments within a comparison have been re-sorted in increasing order.")
     TE[wo] <- -TE[wo]
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]
@@ -136,7 +138,7 @@ netmeta <- function(TE, seTE,
   tdata <- data.frame(studies=p0$studlab, narms=p0$narms)
   tdata <- unique(tdata[order(tdata$studies, tdata$narms),])
   studies <- tdata$studies
-  narms <- tdata$narms                 
+  narms <- tdata$narms
   ##
   ## Network meta-analysis based on prepared data set
   ##
@@ -237,12 +239,13 @@ netmeta <- function(TE, seTE,
               ##
               Q.decomp=res.f$Q.decomp,
               ##
-              all.treatments=all.treatments,
               reference.group=reference.group,
+              all.treatments=all.treatments,
               ##
               title=title,
               ##
               warn=warn,
+              call=match.call(),
               version=packageDescription("netmeta")$Version
               )
   

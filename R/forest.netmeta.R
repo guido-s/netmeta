@@ -1,7 +1,6 @@
 forest.netmeta <- function(x,
-                           reference.group=x$reference.group,
                            pooled=ifelse(x$comb.random, "random", "fixed"),
-                           comb.random=x$comb.random,
+                           reference.group=x$reference.group,
                            leftcols="studlab",
                            leftlabs="Treatment",
                            smlab=NULL,
@@ -9,6 +8,13 @@ forest.netmeta <- function(x,
 
   if (!inherits(x, "netmeta"))
     stop("Argument 'x' must be an object of class \"netmeta\"")
+  
+  ipool <- charmatch(tolower(pooled), c("fixed", "random"), nomatch = NA)
+  ##
+  if (is.na(ipool)) 
+        stop("Argument 'pooled' should be \"fixed\" or \"random\"")
+  ##
+  pooled <- c("fixed", "random")[ipool]
   
   if (pooled=="fixed"){
     TE   <- x$TE.fixed

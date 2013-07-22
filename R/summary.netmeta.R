@@ -1,10 +1,10 @@
 summary.netmeta <- function(object,
-                            all.treatments=object$all.treatments,
-                            reference.group=object$reference.group,
                             level=object$level,
                             level.comb=object$level.comb,
                             comb.fixed=object$comb.fixed,
                             comb.random=object$comb.random,
+                            reference.group=object$reference.group,
+                            all.treatments=object$all.treatments,
                             warn=object$warn,
                             ...){
   
@@ -54,7 +54,6 @@ summary.netmeta <- function(object,
               k=k, m=m, Q=Q, df=object$df,
               tau=object$tau, I2=object$I2,
               sm=object$sm,
-              call=match.call(),
               ci.lab=ci.lab,
               comb.fixed=comb.fixed,
               comb.random=comb.random,
@@ -62,18 +61,18 @@ summary.netmeta <- function(object,
               level.comb=level.comb
               )
   
-  
   if (reference.group!="" & missing(all.treatments))
     all.treatments <- FALSE
   
-  res$all.treatments <- all.treatments
   res$reference.group <- reference.group
+  res$all.treatments <- all.treatments
   ##
   res$title   <- object$title
+  
+  res$call <- match.call()
+  res$version <- packageDescription("netmeta")$Version
   ##
   class(res) <- "summary.netmeta"
-  
-  res$version <- packageDescription("netmeta")$Version
   
   res
 }
