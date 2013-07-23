@@ -12,10 +12,10 @@
 
 \usage{
 \method{print}{netmeta}(x, sortvar, level=x$level, level.comb=x$level.comb,
-        comb.fixed=x$comb.fixed, comb.random=x$comb.random,
-        reference.group=x$reference.group, all.treatments=x$all.treatments,
-        details=TRUE, ma=TRUE, logscale=FALSE,
-        digits=max(4, .Options$digits - 3), ...)
+      comb.fixed=x$comb.fixed, comb.random=x$comb.random,
+      reference.group=x$reference.group, all.treatments=x$all.treatments,
+      details=TRUE, ma=TRUE, logscale=FALSE,
+      digits=max(4, .Options$digits - 3), ...)
 
 \method{summary}{netmeta}(object,
         level=object$level, level.comb=object$level.comb,
@@ -24,8 +24,8 @@
         warn=object$warn, ...)
 
 \method{print}{summary.netmeta}(x, comb.fixed=x$comb.fixed, comb.random=x$comb.random,
-        reference.group=x$reference.group, all.treatments=x$all.treatments,
-        logscale=FALSE, header=TRUE, digits=max(3, .Options$digits - 3), ...)
+      reference.group=x$reference.group, all.treatments=x$all.treatments,
+      logscale=FALSE, header=TRUE, digits=max(3, .Options$digits - 3), ...)
 }
 
 \arguments{
@@ -43,11 +43,11 @@
     meta-analysis should be conducted.}
   \item{reference.group}{Reference group.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
-        \code{TRUE}, matrices with all treatment effects, and confidence
-        limits will be printed.}
-  \item{details}{A logical indicating whether further details of
+    \code{TRUE}, matrices with all treatment effects, and confidence
+    limits will be printed.}
+  \item{details}{A logical indicating whether further details for
     individual studies should be printed.}
-  \item{ma}{A logical indicating whether the summary results of the
+  \item{ma}{A logical indicating whether summary results of
     meta-analysis should be printed.}
   \item{logscale}{A logical indicating whether results for summary
     measures 'RR', 'OR', 'HR', or 'PLN' will be printed on logarithmic
@@ -62,36 +62,34 @@
   \item{\dots}{Additional arguments}
 }
 
-\details{
-  TODO ...
-}
-
 \value{
   A list is returned by the function \code{summary.netmeta} with the
   following elements:
   \item{comparison}{Results for pairwise comparisons (a list with
     elements TE, seTE, lower, upper, z, p, level, df, studlab, treat1,
     treat2).}
-  \item{comparison.nma.fixed}{TODO: Results for pairwise comparisons
-    based on fixed effect model (a list with elements TE, seTE, lower,
+  \item{comparison.nma.fixed}{Results for pairwise comparisons based
+    on fixed effect model (a list with elements TE, seTE, lower,
     upper, z, p, level, df, studlab, treat1, treat2, leverage).}
-  \item{comparison.nma.random}{TODO: Results for pairwise comparisons
-    based on random effects model (a list with elements TE, seTE,
-    lower, upper, z, p, level, df, studlab, treat1, treat2).}
-  \item{fixed}{TODO: Results for fixed effect model
-    (a list with elements TE, seTE, lower, upper, z, p, level, df).}
-  \item{random}{TODO: Results for random effects model
-    (a list with elements TE, seTE, lower, upper, z, p, level, df).}
-  \item{studies}{???}
-  \item{narms}{???}
+  \item{comparison.nma.random}{Results for pairwise comparisons based
+    on random effects model (a list with elements TE, seTE, lower,
+    upper, z, p, level, df, studlab, treat1, treat2).}
+  \item{fixed}{Results for fixed effect model (a list with elements
+    TE, seTE, lower, upper, z, p, level, df).}
+  \item{random}{Results for random effects model (a list with elements
+    TE, seTE, lower, upper, z, p, level, df).}
+  \item{studies}{Study labels coerced into a factor with its levels
+    sorted alphabetically.}
+  \item{narms}{Number of arms for each study.}
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
-  \item{Q}{Overall heterogeneity/inconsistency statistic.}
-  \item{df}{Degrees of freedom for test of heterogeneity/inconsistency.}
+  \item{Q}{Overall heterogeneity / inconsistency statistic.}
+  \item{df}{Degrees of freedom for test of heterogeneity /
+    inconsistency.}
   \item{tau}{Square-root of between-study variance.}
   \item{I2}{I-squared.}
   \item{sm}{A character string indicating underlying summary measure.}
-  \item{ci.lab}{???}
+  \item{ci.lab}{Label for confidence interval.}
   \item{comb.fixed}{A logical indicating whether result for fixed
     effect meta-analysis should be printed.}
   \item{comb.random}{A logical indicating whether result for random
@@ -101,8 +99,8 @@
   \item{level.comb}{The level used to calculate confidence intervals for
     pooled estimates.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
-        \code{TRUE}, matrices with all treatment effects, and confidence
-        limits will be printed.}
+    \code{TRUE}, matrices with all treatment effects, and confidence
+    limits will be printed.}
   \item{reference.group}{Reference group.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
         \code{TRUE}, matrices with all treatment effects, and confidence
@@ -112,27 +110,27 @@
   \item{version}{Version of R package netmeta used to create object.}
 }
 
-\references{
-  TODO - any references ???
-}
-
 \author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
 \seealso{\code{\link{netmeta}}}
 
 \examples{
 
-## TODO: Better example?
+data(Senn2013)
 
-data(example1)
+#### Fixed effect model (default)
 
-example1$se.effect <- sqrt(1/example1$weight)
+net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data=Senn2013, sm="MD")
+print(net1, ref="placebo", digits=3)
+summary(net1)
 
-## Fixed effect model (default)
-##
-nm <- netmeta(effect, se.effect, treat1, treat2, author,
-              data=example1)
-summary(nm)
+#### Random effects model
+
+net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data=Senn2013, sm="MD", comb.random=TRUE)
+print(net2, ref="placebo", digits=3)
+summary(net2)
 }
 
 \keyword{print}

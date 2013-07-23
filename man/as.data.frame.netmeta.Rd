@@ -26,15 +26,17 @@
 \seealso{\code{\link{netmeta}}}
 
 \examples{
-data(example1)
 
-example1$se.effect <- sqrt(1/example1$weight)
+data(Senn2013)
 
-nm <- netmeta(effect, se.effect, treat1, treat2, author,
-              data=example1)
+#### Fixed effect model (default)
 
-as.data.frame(nm)
+net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data=Senn2013, sm="MD")
 
-as.data.frame(nm, details=TRUE)
+as.data.frame(net1)
+
+as.data.frame(net1, details=TRUE)
+
 }
 \keyword{print}
