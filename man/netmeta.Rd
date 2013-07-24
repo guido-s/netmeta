@@ -98,6 +98,8 @@
     defined above.}
   \item{comb.fixed, comb.random, tau.preset, title, warn}{As defined
     above.}
+  \item{seTE.adj}{Standard error of treatment estimate, adjusted for
+    multi-armed studies.}
   \item{reference.group}{The name of the reference group, if
     specified, otherwise \code{c("")}.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If

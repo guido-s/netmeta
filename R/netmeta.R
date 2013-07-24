@@ -149,7 +149,8 @@ netmeta <- function(TE, seTE,
                    p0$treat1.pos, p0$treat2.pos,
                    p0$narms, p0$studlab,
                    sm=sm,
-                   level=level, level.comb=level.comb)
+                   level=level, level.comb=level.comb,
+                   seTE.orig=p0$seTE)
   ##
   ## Random effects model
   ##
@@ -163,7 +164,8 @@ netmeta <- function(TE, seTE,
                    p0$treat1.pos, p0$treat2.pos,
                    p0$narms, p0$studlab,
                    sm=sm,
-                   level=level, level.comb=level.comb)
+                   level=level, level.comb=level.comb,
+                   seTE.orig=p0$seTE)
   
   
   o <- order(p0$order)
@@ -174,7 +176,8 @@ netmeta <- function(TE, seTE,
               treat2=res.f$treat2[o],
               ##
               TE=res.f$TE[o],
-              seTE=res.f$seTE[o],
+              seTE=res.f$seTE.orig[o],
+              seTE.adj=res.f$seTE[o],
               ##
               studies=studies,
               narms=narms,

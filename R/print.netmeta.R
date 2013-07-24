@@ -83,8 +83,12 @@ print.netmeta <- function(x,
     res <- data.frame(treat1=x$treat1,
                       treat2=x$treat2,
                       TE=format.TE(round(x$TE, digits), na=TRUE),
-                      seTE=format(round(x$seTE, digits)),
-                      studlab=x$studlab)
+                      seTE=format(round(x$seTE, digits)))
+    ##
+    if (any(x$narms>2))
+      res$seTE.adj <- format(round(x$seTE.adj, digits))
+    ##
+    res$studlab <- x$studlab
     ##
     if (any(x$narms>2)){
       tdata1 <- data.frame(studlab=as.character(x$studies),
@@ -99,6 +103,8 @@ print.netmeta <- function(x,
       res$studlab <- NULL
       res <- as.matrix(res)
     }
+    else
+      res$studlab <- NULL
     ##
     dimnames(res)[[1]] <- x$studlab
     

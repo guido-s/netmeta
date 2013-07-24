@@ -4,12 +4,13 @@ network <- function(TE, seTE,
                     narms, studlab,
                     data=NULL,
                     sm="",
-                    level=0.95, level.comb=0.95){
+                    level=0.95, level.comb=0.95,
+                    seTE.orig){
   
   if (is.null(data)) data <- sys.frame(sys.parent())
   ##
   ## Catch TE, treat1, treat2, treat1.pos, treat2.pos, seTE, studlab,
-  ## narms from data:
+  ## narms, seTE.orig from data:
   ##
   mf <- match.call()
   mf$level <- mf$level.comb <- NULL
@@ -23,6 +24,7 @@ network <- function(TE, seTE,
   treat1.pos <- mf$treat1.pos
   treat2.pos <- mf$treat2.pos
   seTE <- mf$seTE
+  seTE.orig <- mf$seTE.orig
   ##
   if (length(mf$studlab)!=0){
     if (is.factor(mf$studlab))
@@ -237,6 +239,7 @@ network <- function(TE, seTE,
               studlab=studlab,
               treat1=treat1, treat2=treat2,
               TE=TE, seTE=seTE,
+              seTE.orig=seTE.orig,
               TE.nma=v,
               seTE.nma=sqrt(V),
               lower.nma=ci.v$lower,
