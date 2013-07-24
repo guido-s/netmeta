@@ -59,9 +59,9 @@ data(Senn2013)
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
 
-forest(net1, ref="placebo")
+forest(net1, ref="plac")
 
-forest(net1, xlim=c(-1.5,1), ref="placebo",
+forest(net1, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference",
        leftcols="studlab", rightcols=NULL,
        leftlabs="Contrast to placebo")
@@ -71,7 +71,7 @@ forest(net1, xlim=c(-1.5,1), ref="placebo",
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", comb.random=TRUE)
 
-forest(net2, xlim=c(-1.5,1), ref="placebo",
+forest(net2, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference",
        leftcols="studlab", rightcols=NULL,
        leftlabs="Contrast to placebo")

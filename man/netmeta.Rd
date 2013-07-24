@@ -9,8 +9,8 @@
   for the same condition. The graph-theoretical method for analysis of
   network meta-analyses uses graph-theoretical methods that were
   originally developed in electrical network theory. It has been found
-  to be equivalent to the freuqentist approach to network
-  meta-analysis (Rücker G, 2012).
+  to be equivalent to the frequentist approach to network
+  meta-analysis (Rücker, 2012).
 }
 
 \usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
@@ -50,12 +50,12 @@
 }
 
 \details{
-  Let \emph{n} be the number of different treatments in a network and let
-  \emph{m} be the number of existing comparisons (edges) between the
-  treatments. If there are only two-arm studies, \emph{m} is the number of
-  studies. Let TE and seTE the vectors of observed effects and their
-  standard errors. Let W be the \emph{m}x\emph{m} diagonal matrix that contains
-  the inverse variance 1/seTE^2.
+  Let \emph{n} be the number of different treatments in a network and
+  let \emph{m} be the number of existing comparisons (edges) between
+  the treatments. If there are only two-arm studies, \emph{m} is the
+  number of studies. Let TE and seTE be the vectors of observed
+  effects and their standard errors. Let W be the \emph{m}x\emph{m}
+  diagonal matrix that contains the inverse variance 1/seTE^2.
   
   The given comparisons define the network structure. Therefrom an
   \emph{m}x\emph{n} design matrix B is formed; for more precise information, see
@@ -64,7 +64,7 @@
   important role in graph theory and electrical network theory).
   Using these matrices, the variances based on both direct and
   indirect comparisons can be estimated. Moreover, the hat matrix H
-  can be estimated by \strong{H = BL^{+}B^{t}W = B(B^{t} W B)^{+}B^{t}W} and
+  can be estimated by \strong{H = BL+B^{t}W = B(B^{t} W B)^{+}B^{t}W} and
   finally consistent treatment effects can be estimated by applying
   the hat matrix to the observed (potentially inconsistent) effects. H
   is a projection matrix which maps the observed effects onto the
@@ -83,7 +83,7 @@
   A simple random effects model assuming that a constant heterogeneity
   variance is added to each edge of the network can be defined via a
   generalised methods of moments estimate of the between-studies
-  variance tau^2 (Jackson et al., 2012). This is added to observed
+  variance tau^2 (Jackson et al., 2012). This is added to the observed
   sampling variance seTE^2 of each edge in the network (after
   appropriate adjustment for multi-armed studies). Then, as in
   standard pairwise meta-analysis, the procedure is repeated with the
@@ -94,15 +94,15 @@
   An object of class \code{c("netmeta")} with corresponding
   \code{print}, \code{summary}, \code{forest} function. The object is
   a list containing the following components:
-  \item{TE, seTE, studlab, treat1, treat2}{}
-  \item{sm, level, level.comb,}{}
-  \item{comb.fixed, comb.random,}{As described above.}
+  \item{TE, seTE, studlab, treat1, treat2, sm, level, level.comb}{As
+    defined above.}
+  \item{comb.fixed, comb.random, tau.preset, title, warn}{As defined
+    above.}
   \item{reference.group}{The name of the reference group, if
     specified, otherwise \code{c("")}.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
         \code{TRUE}, matrices with all treatment effects, and
         confidence limits will be printed.}
-  \item{tau.preset, title, warn}{As defined above.}
   \item{studies}{Study labels coerced into a factor with its levels
     sorted alphabetically.}
   \item{narms}{Number of arms for each study.}
@@ -153,8 +153,8 @@
   \item{Q.matrix}{Matrix of heterogeneity statistics for pairwise
     meta-analyses, where direct comparisons exist (\emph{n}x\emph{n}).}
   \item{G.matrix}{Matrix with variances and covariances of edges
-    (\emph{m}x\emph{m}). G is defined as \strong{BL^{+}B^{t}}.}
-  \item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as \strong{H=GW=BL^{+}B^{t}W}.}
+    (\emph{m}x\emph{m}). G is defined as \strong{BL+B^{t}}.}
+  \item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as \strong{H=GW=BL+B^{t}W}.}
   \item{Q.decomp}{Data frame with columns 'treat1', 'treat2', 'Q',
     'df' and 'pval.Q', providing heterogeneity statistics for each
     pairwise meta-analysis of direct comparisons.}
@@ -200,7 +200,7 @@ net1$Q.decomp
 #### Comparison with reference group
 
 netmeta(TE, seTE, treat1, treat2, studlab,
-        data=Senn2013, sm="MD", reference="placebo")
+        data=Senn2013, sm="MD", reference="plac")
 
 #### Random effects model
 

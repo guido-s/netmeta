@@ -24,11 +24,12 @@ prepare <- function(TE, seTE,
     studlab <- seq(along=TE)
 
   w.fixed <- 1/seTE^2
-
+  
   if (is.factor(treat1))
     treat1 <- as.character(treat1)
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
+  
   data <- data.frame(studlab,
                      treat1, treat2,
                      treat1.pos=NA, treat2.pos=NA,

@@ -122,14 +122,14 @@ data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
-print(net1, ref="placebo", digits=3)
+print(net1, ref="plac", digits=3)
 summary(net1)
 
 #### Random effects model
 
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", comb.random=TRUE)
-print(net2, ref="placebo", digits=3)
+print(net2, ref="plac", digits=3)
 summary(net2)
 }
 
