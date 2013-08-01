@@ -18,6 +18,7 @@ summary.netmeta <- function(object,
   
   k <- object$k
   m <- object$m
+  n <- object$n
   Q <- object$Q
   
   ci.lab <- paste(round(100*level.comb, 1), "%-CI", sep="")
@@ -51,7 +52,7 @@ summary.netmeta <- function(object,
               fixed=ci.f, random=ci.r,
               studies=object$studies,
               narms=object$narms,
-              k=k, m=m, Q=Q, df=object$df,
+              k=k, m=m, n=n, Q=Q, df=object$df,
               tau=object$tau, I2=object$I2,
               sm=object$sm,
               ci.lab=ci.lab,

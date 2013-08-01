@@ -1,3 +1,14 @@
+2013-08-01, version 0.3-1
+
+Functions netmeta and summary.netmeta:
+- new list component n (number of treatments)
+
+Function print.summary.netmeta:
+- modified such that number of treatments is printed
+- modified such that argument 'reference.group' works as expected for
+  random effects model
+
+
 2013-07-24, version 0.3-0
 
 First version released on CRAN

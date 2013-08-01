@@ -141,6 +141,7 @@
     heterogeneity / inconsistency statistic.}
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
+  \item{n}{Total number of treatments.}
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
   \item{df}{Degrees of freedom for test of heterogeneity / inconsistency.}
   \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}

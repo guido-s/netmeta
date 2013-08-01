@@ -51,8 +51,9 @@ print.summary.netmeta <- function(x,
     res
   }
   
-  m <- x$m
   k <- x$k
+  m <- x$m
+  n <- x$n
   sm <- x$sm
   
   sm.lab <- sm
@@ -107,6 +108,7 @@ print.summary.netmeta <- function(x,
   
   if (comb.fixed|comb.random){
     cat(paste("Number of studies: k=", k, "\n", sep=""))
+    cat(paste("Number of treatments: n=", n, "\n", sep=""))
     cat(paste("Number of pairwise comparisons: m=", m, "\n", sep=""))
     
     if (comb.fixed){
@@ -143,12 +145,35 @@ print.summary.netmeta <- function(x,
     }
     
     if (comb.random){
-      cat("\nRandom effects model\n\nTreatment estimate (sm='", sm.lab, "'):\n", sep="")
-      print(TE.random)
-      cat("\nLower ", 100*x$random$level, "%-confidence limit:\n", sep="")
-      print(lowTE.random)
-      cat("\nUpper ", 100*x$random$level, "%-confidence limit:\n", sep="")
-      print(uppTE.random)
+      if (all.treatments | reference.group!="")
+        cat("\nRandom effects model\n")
+      if (all.treatments){
+        cat("\nTreatment estimate (sm='", sm.lab, "'):\n", sep="")
+        print(TE.random)
+        cat("\nLower ", 100*x$random$level, "%-confidence limit:\n", sep="")
+        print(lowTE.random)
+        cat("\nUpper ", 100*x$random$level, "%-confidence limit:\n", sep="")
+        print(uppTE.random)
+      }
+      if (reference.group!=""){
+        if (all(colnames(TE.random)!=reference.group))
+          stop(paste("Argument 'reference.group' must match any of the following values: ",
+                     paste(paste("'", colnames(TE.random), "'", sep=""),
+                           collapse=" - "), sep=""))
+        ##
+        TE.random.b <- TE.random[,colnames(TE.random)==reference.group]
+        lowTE.random.b <- lowTE.random[,colnames(lowTE.random)==reference.group]
+        uppTE.random.b <- uppTE.random[,colnames(uppTE.random)==reference.group]
+        ##
+        res <- cbind(format.TE(TE.random.b, na=TRUE),
+                     p.ci(format(lowTE.random.b), format(uppTE.random.b)))
+        dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab))
+        
+        cat("\nTreatment estimate (sm='", sm.lab,
+            "', reference.group='", reference.group, "'):\n", sep="")
+        
+        prmatrix(res, quote=FALSE, right=TRUE)
+      }
     }
     zlab <- "z"
     

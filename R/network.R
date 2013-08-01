@@ -259,6 +259,7 @@ network <- function(TE, seTE,
               ##
               k=length(unique(studlab)),
               m=length(TE),
+              n=dim(TE.pooled)[[1]],
               Q=Q,
               df=df,
               pval.Q=1-pchisq(Q, df),

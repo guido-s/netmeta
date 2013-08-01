@@ -218,6 +218,7 @@ netmeta <- function(TE, seTE,
               ##
               k=res.f$k,
               m=res.f$m,
+              n=res.f$n,
               Q=res.f$Q,
               df=res.f$df,
               pval.Q=res.f$pval.Q,

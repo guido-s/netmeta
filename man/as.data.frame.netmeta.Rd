@@ -16,7 +16,7 @@
   \item{optional}{A logical. If \code{TRUE}, setting row names and
     converting column names (to syntactic names) is optional.}
   \item{details}{A logical. If \code{TRUE}, additional variables of
-    less interested are included in data frame.}
+    less interest are included in data frame.}
   \item{...}{other arguments}
 }
 \value{

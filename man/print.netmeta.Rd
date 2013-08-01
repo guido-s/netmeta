@@ -83,6 +83,7 @@
   \item{narms}{Number of arms for each study.}
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
+  \item{n}{Total number of treatments.}
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
   \item{df}{Degrees of freedom for test of heterogeneity /
     inconsistency.}
