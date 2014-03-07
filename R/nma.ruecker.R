@@ -1,11 +1,11 @@
-network <- function(TE, seTE,
-                    treat1, treat2,
-                    treat1.pos, treat2.pos,
-                    narms, studlab,
-                    data=NULL,
-                    sm="",
-                    level=0.95, level.comb=0.95,
-                    seTE.orig){
+nma.ruecker <- function(TE, seTE,
+                        treat1, treat2,
+                        treat1.pos, treat2.pos,
+                        narms, studlab,
+                        data=NULL,
+                        sm="",
+                        level=0.95, level.comb=0.95,
+                        seTE.orig){
   
   if (is.null(data)) data <- sys.frame(sys.parent())
   ##
@@ -121,7 +121,7 @@ network <- function(TE, seTE,
   ## Resulting effects and variances at numbered edges
   ##
   v <- as.vector(GW%*%TE)
-  ci.v <- meta:::ci(v, sqrt(V), level=level)
+  ci.v <- meta::ci(v, sqrt(V), level=level)
   ##
   ## Resulting effects, all edges, as a n x n matrix:
   ##
@@ -200,7 +200,7 @@ network <- function(TE, seTE,
   TE.pooled <- all
   seTE.pooled <- sqrt(R)
   ##
-  ci.pooled <- meta:::ci(all, sqrt(R), level=level.comb)
+  ci.pooled <- meta::ci(all, sqrt(R), level=level.comb)
   ##
   lower.pooled <- ci.pooled$lower
   upper.pooled <- ci.pooled$upper

@@ -13,45 +13,6 @@ print.netmeta <- function(x,
     stop("Argument 'x' must be an object of class \"netmeta\"")
   
   
-  rmSpace <- function(x, end=FALSE, pat=" "){
-    ##
-    if ( !end ){
-      while (any(substring(x, 1, 1) == pat, na.rm=TRUE)){
-        sel <- substring(x, 1, 1) == pat
-        x[sel] <- substring(x[sel], 2)
-      }
-    }
-    else{
-      last <- nchar(x)
-      ##
-      while ( any(substring(x, last, last) == pat, na.rm=TRUE) ){
-        sel <- substring(x, last, last) == pat
-          x[sel] <- substring(x[sel], 1, last[sel]-1)
-        last <- nchar(x)
-      }
-    }
-    ##
-    x
-  }
-
-  p.ci <- function(lower, upper){
-    lower <- rmSpace(lower)
-    upper <- rmSpace(upper)
-    ##
-    ifelse (lower=="NA" & upper=="NA",
-            "",
-            paste(" [", format(lower, justify="right"),
-                  "; ", format(upper, justify="right"), "]", sep=""))
-  }
-
-  format.TE <- function(TE, na=FALSE){
-    TE <- rmSpace(TE)
-    if (na) res <- format(TE)
-    else res <- ifelse(is.na(TE), "", format(TE))
-    res
-  }
-  
-  
   k.all <- length(x$TE)
   ##
   if (missing(sortvar)) sortvar <- 1:k.all

@@ -40,14 +40,14 @@ forest.netmeta <- function(x,
 
   m1 <- metagen(TE.b, seTE.b, sm=x$sm,
                 studlab=colnames(TE), warn=FALSE)
-
-  meta:::forest(m1,
-                comb.fixed=FALSE, comb.random=FALSE,
-                hetstat=FALSE,
-                leftcols=leftcols,
-                leftlabs=leftlabs,
-                smlab=smlab,
-                ...)
-
+  
+  forest(m1,
+         comb.fixed=FALSE, comb.random=FALSE,
+         hetstat=FALSE,
+         leftcols=leftcols,
+         leftlabs=leftlabs,
+         smlab=smlab,
+         ...)
+  
   invisible(NULL)
 }

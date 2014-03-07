@@ -1,13 +1,21 @@
 export(netmeta,
        as.data.frame.netmeta, print.netmeta,
        summary.netmeta, print.summary.netmeta,
-       forest.netmeta)
+       forest.netmeta,
+       decomp.design, print.decomp.design,
+       netheat, netgraph, netheat, netmeasures)
 
 # not visible:
-# network, prepare, multiarm, matitle, forest
+# prepare, multiarm, matitle, nma.ruecker, nma.krahn,
+# format.TE, p.ci
 
 S3method(as.data.frame, netmeta)
 S3method(print, netmeta)
 S3method(summary, netmeta)
 S3method(print, summary.netmeta)
 S3method(forest, netmeta)
+S3method(print, decomp.design)
+
+importFrom(meta, forest)
+
+importFrom(magic, adiag)

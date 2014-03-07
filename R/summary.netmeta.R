@@ -23,13 +23,13 @@ summary.netmeta <- function(object,
   
   ci.lab <- paste(round(100*level.comb, 1), "%-CI", sep="")
   ##
-  ci.comp <- ci(object$TE, object$seTE, level)
-  ci.comp.nma.fixed <- ci(object$TE.nma.fixed,
-                          object$seTE.nma.fixed, level)
-  ci.comp.nma.random <- ci(object$TE.nma.random,
-                           object$seTE.nma.random, level)
-  ci.f <- ci(object$TE.fixed , object$seTE.fixed , level.comb)
-  ci.r <- ci(object$TE.random, object$seTE.random, level.comb)
+  ci.comp <- meta::ci(object$TE, object$seTE, level)
+  ci.comp.nma.fixed <- meta::ci(object$TE.nma.fixed,
+                                object$seTE.nma.fixed, level)
+  ci.comp.nma.random <- meta::ci(object$TE.nma.random,
+                                 object$seTE.nma.random, level)
+  ci.f <- meta::ci(object$TE.fixed , object$seTE.fixed , level.comb)
+  ci.r <- meta::ci(object$TE.random, object$seTE.random, level.comb)
   
   ci.comp$studlab <- object$studlab
   ci.comp$treat1 <- object$treat1

@@ -54,7 +54,7 @@ prepare <- function(TE, seTE,
   sl <- unique(data$studlab)
   ##
   ## Determining number of arms and adjusting weights of
-  ## multi-armed studies
+  ## multi-arm studies
   ##
   for (s in sl){
     subgraph <- data[data$studlab==s,]

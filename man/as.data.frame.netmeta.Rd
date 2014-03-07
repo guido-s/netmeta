@@ -17,7 +17,7 @@
     converting column names (to syntactic names) is optional.}
   \item{details}{A logical. If \code{TRUE}, additional variables of
     less interest are included in data frame.}
-  \item{...}{other arguments}
+  \item{\dots}{Additional arguments.}
 }
 \value{
   A data frame is returned by the function \code{as.data.frame}.
@@ -29,8 +29,9 @@
 
 data(Senn2013)
 
-#### Fixed effect model (default)
-
+##
+## Fixed effect model (default)
+##
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
 

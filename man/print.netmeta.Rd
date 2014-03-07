@@ -59,7 +59,7 @@
   \item{warn}{A logical indicating whether the use of
     \code{summary.meta} in connection with \code{metacum} or
     \code{metainf} should result in a warning.}
-  \item{\dots}{Additional arguments}
+  \item{\dots}{Additional arguments.}
 }
 
 \value{
@@ -119,15 +119,17 @@
 
 data(Senn2013)
 
-#### Fixed effect model (default)
-
+##
+## Fixed effect model (default)
+##
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
 print(net1, ref="plac", digits=3)
 summary(net1)
 
-#### Random effects model
-
+##
+## Random effects model
+##
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", comb.random=TRUE)
 print(net2, ref="plac", digits=3)

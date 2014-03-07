@@ -83,6 +83,29 @@ netmeta <- function(TE, seTE,
     }
   }
   
+  
+  ##
+  ## Check for correct number of comparisons
+  ## Assuming that maximum number of treatments per study is 8
+  ##
+  treatments <- 2:8
+  narms.possible <- treatments*(treatments-1)/2
+  tabnarms <- table(studlab)
+  sel.narms <- !(tabnarms %in% narms.possible)
+  ##
+  if (sum(sel.narms)==1)
+    stop(paste("Study '", names(tabnarms)[sel.narms],
+               "' has a wrong number of comparisons.",
+               "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
+               sep=""))
+  if (sum(sel.narms)>1)
+    stop(paste("The following studies have a wrong number of comparisons: ",
+               paste(paste("'", names(tabnarms)[sel.narms], "'", sep=""),
+                     collapse=", "),
+               "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
+               sep=""))
+  
+  
   ##
   ## TODO - Do not reorder factor variables ...
   ##
@@ -144,13 +167,13 @@ netmeta <- function(TE, seTE,
   ##
   ## Fixed effect model
   ##
-  res.f <- network(p0$TE, sqrt(1/p0$w.fixed),
-                   p0$treat1, p0$treat2,
-                   p0$treat1.pos, p0$treat2.pos,
-                   p0$narms, p0$studlab,
-                   sm=sm,
-                   level=level, level.comb=level.comb,
-                   seTE.orig=p0$seTE)
+  res.f <- nma.ruecker(p0$TE, sqrt(1/p0$w.fixed),
+                       p0$treat1, p0$treat2,
+                       p0$treat1.pos, p0$treat2.pos,
+                       p0$narms, p0$studlab,
+                       sm=sm,
+                       level=level, level.comb=level.comb,
+                       seTE.orig=p0$seTE)
   ##
   ## Random effects model
   ##
@@ -159,13 +182,13 @@ netmeta <- function(TE, seTE,
   else
     tau <- tau.preset
   ##
-  res.r <- network(p0$TE, sqrt(1/p0$w.fixed + tau^2),
-                   p0$treat1, p0$treat2,
-                   p0$treat1.pos, p0$treat2.pos,
-                   p0$narms, p0$studlab,
-                   sm=sm,
-                   level=level, level.comb=level.comb,
-                   seTE.orig=p0$seTE)
+  res.r <- nma.ruecker(p0$TE, sqrt(1/p0$w.fixed + tau^2),
+                       p0$treat1, p0$treat2,
+                       p0$treat1.pos, p0$treat2.pos,
+                       p0$narms, p0$studlab,
+                       sm=sm,
+                       level=level, level.comb=level.comb,
+                       seTE.orig=p0$seTE)
   
   
   o <- order(p0$order)

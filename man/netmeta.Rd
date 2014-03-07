@@ -24,7 +24,7 @@
   \item{seTE}{Standard error of treatment estimate.}
   \item{treat1}{Label/Number for first treatment.}
   \item{treat2}{Label/Number for second treatment.}
-  \item{studlab}{An optional vector with study labels.}
+  \item{studlab}{An optional - but important! - vector with study labels (see Details).}
   \item{data}{An optional data frame containing the study information.}
   \item{subset}{An optional vector specifying a subset of studies to be used.}
   \item{sm}{A character string indicating underlying summary measure,
@@ -58,36 +58,53 @@
   diagonal matrix that contains the inverse variance 1/seTE^2.
   
   The given comparisons define the network structure. Therefrom an
-  \emph{m}x\emph{n} design matrix B is formed; for more precise information, see
-  Rücker (2012). Moreover, the \emph{n}x\emph{n} Laplacian matrix L and its
-  Moore-Penrose pseudoinverse L+ are calculated (both matrices play an
-  important role in graph theory and electrical network theory).
-  Using these matrices, the variances based on both direct and
-  indirect comparisons can be estimated. Moreover, the hat matrix H
-  can be estimated by \strong{H = BL+B^{t}W = B(B^{t} W B)^{+}B^{t}W} and
-  finally consistent treatment effects can be estimated by applying
-  the hat matrix to the observed (potentially inconsistent) effects. H
-  is a projection matrix which maps the observed effects onto the
-  consistent (n-1)-dimensional subspace. This is the Aitken
-  estimator (Senn et al., 2013). As in pairwise meta-analysis, the Q
-  statistic measures the deviation from consistency. Q can be
-  separated into parts for each pairwise meta-analysis and a part for
-  remaining inconsistency between comparisons.
+  \emph{m}x\emph{n} design matrix B is formed; for more precise
+  information, see Rücker (2012). Moreover, the \emph{n}x\emph{n}
+  Laplacian matrix L and its Moore-Penrose pseudoinverse L+ are
+  calculated (both matrices play an important role in graph theory and
+  electrical network theory).  Using these matrices, the variances
+  based on both direct and indirect comparisons can be
+  estimated. Moreover, the hat matrix H can be estimated by \strong{H
+  = BL+B^{t}W = B(B^{t} W B)^{+}B^{t}W} and finally consistent
+  treatment effects can be estimated by applying the hat matrix to the
+  observed (potentially inconsistent) effects. H is a projection
+  matrix which maps the observed effects onto the consistent
+  (n-1)-dimensional subspace. This is the Aitken estimator (Senn et
+  al., 2013). As in pairwise meta-analysis, the Q statistic measures
+  the deviation from consistency. Q can be separated into parts for
+  each pairwise meta-analysis and a part for remaining inconsistency
+  between comparisons.
 
-  Often multi-armed studies are included in a network meta-analysis.
-  In multi-armed studies, the treatment effects on different
-  comparisons are not independent, but correlated. This is accounted
-  for by reweighting all edges of each multi-armed study. The method
-  is described in Rücker (2012).
+  Often multi-arm studies are included in a network meta-analysis.  In
+  multi-arm studies, the treatment effects on different comparisons
+  are not independent, but correlated. This is accounted for by
+  reweighting all comparisons of each multi-arm study. The method is
+  described in Rücker (2012).
 
+  Comparisons belonging to multi-arm studies are identified by
+  identical study labels (argument \code{studlab}). It is therefore
+  important to use identical study labels for all comparisons
+  belonging to the same multi-arm study, e.g., study label
+  "Willms1999" for the three-arm study in the data example (Senn et
+  al., 2013). The function netmeta then automatically accounts for
+  within-study correlation by reweighting all comparisons of each
+  multi-arm study.
+
+  All pairwise comparisons must be provided for a multi-arm
+  study. Consider a multi-arm study of \emph{p} treatments with known
+  variances. For this study, treatment effects and standard errors
+  must be provided for each of \emph{p}(\emph{p} - 1)/2 possible
+  comparisons. For instance, a three-arm study contributes three
+  pairwise comparisons, a four-arm study even six pairwise comparisons
+  
   A simple random effects model assuming that a constant heterogeneity
-  variance is added to each edge of the network can be defined via a
-  generalised methods of moments estimate of the between-studies
+  variance is added to each comparison of the network can be defined
+  via a generalised methods of moments estimate of the between-studies
   variance tau^2 (Jackson et al., 2012). This is added to the observed
-  sampling variance seTE^2 of each edge in the network (after
-  appropriate adjustment for multi-armed studies). Then, as in
-  standard pairwise meta-analysis, the procedure is repeated with the
-  resulting enlarged standard errors.
+  sampling variance seTE^2 of each comparison in the network (after
+  appropriate adjustment for multi-arm studies). Then, as in standard
+  pairwise meta-analysis, the procedure is repeated with the resulting
+  enlarged standard errors.
 }
 
 \value{
@@ -99,7 +116,7 @@
   \item{comb.fixed, comb.random, tau.preset, title, warn}{As defined
     above.}
   \item{seTE.adj}{Standard error of treatment estimate, adjusted for
-    multi-armed studies.}
+    multi-arm studies.}
   \item{reference.group}{The name of the reference group, if
     specified, otherwise \code{c("")}.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
@@ -155,7 +172,7 @@
     matrix (\emph{n}x\emph{n}).}
   \item{Q.matrix}{Matrix of heterogeneity statistics for pairwise
     meta-analyses, where direct comparisons exist (\emph{n}x\emph{n}).}
-  \item{G.matrix}{Matrix with variances and covariances of edges
+  \item{G.matrix}{Matrix with variances and covariances of comparisons
     (\emph{m}x\emph{m}). G is defined as \strong{BL+B^{t}}.}
   \item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as \strong{H=GW=BL+B^{t}W}.}
   \item{Q.decomp}{Data frame with columns 'treat1', 'treat2', 'Q',
@@ -193,22 +210,24 @@ Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
 data(Senn2013)
 
-#### Fixed effect model (default)
-
+##
+## Fixed effect model (default)
+##
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
 net1
 net1$Q.decomp
 
-#### Comparison with reference group
-
+##
+## Comparison with reference group
+##
 netmeta(TE, seTE, treat1, treat2, studlab,
         data=Senn2013, sm="MD", reference="plac")
 
-#### Random effects model
-
+##
+## Random effects model
+##
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", comb.random=TRUE)
 net2
-
 }

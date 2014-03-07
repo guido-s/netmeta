@@ -1,3 +1,22 @@
+2014-03-07, version 0.4-0
+
+New functions added:
+- netgraph (network graph)
+- netheat (net heat graph)
+- netmeasures (measures for network meta-analysis)
+- decomp.design (design-based decomposition of Cochran's Q)
+- print.decomp.design (corresponding print function)
+- p.ci, format.TE, nma.krahn, nma.ruecker (used internally)
+
+Function netmeta:
+- Check added whether all pairwise comparisons are provided for
+  multi-arm studies
+
+Help pages added for new functions
+
+Help page of function netmeta updated
+
+
 2013-08-01, version 0.3-1
 
 Functions netmeta and summary.netmeta:

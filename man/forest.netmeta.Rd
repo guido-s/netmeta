@@ -54,8 +54,9 @@
 
 data(Senn2013)
 
-#### Fixed effect model (default)
-
+##
+## Fixed effect model (default)
+##
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
 
@@ -66,8 +67,9 @@ forest(net1, xlim=c(-1.5,1), ref="plac",
        leftcols="studlab", rightcols=NULL,
        leftlabs="Contrast to placebo")
 
-#### Random effects effect model
-
+##
+## Random effects effect model
+##
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", comb.random=TRUE)
 
