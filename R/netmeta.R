@@ -6,6 +6,7 @@ netmeta <- function(TE, seTE,
                     comb.fixed=TRUE, comb.random=FALSE,
                     reference.group="",
                     all.treatments=NULL,
+                    seq=NULL,
                     tau.preset=NULL,
                     title="",
                     warn=TRUE
@@ -19,7 +20,7 @@ netmeta <- function(TE, seTE,
   mf$data <- mf$subset <- mf$sm <- NULL
   mf$level <- mf$level.comb <- NULL
   mf$comb.fixed <- mf$comb.random <- mf$reference.group <- NULL
-  mf$all.treatments <- mf$tau.preset <- NULL
+  mf$all.treatments <- mf$seq <- mf$tau.preset <- NULL
   mf$title <- mf$warn <- NULL
   mf[[1]] <- as.name("data.frame")
   mf <- eval(mf, data)
@@ -32,7 +33,7 @@ netmeta <- function(TE, seTE,
   mf2$data <- mf2$sm <- NULL
   mf2$level <- mf2$level.comb <- NULL
   mf2$comb.fixed <- mf2$comb.random <- mf2$reference.group <- NULL
-  mf2$all.treatments <- mf2$tau.preset <- NULL
+  mf2$all.treatments <- mf2$seq <- mf2$tau.preset <- NULL
   mf2$title <- mf2$warn <- NULL
   mf2[[1]] <- as.name("data.frame")
   ##
@@ -54,6 +55,8 @@ netmeta <- function(TE, seTE,
   if (length(mf$studlab)!=0){
     if (is.factor(mf$studlab))
       studlab <- as.character(mf$studlab)
+    else
+      studlab <- mf$studlab
   }
   else{
     if (warn)
@@ -61,7 +64,40 @@ netmeta <- function(TE, seTE,
     studlab <- seq(along=TE)
   }
   
+  
+  to <- sort(unique(c(as.character(treat1),
+                                   as.character(treat2))))
+  ##
+  if (!is.null(seq)){
+    if (length(to)!=length(seq))
+      stop("Length of argument 'seq' different from number of treatments.")
+    else{
+      if (is.numeric(seq)){
+        if (any(is.na(seq)))
+          stop("Missing values not allowed in argument 'seq'.")
+        if (length(unique(seq)) != length(seq))
+          stop("Values for argument 'seq' must all be disparate.")
+        if (any(!(seq %in% (1:length(to)))))
+          stop(paste("Argument 'seq' must be a permutation of the integers from 1 to ",
+                     length(to), ".", sep=""))
+        seq <- to[seq]
+        }
+      else if (is.character(seq)){
+        if (length(unique(seq)) != length(seq))
+          stop("Values for argument 'seq' must all be disparate.")
+        if (any(!(seq %in% to)))
+          stop(paste("Argument 'seq' must be a permutation of the following values:\n  ",
+                     paste(paste("'", to, "'", sep=""),
+                           collapse=" - "), sep=""))
+      }
+    }
+  }
+  else
+    seq <- to
+  
+  
   if (is.character(treat1) & is.character(treat2)){
+    ##
     tlevs <- sort(unique(c(treat1, treat2)))
     treat1 <- factor(treat1, levels=tlevs)
     treat2 <- factor(treat2, levels=tlevs)
@@ -113,6 +149,7 @@ netmeta <- function(TE, seTE,
     treat1 <- as.character(treat1)
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
+  
   
   ##
   ## Check for correct treatment order within comparison
@@ -193,8 +230,7 @@ netmeta <- function(TE, seTE,
   
   o <- order(p0$order)
   ##
-  res <- list(
-              studlab=res.f$studlab[o],
+  res <- list(studlab=res.f$studlab[o],
               treat1=res.f$treat1[o],
               treat2=res.f$treat2[o],
               ##
@@ -268,6 +304,8 @@ netmeta <- function(TE, seTE,
               ##
               reference.group=reference.group,
               all.treatments=all.treatments,
+              ##
+              seq=seq,
               ##
               title=title,
               ##

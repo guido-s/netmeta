@@ -1,4 +1,4 @@
-netgraph <- function(x, seq=NULL,
+netgraph <- function(x, seq=x$seq,
                      labels=NULL, plastic=TRUE, thickness=TRUE,
                      col="slateblue", lwd=1,
                      highlight=NULL,

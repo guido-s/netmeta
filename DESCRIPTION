@@ -1,6 +1,6 @@
 Package: netmeta
 Title: Network meta-analysis with R
-Version: 0.4-0
+Version: 0.4-1
 Depends: meta
 Imports: magic
 Author: Gerta Rücker <ruecker@imbi.uni-freiburg.de>, Guido Schwarzer <sc@imbi.uni-freiburg.de>, Ulrike Krahn <krahnu@uni-mainz.de>

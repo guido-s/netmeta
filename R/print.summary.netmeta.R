@@ -35,6 +35,19 @@ print.summary.netmeta <- function(x,
   seTE.random  <- x$random$seTE
   lowTE.random <- x$random$lower
   uppTE.random <- x$random$upper
+  ##
+  if (!is.null(x$seq)){
+    TE.fixed <- TE.fixed[x$seq, x$seq]
+    seTE.fixed <- seTE.fixed[x$seq, x$seq]
+    lowTE.fixed <- lowTE.fixed[x$seq, x$seq]
+    uppTE.fixed <- uppTE.fixed[x$seq, x$seq]
+  }
+  else{
+    TE.random <- TE.random[x$seq, x$seq]
+    seTE.random <- seTE.random[x$seq, x$seq]
+    lowTE.random <- lowTE.random[x$seq, x$seq]
+    uppTE.random <- uppTE.random[x$seq, x$seq]
+  }
   
   
   if (!logscale & (sm == "RR" | sm == "OR" | sm == "HR")){

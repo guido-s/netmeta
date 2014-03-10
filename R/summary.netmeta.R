@@ -45,8 +45,7 @@ summary.netmeta <- function(object,
   ci.comp.nma.random$treat2 <- object$treat2
   
   
-  res <- list(
-              comparison=ci.comp,
+  res <- list(comparison=ci.comp,
               comparison.nma.fixed=ci.comp.nma.fixed,
               comparison.nma.random=ci.comp.nma.random,
               fixed=ci.f, random=ci.r,
@@ -59,7 +58,8 @@ summary.netmeta <- function(object,
               comb.fixed=comb.fixed,
               comb.random=comb.random,
               level=level,
-              level.comb=level.comb
+              level.comb=level.comb,
+              seq=object$seq
               )
   
   if (reference.group!="" & missing(all.treatments))

@@ -9,7 +9,7 @@
 }
 
 \usage{
-netgraph(x, seq=NULL, labels=NULL, plastic=TRUE, thickness=TRUE, 
+netgraph(x, seq=x$seq, labels=NULL, plastic=TRUE, thickness=TRUE,
          col="slateblue", lwd=1,
          highlight=NULL, col.highlight="red2", lwd.highlight=2, ...)
 }

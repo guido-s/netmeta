@@ -226,11 +226,11 @@ nma.krahn <- function(x){
     }
     X
   }
-  ##  
+  ##
   X.full <- fX(n)
   rownames(X.full) <- trts.poss
   colnames(X.full) <- trts.poss[1:n-1]
-  ##  
+  ##
   X.obs2.design <- X.full[direct2$comparison,]
   
   

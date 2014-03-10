@@ -16,7 +16,7 @@
 \usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm="", level=0.95, level.comb=0.95,
         comb.fixed=TRUE, comb.random=FALSE, reference.group="",
-        all.treatments=NULL, tau.preset=NULL, title="", warn=TRUE)
+        all.treatments=NULL, seq=NULL, tau.preset=NULL, title="", warn=TRUE)
 }
 
 \arguments{
@@ -42,6 +42,8 @@
   \item{all.treatments}{A logical or value \code{"NULL"}. If
         \code{TRUE}, matrices with all treatment effects, and confidence
         limits will be printed.}
+  \item{seq}{A character or numerical vector specifying the sequence
+    of treatments.}
   \item{tau.preset}{Prespecified value for between-study variance tau-squared.}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
@@ -113,7 +115,7 @@
   a list containing the following components:
   \item{TE, seTE, studlab, treat1, treat2, sm, level, level.comb}{As
     defined above.}
-  \item{comb.fixed, comb.random, tau.preset, title, warn}{As defined
+  \item{comb.fixed, comb.random, seq, tau.preset, title, warn}{As defined
     above.}
   \item{seTE.adj}{Standard error of treatment estimate, adjusted for
     multi-arm studies.}
