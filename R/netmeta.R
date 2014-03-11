@@ -53,12 +53,8 @@ netmeta <- function(TE, seTE,
   treat1 <- as.character(mf$treat1)
   treat2 <- as.character(mf$treat2)
   ##
-  if (length(mf$studlab)!=0){
-    if (is.factor(mf$studlab))
-      studlab <- as.character(mf$studlab)
-    else
-      studlab <- mf$studlab
-  }
+  if (length(mf$studlab)!=0)
+    studlab <- as.character(mf$studlab)
   else{
     if (warn)
       warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
@@ -176,9 +172,7 @@ netmeta <- function(TE, seTE,
                        p0$treat1, p0$treat2,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
-                       sm=sm,
-                       level=level, level.comb=level.comb,
-                       seTE.orig=p0$seTE)
+                       sm, level, level.comb, p0$seTE)
   ##
   ## Random effects model
   ##
@@ -191,9 +185,7 @@ netmeta <- function(TE, seTE,
                        p0$treat1, p0$treat2,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
-                       sm=sm,
-                       level=level, level.comb=level.comb,
-                       seTE.orig=p0$seTE)
+                       sm, level, level.comb, p0$seTE)
   
   
   o <- order(p0$order)

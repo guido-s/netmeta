@@ -2,60 +2,9 @@ nma.ruecker <- function(TE, seTE,
                         treat1, treat2,
                         treat1.pos, treat2.pos,
                         narms, studlab,
-                        data=NULL,
                         sm="",
                         level=0.95, level.comb=0.95,
                         seTE.orig){
-  
-  if (is.null(data)) data <- sys.frame(sys.parent())
-  ##
-  ## Catch TE, treat1, treat2, treat1.pos, treat2.pos, seTE, studlab,
-  ## narms, seTE.orig from data:
-  ##
-  mf <- match.call()
-  mf$level <- mf$level.comb <- NULL
-  mf$data <- NULL
-  mf[[1]] <- as.name("data.frame")
-  mf <- eval(mf, data)
-
-  TE <- mf$TE
-  seTE <- mf$seTE
-  seTE.orig <- mf$seTE.orig
-  ##
-  treat1 <- as.character(mf$treat1)
-  treat2 <- as.character(mf$treat2)
-  treat1.pos <- mf$treat1.pos
-  treat2.pos <- mf$treat2.pos
-  ##
-  if (length(mf$studlab)!=0){
-    if (is.factor(mf$studlab))
-      studlab <- as.character(mf$studlab)
-  }
-  else
-    studlab <- seq(along=TE)
-  ##
-  if (length(mf$narms)==0)
-    stop("Argument 'narms' has to be provided.")
-  else
-    narms <- mf$narms
-  
-  
-  ##
-  ## Check for levels of confidence interval
-  ##
-  if (!is.numeric(level) | length(level)!=1)
-    stop("parameter 'level' must be a numeric of length 1")
-  if (level <= 0 | level >= 1)
-    stop("parameter 'level': no valid level for confidence interval")
-  
-  
-  ##
-  ## Check for levels of confidence interval
-  ##
-  if (!is.numeric(level.comb) | length(level.comb)!=1)
-    stop("parameter 'level.comb' must be a numeric of length 1")
-  if (level.comb <= 0 | level.comb >= 1)
-    stop("parameter 'level.comb': no valid level.comb for confidence interval")
   
   
   w.pooled <- 1/seTE^2

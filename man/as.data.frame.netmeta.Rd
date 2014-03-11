@@ -38,6 +38,6 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 as.data.frame(net1)
 
 as.data.frame(net1, details=TRUE)
-
 }
+
 \keyword{print}
