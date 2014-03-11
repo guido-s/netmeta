@@ -232,4 +232,14 @@ netmeta(TE, seTE, treat1, treat2, studlab,
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", comb.random=TRUE)
 net2
+
+##
+## Change printing order of treatments (placebo frist)
+##
+trts <- c("plac", "acar", "benf", "metf", "migl", "piog",
+          "rosi", "sita", "sulf", "vild")
+net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data=Senn2013, sm="MD",
+                seq=trts)
+print(summary(net3), digits=2)
 }

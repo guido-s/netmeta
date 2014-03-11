@@ -72,6 +72,13 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 netgraph(net1, highlight="acar:metf",
          seq=c("plac", "benf", "migl", "acar", "sulf",
                "metf", "rosi", "piog", "sita", "vild"))
+##
+## Same network graph using argument 'seq' in netmeta function
+##
+net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data=Senn2013, sm="MD", reference="plac")
+netgraph(net2, highlight="acar:metf")
+
 
 ##
 ## Network graph without 3D look of the comparisons and one highlighted comparison
