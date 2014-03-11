@@ -19,12 +19,13 @@ nma.ruecker <- function(TE, seTE,
   mf <- eval(mf, data)
 
   TE <- mf$TE
-  treat1 <- mf$treat1
-  treat2 <- mf$treat2
-  treat1.pos <- mf$treat1.pos
-  treat2.pos <- mf$treat2.pos
   seTE <- mf$seTE
   seTE.orig <- mf$seTE.orig
+  ##
+  treat1 <- as.character(mf$treat1)
+  treat2 <- as.character(mf$treat2)
+  treat1.pos <- mf$treat1.pos
+  treat2.pos <- mf$treat2.pos
   ##
   if (length(mf$studlab)!=0){
     if (is.factor(mf$studlab))
@@ -38,10 +39,6 @@ nma.ruecker <- function(TE, seTE,
   else
     narms <- mf$narms
   
-  if (is.factor(treat1))
-    treat1 <- as.character(treat1)
-  if (is.factor(treat2))
-    treat2 <- as.character(treat2)
   
   ##
   ## Check for levels of confidence interval
@@ -51,6 +48,7 @@ nma.ruecker <- function(TE, seTE,
   if (level <= 0 | level >= 1)
     stop("parameter 'level': no valid level for confidence interval")
   
+  
   ##
   ## Check for levels of confidence interval
   ##
@@ -59,19 +57,22 @@ nma.ruecker <- function(TE, seTE,
   if (level.comb <= 0 | level.comb >= 1)
     stop("parameter 'level.comb': no valid level.comb for confidence interval")
   
+  
   w.pooled <- 1/seTE^2
+  
   
   m <- length(TE)                        ## Number of pairwise comparisons (edges)
   n <- length(unique(c(treat1, treat2))) ## Number of treatments (vertices)
   W <- diag(w.pooled)                    ## Weighted degree diagonal matrix
   df1 <- 2*sum(1/narms)                  ## Sum of degrees of freedom per study
   
+  
   ##
   ## B is the edge-vertex incidence matrix (m x n)
   ##
   B <- matrix(0, nrow=m, ncol=n)
   for (i in 1:m){
-    if (treat1[i]!=treat2[i]) {
+    if (treat1[i] != treat2[i]){
       B[i, treat1.pos[i]] <-  1
       B[i, treat2.pos[i]] <- -1
     }
@@ -197,6 +198,7 @@ nma.ruecker <- function(TE, seTE,
                          df=dfs,
                          pval.Q=1-pchisq(q, dfs))
   
+  
   TE.pooled <- all
   seTE.pooled <- sqrt(R)
   ##
@@ -213,7 +215,8 @@ nma.ruecker <- function(TE, seTE,
   rownames(upper.pooled) <- colnames(upper.pooled) <- names.treat
   rownames(zval.pooled) <- colnames(zval.pooled) <- names.treat
   rownames(pval.pooled) <- colnames(pval.pooled) <- names.treat
-
+  
+  
   A.matrix <- A
   L.matrix <- L
   Lplus.matrix <- Lplus

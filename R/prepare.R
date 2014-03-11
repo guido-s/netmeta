@@ -1,5 +1,4 @@
-prepare <- function(TE, seTE,
-                    treat1, treat2,
+prepare <- function(TE, seTE, treat1, treat2,
                     studlab, data=NULL){
 
   if (is.null(data)) data <- sys.frame(sys.parent())
@@ -10,10 +9,11 @@ prepare <- function(TE, seTE,
   mf$data <- NULL
   mf[[1]] <- as.name("data.frame")
   mf <- eval(mf, data)
-
+  
+  
   TE <- mf$TE
-  treat1 <- mf$treat1
-  treat2 <- mf$treat2
+  treat1 <- as.character(mf$treat1)
+  treat2 <- as.character(mf$treat2)
   seTE <- mf$seTE
   ##
   if (length(mf$studlab)!=0){
@@ -22,13 +22,10 @@ prepare <- function(TE, seTE,
   }
   else
     studlab <- seq(along=TE)
-
+  
+  
   w.fixed <- 1/seTE^2
   
-  if (is.factor(treat1))
-    treat1 <- as.character(treat1)
-  if (is.factor(treat2))
-    treat2 <- as.character(treat2)
   
   data <- data.frame(studlab,
                      treat1, treat2,
@@ -38,8 +35,7 @@ prepare <- function(TE, seTE,
   ##
   ## Ordering data set
   ##
-  o <- order(data$studlab, data$treat1,
-             data$treat2)
+  o <- order(data$studlab, data$treat1, data$treat2)
   ##
   data <- data[o,]
   ##
@@ -48,7 +44,8 @@ prepare <- function(TE, seTE,
   names.treat <- sort(unique(c(data$treat1, data$treat2)))
   data$treat1.pos <- match(data$treat1, names.treat)
   data$treat2.pos <- match(data$treat2, names.treat)
-
+  
+  
   newdata <- data[1,][-1,]
   ##
   sl <- unique(data$studlab)
@@ -64,11 +61,6 @@ prepare <- function(TE, seTE,
     newdata <- rbind(newdata, subgraph)
   }
   res <- newdata
-  ##
-  if (is.factor(res$treat1))
-    res$treat1 <- as.character(res$treat1)
-  if (is.factor(res$treat2))
-    res$treat2 <- as.character(res$treat2)
   ##
   res$order <- o
   ##

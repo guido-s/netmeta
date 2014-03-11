@@ -49,8 +49,9 @@ netmeta <- function(TE, seTE,
   
   TE     <- mf$TE
   seTE   <- mf$seTE
-  treat1 <- mf$treat1
-  treat2 <- mf$treat2
+  ##
+  treat1 <- as.character(mf$treat1)
+  treat2 <- as.character(mf$treat2)
   ##
   if (length(mf$studlab)!=0){
     if (is.factor(mf$studlab))
@@ -65,11 +66,10 @@ netmeta <- function(TE, seTE,
   }
   
   
-  to <- sort(unique(c(as.character(treat1),
-                                   as.character(treat2))))
+  tlevs <- sort(unique(c(treat1, treat2)))
   ##
   if (!is.null(seq)){
-    if (length(to)!=length(seq))
+    if (length(tlevs)!=length(seq))
       stop("Length of argument 'seq' different from number of treatments.")
     else{
       if (is.numeric(seq)){
@@ -77,47 +77,23 @@ netmeta <- function(TE, seTE,
           stop("Missing values not allowed in argument 'seq'.")
         if (length(unique(seq)) != length(seq))
           stop("Values for argument 'seq' must all be disparate.")
-        if (any(!(seq %in% (1:length(to)))))
+        if (any(!(seq %in% (1:length(tlevs)))))
           stop(paste("Argument 'seq' must be a permutation of the integers from 1 to ",
-                     length(to), ".", sep=""))
-        seq <- to[seq]
+                     length(tlevs), ".", sep=""))
+        seq <- tlevs[seq]
         }
       else if (is.character(seq)){
         if (length(unique(seq)) != length(seq))
           stop("Values for argument 'seq' must all be disparate.")
-        if (any(!(seq %in% to)))
+        if (any(!(seq %in% tlevs)))
           stop(paste("Argument 'seq' must be a permutation of the following values:\n  ",
-                     paste(paste("'", to, "'", sep=""),
+                     paste(paste("'", tlevs, "'", sep=""),
                            collapse=" - "), sep=""))
       }
     }
   }
   else
-    seq <- to
-  
-  
-  if (is.character(treat1) & is.character(treat2)){
-    ##
-    tlevs <- sort(unique(c(treat1, treat2)))
-    treat1 <- factor(treat1, levels=tlevs)
-    treat2 <- factor(treat2, levels=tlevs)
-  }
-  
-  ##
-  ## TODO - Check factor variables / levels
-  ##
-  if (FALSE){
-    if ((is.factor(treat1) & !is.factor(treat2)) |
-        (!is.factor(treat1) & is.factor(treat2)))
-      stop("Both arguments 'treat1' and 'treat2' must be factor variables (if at all)")
-    ##
-    if (is.factor(treat1) & is.factor(treat2)){
-      if (length(levels(treat1))!=length(levels(treat2)))
-        warning("Factors 'treat1' and 'treat2' must have the same levels")
-      if (!all(levels(treat1)==levels(treat2)))
-        warning("Factors 'treat1' and 'treat2' must have the same levels")
-    }
-  }
+    seq <- tlevs
   
   
   ##
@@ -143,15 +119,6 @@ netmeta <- function(TE, seTE,
   
   
   ##
-  ## TODO - Do not reorder factor variables ...
-  ##
-  if (is.factor(treat1))
-    treat1 <- as.character(treat1)
-  if (is.factor(treat2))
-    treat2 <- as.character(treat2)
-  
-  
-  ##
   ## Check for correct treatment order within comparison
   ##
   wo <- treat1 > treat2
@@ -164,6 +131,7 @@ netmeta <- function(TE, seTE,
     treat1[wo] <- treat2[wo]
     treat2[wo] <- ttreat1[wo]
   }
+  
   
   ##
   ## Check for levels of confidence interval
