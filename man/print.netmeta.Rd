@@ -99,6 +99,7 @@
     individual comparisons.}
   \item{level.comb}{The level used to calculate confidence intervals for
     pooled estimates.}
+  \item{seq}{A character specifying the sequence of treatments.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
     \code{TRUE}, matrices with all treatment effects, and confidence
     limits will be printed.}

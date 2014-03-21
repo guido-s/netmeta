@@ -1,3 +1,16 @@
+2014-03-21, version 0.4-1
+
+Function netmeta:
+- Argument 'seq' added (see also R function netgraph)
+
+Function netgraph:
+- new default for argument 'seq'
+
+Help pages updated accordingly
+
+Some internal code cleaning to improve readability of R functions
+
+
 2014-03-07, version 0.4-0
 
 New functions added:

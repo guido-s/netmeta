@@ -43,7 +43,7 @@
         \code{TRUE}, matrices with all treatment effects, and confidence
         limits will be printed.}
   \item{seq}{A character or numerical vector specifying the sequence
-    of treatments.}
+    of treatments in printouts.}
   \item{tau.preset}{Prespecified value for between-study variance tau-squared.}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
@@ -234,7 +234,7 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 net2
 
 ##
-## Change printing order of treatments (placebo frist)
+## Change printing order of treatments (placebo first)
 ##
 trts <- c("plac", "acar", "benf", "metf", "migl", "piog",
           "rosi", "sita", "sulf", "vild")

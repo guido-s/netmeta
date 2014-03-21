@@ -69,14 +69,15 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 ## Network graph with specified order of the treatments and one
 ## highlighted comparison
 ##
-netgraph(net1, highlight="acar:metf",
-         seq=c("plac", "benf", "migl", "acar", "sulf",
-               "metf", "rosi", "piog", "sita", "vild"))
+trts <- c("plac", "benf", "migl", "acar", "sulf",
+          "metf", "rosi", "piog", "sita", "vild")
+netgraph(net1, highlight="acar:metf", seq=trts)
 ##
 ## Same network graph using argument 'seq' in netmeta function
 ##
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data=Senn2013, sm="MD", reference="plac")
+                data=Senn2013, sm="MD", reference="plac",
+                seq=trts)
 netgraph(net2, highlight="acar:metf")
 
 
