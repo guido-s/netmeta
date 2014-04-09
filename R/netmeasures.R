@@ -20,7 +20,7 @@ netmeasures <- function(x){
   ##
   proportion <- rep(0, nrow(H))
   names(proportion) <- rownames(H)
-  proportion[comparisons] <- network[comparisons,"seTE"] / direct$seTE
+  proportion[comparisons] <- network[comparisons,"seTE"]^2 / direct$seTE^2
   
   
   ##

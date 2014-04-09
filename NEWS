@@ -1,3 +1,10 @@
+2014-03-31, version 0.4-2
+
+Function netmeasures:
+- bug fix using correct formula to calculate direct evidence
+  proportion (variance instead of standard error)
+
+
 2014-03-21, version 0.4-1
 
 Function netmeta:
