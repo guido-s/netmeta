@@ -41,8 +41,7 @@ print.summary.netmeta <- function(x,
     seTE.fixed <- seTE.fixed[x$seq, x$seq]
     lowTE.fixed <- lowTE.fixed[x$seq, x$seq]
     uppTE.fixed <- uppTE.fixed[x$seq, x$seq]
-  }
-  else{
+    ##
     TE.random <- TE.random[x$seq, x$seq]
     seTE.random <- seTE.random[x$seq, x$seq]
     lowTE.random <- lowTE.random[x$seq, x$seq]

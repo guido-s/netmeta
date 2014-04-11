@@ -50,8 +50,13 @@ netmeta <- function(TE, seTE,
   TE     <- mf$TE
   seTE   <- mf$seTE
   ##
-  treat1 <- as.character(mf$treat1)
-  treat2 <- as.character(mf$treat2)
+  treat1 <- mf$treat1
+  treat2 <- mf$treat2
+  ##
+  if (is.factor(treat1))
+    treat1 <- as.character(treat1)
+  if (is.factor(treat2))
+    treat2 <- as.character(treat2)
   ##
   if (length(mf$studlab)!=0)
     studlab <- as.character(mf$studlab)
@@ -60,6 +65,10 @@ netmeta <- function(TE, seTE,
       warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
     studlab <- seq(along=TE)
   }
+  
+  
+  if (any(treat1==treat2))
+    stop("Treatments must be different (arguments 'treat1' and 'treat2').")
   
   
   tlevs <- sort(unique(c(treat1, treat2)))

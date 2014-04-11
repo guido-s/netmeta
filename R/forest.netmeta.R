@@ -29,6 +29,12 @@ forest.netmeta <- function(x,
     if (is.null(smlab))
       smlab <- "Random Effects Model"
   }
+
+  if (!is.null(x$seq)){
+    TE <- TE[x$seq, x$seq]
+    seTE <- seTE[x$seq, x$seq]
+  }
+  
   
   if (all(colnames(TE)!=reference.group))
     stop(paste("Argument 'reference.group' must match any of the following values: ",

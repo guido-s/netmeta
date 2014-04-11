@@ -30,21 +30,21 @@ nma.ruecker <- function(TE, seTE,
   ## M is the unweighted Laplacian, D its diagonal,
   ## A is the adjacency matrix
   ##
-  M <- t(B)%*%B      ## unweighted Laplacian matrix
+  M <- t(B) %*% B    ## unweighted Laplacian matrix
   D <- diag(diag(M)) ## diagonal matrix
   A <- D - M         ## adjacency matrix (n x n)
   ##
   ## L is the weighted Laplacian (Kirchhoff) matrix (n x n)
   ## Lplus is its Moore-Penrose pseudoinverse
   ##
-  L <- t(B)%*%W%*%B 
-  Lplus <- solve(L-1/n)+1/n
+  L <- t(B) %*% W %*% B 
+  Lplus <- solve(L - 1/n) + 1/n
   ##
   ## R resistance distance (variance) matrix (n x n)
   ##
   R <- matrix(0, nrow=n, ncol=n) 
-  for (i in 1:n) {
-    for (j in 1:n) {
+  for (i in 1:n){
+    for (j in 1:n){
       R[i,j] <- Lplus[i,i] + Lplus[j,j] - 2*Lplus[i,j]
     }
   }
@@ -56,21 +56,21 @@ nma.ruecker <- function(TE, seTE,
     V[i] <- R[treat1.pos[i], treat2.pos[i]]
   }
   ##
-  ## G is the matrix B%*%Lplus%*%t(B) GW is the projection matrix (also
+  ## G is the matrix B %*% Lplus %*% t(B) GW is the projection matrix (also
   ## called "hat matrix")
   ##
   ## Interpretation:
   ## (i)    diag(G) = V               The effective variances
-  ## (ii)   diag(GW) = V%*%W = V*w    The leverages
+  ## (ii)   diag(GW) = V %*% W = V*w  The leverages
   ## (iii)  sum(diag(GW)) = n-1       Rank of projection
   ## (iv)   mean(diag(GW)) = (n-1)/m  Mean leverage = average efficiency
   ##
-  G <- B%*%Lplus%*%t(B)
-  GW <- G%*%W
+  G  <- B %*% Lplus %*% t(B)
+  GW <- G %*% W
   ##
   ## Resulting effects and variances at numbered edges
   ##
-  v <- as.vector(GW%*%TE)
+  v <- as.vector(GW %*% TE)
   ci.v <- meta::ci(v, sqrt(V), level=level)
   ##
   ## Resulting effects, all edges, as a n x n matrix:
@@ -79,14 +79,20 @@ nma.ruecker <- function(TE, seTE,
   for (i in 1:m){
     all[treat1.pos[i], treat2.pos[i]] <- v[i]
   }
-  for(i in 1:n){
-    for(j in 1:n){
-      for(k in 1:n){
-        if(is.na(all[i,k])){
-          all[i,k] <- all[i,j]-all[k,j]
+  for (i in 1:n){
+    for (j in 1:n){
+      for (k in 1:n){
+        if (!is.na(all[i,k]) & !is.na(all[j,k])){
+          all[i,j] <- all[i,k] - all[j,k]
+          all[j,i] <- all[j,k] - all[i,k]
         }
-        if(is.na(all[k,j])) { 
-          all[k,j] <- all[i,j]-all[i,k]
+        if (!is.na(all[i,j]) & !is.na(all[k,j])){
+          all[i,k] <- all[i,j] - all[k,j]
+          all[k,i] <- all[k,j] - all[i,j]
+        }
+        if (!is.na(all[i,k]) & !is.na(all[i,j])){
+          all[j,k] <- all[i,k] - all[i,j]
+          all[k,j] <- all[i,j] - all[i,k]
         }
       }
     }
@@ -94,8 +100,8 @@ nma.ruecker <- function(TE, seTE,
   ##
   ## Test of total heterogeneity/inconsistency:
   ##
-  Q <- as.vector(t(TE-v)%*%W%*%(TE-v))
-  df <- df1-(n-1)
+  Q <- as.vector(t(TE-v) %*% W %*% (TE-v))
+  df <- df1 - (n-1)
   ##
   ## Heterogeneity variance
   ##
@@ -111,9 +117,9 @@ nma.ruecker <- function(TE, seTE,
                      TE, w.pooled,
                      stringsAsFactors=FALSE)
   ##
-  for (i in 1:(n-1)) {
-    for (j in (i+1):n) {
-      if (A[i,j] > 1) {
+  for (i in 1:(n-1)){
+    for (j in (i+1):n){
+      if (A[i,j] > 1){
         n.pairwise <- n.pairwise + 1
         sub <- data[(data$treat1.pos==i & data$treat2.pos==j) |
                     (data$treat1.pos==j & data$treat2.pos==i),]
@@ -124,14 +130,14 @@ nma.ruecker <- function(TE, seTE,
   }
   q <- t1 <- t2 <- dfs <- vector(length=n.pairwise, mode="numeric")
   p <- 0
-  for (i in 1:(n-1)) {
-    for (j in (i+1):n) {
-      if (A[i,j] > 0) {
+  for (i in 1:(n-1)){
+    for (j in (i+1):n){
+      if (A[i,j] > 0){
         p <- p+1
         t1[p] <- i
         t2[p] <- j
         q[p] <- Q.matrix[i,j]
-        dfs[p] <- A[i,j]-1
+        dfs[p] <- A[i,j] - 1
       }
     }
   }

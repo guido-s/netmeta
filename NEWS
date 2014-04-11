@@ -1,3 +1,23 @@
+2014-04-11, version 0.4-3
+
+Function netmeta:
+- numeric values for arguments 'treat1' and 'treat2' not converted to
+  character values (only factors converted to characters)
+- check whether treatments are different (arguments 'treat1' and
+  'treat2')
+
+Function print.summary.netmeta:
+- print random effects estimates according to argument 'seq'
+
+Function forest.netmeta:
+- sort treatment effect estimates according to argument 'seq'
+
+Function nma.ruecker (used internally):
+- changed such that all treatment effects are calculated irregardless
+  of treatment order (some treatment effects remained NA depending on
+  order of treatments)
+
+
 2014-03-31, version 0.4-2
 
 Function netmeasures:
