@@ -1,3 +1,17 @@
+2014-05-27, version 0.4-4
+
+Functions netmeta and nma.ruecker:
+- modified such that the estimated tau-squared in random effects model
+  considers multi-arm studies
+
+Function print.netmeta:
+- information on percentage weight not printed as interpretation is
+  difficult
+
+Dataset Senn2013:
+- use of unpooled standard error for each treatment comparison
+
+
 2014-04-14, version 0.4-3
 
 Function netmeta:

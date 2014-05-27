@@ -1,11 +1,11 @@
-prepare <- function(TE, seTE, treat1, treat2, studlab){
+prepare <- function(TE, seTE, treat1, treat2, studlab, tau=0){
   
-  w.fixed <- 1/seTE^2
+  weights <- 1/(seTE^2 + tau^2)
   
   data <- data.frame(studlab,
                      treat1, treat2,
                      treat1.pos=NA, treat2.pos=NA,
-                     TE, seTE, w.fixed,
+                     TE, seTE, weights,
                      narms=NA, stringsAsFactors=FALSE)
   ##
   ## Ordering data set
@@ -31,7 +31,7 @@ prepare <- function(TE, seTE, treat1, treat2, studlab){
     subgraph <- data[data$studlab==s,]
     subgraph$narms <- (1+sqrt(8*dim(subgraph)[1]+1))/2
     if (dim(subgraph)[1] > 1)
-      subgraph$w.fixed <- 1/multiarm(1/subgraph$w.fixed)$v ## Reciprocal new weights
+      subgraph$weights <- 1/multiarm(1/subgraph$weights)$v ## Reciprocal new weights
     newdata <- rbind(newdata, subgraph)
   }
   res <- newdata

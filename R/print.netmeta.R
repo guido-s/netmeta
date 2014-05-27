@@ -110,38 +110,24 @@ print.netmeta <- function(x,
   lowTE.r <- round(lowTE.r, digits)
   uppTE.r <- round(uppTE.r, digits)
   
-  if (comb.fixed)
-    if (sum(x$w.fixed)>0)
-      w.fixed.p <- 100*round(x$w.fixed/sum(x$w.fixed, na.rm=TRUE), 4)
-    else w.fixed.p <- x$w.fixed
   
-  if (comb.random)
-    if (sum(x$w.random)>0)
-      w.random.p <- 100*round(x$w.random/sum(x$w.random, na.rm=TRUE), 4)
-    else w.random.p <- x$w.random
-    
-
   res.f <- cbind(x$treat1, x$treat2,
                  format.TE(TE.f, na=TRUE),
                  p.ci(format(lowTE.f), format(uppTE.f)),
-                 if (comb.fixed) format(w.fixed.p),
                  if (comb.fixed) format(round(x$Q.fixed, 2)),
                  if (comb.fixed) format(round(x$leverage.fixed, 2)))
   dimnames(res.f) <-
     list(x$studlab, c("treat1", "treat2",
                       sm.lab, ci.lab,
-                      if (comb.fixed) "%W",
                       if (comb.fixed) "Q",
                       if (comb.fixed) "leverage"))
   
+  
   res.r <- cbind(x$treat1, x$treat2,
                  format.TE(TE.r, na=TRUE),
-                 p.ci(format(lowTE.r), format(uppTE.r)),
-                 if (comb.random) format(w.random.p))
+                 p.ci(format(lowTE.r), format(uppTE.r)))
   dimnames(res.r) <-
-    list(x$studlab, c("treat1", "treat2",
-                      sm.lab, ci.lab,
-                      if (comb.random) "%W"))
+    list(x$studlab, c("treat1", "treat2", sm.lab, ci.lab))
   
   
   if (comb.fixed){

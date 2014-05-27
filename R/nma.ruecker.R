@@ -10,10 +10,10 @@ nma.ruecker <- function(TE, seTE,
   w.pooled <- 1/seTE^2
   
   
-  m <- length(TE)                        ## Number of pairwise comparisons (edges)
-  n <- length(unique(c(treat1, treat2))) ## Number of treatments (vertices)
-  W <- diag(w.pooled)                    ## Weighted degree diagonal matrix
-  df1 <- 2*sum(1/narms)                  ## Sum of degrees of freedom per study
+  m <- length(TE)                        # Number of pairwise comparisons (edges)
+  n <- length(unique(c(treat1, treat2))) # Number of treatments (vertices)
+  W <- diag(w.pooled)                    # Weighted degree diagonal matrix
+  df1 <- 2*sum(1/narms)                  # Sum of degrees of freedom per study
   
   
   ##
@@ -30,9 +30,9 @@ nma.ruecker <- function(TE, seTE,
   ## M is the unweighted Laplacian, D its diagonal,
   ## A is the adjacency matrix
   ##
-  M <- t(B) %*% B    ## unweighted Laplacian matrix
-  D <- diag(diag(M)) ## diagonal matrix
-  A <- D - M         ## adjacency matrix (n x n)
+  M <- t(B) %*% B    # unweighted Laplacian matrix
+  D <- diag(diag(M)) # diagonal matrix
+  A <- D - M         # adjacency matrix (n x n)
   ##
   ## L is the weighted Laplacian (Kirchhoff) matrix (n x n)
   ## Lplus is its Moore-Penrose pseudoinverse
@@ -56,21 +56,21 @@ nma.ruecker <- function(TE, seTE,
     V[i] <- R[treat1.pos[i], treat2.pos[i]]
   }
   ##
-  ## G is the matrix B %*% Lplus %*% t(B) GW is the projection matrix (also
-  ## called "hat matrix")
+  ## G is the matrix B %*% Lplus %*% t(B)
+  ## H is the projection matrix (also called "hat matrix")
   ##
   ## Interpretation:
-  ## (i)    diag(G) = V               The effective variances
-  ## (ii)   diag(GW) = V %*% W = V*w  The leverages
-  ## (iii)  sum(diag(GW)) = n-1       Rank of projection
-  ## (iv)   mean(diag(GW)) = (n-1)/m  Mean leverage = average efficiency
+  ## (i)    diag(G) = V              The effective variances
+  ## (ii)   diag(H) = V %*% W = V*w  The leverages
+  ## (iii)  sum(diag(H)) = n-1       Rank of projection
+  ## (iv)   mean(diag(H)) = (n-1)/m  Mean leverage = average efficiency
   ##
-  G  <- B %*% Lplus %*% t(B)
-  GW <- G %*% W
+  G <- B %*% Lplus %*% t(B)
+  H <- G %*% W
   ##
   ## Resulting effects and variances at numbered edges
   ##
-  v <- as.vector(GW %*% TE)
+  v <- as.vector(H %*% TE)
   ci.v <- meta::ci(v, sqrt(V), level=level)
   ##
   ## Resulting effects, all edges, as a n x n matrix:
@@ -105,7 +105,13 @@ nma.ruecker <- function(TE, seTE,
   ##
   ## Heterogeneity variance
   ##
-  tau2 <- max(0, (Q-df)/sum(w.pooled*(1-V*w.pooled)))
+  I <- diag(m)
+  E <- matrix(0, nrow=m, ncol=m)
+  for (i in 1:m)
+    for (j in 1:m)
+      E[i,j] <- as.numeric(studlab[i]==studlab[j])
+  ##
+  tau2 <- max(0, (Q-df)/sum(diag((I-H) %*% (B %*% t(B)*E/2) %*% W)))
   tau <- sqrt(tau2)
   ##
   ## Decomposition of total Q into parts from pairwise meta-analyses
@@ -182,12 +188,13 @@ nma.ruecker <- function(TE, seTE,
   rownames(Q.matrix) <- colnames(Q.matrix) <- names.treat
   
   G.matrix <- G
-  H.matrix <- GW
+  H.matrix <- H
   ##
   rownames(G.matrix) <- colnames(G.matrix) <- studlab
   rownames(H.matrix) <- colnames(H.matrix) <- studlab
   
   
+  ##
   ## Contribution of individual studies to Q
   ##
   Q.pooled <- w.pooled*(TE-v)^2
@@ -202,7 +209,7 @@ nma.ruecker <- function(TE, seTE,
               seTE.nma=sqrt(V),
               lower.nma=ci.v$lower,
               upper.nma=ci.v$upper,
-              leverage=diag(GW),
+              leverage=diag(H),
               w.pooled=w.pooled,
               Q.pooled=Q.pooled,
               treat1.pos=treat1.pos,

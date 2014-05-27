@@ -177,7 +177,7 @@ netmeta <- function(TE, seTE,
   ##
   ## Fixed effect model
   ##
-  res.f <- nma.ruecker(p0$TE, sqrt(1/p0$w.fixed),
+  res.f <- nma.ruecker(p0$TE, sqrt(1/p0$weights),
                        p0$treat1, p0$treat2,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
@@ -190,11 +190,13 @@ netmeta <- function(TE, seTE,
   else
     tau <- tau.preset
   ##
-  res.r <- nma.ruecker(p0$TE, sqrt(1/p0$w.fixed + tau^2),
-                       p0$treat1, p0$treat2,
-                       p0$treat1.pos, p0$treat2.pos,
-                       p0$narms, p0$studlab,
-                       sm, level, level.comb, p0$seTE)
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
+  ##
+  res.r <- nma.ruecker(p1$TE, sqrt(1/p1$weights),
+                       p1$treat1, p1$treat2,
+                       p1$treat1.pos, p1$treat2.pos,
+                       p1$narms, p1$studlab, 
+                       sm, level, level.comb, p1$seTE)
   
   
   o <- order(p0$order)
