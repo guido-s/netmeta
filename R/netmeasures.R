@@ -4,9 +4,16 @@ netmeasures <- function(x){
   if (!inherits(x, "netmeta"))
     stop("Argument 'x' must be an object of class \"netmeta\"")
   
+  if (x$comb.random==FALSE & length(x$tau.preset)==0)                           
+    nmak <- nma.krahn(x)
+  ##                                                                            
+  if (length(x$tau.preset)==1)                                                  
+    nmak <- nma.krahn(x, tau.preset=x$tau.preset)                                   
+  ##                                                                            
+  if (x$comb.random==TRUE & length(x$tau.preset)==0)                            
+    nmak <- nma.krahn(x, tau.preset=x$tau)
   
-  nmak <- nma.krahn(x)
-  ##
+  
   comparisons <- nmak$direct[,"comparison"]
   direct  <- nmak$direct
   network <- nmak$network
@@ -64,5 +71,6 @@ netmeasures <- function(x){
               minpar=round(minpar, 4),
               minpar.study=round(minpar.study, 4),
               H.tilde=H.tilde)
+  ##
   res
 }

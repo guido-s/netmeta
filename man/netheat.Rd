@@ -10,11 +10,16 @@
 }
 
 \usage{
-netheat(x, ...)
+netheat(x, random=FALSE, tau.preset=NULL, ...)                                
 }
 
 \arguments{
   \item{x}{An object of class \code{netmeta}.}
+  \item{random}{A logical indicating whether the net heat plot should be based  
+    on a random effects model.}                                                 
+  \item{tau.preset}{An optional value for the square-root of the
+    between-study variance \eqn{tau^2} for a random effects model on
+    which the net heat plot will be based.}
   \item{\dots}{Additional arguments.}
 }
 
@@ -53,6 +58,12 @@ netheat(x, ...)
   network or where the removal of corresponding studies would lead to
   a splitting of the network do not contribute to the inconsistency
   assessment and are not incorporated into the net heat plot.
+                                                                                
+  In the case of \code{random=TRUE}, the net heat plot is based on a random     
+  effects model generalised for multivariate meta-analysis in which the         
+  between-study variance \eqn{tau^2} is estimated by the method of moments      
+  (see Jackson et al., 2012) and embedded in a full design-by-treatment         
+  interaction model (see Higgins et al., 2012).                                 
 }
 
 \references{
@@ -60,6 +71,16 @@ netheat(x, ...)
   A graphical tool for locating inconsistency in network
   meta-analyses.
   \emph{BMC Medical Research Methodology}, \bold{13}, 35.
+  
+  Jackson D, White IR and Riley RD (2012),                                       
+  Quantifying the impact of between-study heterogeneity in multivariate         
+  meta-analyses.                                                                
+  \emph{Statistics in Medicine}, \bold{31}(29), 3805--3820.                     
+                                                                                
+  Higgins JPT, Jackson D, Barrett JK, Lu G, Ades AE, White IR (2012),           
+  Consistency and inconsistency in network meta-analysis: concepts              
+  and models for multi-arm studies.                                             
+  \emph{Research Synthesis Methods}, \bold{3}, 98--110.                         
 }
 
 \author{Ulrike Krahn \email{krahnu@uni-mainz.de}}
@@ -71,15 +92,20 @@ data(Senn2013)
 
 ##
 ## Generation of an object of class 'netmeta' with
-## reference treatment 'plac', i.e. placebo
+## reference treatment 'plac', i.e. placebo 
 ##
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
         data=Senn2013, sm="MD", reference="plac")
         
 ##
-## Generate net heat plot 
+## Generate a net heat plot based on a fixed effects model
 ##
 netheat(net1) 
+
+##                                                                              
+## Generate a net heat plot based on a random effects model                     
+##                                                                              
+netheat(net1, random=TRUE)                                                      
 }
 
 \keyword{Network meta-analysis}

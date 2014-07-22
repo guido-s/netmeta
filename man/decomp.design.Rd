@@ -2,7 +2,8 @@
 
 \alias{decomp.design}
 
-\title{Design-based decomposition of Cochran's Q in network meta-analysis}
+\title{Design-based decomposition of Cochran's Q in network
+meta-analysis}
 
 \description{
   This function performs a design-based decomposition of Cochran's Q
@@ -13,11 +14,19 @@
 }
 
 \usage{
-decomp.design(x)
+decomp.design(x, tau.preset=x$tau.preset)
 }
 
 \arguments{
    \item{x}{An object of class \code{netmeta}.}
+   \item{tau.preset}{An optional value for the square-root of the
+     between-study variance \eqn{tau^2} of a random effects model on
+     which a between-designs Q statistic (see
+     \code{Q.inc.random.preset}) will be based. Design-specific
+     contributions of this Q statistic (see
+     \code{Q.inc.design.random.preset}) as well as residuals after
+     detaching of single designs (see
+     \code{residuals.inc.detach.random.preset}) can be obtained.}
 }
 
 \details{
@@ -28,39 +37,76 @@ decomp.design(x)
   within-design Q statistics and one between-designs Q statistic that
   incorporates the concept of design inconsistency, see Higgins et
   al. (2012).
+  
+  For assessing the inconsistency in a random effects model, the
+  between-designs Q statistic can be calculated based on a full
+  design-by-treatment interaction random effects model (see Higgins et
+  al., 2012). This Q statistic will be automatically given in the
+  output (\eqn{tau^2} estimated by the method of moments (see Jackson
+  et al., 2012). Alternatively, the square-root of the between-study
+  variance can be prespecified by argument \code{tau.preset} to obtain
+  a between-designs Q statistic (in \code{Q.inc.random}), its
+  design-specific contributions \code{Q.inc.design.random.preset}) as
+  well as residuals after detaching of single designs
+  (\code{residuals.inc.detach.random.preset}).
 
   Since an inconsistent treatment effect of one design can
   simultaneously inflate several residuals, Krahn et al. (2013)
   suggest for locating the inconsistency in a network to fit a set of
   extended models allowing for example for a deviating effect of each
   study design in turn. The recalculated between-designs Q statistics
-  are given in list component \code{Q.detach}. The change of the
+  are given in list component \code{Q.inc.detach}. The change of the
   inconsistency contribution of single designs can be investigated in
   more detail by a net heat plot (see function
   \link{netheat}). Designs where only one treatment is involved in
   other designs of the network or where the removal of corresponding
   studies would lead to a splitting of the network do not contribute
   to the inconsistency assessment. These designs are not included in
-  \code{Q.detach}.
+  \code{Q.inc.detach}.
 }
 
 \value{
   A list containing the following components:
-  \item{Q.decomp}{Data frame with Q statistics (variable \code{Q}) to
-    assess the homogeneity/consistency in the whole network, within
-    designs, and between designs. Corresponding degrees of freedom
-    (\code{df}) and p-values (\code{pval}) are also given.}
-  \item{Q.design}{Data frame with design-specific decomposition of the
-    within-designs Q statistic (\code{Q}), corresponding degrees of
-    freedom (\code{df}) and p-values (\code{pval}) as well as
-    information on the designs (\code{design}) are given.}
-  \item{Q.detach}{Data frame with between-designs Q statistics
-    (\code{Q}) after detaching of single designs, corresponding
-    degrees of freedom (\code{df}) and p-values (\code{pval}) as well
-    as information on the detached design (\code{design}) are given.}
-  \item{residuals}{Matrix with residuals.}
-  \item{Q.inc.design}{A named vector with contribution of single
-    designs to the between design Q statistic.}
+  \item{Q.decomp}{Data frame with Q statistics (variable \code{Q})
+    based on the fixed effects model to assess the
+    homogeneity/consistency in the whole network, within designs, and
+    between designs. Corresponding degrees of freedom (\code{df}) and
+    p-values (\code{p.val}) are also given.}
+  \item{Q.het.design}{Data frame with design-specific decomposition of
+    the within-designs Q statistic (\code{Q}) of the fixed effects
+    model, corresponding degrees of freedom (\code{df}) and p-values
+    (\code{p.val}) are given.}
+  \item{Q.inc.detach}{Data frame with between-designs Q statistics
+    (\code{Q}) of the fixed effects model after detaching of single
+    designs, corresponding degrees of freedom (\code{df}) and p-values
+    (\code{p.val}) are given.}
+  \item{Q.inc.design}{A named vector with contributions of single
+    designs to the between design Q statistic given in
+    \code{Q.decomp}.}
+  \item{Q.inc.random}{Data frame with between-designs Q statistic
+   (\code{Q}) based on a random effects model with square-root of
+   between-study variance \code{tau.within} estimated embedded in a
+   full design-by-treatment interaction model, corresponding degrees
+   of freedom (\code{df}) and p-value (\code{p.val}).}
+  \item{Q.inc.random.preset}{Data frame with between-designs Q
+   statistic (\code{Q}) based on a random effects model with
+   prespecified square-root of between-study variance
+   \code{tau.preset} in the case if argument \code{tau.preset} is not
+   NULL, corresponding degrees of freedom (\code{df}) and p-value
+   (\code{p.val}).}
+  \item{Q.inc.design.random.preset}{A named vector with contributions
+    of single designs to the between design Q statistic based on a
+    random effects model with prespecified square-root of
+    between-study variance \code{tau.preset} in the case if argument
+    \code{tau.preset} is given.}
+  \item{residuals.inc.detach}{Matrix with residuals,
+    i.e. design-specific direct estimates minus the corresponding
+    network estimates after detaching the design of the column.}
+  \item{residuals.inc.detach.random.preset}{Matrix with residuals
+   analogous to \code{residuals.inc.detach} but based on a random
+   effects model with prespecified square-root of between-study
+   variance \code{tau.preset} in the case if argument
+   \code{tau.preset} is not NULL.}
   \item{call}{Function call.}
   \item{version}{Version of R package netmeta used to create object.}
 }
@@ -75,18 +121,18 @@ decomp.design(x)
   A graphical tool for locating inconsistency in network
   meta-analyses.
   \emph{BMC Medical Research Methodology}, \bold{13}, 35.
+  
+  Jackson D, White IR and Riley RD (2012),
+  Quantifying the impact of between-study heterogeneity in
+  multivariate meta-analyses.
+  \emph{Statistics in Medicine}, \bold{31}(29), 3805--3820.
 }
 
-\author{Ulrike Krahn \email{krahnu@uni-mainz.de}}
+\author{Ulrike Krahn \email{krahnu@uni-mainz.de}, Jochem König \email{koenigjo@uni-mainz.de}}
 
 \seealso{\link{netmeta}, \link{netheat}}
 
-\examples{
-##
-## Note: Contrary to these data, in Krahn et al. (2013) slightly
-## different standard errors related to individual studies are used
-## calculated by the function 'metacont' of R package 'meta'.
-##
+\examples{                                                                      
 data(Senn2013)
 
 ##
@@ -97,9 +143,9 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", reference="plac")
 
 ##
-## Decomposition of Cochran's Q 
+## Decomposition of Cochran's Q
 ##
-decomp.design(net1) 
+decomp.design(net1)
 }
 
 \keyword{Network meta-analysis}

@@ -1,19 +1,36 @@
-netheat <- function(x, ...){
+netheat <- function(x, random=FALSE, tau.preset=NULL, ...){ 
   
   
   if (!inherits(x, "netmeta"))
     stop("Argument 'x' must be an object of class \"netmeta\"")
   
   
-  nmak <- nma.krahn(x)
+  if (random==FALSE & length(tau.preset)==0){ 
+    nmak <- nma.krahn(x)
+    decomp <- decomp.design(x) 
+    residuals <- decomp$residuals.inc.detach 
+    Q.inc.design <- decomp$Q.inc.design 
+  } 
+  ## 
+  if (length(tau.preset)==1){ 
+    nmak <- nma.krahn(x, tau.preset=tau.preset) 
+    decomp <- decomp.design(x, tau.preset=tau.preset) 
+    residuals <- decomp$residuals.inc.detach.random.preset 
+    Q.inc.design <- decomp$Q.inc.design.random.preset 
+  } 
+  ## 
+  if (random==TRUE & length(tau.preset)==0){ 
+    tau.within <- tau.within(x)
+    nmak <- nma.krahn(x, tau.preset=tau.within)
+    decomp <- decomp.design(x, tau.preset=tau.within) 
+    residuals <- decomp$residuals.inc.detach.random.preset 
+    Q.inc.design <- decomp$Q.inc.design.random.preset 
+  } 
+  
   ##
-  H <- nmak$H
-  V <- nmak$V
-  design <- nmak$design
-  ##
-  decomp <- decomp.design(x) 
-  residuals <- decomp$residuals
-  Q.inc.design <- decomp$Q.inc.design
+  H <- nmak$H 
+  V <- nmak$V 
+  design <- nmak$design 
   
   
   Q.inc.design.typ <- apply(residuals, 2, function(x) t(x) %*% solve(V)*x)
@@ -41,7 +58,7 @@ netheat <- function(x, ...){
   
   
   for (i in 1:(nrow(t1)))
-    tn[i,] <-  t1[nrow(t1)-(i-1),]
+    tn[i,] <- t1[nrow(t1)-(i-1),]
   
   
   tn[tn < -8] <- -8
@@ -71,7 +88,7 @@ netheat <- function(x, ...){
   Hpn <- matrix(NA, nrow=nrow(Hp), ncol=ncol(Hp))
   ##
   for (i in 1:(nrow(Hp)))
-    Hpn[i,] <-  Hp[ncol(Hp)-(i-1),]
+    Hpn[i,] <- Hp[ncol(Hp)-(i-1),]
   ##
   Hpn <- t(Hpn)
   
@@ -198,9 +215,9 @@ netheat <- function(x, ...){
   }
   
   
-  if(min(round(t1,10)) != max(round(t1,10))){
-    legend.col(rev(mycol),seq(from=max(-max(t1),-8),to=min(-min(t1),8),len=length(mycol)))
-  }
+  if(min(round(t1,10)) != max(round(t1,10)))
+    legend.col(rev(mycol),
+               seq(from=max(-max(t1),-8), to=min(-min(t1),8), len=length(mycol)))
   
   
   box(lwd=1.1)

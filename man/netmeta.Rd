@@ -20,7 +20,9 @@
 }
 
 \arguments{
-  \item{TE}{Estimate of treatment effect.}
+  \item{TE}{Estimate of treatment effect, i.e. difference between
+   first and second treatment (e.g. log odds ratio or mean
+   difference).}
   \item{seTE}{Standard error of treatment estimate.}
   \item{treat1}{Label/Number for first treatment.}
   \item{treat2}{Label/Number for second treatment.}
@@ -44,7 +46,8 @@
         limits will be printed.}
   \item{seq}{A character or numerical vector specifying the sequence
     of treatments in printouts.}
-  \item{tau.preset}{Prespecified value for between-study variance tau-squared.}
+  \item{tau.preset}{An optional value for the square-root of the
+    between-study variance \eqn{\tau^2}.}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero

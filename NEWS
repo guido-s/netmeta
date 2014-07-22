@@ -1,3 +1,31 @@
+2014-06-24, version 0.5-0
+
+Functions nma.krahn, netmeasures, netheat, decomp.design, and
+print.decomp.design:
+- random effects network meta-analysis added
+
+Function netheat:
+- new argument 'random' 
+
+Functions nma.krahn, decomp.design, and netheat:
+- new argument 'tau.preset'
+
+Function decomp.design:
+- correct design-specific decomposition of Q statistic in network
+   meta-analysis with multi-arm studies
+- list component 'Q.design' renamed to 'Q.het.design'
+- list component 'Q.detach' renamed to 'Q.inc.detach'
+- list component 'residuals' renamed to 'residuals.inc.detach'
+- new list components:
+   'Q.inc.random', 'Q.inc.random.preset',
+   'Q.inc.design.random.preset', 'residuals.inc.detach.random.preset', 
+   'tau.preset'
+
+New functions tau.within and decomp.tau (used internally)
+
+Help pages updated accordingly
+
+
 2014-05-27, version 0.4-4
 
 Functions netmeta and nma.ruecker:

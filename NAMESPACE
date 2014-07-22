@@ -7,7 +7,7 @@ export(netmeta,
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
-# format.TE, p.ci
+# format.TE, p.ci, tau.within, decomp.tau
 
 S3method(as.data.frame, netmeta)
 S3method(print, netmeta)

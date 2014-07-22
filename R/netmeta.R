@@ -20,7 +20,7 @@ netmeta <- function(TE, seTE,
   mf$data <- mf$subset <- mf$sm <- NULL
   mf$level <- mf$level.comb <- NULL
   mf$comb.fixed <- mf$comb.random <- mf$reference.group <- NULL
-  mf$all.treatments <- mf$seq <- mf$tau.preset <- NULL
+  mf$all.treatments <- mf$seq <- NULL
   mf$title <- mf$warn <- NULL
   mf[[1]] <- as.name("data.frame")
   mf <- eval(mf, data)
@@ -33,7 +33,7 @@ netmeta <- function(TE, seTE,
   mf2$data <- mf2$sm <- NULL
   mf2$level <- mf2$level.comb <- NULL
   mf2$comb.fixed <- mf2$comb.random <- mf2$reference.group <- NULL
-  mf2$all.treatments <- mf2$seq <- mf2$tau.preset <- NULL
+  mf2$all.treatments <- mf2$seq <- NULL
   mf2$title <- mf2$warn <- NULL
   mf2[[1]] <- as.name("data.frame")
   ##
@@ -86,7 +86,7 @@ netmeta <- function(TE, seTE,
           stop(paste("Argument 'seq' must be a permutation of the integers from 1 to ",
                      length(tlevs), ".", sep=""))
         seq <- tlevs[seq]
-        }
+      }
       else if (is.character(seq)){
         if (length(unique(seq)) != length(seq))
           stop("Values for argument 'seq' must all be disparate.")
@@ -160,7 +160,7 @@ netmeta <- function(TE, seTE,
     else
       all.treatments <- FALSE
   }
-      
+  
   
   ## Generate ordered data set, with added numbers of arms per study
   ##
@@ -254,6 +254,7 @@ netmeta <- function(TE, seTE,
               pval.Q=res.f$pval.Q,
               I2=res.f$I2,
               tau=res.f$tau,
+              tau.preset=tau.preset,                                             
               Q.heterogeneity=res.f$Q.heterogeneity,
               Q.inconsistency=res.f$Q.inconsistency,
               ##

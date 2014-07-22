@@ -1,12 +1,12 @@
 Package: netmeta
 Title: Network meta-analysis with R
-Version: 0.4-4
+Version: 0.5-0
 Depends: meta
 Imports: magic
 Authors@R: c(person("Gerta","Rücker", role="aut"),
     person("Guido","Schwarzer", email="sc@imbi.uni-freiburg.de", role=c("aut","cre")),
-    person("Ulrike","Krahn", role="aut"))
-Date: 2014-05-27
+    person("Ulrike","Krahn", role="aut"), person("Jochem","König", role="aut"))
+Date: 2014-06-24
 Description: Network meta-analysis following methods by Rücker (2012) and Krahn et al. (2013)
 License: GPL (>= 2)
 Encoding: UTF-8

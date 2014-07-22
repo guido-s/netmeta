@@ -1,34 +1,34 @@
-nma.krahn <- function(x){
-  
-  
+nma.krahn <- function(x, tau.preset=0){
+
+
   if (!inherits(x, "netmeta"))
     stop("Argument 'x' must be an object of class \"netmeta\"")
-  
-  
+
+
   n <- x$n
-  
-  
+
+
   if (x$reference.group=="")
     trts <- colnames(x$A.matrix)
   else
     trts <- c(x$reference.group,
               colnames(x$A.matrix)[colnames(x$A.matrix)!=x$reference.group])
-  
-  
+
+
   studies.pre <- data.frame(studlab=x$studlab,
                             treat1=x$treat1, treat2=x$treat2,
-                            TE=-x$TE, seTE=x$seTE,
+                            TE=-x$TE, seTE=sqrt(x$seTE^2+tau.preset^2),
                             narms=x$narms[match(x$studlab, x$studies)],
                             stringsAsFactors=FALSE)
   ##
   studies <- studies.pre <- studies.pre[order(studies.pre$studlab),]
-  
-  
+
+
   twoarm   <- any(studies$narms==2)
   multiarm <- any(studies$narms>2)
   selmulti <- studies$narms>2
-  
-  
+
+
   sel <- studies.pre$treat2==x$reference.group
   ##
   studies$treat1[sel] <- studies.pre$treat2[sel]
@@ -36,13 +36,13 @@ nma.krahn <- function(x){
   studies$TE[sel] <- -studies.pre$TE[sel]
   studies <- data.frame(studies,
                         comparison=paste(studies$treat1, studies$treat2, sep=":"))
-  
-  
+
+
   comparison.num.poss <- n*(n-1)/2
   comparisons <- levels(factor(as.character(studies$comparison)))
   comparison.num <- length(comparisons)
-  
-  
+
+
   trts.poss <- rep(NA, comparison.num.poss)
   k <- 1
   for (i in 1:(n-1))
@@ -50,8 +50,8 @@ nma.krahn <- function(x){
       trts.poss[k] <- paste(trts[i], trts[j], sep=":")
       k <- k+1
     }
-  
-  
+
+
   direct <- matrix(NA, nrow=comparison.num, ncol=6)
   ##
   colnames(direct) <- c("comparison", "TE", "seTE",
@@ -81,8 +81,8 @@ nma.krahn <- function(x){
       direct$n.2arm[j] <- m2$k
     }
   }
-  
-  
+
+
   if (multiarm){
     multistudies <- split(studies[selmulti,], as.character(studies$studlab[selmulti]))
     multistudies <- lapply(multistudies,
@@ -100,9 +100,9 @@ nma.krahn <- function(x){
     multistudies <- data.frame(multistudies,
                                des=paste(multistudies$comparison, multistudies$design, sep="_"))
     ##
+    row.names(studies) <- NULL
     multistudies2 <- split(studies[selmulti,], as.character(studies$studlab[selmulti]))
-    multistudies2 <- lapply(multistudies2, function(x) x[order(x$treat1),])
-    multistudies2 <- lapply(multistudies2, function(x) x[order(x$treat2),])
+    multistudies2 <- lapply(multistudies2, function(x) x[do.call(order,x[,c("treat1","treat2")]),])
     multistudies2 <- lapply(multistudies2,
                             function(x)
                             rbind(
@@ -112,22 +112,19 @@ nma.krahn <- function(x){
                              rep(names(multistudies2),
                                  unlist(lapply(multistudies2, function(x) nrow(x)))))
   }
-  
-  
+
   studies <- data.frame(studies, design=studies$comparison)
-  
-  
   if (multiarm & sum(is.na(direct$seTE.2arm))>0)
     direct2 <- data.frame(direct[!is.na(direct$seTE.2arm),])
   else
     direct2 <- direct
   ##
   direct2 <- data.frame(direct2)
-  
-  
+
+
   V.design <- diag(direct2$seTE.2arm^2)
-  
-  
+
+
   if (multiarm){
     sp <- split(multistudies2, multistudies2$studlab)
     armM <- unlist(lapply(split(multistudies2$narms, multistudies2$studlab), function(x) x[1]))
@@ -179,10 +176,10 @@ nma.krahn <- function(x){
       ##
       TE.agg <- c(TE.agg,covs3 %*% apply(m, 1, sum))
     }
-    
+
     V3.agg <- V3.agg[-1,-1]
     TE.agg <- TE.agg[-1]
-    
+
     V <- magic::adiag(V.design, V3.agg)
     ##
     nam <- rep(multicomp, unlist(lapply(split(multistudies, multistudies$design),
@@ -201,13 +198,13 @@ nma.krahn <- function(x){
     colnames(V) <- direct2$comparison
     TE.dir <- direct2$TE.2arm
     V.studies <- diag(studies$seTE[!selmulti]^2)
-    colnames(V.studies) <- rownames(V.studies) <- as.character(studies$design[!selmulti])
+    colnames(V.studies) <- rownames(V.studies) <- as.character(studies$comparison[!selmulti])
   }
-  ##  
+  ##
   if (min(eigen(V, only.values = TRUE)$values)<0)
     stop("Covariance matrix is not nnd")
-  
-  
+
+
   fX <- function(n){
     possK <- n*(n-1)/2
     X <- matrix(0, nrow=possK, ncol=n-1)
@@ -232,8 +229,8 @@ nma.krahn <- function(x){
   colnames(X.full) <- trts.poss[1:n-1]
   ##
   X.obs2.design <- X.full[direct2$comparison,]
-  
-  
+
+
   if (multiarm){
     num.basics.design <- unlist(lapply(split(multistudies,multistudies$design),
                                        function(x) x$narms[1]))-1
@@ -242,7 +239,7 @@ nma.krahn <- function(x){
                      function(x) split(x, x$studlab)[[1]]$comparison)
     basics <- unsplit(basics, rep(1:length(multicomp), num.basics.design))
     ##
-    X.obs3.design <-  X.full[as.character(basics),]
+    X.obs3.design <- X.full[as.character(basics),]
     rownames(X.obs3.design) <- rep(multicomp, num.basics.design)
     X.obs <- rbind(X.obs2.design, X.obs3.design)
   }
@@ -251,8 +248,8 @@ nma.krahn <- function(x){
   ##
   H <- X.full %*% solve(t(X.obs) %*% solve(V) %*% X.obs) %*% t(X.obs) %*% solve(V)
   TE.net <- H %*% TE.dir
-  
-  
+
+
   covTE.net.base <- solve(t(X.obs) %*% solve(V) %*% X.obs)
   co <- NA
   for (i in 1:(n-2)){
@@ -267,8 +264,8 @@ nma.krahn <- function(x){
   }
   ##
   covTE.net <- c(diag(covTE.net.base), co[-1])
-  
-  
+
+
   comps <- as.character(studies$comparison[!selmulti])
   studlabs <- as.character(studies$studlab[!selmulti])
   ##
@@ -276,21 +273,21 @@ nma.krahn <- function(x){
     comps <- c(comps, as.character(multistudies$comparison))
     studlabs <- c(studlabs, as.character(multistudies$studlab))
   }
-  
-  
+
+
   X.obs.studies <- X.full[comps,]
-  
-  
+
+
   H.studies <- X.full %*%
     solve(t(X.obs.studies) %*% solve(V.studies) %*% X.obs.studies) %*%
       t(X.obs.studies) %*% solve(V.studies)
   ##
   colnames(H.studies) <- studlabs
-  
-  
+
+
   network <- data.frame(TE=TE.net, seTE=sqrt(covTE.net))
-  
-  
+
+
   if (multiarm){
     len.designs <- c(rep(1, length(direct2$comparison)),
                      unlist(lapply(strsplit(multicomp, ":"),
@@ -334,8 +331,8 @@ nma.krahn <- function(x){
   design <- data.frame(design,
                        TE.net=network[as.character(design$comparison), "TE"],
                        seTE.net=network[as.character(design$comparison), "seTE"])
-  
-  
+
+
   if (multiarm)
     studies <- rbind(studies[!selmulti,], multistudies[, 1:8])
   ##
@@ -346,16 +343,18 @@ nma.krahn <- function(x){
   studies <- merge(studies, design[, names(design) != "narms"],
                    by=c("design", "comparison"))
   ##
-  studies <- studies[, c("studlab", "design", "comparison",
+  studies <- studies[, c("studlab", "design", "comparison", "treat1", "treat2",
                          "narms", "freq", "TE", "seTE",
                          "TE.dir", "seTE.dir", "TE.net", "seTE.net")]
   ##
-  studies <- studies[order(studies$narms, studies$studlab),]
-  
-  
+  studies_lim <- studies[which(studies$narms==2),]
+  studies_mult <- studies[which(studies$narms>2),]
+  studies <- rbind(studies_lim[order(studies_lim$studlab),],
+                   studies_mult[do.call(order, studies_mult[,c("studlab","treat1","treat2")]),])
+
   res <- list(n=n,
               k=x$k,
-              d=length(design$design),
+              d=length(unique(design$design)),
               trts=trts,
               comparisons=comparisons,
               studies=studies,
@@ -371,6 +370,6 @@ nma.krahn <- function(x){
               H.studies=H.studies)
 
   class(res) <- "nma.krahn"
-  
+
   res
 }
