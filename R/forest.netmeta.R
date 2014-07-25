@@ -4,6 +4,7 @@ forest.netmeta <- function(x,
                            leftcols="studlab",
                            leftlabs="Treatment",
                            smlab=NULL,
+                           sortvar=x$seq,
                            ...){
 
   if (!inherits(x, "netmeta"))
@@ -30,9 +31,28 @@ forest.netmeta <- function(x,
       smlab <- "Random Effects Model"
   }
 
-  if (!is.null(x$seq)){
-    TE <- TE[x$seq, x$seq]
-    seTE <- seTE[x$seq, x$seq]
+  if (!is.null(sortvar)){
+    if (is.character(sortvar)){
+      tlevs <- rownames(TE)
+      ##
+      if (length(tlevs)!=length(sortvar))
+        stop("Length of argument 'sortvar' different from number of treatments.")
+      else{
+        if (length(unique(sortvar)) != length(sortvar))
+          stop("Values for argument 'sortvar' must all be disparate.")
+        if (any(!(sortvar %in% tlevs)))
+          stop(paste("Argument 'sortvar' must be a permutation of the following values:\n  ",
+                     paste(paste("'", tlevs, "'", sep=""),
+                           collapse=" - "), sep=""))
+      }
+      TE <- TE[sortvar, sortvar]
+      seTE <- seTE[sortvar, sortvar]
+    }
+    else{
+      o <- order(sortvar)
+      TE <- TE[o,o]
+      seTE <- seTE[o,o]
+    }
   }
   
   

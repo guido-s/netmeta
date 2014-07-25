@@ -16,6 +16,7 @@
        leftcols="studlab",
        leftlabs="Treatment",
        smlab=NULL,
+       sortvar=x$seq,
        ...)
 }
 
@@ -34,6 +35,8 @@
   \item{smlab}{A label printed at top of figure. By default, text
     indicating either fixed effect or random effects model is
     printed.}
+  \item{sortvar}{An optional vector used to sort the individual studies
+    (must be of same length as the total number of treatments).}
   \item{\dots}{Additional arguments for \code{\link{forest.meta}}
     function.}
 }
@@ -41,6 +44,11 @@
 \details{
   A forest plot, also called confidence interval plot, is drawn in the
   active graphics window.
+
+  Argument \code{sortvar} can be either a numeric or character
+  vector. If \code{sortvar} is numeric the order function is utilised
+  internally to determine the order of values. If \code{sortvar} is
+  character it must be a permutation of the treatment names.
 
   For more information see help page of \code{\link{forest.meta}}
   function.

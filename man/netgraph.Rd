@@ -9,9 +9,33 @@
 }
 
 \usage{
-netgraph(x, seq=x$seq, labels=NULL, plastic=TRUE, thickness=TRUE,
-         col="slateblue", lwd=1,
-         highlight=NULL, col.highlight="red2", lwd.highlight=2, ...)
+netgraph(x, seq=x$seq, labels, plastic, thickness,
+         col="slateblue", lwd=5,
+         highlight=NULL, col.highlight="red2", lwd.highlight=lwd,
+         start.layout="circle",
+         iterate, tol=0.0001, maxit=500, allfigures=FALSE,
+         eig1=2, eig2=3,
+         A.matrix=x$A.matrix, N.matrix=sign(A.matrix),
+         ##
+         main="",
+         ##
+         lwd.min=lwd/2,
+         lwd.max=lwd*4,
+         ##
+         scale=1.10, offset=0.0175,
+         ##
+         cex.labels=1,
+         comparisons=NULL,
+         cex=1,
+         ##
+         multiarm=any(x$narms>2), col.multiarm=NULL,
+         ##
+         points=FALSE, col.point="red", cex.point=1, pch.point=20,
+         ##
+         arrows=FALSE,
+         ##
+         xpos=NULL, ypos=NULL,
+         ...)
 }
 
 \arguments{

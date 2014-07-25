@@ -1,3 +1,33 @@
+2014-07-29, version 0.6-0
+
+Function netgraph:
+- complete rewrite of this function
+- list of new features:
+ - ...
+
+Function netmeta:
+- calculate treatment estimates from all direct pairwise treatment
+  comparisons (both fixed effect and random effects model)
+- new list components:
+   'tau.preset', 'TE.direct.fixed', 'seTE.direct.fixed',
+   'lower.direct.fixed', 'upper.direct.fixed', 'zval.direct.fixed',
+   'pval.direct.fixed', 'TE.direct.random', 'seTE.direct.random',
+   'lower.direct.random', 'upper.direct.random', 'zval.direct.random',
+   'pval.direct.random'
+
+Function nma.ruecker (used internally)
+- changed accordingly to reflect changes in netmeta function
+
+Function forest.netmeta:
+- new argument sortvar (default: sort treatment effect estimates
+  according to list component 'seq' of netmeta object)
+
+New functions stress and nodedist (used internally)
+- auxiliary functions for netgraph function
+
+Help pages updated accordingly
+
+
 2014-06-24, version 0.5-0
 
 Functions nma.krahn, netmeasures, netheat, decomp.design, and

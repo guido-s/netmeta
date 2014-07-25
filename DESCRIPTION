@@ -1,7 +1,8 @@
 Package: netmeta
 Title: Network meta-analysis with R
-Version: 0.5-0
+Version: 0.6-0
 Depends: meta
+Suggests: colorspace
 Imports: magic
 Authors@R: c(person("Gerta","Rücker", role="aut"),
     person("Guido","Schwarzer", email="sc@imbi.uni-freiburg.de", role=c("aut","cre")),

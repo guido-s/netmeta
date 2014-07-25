@@ -192,6 +192,52 @@ nma.ruecker <- function(TE, seTE,
   ##
   rownames(G.matrix) <- colnames(G.matrix) <- studlab
   rownames(H.matrix) <- colnames(H.matrix) <- studlab
+
+
+  ## Calculate direct treatment estimates
+  ##
+  Bo <- B
+  Bo[Bo==1] <- -2
+  rownames(B) <- studlab
+  colnames(B) <- names.treat
+  ##
+  B.matrix <- B[do.call(order, data.frame(Bo)),]
+  ##
+  TE.direct   <- matrix(NA, ncol=length(names.treat),
+                        nrow=length(names.treat))
+  seTE.direct <- matrix(NA, ncol=length(names.treat),
+                        nrow=length(names.treat))
+  rownames(TE.direct)   <- colnames(TE.direct) <- names.treat
+  rownames(seTE.direct) <- colnames(seTE.direct) <- names.treat
+  ##
+  C.matrix <- B.matrix[!duplicated(B.matrix),]
+  ##
+  for (i in 1:dim(C.matrix)[1]){
+    sel1 <- C.matrix[i,]==1
+    sel2 <- C.matrix[i,]==-1
+    sel.treat1 <- colnames(C.matrix)[sel1]
+    sel.treat2 <- colnames(C.matrix)[sel2]
+    ##
+    selstud <- treat1==sel.treat1 & treat2==sel.treat2
+    ##
+    m.i <- metagen(TE, seTE.orig, subset=selstud)
+    ##
+    ## cat(paste(sel.treat1, sel.treat2, sep=":"),
+    ##     ":", length(selstud), "\n")
+    ##
+    TE.direct[sel.treat1, sel.treat2] <- m.i$TE.fixed
+    seTE.direct[sel.treat1, sel.treat2] <- m.i$seTE.fixed
+    ##
+    TE.direct[sel.treat2, sel.treat1] <- -m.i$TE.fixed
+    seTE.direct[sel.treat2, sel.treat1] <- m.i$seTE.fixed
+  }
+  ##
+  ci.direct <- meta::ci(TE.direct, seTE.direct, level=level.comb)
+  ##
+  lower.direct <- ci.direct$lower
+  upper.direct <- ci.direct$upper
+  zval.direct <- ci.direct$z
+  pval.direct <- ci.direct$p
   
   
   ##
@@ -244,7 +290,14 @@ nma.ruecker <- function(TE, seTE,
               G.matrix=G.matrix,
               H.matrix=H.matrix,
               ##
-              Q.decomp = Q.decomp
+              TE.direct=TE.direct,
+              seTE.direct=seTE.direct,
+              lower.direct=lower.direct,
+              upper.direct=upper.direct,
+              zval.direct=zval.direct,
+              pval.direct=pval.direct,
+              ##
+              Q.decomp=Q.decomp
               )
   
   res$version <- packageDescription("netmeta")$Version

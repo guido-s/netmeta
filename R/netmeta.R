@@ -243,6 +243,20 @@ netmeta <- function(TE, seTE,
               zval.random=res.r$zval.pooled,
               pval.random=res.r$pval.pooled,
               ##
+              TE.direct.fixed=res.f$TE.direct,
+              seTE.direct.fixed=res.f$seTE.direct,
+              lower.direct.fixed=res.f$lower.direct,
+              upper.direct.fixed=res.f$upper.direct,
+              zval.direct.fixed=res.f$zval.direct,
+              pval.direct.fixed=res.f$pval.direct,
+              ##
+              TE.direct.random=res.r$TE.direct,
+              seTE.direct.random=res.r$seTE.direct,
+              lower.direct.random=res.r$lower.direct,
+              upper.direct.random=res.r$upper.direct,
+              zval.direct.random=res.r$zval.direct,
+              pval.direct.random=res.r$pval.direct,
+              ##
               treat1.pos=res.f$treat1.pos[o],
               treat2.pos=res.f$treat2.pos[o],
               ##
