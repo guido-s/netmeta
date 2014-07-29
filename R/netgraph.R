@@ -1,36 +1,23 @@
 netgraph <- function(x, seq=x$seq,
-                     labels=NULL, plastic, thickness,
-                     col="slateblue", lwd=5,
-                     highlight=NULL,
-                     col.highlight="red2", lwd.highlight=lwd,
-                     highlight.split=":",
+                     labels=dimnames(x$A.matrix)[[1]],
+                     cex=1, col="slateblue", offset=0.0175,
+                     scale=1.10,
+                     plastic, thickness, lwd=5, lwd.min=lwd/2.5, lwd.max=lwd*4,
                      ##
-                     start.layout="circle",
-                     iterate,
-                     tol=0.0001, maxit=500, allfigures=FALSE,
-                     eig1=2, eig2=3,
-                     A.matrix=x$A.matrix,
-                     N.matrix=sign(A.matrix),
-                     ##
-                     scale=1.10, offset=0.0175,
-                     ##
-                     cex.labels=1,
-                     ##
-                     lwd.min=lwd/2,
-                     lwd.max=lwd*4,
-                     ##
-                     comparisons=NULL,
-                     cex=1,
+                     highlight=NULL, col.highlight="red2",
+                     lwd.highlight=lwd, highlight.split=":",
                      ##
                      multiarm=any(x$narms>2),
                      col.multiarm=NULL,
-                     multiarm.colfunc=colorspace::sequential_hcl,
+                     alpha.transparency=0.5,
                      ##
-                     points=FALSE,
-                     col.point="red", cex.point=1, pch.point=20,
+                     points=FALSE, col.points="red", cex.points=1, pch.points=20,
                      ##
-                     arrows=FALSE,
-                     
+                     start.layout="circle", eig1=2, eig2=3,
+                     iterate,
+                     tol=0.0001, maxit=500, allfigures=FALSE,
+                     A.matrix=x$A.matrix,
+                     N.matrix=sign(A.matrix),
                      ##
                      xpos=NULL, ypos=NULL,
                      ...){
@@ -84,7 +71,7 @@ netgraph <- function(x, seq=x$seq,
       ##
       else if (length(thickness)==1 & is.logical(thickness)){
         if (thickness)
-          thick <- "w.fixed"
+          thick <- "se.fixed"
         else
           thick <- "equal"
       }
@@ -101,36 +88,36 @@ netgraph <- function(x, seq=x$seq,
   }
   
   
-  treatments <- dimnames(x$A.matrix)[[1]]
-  ##
   if (is.null(seq) | !(start.layout=="circle" & iterate==FALSE)){
-    seq1 <- 1:length(treatments)
+    seq1 <- 1:length(labels)
     if (!missing(seq) & (is.null(xpos) & is.null(ypos)))
       warning("Argument 'seq' only considered if start.layout=\"circle\" and iterate=FALSE.")
   }
   else{
-    if (!is.null(seq) & length(seq) != length(treatments))
+    if (!is.null(seq) & length(seq) != length(labels))
       stop("Length of argument 'seq' different from number of treatments.")
     if (is.numeric(seq) && any(is.na(seq)))
       stop("Missing values not allowed in argument 'seq'.")
     if (length(unique(seq)) != length(seq))
       stop("Values for argument 'seq' must all be disparate.")
-    if (is.numeric(seq) && any(!(seq %in% (1:length(treatments)))))
-      stop(paste("Argument 'seq' must be a permutation of the integers from 1 to ",
-                 length(treatments), ".", sep=""))
-    if (is.character(seq) && any(!(seq %in% treatments)))
-      stop(paste("Argument 'seq' must be a permutation of the following values:\n  ",
-                 paste(paste("'", treatments, "'", sep=""),
+    if (is.numeric(seq) && any(!(seq %in% (1:length(labels)))))
+      stop(paste("Numeric vector 'seq' must be a permutation of the integers from 1 to ",
+                 length(labels), ".", sep=""))
+    if (is.character(seq) && any(!(seq %in% labels)))
+      stop(paste("Character vector 'seq' must be a permutation of the following values:\n  ",
+                 paste(paste("'", labels, "'", sep=""),
                        collapse=" - "), sep=""))
     ##
     else if (is.numeric(seq))
       seq1 <- seq
     else if (is.character(seq))
-      seq1 <- match(seq, treatments)
+      seq1 <- match(seq, labels)
   }
   ##
   A.matrix <- A.matrix[seq1, seq1]
   N.matrix <- N.matrix[seq1, seq1]
+  ##
+  labels <- labels[seq1]
   
   
   A.sign <- sign(A.matrix)
@@ -138,61 +125,43 @@ netgraph <- function(x, seq=x$seq,
   
   if (is.null(xpos) & is.null(ypos)){
     stressdata <- stress(x,
-                         ##
-                         start.layout=start.layout,
-                         iterate=iterate,
-                         eig1=eig1, eig2=eig2,
-                         tol=tol, maxit=maxit,
-                         ##
                          seq=seq,
                          ##
-                         A.matrix=A.matrix,
-                         N.matrix=N.matrix,
-                         ##
-                         thickness=thickness,
-                         plastic=plastic,
-                         ##
-                         scale=scale, offset=offset,
-                         ##
                          labels=labels,
-                         cex.labels=cex.labels,
+                         cex=cex,
+                         col=col,
+                         offset=offset,
+                         scale=scale,
                          ##
+                         plastic=plastic,
+                         thickness=thickness,
                          lwd=lwd,
                          lwd.min=lwd.min,
                          lwd.max=lwd.max,
-                         ##
-                         comparisons=comparisons,
-                         col=col,
-                         cex=cex,
-                         ##
-                         col.multiarm=col.multiarm,
-                         multiarm.colfunc=multiarm.colfunc,
                          ##
                          highlight=highlight,
                          col.highlight=col.highlight,
                          lwd.highlight=lwd.highlight,
                          highlight.split=highlight.split,
                          ##
-                         points=points,
-                         col.point=col.point, cex.point=cex.point,
-                         pch.point=pch.point,
+                         ## multiarm
+                         col.multiarm=col.multiarm,
+                         alpha.transparency=alpha.transparency,
                          ##
-                         arrows=arrows,
+                         points=points, col.points=col.points,
+                         cex.points=cex.points, pch.points=pch.points,
                          ##
-                         allfigures=allfigures,
+                         start.layout=start.layout,
+                         iterate=iterate,
+                         tol=tol, maxit=maxit, allfigures=allfigures,
+                         eig1=eig1, eig2=eig2,
+                         A.matrix=A.matrix,
+                         N.matrix=N.matrix,
                          ...)
     ##
     xpos <- stressdata$x
     ypos <- stressdata$y
-    ##
-    if (is.null(labels))
-      labels <- stressdata$labels
   }
-  else
-    if (is.null(labels))
-      labels <- treatments
-    else
-      labels <- labels[seq1]
   
   
   if (allfigures)
@@ -245,16 +214,20 @@ netgraph <- function(x, seq=x$seq,
     ##
     n.multi <- length(multiarm.studies)
     ##
-    if (is.null(col.multiarm)){
+    missing.col.multiarm <- missing(col.multiarm)
+    ##
+    if (missing.col.multiarm | is.null(col.multiarm)){
       ## Check for R package colorspace & use various gray values if
-      ## not installed
-      if (missing(multiarm.colfunc) &
-          !any(as.data.frame(installed.packages())$Package=="colorspace")){
-        col.multiarm <- paste("gray", round(seq.int(95, 30, length.out=n.multi)), sep="")
-      }
+      ## not installed packages
+      if (!any(as.data.frame(installed.packages())$Package=="colorspace"))
+        col.polygon <- grDevices::rainbow(n.multi, alpha=alpha.transparency)
+      else 
+        col.polygon <- colorspace::sequential_hcl(n.multi, alpha=alpha.transparency)
+    }
+    else {
       ##
-      else{
-        mcname <- deparse(substitute(multiarm.colfunc))
+      if (is.function(col.multiarm)){
+        mcname <- deparse(substitute(col.multiarm))
         ##
         csfun <- function(fcall, fname){
           is.cs <- length(grep(fname, fcall))>0
@@ -264,38 +237,41 @@ netgraph <- function(x, seq=x$seq,
         }
         ##
         if (csfun(mcname, "rainbow_hcl"))
-          col.multiarm <- colorspace::rainbow_hcl(n.multi, start=240, end=60, alpha=0.5)
+          col.polygon <- colorspace::rainbow_hcl(n.multi, start=240, end=60, alpha=alpha.transparency)
         else if (csfun(mcname, "sequential_hcl"))
-          col.multiarm <- colorspace::sequential_hcl(n.multi, alpha=0.5)
+          col.polygon <- colorspace::sequential_hcl(n.multi, alpha=alpha.transparency)
         else if (csfun(mcname, "diverge_hcl"))
-          col.multiarm <- colorspace::diverge_hcl(n.multi, alpha=0.5)
+          col.polygon <- colorspace::diverge_hcl(n.multi, alpha=alpha.transparency)
         else if (csfun(mcname, "heat_hcl"))
-          col.multiarm <- colorspace::heat_hcl(n.multi, alpha=0.5)
+          col.polygon <- colorspace::heat_hcl(n.multi, alpha=alpha.transparency)
         else if (csfun(mcname, "terrain_hcl"))
-          col.multiarm <- colorspace::terrain_hcl(n.multi, alpha=0.5)
+          col.polygon <- colorspace::terrain_hcl(n.multi, alpha=alpha.transparency)
         else if (csfun(mcname, "diverge_hsv"))
-          col.multiarm <- colorspace::diverge_hsv(n.multi, alpha=0.5)
+          col.polygon <- colorspace::diverge_hsv(n.multi, alpha=alpha.transparency)
         else if (csfun(mcname, "choose_palette")){
           fcolm <- colorspace::choose_palette(n=n.multi)
-          col.multiarm <- fcolm(n=n.multi)
+          col.polygon <- fcolm(n=n.multi)
         }
         else 
-          col.multiarm <- sapply(n.multi, multiarm.colfunc)
+          col.polygon <- sapply(n.multi, col.multiarm, alpha=alpha.transparency)
         ##
         if (csfun(mcname, "sequential_hcl")|
             csfun(mcname, "diverge_hcl")|
             csfun(mcname, "heat_hcl"))
-          col.multiarm <- rev(col.multiarm)
+          col.polygon <- rev(col.polygon)
       }
     }
-    else
+    ##
+    if (!missing.col.multiarm & is.character(col.multiarm)){
       if (length(col.multiarm) > 1 & length(col.multiarm) != n.multi)
         stop("Length of argument 'col.multiarm' must be equal to one or the number of multi-arm studies: ", n.multi)
+      col.polygon <- col.multiarm
+    }
     ##
     if (n.multi>0){
       multiarm.labels <- vector("list", n.multi)
-      if (length(col.multiarm)==1)
-        col.multiarm <- rep(col.multiarm, n.multi)
+      if (length(col.polygon)==1)
+        col.polygon <- rep(col.polygon, n.multi)
       for (i in 1:n.multi){
         treat1 <- x$treat1[x$studlab %in% multiarm.studies[i]]
         treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
@@ -322,7 +298,7 @@ netgraph <- function(x, seq=x$seq,
         pdm <- pdm[polysort(pdm$xpos, pdm$ypos),]
         ##
         polygon(pdm$xpos, pdm$ypos,
-                col=col.multiarm[i], border=NA)
+                col=col.polygon[i], border=NA)
       }
     }
   }
@@ -337,25 +313,25 @@ netgraph <- function(x, seq=x$seq,
     W.matrix <- lwd*A.sign
   }
   else if (thick=="se.fixed"){
-    IV.matrix <- x$seTE.direct.fixed
+    IV.matrix <- x$seTE.direct.fixed[seq1, seq1]
     IV.matrix[is.infinite(IV.matrix)] <- NA
     W.matrix <- lwd.max*min(IV.matrix, na.rm=TRUE)/IV.matrix
     W.matrix[W.matrix<lwd.min&W.matrix!=0] <- lwd.min
   }
   else if (thick=="se.random"){
-    IV.matrix <- x$seTE.direct.random
+    IV.matrix <- x$seTE.direct.random[seq1, seq1]
     IV.matrix[is.infinite(IV.matrix)] <- NA
     W.matrix <- lwd.max*min(IV.matrix, na.rm=TRUE)/IV.matrix
     W.matrix[W.matrix<lwd.min&W.matrix!=0] <- lwd.min
   }
   else if (thick=="w.fixed"){
-    IV.matrix <- 1/x$seTE.direct.fixed^2
+    IV.matrix <- 1/x$seTE.direct.fixed[seq1, seq1]^2
     IV.matrix[is.infinite(IV.matrix)] <- NA
     W.matrix <- lwd.max*IV.matrix/max(IV.matrix, na.rm=TRUE)
     W.matrix[W.matrix<lwd.min&W.matrix!=0] <- lwd.min
   }
   else if (thick=="w.random"){
-    IV.matrix <- 1/x$seTE.direct.random^2
+    IV.matrix <- 1/x$seTE.direct.random[seq1, seq1]^2
     IV.matrix[is.infinite(IV.matrix)] <- NA
     W.matrix <- lwd.max*IV.matrix/max(IV.matrix, na.rm=TRUE)
     W.matrix[W.matrix<lwd.min&W.matrix!=0] <- lwd.min
@@ -369,10 +345,6 @@ netgraph <- function(x, seq=x$seq,
     ##
     W.matrix[W.matrix<lwd.min&W.matrix!=0] <- lwd.min
   }
-  
-  
-  if (is.null(comparisons) || !is.matrix(comparisons))
-    comparisons <- matrix(NA, nrow=n, ncol=n)
   
   
   ## Draw lines
@@ -405,25 +377,6 @@ netgraph <- function(x, seq=x$seq,
   }
   
   
-  ## Draw arrows / print treatment labels
-  ##
-  for (i in 1:(n-1)){
-    for (j in (i+1):n){
-      if (A.sign[i,j]>0){
-        ##
-        if (arrows)
-          arrows(xpos[i], ypos[i], xpos[j], ypos[j],
-                 lwd=2, col=col,
-                 code=2, angle=20, length=0.4)
-        ##
-        text((xpos[i]+xpos[j])/2, (ypos[i]+ypos[j])/2,
-             labels=comparisons[i,j],
-             cex=cex)
-      }
-    }
-  }
-  
-  
   ## Add highlighted comparisons
   ##
   if (!is.null(highlight)){
@@ -450,7 +403,7 @@ netgraph <- function(x, seq=x$seq,
   ##
   if (points)
     points(xpos, ypos,
-           pch=pch.point, cex=cex.point, col=col.point)               
+           pch=pch.points, cex=cex.points, col=col.points)               
   
 
   ## Print treatment labels
