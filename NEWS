@@ -1,9 +1,22 @@
 2014-07-29, version 0.6-0
 
 Function netgraph:
-- complete rewrite of this function
-- list of new features:
- - ...
+- complete rewrite of this function (without changing previous default
+  settings substantially)
+- list of major new features:
+ - additional layouts beside circular presentation (see argument
+   'start.layout')
+ - implementation of stress majorization algorithm to optimize layout
+   (argument 'iterate')
+ - additional methods to determine width of lines connecting
+   treatments (argument 'thickness')
+ - highlight multi-arm studies (arguments 'multiarm' and
+   'col.multiarm')
+ - possibility to provide a neighborhood matrix to specify
+    neighborhood differently than using the adjacency matrix, for
+    example content-based (argument 'N.matrix')
+ - possibility to provide x- and y-coordinates for network plot
+   (arguments 'xpos' and 'ypos')
 
 Function netmeta:
 - calculate treatment estimates from all direct pairwise treatment

@@ -26,7 +26,7 @@ netgraph(x, seq=x$seq,
 }
 
 \arguments{
-  \item{x}{An object of class \code{netmeta}.}
+  \item{x}{An object of class \code{netmeta} (mandatory).}
   \item{seq}{A character or numerical vector specifying the sequence
     of treatments arrangement (anticlockwise if
     \code{start.layout="circle"}).}
@@ -101,10 +101,13 @@ netgraph(x, seq=x$seq,
     are shown if \code{iterate=TRUE}. May slow down calculations if
     set to \code{TRUE} (especially if \code{plastic=TRUE}).}
   \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}) characterizing
-    the structure of the network graph.}
+    the structure of the network graph. Row and column names must be
+    the same set of values as provided by argument \code{seq}.}
   \item{N.matrix}{Neighborhood matrix (\emph{n}x\emph{n}) replacing
     A.matrix if neighborhood is to be specified differently from node
-    adjacency in the network graph, for example content-based.}
+    adjacency in the network graph, for example content-based. Row and
+    column names must be the same set of values as provided by
+    argument \code{seq}.}
   \item{xpos}{Vector (\emph{n}) of x coordinates.}
   \item{ypos}{Vector (\emph{n}) of y coordinates.}
   \item{\dots}{Additional graphical arguments.}
@@ -114,8 +117,8 @@ netgraph(x, seq=x$seq,
   graph layout correspond to the treatments and edges display the
   observed treatment comparisons. For the default setting, nodes are
   placed on a circle.  Other starting layouts are "eigen", "prcomp",
-  and "random"). If \code{iterate=TRUE}, the layout is further
-  optimised using the stress majorization algorithm. This algorithm
+  and "random". If \code{iterate=TRUE}, the layout is further
+  optimized using the stress majorization algorithm. This algorithm
   specifies an 'ideal' distance (e.g., the graph distance) between two
   nodes in the plane. In the optimal layout, these distances are best
   approximated in the sense of least squares. Starting from an initial
