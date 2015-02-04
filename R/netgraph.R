@@ -1,5 +1,5 @@
 netgraph <- function(x, seq=x$seq,
-                     labels=dimnames(x$A.matrix)[[1]],
+                     labels=rownames(x$TE.fixed),
                      cex=1, col="slateblue", offset=0.0175,
                      scale=1.10,
                      plastic, thickness, lwd=5, lwd.min=lwd/2.5, lwd.max=lwd*4,
@@ -26,15 +26,13 @@ netgraph <- function(x, seq=x$seq,
   if (!inherits(x, "netmeta"))
     stop("Argument 'x' must be an object of class \"netmeta\"")
   
-  
-  isl <- charmatch(tolower(start.layout),
-                   c("eigen", "prcomp", "circle", "random"), nomatch = NA)
+  start.layout <- meta:::setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
   ##
-  if(is.na(isl))
-    stop("Argument 'start.layout' should be \"eigen\", \"prcomp\", \"circle\", or \"random\"")
+  if (!missing(seq) & is.null(seq))
+    stop("Argument 'seq' must be not NULL.")
   ##
-  start.layout <- c("eigen", "prcomp", "circle", "random")[isl]
-  
+  if (!missing(labels) & is.null(labels))
+    stop("Argument 'labels' must be not NULL.")
   
   if (missing(iterate))
     iterate <- ifelse(start.layout=="circle", FALSE, TRUE)
@@ -59,15 +57,10 @@ netgraph <- function(x, seq=x$seq,
   }
   else{
     if (!is.matrix(thickness)){
-      if (length(thickness)==1 & is.character(thickness)){
-        ithick <- charmatch(tolower(thickness),
-                            c("equal", "number.of.studies", "se.fixed", "se.random", "w.fixed", "w.random"), nomatch = NA)
-        ##
-        if(is.na(ithick))
-          stop("Argument 'thickness' should be \"equal\", \"number.of.studies\", \"se.fixed\", \"se.random\", \"w.fixed\", or \"w.random\"")
-        ##
-        thick <- c("equal", "number.of.studies", "se.fixed", "se.random", "w.fixed", "w.random")[ithick]
-      }
+      if (length(thickness)==1 & is.character(thickness))
+        thick <- meta:::setchar(thickness,
+                                c("equal", "number.of.studies",
+                                  "se.fixed", "se.random", "w.fixed", "w.random"))
       ##
       else if (length(thickness)==1 & is.logical(thickness)){
         if (thickness)
@@ -80,42 +73,36 @@ netgraph <- function(x, seq=x$seq,
       if ((dim(thickness)[1] != dim(A.matrix)[1]) |
           (dim(thickness)[2] != dim(A.matrix)[2]))
         stop("Dimension of argument 'A.matrix' and 'thickness' are different.")
+      if (is.null(dimnames(thickness)))
+        stop("Matrix 'thickness' must have row and column names identical to argument 'A.matrix'.")
       else{
-        W.matrix <- thickness
-        thick <- "matrix"
+        if (any(rownames(thickness)!=rownames(A.matrix)))
+          stop("Row names of matrix 'thickness' must be identical to argument 'A.matrix'.")
+        if (any(colnames(thickness)!=colnames(A.matrix)))
+          stop("Column names of matrix 'thickness' must be identical to argument 'A.matrix'.")
       }
+      ##
+      W.matrix <- thickness
+      thick <- "matrix"
     }
   }
   
   
   if (is.null(seq) | !(start.layout=="circle" & iterate==FALSE)){
     seq1 <- 1:length(labels)
-    if (!missing(seq) & (is.null(xpos) & is.null(ypos)))
+    if (!missing(seq) & !is.null(seq) & (is.null(xpos) & is.null(ypos)))
       warning("Argument 'seq' only considered if start.layout=\"circle\" and iterate=FALSE.")
   }
   else{
-    if (!is.null(seq) & length(seq) != length(labels))
-      stop("Length of argument 'seq' different from number of treatments.")
-    if (is.numeric(seq) && any(is.na(seq)))
-      stop("Missing values not allowed in argument 'seq'.")
-    if (length(unique(seq)) != length(seq))
-      stop("Values for argument 'seq' must all be disparate.")
-    if (is.numeric(seq) && any(!(seq %in% (1:length(labels)))))
-      stop(paste("Numeric vector 'seq' must be a permutation of the integers from 1 to ",
-                 length(labels), ".", sep=""))
-    if (is.character(seq) && any(!(seq %in% labels)))
-      stop(paste("Character vector 'seq' must be a permutation of the following values:\n  ",
-                 paste(paste("'", labels, "'", sep=""),
-                       collapse=" - "), sep=""))
-    ##
-    else if (is.numeric(seq))
-      seq1 <- seq
-    else if (is.character(seq))
-      seq1 <- match(seq, labels)
+    rn <- rownames(x$TE.fixed)
+    seq1 <- charmatch(setseq(seq, rn), rn)
   }
   ##
   A.matrix <- A.matrix[seq1, seq1]
   N.matrix <- N.matrix[seq1, seq1]
+  ##
+  if (thick=="matrix")
+    W.matrix <- W.matrix[seq1, seq1]
   ##
   labels <- labels[seq1]
   
@@ -175,15 +162,15 @@ netgraph <- function(x, seq=x$seq,
   
   ## Generate dataset for plotting
   ##
-  pd <- data.frame(xpos, ypos, labels)
+  pd <- data.frame(xpos, ypos, labels, seq)
   pd$adj1 <- NA
   pd$adj2 <- NA
   ##
-  pd$adj1[pd$xpos>0] <- 0
+  pd$adj1[pd$xpos>=0] <- 0
   pd$adj1[pd$xpos<0] <- 1
   ##
   pd$adj2[pd$ypos>0] <- 0
-  pd$adj2[pd$ypos<0] <- 1
+  pd$adj2[pd$ypos<=0] <- 1
   ##
   offset <- offset*2*d
   ##
@@ -277,7 +264,9 @@ netgraph <- function(x, seq=x$seq,
         treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
         multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
         ##
-        pdm <- pd[pd$labels %in% multiarm.labels[[i]],]
+        pdm <- pd[pd$seq %in% multiarm.labels[[i]],]
+        if (nrow(pdm)==0)
+          pdm <- pd[pd$labels %in% multiarm.labels[[i]],]
         ##
         ## Clockwise ordering of polygon coordinates
         ##

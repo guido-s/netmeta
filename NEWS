@@ -1,3 +1,88 @@
+2015-02-04, version 0.7-0
+
+Title of R package changed.
+
+New function pairwise:
+- transforms data that are given in an arm-based format (e.g. input
+  for WinBUGS is of this format) to contrast-based format that can be
+  read by function netmeta
+
+New datasets:
+- dietaryfat (dataset with incidence rates as outcomes)
+- parkinson (continuous outcomes)
+- smoking (binary outcomes)
+
+Function netmeta:
+- implement a general check for correct number of comparisons for
+  multi-arm studies
+- use setseq function to check and set value of argument 'seq'
+- use setref function to check and set value of argument
+  'reference.group'
+- use chklevel function from R package meta to check levels of
+  confidence intervals
+- consider attribute 'sm' from R objects generated with R function
+  pairwise
+- function can be used for a pairwise meta-analysis (bug fix in
+  nma.ruecker function used internally)
+
+Function netgraph:
+- check that matrix 'thickness' (if provided) has same row and column
+  names as argument 'labels'
+- use setseq function to check and set value of argument 'seq'
+- stop with an error message if argument 'seq' or 'labels' is NULL
+
+Function netheat:
+- no net heat plot produced if (i) the number of designs is equal or
+  smaller than 2 or (ii) no between-design heterogeneity exists
+- unintentional warnings omitted
+
+Function forest.netmeta:
+- print a warning that the first treatment is used as reference if the
+  reference group is unspecified instead of producing an error
+- use setseq function to check and set value of argument 'seq'
+- use setref function to check and set value of argument
+  'reference.group'
+
+Function print.summary.netmeta:
+- print "." instead of "0" or "1" for diagonal elements of treatment
+  effect and confidence interval matrices
+- print "." instead of "0" or "1" for reference group (if provided)
+- use setref function to check and set value of argument
+  'reference.group'
+- use is.relative.effect function from R package meta to check if a
+  relative effect measure is used (argument 'sm')
+
+Function print.netmeta:
+- use setref function to check and set value of argument
+  'reference.group'
+- use is.relative.effect function from R package meta to check if a
+  relative effect measure is used (argument 'sm')
+
+Function summary.netmeta:
+- use setref function to check and set value of argument
+  'reference.group'
+
+Function decomp.tau and tau.within (used internally):
+- bug fix such that no error is produced in decomp.design and netheat
+  function for networks without heterogeneity and inconsistency
+
+Function print.decomp.design:
+- omit printing of information on between-designs Q statistic after
+  detaching of single designs if no between-design heterogeneity
+  exists
+- use format.tau function from R package meta to print "0" instead of
+  "< 0.0001" if tau-squared is zero
+
+New functions (used internally):
+- setseq - check and set argument 'seq' (and argument 'sortvar' in
+  forest.meta function)
+- setref - check and set argument 'reference.group'
+- chklist - check for a list
+
+New help pages for function pairwise and datasets dietaryfat,
+parkinson, and smoking.
+
+
 2014-07-29, version 0.6-0
 
 Function netgraph:

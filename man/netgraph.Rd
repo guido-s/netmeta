@@ -10,7 +10,7 @@
 
 \usage{
 netgraph(x, seq=x$seq,
-         labels=dimnames(x$A.matrix)[[1]],
+         labels=rownames(x$TE.fixed),
          cex=1, col="slateblue", offset=0.0175, scale=1.10,
          plastic, thickness, lwd=5, lwd.min=lwd/2.5, lwd.max=lwd*4,
          highlight=NULL, col.highlight="red2",
@@ -45,8 +45,8 @@ netgraph(x, seq=x$seq,
     comparisons should be in 3D look.}
   \item{thickness}{Either a character variable to determine the method
     to plot line widths (see Details) or a matrix of the same
-    dimension as argument \code{A.matrix} with information on line
-    width.}
+    dimension and row and column names as argument \code{A.matrix}
+    with information on line width.}
   \item{lwd}{A numeric for scaling the line width of comparisons.}
   \item{lwd.max}{Maximum line width in network graph. The connection
     with the largest value according to argument \code{thickness} will
@@ -71,7 +71,7 @@ netgraph(x, seq=x$seq,
     highlight multi-arm studies (0 means transparent and 1 means
     opaque).}
   \item{points}{A logical indicating whether points should be printed
-    at edges (i.e. treatments) of the network graph.}
+    at nodes (i.e. treatments) of the network graph.}
   \item{col.points, cex.points, pch.points}{Corresponding color, size,
     type for points.}
   \item{start.layout}{A character string indicating which starting
@@ -141,7 +141,7 @@ netgraph(x, seq=x$seq,
    \item Proportional to inverse standard error of fixed effect model
      comparing two treatments (\code{thickness="se.fixed"})
    \item Proportional to inverse standard error of random effects
-     model comparing two treatments (\code{thickness="se.fixed"})
+     model comparing two treatments (\code{thickness="se.random"})
    \item Weight from fixed effect model comparing two treatments
      (\code{thickness="w.fixed"})
    \item Weight from random effects model comparing two treatments
@@ -225,8 +225,8 @@ netgraph(net1, start="circle", iterate=TRUE, col.multiarm="purple")
 ## Network graph optimized, starting from a circle, with multi-arm
 ## study colored and all intermediate iteration steps visible
 ##
-netgraph(net1, start="circle", iterate=TRUE, col.multiarm="purple",
-         allfigures=TRUE)
+\dontrun{netgraph(net1, start="circle", iterate=TRUE, col.multiarm="purple",
+         allfigures=TRUE)}
 
 ## Network graph optimized, starting from Laplacian eigenvectors, with
 ## multi-arm study colored

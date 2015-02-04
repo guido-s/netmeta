@@ -210,7 +210,7 @@ nma.ruecker <- function(TE, seTE,
   rownames(TE.direct)   <- colnames(TE.direct) <- names.treat
   rownames(seTE.direct) <- colnames(seTE.direct) <- names.treat
   ##
-  C.matrix <- B.matrix[!duplicated(B.matrix),]
+  C.matrix <- B.matrix[!duplicated(B.matrix),,drop=FALSE]
   ##
   for (i in 1:dim(C.matrix)[1]){
     sel1 <- C.matrix[i,]==1

@@ -1,7 +1,7 @@
 export(netmeta,
        as.data.frame.netmeta, print.netmeta,
        summary.netmeta, print.summary.netmeta,
-       forest.netmeta,
+       forest.netmeta, pairwise,
        decomp.design, print.decomp.design,
        netheat, netgraph, netheat, netmeasures)
 
@@ -17,5 +17,9 @@ S3method(forest, netmeta)
 S3method(print, decomp.design)
 
 importFrom(meta, forest)
+importFrom(meta, metabin)
+importFrom(meta, metacont)
+importFrom(meta, metagen)
+importFrom(meta, metainc)
 
 importFrom(magic, adiag)

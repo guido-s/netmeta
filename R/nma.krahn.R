@@ -120,11 +120,13 @@ nma.krahn <- function(x, tau.preset=0){
     direct2 <- direct
   ##
   direct2 <- data.frame(direct2)
-
-
-  V.design <- diag(direct2$seTE.2arm^2)
-
-
+  
+  
+  V.design <- diag(direct2$seTE.2arm^2,
+                   nrow=length(direct2$seTE.2arm),
+                   ncol=length(direct2$seTE.2arm))
+  
+  
   if (multiarm){
     sp <- split(multistudies2, multistudies2$studlab)
     armM <- unlist(lapply(split(multistudies2$narms, multistudies2$studlab), function(x) x[1]))
@@ -228,7 +230,7 @@ nma.krahn <- function(x, tau.preset=0){
   rownames(X.full) <- trts.poss
   colnames(X.full) <- trts.poss[1:n-1]
   ##
-  X.obs2.design <- X.full[direct2$comparison,]
+  X.obs2.design <- X.full[direct2$comparison,, drop=FALSE]
 
 
   if (multiarm){

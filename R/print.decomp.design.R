@@ -21,8 +21,8 @@ print.decomp.design <- function(x,
   Q.detach$pval <- meta:::format.p(Q.detach$pval)
   ##
   Q.inc.random$Q <- round(Q.inc.random$Q, digits)
-  Q.inc.random$tau2.within <- meta:::format.p(Q.inc.random$tau.within^2)
-  Q.inc.random$tau.within  <- meta:::format.p(Q.inc.random$tau.within)
+  Q.inc.random$tau2.within <- meta:::format.tau(Q.inc.random$tau.within^2)
+  Q.inc.random$tau.within  <- meta:::format.tau(Q.inc.random$tau.within)
   Q.inc.random$pval <- meta:::format.p(Q.inc.random$pval)
   ##
   nam <- names(Q.decomp)
@@ -47,10 +47,12 @@ print.decomp.design <- function(x,
                              colnames(Q.design))
   prmatrix(Q.design, quote=FALSE, right=TRUE)
 
-  cat("\nBetween-designs Q statistic after detaching of single designs\n\n")
-  dimnames(Q.detach) <- list(rep("", dim(Q.detach)[[1]]),
-                             colnames(Q.detach))
-  prmatrix(Q.detach, quote=FALSE, right=TRUE)
+  if (nrow(Q.detach) > 0){
+    cat("\nBetween-designs Q statistic after detaching of single designs\n\n")
+    dimnames(Q.detach) <- list(rep("", dim(Q.detach)[[1]]),
+                               colnames(Q.detach))
+    prmatrix(Q.detach, quote=FALSE, right=TRUE)
+  }
 
   cat(paste("\nQ statistic to assess consistency under the assumption of\n",
             "a full design-by-treatment interaction random effects model\n\n",

@@ -25,9 +25,15 @@ netheat <- function(x, random=FALSE, tau.preset=NULL, ...){
     decomp <- decomp.design(x, tau.preset=tau.within) 
     residuals <- decomp$residuals.inc.detach.random.preset 
     Q.inc.design <- decomp$Q.inc.design.random.preset 
-  } 
+  }
   
-  ##
+  
+  if (nmak$d<=2){
+    warning("Net heat plot not available due to small number of designs: ", nmak$d)
+    return(invisible(NULL))
+  }
+  
+  
   H <- nmak$H 
   V <- nmak$V 
   design <- nmak$design 
@@ -40,12 +46,17 @@ netheat <- function(x, random=FALSE, tau.preset=NULL, ...){
   diff <- inc - Q.inc.design.typ
   colnames(diff) <- colnames(Q.inc.design.typ)
   rownames(diff) <- rownames(residuals)
+  ##
+  if (all(is.na(diff))){
+    warning("Net heat plot not available as no between-design heterogeneity exists.")
+    return(invisible(NULL))
+  }
   
   
   t1 <- -1*diff
   wi <- which(apply(t1,2,function(x) sum(is.na(x))==nrow(t1)))
   if (length(wi)>0){
-    t1 <- t1[-wi, -wi]
+    t1 <- t1[-wi, -wi, drop=FALSE]
   }
   dmat <- t1
   d1 <- dist(dmat, method="manhattan")
@@ -107,7 +118,7 @@ netheat <- function(x, random=FALSE, tau.preset=NULL, ...){
     design.comb <- rep(NA, length(as.character(design2$comparison)))
     ##
     for (i in 1:(length(as.character(design2$comparison)))){
-      if((((design2$na)[h1$order])[i])>2)
+      if((((design2$narms)[h1$order])[i])>2)
         design.comb[i] <- paste(as.character(design2$comparison)[h1$order][i],
                                 as.character(design2$design)[h1$order][i], sep="_")
       else

@@ -68,7 +68,12 @@ tau.within <- function(x){
     ##
     trace1 <- sum(diag(W0%*%V.0))
     trace2 <- sum(diag(C%*%t(X)%*%W0%*%V.0%*%W0%*%X))
-    tausq <- max(0,(Q-nrow(V)+ncol(X))/(trace1-trace2))
+    ##
+    if (trace1==trace2)
+      tausq <- 0
+    else
+      tausq <- max(0, (Q-nrow(V)+ncol(X))/(trace1-trace2))
+    ##
     sqrt(tausq)
   }
   

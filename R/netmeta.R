@@ -1,7 +1,7 @@
 netmeta <- function(TE, seTE,
                     treat1, treat2,
                     studlab, data=NULL, subset=NULL,
-                    sm="",
+                    sm,
                     level=0.95, level.comb=0.95,
                     comb.fixed=TRUE, comb.random=FALSE,
                     reference.group="",
@@ -71,44 +71,25 @@ netmeta <- function(TE, seTE,
     stop("Treatments must be different (arguments 'treat1' and 'treat2').")
   
   
-  tlevs <- sort(unique(c(treat1, treat2)))
+  labels <- sort(unique(c(treat1, treat2)))
   ##
-  if (!is.null(seq)){
-    if (length(tlevs)!=length(seq))
-      stop("Length of argument 'seq' different from number of treatments.")
-    else{
-      if (is.numeric(seq)){
-        if (any(is.na(seq)))
-          stop("Missing values not allowed in argument 'seq'.")
-        if (length(unique(seq)) != length(seq))
-          stop("Values for argument 'seq' must all be disparate.")
-        if (any(!(seq %in% (1:length(tlevs)))))
-          stop(paste("Argument 'seq' must be a permutation of the integers from 1 to ",
-                     length(tlevs), ".", sep=""))
-        seq <- tlevs[seq]
-      }
-      else if (is.character(seq)){
-        if (length(unique(seq)) != length(seq))
-          stop("Values for argument 'seq' must all be disparate.")
-        if (any(!(seq %in% tlevs)))
-          stop(paste("Argument 'seq' must be a permutation of the following values:\n  ",
-                     paste(paste("'", tlevs, "'", sep=""),
-                           collapse=" - "), sep=""))
-      }
-    }
+  if (!is.null(seq))
+    seq <- setseq(seq, labels)
+  else{
+    seq <- labels
+    if (is.numeric(seq))
+      seq <- as.character(seq)
   }
-  else
-    seq <- tlevs
   
   
   ##
   ## Check for correct number of comparisons
-  ## Assuming that maximum number of treatments per study is 8
   ##
-  treatments <- 2:8
-  narms.possible <- treatments*(treatments-1)/2
+  is.wholenumber <-
+    function(x, tol=.Machine$double.eps^0.5)
+      abs(x - round(x)) < tol
   tabnarms <- table(studlab)
-  sel.narms <- !(tabnarms %in% narms.possible)
+  sel.narms <- !is.wholenumber((1 + sqrt(8*tabnarms + 1))/2)
   ##
   if (sum(sel.narms)==1)
     stop(paste("Study '", names(tabnarms)[sel.narms],
@@ -121,6 +102,26 @@ netmeta <- function(TE, seTE,
                      collapse=", "),
                "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
                sep=""))
+  
+  
+  ##
+  ## Check for levels of confidence interval
+  ##
+  meta:::chklevel(level)
+  meta:::chklevel(level.comb)
+  
+  
+  ##
+  ## Check value for reference group
+  ##
+  if (is.null(all.treatments))
+    if (reference.group=="")
+      all.treatments <- TRUE
+    else
+      all.treatments <- FALSE
+  ##
+  if (reference.group !="")
+    reference.group <- setref(reference.group, labels)
   
   
   ##
@@ -139,29 +140,16 @@ netmeta <- function(TE, seTE,
   
   
   ##
-  ## Check for levels of confidence interval
+  ## Check value for argument 'sm'
   ##
-  if (!is.numeric(level) | length(level)!=1)
-    stop("parameter 'level' must be a numeric of length 1")
-  if (level <= 0 | level >= 1)
-    stop("parameter 'level': no valid level for confidence interval")
-  
-  ##
-  ## Check for levels of confidence interval
-  ##
-  if (!is.numeric(level.comb) | length(level.comb)!=1)
-    stop("parameter 'level.comb' must be a numeric of length 1")
-  if (level.comb <= 0 | level.comb >= 1)
-    stop("parameter 'level.comb': no valid level.comb for confidence interval")
-
-  if (is.null(all.treatments)){
-    if (reference.group=="")
-      all.treatments <- TRUE
+  if (missing(sm))
+    if (!is.null(data) && !is.null(attr(data, "sm")))
+      sm <- attr(data, "sm")
     else
-      all.treatments <- FALSE
-  }
+      sm <- ""
   
   
+  ##
   ## Generate ordered data set, with added numbers of arms per study
   ##
   p0 <- prepare(TE, seTE, treat1, treat2, studlab)

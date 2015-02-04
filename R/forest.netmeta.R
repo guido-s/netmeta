@@ -31,22 +31,13 @@ forest.netmeta <- function(x,
       smlab <- "Random Effects Model"
   }
 
+  labels <- colnames(TE)
+  ##
   if (!is.null(sortvar)){
     if (is.character(sortvar)){
-      tlevs <- rownames(TE)
-      ##
-      if (length(tlevs)!=length(sortvar))
-        stop("Length of argument 'sortvar' different from number of treatments.")
-      else{
-        if (length(unique(sortvar)) != length(sortvar))
-          stop("Values for argument 'sortvar' must all be disparate.")
-        if (any(!(sortvar %in% tlevs)))
-          stop(paste("Argument 'sortvar' must be a permutation of the following values:\n  ",
-                     paste(paste("'", tlevs, "'", sep=""),
-                           collapse=" - "), sep=""))
-      }
-      TE <- TE[sortvar, sortvar]
-      seTE <- seTE[sortvar, sortvar]
+      seq <- setseq(sortvar, labels)
+      TE <- TE[seq,seq]
+      seTE <- seTE[seq,seq]
     }
     else{
       o <- order(sortvar)
@@ -56,10 +47,12 @@ forest.netmeta <- function(x,
   }
   
   
-  if (all(colnames(TE)!=reference.group))
-    stop(paste("Argument 'reference.group' must match any of the following values: ",
-               paste(paste("'", colnames(TE), "'", sep=""),
-                     collapse=" - "), sep=""))
+  if (reference.group==""){
+    warning("First treatment used as reference as argument 'reference.group' is unspecified.")
+    reference.group <- labels[1]
+  }
+  else
+    reference.group <- setref(reference.group, labels)
   ##
   TE.b <- TE[,colnames(TE)==reference.group]
   seTE.b <- seTE[,colnames(seTE)==reference.group]

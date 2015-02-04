@@ -20,7 +20,7 @@ print.summary.netmeta <- function(x,
   
   sm.lab <- sm
   ##
-  if (logscale & (sm == "RR" | sm == "OR" | sm == "HR"))
+  if (logscale & meta:::is.relative.effect(sm))
     sm.lab <- paste("log", sm, sep="")
 
   ci.lab <- paste(round(100*x$level.comb, 1), "%-CI", sep="")
@@ -49,7 +49,11 @@ print.summary.netmeta <- function(x,
   }
   
   
-  if (!logscale & (sm == "RR" | sm == "OR" | sm == "HR")){
+  noeffect <- 0
+  ##
+  if (!logscale & meta:::is.relative.effect(sm)){
+    noeffect <- 1
+    ##
     TE.fixed    <- exp(TE.fixed)
     lowTE.fixed <- exp(lowTE.fixed)
     uppTE.fixed <- exp(uppTE.fixed)
@@ -80,6 +84,9 @@ print.summary.netmeta <- function(x,
   if (reference.group!="" & missing(all.treatments))
     all.treatments <- FALSE
   
+  if (reference.group !="")
+    reference.group <- setref(reference.group, rownames(TE.fixed))
+  
   if (comb.fixed|comb.random){
     cat(paste("Number of studies: k=", k, "\n", sep=""))
     cat(paste("Number of treatments: n=", n, "\n", sep=""))
@@ -90,11 +97,20 @@ print.summary.netmeta <- function(x,
         cat("\nFixed effect model\n")
       if (all.treatments){
         cat("\nTreatment estimate (sm='", sm.lab, "'):\n", sep="")
-        print(TE.fixed)
+        TEf <- format(TE.fixed)
+        if (all(diag(TE.fixed)==noeffect))
+          diag(TEf) <- "."
+        prmatrix(TEf, quote=FALSE, right=TRUE)
         cat("\nLower ", 100*x$fixed$level, "%-confidence limit:\n", sep="")
-        print(lowTE.fixed)
+        lowTEf <- format(lowTE.fixed)
+        if (all(diag(lowTE.fixed)==noeffect))
+          diag(lowTEf) <- "."
+        prmatrix(lowTEf, quote=FALSE, right=TRUE)
         cat("\nUpper ", 100*x$fixed$level, "%-confidence limit:\n", sep="")
-        print(uppTE.fixed)
+        uppTEf <- format(uppTE.fixed)
+        if (all(diag(uppTE.fixed)==noeffect))
+          diag(uppTEf) <- "."
+        prmatrix(uppTEf, quote=FALSE, right=TRUE)
       }
       if (reference.group!=""){
         if (all(colnames(TE.fixed)!=reference.group))
@@ -110,6 +126,9 @@ print.summary.netmeta <- function(x,
                      p.ci(format(lowTE.fixed.b), format(uppTE.fixed.b)))
         dimnames(res) <-
           list(colnames(TE.fixed), c(sm.lab, ci.lab))
+        ##
+        if (TE.fixed.b[rownames(res)==reference.group]==noeffect)
+          res[rownames(res)==reference.group,] <- c(".", ".")
         
         cat("\nTreatment estimate (sm='", sm.lab,
             "', reference.group='", reference.group, "'):\n", sep="")
@@ -123,11 +142,20 @@ print.summary.netmeta <- function(x,
         cat("\nRandom effects model\n")
       if (all.treatments){
         cat("\nTreatment estimate (sm='", sm.lab, "'):\n", sep="")
-        print(TE.random)
+        TEr <- format(TE.random)
+        if (all(diag(TE.random)==noeffect))
+          diag(TEr) <- "."
+        prmatrix(TEr, quote=FALSE, right=TRUE)
         cat("\nLower ", 100*x$random$level, "%-confidence limit:\n", sep="")
-        print(lowTE.random)
+        lowTEr <- format(lowTE.random)
+        if (all(diag(lowTE.random)==noeffect))
+          diag(lowTEr) <- "."
+        prmatrix(lowTEr, quote=FALSE, right=TRUE)
         cat("\nUpper ", 100*x$random$level, "%-confidence limit:\n", sep="")
-        print(uppTE.random)
+        uppTEr <- format(uppTE.random)
+        if (all(diag(uppTE.random)==noeffect))
+          diag(uppTEr) <- "."
+        prmatrix(uppTEr, quote=FALSE, right=TRUE)
       }
       if (reference.group!=""){
         if (all(colnames(TE.random)!=reference.group))
@@ -142,6 +170,10 @@ print.summary.netmeta <- function(x,
         res <- cbind(format.TE(TE.random.b, na=TRUE),
                      p.ci(format(lowTE.random.b), format(uppTE.random.b)))
         dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab))
+        ##
+        if (TE.random.b[rownames(res)==reference.group]==noeffect)
+          res[rownames(res)==reference.group,] <- c(".", ".")
+        
         
         cat("\nTreatment estimate (sm='", sm.lab,
             "', reference.group='", reference.group, "'):\n", sep="")

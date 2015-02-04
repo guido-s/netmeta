@@ -128,7 +128,7 @@ stress <- function(x,
   }
   
   
-  res <- data.frame(labels=dimnames(As.matrix)[[1]],
+  res <- data.frame(labels=rownames(As.matrix),
                     x=coord.new[,1], y=coord.new[,2])
   ##
   attr(res, "convergence") <- convergence

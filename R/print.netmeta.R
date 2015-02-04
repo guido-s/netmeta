@@ -26,7 +26,7 @@ print.netmeta <- function(x,
   
   sm.lab <- sm
   ##
-  if (logscale & (sm == "RR" | sm == "OR" | sm == "HR"))
+  if (logscale & meta:::is.relative.effect(sm))
     sm.lab <- paste("log", sm, sep="")
 
   
@@ -85,7 +85,7 @@ print.netmeta <- function(x,
   lowTE.f <- tsum$comparison.nma.fixed$lower
   uppTE.f <- tsum$comparison.nma.fixed$upper
   ##
-  if (!logscale & (sm == "RR" | sm == "OR" | sm == "HR")){
+  if (!logscale & meta:::is.relative.effect(sm)){
     TE.f    <- exp(TE.f)
     lowTE.f <- exp(lowTE.f)
     uppTE.f <- exp(uppTE.f)
@@ -100,7 +100,7 @@ print.netmeta <- function(x,
   lowTE.r <- tsum$comparison.nma.random$lower
   uppTE.r <- tsum$comparison.nma.random$upper
   ##
-  if (!logscale & (sm == "RR" | sm == "OR" | sm == "HR")){
+  if (!logscale & meta:::is.relative.effect(sm)){
     TE.r    <- exp(TE.r)
     lowTE.r <- exp(lowTE.r)
     uppTE.r <- exp(uppTE.r)
@@ -148,6 +148,11 @@ print.netmeta <- function(x,
   
   if (reference.group!="" & missing(all.treatments))
     all.treatments <- FALSE
+  
+  
+  if (reference.group !="")
+    reference.group <- setref(reference.group, rownames(x$A.matrix))
+  
   
   if (ma)
     print(tsum, digits=digits,

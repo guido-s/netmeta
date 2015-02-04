@@ -65,6 +65,9 @@ summary.netmeta <- function(object,
   if (reference.group!="" & missing(all.treatments))
     all.treatments <- FALSE
   
+  if (reference.group !="")
+    reference.group <- setref(reference.group, rownames(object$A.matrix))
+  
   res$reference.group <- reference.group
   res$all.treatments <- all.treatments
   ##
