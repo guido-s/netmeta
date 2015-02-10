@@ -10,7 +10,7 @@ New function pairwise:
 New datasets:
 - dietaryfat (dataset with incidence rates as outcomes)
 - parkinson (continuous outcomes)
-- smoking (binary outcomes)
+- smokingcessation (binary outcomes)
 
 Function netmeta:
 - implement a general check for correct number of comparisons for
@@ -80,7 +80,7 @@ New functions (used internally):
 - chklist - check for a list
 
 New help pages for function pairwise and datasets dietaryfat,
-parkinson, and smoking.
+parkinson, and smokingcessation.
 
 
 2014-07-29, version 0.6-0
