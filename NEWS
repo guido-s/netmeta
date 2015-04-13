@@ -1,4 +1,13 @@
+2015-mm-yy, version 0.7-1
+
+Function print.netmeta:
+- minor change in printout (old: "Data utilised in network
+  meta-analysis ..."; new: "Results ...")
+
+
 2015-02-04, version 0.7-0
+
+Version of R package meta must be larger or equal 4.0-0
 
 Title of R package changed.
 

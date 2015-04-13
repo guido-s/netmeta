@@ -131,7 +131,7 @@ print.netmeta <- function(x,
   
   
   if (comb.fixed){
-    cat("Data utilised in network meta-analysis (fixed effect model):\n\n")
+    cat("Results (fixed effect model):\n\n")
     
     prmatrix(res.f[order(sortvar),], quote=FALSE, right=TRUE)
     
@@ -139,7 +139,7 @@ print.netmeta <- function(x,
   }
   
   if (comb.random){
-    cat("Data utilised in network meta-analysis (random effects model):\n\n")
+    cat("Results (random effects model):\n\n")
     
     prmatrix(res.r[order(sortvar),], quote=FALSE, right=TRUE)
     
