@@ -113,20 +113,23 @@ netgraph(x, seq=x$seq,
   \item{\dots}{Additional graphical arguments.}
 }
 
-\details{ The network is laid out in the plane, where the nodes in the
-  graph layout correspond to the treatments and edges display the
-  observed treatment comparisons. For the default setting, nodes are
-  placed on a circle.  Other starting layouts are "eigen", "prcomp",
-  and "random". If \code{iterate=TRUE}, the layout is further
-  optimized using the stress majorization algorithm. This algorithm
-  specifies an 'ideal' distance (e.g., the graph distance) between two
-  nodes in the plane. In the optimal layout, these distances are best
-  approximated in the sense of least squares. Starting from an initial
-  layout, the optimum is approximated in an iterative process called
-  stress majorization (Kamada and Kawai 1989, Michailidis and de Leeuw
-  2001, Hu 2012). The starting layout can be chosen as a circle or
-  coming from eigenvectors of the Laplacian matrix (corresponding to
-  Hall's algorithm, Hall 1970), calculated in different ways, or
+\details{
+
+  The network is laid out in the plane, where the nodes in the graph
+  layout correspond to the treatments and edges display the observed
+  treatment comparisons. For the default setting, nodes are placed on
+  a circle.  Other starting layouts are "eigen", "prcomp", and
+  "random" (Rücker & Schwarzer 2015). If \code{iterate=TRUE}, the
+  layout is further optimized using the stress majorization
+  algorithm. This algorithm specifies an 'ideal' distance (e.g., the
+  graph distance) between two nodes in the plane. In the optimal
+  layout, these distances are best approximated in the sense of least
+  squares. Starting from an initial layout, the optimum is
+  approximated in an iterative process called stress majorization
+  (Kamada and Kawai 1989, Michailidis and de Leeuw 2001, Hu 2012). The
+  starting layout can be chosen as a circle or coming from
+  eigenvectors of the Laplacian matrix (corresponding to Hall's
+  algorithm, Hall 1970), calculated in different ways, or
   random. Moreover, it can be chosen whether the iteration steps are
   shown (argument \code{allfigures=TRUE}).
 
@@ -164,11 +167,6 @@ netgraph(x, seq=x$seq,
 }
 
 \references{
-  Krahn U, Binder H, König J (2013),
-  A graphical tool for locating inconsistency in network
-  meta-analyses.
-  \emph{BMC Medical Research Methodology}, \bold{13}, 35.
-  
   Hall, K.M. (1970).
   An r-dimensional quadratic placement algorithm.
   \emph{Management Science}, \bold{17}, 219--229.
@@ -182,9 +180,19 @@ netgraph(x, seq=x$seq,
   An algorithm for drawing general undirected graphs.
   \emph{Information Processing Letters}, \bold{31}(1), 7--15.
 
+  Krahn U, Binder H, König J (2013),
+  A graphical tool for locating inconsistency in network
+  meta-analyses.
+  \emph{BMC Medical Research Methodology}, \bold{13}, 35.
+  
   Michailidis, G. and de Leeuw, J. (2001).
   Data visualization through graph drawing.
   \emph{Computational Statistics}, \bold{16}(3), 435--450.
+
+  Rücker G & Schwarzer G (2015),
+  Automated drawing of network plots in network meta-analysis.
+  \emph{Research Synthesis Methods},
+  First published online 2015 Jun 9.
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Ulrike Krahn \email{krahnu@uni-mainz.de}, Jochem König \email{koenigjo@uni-mainz.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}

@@ -131,7 +131,7 @@ netmeta <- function(TE, seTE,
   ##
   if (any(wo)){
     if (warn)
-      warning("Treatments within a comparison have been re-sorted in increasing order.")
+      warning("Note, treatments within a comparison have been re-sorted in increasing order.", call.=FALSE)
     TE[wo] <- -TE[wo]
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]

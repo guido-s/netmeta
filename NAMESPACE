@@ -3,7 +3,8 @@ export(netmeta,
        summary.netmeta, print.summary.netmeta,
        forest.netmeta, pairwise,
        decomp.design, print.decomp.design,
-       netheat, netgraph, netheat, netmeasures)
+       netheat, netgraph, netheat, netmeasures,
+       netrank, print.netrank)
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
@@ -15,6 +16,7 @@ S3method(summary, netmeta)
 S3method(print, summary.netmeta)
 S3method(forest, netmeta)
 S3method(print, decomp.design)
+S3method(print, netrank)
 
 importFrom(meta, forest)
 importFrom(meta, metabin)

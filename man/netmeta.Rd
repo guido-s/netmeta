@@ -100,7 +100,7 @@
   variances. For this study, treatment effects and standard errors
   must be provided for each of \emph{p}(\emph{p} - 1)/2 possible
   comparisons. For instance, a three-arm study contributes three
-  pairwise comparisons, a four-arm study even six pairwise comparisons
+  pairwise comparisons, a four-arm study even six pairwise comparisons.
   
   A simple random effects model assuming that a constant heterogeneity
   variance is added to each comparison of the network can be defined
@@ -209,7 +209,7 @@
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
 Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\code{\link{forest.netmeta}}, \code{\link{metagen}}}
+\seealso{\code{\link{pairwise}}, \code{\link{forest.netmeta}}, \code{\link{metagen}}}
 
 \examples{
 
