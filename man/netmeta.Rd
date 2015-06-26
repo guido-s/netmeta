@@ -95,12 +95,21 @@
   within-study correlation by reweighting all comparisons of each
   multi-arm study.
 
-  All pairwise comparisons must be provided for a multi-arm
-  study. Consider a multi-arm study of \emph{p} treatments with known
-  variances. For this study, treatment effects and standard errors
-  must be provided for each of \emph{p}(\emph{p} - 1)/2 possible
-  comparisons. For instance, a three-arm study contributes three
-  pairwise comparisons, a four-arm study even six pairwise comparisons.
+  Data entry for this function is in \emph{contrast-based} format,
+  that is, data are given as contrasts (differences) between two
+  treatments (argument \code{TE}) with standard error (argument
+  \code{seTE}). Particularly, all pairwise comparisons must be
+  provided for a multi-arm study. Consider a multi-arm study of
+  \emph{p} treatments with known variances.  For this study, treatment
+  effects and standard errors must be provided for each of
+  \emph{p}(\emph{p} - 1)/2 possible comparisons. For instance, a
+  three-arm study contributes three pairwise comparisons, a four-arm
+  study even six pairwise comparisons.
+
+  If data are given in \emph{arm-based} format, that is, data are
+  given as treatment effect and standard error for each treatment arm
+  separately, function \code{\link{pairwise}} can be used to transform
+  them into contrast-based format.
   
   A simple random effects model assuming that a constant heterogeneity
   variance is added to each comparison of the network can be defined
@@ -114,8 +123,8 @@
 
 \value{
   An object of class \code{c("netmeta")} with corresponding
-  \code{print}, \code{summary}, \code{forest} function. The object is
-  a list containing the following components:
+  \code{print}, \code{summary}, \code{forest}, and \code{netrank}
+  function. The object is a list containing the following components:
   \item{TE, seTE, studlab, treat1, treat2, sm, level, level.comb}{As
     defined above.}
   \item{comb.fixed, comb.random, seq, tau.preset, title, warn}{As defined
@@ -209,7 +218,7 @@
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
 Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\code{\link{pairwise}}, \code{\link{forest.netmeta}}, \code{\link{metagen}}}
+\seealso{\code{\link{pairwise}}, \code{\link{forest.netmeta}}, \code{\link{netrank}}, \code{\link{metagen}}}
 
 \examples{
 
