@@ -21,8 +21,9 @@
 
 \arguments{
   \item{TE}{Estimate of treatment effect, i.e. difference between
-   first and second treatment (e.g. log odds ratio or mean
-   difference).}
+   first and second treatment (e.g. log odds ratio, mean difference,
+   or log hazard ratio).}
+   
   \item{seTE}{Standard error of treatment estimate.}
   \item{treat1}{Label/Number for first treatment.}
   \item{treat2}{Label/Number for second treatment.}
@@ -31,7 +32,7 @@
   \item{subset}{An optional vector specifying a subset of studies to be used.}
   \item{sm}{A character string indicating underlying summary measure,
     e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"AS"},
-    \code{"MD"}, \code{"SMD"}.}
+    \code{"MD"}, \code{"SMD"}, or \code{"HR"}.}
   \item{level}{The level used to calculate confidence intervals for
     individual comparisons.}
   \item{level.comb}{The level used to calculate confidence intervals for
