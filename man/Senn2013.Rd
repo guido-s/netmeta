@@ -51,28 +51,28 @@
 \examples{
 data(Senn2013)
 
-##
-## Fixed effect model (default)
-##
+#
+# Fixed effect model (default)
+#
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data=Senn2013)
 net1
 net1$Q.decomp
 
 
-##
-## Comparison with reference group
-##
+#
+# Comparison with reference group
+#
 netmeta(TE, seTE, treat1, treat2, studlab, data=Senn2013, 
         reference="plac")
 
-##
-## Forest plot
-##
+#
+# Forest plot
+#
 forest(net1, ref="plac")
 
-##
-## Random effects model
-##
+#
+# Random effects model
+#
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab, data=Senn2013,
                 comb.random = TRUE)
 net2

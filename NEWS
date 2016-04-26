@@ -1,7 +1,75 @@
-2015-11-11, version 0.8-1
+2016-04-26, version 0.9-0
+
+New functions:
+- netdistance (calculate distance matrix; replacement for internal
+  function nodedist)
+- netconnection (Get connectivity information for network)
+- print.netconnection (corresponding print function)
+
+Internal function nodedist removed (replaced by netdistance function)
+
+Import functions from R package rgl (for 3-D plots)
+
+New dataset Woods2010 (use long format in pairwise function)
+
+Function netmeta:
+- check connectivity of network and stop with informative error
+  message if network is not fully connected
+- new list components:
+  'Cov.fixed' (variance-covariance matrix for fixed effect model)
+  'Cov.random' (variance-covariance matrix for random effects model)
+
+Function pairwise:
+- extension to long data format (see example on help page)
+
+Function netmeta:
+- new arguments 'dim', 'eig3', and 'zpos' to generate 3-D network
+  plots
+
+Function stress (used internally):
+- extension to generate 3-D network plots
+- use netdistance function instead of nodedist
+
+Function nma.ruecker (used internally):
+- use of netmeta function does not result in an error for networks
+  without heterogeneity / inconsistency, i.e. networks with zero
+  degrees of freedom (e.g. a star-shaped network with only a single
+  study for each comparison; simple example: single comparisons A-B,
+  A-C, A-D)
+- calculate variance-covariance matrix
+
+Function print.netrank:
+- print title of meta-analysis (if available)
+
+Function print.summary.netmeta:
+- print "--" instead of "< 0.0001" in networks without heterogeneity
+  / inconsistency
+- print "0" instead of "< 0.0001" if tau-squared is zero
+- print 'p-value' instead of 'p.value'
+
+Function print.decomp.design:
+- print 'p-value' instead of 'p.value'
 
 Help page of netmeta function:
+- more details on contrast- and arm-based data format
+- reference to book "Meta-Analysis with R" and Rücker & Schwarzer (2014) added
 - add information that hazard ratio is a possible summary measure
+- change error in description of adjustment in random effects model
+
+Help page of netgraph function:
+- example for 3-D network plot added
+
+Help page of netrank function:
+- reference to Rücker & Schwarzer (2015) updated
+
+Help page of pairwise function:
+- description on use of long data format added
+- more information on additional arguments for meta-analysis functions
+
+New help pages:
+- netconnection, print.netconnection
+- netdistance
+- Wooks2010 dataset
 
 
 2015-06-26, version 0.8-0

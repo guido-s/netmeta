@@ -23,7 +23,6 @@
   \item{TE}{Estimate of treatment effect, i.e. difference between
    first and second treatment (e.g. log odds ratio, mean difference,
    or log hazard ratio).}
-   
   \item{seTE}{Standard error of treatment estimate.}
   \item{treat1}{Label/Number for first treatment.}
   \item{treat2}{Label/Number for second treatment.}
@@ -56,6 +55,9 @@
 }
 
 \details{
+  Network meta-analysis using R package \bold{netmeta} is described in
+  detail in Schwarzer et al. (2015), Chapter 8.
+
   Let \emph{n} be the number of different treatments in a network and
   let \emph{m} be the number of existing comparisons (edges) between
   the treatments. If there are only two-arm studies, \emph{m} is the
@@ -85,7 +87,7 @@
   multi-arm studies, the treatment effects on different comparisons
   are not independent, but correlated. This is accounted for by
   reweighting all comparisons of each multi-arm study. The method is
-  described in Rücker (2012).
+  described in Rücker (2012) and Rücker and Schwarzer (2014).
 
   Comparisons belonging to multi-arm studies are identified by
   identical study labels (argument \code{studlab}). It is therefore
@@ -99,33 +101,47 @@
   Data entry for this function is in \emph{contrast-based} format,
   that is, data are given as contrasts (differences) between two
   treatments (argument \code{TE}) with standard error (argument
-  \code{seTE}). Particularly, all pairwise comparisons must be
-  provided for a multi-arm study. Consider a multi-arm study of
-  \emph{p} treatments with known variances.  For this study, treatment
-  effects and standard errors must be provided for each of
-  \emph{p}(\emph{p} - 1)/2 possible comparisons. For instance, a
-  three-arm study contributes three pairwise comparisons, a four-arm
-  study even six pairwise comparisons.
-
-  If data are given in \emph{arm-based} format, that is, data are
-  given as treatment effect and standard error for each treatment arm
-  separately, function \code{\link{pairwise}} can be used to transform
-  them into contrast-based format.
+  \code{seTE}). In principle, meta-analysis functions from R package
+  \bold{meta}, e.g. \code{\link{metabin}} for binary outcomes or
+  \code{\link{metacont}} for continuous outcomes, can be used to
+  calculate treatment effects separately for each treatment comparison
+  which is a rather tedious enterprise. If data are provided in
+  \emph{arm-based} format, that is, data are given for each treatment
+  arm separately (e.g. number of events and participants for binary
+  outcomes), a much more convenient way to transform data into
+  contrast-based form is available. Function \code{\link{pairwise}}
+  can automatically transform data with binary outcomes (using the
+  \code{\link{metabin}} function from R package \bold{meta}),
+  continuous outcomes (\code{\link{metacont}} function), incidence
+  rates (\code{\link{metainc}} function), and generic outcomes
+  (\code{\link{metagen}} function). Additional arguments of these
+  functions can be provided, e.g., to calculate Hedges' \emph{g} or
+  Cohen's \emph{d} for continuous outcomes (see help page of function
+  \code{\link{pairwise}}).
+  
+  Note, all pairwise comparisons must be provided for a multi-arm
+  study. Consider a multi-arm study of \emph{p} treatments with known
+  variances.  For this study, treatment effects and standard errors
+  must be provided for each of \emph{p}(\emph{p} - 1)/2 possible
+  comparisons. For instance, a three-arm study contributes three
+  pairwise comparisons, a four-arm study even six pairwise
+  comparisons. Function \code{\link{pairwise}} automatically
+  calculates all pairwise comparisons for multi-arm studies.
   
   A simple random effects model assuming that a constant heterogeneity
   variance is added to each comparison of the network can be defined
   via a generalised methods of moments estimate of the between-studies
   variance tau^2 (Jackson et al., 2012). This is added to the observed
-  sampling variance seTE^2 of each comparison in the network (after
+  sampling variance seTE^2 of each comparison in the network (before
   appropriate adjustment for multi-arm studies). Then, as in standard
   pairwise meta-analysis, the procedure is repeated with the resulting
   enlarged standard errors.
 }
 
 \value{
-  An object of class \code{c("netmeta")} with corresponding
-  \code{print}, \code{summary}, \code{forest}, and \code{netrank}
-  function. The object is a list containing the following components:
+  An object of class \code{netmeta} with corresponding \code{print},
+  \code{summary}, \code{forest}, and \code{netrank} function. The
+  object is a list containing the following components:
   \item{TE, seTE, studlab, treat1, treat2, sm, level, level.comb}{As
     defined above.}
   \item{comb.fixed, comb.random, seq, tau.preset, title, warn}{As defined
@@ -190,6 +206,8 @@
   \item{G.matrix}{Matrix with variances and covariances of comparisons
     (\emph{m}x\emph{m}). G is defined as \strong{BL+B^{t}}.}
   \item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as \strong{H=GW=BL+B^{t}W}.}
+  \item{Cov.fixed}{Variance-covariance matrix (fixed effect model)}
+  \item{Cov.random}{Variance-covariance matrix (random effects model)}
   \item{Q.decomp}{Data frame with columns 'treat1', 'treat2', 'Q',
     'df' and 'pval.Q', providing heterogeneity statistics for each
     pairwise meta-analysis of direct comparisons.}
@@ -202,14 +220,24 @@
   Quantifying the impact of between-study heterogeneity in multivariate
   meta-analyses.
   \emph{Statistics in Medicine},
-  \bold{31}(29). 3805--3820.
+  \bold{31}(29), 3805--3820.
 
   Rücker G (2012),
   Network meta-analysis, electrical networks and graph theory.
   \emph{Research Synthesis Methods},
   \bold{3}, 312--324.
 
-  Senn S, Gavini F, Magrez D, and Scheen A (2013).
+  Rücker G and Schwarzer G (2014),
+  Reduce dimension or reduce weights? Comparing two approaches to
+  multi-arm studies in network meta-analysis.
+  \emph{Statistics in Medicine},
+  \bold{33}, 4353--4369.
+
+  Schwarzer G, Carpenter JR and Rücker G (2015),
+  \emph{Meta-Analysis with R (Use-R!)}.
+  Springer International Publishing, Switzerland
+
+  Senn S, Gavini F, Magrez D, and Scheen A (2013),
   Issues in performing a network meta-analysis.
   \emph{Statistical Methods in Medical Research},
   \bold{22}(2), 169--189.
@@ -222,33 +250,32 @@ Schwarzer \email{sc@imbi.uni-freiburg.de}}
 \seealso{\code{\link{pairwise}}, \code{\link{forest.netmeta}}, \code{\link{netrank}}, \code{\link{metagen}}}
 
 \examples{
-
 data(Senn2013)
 
-##
-## Fixed effect model (default)
-##
+#
+# Fixed effect model (default)
+#
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
 net1
 net1$Q.decomp
 
-##
-## Comparison with reference group
-##
+#
+# Comparison with reference group
+#
 netmeta(TE, seTE, treat1, treat2, studlab,
         data=Senn2013, sm="MD", reference="plac")
 
-##
-## Random effects model
-##
+#
+# Random effects model
+#
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", comb.random=TRUE)
 net2
 
-##
-## Change printing order of treatments (placebo first)
-##
+#
+# Change printing order of treatments (placebo first)
+#
 trts <- c("plac", "acar", "benf", "metf", "migl", "piog",
           "rosi", "sita", "sulf", "vild")
 net3 <- netmeta(TE, seTE, treat1, treat2, studlab,

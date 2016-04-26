@@ -125,6 +125,17 @@ netmeta <- function(TE, seTE,
   
   
   ##
+  ## Check number of subgraphs
+  ##
+  n.subnets <- netconnection(treat1, treat2, studlab)$n.subnets
+  ##
+  if (n.subnets > 1)
+    stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
+               "Use R function 'netconnection' to identify sub-networks.",
+               sep = ""))
+  
+  
+  ##
   ## Check for correct treatment order within comparison
   ##
   wo <- treat1 > treat2
@@ -273,6 +284,9 @@ netmeta <- function(TE, seTE,
               ##
               G.matrix=res.f$G.matrix[o,o],
               H.matrix=res.f$H.matrix[o,o],
+              ##
+              Cov.fixed = res.f$Cov,
+              Cov.random = res.r$Cov,
               ##
               Q.decomp=res.f$Q.decomp,
               ##

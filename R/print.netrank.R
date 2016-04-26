@@ -13,6 +13,8 @@ print.netrank <- function(x,
   ##
   colnames(res) <- "P-score"
   ##
+  matitle(x)
+  ##
   print(res, digits=digits, ...)
   
   invisible(NULL)

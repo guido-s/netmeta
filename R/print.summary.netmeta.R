@@ -186,12 +186,14 @@ print.summary.netmeta <- function(x,
     
     if (!is.na(x$tau))
       cat(paste("\nQuantifying heterogeneity/inconsistency:\n",
-                if (x$tau^2 < 0.0001)
-                "tau^2 < 0.0001"
+                if (x$tau^2 > 0 & x$tau^2 < 0.0001)
+                paste("tau^2", meta:::format.tau(x$tau^2))
                 else
                 paste("tau^2 = ",
-                      format(round(x$tau^2, 4), 4, nsmall=4, scientific=FALSE), sep="")
-                ,
+                      ifelse(x$tau==0,
+                             "0",
+                             format(round(x$tau^2, 4), 4, nsmall=4, scientific=FALSE)),
+                      sep=""),
                 paste("; I^2 = ", round(I2, 1), "%",
                       "",
                       ##ifelse(FALSE,
@@ -206,9 +208,10 @@ print.summary.netmeta <- function(x,
     if (m > 1){
       
       Qdata <- cbind(round(x$Q, 2), x$df,
-                     meta:::format.p(1-pchisq(x$Q, df=x$df)))
+                     ifelse(x$df == 0, "--",
+                            meta:::format.p(1-pchisq(x$Q, df=x$df))))
       
-      dimnames(Qdata) <- list("", c("Q", "d.f.", "p.value"))
+      dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
       ##
       cat("\nTest of heterogeneity/inconsistency:\n")
       prmatrix(Qdata, quote=FALSE, right=TRUE, ...)

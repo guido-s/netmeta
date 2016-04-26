@@ -1,13 +1,13 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
-Version: 0.8-1
+Version: 0.9-0
 Depends: meta (>= 4.0-0)
 Suggests: colorspace
-Imports: magic
+Imports: magic, rgl
 Authors@R: c(person("Gerta","Rücker", role="aut"),
     person("Guido","Schwarzer", email="sc@imbi.uni-freiburg.de", role=c("aut","cre")),
     person("Ulrike","Krahn", role="aut"), person("Jochem","König", role="aut"))
-Date: 2015-mm-dd
-Description: Network meta-analysis following methods by Rücker (2012) and Krahn et al. (2013).
+Date: 2016-04-26
+Description: Network meta-analysis following methods by Rücker (2012) and Krahn et al. (2013). Functions and datasets to support Schwarzer, Carpenter, and Rücker, "Meta-Analysis with R" (2015), Chapter 8 "Network Meta-Analysis".
 License: GPL (>= 2)
 Encoding: UTF-8

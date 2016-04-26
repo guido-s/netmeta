@@ -26,15 +26,15 @@ print.decomp.design <- function(x,
   Q.inc.random$pval <- meta:::format.p(Q.inc.random$pval)
   ##
   nam <- names(Q.decomp)
-  names(Q.decomp)[nam=="pval"] <- "p.value"
+  names(Q.decomp)[nam=="pval"] <- "p-value"
   nam <- names(Q.design)
   names(Q.design)[nam=="design"] <- "Design"
-  names(Q.design)[nam=="pval"] <- "p.value"
+  names(Q.design)[nam=="pval"] <- "p-value"
   nam <- names(Q.detach)
   names(Q.detach)[nam=="design"] <- "Detached design"
-  names(Q.detach)[nam=="pval"] <- "p.value"
+  names(Q.detach)[nam=="pval"] <- "p-value"
   nam <- names(Q.inc.random)
-  names(Q.inc.random)[nam=="pval"] <- "p.value"
+  names(Q.inc.random)[nam=="pval"] <- "p-value"
   ##
   Q.design <- as.matrix(Q.design)
   Q.detach <- as.matrix(Q.detach)

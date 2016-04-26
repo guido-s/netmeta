@@ -26,12 +26,11 @@
 \seealso{\code{\link{netmeta}}}
 
 \examples{
-
 data(Senn2013)
 
-##
-## Fixed effect model (default)
-##
+#
+# Fixed effect model (default)
+#
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
 

@@ -117,20 +117,19 @@
 \seealso{\code{\link{netmeta}}}
 
 \examples{
-
 data(Senn2013)
 
-##
-## Fixed effect model (default)
-##
+#
+# Fixed effect model (default)
+#
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
 print(net1, ref="plac", digits=3)
 summary(net1)
 
-##
-## Random effects model
-##
+#
+# Random effects model
+#
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", comb.random=TRUE)
 print(net2, ref="plac", digits=3)

@@ -4,11 +4,12 @@ export(netmeta,
        forest.netmeta, pairwise,
        decomp.design, print.decomp.design,
        netheat, netgraph, netheat, netmeasures,
-       netrank, print.netrank)
+       netrank, print.netrank,
+       netconnection, print.netconnection, netdistance)
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
-# format.TE, p.ci, tau.within, decomp.tau, stress, nodedist
+# format.TE, p.ci, tau.within, decomp.tau, stress
 
 S3method(as.data.frame, netmeta)
 S3method(print, netmeta)
@@ -17,8 +18,10 @@ S3method(print, summary.netmeta)
 S3method(forest, netmeta)
 S3method(print, decomp.design)
 S3method(print, netrank)
+S3method(print, netconnection)
 
-importFrom("meta", "forest", "metabin", "metacont", "metagen", "metainc")
+importFrom("meta", "forest", "metabin", "metacont", "metagen",
+           "metainc", "metaprop")
 
 importFrom("magic", "adiag")
 
@@ -30,3 +33,5 @@ importFrom("graphics", "axis", "box", "lines", "par",
 importFrom("stats", "dist", "hclust", "pchisq", "prcomp", "rnorm", "sd")
 
 importFrom("utils", "installed.packages", "packageDescription")
+
+importFrom("rgl", "plot3d", "lines3d", "points3d", "text3d", "triangles3d")

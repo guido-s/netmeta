@@ -11,7 +11,7 @@
 \usage{
 netrank(x, small.values="good")
 
-\method{print}{netrank}(x, sort=TRUE, digits=max(4, .Options$digits - 3), ...)            
+\method{print}{netrank}(x, sort=TRUE, digits=max(4, .Options$digits - 3), ...)
 }
 
 \arguments{
@@ -54,9 +54,8 @@ netrank(x, small.values="good")
 }
 
 \value{
-  An object of class \code{c("netrank")} with corresponding
-  \code{print} function. The object is a list containing the following
-  components:
+  An object of class \code{netrank} with corresponding \code{print}
+  function. The object is a list containing the following components:
   \item{Pscore}{A named numeric vector with P-scores.}
   \item{Pmatrix}{Numeric matrix based on pairwise one-sided p-values.}
   \item{small.values, x}{As defined above.}
@@ -67,7 +66,8 @@ netrank(x, small.values="good")
   Rücker G & Schwarzer G (2015),
   Ranking treatments in frequentist network meta-analysis works
   without resampling methods.
-  Submitted.
+  \emph{BMC Medical Research Methodology},
+  \bold{15}, 58, DOI:10.1186/s12874-015-0060-8 .
 
   Salanti G, Ades AE, Ioannidis JP (2011). 
   Graphical methods and numerical summaries for presenting results

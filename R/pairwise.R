@@ -2,15 +2,12 @@ pairwise <- function(treat,
                      event, n, mean, sd, TE, seTE, time,
                      data=NULL, studlab, ...){
   
-  nulldata <- is.null(data)
-  ##
-  if (nulldata)
-    data <- sys.frame(sys.parent())
-  ##
-  mf <- match.call()
+  
+  if (is.null(data)) data <- sys.frame(sys.parent())
   ##
   ## Catch studlab, treat, event, n, mean, sd, time from data:
   ##
+  mf <- match.call()
   studlab <- eval(mf[[match("studlab", names(mf))]],
                   data, enclos = sys.frame(sys.parent()))
   treat <- eval(mf[[match("treat", names(mf))]],
@@ -31,28 +28,53 @@ pairwise <- function(treat,
                data, enclos = sys.frame(sys.parent()))
   
   
-  chklist(treat)
+  if (is.null(treat))
+    stop("Argument 'treat' mandatory.")
+  ##
+  if (is.list(treat))
+    chklist(treat)
   ##
   if (!is.null(event))
-    chklist(event)
+    if (is.list(event))
+      chklist(event)
+    else
+      meta:::chknumeric(event)
   ##
   if (!is.null(n))
-    chklist(n)
+    if (is.list(n))
+      chklist(n)
+    else
+      meta:::chknumeric(n)
   ##
   if (!is.null(mean))
-    chklist(mean)
+    if (is.list(mean))
+      chklist(mean)
+    else
+      meta:::chknumeric(mean)
   ##
   if (!is.null(sd))
-    chklist(sd)
+    if (is.list(sd))
+      chklist(sd)
+    else
+      meta:::chknumeric(sd)
   ##
   if (!is.null(TE))
-    chklist(TE)
+    if (is.list(TE))
+      chklist(TE)
+    else
+      meta:::chknumeric(TE)
   ##
-  if (!is.null(TE))
-    chklist(seTE)
+  if (!is.null(seTE))
+    if (is.list(seTE))
+      chklist(seTE)
+    else
+      meta:::chknumeric(seTE)
   ##
   if (!is.null(time))
-    chklist(time)
+    if (is.list(time))
+      chklist(time)
+    else
+      meta:::chknumeric(time)
   
   
   if (!is.null(event) & !is.null(n) &
@@ -79,6 +101,152 @@ pairwise <- function(treat,
     stop("Type of outcome unclear. Please provide the necessary information:\n  - event, n (binary outcome)\n  - n, mean, sd (continuous outcome)\n  - TE, seTE (generic outcome)\n  - event, time (incidence rates).")
   
   
+  
+  
+  
+  ##
+  ## Transform long format to list format
+  ##
+  treat.list <- list()
+  event.list <- list()
+  n.list     <- list()
+  mean.list  <- list()
+  sd.list    <- list()
+  TE.list    <- list()
+  seTE.list  <- list()
+  time.list  <- list()
+  ##
+  if (type == "binary") {
+    listformat <- is.list(event) & is.list(n)
+    if (!listformat){
+      if (is.null(studlab))
+        stop("Argument 'studlab' mandatory if argument 'event' is a vector.")
+      ##
+      ttab <- table(as.character(studlab), as.character(treat))
+      n.arms <- apply(ttab, 1, sum)
+      ##
+      tdat <- data.frame(studlab, treat, event, n, stringsAsFactors = FALSE)
+      tdat <- tdat[order(tdat$studlab, tdat$treat), ]
+      ##
+      studlab <- names(n.arms)
+      tres <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      ##
+      for (i in 1:max(n.arms)) {
+        tdat.i <- tdat[!duplicated(tdat$studlab), ]
+        tres.i <- merge(tres, tdat.i, by = "studlab", all.x = TRUE)
+        ##
+        treat.list[[i]] <- tres.i$treat
+        event.list[[i]] <- tres.i$event
+        n.list[[i]]     <- tres.i$n
+        ##
+        tdat <- tdat[duplicated(tdat$studlab), ]
+      }
+      ##
+      treat <- treat.list
+      event <- event.list
+      n     <- n.list
+    }
+  }
+  else if (type == "continuous") {
+    listformat <- is.list(n) & is.list(mean) & is.list(sd)
+    if (!listformat){
+      if (is.null(studlab))
+        stop("Argument 'studlab' mandatory if argument 'mean' is a vector.")
+      ##
+      ttab <- table(as.character(studlab), as.character(treat))
+      n.arms <- apply(ttab, 1, sum)
+      ##
+      tdat <- data.frame(studlab, treat, n, mean, sd, stringsAsFactors = FALSE)
+      tdat <- tdat[order(tdat$studlab, tdat$treat), ]
+      ##
+      studlab <- names(n.arms)
+      tres <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      ##
+      for (i in 1:max(n.arms)) {
+        tdat.i <- tdat[!duplicated(tdat$studlab), ]
+        tres.i <- merge(tres, tdat.i, by = "studlab", all.x = TRUE)
+        ##
+        treat.list[[i]] <- tres.i$treat
+        n.list[[i]]     <- tres.i$n
+        mean.list[[i]]  <- tres.i$mean
+        sd.list[[i]]    <- tres.i$sd
+        ##
+        tdat <- tdat[duplicated(tdat$studlab), ]
+      }
+      ##
+      treat <- treat.list
+      n     <- n.list
+      mean  <- mean.list
+      sd    <- sd.list
+    }
+  }
+  else if (type == "count") {
+    listformat <- is.list(event) & is.list(time)
+    if (!listformat){
+      if (is.null(studlab))
+        stop("Argument 'studlab' mandatory if argument 'event' is a vector.")
+      ##
+      ttab <- table(as.character(studlab), as.character(treat))
+      n.arms <- apply(ttab, 1, sum)
+      ##
+      tdat <- data.frame(studlab, treat, event, time, stringsAsFactors = FALSE)
+      tdat <- tdat[order(tdat$studlab, tdat$treat), ]
+      ##
+      studlab <- names(n.arms)
+      tres <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      ##
+      for (i in 1:max(n.arms)) {
+        tdat.i <- tdat[!duplicated(tdat$studlab), ]
+        tres.i <- merge(tres, tdat.i, by = "studlab", all.x = TRUE)
+        ##
+        treat.list[[i]] <- tres.i$treat
+        event.list[[i]] <- tres.i$event
+        time.list[[i]]  <- tres.i$time
+        ##
+        tdat <- tdat[duplicated(tdat$studlab), ]
+      }
+      ##
+      treat <- treat.list
+      event <- event.list
+      time  <- time.list
+    }
+  }
+  else if (type == "generic") {
+    listformat <- is.list(TE) & is.list(seTE)
+    if (!listformat){
+      if (is.null(studlab))
+        stop("Argument 'studlab' mandatory if argument 'TE' is a vector.")
+      ##
+      ttab <- table(as.character(studlab), as.character(treat))
+      n.arms <- apply(ttab, 1, sum)
+      ##
+      tdat <- data.frame(studlab, treat, TE, seTE, stringsAsFactors = FALSE)
+      tdat <- tdat[order(tdat$studlab, tdat$treat), ]
+      ##
+      studlab <- names(n.arms)
+      tres <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      ##
+      for (i in 1:max(n.arms)) {
+        tdat.i <- tdat[!duplicated(tdat$studlab), ]
+        tres.i <- merge(tres, tdat.i, by = "studlab", all.x = TRUE)
+        ##
+        treat.list[[i]] <- tres.i$treat
+        TE.list[[i]]    <- tres.i$TE
+        seTE.list[[i]]  <- tres.i$seTE
+        ##
+        tdat <- tdat[duplicated(tdat$studlab), ]
+      }
+      ##
+      treat <- treat.list
+      TE    <- TE.list
+      seTE  <- seTE.list
+    }
+  }
+  
+  
+  
+  
+  
   ##
   ## Check and set study labels
   ##
@@ -86,7 +254,7 @@ pairwise <- function(treat,
     studlab <- seq(along=treat[[1]])
   ##
   if (length(studlab) != length(unique(studlab)))
-    stop("Study labels must all be distinct")
+    stop("Study labels must all be distinct.")
   ##
   levs <- studlab
   
@@ -120,6 +288,7 @@ pairwise <- function(treat,
                           treat2=treat[[j]],
                           event1=event[[i]], n1=n[[i]],
                           event2=event[[j]], n2=n[[j]])
+        ##
         dat <- dat[!(is.na(dat$event1) & is.na(dat$n1)),]
         dat <- dat[!(is.na(dat$event2) & is.na(dat$n2)),]
         ##
@@ -291,6 +460,34 @@ pairwise <- function(treat,
       }
     }
   }
+
+
+  ##
+  ## Additional checks
+  ##
+  ##
+  ## a) Duplicate treatments ?
+  ##
+  sel.treat <- as.character(res$treat1) == as.character(res$treat2)
+  ##
+  if (any(sel.treat)) {
+    stop(paste("Identical treatments for the following studies:\n  ",
+                paste(paste("'", studlab[sel.treat], "'", sep = ""),
+                      collapse = " - "), sep = ""))
+  }
+  ##
+  ## b) Studies missing ?
+  ##
+  sel.study <- !(studlab %in% unique(as.character(res$studlab)))
+  ##
+  if (any(sel.study))
+    warning(paste("The following studies are not considered in the analysis\n  ",
+                  "(due to single study arm or missing values):\n  ",
+                  paste(paste("'", studlab[sel.study], "'", sep = ""),
+                        collapse = " - "), sep = ""))
+  
+  
+  
   
   
   attr(res, "sm") <- m1$sm

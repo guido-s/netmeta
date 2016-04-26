@@ -86,36 +86,36 @@ A list containing the following components:
 \examples{
 data(Senn2013)
 
-##
-## Generation of an object of class 'netmeta' with
-## reference treatment 'plac', i.e. placebo based 
-## on a fixed effects model
-##
+#
+# Generation of an object of class 'netmeta' with
+# reference treatment 'plac', i.e. placebo based 
+# on a fixed effects model
+#
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
         data=Senn2013, sm="MD", reference="plac")
 
-##
-## Calculate measures based on a fixed effects model
-##        
+#
+# Calculate measures based on a fixed effects model
+#        
 nm1 <- netmeasures(net1)
 
-##
-## Plot of minimal parallelism versus mean path length
-##
+#
+# Plot of minimal parallelism versus mean path length
+#
 plot(nm1$meanpath, nm1$minpar, pch="",
      xlab="Mean path length", ylab="Minimal parallelism")
 text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex=0.8)
 
-## Generation of an object of class 'netmeta' with
-## reference treatment 'plac' based on a random
-## effects model
-##
+# Generation of an object of class 'netmeta' with
+# reference treatment 'plac' based on a random
+# effects model
+#
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", reference="plac", comb.random=TRUE)
 
-##
-## Calculate measures based on a random effects model
-##                          
+#
+# Calculate measures based on a random effects model
+#                          
 nm2 <- netmeasures(net2)
 }                                                                              
 

@@ -26,6 +26,7 @@ netrank <- function(x, small.values="good"){
               Pmatrix=P,
               small.values=small.values,
               x=x,
+              title = x$title,
               version=packageDescription("netmeta")$Version)
 
   class(res) <- "netrank"

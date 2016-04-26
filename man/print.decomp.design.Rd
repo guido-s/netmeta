@@ -23,7 +23,6 @@
 \seealso{\code{\link{decomp.design}}}
 
 \examples{
-
 data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,

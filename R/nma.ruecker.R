@@ -27,6 +27,18 @@ nma.ruecker <- function(TE, seTE,
     }
   }
   ##
+  ## B.full is the full edge-vertex incidence matrix (m x n)
+  ##
+  B.full <- matrix(0, nrow = n * (n - 1) / 2, ncol = n)
+  k <- 0
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      k <- k + 1
+      B.full[k, i] <-  1
+      B.full[k, j] <- -1
+    }
+  }
+  ##
   ## M is the unweighted Laplacian, D its diagonal,
   ## A is the adjacency matrix
   ##
@@ -37,7 +49,7 @@ nma.ruecker <- function(TE, seTE,
   ## L is the weighted Laplacian (Kirchhoff) matrix (n x n)
   ## Lplus is its Moore-Penrose pseudoinverse
   ##
-  L <- t(B) %*% W %*% B 
+  L <- t(B) %*% W %*% B
   Lplus <- solve(L - 1/n) + 1/n
   ##
   ## R resistance distance (variance) matrix (n x n)
@@ -67,6 +79,10 @@ nma.ruecker <- function(TE, seTE,
   ##
   G <- B %*% Lplus %*% t(B)
   H <- G %*% W
+  ##
+  ## Variance-covariance matrix for all comparisons
+  ##
+  Cov <- B.full %*% Lplus %*% t(B.full)
   ##
   ## Resulting effects and variances at numbered edges
   ##
@@ -111,7 +127,15 @@ nma.ruecker <- function(TE, seTE,
     for (j in 1:m)
       E[i,j] <- as.numeric(studlab[i]==studlab[j])
   ##
-  tau2 <- max(0, (Q-df)/sum(diag((I-H) %*% (B %*% t(B)*E/2) %*% W)))
+  if (df == 0) {
+    tau2 <- 0
+    I2 <- 0
+  }
+  else {
+    tau2 <- max(0, (Q-df)/sum(diag((I-H) %*% (B %*% t(B)*E/2) %*% W)))
+    I2 <- max(0, 100*(Q-df)/Q)
+  }
+  ##
   tau <- sqrt(tau2)
   ##
   ## Decomposition of total Q into parts from pairwise meta-analyses
@@ -192,8 +216,20 @@ nma.ruecker <- function(TE, seTE,
   ##
   rownames(G.matrix) <- colnames(G.matrix) <- studlab
   rownames(H.matrix) <- colnames(H.matrix) <- studlab
-
-
+  
+  names.Cov <- rep("", nrow(B.full))
+  ##
+  k <- 0
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      k <- k + 1
+      names.Cov[k] <- paste(names.treat[i], names.treat[j], sep =":")
+    }
+  }
+  ##
+  rownames(Cov) <- colnames(Cov) <- names.Cov
+  
+  
   ## Calculate direct treatment estimates
   ##
   Bo <- B
@@ -246,8 +282,7 @@ nma.ruecker <- function(TE, seTE,
   Q.pooled <- w.pooled*(TE-v)^2
   
   
-  res <- list(
-              studlab=studlab,
+  res <- list(studlab=studlab,
               treat1=treat1, treat2=treat2,
               TE=TE, seTE=seTE,
               seTE.orig=seTE.orig,
@@ -274,7 +309,7 @@ nma.ruecker <- function(TE, seTE,
               Q=Q,
               df=df,
               pval.Q=1-pchisq(Q, df),
-              I2=max(0, 100*(Q-df)/Q),
+              I2=I2,
               tau=tau,
               Q.heterogeneity=Q.heterogeneity,
               Q.inconsistency=Q.inconsistency,
@@ -289,6 +324,8 @@ nma.ruecker <- function(TE, seTE,
               Q.matrix=Q.matrix,
               G.matrix=G.matrix,
               H.matrix=H.matrix,
+              ##
+              Cov = Cov,
               ##
               TE.direct=TE.direct,
               seTE.direct=seTE.direct,
