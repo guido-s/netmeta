@@ -83,7 +83,7 @@ netheat(x, random=FALSE, tau.preset=NULL, ...)
   \emph{Research Synthesis Methods}, \bold{3}, 98--110.                         
 }
 
-\author{Ulrike Krahn \email{krahnu@uni-mainz.de}}
+\author{Ulrike Krahn \email{ulrike.krahn@bayer.com}}
 
 \seealso{\link{netmeta}}
 

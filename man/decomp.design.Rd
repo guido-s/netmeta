@@ -128,7 +128,7 @@ decomp.design(x, tau.preset=x$tau.preset)
   \emph{Statistics in Medicine}, \bold{31}(29), 3805--3820.
 }
 
-\author{Ulrike Krahn \email{krahnu@uni-mainz.de}, Jochem König \email{koenigjo@uni-mainz.de}}
+\author{Ulrike Krahn \email{ulrike.krahn@bayer.com}, Jochem König \email{koenigjo@uni-mainz.de}}
 
 \seealso{\link{netmeta}, \link{netheat}}
 

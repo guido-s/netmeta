@@ -18,7 +18,7 @@
   \item{\dots}{Additional arguments (ignored at the moment).}
 }
 
-\author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}, Ulrike Krahn \email{krahnu@uni-mainz.de}}
+\author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}, Ulrike Krahn \email{ulrike.krahn@bayer.com}}
 
 \seealso{\code{\link{decomp.design}}}
 

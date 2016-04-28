@@ -79,7 +79,7 @@ A list containing the following components:
   \emph{Statistics in Medicine}, \bold{32}(30), 5414--29.
 }
 
-\author{Ulrike Krahn \email{krahnu@uni-mainz.de}, Jochem König \email{koenigjo@uni-mainz.de}}
+\author{Ulrike Krahn \email{ulrike.krahn@bayer.com}, Jochem König \email{koenigjo@uni-mainz.de}}
 
 \seealso{\link{netmeta}}
 
