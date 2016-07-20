@@ -15,6 +15,11 @@ netgraph <- function(x, seq = x$seq,
                      points = FALSE, col.points = "red",
                      cex.points = 1, pch.points = 20,
                      ##
+                     number.of.studies = FALSE,
+                     cex.number.of.studies = cex,
+                     col.number.of.studies = "white",
+                     bg.number.of.studies = "black",
+                     ##
                      start.layout = ifelse(dim == "2d", "circle", "eigen"),
                      eig1 = 2, eig2 = 3, eig3 = 4,
                      iterate,
@@ -162,6 +167,7 @@ netgraph <- function(x, seq = x$seq,
                          ##
                          points = points, col.points = col.points,
                          cex.points = cex.points, pch.points = pch.points,
+                         number.of.studies = number.of.studies,
                          ##
                          ...)
     ##
@@ -391,18 +397,26 @@ netgraph <- function(x, seq = x$seq,
     if (plastic) {
       n.plastic <- 30
       lwd.multiply <- rep(NA, n.plastic)
-      cols <- rep("", n.plastic)
+      cols <- cols.highlight <- rep("", n.plastic)
       j <- 0
       for (i in n.plastic:1) {
         j <- j + 1
         lwd.multiply[j] <- sin(pi * i / 2 / n.plastic)
         cols[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
+        cols.highlight[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
       }
+      if (substring(col.highlight, nchar(col.highlight)) %in% 1:4)
+        col.highlight <- substring(col.highlight, 1, nchar(col.highlight) - 1)
+      cols.highlight[1:12] <- rep(paste(col.highlight, 4:1, sep = ""), rep(3, 4))
+      cols.highlight[13:15] <- rep(col.highlight, 3)
     }
     else {
       lwd.multiply <- 1
       cols <- col
+      cols.highlight <- col.highlight
     }
+    print(cols)
+    print(cols.highlight)
     ##
     for (n.plines in 1:length(lwd.multiply)) {
       for (i in 1:(n - 1)) {
@@ -431,11 +445,11 @@ netgraph <- function(x, seq = x$seq,
         ##
         pdh <- pd[pd$labels %in% highs, ]
         ##
-        if (is_2d) {
-          lines(pdh$xpos, pdh$ypos,
-                lwd = W.matrix[labels == highs[1], labels == highs[2]],
-                col = col.highlight)
-        }
+        if (is_2d)
+          for (n.plines in 1:length(lwd.multiply))
+            lines(pdh$xpos, pdh$ypos,
+                  lwd = W.matrix[labels == highs[1], labels == highs[2]] * lwd.multiply[n.plines],
+                  col = cols.highlight[n.plines])
       }
     }
     ##
@@ -453,6 +467,23 @@ netgraph <- function(x, seq = x$seq,
              labels = pd$labels[i],
              cex = cex,
              adj = c(pd$adj1[i], pd$adj2[i]))
+    ##
+    ## Print number of treatments
+    ##
+    if (number.of.studies) {
+      for (i in 1:(n - 1)) {
+        for (j in (i + 1):n) {
+          if (A.sign[i, j] > 0) {
+            shadowtext((xpos[i] + xpos[j]) / 2,
+                       (ypos[i] + ypos[j]) / 2,
+                       labels = A.matrix[i, j],
+                       cex = cex.number.of.studies,
+                       col = col.number.of.studies,
+                       bg = bg.number.of.studies)
+          }
+        }
+      }
+    }
   }
   else {
     plot3d(xpos, ypos, zpos,
@@ -490,7 +521,7 @@ netgraph <- function(x, seq = x$seq,
         ##
         pdh <- pd[pd$labels %in% highs, ]
         ##
-        lines3d(pdh$xpos*(1+1e-4), pdh$ypos*(1+1e-4), pdh$zpos*(1+1e-4),
+        lines3d(pdh$xpos * (1 + 1e-4), pdh$ypos * (1 + 1e-4), pdh$zpos * (1 + 1e-4),
                 lwd = W.matrix[labels == highs[1], labels == highs[2]],
                 col = col.highlight)
       }

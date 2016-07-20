@@ -19,6 +19,10 @@ netgraph(x, seq = x$seq,
          multiarm = any(x$narms > 2), col.multiarm = NULL,
          alpha.transparency = 0.5,
          points = FALSE, col.points = "red", cex.points = 1, pch.points = 20,
+         number.of.studies = FALSE,
+         cex.number.of.studies = cex,
+         col.number.of.studies = "white",
+         bg.number.of.studies = "black",
          start.layout = ifelse(dim  == "2d", "circle", "eigen"),
          eig1 = 2, eig2 = 3, eig3 = 4,
          iterate, tol = 0.0001, maxit = 500, allfigures = FALSE,
@@ -80,6 +84,13 @@ netgraph(x, seq = x$seq,
     at nodes (i.e. treatments) of the network graph.}
   \item{col.points, cex.points, pch.points}{Corresponding color, size,
     type for points.}
+  \item{number.of.studies}{A logical indicating whether number of
+    studies should be added to network graph.}
+  \item{cex.number.of.studies}{The magnification to be used for number
+    of studies.}
+  \item{col.number.of.studies}{Color for number of studies.}
+  \item{bg.number.of.studies}{Color for shadow around number of
+    studies.}
   \item{start.layout}{A character string indicating which starting
     layout is used if \code{iterate = TRUE}. If "circle" (default), the
     iteration starts with a circular ordering of the vertices; if
