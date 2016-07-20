@@ -1,3 +1,4 @@
 language: r
 r: devel
 cache: packages
+r_packages: rgl
