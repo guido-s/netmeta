@@ -9,7 +9,17 @@ Official GitHub repository of R package netmeta
 
 ## Description
 
-Network meta-analysis following methods by Rücker (2012) and Krahn et al. (2013). Functions and datasets to support Schwarzer, Carpenter, and Rücker, "Meta-Analysis with R" (2015), Chapter 8 "Network Meta-Analysis", http://meta-analysis-with-r.org/ .
+Network meta-analysis following methods by Rücker (2012) and Krahn et al. (2013). Functions and datasets to support Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis", http://meta-analysis-with-r.org/ .
+
+### References
+
+Krahn U, Binder H, König J (2013), A graphical tool for locating inconsistency in network meta-analyses. *BMC Medical Research Methodology*, **13**, 35.
+
+Rücker G (2012), Network meta-analysis, electrical networks and graph
+theory.  *Research Synthesis Methods*, **3**, 312--324.
+
+Schwarzer G, Carpenter JR and Rücker G (2015), *Meta-Analysis with R
+(Use-R!)*. Springer International Publishing, Switzerland
 
 
 ## Installation
