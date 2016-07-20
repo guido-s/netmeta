@@ -167,7 +167,11 @@ netgraph <- function(x, seq = x$seq,
                          ##
                          points = points, col.points = col.points,
                          cex.points = cex.points, pch.points = pch.points,
+                         ##
                          number.of.studies = number.of.studies,
+                         cex.number.of.studies = cex.number.of.studies,
+                         col.number.of.studies = col.number.of.studies,
+                         bg.number.of.studies = bg.number.of.studies,
                          ##
                          ...)
     ##
@@ -415,8 +419,6 @@ netgraph <- function(x, seq = x$seq,
       cols <- col
       cols.highlight <- col.highlight
     }
-    print(cols)
-    print(cols.highlight)
     ##
     for (n.plines in 1:length(lwd.multiply)) {
       for (i in 1:(n - 1)) {
