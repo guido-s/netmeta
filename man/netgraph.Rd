@@ -286,10 +286,12 @@ netgraph(net1, plastic = FALSE, thickness = FALSE)
 netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
          labels = LETTERS[1:10])
 
+\dontrun{
 # Network graph in 3-D (opens a new device, where you may rotate and
 # zoom the plot using the mouse / the mouse wheel).
 #
 netgraph(net1, dim = "3d")
+}
 }
 
 \keyword{Network meta-analysis}
