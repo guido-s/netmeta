@@ -7,7 +7,12 @@ Imports: magic, rgl
 Authors@R: c(person("Gerta","Rücker", role="aut"),
     person("Guido","Schwarzer", email="sc@imbi.uni-freiburg.de", role=c("aut","cre")),
     person("Ulrike","Krahn", role="aut"), person("Jochem","König", role="aut"))
-Date: 2016-07-20
-Description: Network meta-analysis following methods by Rücker (2012) and Krahn et al. (2013). Functions and datasets to support Schwarzer, Carpenter, and Rücker, "Meta-Analysis with R" (2015), Chapter 8 "Network Meta-Analysis".
+Date: 2016-07-22
+Description: A comprehensive set of functions providing frequentist methods for network meta-analysis and supporting Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis":
+ - frequentist network meta-analysis following Rücker (2012);
+ - net heat plot and design-based decomposition of Cochran's Q (Krahn et al., 2013);
+ - measures characterizing the flow of evidence between two treatments (König et al., 2013);
+ - ranking of treatments (frequentist analogue of SUCRA);
+ - automated drawing of network graphs.
 License: GPL (>= 2)
 Encoding: UTF-8
