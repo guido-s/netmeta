@@ -3,6 +3,8 @@
  ** Major changes **
 
   * Number of studies can be added to network graph
+
+  * Distance matrix can be provided directly to generate network graph
   
   * shadowtext() from TeachingDemos package by Greg Snow added to
     netmeta package
@@ -14,6 +16,7 @@
     (number.of.studies, cex.number.of.studies, col.number.of.studies,
      bg.number.of.studies)   
   - plastic look retained for highlighted comparisons
+  - new argument D.matrix to provide treatment distances directly
 
   * Help pages updated:
     decomp.design(), print.decomp.design(),

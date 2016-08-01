@@ -27,6 +27,7 @@ netgraph(x, seq = x$seq,
          eig1 = 2, eig2 = 3, eig3 = 4,
          iterate, tol = 0.0001, maxit = 500, allfigures = FALSE,
          A.matrix = x$A.matrix, N.matrix = sign(A.matrix),
+	 D.matrix = netdistance(N.matrix),
          xpos = NULL, ypos = NULL, zpos = NULL,
          ...)
 }
@@ -129,6 +130,10 @@ netgraph(x, seq = x$seq,
     adjacency in the network graph, for example content-based. Row and
     column names must be the same set of values as provided by
     argument \code{seq}.}
+  \item{D.matrix}{Distance matrix (\emph{n}x\emph{n}) replacing
+    A.matrix and N.matrix if distances should be provided
+    directly. Row and column names must be the same set of values as
+    provided by argument \code{seq}.}
   \item{xpos}{Vector (\emph{n}) of x coordinates.}
   \item{ypos}{Vector (\emph{n}) of y coordinates.}
   \item{zpos}{Vector (\emph{n}) of z coordinates.}

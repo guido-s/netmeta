@@ -1,6 +1,7 @@
 stress <- function(x,
                    A.matrix = x$A.matrix,
                    N.matrix = sign(A.matrix),
+                   D.matrix = netdistance(N.matrix),
                    ##
                    dim = "2d",
                    start.layout = "eigen",
@@ -30,12 +31,6 @@ stress <- function(x,
   e <- rep(1, n)                                    # Vector of ones
   L <- diag(as.vector(As.matrix %*% e)) - As.matrix # Laplacian
   Lt <- solve(L - e %*% t(e) / n) + e %*% t(e) / n  # Its pseudoinverse
-  
-  
-  ##
-  ## Distance matrix
-  ##
-  D.matrix <- netdistance(N.matrix)
   
   
   ##

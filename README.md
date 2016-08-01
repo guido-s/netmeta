@@ -11,7 +11,7 @@ Official GitHub repository of R package **netmeta**
 ## Description
 
 A comprehensive set of functions providing frequentist methods for
-network meta-analysis are implemented:
+network meta-analysis:
 
   - frequentist network meta-analysis (Rücker, 2012);
 

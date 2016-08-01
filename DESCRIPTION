@@ -1,13 +1,13 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
-Version: 0.9-1-0
+Version: 0.9-1-1
 Depends: meta (>= 4.0-0)
 Suggests: colorspace
 Imports: magic, rgl
 Authors@R: c(person("Gerta","Rücker", role="aut"),
     person("Guido","Schwarzer", email="sc@imbi.uni-freiburg.de", role=c("aut","cre")),
     person("Ulrike","Krahn", role="aut"), person("Jochem","König", role="aut"))
-Date: 2016-07-22
+Date: 2016-08-01
 Description: A comprehensive set of functions providing frequentist methods for network meta-analysis and supporting Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis":
  - frequentist network meta-analysis following Rücker (2012);
  - net heat plot and design-based decomposition of Cochran's Q (Krahn et al., 2013);

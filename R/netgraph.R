@@ -26,6 +26,7 @@ netgraph <- function(x, seq = x$seq,
                      tol = 0.0001, maxit = 500, allfigures = FALSE,
                      A.matrix = x$A.matrix,
                      N.matrix = sign(A.matrix),
+                     D.matrix = netdistance(N.matrix),
                      ##
                      xpos = NULL, ypos = NULL, zpos = NULL,
                      ...) {
@@ -118,6 +119,7 @@ netgraph <- function(x, seq = x$seq,
   ##
   A.matrix <- A.matrix[seq1, seq1]
   N.matrix <- N.matrix[seq1, seq1]
+  D.matrix <- D.matrix[seq1, seq1]
   ##
   if (thick == "matrix")
     W.matrix <- W.matrix[seq1, seq1]
@@ -133,6 +135,7 @@ netgraph <- function(x, seq = x$seq,
     stressdata <- stress(x,
                          A.matrix = A.matrix,
                          N.matrix = N.matrix,
+                         D.matrix = D.matrix,
                          ##
                          dim = dim,
                          start.layout = start.layout,
