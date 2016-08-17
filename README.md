@@ -59,3 +59,9 @@ install.packages("devtools")
 library("devtools")
 install_github("guido-s/netmeta")
 ```
+
+### Bug Reports:
+
+```r
+bug.report(package = "netmeta")
+```
