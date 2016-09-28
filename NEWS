@@ -12,11 +12,26 @@
  ** User-visible changes **
 
   * netgraph():
-  - new arguments to add number of studies to network graph
-    (number.of.studies, cex.number.of.studies, col.number.of.studies,
-     bg.number.of.studies)   
+    - new arguments to add number of studies to network graph
+      (number.of.studies, cex.number.of.studies,
+      col.number.of.studies, bg.number.of.studies)     
   - plastic look retained for highlighted comparisons
   - new argument D.matrix to provide treatment distances directly
+
+  * netmeta():
+    - function can be used with a single pairwise comparison without
+      resulting in an error
+
+  * print.netmeta():
+    - use correct layout for network meta-analysis with a single
+      pairwise comparison
+
+  * netconnection():
+    - print sensible error message if argument treat2 is missing or of
+      different length than argument treat 1
+
+  * netdistance():
+    - print sensible error message if argument A is not a matrix
 
   * Help pages updated:
     decomp.design(), print.decomp.design(),
@@ -26,6 +41,10 @@
 
   * New function:
     - shadowtext() to print number of studies
+
+  * nma.ruecker():
+    - keep dimension of matrices W and B.matrix for network
+      meta-analysis with a single pairwise comparison
 
 
 2016-04-26, version 0.9-0

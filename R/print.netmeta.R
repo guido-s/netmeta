@@ -133,7 +133,7 @@ print.netmeta <- function(x,
   if (comb.fixed){
     cat("Results (fixed effect model):\n\n")
     
-    prmatrix(res.f[order(sortvar),], quote=FALSE, right=TRUE)
+    prmatrix(res.f[order(sortvar), , drop = FALSE], quote = FALSE, right = TRUE)
     
     cat("\n")
   }
@@ -141,7 +141,7 @@ print.netmeta <- function(x,
   if (comb.random){
     cat("Results (random effects model):\n\n")
     
-    prmatrix(res.r[order(sortvar),], quote=FALSE, right=TRUE)
+    prmatrix(res.r[order(sortvar), , drop = FALSE], quote = FALSE, right = TRUE)
     
     cat("\n")
   }

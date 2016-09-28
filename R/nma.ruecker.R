@@ -12,7 +12,8 @@ nma.ruecker <- function(TE, seTE,
   
   m <- length(TE)                        # Number of pairwise comparisons (edges)
   n <- length(unique(c(treat1, treat2))) # Number of treatments (vertices)
-  W <- diag(w.pooled)                    # Weighted degree diagonal matrix
+  W <- diag(w.pooled,                    # Weighted degree diagonal matrix
+            nrow = length(w.pooled))     # 
   df1 <- 2*sum(1/narms)                  # Sum of degrees of freedom per study
   
   
@@ -237,7 +238,7 @@ nma.ruecker <- function(TE, seTE,
   rownames(B) <- studlab
   colnames(B) <- names.treat
   ##
-  B.matrix <- B[do.call(order, data.frame(Bo)),]
+  B.matrix <- B[do.call(order, data.frame(Bo)), , drop = FALSE]
   ##
   TE.direct   <- matrix(NA, ncol=length(names.treat),
                         nrow=length(names.treat))

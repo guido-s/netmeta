@@ -4,6 +4,11 @@ netconnection <- function(treat1, treat2,
                           title = "",
                           warn = FALSE) {
   
+  if (missing(treat1))
+    stop("Argument 'treat1' is mandatory.")
+  if (missing(treat2))
+    stop("Argument 'treat2' is mandatory.")
+  ##
   if (is.null(data)) data <- sys.frame(sys.parent())
   ##
   ## Catch treat1, treat2, studlab from data:
@@ -46,7 +51,13 @@ netconnection <- function(treat1, treat2,
       warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
     studlab <- seq(along = treat1)
   }
-  
+  ##
+  if (length(treat1) == 0 |
+      length(treat2) == 0 |
+      length(treat1) != length(treat2))
+    stop("Arguments 'treat1' and 'treat2' must be of the same length.")
+  if (length(treat1) != length(studlab))
+    stop("Arguments 'treat1' and 'studlab' must be of the same length.")
   
   if (any(treat1 == treat2))
     stop("Treatments must be different (arguments 'treat1' and 'treat2').")
