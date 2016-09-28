@@ -2,6 +2,8 @@ decomp.tau <- function(x, tau.preset=0){
   
   
   nmak <- nma.krahn(x, tau.preset=tau.preset)
+  if (is.null(nmak))
+    return(invisible(NULL))
   ##
   design <- nmak$design
   studies <- nmak$studies

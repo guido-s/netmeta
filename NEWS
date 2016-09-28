@@ -26,6 +26,10 @@
     - use correct layout for network meta-analysis with a single
       pairwise comparison
 
+  * decomp.design(), netheat(), netmeasures():
+    - print a warning and return NULL for network meta-analysis with a
+      single design
+
   * netconnection():
     - print sensible error message if argument treat2 is missing or of
       different length than argument treat 1
@@ -45,6 +49,13 @@
   * nma.ruecker():
     - keep dimension of matrices W and B.matrix for network
       meta-analysis with a single pairwise comparison
+
+  * nma.krahn():
+    - print a warning and return NULL for network meta-analysis with a
+      single design
+
+  * decomp.tau(), tau.within():
+    - return NULL for network meta-analysis with a single design
 
 
 2016-04-26, version 0.9-0

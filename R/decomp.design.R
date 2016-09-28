@@ -6,6 +6,9 @@ decomp.design <- function(x, tau.preset=x$tau.preset){
   
   
   tau.within <- tau.within(x)
+  if (is.null(tau.within))
+    return(invisible(NULL))
+  ##
   decomp.random <- decomp.tau(x, tau.preset=tau.within)
   Q.inc.random <- decomp.random$Q.decomp["Between designs",]
   Q.inc.design.random <- decomp.random$Q.inc.design

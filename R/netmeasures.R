@@ -4,14 +4,23 @@ netmeasures <- function(x){
   if (!inherits(x, "netmeta"))
     stop("Argument 'x' must be an object of class \"netmeta\"")
   
-  if (x$comb.random==FALSE & length(x$tau.preset)==0)                           
+  if (x$comb.random==FALSE & length(x$tau.preset)==0) {
     nmak <- nma.krahn(x)
+    if (is.null(nmak))
+      return(invisible(NULL))
+  }
   ##                                                                            
-  if (length(x$tau.preset)==1)                                                  
-    nmak <- nma.krahn(x, tau.preset=x$tau.preset)                                   
+  if (length(x$tau.preset)==1) {
+    nmak <- nma.krahn(x, tau.preset=x$tau.preset)
+    if (is.null(nmak))
+      return(invisible(NULL))
+  }    
   ##                                                                            
-  if (x$comb.random==TRUE & length(x$tau.preset)==0)                            
+  if (x$comb.random==TRUE & length(x$tau.preset)==0) {
     nmak <- nma.krahn(x, tau.preset=x$tau)
+    if (is.null(nmak))
+      return(invisible(NULL))
+  }
   
   
   comparisons <- nmak$direct[,"comparison"]

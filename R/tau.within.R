@@ -3,9 +3,11 @@ tau.within <- function(x){
   
   if (!inherits(x, "netmeta"))
     stop("Argument 'x' must be an object of class \"netmeta\"")
-
+  
   
   nmak <- nma.krahn(x)
+  if (is.null(nmak))
+    return(invisible(NULL))
   
   
   t <- diag(rep(1,length(as.character(nmak$design$design))))
