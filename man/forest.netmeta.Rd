@@ -111,9 +111,9 @@ forest(net2, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference",
        leftcols="studlab",
        leftlabs="Contrast to placebo",
-       rightcols = c("effect", "ci", "Pscore"),
-       rightlabs = "P-Score",
-       just.add = "right")
+       rightcols=c("effect", "ci", "Pscore"),
+       rightlabs="P-Score",
+       just.addcols="right")
 
 #
 # Add column with P-Scores on left side of forest plot
@@ -122,7 +122,7 @@ forest(net2, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference",
        leftcols=c("studlab", "Pscore"),
        leftlabs=c("Contrast to placebo", "P-Score"),
-       just.add = "right")
+       just.addcols="right")
 
 #
 # Sort forest plot by descending P-Score
@@ -131,10 +131,10 @@ forest(net2, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference",
        leftcols="studlab",
        leftlabs="Contrast to placebo",
-       rightcols = c("effect", "ci", "Pscore"),
-       rightlabs = "P-Score",
-       just.add = "right",
-       sortvar = -Pscore)
+       rightcols=c("effect", "ci", "Pscore"),
+       rightlabs="P-Score",
+       just.addcols="right",
+       sortvar=-Pscore)
 }
 
 \keyword{hplot}
