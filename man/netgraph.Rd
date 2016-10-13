@@ -215,10 +215,9 @@ netgraph(x, seq = x$seq,
   Data visualization through graph drawing.
   \emph{Computational Statistics}, \bold{16}(3), 435--450.
 
-  Rücker G & Schwarzer G (2015),
+  Rücker G & Schwarzer G (2016),
   Automated drawing of network plots in network meta-analysis.
-  \emph{Research Synthesis Methods},
-  First published online 2015 Jun 9.
+  \emph{Research Synthesis Methods}, \bold{7}, 94--107.
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Ulrike Krahn \email{ulrike.krahn@bayer.com}, Jochem König \email{koenigjo@uni-mainz.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}

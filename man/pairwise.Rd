@@ -260,12 +260,12 @@ data(Woods2010)
 # Argument 'sm' has to be used for odds ratio as summary measure; by
 # default the risk ratio is used in the metabin function called
 # internally.
-p5 <- pairwise(treatment, event = r, n = N,
-               studlab = author, data = Woods2010, sm = "OR")
+p5 <- pairwise(treatment, event=r, n=N,
+               studlab=author, data=Woods2010, sm="OR")
 p5
 
 # Conduct network meta-analysis
-net5 <- netmeta(TE, seTE, treat1, treat2, studlab, data = p5)
+net5 <- netmeta(TE, seTE, treat1, treat2, studlab, data=p5)
 net5
 
 }

@@ -30,8 +30,8 @@
   \item{data}{An optional data frame containing the study information.}
   \item{subset}{An optional vector specifying a subset of studies to be used.}
   \item{sm}{A character string indicating underlying summary measure,
-    e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"AS"},
-    \code{"MD"}, \code{"SMD"}, or \code{"HR"}.}
+    e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
+    \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.}
   \item{level}{The level used to calculate confidence intervals for
     individual comparisons.}
   \item{level.comb}{The level used to calculate confidence intervals for
@@ -225,7 +225,7 @@
   Rücker G (2012),
   Network meta-analysis, electrical networks and graph theory.
   \emph{Research Synthesis Methods},
-  \bold{3}, 312--324.
+  \bold{3}, 312--24.
 
   Rücker G and Schwarzer G (2014),
   Reduce dimension or reduce weights? Comparing two approaches to

@@ -1,4 +1,4 @@
-*** netmeta, version 0.9-1, 2016-mm-dd ***
+*** netmeta, version 0.9-1, 2016-10-12 ***
 
  ** Major changes **
 
@@ -12,6 +12,8 @@
   * P-scores can be printed in forest plot
   
  ** User-visible changes **
+    
+  * help page with brief overview of netmeta package added
 
   * netgraph():
     - new arguments to add number of studies to network graph
