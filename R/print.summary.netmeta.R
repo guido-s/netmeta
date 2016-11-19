@@ -9,8 +9,7 @@ print.summary.netmeta <- function(x,
                                   ...){
   
   
-  if (!inherits(x, "summary.netmeta"))
-    stop("Argument 'x' must be an object of class \"summary.netmeta\"")
+  meta:::chkclass(x, "summary.netmeta")
   
   
   k <- x$k

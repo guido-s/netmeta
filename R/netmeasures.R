@@ -1,8 +1,8 @@
 netmeasures <- function(x){
   
   
-  if (!inherits(x, "netmeta"))
-    stop("Argument 'x' must be an object of class \"netmeta\"")
+  meta:::chkclass(x, "netmeta")
+  
   
   if (x$comb.random==FALSE & length(x$tau.preset)==0) {
     nmak <- nma.krahn(x)

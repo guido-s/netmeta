@@ -10,9 +10,10 @@ forest.netmeta <- function(x,
                            smlab = NULL,
                            sortvar = x$seq,
                            ...){
-
-  if (!inherits(x, "netmeta"))
-    stop("Argument 'x' must be an object of class \"netmeta\"")
+  
+  
+  meta:::chkclass(x, "netmeta")
+  
   
   ipool <- charmatch(tolower(pooled), c("fixed", "random"), nomatch = NA)
   ##

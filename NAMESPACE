@@ -34,5 +34,3 @@ importFrom("graphics", "axis", "box", "lines", "par",
 importFrom("stats", "dist", "hclust", "pchisq", "prcomp", "rnorm", "sd")
 
 importFrom("utils", "installed.packages", "packageDescription")
-
-importFrom("rgl", "plot3d", "lines3d", "points3d", "text3d", "triangles3d")

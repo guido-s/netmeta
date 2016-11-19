@@ -1,8 +1,7 @@
 netheat <- function(x, random=FALSE, tau.preset=NULL, ...){ 
   
   
-  if (!inherits(x, "netmeta"))
-    stop("Argument 'x' must be an object of class \"netmeta\"")
+  meta:::chkclass(x, "netmeta")
   
   
   if (random==FALSE & length(tau.preset)==0){ 

@@ -1,8 +1,7 @@
 tau.within <- function(x){
   
   
-  if (!inherits(x, "netmeta"))
-    stop("Argument 'x' must be an object of class \"netmeta\"")
+  meta:::chkclass(x, "netmeta")
   
   
   nmak <- nma.krahn(x)

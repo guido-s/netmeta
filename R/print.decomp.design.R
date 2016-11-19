@@ -1,9 +1,10 @@
 print.decomp.design <- function(x,
                                 digits=2, ...){
-
-  if (!inherits(x, "decomp.design"))
-    stop("Argument 'x' must be an object of class \"decomp.design\"")
-
+  
+  
+  meta:::chkclass(x, "decomp.design")
+  
+  
   Q.decomp <- x$Q.decomp
   Q.design <- x$Q.het.design
   Q.detach <- x$Q.inc.detach

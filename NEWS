@@ -1,3 +1,21 @@
+*** netmeta, version 0.9-2, 2016-11-19 ***
+
+ ** Major changes **
+
+  * R package rgl moved from imported to suggested packages as
+    - 3-D network plots are not essential for network meta-analysis
+    - installation of netmeta package breaks under Mac OS if XQuartz
+      is not available
+    
+ ** User-visible changes **
+    
+  * help page of netgraph() updated (information on rgl package)
+
+ ** Internal changes **
+
+  * Use chkclass() from meta package to check for class membership
+
+
 *** netmeta, version 0.9-1, 2016-10-13 ***
 
  ** Major changes **

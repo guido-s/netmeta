@@ -9,8 +9,8 @@ print.netmeta <- function(x,
                           ...
                           ){
   
-  if (!inherits(x, "netmeta"))
-    stop("Argument 'x' must be an object of class \"netmeta\"")
+  
+  meta:::chkclass(x, "netmeta")
   
   
   k.all <- length(x$TE)

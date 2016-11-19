@@ -1,8 +1,7 @@
 decomp.design <- function(x, tau.preset=x$tau.preset){
   
   
-  if (!inherits(x, "netmeta"))
-    stop("Argument 'x' must be an object of class \"netmeta\"")
+  meta:::chkclass(x, "netmeta")
   
   
   tau.within <- tau.within(x)

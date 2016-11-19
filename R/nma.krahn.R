@@ -1,10 +1,9 @@
 nma.krahn <- function(x, tau.preset=0){
-
-
-  if (!inherits(x, "netmeta"))
-    stop("Argument 'x' must be an object of class \"netmeta\"")
-
-
+  
+  
+  meta:::chkclass(x, "netmeta")
+  
+  
   n <- x$n
 
 
@@ -154,11 +153,11 @@ nma.krahn <- function(x, tau.preset=0){
     V3 <- NA
     ##
     for (i in 1:length(covs))
-      V3 <- magic::adiag(V3, covs[[i]])
+      V3 <- adiag(V3, covs[[i]])
     ##
     V3 <- V3[-1, -1]
     ##
-    V.studies <- magic::adiag(diag(studies$seTE[!selmulti]^2), V3)
+    V.studies <- adiag(diag(studies$seTE[!selmulti]^2), V3)
     colnames(V.studies) <- c(as.character(studies$design[!selmulti]),
                              as.character(multistudies$design))
     rownames(V.studies) <- c(as.character(studies$design[!selmulti]),
@@ -174,7 +173,7 @@ nma.krahn <- function(x, tau.preset=0){
       l <- sapply(ncovs, solve)
       dim <- multistudies$narms[multistudies$studlab==studlabM[1]][1]-1
       covs3 <- solve(matrix(apply(l, 1, sum), nrow=dim))
-      V3.agg <- magic::adiag(V3.agg, covs3)
+      V3.agg <- adiag(V3.agg, covs3)
       m <- matrix(NA, nrow=dim, ncol=length(studlabM))
       for (j in 1:length(studlabM))
         m[,j] <- matrix(l[, j], nrow=dim) %*%
@@ -186,7 +185,7 @@ nma.krahn <- function(x, tau.preset=0){
     V3.agg <- V3.agg[-1,-1]
     TE.agg <- TE.agg[-1]
 
-    V <- magic::adiag(V.design, V3.agg)
+    V <- adiag(V.design, V3.agg)
     ##
     nam <- rep(multicomp, unlist(lapply(split(multistudies, multistudies$design),
                                         function(x) x$narms[1]))-1)
@@ -199,7 +198,7 @@ nma.krahn <- function(x, tau.preset=0){
     TE.dir <- c(direct2$TE.2arm, TE.agg)
   }
   else{
-    V <- magic::adiag(V.design)
+    V <- adiag(V.design)
     rownames(V) <- direct2$comparison
     colnames(V) <- direct2$comparison
     TE.dir <- direct2$TE.2arm

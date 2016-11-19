@@ -32,12 +32,26 @@ netgraph <- function(x, seq = x$seq,
                      ...) {
   
   
-  if (!inherits(x, "netmeta"))
-    stop("Argument 'x' must be an object of class \"netmeta\"")
+  meta:::chkclass(x, "netmeta")
+  
   
   dim <- meta:::setchar(dim, c("2d", "3d"))
   is_2d <- dim == "2d"
   is_3d <- !is_2d
+  ##
+  if (is_3d & !meta:::is.installed.package("rgl", stop = FALSE)) {
+    warning(paste("2-D plot generated as package 'rgl' is missing.",
+                  "\n  ",
+                  "Please install library 'rgl' in order to produce 3-D plots",
+                  "\n  ",
+                  "(R command: 'install.packages(\"rgl\")').",
+                  if (length(grep("darwin", R.Version()$os)) == 1)
+                    "\n  Note, macOS users have to install XQuartz, see https://www.xquartz.org/.",
+                  sep = ""))
+    dim <- "2d"
+    is_2d <- TRUE
+    is_3d <- FALSE
+  }
   ##
   start.layout <- meta:::setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
   ##
@@ -491,25 +505,25 @@ netgraph <- function(x, seq = x$seq,
     }
   }
   else {
-    plot3d(xpos, ypos, zpos,
-           size = 10, col = col.points, cex = cex.points,
-           axes = FALSE, box = FALSE,
-           xlab = "", ylab = "", zlab = "")
+    rgl::plot3d(xpos, ypos, zpos,
+                size = 10, col = col.points, cex = cex.points,
+                axes = FALSE, box = FALSE,
+                xlab = "", ylab = "", zlab = "")
     ##
     ## Add points for labels
     ##
     if (points)
-      points3d(xpos, ypos, zpos,
-               pch = pch.points, cex = cex.points, col = col.points)
+      rgl::points3d(xpos, ypos, zpos,
+                    pch = pch.points, cex = cex.points, col = col.points)
     ##
     ## Print treatment labels
     ##
     if (!is.null(labels))
       for (i in 1:n)
-        text3d(pd$xpos.labels[i], pd$ypos.labels[i], pd$zpos.labels[i],
-               texts = pd$labels[i],
-               cex = cex,
-               adj = c(pd$adj1[i], pd$adj2[i]))
+        rgl::text3d(pd$xpos.labels[i], pd$ypos.labels[i], pd$zpos.labels[i],
+                    texts = pd$labels[i],
+                    cex = cex,
+                    adj = c(pd$adj1[i], pd$adj2[i]))
     ##
     ## Add highlighted comparisons
     ##
@@ -526,9 +540,9 @@ netgraph <- function(x, seq = x$seq,
         ##
         pdh <- pd[pd$labels %in% highs, ]
         ##
-        lines3d(pdh$xpos * (1 + 1e-4), pdh$ypos * (1 + 1e-4), pdh$zpos * (1 + 1e-4),
-                lwd = W.matrix[labels == highs[1], labels == highs[2]],
-                col = col.highlight)
+        rgl::lines3d(pdh$xpos * (1 + 1e-4), pdh$ypos * (1 + 1e-4), pdh$zpos * (1 + 1e-4),
+                     lwd = W.matrix[labels == highs[1], labels == highs[2]],
+                     col = col.highlight)
       }
     }
     ##
@@ -551,8 +565,8 @@ netgraph <- function(x, seq = x$seq,
           if (nrow(pdm) == 0)
             pdm <- pd[pd$labels %in% multiarm.labels[[i]], ]
           if (nrow(pdm) == 3)
-            triangles3d(pdm$xpos, pdm$ypos, pdm$zpos,
-                        col = col.polygon[i])
+            rgl::triangles3d(pdm$xpos, pdm$ypos, pdm$zpos,
+                             col = col.polygon[i])
           else
             morethan3 <- TRUE
         }
@@ -566,9 +580,9 @@ netgraph <- function(x, seq = x$seq,
     for (i in 1:(n - 1)) {
       for (j in (i + 1):n) {
         if (A.sign[i, j] > 0) {
-          lines3d(c(xpos[i], xpos[j]), c(ypos[i], ypos[j]), c(zpos[i], zpos[j]),
-                  lwd = W.matrix[i, j],
-                  col = col)
+          rgl::lines3d(c(xpos[i], xpos[j]), c(ypos[i], ypos[j]), c(zpos[i], zpos[j]),
+                       lwd = W.matrix[i, j],
+                       col = col)
         }
       }
     }

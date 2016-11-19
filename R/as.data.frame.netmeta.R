@@ -2,9 +2,10 @@ as.data.frame.netmeta <- function(x, row.names=NULL,
                                   optional=FALSE,
                                   details=FALSE, ...){
   
-  if (!inherits(x, "netmeta"))
-    stop("Argument 'x' must be an object of class \"netmeta\"")
-
+  
+  meta:::chkclass(x, "netmeta")
+  
+  
   ## Remove element 'call' from object of class meta to get rid
   ## of an error message in meta-analyses with six studies:
   ## 'Error: evaluation nested too deeply: infinite recursion ...'

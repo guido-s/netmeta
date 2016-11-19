@@ -190,6 +190,10 @@ netgraph(x, seq = x$seq,
   \code{\link[colorspace]{sequential_hcl}} function is used to
   highlight multi-arm studies; otherwise the \code{\link{rainbow}} is
   used.
+
+  In order to generate 3-D plots (argument \code{dim = "3d"}), R
+  package \bold{rgl} is necessary. Note, under macOS the X.Org X
+  Window System must be available (see \url{https://www.xquartz.org}).
 }
 
 \references{
@@ -241,14 +245,14 @@ netgraph(net1)
 #
 trts <- c("plac", "benf", "migl", "acar", "sulf",
           "metf", "rosi", "piog", "sita", "vild")
-netgraph(net1, highlight = "acar:metf", seq = trts)
+netgraph(net1, highlight = "rosi:plac", seq = trts)
 
 # Same network graph using argument 'seq' in netmeta function
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD", reference = "plac",
                 seq = trts)
-netgraph(net2, highlight = "acar:metf")
+netgraph(net2, highlight = "rosi:plac")
 
 # Network graph optimized, starting from a circle, with multi-arm
 # study colored
@@ -278,7 +282,7 @@ netgraph(net1, start = "random", col.multiarm = "purple")
 
 # Network graph without plastic look and one highlighted comparison
 #
-netgraph(net1, plastic = FALSE, highlight = "acar:metf")
+netgraph(net1, plastic = FALSE, highlight = "rosi:plac")
 
 # Network graph without plastic look and comparisons with same
 # thickness
@@ -293,6 +297,7 @@ netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
 \dontrun{
 # Network graph in 3-D (opens a new device, where you may rotate and
 # zoom the plot using the mouse / the mouse wheel).
+# The rgl package must be installed for 3-D plots.
 #
 netgraph(net1, dim = "3d")
 }
