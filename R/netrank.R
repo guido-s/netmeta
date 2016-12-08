@@ -1,4 +1,4 @@
-netrank <- function(x, small.values="good"){
+netrank <- function(x, small.values = "good") {
   
   ## Check for netmeta object
   ##
@@ -8,26 +8,26 @@ netrank <- function(x, small.values="good"){
   
   ## Calculate one-sided p-values
   ##
-  w <- (1 + sign(x$TE.random))/2
+  w <- (1 + sign(x$TE.random)) / 2
   p <- x$pval.random
   ##
-  if (small.values=="good")
-    P <- w*p/2 + (1-w)*(1 - p/2)
+  if (small.values == "good")
+    P <- w * p / 2       + (1 - w) * (1 - p / 2)
   else
-    P <- w*(1 - p/2) + (1-w)*p/2
+    P <- w * (1 - p / 2) + (1 - w) * p / 2
   
   
   ## Row means provide P-scores
   ##
-  Pscore <- rowMeans(P[,], na.rm=TRUE)
+  Pscore <- rowMeans(P[, ], na.rm = TRUE)
   
   
-  res <- list(Pscore=Pscore,
-              Pmatrix=P,
-              small.values=small.values,
-              x=x,
+  res <- list(Pscore = Pscore,
+              Pmatrix = P,
+              small.values = small.values,
+              x = x,
               title = x$title,
-              version=packageDescription("netmeta")$Version)
+              version = packageDescription("netmeta")$Version)
 
   class(res) <- "netrank"
   

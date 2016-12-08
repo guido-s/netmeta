@@ -33,7 +33,7 @@ netconnection <- function(treat1, treat2,
         (length(mf2$subset) > length(mf$treat1)))
       stop("Length of subset is larger than number of comparisons.")
     else
-      mf <- mf[mf2$subset,]
+      mf <- mf[mf2$subset, ]
   
   
   treat1 <- mf$treat1
@@ -46,7 +46,7 @@ netconnection <- function(treat1, treat2,
   ##
   if (length(mf$studlab) != 0)
     studlab <- as.character(mf$studlab)
-  else{
+  else {
     if (warn)
       warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
     studlab <- seq(along = treat1)
@@ -105,7 +105,7 @@ netconnection <- function(treat1, treat2,
   D <- netdistance(A)              # Distance matrix
   L <- diag(rowSums(A)) - A        # Laplacian matrix without multiplicity
   ##
-  n.subsets <- as.integer(table(round(eigen(L)$values,10)==0)[2])
+  n.subsets <- as.integer(table(round(eigen(L)$values,10) == 0)[2])
   ##
   if (n.subsets > 1) {
     ##

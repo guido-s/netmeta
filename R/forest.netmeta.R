@@ -9,7 +9,7 @@ forest.netmeta <- function(x,
                            digits.Pscore = 2,
                            smlab = NULL,
                            sortvar = x$seq,
-                           ...){
+                           ...) {
   
   
   meta:::chkclass(x, "netmeta")
@@ -22,14 +22,14 @@ forest.netmeta <- function(x,
   ##
   pooled <- c("fixed", "random")[ipool]
   
-  if (pooled == "fixed"){
+  if (pooled == "fixed") {
     TE   <- x$TE.fixed
     seTE <- x$seTE.fixed
     if (is.null(smlab))
       smlab <- "Fixed Effect Model"
   }
   ##
-  if (pooled == "random"){
+  if (pooled == "random") {
     TE   <- x$TE.random
     seTE <- x$seTE.random
     if (is.null(smlab))
@@ -56,14 +56,14 @@ forest.netmeta <- function(x,
   
   labels <- colnames(TE)
   ##
-  if (!is.null(sortvar)){
-    if (is.character(sortvar)){
+  if (!is.null(sortvar)) {
+    if (is.character(sortvar)) {
       seq <- setseq(sortvar, labels)
       TE <- TE[seq, seq]
       seTE <- seTE[seq, seq]
       Pscore <- Pscore[seq]
     }
-    else{
+    else {
       o <- order(sortvar)
       TE <- TE[o, o]
       seTE <- seTE[o, o]
@@ -72,7 +72,7 @@ forest.netmeta <- function(x,
   }
   
   
-  if (reference.group == ""){
+  if (reference.group == "") {
     warning("First treatment used as reference as argument 'reference.group' is unspecified.")
     reference.group <- labels[1]
   }

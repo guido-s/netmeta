@@ -1,9 +1,9 @@
 netdistance <- function(A) {
   
-  ## Calculate distance matrix D of a given adjacency matrix A based
-  ## on distance algorithm by Mueller, Knop, Szymanski and Trinajstic
-  ## using triangle inequality
-
+  ## Calculate distance matrix D of adjacency matrix A based on
+  ## distance algorithm by Mueller et al. (1987) using triangle
+  ## inequality
+  
   ## Check whether A is a matrix
   ##
   if (!is.matrix(A))

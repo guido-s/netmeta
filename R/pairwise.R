@@ -1,6 +1,6 @@
 pairwise <- function(treat,
                      event, n, mean, sd, TE, seTE, time,
-                     data=NULL, studlab, ...){
+                     data = NULL, studlab, ...) {
   
   
   if (is.null(data)) data <- sys.frame(sys.parent())
@@ -118,7 +118,7 @@ pairwise <- function(treat,
   ##
   if (type == "binary") {
     listformat <- is.list(event) & is.list(n)
-    if (!listformat){
+    if (!listformat) {
       if (is.null(studlab))
         stop("Argument 'studlab' mandatory if argument 'event' is a vector.")
       ##
@@ -149,7 +149,7 @@ pairwise <- function(treat,
   }
   else if (type == "continuous") {
     listformat <- is.list(n) & is.list(mean) & is.list(sd)
-    if (!listformat){
+    if (!listformat) {
       if (is.null(studlab))
         stop("Argument 'studlab' mandatory if argument 'mean' is a vector.")
       ##
@@ -182,7 +182,7 @@ pairwise <- function(treat,
   }
   else if (type == "count") {
     listformat <- is.list(event) & is.list(time)
-    if (!listformat){
+    if (!listformat) {
       if (is.null(studlab))
         stop("Argument 'studlab' mandatory if argument 'event' is a vector.")
       ##
@@ -213,7 +213,7 @@ pairwise <- function(treat,
   }
   else if (type == "generic") {
     listformat <- is.list(TE) & is.list(seTE)
-    if (!listformat){
+    if (!listformat) {
       if (is.null(studlab))
         stop("Argument 'studlab' mandatory if argument 'TE' is a vector.")
       ##
@@ -251,7 +251,7 @@ pairwise <- function(treat,
   ## Check and set study labels
   ##
   if (is.null(studlab))
-    studlab <- seq(along=treat[[1]])
+    studlab <- seq(along = treat[[1]])
   ##
   if (length(studlab) != length(unique(studlab)))
     stop("Study labels must all be distinct.")
@@ -262,56 +262,56 @@ pairwise <- function(treat,
   narms <- length(treat)
   
   
-  if (type=="binary"){
+  if (type == "binary") {
     if (length(event) != narms)
       stop("Different length of lists 'treat' and 'event'.")
     if (length(n) != narms)
       stop("Different length of lists 'treat' and 'n'.")
     ##
-    for (i in 1:(narms-1)){
+    for (i in 1:(narms - 1)) {
       ##
-      if (i==1 & (length(treat[[i]]) != length(event[[i]])))
+      if (i == 1 & (length(treat[[i]]) != length(event[[i]])))
         stop("Different length of element ", i, " of lists 'treat' and 'event'.")
-      if (i==1 & (length(event[[i]]) != length(n[[i]])))
+      if (i == 1 & (length(event[[i]]) != length(n[[i]])))
         stop("Different length of element ", i, " of lists 'event' and 'n'.")
       ##
-      for (j in (i+1):narms){
+      for (j in (i + 1):narms) {
         ##
         if (length(treat[[j]]) != length(event[[j]]))
           stop("Different length of element ", j, " of lists 'treat' and 'event'.")
         if (length(event[[j]]) != length(n[[j]]))
           stop("Different length of element ", j, " of lists 'event' and 'n'.")
         ##
-        dat <- data.frame(TE=NA, seTE=NA,
-                          studlab=studlab,
-                          treat1=treat[[i]],
-                          treat2=treat[[j]],
-                          event1=event[[i]], n1=n[[i]],
-                          event2=event[[j]], n2=n[[j]])
+        dat <- data.frame(TE = NA, seTE = NA,
+                          studlab = studlab,
+                          treat1 = treat[[i]],
+                          treat2 = treat[[j]],
+                          event1 = event[[i]], n1 = n[[i]],
+                          event2 = event[[j]], n2 = n[[j]])
         ##
-        dat <- dat[!(is.na(dat$event1) & is.na(dat$n1)),]
-        dat <- dat[!(is.na(dat$event2) & is.na(dat$n2)),]
+        dat <- dat[!(is.na(dat$event1) & is.na(dat$n1)), ]
+        dat <- dat[!(is.na(dat$event2) & is.na(dat$n2)), ]
         ##
-        if (nrow(dat) > 0){
+        if (nrow(dat) > 0) {
           m1 <- metabin(dat$event1, dat$n1,
                         dat$event2, dat$n2, ...)
-          dat$TE <- m1$TE
+          dat$TE   <- m1$TE
           dat$seTE <- m1$seTE
           ##
-          if (i==1 & j==2)
+          if (i == 1 & j == 2)
             res <- dat
           else
             res <- rbind(res, dat)
         }
         else
-          if (i==1 & j==2)
+          if (i == 1 & j == 2)
             stop("No studies available for comparison of first and second treatment.")
       }
     }
   }
   
   
-  if (type=="continuous"){
+  if (type == "continuous") {
     if (length(n) != narms)
       stop("Different length of lists 'treat' and 'n'.")
     if (length(mean) != narms)
@@ -319,16 +319,16 @@ pairwise <- function(treat,
     if (length(sd) != narms)
       stop("Different length of lists 'treat' and 'sd'.")
     ##
-    for (i in 1:(narms-1)){
+    for (i in 1:(narms - 1)) {
       ##
-      if (i==1 & (length(treat[[i]]) != length(n[[i]])))
+      if (i == 1 & (length(treat[[i]]) != length(n[[i]])))
         stop("Different length of element ", i, " of lists 'treat' and 'n'.")
-      if (i==1 & (length(treat[[i]]) != length(mean[[i]])))
+      if (i == 1 & (length(treat[[i]]) != length(mean[[i]])))
         stop("Different length of element ", i, " of lists 'treat' and 'mean'.")
-      if (i==1 & (length(treat[[i]]) != length(sd[[i]])))
+      if (i == 1 & (length(treat[[i]]) != length(sd[[i]])))
         stop("Different length of element ", i, " of lists 'treat' and 'sd'.")
       ##
-      for (j in (i+1):narms){
+      for (j in (i + 1):narms) {
         ##
         if (length(treat[[j]]) != length(n[[j]]))
           stop("Different length of element ", j, " of lists 'treat' and 'n'.")
@@ -337,125 +337,125 @@ pairwise <- function(treat,
         if (length(treat[[j]]) != length(sd[[j]]))
           stop("Different length of element ", j, " of lists 'treat' and 'sd'.")
         ##
-        dat <- data.frame(TE=NA, seTE=NA,
-                          studlab=studlab,
-                          treat1=treat[[i]],
-                          treat2=treat[[j]],
-                          n1=n[[i]], mean1=mean[[i]], sd1=sd[[i]],
-                          n2=n[[j]], mean2=mean[[j]], sd2=sd[[j]])
-        dat <- dat[!(is.na(dat$n1) & is.na(dat$mean1) & is.na(dat$sd1)),]
-        dat <- dat[!(is.na(dat$n2) & is.na(dat$mean2) & is.na(dat$sd2)),]
+        dat <- data.frame(TE = NA, seTE = NA,
+                          studlab = studlab,
+                          treat1 = treat[[i]],
+                          treat2 = treat[[j]],
+                          n1 = n[[i]], mean1 = mean[[i]], sd1 = sd[[i]],
+                          n2 = n[[j]], mean2 = mean[[j]], sd2 = sd[[j]])
+        dat <- dat[!(is.na(dat$n1) & is.na(dat$mean1) & is.na(dat$sd1)), ]
+        dat <- dat[!(is.na(dat$n2) & is.na(dat$mean2) & is.na(dat$sd2)), ]
         ##
-        if (nrow(dat) > 0){
+        if (nrow(dat) > 0) {
           m1 <- metacont(dat$n1, dat$mean1, dat$sd1,
                          dat$n2, dat$mean2, dat$sd2,
                          ...)
-          dat$TE <- m1$TE
+          dat$TE   <- m1$TE
           dat$seTE <- m1$seTE
           ##
-          if (i==1 & j==2)
+          if (i == 1 & j == 2)
             res <- dat
           else
             res <- rbind(res, dat)
         }
         else
-          if (i==1 & j==2)
+          if (i == 1 & j == 2)
             stop("No studies available for comparison of first and second treatment.")
       }
     }
   }
   
   
-  if (type=="generic"){
+  if (type == "generic") {
     if (length(TE) != narms)
       stop("Different length of lists 'treat' and 'TE'.")
     if (length(seTE) != narms)
       stop("Different length of lists 'treat' and 'seTE'.")
     ##
-    for (i in 1:(narms-1)){
+    for (i in 1:(narms - 1)) {
       ##
-      if (i==1 & (length(treat[[i]]) != length(TE[[i]])))
+      if (i == 1 & (length(treat[[i]]) != length(TE[[i]])))
         stop("Different length of element ", i, " of lists 'treat' and 'TE'.")
-      if (i==1 & (length(treat[[i]]) != length(seTE[[i]])))
+      if (i == 1 & (length(treat[[i]]) != length(seTE[[i]])))
         stop("Different length of element ", i, " of lists 'treat' and 'seTE'.")
       ##
-      for (j in (i+1):narms){
+      for (j in (i + 1):narms) {
         ##
         if (length(treat[[j]]) != length(TE[[j]]))
           stop("Different length of element ", j, " of lists 'treat' and 'TE'.")
         if (length(treat[[j]]) != length(seTE[[j]]))
           stop("Different length of element ", j, " of lists 'treat' and 'seTE'.")
         ##
-        dat <- data.frame(TE=NA, seTE=NA,
-                          studlab=studlab,
-                          treat1=treat[[i]],
-                          treat2=treat[[j]],
-                          TE1=TE[[i]], seTE1=seTE[[i]],
-                          TE2=TE[[j]], seTE2=seTE[[j]])
-        dat <- dat[!(is.na(dat$TE1) & is.na(dat$seTE1)),]
-        dat <- dat[!(is.na(dat$TE2) & is.na(dat$seTE2)),]
+        dat <- data.frame(TE = NA, seTE = NA,
+                          studlab = studlab,
+                          treat1 = treat[[i]],
+                          treat2 = treat[[j]],
+                          TE1 = TE[[i]], seTE1 = seTE[[i]],
+                          TE2 = TE[[j]], seTE2 = seTE[[j]])
+        dat <- dat[!(is.na(dat$TE1) & is.na(dat$seTE1)), ]
+        dat <- dat[!(is.na(dat$TE2) & is.na(dat$seTE2)), ]
         ##
-        if (nrow(dat) > 0){
+        if (nrow(dat) > 0) {
           m1 <- metagen(dat$TE1 - dat$TE2,
                         sqrt(dat$seTE1^2 + dat$seTE2^2), ...)
           dat$TE <- m1$TE
           dat$seTE <- m1$seTE
           ##
-          if (i==1 & j==2)
+          if (i == 1 & j == 2)
             res <- dat
           else
             res <- rbind(res, dat)
         }
         else
-          if (i==1 & j==2)
+          if (i == 1 & j == 2)
             stop("No studies available for comparison of first and second treatment.")
       }
     }
   }
   
   
-  if (type=="count"){
+  if (type == "count") {
     if (length(event) != narms)
       stop("Different length of lists 'treat' and 'event'.")
     if (length(time) != narms)
       stop("Different length of lists 'treat' and 'time'.")
     ##
-    for (i in 1:(narms-1)){
+    for (i in 1:(narms - 1)) {
       ##
-      if (i==1 & (length(treat[[i]]) != length(event[[i]])))
+      if (i == 1 & (length(treat[[i]]) != length(event[[i]])))
         stop("Different length of element ", i, " of lists 'treat' and 'event'.")
-      if (i==1 & (length(treat[[i]]) != length(time[[i]])))
+      if (i == 1 & (length(treat[[i]]) != length(time[[i]])))
         stop("Different length of element ", i, " of lists 'treat' and 'time'.")
       ##
-      for (j in (i+1):narms){
+      for (j in (i + 1):narms) {
         ##
         if (length(treat[[j]]) != length(event[[j]]))
           stop("Different length of element ", j, " of lists 'treat' and 'event'.")
         if (length(treat[[j]]) != length(time[[j]]))
           stop("Different length of element ", j, " of lists 'treat' and 'time'.")
         ##
-        dat <- data.frame(TE=NA, seTE=NA,
-                          studlab=studlab,
-                          treat1=treat[[i]],
-                          treat2=treat[[j]],
-                          event1=event[[i]], time1=time[[i]],
-                          event2=event[[j]], time2=time[[j]])
-        dat <- dat[!(is.na(dat$event1) & is.na(dat$time1)),]
-        dat <- dat[!(is.na(dat$event2) & is.na(dat$time2)),]
+        dat <- data.frame(TE = NA, seTE = NA,
+                          studlab = studlab,
+                          treat1 = treat[[i]],
+                          treat2 = treat[[j]],
+                          event1 = event[[i]], time1 = time[[i]],
+                          event2 = event[[j]], time2 = time[[j]])
+        dat <- dat[!(is.na(dat$event1) & is.na(dat$time1)), ]
+        dat <- dat[!(is.na(dat$event2) & is.na(dat$time2)), ]
         ##
-        if (nrow(dat) > 0){
+        if (nrow(dat) > 0) {
           m1 <- metainc(dat$event1, dat$time1,
                         dat$event2, dat$time2, ...)
           dat$TE <- m1$TE
           dat$seTE <- m1$seTE
           ##
-          if (i==1 & j==2)
+          if (i == 1 & j == 2)
             res <- dat
           else
             res <- rbind(res, dat)
         }
         else
-          if (i==1 & j==2)
+          if (i == 1 & j == 2)
             stop("No studies available for comparison of first and second treatment.")
       }
     }
@@ -495,7 +495,7 @@ pairwise <- function(treat,
   attr(res, "version") <- packageDescription("netmeta")$Version
   
   
-  res <- res[order(factor(res$studlab, levels=levs), res$treat1, res$treat2),]
+  res <- res[order(factor(res$studlab, levels = levs), res$treat1, res$treat2), ]
   ##
   rownames(res) <- 1:nrow(res)
   res

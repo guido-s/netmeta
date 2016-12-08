@@ -107,9 +107,9 @@ stress <- function(x,
                      (coord[i, 3] - coord[j, 3])^2)
           ##
           if (is.na(Lwd[i, j]))
-            Lwd[i, j] <- Lwd[j, i] <- 0
+            Lwd[i, j] <- Lwd[j, i] <-  0
           else if (Lwd[i, j] == Inf)
-            Lwd[i, j] <- Lwd[j, i] <- 1
+            Lwd[i, j] <- Lwd[j, i] <-  1
           else if (Lwd[i, j] == -Inf)
             Lwd[i, j] <- Lwd[j, i] <- -1
         }

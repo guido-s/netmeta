@@ -1,9 +1,9 @@
-p.ci <- function(lower, upper){
+p.ci <- function(lower, upper) {
   lower <- meta:::rmSpace(lower)
   upper <- meta:::rmSpace(upper)
   ##
-  ifelse (lower=="NA" & upper=="NA",
+  ifelse (lower == "NA" & upper == "NA",
           "",
-          paste(" [", format(lower, justify="right"),
-                "; ", format(upper, justify="right"), "]", sep=""))
+          paste(" [", format(lower, justify = "right"),
+                "; ", format(upper, justify = "right"), "]", sep = ""))
 }

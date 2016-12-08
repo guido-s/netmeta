@@ -1,5 +1,5 @@
 print.decomp.design <- function(x,
-                                digits=2, ...){
+                                digits = 2, ...) {
   
   
   meta:::chkclass(x, "decomp.design")
@@ -27,15 +27,15 @@ print.decomp.design <- function(x,
   Q.inc.random$pval <- meta:::format.p(Q.inc.random$pval)
   ##
   nam <- names(Q.decomp)
-  names(Q.decomp)[nam=="pval"] <- "p-value"
+  names(Q.decomp)[nam == "pval"] <- "p-value"
   nam <- names(Q.design)
-  names(Q.design)[nam=="design"] <- "Design"
-  names(Q.design)[nam=="pval"] <- "p-value"
+  names(Q.design)[nam == "design"] <- "Design"
+  names(Q.design)[nam == "pval"] <- "p-value"
   nam <- names(Q.detach)
-  names(Q.detach)[nam=="design"] <- "Detached design"
-  names(Q.detach)[nam=="pval"] <- "p-value"
+  names(Q.detach)[nam == "design"] <- "Detached design"
+  names(Q.detach)[nam == "pval"] <- "p-value"
   nam <- names(Q.inc.random)
-  names(Q.inc.random)[nam=="pval"] <- "p-value"
+  names(Q.inc.random)[nam == "pval"] <- "p-value"
   ##
   Q.design <- as.matrix(Q.design)
   Q.detach <- as.matrix(Q.detach)
@@ -46,18 +46,18 @@ print.decomp.design <- function(x,
   cat("\nDesign-specific decomposition of within-designs Q statistic\n\n")
   dimnames(Q.design) <- list(rep("", dim(Q.design)[[1]]),
                              colnames(Q.design))
-  prmatrix(Q.design, quote=FALSE, right=TRUE)
+  prmatrix(Q.design, quote = FALSE, right = TRUE)
 
-  if (nrow(Q.detach) > 0){
+  if (nrow(Q.detach) > 0) {
     cat("\nBetween-designs Q statistic after detaching of single designs\n\n")
     dimnames(Q.detach) <- list(rep("", dim(Q.detach)[[1]]),
                                colnames(Q.detach))
-    prmatrix(Q.detach, quote=FALSE, right=TRUE)
+    prmatrix(Q.detach, quote = FALSE, right = TRUE)
   }
 
   cat(paste("\nQ statistic to assess consistency under the assumption of\n",
             "a full design-by-treatment interaction random effects model\n\n",
-            sep=""))
+            sep = ""))
   print(Q.inc.random)
 
   invisible(NULL)

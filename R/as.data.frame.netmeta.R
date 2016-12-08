@@ -1,6 +1,6 @@
-as.data.frame.netmeta <- function(x, row.names=NULL,
-                                  optional=FALSE,
-                                  details=FALSE, ...){
+as.data.frame.netmeta <- function(x, row.names = NULL,
+                                  optional = FALSE,
+                                  details = FALSE, ...){
   
   
   meta:::chkclass(x, "netmeta")

@@ -14,5 +14,5 @@ shadowtext <- function(x, y = NULL, labels,
   for (i in theta)
     text(xy$x + cos(i) * xo, xy$y + sin(i) * yo, labels, col = bg, ...)
   
-  text(xy$x, xy$y, labels, col=col, ...)
+  text(xy$x, xy$y, labels, col = col, ...)
 }

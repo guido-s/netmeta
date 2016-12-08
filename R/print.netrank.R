@@ -1,10 +1,10 @@
 print.netrank <- function(x,
-                          sort=TRUE,
-                          digits=max(4, .Options$digits - 3),
-                          ...){
+                          sort = TRUE,
+                          digits = max(4, .Options$digits - 3),
+                          ...) {
   
   meta:::chklogical(sort)
-  meta:::chknumeric(digits, single=TRUE)
+  meta:::chknumeric(digits, single = TRUE)
   
   if (sort)
     res <- as.data.frame(round(x$Pscore[order(-x$Pscore)], digits))
@@ -15,7 +15,7 @@ print.netrank <- function(x,
   ##
   matitle(x)
   ##
-  print(res, digits=digits, ...)
+  print(res, digits = digits, ...)
   
   invisible(NULL)
 }
