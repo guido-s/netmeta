@@ -67,6 +67,34 @@ netmeta <- function(TE, seTE,
   }
   
   
+  ##
+  ## Check NAs and zero standard errors
+  ##
+  excl <- is.na(TE) | is.na(seTE) | seTE <= 0
+  ##
+  if (any(excl)) {
+    dat.NAs <- data.frame(studlab = studlab[excl],
+                          treat1 = treat1[excl],
+                          treat2 = treat2[excl],
+                          TE = format(round(TE[excl], 4)),
+                          seTE = format(round(seTE[excl], 4))
+                          )
+    warning("Comparison",
+            if (sum(excl) > 1) "s",
+            " with missing TE / seTE or zero seTE not considered in network meta-analysis.",
+            call. = FALSE)
+    cat("Studies not considered in network meta-analysis:\n")
+    prmatrix(dat.NAs, quote = FALSE, right = TRUE,
+             rowlab = rep("", sum(excl)))
+    ##
+    studlab <- studlab[!(excl)]
+    treat1  <- treat1[!(excl)]
+    treat2  <- treat2[!(excl)]
+    TE      <- TE[!(excl)]
+    seTE    <- seTE[!(excl)]
+  }
+  
+  
   if (any(treat1 == treat2))
     stop("Treatments must be different (arguments 'treat1' and 'treat2').")
   
