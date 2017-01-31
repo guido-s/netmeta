@@ -4,6 +4,10 @@
  
   * Calculate indirect treatment estimates
 
+ ** User-visible changes **
+    
+  * New arguments random and tau.preset in netmeasures()
+
 
 *** netmeta, version 0.9-2, 2016-11-19 ***
 
@@ -16,7 +20,7 @@
     
  ** User-visible changes **
     
-  * help page of netgraph() updated (information on rgl package)
+  * Help page of netgraph() updated (information on rgl package)
 
  ** Internal changes **
 
