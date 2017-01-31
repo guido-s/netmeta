@@ -276,7 +276,6 @@ netmeta <- function(TE, seTE,
               upper.direct.fixed = res.f$upper.direct,
               zval.direct.fixed = res.f$zval.direct,
               pval.direct.fixed = res.f$pval.direct,
-              prop.direct.fixed = NA,
               ##
               TE.direct.random = res.r$TE.direct,
               seTE.direct.random = res.r$seTE.direct,
@@ -284,6 +283,8 @@ netmeta <- function(TE, seTE,
               upper.direct.random = res.r$upper.direct,
               zval.direct.random = res.r$zval.direct,
               pval.direct.random = res.r$pval.direct,
+              ##
+              prop.direct.fixed = NA,
               prop.direct.random = NA,
               ##
               TE.indirect.fixed = NA,
@@ -361,12 +362,18 @@ netmeta <- function(TE, seTE,
   colnames(P.fixed) <- rownames(P.fixed) <-
     colnames(P.random) <- rownames(P.random) <- colnames(res$TE.direct.fixed)
   ##
-  k <- 0
-  for (i in 1:(n - 1)) {
-    for (j in (i + 1):n) {
-      k <- k + 1
-      P.fixed[i, j] <- P.fixed[j, i] <- res$prop.direct.fixed[k]
-      P.random[i, j] <- P.random[j, i] <- res$prop.direct.random[k]
+  if (n == 2) {
+    P.fixed  <- 1
+    P.random <- 1
+  }
+  else {
+    k <- 0
+    for (i in 1:(n - 1)) {
+      for (j in (i + 1):n) {
+        k <- k + 1
+        P.fixed[i, j] <- P.fixed[j, i] <- res$prop.direct.fixed[k]
+        P.random[i, j] <- P.random[j, i] <- res$prop.direct.random[k]
+      }
     }
   }
   ##

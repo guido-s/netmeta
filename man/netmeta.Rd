@@ -185,8 +185,39 @@
   \item{zval.fixed, pval.fixed, zval.random, pval.random}{\emph{n}x\emph{n}
     matrices with z-value and p-value for test of overall treatment
     effect (fixed effect / random effects model).}
+  \item{TE.direct.fixed, TE.direct.random}{\emph{n}x\emph{n} matrix
+    with estimated treatment effects from direct evidence (fixed
+    effect / random effects model).}
+  \item{seTE.direct.fixed, seTE.direct.random}{\emph{n}x\emph{n}
+    matrix with estimated standard errors from direct evidence (fixed
+    effect / random effects model).}
+  \item{lower.direct.fixed, upper.direct.fixed, lower.direct.random,
+    upper.direct.random}{\emph{n}x\emph{n} matrices with lower and
+    upper confidence interval limits from direct evidence (fixed
+    effect / random effects model).}
+  \item{zval.direct.fixed, pval.direct.fixed, zval.direct.random,
+    pval.direct.random}{\emph{n}x\emph{n} matrices with z-value and
+    p-value for test of overall treatment effect from direct evidence
+    (fixed effect / random effects model).}
+  \item{TE.indirect.fixed, TE.indirect.random}{\emph{n}x\emph{n} matrix
+    with estimated treatment effects from indirect evidence (fixed
+    effect / random effects model).}
+  \item{seTE.indirect.fixed, seTE.indirect.random}{\emph{n}x\emph{n}
+    matrix with estimated standard errors from indirect evidence (fixed
+    effect / random effects model).}
+  \item{lower.indirect.fixed, upper.indirect.fixed, lower.indirect.random,
+    upper.indirect.random}{\emph{n}x\emph{n} matrices with lower and
+    upper confidence interval limits from indirect evidence (fixed
+    effect / random effects model).}
+  \item{zval.indirect.fixed, pval.indirect.fixed, zval.indirect.random,
+    pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value and
+    p-value for test of overall treatment effect from indirect evidence
+    (fixed effect / random effects model).}
+  \item{prop.direct.fixed, prop.direct.random}{A named vector of the
+    direct evidence proportion of each network estimate. (fixed effect
+    / random effects model).}
   \item{Q.fixed}{A vector of length \emph{m} of contributions to total
-    heterogeneity / inconsistency statistic.}
+    heterogeneity / inconsistency statistic.}    
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
