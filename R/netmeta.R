@@ -228,9 +228,6 @@ netmeta <- function(TE, seTE,
   
   o <- order(p0$order)
   ##
-  NAs <- res.f$TE.indirect.fixed
-  NAs[!is.na(NAs)] <- NA
-  ##
   res <- list(studlab = res.f$studlab[o],
               treat1 = res.f$treat1[o],
               treat2 = res.f$treat2[o],
@@ -279,6 +276,7 @@ netmeta <- function(TE, seTE,
               upper.direct.fixed = res.f$upper.direct,
               zval.direct.fixed = res.f$zval.direct,
               pval.direct.fixed = res.f$pval.direct,
+              prop.direct.fixed = NA,
               ##
               TE.direct.random = res.r$TE.direct,
               seTE.direct.random = res.r$seTE.direct,
@@ -286,20 +284,21 @@ netmeta <- function(TE, seTE,
               upper.direct.random = res.r$upper.direct,
               zval.direct.random = res.r$zval.direct,
               pval.direct.random = res.r$pval.direct,
+              prop.direct.random = NA,
               ##
-              TE.indirect.fixed = NAs,
-              seTE.indirect.fixed = NAs,
-              lower.indirect.fixed = NAs,
-              upper.indirect.fixed = NAs,
-              zval.indirect.fixed = NAs,
-              pval.indirect.fixed = NAs,
+              TE.indirect.fixed = NA,
+              seTE.indirect.fixed = NA,
+              lower.indirect.fixed = NA,
+              upper.indirect.fixed = NA,
+              zval.indirect.fixed = NA,
+              pval.indirect.fixed = NA,
               ##
-              TE.indirect.random = NAs,
-              seTE.indirect.random = NAs,
-              lower.indirect.random = NAs,
-              upper.indirect.random = NAs,
-              zval.indirect.random = NAs,
-              pval.indirect.random = NAs,
+              TE.indirect.random = NA,
+              seTE.indirect.random = NA,
+              lower.indirect.random = NA,
+              upper.indirect.random = NA,
+              zval.indirect.random = NA,
+              pval.indirect.random = NA,
               ##
               treat1.pos = res.f$treat1.pos[o],
               treat2.pos = res.f$treat2.pos[o],
@@ -354,22 +353,27 @@ netmeta <- function(TE, seTE,
   ## Add results for indirect treatment estimates
   ##
   n <- res$n
-  prop <- netmeasures(res)$proportion
   ##
-  P.direct <- matrix(NA, n, n)
-  colnames(P.direct) <- rownames(P.direct) <- colnames(res$TE.direct.fixed)
+  res$prop.direct.fixed  <- netmeasures(res, random = FALSE)$proportion
+  res$prop.direct.random <- netmeasures(res, random = TRUE, tau.preset = res$tau)$proportion
+  ##
+  P.fixed <- P.random <- matrix(NA, n, n)
+  colnames(P.fixed) <- rownames(P.fixed) <-
+    colnames(P.random) <- rownames(P.random) <- colnames(res$TE.direct.fixed)
+  ##
   k <- 0
   for (i in 1:(n - 1)) {
     for (j in (i + 1):n) {
       k <- k + 1
-      P.direct[i, j] <- P.direct[j, i] <- prop[k]
+      P.fixed[i, j] <- P.fixed[j, i] <- res$prop.direct.fixed[k]
+      P.random[i, j] <- P.random[j, i] <- res$prop.direct.random[k]
     }
   }
   ##
   ## Fixed effect model
   ##
-  ci.if <- meta::ci((res$TE.fixed - P.direct * res$TE.direct.fixed) / (1 - P.direct),
-                    sqrt(res$seTE.fixed^2 / (1 - P.direct)),
+  ci.if <- meta::ci((res$TE.fixed - P.fixed * res$TE.direct.fixed) / (1 - P.fixed),
+                    sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
                     level = level)
   ##
   res$TE.indirect.fixed   <- ci.if$TE
@@ -383,8 +387,8 @@ netmeta <- function(TE, seTE,
   ##
   ## Random effects model
   ##
-  ci.ir <- meta::ci((res$TE.random - P.direct * res$TE.direct.random) / (1 - P.direct),
-                    sqrt(res$seTE.random^2 / (1 - P.direct)),
+  ci.ir <- meta::ci((res$TE.random - P.random * res$TE.direct.random) / (1 - P.random),
+                    sqrt(res$seTE.random^2 / (1 - P.random)),
                     level = level)
   ##
   res$TE.indirect.random   <- ci.ir$TE

@@ -1,22 +1,34 @@
-netmeasures <- function(x){
+netmeasures <- function(x,
+                        random = x$comb.random | !missing(tau.preset),
+                        tau.preset = x$tau.preset) {
   
   
   meta:::chkclass(x, "netmeta")
   
   
-  if (x$comb.random == FALSE & length(x$tau.preset) == 0) {
+  meta:::chklogical(random)
+  ##
+  if (!is.null(tau.preset)) {
+    meta:::chknumeric(tau.preset, min = 0, single = TRUE)
+    if (!random) {
+      warning("Measures calculated for random effects model (argument random=TRUE) as argument 'tau.preset' is provided.")
+    }
+  }
+  
+  
+  if (random == FALSE & length(tau.preset) == 0) {
     nmak <- nma.krahn(x)
     if (is.null(nmak))
       return(invisible(NULL))
   }
-  ##                                                                            
-  if (length(x$tau.preset) == 1) {
-    nmak <- nma.krahn(x, tau.preset = x$tau.preset)
+  ##                                                             
+  if (length(tau.preset) == 1) {
+    nmak <- nma.krahn(x, tau.preset = tau.preset)
     if (is.null(nmak))
       return(invisible(NULL))
   }    
   ##                                                                            
-  if (x$comb.random == TRUE & length(x$tau.preset) == 0) {
+  if (random == TRUE & length(tau.preset) == 0) {
     nmak <- nma.krahn(x, tau.preset = x$tau)
     if (is.null(nmak))
       return(invisible(NULL))

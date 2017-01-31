@@ -14,11 +14,17 @@
 }
 
 \usage{
-netmeasures(x)
+netmeasures(x,
+            random = x$comb.random | !missing(tau.preset),
+            tau.preset = x$tau.preset)
 }
 
 \arguments{
   \item{x}{An object of class \code{netmeta}.}
+  \item{random}{A logical indicating whether random effects model
+    should be used to calculate network measures.}
+  \item{tau.preset}{An optional value for the square-root of the
+    between-study variance \eqn{\tau^2}.}
 }
 
 \details{
