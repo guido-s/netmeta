@@ -356,13 +356,25 @@ netmeta <- function(TE, seTE,
   n <- res$n
   ##
   res$prop.direct.fixed  <- netmeasures(res, random = FALSE)$proportion
-  res$prop.direct.random <- netmeasures(res, random = TRUE, tau.preset = res$tau)$proportion
+  ## Print warning(s) in call of netmeasures() once
+  oldopts <- options(warn = -1)
+  res$prop.direct.random <- netmeasures(res, random = TRUE,
+                                        tau.preset = res$tau)$proportion
+  options(oldopts)
   ##
   P.fixed <- P.random <- matrix(NA, n, n)
   colnames(P.fixed) <- rownames(P.fixed) <-
     colnames(P.random) <- rownames(P.random) <- colnames(res$TE.direct.fixed)
   ##
   if (n == 2) {
+    ##
+    ## For two treatments only direct evidence is available
+    ##
+    res$prop.direct.fixed <- 1
+    res$prop.direct.random <- 1
+    names(res$prop.direct.fixed) <-
+      names(res$prop.direct.random) <- paste(labels, collapse = ":")
+    ##
     P.fixed  <- 1
     P.random <- 1
   }
@@ -377,9 +389,23 @@ netmeta <- function(TE, seTE,
     }
   }
   ##
+  ## Set direct evidence estimates to 0 if only indirect evidence is available
+  ## (otherwise indirect estimates would be NA as direct estimates are NA)
+  ##
+  TE.direct.fixed <- res$TE.direct.fixed
+  TE.direct.fixed[P.fixed == 0] <- 0
+  ##
+  TE.direct.random <- res$TE.direct.random
+  TE.direct.random[P.random == 0] <- 0
+  ##
+  ## Indirect estimate is NA if only direct evidence is available
+  ##
+  P.fixed[P.fixed == 1]   <- NA
+  P.random[P.random == 1] <- NA
+  ##
   ## Fixed effect model
   ##
-  ci.if <- meta::ci((res$TE.fixed - P.fixed * res$TE.direct.fixed) / (1 - P.fixed),
+  ci.if <- meta::ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
                     sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
                     level = level)
   ##
@@ -394,7 +420,7 @@ netmeta <- function(TE, seTE,
   ##
   ## Random effects model
   ##
-  ci.ir <- meta::ci((res$TE.random - P.random * res$TE.direct.random) / (1 - P.random),
+  ci.ir <- meta::ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
                     sqrt(res$seTE.random^2 / (1 - P.random)),
                     level = level)
   ##

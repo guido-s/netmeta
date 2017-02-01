@@ -217,7 +217,7 @@
     direct evidence proportion of each network estimate. (fixed effect
     / random effects model).}
   \item{Q.fixed}{A vector of length \emph{m} of contributions to total
-    heterogeneity / inconsistency statistic.}    
+    heterogeneity / inconsistency statistic.}
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
