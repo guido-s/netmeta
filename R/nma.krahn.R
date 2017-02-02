@@ -71,7 +71,7 @@ nma.krahn <- function(x, tau.preset = 0) {
     direct$seTE[j] <- m1$seTE.fixed
     ##
     if (sum(studies$comparison == i & !selmulti) > 0) {
-      TE.i   <- studies$TE[studies$comparison == i   & studies$narms == 2]
+      TE.i   <- studies$TE[studies$comparison == i & studies$narms == 2]
       seTE.i <- studies$seTE[studies$comparison == i & studies$narms == 2]
       m2 <- metagen(TE.i, seTE.i, sm = x$sm)
       ##

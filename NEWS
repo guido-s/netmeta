@@ -1,12 +1,23 @@
 *** netmeta, version 0.9-3, 2017-mm-dd ***
 
  ** Major changes **
+
+  * Bug fix: netmeta() calculates correct direct evidence estimates
+    under random effects model (list components 'TE.direct.random',
+    'seTE.direct.random', ..., 'pval.direct.random'); so far results
+    from fixed effect model have been used
  
   * Calculate indirect treatment estimates
 
  ** User-visible changes **
     
   * New arguments random and tau.preset in netmeasures()
+
+ ** Internal changes **
+
+  * nma.ruecker(): estimates from random effects model are used for
+    direct treatment estimates if argument 'tau.direct' is larger than
+    zero
 
 
 *** netmeta, version 0.9-2, 2016-11-19 ***

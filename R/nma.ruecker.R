@@ -259,11 +259,20 @@ nma.ruecker <- function(TE, seTE,
     ##
     m.i <- metagen(TE, seTE.orig, subset = selstud, tau.preset = tau.direct)
     ##
-    TE.direct[sel.treat1, sel.treat2]   <- m.i$TE.fixed
-    seTE.direct[sel.treat1, sel.treat2] <- m.i$seTE.fixed
+    if (tau.direct == 0) {
+      TE.i   <- m.i$TE.fixed
+      seTE.i <- m.i$seTE.fixed
+    }
+    else {
+      TE.i   <- m.i$TE.random
+      seTE.i <- m.i$seTE.random
+    }
     ##
-    TE.direct[sel.treat2, sel.treat1]   <- -m.i$TE.fixed
-    seTE.direct[sel.treat2, sel.treat1] <- m.i$seTE.fixed
+    TE.direct[sel.treat1, sel.treat2]   <- TE.i
+    seTE.direct[sel.treat1, sel.treat2] <- seTE.i
+    ##
+    TE.direct[sel.treat2, sel.treat1]   <- -TE.i
+    seTE.direct[sel.treat2, sel.treat1] <- seTE.i
   }
   ##
   ci.direct <- meta::ci(TE.direct, seTE.direct, level = level.comb)
