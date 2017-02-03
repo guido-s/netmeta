@@ -193,7 +193,17 @@ nma.krahn <- function(x, tau.preset = 0) {
     ##
     V3 <- V3[-1, -1]
     ##
-    V.studies <- adiag(diag(studies$seTE[!selmulti]^2), V3)
+    if (sum(!selmulti) == 0) {
+      V.studies <- V3
+    }
+    else {
+      if (sum(!selmulti) < 2)
+        V.2arm <- matrix(studies$seTE[!selmulti]^2)
+      else
+        V.2arm <- diag(studies$seTE[!selmulti]^2)
+      ##
+      V.studies <- adiag(V.2arm, V3)
+    }
     colnames(V.studies) <- c(as.character(studies$design[!selmulti]),
                              as.character(multistudies$design))
     rownames(V.studies) <- c(as.character(studies$design[!selmulti]),
@@ -217,7 +227,7 @@ nma.krahn <- function(x, tau.preset = 0) {
       ##
       TE.agg <- c(TE.agg, covs3 %*% apply(m, 1, sum))
     }
-
+    
     TE.agg <- TE.agg[-1]
     V3.agg <- V3.agg[-1, -1]
 
@@ -274,8 +284,8 @@ nma.krahn <- function(x, tau.preset = 0) {
   colnames(X.full) <- trts.poss[1:n - 1]
   ##
   X.obs2.design <- X.full[direct2$comparison, , drop = FALSE]
-
-
+  
+  
   if (multiarm) {
     num.basics.design <- unlist(lapply(split(multistudies, multistudies$design),
                                        function(x)

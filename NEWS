@@ -2,11 +2,16 @@
 
  ** Major changes **
 
-  * Bug fix: netmeta() calculates correct direct evidence estimates
-    under random effects model (list components 'TE.direct.random',
-    'seTE.direct.random', ..., 'pval.direct.random'); so far results
-    from fixed effect model have been used
- 
+  * netmeta() can be used R objects created with pairwise()
+
+  * Bug fixes:
+    - netmeta() calculates correct direct evidence estimates under
+      random effects model (list components 'TE.direct.random',
+      'seTE.direct.random', ..., 'pval.direct.random'); so far results
+      from fixed effect model have been used
+    - netmeasures() does not result in an error if no or only one
+      study with two treatments is available
+
   * Calculate indirect treatment estimates
 
  ** User-visible changes **
@@ -15,9 +20,14 @@
 
  ** Internal changes **
 
-  * nma.ruecker(): estimates from random effects model are used for
+  * nma.ruecker():
+    bug fix such that estimates from random effects model are used for
     direct treatment estimates if argument 'tau.direct' is larger than
     zero
+
+  * nma.krahn():
+    bug fix such that use of function does not result in an error if
+    either no or only one study with two treatments is available
 
 
 *** netmeta, version 0.9-2, 2016-11-19 ***

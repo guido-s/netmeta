@@ -8,6 +8,14 @@ netmeasures <- function(x,
   
   meta:::chklogical(random)
   ##
+  if (!missing(random) & !random) {
+    if (!is.null(tau.preset)) {
+      if (!missing(tau.preset) & tau.preset > 0)
+        stop("Argument 'tau.preset' must be equal 0 if random=FALSE.")
+      tau.preset <- NULL
+    }
+  }
+  ##
   if (!is.null(tau.preset)) {
     meta:::chknumeric(tau.preset, min = 0, single = TRUE)
     if (!random) {

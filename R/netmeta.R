@@ -12,61 +12,132 @@ netmeta <- function(TE, seTE,
                     warn = TRUE
                     ) {
   
-  if (is.null(data)) data <- sys.frame(sys.parent())
+  
+  ##
+  ##
+  ## (1) Check arguments
+  ##
+  ##
+  meta:::chklevel(level)
+  meta:::chklevel(level.comb)
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  meta:::chklogical(warn)
+  ##
+  ## Check value for reference group
+  ##
+  if (is.null(all.treatments))
+    if (reference.group == "")
+      all.treatments <- TRUE
+    else
+      all.treatments <- FALSE
+  
+  
+  ##
+  ##
+  ## (2) Read data
+  ##
+  ##
+  nulldata <- is.null(data)
+  ##
+  if (nulldata)
+    data <- sys.frame(sys.parent())
+  ##
+  mf <- match.call()
   ##
   ## Catch TE, treat1, treat2, seTE, studlab from data:
   ##
-  mf <- match.call()
-  mf$data <- mf$subset <- mf$sm <- NULL
-  mf$level <- mf$level.comb <- NULL
-  mf$comb.fixed <- mf$comb.random <- mf$reference.group <- NULL
-  mf$all.treatments <- mf$seq <- NULL
-  mf$title <- mf$warn <- NULL
-  mf[[1]] <- as.name("data.frame")
-  mf <- eval(mf, data)
+  TE <- eval(mf[[match("TE", names(mf))]],
+             data, enclos = sys.frame(sys.parent()))
   ##
-  ## Catch subset (possibly) from data:
+  if (inherits(TE, "pairwise")) {
+    sm <- attr(TE, "sm")
+    ##
+    seTE <- TE$seTE
+    treat1 <- TE$treat1
+    treat2 <- TE$treat2
+    studlab <- TE$studlab
+    TE <- TE$TE
+  }
+  else {
+    if (missing(sm))
+      if (!is.null(data) && !is.null(attr(data, "sm")))
+        sm <- attr(data, "sm")
+      else
+        sm <- ""
+    ##
+    seTE <- eval(mf[[match("seTE", names(mf))]],
+                 data, enclos = sys.frame(sys.parent()))
+    ##
+    treat1 <- eval(mf[[match("treat1", names(mf))]],
+                   data, enclos = sys.frame(sys.parent()))
+    ##
+    treat2 <- eval(mf[[match("treat2", names(mf))]],
+                   data, enclos = sys.frame(sys.parent()))
+    ##
+    studlab <- eval(mf[[match("studlab", names(mf))]],
+                    data, enclos = sys.frame(sys.parent()))
+  }
   ##
-  mf2 <- match.call()
-  mf2$TE <- mf2$seTE <- mf2$treat1 <- mf2$treat2 <- NULL
-  mf2$studlab <- NULL
-  mf2$data <- mf2$sm <- NULL
-  mf2$level <- mf2$level.comb <- NULL
-  mf2$comb.fixed <- mf2$comb.random <- mf2$reference.group <- NULL
-  mf2$all.treatments <- mf2$seq <- NULL
-  mf2$title <- mf2$warn <- NULL
-  mf2[[1]] <- as.name("data.frame")
-  ##
-  mf2 <- eval(mf2, data)
-  ##
-  if (!is.null(mf2$subset))
-    if ((is.logical(mf2$subset) & (sum(mf2$subset) > length(mf$TE))) ||
-        (length(mf2$subset) > length(mf$TE)))
-      stop("Length of subset is larger than number of comparisons.")
-    else
-      mf <- mf[mf2$subset,]
-  
-  
-  TE     <- mf$TE
-  seTE   <- mf$seTE
-  ##
-  treat1 <- mf$treat1
-  treat2 <- mf$treat2
+  k.Comp <- length(TE)
   ##
   if (is.factor(treat1))
     treat1 <- as.character(treat1)
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
+  if (is.factor(studlab))
+    studlab <- as.character(studlab)
+  
+  
   ##
-  if (length(mf$studlab) != 0)
-    studlab <- as.character(mf$studlab)
+  ##
+  ## (3) Use subset for analysis
+  ##
+  ##
+  subset <- eval(mf[[match("subset", names(mf))]],
+                 data, enclos = sys.frame(sys.parent()))
+  ##
+  if (!is.null(subset)) {
+    if ((is.logical(subset) & (sum(subset) > k.Comp)) ||
+        (length(subset) > k.Comp))
+      stop("Length of subset is larger than number of studies.")
+    ##
+    TE <- TE[subset]
+    seTE <- seTE[subset]
+    treat1 <- treat1[subset]
+    treat2 <- treat2[subset]
+    studlab <- studlab[subset]
+  }
+  ##
+  labels <- sort(unique(c(treat1, treat2)))
+  ##
+  if (!is.null(seq))
+    seq <- setseq(seq, labels)
+  else {
+    seq <- labels
+    if (is.numeric(seq))
+      seq <- as.character(seq)
+  }
+  ##
+  if (reference.group != "")
+    reference.group <- setref(reference.group, labels)
+  
+  
+  ##
+  ##
+  ## (4) Additional checks
+  ##
+  ##
+  if (any(treat1 == treat2))
+    stop("Treatments must be different (arguments 'treat1' and 'treat2').")
+  ##
+  if (length(studlab) != 0)
+    studlab <- as.character(studlab)
   else {
     if (warn)
       warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
     studlab <- seq(along = TE)
   }
-  
-  
   ##
   ## Check NAs and zero standard errors
   ##
@@ -93,23 +164,6 @@ netmeta <- function(TE, seTE,
     TE      <- TE[!(excl)]
     seTE    <- seTE[!(excl)]
   }
-  
-  
-  if (any(treat1 == treat2))
-    stop("Treatments must be different (arguments 'treat1' and 'treat2').")
-  
-  
-  labels <- sort(unique(c(treat1, treat2)))
-  ##
-  if (!is.null(seq))
-    seq <- setseq(seq, labels)
-  else {
-    seq <- labels
-    if (is.numeric(seq))
-      seq <- as.character(seq)
-  }
-  
-  
   ##
   ## Check for correct number of comparisons
   ##
@@ -130,28 +184,6 @@ netmeta <- function(TE, seTE,
                      collapse = ", "),
                "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
                sep = ""))
-  
-  
-  ##
-  ## Check for levels of confidence interval
-  ##
-  meta:::chklevel(level)
-  meta:::chklevel(level.comb)
-  
-  
-  ##
-  ## Check value for reference group
-  ##
-  if (is.null(all.treatments))
-    if (reference.group == "")
-      all.treatments <- TRUE
-    else
-      all.treatments <- FALSE
-  ##
-  if (reference.group != "")
-    reference.group <- setref(reference.group, labels)
-  
-  
   ##
   ## Check number of subgraphs
   ##
@@ -161,8 +193,6 @@ netmeta <- function(TE, seTE,
     stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
                "Use R function 'netconnection' to identify sub-networks.",
                sep = ""))
-  
-  
   ##
   ## Check for correct treatment order within comparison
   ##
@@ -179,15 +209,10 @@ netmeta <- function(TE, seTE,
   
   
   ##
-  ## Check value for argument 'sm'
   ##
-  if (missing(sm))
-    if (!is.null(data) && !is.null(attr(data, "sm")))
-      sm <- attr(data, "sm")
-    else
-      sm <- ""
-  
-  
+  ## (5) Generate analysis dataset
+  ##
+  ##
   ##
   ## Generate ordered data set, with added numbers of arms per study
   ##
@@ -199,8 +224,12 @@ netmeta <- function(TE, seTE,
   tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
   studies <- tdata$studies
   narms <- tdata$narms
+
+  
   ##
-  ## Network meta-analysis based on prepared data set
+  ##
+  ## (6) Conduct network meta-analysis
+  ##
   ##
   ## Fixed effect model
   ##
@@ -226,6 +255,11 @@ netmeta <- function(TE, seTE,
                        sm, level, level.comb, p1$seTE, tau)
   
   
+  ##
+  ##
+  ## (7) Generate R object
+  ##
+  ##
   o <- order(p0$order)
   ##
   res <- list(studlab = res.f$studlab[o],
@@ -348,8 +382,6 @@ netmeta <- function(TE, seTE,
               )
   ##  
   class(res) <- "netmeta"
-  
-  
   ##
   ## Add results for indirect treatment estimates
   ##
@@ -361,6 +393,10 @@ netmeta <- function(TE, seTE,
   res$prop.direct.random <- netmeasures(res, random = TRUE,
                                         tau.preset = res$tau)$proportion
   options(oldopts)
+  if (is.logical(res$prop.direct.fixed))
+    res$prop.direct.fixed <- as.numeric(res$prop.direct.fixed)
+  if (is.logical(res$prop.direct.random))
+    res$prop.direct.random <- as.numeric(res$prop.direct.random)
   ##
   P.fixed <- P.random <- matrix(NA, n, n)
   colnames(P.fixed) <- rownames(P.fixed) <-

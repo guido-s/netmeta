@@ -498,5 +498,6 @@ pairwise <- function(treat,
   res <- res[order(factor(res$studlab, levels = levs), res$treat1, res$treat2), ]
   ##
   rownames(res) <- 1:nrow(res)
+  class(res) <- c(class(res), "pairwise")
   res
 }
