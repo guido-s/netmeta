@@ -2,7 +2,17 @@
 
  ** Major changes **
 
-  * netmeta() can be used R objects created with pairwise()
+  * Calculate indirect treatment estimates based on direct evidence
+    proportion
+
+  * new function netsplit() to split direct and indirect evidence
+
+  * netmeta():
+    - can be used with R objects created with pairwise()
+    - checks for consistency of treatment effects and variances in
+      multi-arm studies
+
+  * Dependency on MASS library added (for consistency checks)
 
   * Bug fixes:
     - netmeta() calculates correct direct evidence estimates under
@@ -11,8 +21,6 @@
       from fixed effect model have been used
     - netmeasures() does not result in an error if no or only one
       study with two treatments is available
-
-  * Calculate indirect treatment estimates
 
  ** User-visible changes **
     
@@ -29,6 +37,9 @@
     bug fix such that use of function does not result in an error if
     either no or only one study with two treatments is available
 
+  * chkmultiarm():
+    new internal function to check consistency of treatment effects
+    and variances in multi-arm studies; calls ginv() from MASS library
 
 *** netmeta, version 0.9-2, 2016-11-19 ***
 

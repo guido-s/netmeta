@@ -218,6 +218,11 @@ netmeta <- function(TE, seTE,
   ##
   p0 <- prepare(TE, seTE, treat1, treat2, studlab)
   ##
+  ## Check consistency of treatment effects and standard errors in
+  ## multi-arm studies
+  ##
+  chkmultiarm(p0$treat1, p0$treat2, p0$TE, p0$seTE, p0$studlab)
+  ##
   ## Study overview
   ##
   tdata <- data.frame(studies = p0$studlab, narms = p0$narms)
