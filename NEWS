@@ -26,6 +26,8 @@
     
   * New arguments random and tau.preset in netmeasures()
 
+  * New functions netsplit() and print.netsplit()
+
  ** Internal changes **
 
   * nma.ruecker():

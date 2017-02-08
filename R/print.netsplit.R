@@ -5,7 +5,7 @@ print.netsplit <- function(x,
                            digits.zval = gs("digits.zval"),
                            digits.pval = gs("digits.pval"),
                            text.NA = ".", backtransf = TRUE,
-                           showall = FALSE,
+                           showall = TRUE,
                            ...) {
   
   meta:::chkclass(x, "netsplit")
@@ -30,44 +30,44 @@ print.netsplit <- function(x,
   
   
   if (!showall) {
-    sel <- !is.na(x$TE.direct.fixed) & !is.na(x$TE.indirect.fixed) &
-      !is.na(x$TE.direct.random) & !is.na(x$TE.indirect.random)
+    sel <- !is.na(x$direct.fixed$TE) & !is.na(x$indirect.fixed$TE) &
+      !is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE)
   }
   else
-    sel <- rep_len(TRUE, length(x$TE.direct.fixed))
+    sel <- rep_len(TRUE, length(x$direct.fixed$TE))
   ## 
   comparison <- x$comparison[sel]
   ##
   prop.fixed <- x$prop.fixed[sel]
-  TE.direct.fixed <- x$TE.direct.fixed[sel]
-  TE.indirect.fixed <- x$TE.indirect.fixed[sel]
-  TE.diff.fixed <- x$TE.diff.fixed[sel]
-  lower.diff.fixed <- x$lower.diff.fixed[sel]
-  upper.diff.fixed <- x$upper.diff.fixed[sel]
-  zval.diff.fixed <- x$zval.diff.fixed[sel]
-  pval.diff.fixed <- x$pval.diff.fixed[sel]
+  TE.direct.fixed <- x$direct.fixed$TE[sel]
+  TE.indirect.fixed <- x$indirect.fixed$TE[sel]
+  TE.compare.fixed <- x$compare.fixed$TE[sel]
+  lower.compare.fixed <- x$compare.fixed$lower[sel]
+  upper.compare.fixed <- x$compare.fixed$upper[sel]
+  zval.compare.fixed <- x$compare.fixed$z[sel]
+  pval.compare.fixed <- x$compare.fixed$p[sel]
   ##
   prop.random <- x$prop.random[sel]
-  TE.direct.random <- x$TE.direct.random[sel]
-  TE.indirect.random <- x$TE.indirect.random[sel]
-  TE.diff.random <- x$TE.diff.random[sel]
-  lower.diff.random <- x$lower.diff.random[sel]
-  upper.diff.random <- x$upper.diff.random[sel]
-  zval.diff.random <- x$zval.diff.random[sel]
-  pval.diff.random <- x$pval.diff.random[sel]
+  TE.direct.random <- x$direct.random$TE[sel]
+  TE.indirect.random <- x$indirect.random$TE[sel]
+  TE.compare.random <- x$compare.random$TE[sel]
+  lower.compare.random <- x$compare.random$lower[sel]
+  upper.compare.random <- x$compare.random$upper[sel]
+  zval.compare.random <- x$compare.random$z[sel]
+  pval.compare.random <- x$compare.random$p[sel]
   
   
   if (backtransf & relative) {
     TE.direct.fixed <- exp(TE.direct.fixed)
     TE.indirect.fixed <- exp(TE.indirect.fixed)
-    TE.diff.fixed <- exp(TE.diff.fixed)
-    lower.diff.fixed <- exp(lower.diff.fixed)
-    upper.diff.fixed <- exp(upper.diff.fixed)
+    TE.compare.fixed <- exp(TE.compare.fixed)
+    lower.compare.fixed <- exp(lower.compare.fixed)
+    upper.compare.fixed <- exp(upper.compare.fixed)
     TE.direct.random <- exp(TE.direct.random)
     TE.indirect.random <- exp(TE.indirect.random)
-    TE.diff.random <- exp(TE.diff.random)
-    lower.diff.random <- exp(lower.diff.random)
-    upper.diff.random <- exp(upper.diff.random) 
+    TE.compare.random <- exp(TE.compare.random)
+    lower.compare.random <- exp(lower.compare.random)
+    upper.compare.random <- exp(upper.compare.random) 
   }
   
   
@@ -75,11 +75,11 @@ print.netsplit <- function(x,
                       prop = format(round(prop.fixed, 2)),
                       TE.direct.fixed = meta:::format.NA(TE.direct.fixed, digits, text.NA = text.NA),
                       TE.indirect.fixed = meta:::format.NA(TE.indirect.fixed, digits, text.NA = text.NA),
-                      diff = meta:::format.NA(TE.diff.fixed, digits, text.NA = text.NA),
-                      ci = meta:::p.ci(round(lower.diff.fixed, digits),
-                                       round(upper.diff.fixed, digits)),
-                      z = meta:::format.NA(zval.diff.fixed, digits.zval),
-                      p = meta:::format.p(pval.diff.fixed, digits = digits.pval),
+                      diff = meta:::format.NA(TE.compare.fixed, digits, text.NA = text.NA),
+                      ci = meta:::p.ci(round(lower.compare.fixed, digits),
+                                       round(upper.compare.fixed, digits)),
+                      z = meta:::format.NA(zval.compare.fixed, digits.zval),
+                      p = meta:::format.p(pval.compare.fixed, digits = digits.pval),
                       stringsAsFactors = FALSE
                       )
   ##
@@ -93,11 +93,11 @@ print.netsplit <- function(x,
                        prop = format(round(prop.random, 2)),
                        TE.dir = meta:::format.NA(TE.direct.random, digits, text.NA = text.NA),
                        TE.indirect.fixed = meta:::format.NA(TE.indirect.fixed, digits, text.NA = text.NA),
-                       diff = meta:::format.NA(TE.diff.random, digits, text.NA = text.NA),
-                       ci = meta:::p.ci(round(lower.diff.random, digits),
-                                        round(upper.diff.random, digits)),
-                       z = meta:::format.NA(zval.diff.random, digits.zval),
-                       p = meta:::format.p(pval.diff.random, digits = digits.pval),
+                       diff = meta:::format.NA(TE.compare.random, digits, text.NA = text.NA),
+                       ci = meta:::p.ci(round(lower.compare.random, digits),
+                                        round(upper.compare.random, digits)),
+                       z = meta:::format.NA(zval.compare.random, digits.zval),
+                       p = meta:::format.p(pval.compare.random, digits = digits.pval),
                        stringsAsFactors = FALSE
                        )
   ##

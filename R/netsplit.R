@@ -7,68 +7,96 @@ netsplit <- function(x) {
   ##
   ## Fixed effect model
   ##
-  TE.fixed <- lowertri(x$TE.fixed)
-  seTE.fixed <- lowertri(x$seTE.fixed)
-  TE.direct.fixed <- lowertri(x$TE.direct.fixed)
-  seTE.direct.fixed <- lowertri(x$seTE.direct.fixed)
-  TE.indirect.fixed <- lowertri(x$TE.indirect.fixed)
-  seTE.indirect.fixed <- lowertri(x$seTE.indirect.fixed)
   ##
   prop.fixed <- x$prop.direct.fixed
   ##
-  m.fixed <- metagen(TE.direct.fixed - TE.indirect.fixed,
-                     sqrt(seTE.direct.fixed^2 + seTE.indirect.fixed^2))
+  fixed <- list(TE = lowertri(x$TE.fixed),
+                seTE = lowertri(x$seTE.fixed),
+                lower = lowertri(x$lower.fixed),
+                upper = lowertri(x$upper.fixed),
+                z = lowertri(x$zval.fixed),
+                p = lowertri(x$pval.fixed))
+  ##
+  direct.fixed <- list(TE = lowertri(x$TE.direct.fixed),
+                       seTE = lowertri(x$seTE.direct.fixed),
+                       lower = lowertri(x$lower.direct.fixed),
+                       upper = lowertri(x$upper.direct.fixed),
+                       z = lowertri(x$zval.direct.fixed),
+                       p = lowertri(x$pval.direct.fixed))
+  ##
+  indirect.fixed <- list(TE = lowertri(x$TE.indirect.fixed),
+                         seTE = lowertri(x$seTE.indirect.fixed),
+                         lower = lowertri(x$lower.indirect.fixed),
+                         upper = lowertri(x$upper.indirect.fixed),
+                         z = lowertri(x$zval.indirect.fixed),
+                         p = lowertri(x$pval.indirect.fixed))
+  ##
+  m.fixed <- metagen(direct.fixed$TE - indirect.fixed$TE,
+                     sqrt(direct.fixed$seTE^2 + indirect.fixed$seTE^2),
+                     level = x$level.comb)
+  ##
+  compare.fixed <- list(TE = m.fixed$TE,
+                        seTE = m.fixed$seTE,
+                        lower = m.fixed$lower,
+                        upper = m.fixed$upper,
+                        z = m.fixed$zval,
+                        p = m.fixed$pval)
   ##
   ## Random effects model
   ##
-  TE.direct.random <- lowertri(x$TE.direct.random)
-  seTE.direct.random <- lowertri(x$seTE.direct.random)
-  TE.indirect.random <- lowertri(x$TE.indirect.random)
-  seTE.indirect.random <- lowertri(x$seTE.indirect.random)
-  TE.random <- lowertri(x$TE.random)
-  seTE.random <- lowertri(x$seTE.random)
-  ##
   prop.random <- x$prop.direct.random
   ##
-  m.random <- metagen(TE.direct.random - TE.indirect.random,
-                      sqrt(seTE.direct.random^2 + seTE.indirect.random^2))
+  random <- list(TE = lowertri(x$TE.random),
+                 seTE = lowertri(x$seTE.random),
+                 lower = lowertri(x$lower.random),
+                 upper = lowertri(x$upper.random),
+                 z = lowertri(x$zval.random),
+                 p = lowertri(x$pval.random))
+  ##
+  direct.random <- list(TE = lowertri(x$TE.direct.random),
+                        seTE = lowertri(x$seTE.direct.random),
+                        lower = lowertri(x$lower.direct.random),
+                        upper = lowertri(x$upper.direct.random),
+                        z = lowertri(x$zval.direct.random),
+                        p = lowertri(x$pval.direct.random))
+  ##
+  indirect.random <- list(TE = lowertri(x$TE.indirect.random),
+                          seTE = lowertri(x$seTE.indirect.random),
+                          lower = lowertri(x$lower.indirect.random),
+                          upper = lowertri(x$upper.indirect.random),
+                          z = lowertri(x$zval.indirect.random),
+                          p = lowertri(x$pval.indirect.random))
+  ##
+  m.random <- metagen(direct.random$TE - indirect.random$TE,
+                      sqrt(direct.random$seTE^2 + indirect.random$seTE^2),
+                      level = x$level.comb)
+  ##
+  compare.random <- list(TE = m.random$TE,
+                         seTE = m.random$seTE,
+                         lower = m.random$lower,
+                         upper = m.random$upper,
+                         z = m.random$zval,
+                         p = m.random$pval)
   ##
   res <- list(comparison = comparison,
               ##
               prop.fixed = prop.fixed,
-              TE.fixed = TE.fixed,
-              seTE.fixed = seTE.fixed,
-              TE.direct.fixed = TE.direct.fixed,
-              seTE.direct.fixed = seTE.direct.fixed,
-              TE.indirect.fixed = TE.indirect.fixed,
-              seTE.indirect.fixed = seTE.indirect.fixed,
-              ##
-              TE.diff.fixed = m.fixed$TE,
-              seTE.diff.fixed = m.fixed$seTE,
-              lower.diff.fixed = m.fixed$lower,
-              upper.diff.fixed = m.fixed$upper,
-              zval.diff.fixed = m.fixed$zval,
-              pval.diff.fixed = m.fixed$pval,
+              fixed = fixed,
+              direct.fixed = direct.fixed,
+              indirect.fixed = indirect.fixed,
+              compare.fixed = compare.fixed,
               ##
               prop.random = prop.random,
-              TE.random = TE.random,
-              seTE.random = seTE.random,
-              TE.direct.random = TE.direct.random,
-              seTE.direct.random = seTE.direct.random,
-              TE.indirect.random = TE.indirect.random,
-              seTE.indirect.random = seTE.indirect.random,
-              ##
-              TE.diff.random = m.random$TE,
-              seTE.diff.random = m.random$seTE,
-              lower.diff.random = m.random$lower,
-              upper.diff.random = m.random$upper,
-              zval.diff.random = m.random$zval,
-              pval.diff.random = m.random$pval,
+              random = random,
+              direct.random = direct.random,
+              indirect.random = indirect.random,
+              compare.random = compare.random,
               ##
               comb.fixed = x$comb.fixed,
               comb.random = x$comb.random,
               sm = x$sm,
-              level.comb = x$level.comb
+              level.comb = x$level.comb,
+              version = packageDescription("netmeta")$Version
               )
   ##
   class(res) <- "netsplit"
