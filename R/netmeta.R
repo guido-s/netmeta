@@ -309,6 +309,8 @@ netmeta <- function(TE, seTE,
               zval.random = res.r$zval.pooled,
               pval.random = res.r$pval.pooled,
               ##
+              k.direct = res.f$k.direct,
+              ##
               TE.direct.fixed = res.f$TE.direct,
               seTE.direct.fixed = res.f$seTE.direct,
               lower.direct.fixed = res.f$lower.direct,

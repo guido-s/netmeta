@@ -30,14 +30,18 @@
 
  ** Internal changes **
 
+  * netmeta():
+    - new list element 'k.direct' with number of studies in
+      meta-analyses with direct evidence
+
   * nma.ruecker():
-    bug fix such that estimates from random effects model are used for
-    direct treatment estimates if argument 'tau.direct' is larger than
-    zero
+    - bug fix such that estimates from random effects model are used
+      for direct treatment estimates if argument 'tau.direct' is
+      larger than zero
 
   * nma.krahn():
-    bug fix such that use of function does not result in an error if
-    either no or only one study with two treatments is available
+    - bug fix such that use of function does not result in an error if
+      either no or only one study with two treatments is available
 
   * chkmultiarm():
     new internal function to check consistency of treatment effects
