@@ -14,11 +14,15 @@ netsplit(x)
 \method{print}{netsplit}(x,
       comb.fixed = x$comb.fixed,
       comb.random = x$comb.random,
+      showall = TRUE,
+      overall = TRUE,
+      ci = FALSE,
+      test = TRUE,
       digits = gs("digits"),
       digits.zval = gs("digits.zval"),
       digits.pval = gs("digits.pval"),
       text.NA = ".", backtransf = TRUE,
-      showall = TRUE, ...)
+      ...)
 }
 
 \arguments{
@@ -27,6 +31,16 @@ netsplit(x)
     effect model should be printed.}
   \item{comb.random}{A logical indicating whether results for random
     effects model should be printed.}
+  \item{showall}{A logical indicating whether all comparisons
+    (default) or only comparisons contributing both direct and
+    indirect evidence should be printed.} 
+  \item{overall}{A logical indicating whether estimates from network
+    meta-analyis should be printed in addition to direct and indirect
+    estimates.}
+  \item{ci}{A logical indicating whether confidence intervals should
+    be printed in addition to treatment estimates.}  
+  \item{test}{A logical indicating whether results of a test comparing
+    direct and indirect estimates should be printed.}
   \item{digits}{Minimal number of significant digits, see
     \code{print.default}.}
   \item{digits.zval}{Minimal number of significant digits for z-value
@@ -41,9 +55,6 @@ netsplit(x)
     odds ratios rather than log odds ratios.}
   \item{text.NA}{A character string specifying text printed for
     missing values.}
-  \item{showall}{A logical indicating whether all comparisons
-    (default) or only comparisons contributing both direct and
-    indirect evidence should be printed.}
   \item{...}{Additional arguments (ignored at the moment)}
 }
 

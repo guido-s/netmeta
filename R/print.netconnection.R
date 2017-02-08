@@ -16,6 +16,8 @@ print.netconnection <- function(x,
 
   D <- round(x$D.matrix, digits = digits)
   D[is.infinite(D)] <- "."
+  if (x$n.subnets == 1)
+    diag(D) <- "."
   prmatrix(D, quote = FALSE, right = TRUE)
   
   invisible(NULL)

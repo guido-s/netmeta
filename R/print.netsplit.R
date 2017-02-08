@@ -1,14 +1,22 @@
 print.netsplit <- function(x,
                            comb.fixed = x$comb.fixed,
                            comb.random = x$comb.random,
+                           showall = TRUE,
+                           overall = TRUE,
+                           ci = FALSE,
+                           test = TRUE,
                            digits = gs("digits"),
                            digits.zval = gs("digits.zval"),
                            digits.pval = gs("digits.pval"),
                            text.NA = ".", backtransf = TRUE,
-                           showall = TRUE,
                            ...) {
   
   meta:::chkclass(x, "netsplit")
+
+  ## All individual results in a single row - be on the save side:
+  ##
+  oldopts <- options(width = 200)
+  on.exit(options(oldopts))
   
   
   sm <- x$sm
@@ -36,11 +44,22 @@ print.netsplit <- function(x,
   else
     sel <- rep_len(TRUE, length(x$direct.fixed$TE))
   ## 
-  comparison <- x$comparison[sel]
+  comp <- x$comparison[sel]
   ##
   prop.fixed <- x$prop.fixed[sel]
+  ##
+  TE.fixed <- x$fixed$TE[sel]
+  lower.fixed <- x$fixed$lower[sel]
+  upper.fixed <- x$fixed$upper[sel]
+  ##
   TE.direct.fixed <- x$direct.fixed$TE[sel]
+  lower.direct.fixed <- x$direct.fixed$lower[sel]
+  upper.direct.fixed <- x$direct.fixed$upper[sel]
+  ##
   TE.indirect.fixed <- x$indirect.fixed$TE[sel]
+  lower.indirect.fixed <- x$indirect.fixed$lower[sel]
+  upper.indirect.fixed <- x$indirect.fixed$upper[sel]
+  ##
   TE.compare.fixed <- x$compare.fixed$TE[sel]
   lower.compare.fixed <- x$compare.fixed$lower[sel]
   upper.compare.fixed <- x$compare.fixed$upper[sel]
@@ -48,8 +67,19 @@ print.netsplit <- function(x,
   pval.compare.fixed <- x$compare.fixed$p[sel]
   ##
   prop.random <- x$prop.random[sel]
+  ##
+  TE.random <- x$random$TE[sel]
+  lower.random <- x$random$lower[sel]
+  upper.random <- x$random$upper[sel]
+  ##
   TE.direct.random <- x$direct.random$TE[sel]
+  lower.direct.random <- x$direct.random$lower[sel]
+  upper.direct.random <- x$direct.random$upper[sel]
+  ##
   TE.indirect.random <- x$indirect.random$TE[sel]
+  lower.indirect.random <- x$indirect.random$lower[sel]
+  upper.indirect.random <- x$indirect.random$upper[sel]
+  ##
   TE.compare.random <- x$compare.random$TE[sel]
   lower.compare.random <- x$compare.random$lower[sel]
   upper.compare.random <- x$compare.random$upper[sel]
@@ -58,55 +88,146 @@ print.netsplit <- function(x,
   
   
   if (backtransf & relative) {
+    TE.fixed <- exp(TE.fixed)
+    lower.fixed <- exp(lower.fixed)
+    upper.fixed <- exp(upper.fixed)
+    ##
     TE.direct.fixed <- exp(TE.direct.fixed)
+    lower.direct.fixed <- exp(lower.direct.fixed)
+    upper.direct.fixed <- exp(upper.direct.fixed)
+    ##
     TE.indirect.fixed <- exp(TE.indirect.fixed)
+    lower.indirect.fixed <- exp(lower.indirect.fixed)
+    upper.indirect.fixed <- exp(upper.indirect.fixed)
+    ##
+    TE.random <- exp(TE.random)
+    lower.random <- exp(lower.random)
+    upper.random <- exp(upper.random)
+    ##
+    TE.direct.random <- exp(TE.direct.random)
+    lower.direct.random <- exp(lower.direct.random)
+    upper.direct.random <- exp(upper.direct.random)
+    ##
+    TE.indirect.random <- exp(TE.indirect.random)
+    lower.indirect.random <- exp(lower.indirect.random)
+    upper.indirect.random <- exp(upper.indirect.random)
+    ##
     TE.compare.fixed <- exp(TE.compare.fixed)
     lower.compare.fixed <- exp(lower.compare.fixed)
     upper.compare.fixed <- exp(upper.compare.fixed)
-    TE.direct.random <- exp(TE.direct.random)
-    TE.indirect.random <- exp(TE.indirect.random)
+    ##
     TE.compare.random <- exp(TE.compare.random)
     lower.compare.random <- exp(lower.compare.random)
     upper.compare.random <- exp(upper.compare.random) 
   }
   
   
-  fixed <- data.frame(comparison,
-                      prop = format(round(prop.fixed, 2)),
-                      TE.direct.fixed = meta:::format.NA(TE.direct.fixed, digits, text.NA = text.NA),
-                      TE.indirect.fixed = meta:::format.NA(TE.indirect.fixed, digits, text.NA = text.NA),
-                      diff = meta:::format.NA(TE.compare.fixed, digits, text.NA = text.NA),
-                      ci = meta:::p.ci(round(lower.compare.fixed, digits),
-                                       round(upper.compare.fixed, digits)),
-                      z = meta:::format.NA(zval.compare.fixed, digits.zval),
-                      p = meta:::format.p(pval.compare.fixed, digits = digits.pval),
-                      stringsAsFactors = FALSE
-                      )
+  fixed <- list(comp = comp,
+                prop = format(round(prop.fixed, 2)))
+  names.fixed <- c("comparison", "prop")
   ##
-  fixed$z[fixed$z == "--"] <- text.NA
-  fixed$p[meta:::rmSpace(fixed$p) == "--"] <- text.NA
+  if (overall) {
+    fixed$TE.fixed <- meta:::format.NA(TE.fixed, digits, text.NA = text.NA)
+    names.fixed <- c(names.fixed, "nma")
+    if (ci) {
+      fixed$ci.fixed <- meta:::p.ci(round(lower.fixed, digits),
+                                    round(upper.fixed, digits))
+      fixed$ci.fixed[is.na(fixed$ci.fixed)] <- text.NA
+      names.fixed <- c(names.fixed, ci.lab)
+    }
+  }
   ##
-  names(fixed) <- c("comparison", "prop", "direct", "indir.",
-                    if (backtransf & relative) "RoR" else "Diff", ci.lab, "z", "p-value")
+  fixed$TE.direct.fixed <- meta:::format.NA(TE.direct.fixed, digits, text.NA = text.NA)
+  names.fixed <- c(names.fixed, "direct")
+  if (ci) {
+    fixed$ci.direct.fixed <- meta:::p.ci(round(lower.direct.fixed, digits),
+                                         round(upper.direct.fixed, digits))
+    fixed$ci.direct.fixed[is.na(fixed$ci.direct.fixed)] <- text.NA
+    names.fixed <- c(names.fixed, ci.lab)
+  }
   ##
-  random <- data.frame(comparison,
-                       prop = format(round(prop.random, 2)),
-                       TE.dir = meta:::format.NA(TE.direct.random, digits, text.NA = text.NA),
-                       TE.indirect.fixed = meta:::format.NA(TE.indirect.fixed, digits, text.NA = text.NA),
-                       diff = meta:::format.NA(TE.compare.random, digits, text.NA = text.NA),
-                       ci = meta:::p.ci(round(lower.compare.random, digits),
-                                        round(upper.compare.random, digits)),
-                       z = meta:::format.NA(zval.compare.random, digits.zval),
-                       p = meta:::format.p(pval.compare.random, digits = digits.pval),
-                       stringsAsFactors = FALSE
-                       )
+  fixed$TE.indirect.fixed <- meta:::format.NA(TE.indirect.fixed, digits, text.NA = text.NA)
+  names.fixed <- c(names.fixed, "indir.")
+  if (ci) {
+    fixed$ci.indirect.fixed <- meta:::p.ci(round(lower.indirect.fixed, digits),
+                                           round(upper.indirect.fixed, digits))
+    fixed$ci.indirect.fixed[is.na(fixed$ci.indirect.fixed)] <- text.NA
+    names.fixed <- c(names.fixed, ci.lab)
+  }
   ##
-  random$z[random$z == "--"] <- text.NA
-  random$p[meta:::rmSpace(random$p) == "--"] <- text.NA
+  if (test) {
+    fixed$diff <- meta:::format.NA(TE.compare.fixed, digits, text.NA = text.NA)
+    names.fixed <- c(names.fixed, if (backtransf & relative) "RoR" else "Diff")
+    if (ci) {
+      fixed$ci.diff <- meta:::p.ci(round(lower.compare.fixed, digits),
+                                   round(upper.compare.fixed, digits))
+      fixed$ci.diff[is.na(fixed$ci.diff)] <- text.NA
+      names.fixed <- c(names.fixed, ci.lab)
+    }
+    ##
+    fixed$z <- meta:::format.NA(zval.compare.fixed, digits.zval)
+    fixed$z[fixed$z == "--"] <- text.NA
+    fixed$p <- meta:::format.p(pval.compare.fixed, digits = digits.pval)
+    fixed$p[meta:::rmSpace(fixed$p) == "--"] <- text.NA
+    names.fixed <- c(names.fixed, c("z", "p-value"))
+  }
+  fixed <- as.data.frame(fixed)
+  names(fixed) <- names.fixed
+  
+  
+  random <- list(comp = comp,
+                 prop = format(round(prop.random, 2)))
+  names.random <- c("comparison", "prop")
   ##
-  names(random) <- c("comparison", "prop", "direct", "indir.",
-                     if (backtransf & relative) "RoR" else "Diff", ci.lab, "z", "p-value")
+  if (overall) {
+    random$TE.random <- meta:::format.NA(TE.random, digits, text.NA = text.NA)
+    names.random <- c(names.random, "nma")
+    if (ci) {
+      random$ci.random <- meta:::p.ci(round(lower.random, digits),
+                                      round(upper.random, digits))
+      random$ci.random[is.na(random$ci.random)] <- text.NA
+      names.random <- c(names.random, ci.lab)
+    }
+  }
   ##
+  random$TE.direct.random <- meta:::format.NA(TE.direct.random, digits, text.NA = text.NA)
+  names.random <- c(names.random, "direct")
+  if (ci) {
+    random$ci.direct.random <- meta:::p.ci(round(lower.direct.random, digits),
+                                           round(upper.direct.random, digits))
+    random$ci.direct.random[is.na(random$ci.direct.random)] <- text.NA
+    names.random <- c(names.random, ci.lab)
+  }
+  ##
+  random$TE.indirect.random <- meta:::format.NA(TE.indirect.random, digits, text.NA = text.NA)
+  names.random <- c(names.random, "indir.")
+  if (ci) {
+    random$ci.indirect.random <- meta:::p.ci(round(lower.indirect.random, digits),
+                                             round(upper.indirect.random, digits))
+    random$ci.indirect.random[is.na(random$ci.indirect.random)] <- text.NA
+    names.random <- c(names.random, ci.lab)
+  }
+  ##
+  if (test) {
+    random$diff <- meta:::format.NA(TE.compare.random, digits, text.NA = text.NA)
+    names.random <- c(names.random, if (backtransf & relative) "RoR" else "Diff")
+    if (ci) {
+      random$ci.diff <- meta:::p.ci(round(lower.compare.random, digits),
+                                    round(upper.compare.random, digits))
+      random$ci.diff[is.na(random$ci.diff)] <- text.NA
+      names.random <- c(names.random, ci.lab)
+    }
+    ##
+    random$z <- meta:::format.NA(zval.compare.random, digits.zval)
+    random$z[random$z == "--"] <- text.NA
+    random$p <- meta:::format.p(pval.compare.random, digits = digits.pval)
+    random$p[meta:::rmSpace(random$p) == "--"] <- text.NA
+    names.random <- c(names.random, c("z", "p-value"))
+  }
+  random <- as.data.frame(random)
+  names(random) <- names.random
+  
+  
   if (comb.fixed) {
     cat("Fixed effect model: \n\n")
     fixed[is.na(fixed)] <- text.NA
@@ -126,14 +247,21 @@ print.netsplit <- function(x,
   cat("\nLegend:\n")
   cat(" comparison - Treatment comparison\n")
   cat(" prop       - Direct evidence proportion\n")
+  if (overall)
+    cat(paste(" nma        - Estimated treatment effect ", sm.lab,
+              "in network meta-analysis\n", sep = ""))
   cat(paste(" direct     - Estimated treatment effect ", sm.lab,
             "derived from direct evidence\n", sep = ""))
   cat(paste(" indir.     - Estimated treatment effect ", sm.lab,
             "derived from indirect evidence\n", sep = ""))
-  if (backtransf & relative)
-    cat(" RoR        - Ratio of Ratios (direct versus indirect)\n")
-  else
-    cat(" Diff       - Difference between direct and indirect treatment estimates\n")
+  if (test) {
+    if (backtransf & relative)
+      cat(" RoR        - Ratio of Ratios (direct versus indirect)\n")
+    else
+      cat(" Diff       - Difference between direct and indirect treatment estimates\n")
+    cat(" z          - z-value of test for disagreement (direct versus indirect)\n")
+    cat(" p-value    - p-value of test for disagreement (direct versus indirect)\n")
+  }
   ##
   invisible(NULL)
 }
