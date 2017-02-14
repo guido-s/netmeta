@@ -104,11 +104,9 @@ p1 <- pairwise(treatment, event = r, n = N,
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data = p1)
 #
-oldopts <- options(width = 90)
 print(netsplit(net1), digits = 2)
 print(netsplit(net1), digits = 2,
       backtransf = FALSE, comb.random = TRUE)
-options(oldopts)
 
 data(Senn2013)
 #

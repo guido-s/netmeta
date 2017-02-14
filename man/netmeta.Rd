@@ -16,7 +16,9 @@
 \usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
         comb.fixed=TRUE, comb.random=FALSE, reference.group="",
-        all.treatments=NULL, seq=NULL, tau.preset=NULL, title="", warn=TRUE)
+        all.treatments=NULL, seq=NULL, tau.preset=NULL,
+        tol.multiarm = 1e-06, details.tol.multiarm = FALSE,
+        title="", warn=TRUE)
 }
 
 \arguments{
@@ -48,6 +50,12 @@
     of treatments in printouts.}
   \item{tau.preset}{An optional value for the square-root of the
     between-study variance \eqn{\tau^2}.}
+  \item{tol.multiarm}{A numeric for the tolerance for consistency of
+    treatment estimates and corresponding variances in multi-arm studies
+    which are consistent by design.}
+  \item{details.tol.multiarm}{A logical indicating whether treatment
+    estimates and / or variances of multi-arm studies with inconsistent
+    results should be printed.} 
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero

@@ -244,12 +244,8 @@ nma.ruecker <- function(TE, seTE,
                         nrow = length(names.treat))
   seTE.direct <- matrix(NA, ncol = length(names.treat),
                         nrow = length(names.treat))
-  k.direct    <- matrix(0, ncol = length(names.treat),
-                        nrow = length(names.treat))
-  diag(k.direct) <- NA
   rownames(TE.direct)   <- colnames(TE.direct) <- names.treat
   rownames(seTE.direct) <- colnames(seTE.direct) <- names.treat
-  rownames(k.direct)    <- colnames(k.direct) <- names.treat
   ##
   C.matrix <- B.matrix[!duplicated(B.matrix), , drop = FALSE]
   ##
@@ -274,11 +270,9 @@ nma.ruecker <- function(TE, seTE,
     ##
     TE.direct[sel.treat1, sel.treat2]   <- TE.i
     seTE.direct[sel.treat1, sel.treat2] <- seTE.i
-    k.direct[sel.treat1, sel.treat2]    <- m.i$k
     ##
     TE.direct[sel.treat2, sel.treat1]   <- -TE.i
     seTE.direct[sel.treat2, sel.treat1] <- seTE.i
-    k.direct[sel.treat2, sel.treat1]    <- m.i$k
   }
   ##
   ci.direct <- meta::ci(TE.direct, seTE.direct, level = level.comb)
@@ -346,7 +340,6 @@ nma.ruecker <- function(TE, seTE,
               upper.direct = upper.direct,
               zval.direct = zval.direct,
               pval.direct = pval.direct,
-              k.direct = k.direct,
               ##
               Q.decomp = Q.decomp
               )

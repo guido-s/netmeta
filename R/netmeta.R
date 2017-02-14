@@ -8,6 +8,8 @@ netmeta <- function(TE, seTE,
                     all.treatments = NULL,
                     seq = NULL,
                     tau.preset = NULL,
+                    tol.multiarm = 1e-06,
+                    details.tol.multiarm = FALSE,
                     title = "",
                     warn = TRUE
                     ) {
@@ -221,7 +223,8 @@ netmeta <- function(TE, seTE,
   ## Check consistency of treatment effects and standard errors in
   ## multi-arm studies
   ##
-  chkmultiarm(p0$treat1, p0$treat2, p0$TE, p0$seTE, p0$studlab)
+  chkmultiarm(p0$treat1, p0$treat2, p0$TE, p0$seTE, p0$studlab,
+              tol = tol.multiarm, details = details.tol.multiarm)
   ##
   ## Study overview
   ##
@@ -308,8 +311,6 @@ netmeta <- function(TE, seTE,
               upper.random = res.r$upper.pooled,
               zval.random = res.r$zval.pooled,
               pval.random = res.r$pval.pooled,
-              ##
-              k.direct = res.f$k.direct,
               ##
               TE.direct.fixed = res.f$TE.direct,
               seTE.direct.fixed = res.f$seTE.direct,
