@@ -3,5 +3,4 @@ r: devel
 cache: packages
 warnings_are_errors: false
 
-before_install:
-./install-rgraphviz.sh
+before_install: sh ./install-rgraphviz.sh
