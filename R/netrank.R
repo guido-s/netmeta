@@ -6,10 +6,19 @@ netrank <- function(x, small.values = "good") {
   small.values <- meta:::setchar(small.values, c("good", "bad"))
   
   
+  TE.random <- x$TE.random
+  pval.random <- x$pval.random
+  ##
+  if (!is.null(x$seq)) {
+    TE.random <- TE.random[x$seq, x$seq]
+    pval.random <- pval.random[x$seq, x$seq]
+  }
+  
+  
   ## Calculate one-sided p-values
   ##
-  w <- (1 + sign(x$TE.random)) / 2
-  p <- x$pval.random
+  w <- (1 + sign(TE.random)) / 2
+  p <- pval.random
   ##
   if (small.values == "good")
     P <- w * p / 2       + (1 - w) * (1 - p / 2)

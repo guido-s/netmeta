@@ -23,7 +23,11 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
     treatments (\code{\link{netmeasures}}) described in König et
     al. (2013);
   \item ranking of treatments (\code{\link{netrank}}) based on
-    frequentist analogue of SUCRA (Rücker & Schwarzer, 2015);  
+    frequentist analogue of SUCRA (Rücker & Schwarzer, 2015);
+  \item partial order of treatment rankings (\code{\link{netposet}},
+    \code{\link{plot.netposet}}) and Hasse diagram
+    (\code{\link{hasse}});
+  \item split direct and indirect evidence (\code{\link{netsplit}});
   \item automated drawing of network graphs (\code{\link{netgraph}})
     described in Rücker & Schwarzer (2016).
   }

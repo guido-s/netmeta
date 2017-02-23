@@ -78,10 +78,23 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
                                       varTE = round(varTE.s, 8),
                                       resid = round(varTE.diff, 8)))
     }
-
-
     ##
+    iTE <- sum(inconsistent.TE)
+    ivarTE <- sum(inconsistent.varTE)
     ##
+    studlab.inconsistent.TE <- character()
+    studlab.inconsistent.varTE <- character()
+    if (iTE > 0 )
+      studlab.inconsistent.TE <- studlab.multi[inconsistent.TE]
+    if (ivarTE > 0 )
+      studlab.inconsistent.varTE <- studlab.multi[inconsistent.varTE]
+    ##
+    studlab.inconsistent <- unique(c(studlab.inconsistent.TE, studlab.inconsistent.varTE))
+    
+    
+    ##
+    ## Print information on deviations from consistency assumption in
+    ## multi-arm studies
     ##
     if (details & (sum(inconsistent.TE) > 0 | sum(inconsistent.varTE) > 0)) {
       if (length(dat.TE$studlab) > 1) {
@@ -111,14 +124,12 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
     ## Generate error message
     ##
     if (sum(inconsistent.TE) > 0 | sum(inconsistent.varTE) > 0) {
-      iTE <- sum(inconsistent.TE)
-      ivarTE <- sum(inconsistent.varTE)
       ##
       if (iTE > 0)
         msgTE <- paste("  ",
-                       if (iTE == 1) "- study " else "- studies ",
+                       if (iTE == 1) "- Study " else "- Studies ",
                        "with inconsistent treatment estimates: ",
-                       paste(paste("'", studlab.multi[inconsistent.TE], "'", sep = ""),
+                       paste(paste("'", studlab.inconsistent.TE, "'", sep = ""),
                              collapse = ", "),
                        "\n",
                        sep = "")
@@ -127,9 +138,13 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       ##
       if (ivarTE > 0)
         msgvarTE <- paste("  ",
-                          if (ivarTE == 1) "- study " else "- studies ",
+                          if (ivarTE == 1) "- Study " else "- Studies ",
                           "with inconsistent variances: ",
-                          paste(paste("'", studlab.multi[inconsistent.varTE], "'", sep = ""),
+                          if (iTE > 0) "        ",
+                          if ((iTE > 1 & ivarTE > 1) |
+                              (iTE == 1 & ivarTE == 1)) "  ",
+                          if (iTE > 1 & ivarTE == 1) "  ",
+                          paste(paste("'", studlab.inconsistent.varTE, "'", sep = ""),
                                 collapse = ", "),
                           "\n",
                           sep = "")
@@ -141,13 +156,15 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
                       if (iTE > 0) "treatment effects ",
                       if (iTE > 0 & ivarTE > 0) "and ",
                       if (ivarTE > 0) "variances ",
-                      "in multi-arm studies!\n",
+                      "in multi-arm ",
+                      if (length(studlab.inconsistent) > 1) "studies" else "study",
+                      "!\n",
                       msgTE,
                       msgvarTE,
-                      "  - please check original data used as input to netmeta()\n",
-                      if (!details) "  - you may re-run netmeta() command with argument\n",
-                      if (!details) "    details.tol.multiarm=TRUE to inspect deviations\n",
-                      "  - argument 'tol.multiarm' in netmeta() can be used to relax\n",
+                      "  - Please check original data used as input to netmeta().\n",
+                      if (!details) "  - You may re-run netmeta() command with argument\n",
+                      if (!details) "    details.tol.multiarm=TRUE to inspect deviations.\n",
+                      "  - Argument tol.multiarm in netmeta() can be used to relax\n",
                       "    consistency assumption for multi-arm studies (if appropriate).",
                       sep ="")
       ##

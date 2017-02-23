@@ -23,7 +23,7 @@ netrank(x, small.values="good")
   \item{sort}{A logical indicating whether printout should be sorted
     by decreasing P-score.}
   \item{digits}{Minimal number of significant digits, see
-    \code{\link{print.default}}.}    
+    \code{\link{print.default}}.}
   \item{\dots}{Additional arguments passed on to
     \code{\link{print.data.frame}} function (used internally).}
 }

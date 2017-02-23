@@ -287,7 +287,8 @@ pairwise <- function(treat,
                           treat1 = treat[[i]],
                           treat2 = treat[[j]],
                           event1 = event[[i]], n1 = n[[i]],
-                          event2 = event[[j]], n2 = n[[j]])
+                          event2 = event[[j]], n2 = n[[j]],
+                          stringsAsFactors = FALSE)
         ##
         dat <- dat[!(is.na(dat$event1) & is.na(dat$n1)), ]
         dat <- dat[!(is.na(dat$event2) & is.na(dat$n2)), ]
@@ -342,7 +343,8 @@ pairwise <- function(treat,
                           treat1 = treat[[i]],
                           treat2 = treat[[j]],
                           n1 = n[[i]], mean1 = mean[[i]], sd1 = sd[[i]],
-                          n2 = n[[j]], mean2 = mean[[j]], sd2 = sd[[j]])
+                          n2 = n[[j]], mean2 = mean[[j]], sd2 = sd[[j]],
+                          stringsAsFactors = FALSE)
         dat <- dat[!(is.na(dat$n1) & is.na(dat$mean1) & is.na(dat$sd1)), ]
         dat <- dat[!(is.na(dat$n2) & is.na(dat$mean2) & is.na(dat$sd2)), ]
         ##
@@ -391,7 +393,8 @@ pairwise <- function(treat,
                           treat1 = treat[[i]],
                           treat2 = treat[[j]],
                           TE1 = TE[[i]], seTE1 = seTE[[i]],
-                          TE2 = TE[[j]], seTE2 = seTE[[j]])
+                          TE2 = TE[[j]], seTE2 = seTE[[j]],
+                          stringsAsFactors = FALSE)
         dat <- dat[!(is.na(dat$TE1) & is.na(dat$seTE1)), ]
         dat <- dat[!(is.na(dat$TE2) & is.na(dat$seTE2)), ]
         ##
@@ -439,7 +442,8 @@ pairwise <- function(treat,
                           treat1 = treat[[i]],
                           treat2 = treat[[j]],
                           event1 = event[[i]], time1 = time[[i]],
-                          event2 = event[[j]], time2 = time[[j]])
+                          event2 = event[[j]], time2 = time[[j]],
+                          stringsAsFactors = FALSE)
         dat <- dat[!(is.na(dat$event1) & is.na(dat$time1)), ]
         dat <- dat[!(is.na(dat$event2) & is.na(dat$time2)), ]
         ##

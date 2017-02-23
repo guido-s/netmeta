@@ -7,18 +7,34 @@
 
   * new function netsplit() to split direct and indirect evidence
 
+  * new functions netposet(), print.netposet(), and plot.netposet() to
+    calculate, print and plot partial ordering of rankings
+
+  * new function hasse() to draw Hasse diagram of partially ordered
+    treatment rankings
+
   * netmeta():
     - can be used with R objects created with pairwise()
     - checks for consistency of treatment effects and variances in
       multi-arm studies
 
-  * Dependency on MASS library added (for consistency checks)
+  * Imports from other libraries added:
+    - MASS (for consistency checks)
+    - Matrix (Boolean sum of Boolean powers)
+    - methods (for Hasse diagram)
+
+  * Suggested packages added (for Hasse diagram):
+    - hasseDiagram
+    - grid
 
   * Bug fixes:
     - netmeta() calculates correct direct evidence estimates under
       random effects model (list components 'TE.direct.random',
       'seTE.direct.random', ..., 'pval.direct.random'); so far results
       from fixed effect model have been used
+    - netmeta() excludes a treatment from list component 'seq' if all
+      comparisons containing the respecitve treatment are excluded due to
+      missing values in treatment effect or standard error
     - netmeasures() does not result in an error if no or only one
       study with two treatments is available
 
@@ -27,6 +43,9 @@
   * New arguments random and tau.preset in netmeasures()
 
   * New functions netsplit() and print.netsplit()
+
+  * Consider ordering of treatments in netrank() which is defined by
+    argument seq in netmeta()
 
  ** Internal changes **
 
@@ -42,6 +61,9 @@
   * nma.krahn():
     - bug fix such that use of function does not result in an error if
       either no or only one study with two treatments is available
+
+  * pairwise():
+    - data.frame commands use argument stringsAsFactors = FALSE
 
   * chkmultiarm():
     new internal function to check consistency of treatment effects

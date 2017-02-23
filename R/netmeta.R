@@ -165,6 +165,8 @@ netmeta <- function(TE, seTE,
     treat2  <- treat2[!(excl)]
     TE      <- TE[!(excl)]
     seTE    <- seTE[!(excl)]
+    ##
+    seq <- seq[seq %in% unique(c(treat1, treat2))]
   }
   ##
   ## Check for correct number of comparisons
