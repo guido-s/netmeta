@@ -4,4 +4,4 @@ cache: packages
 warnings_are_errors: false
 
 before_install:
-Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("Rgraphviz")'
+./install-rgraphviz.sh
