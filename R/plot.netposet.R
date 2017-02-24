@@ -1,7 +1,7 @@
 plot.netposet <- function(x,
                           sel.x = 1, sel.y = 2, sel.z = 3,
                           dim = "2d",
-                          cex = 1.25, col = "black",
+                          cex = 1, col = "black",
                           adj.x = 0, adj.y = 1,
                           offset.x = 0.005, offset.y = -0.005,
                           arrows = TRUE,

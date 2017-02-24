@@ -21,6 +21,9 @@ hasse(x, newpage = TRUE)
 }
 
 \details{
+  Generate a Hasse diagram for a partial order of treatment ranks in a
+  network meta-analysis (Carlsen and Bruggemann, 2014).
+  
   This R function is a wrapper function for R function
   \code{\link[hasseDiagram]{hasse}} in R package \bold{hasseDiagram}
   (Krzysztof Ciomek, \url{https://github.com/kciomek/hasseDiagram}),
@@ -28,36 +31,63 @@ hasse(x, newpage = TRUE)
   \bold{hasseDiagram} is installed.
 }
 
+\references{
+  Carlsen L, Bruggemann R (2014),
+  Partial order methodology: a valuable tool in chemometrics.
+  \emph{Journal of Chemometrics},
+  \bold{28} 226--34, DOI:10.1002/cem.2569
+}
+
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
 \seealso{\code{\link{netmeta}}, \code{\link{netposet}}}
 
 \examples{
-## Ribassin-Majed et al. (2017), J. Clin. Oncol.
-##
-outcomes <- c("OS", "PFS", "LC", "DC")
-treatments <- c("RT", "IC-RT", "IC-CRT", "CRT",
-                "CRT-AC", "RT-AC", "IC-RT-AC")
-##
-## P-scores (from Table 1)
-##
-pscore.os  <- c(15, 33, 63, 70, 96, 28, 45) / 100
-pscore.pfs <- c( 4, 46, 79, 52, 94, 36, 39) / 100
-pscore.lc  <- c( 9, 27, 47, 37, 82, 58, 90) / 100
-pscore.dc  <- c(16, 76, 95, 48, 72, 32, 10) / 100
-
-pscore.matrix <- data.frame(pscore.os, pscore.pfs, pscore.lc, pscore.dc)
-rownames(pscore.matrix) <- treatments
-colnames(pscore.matrix) <- outcomes
-pscore.matrix
-
-po <- netposet(pscore.matrix)
-po12 <- netposet(pscore.matrix[, 1:2])
-po
-po12
-
+# Use depression dataset
+#
+data(Linde2015)
+#
+# Define order of treatments
+#
+trts <- c("TCA", "SSRI", "SNRI", "NRI",
+          "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
+          "Placebo")
+#
+# Outcome labels
+#
+outcomes <- c("Early response", "Early remission")
+#
+# (1) Early response
+#
+p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+               event = list(resp1, resp2, resp3),
+               n = list(n1, n2, n3),
+               studlab = id, data = Linde2015, sm = "OR")
+#
+net1 <- netmeta(p1,
+                comb.fixed = FALSE, comb.random = TRUE,
+                seq = trts, ref = "Placebo")
+#
+# (2) Early remission
+#
+p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+               event = list(remi1, remi2, remi3),
+               n = list(n1, n2, n3),
+               studlab = id, data = Linde2015, sm = "OR")
+#
+net2 <- netmeta(p2,
+                comb.fixed = FALSE, comb.random = TRUE,
+                seq = trts, ref = "Placebo")
+#
+# Partial order of treatment rankings (all five outcomes)
+#
+po <- netposet(netrank(net1, small.values = "bad"),
+               netrank(net2, small.values = "bad"),
+               outcomes = outcomes)
+#
+# Hasse diagram
+#
 hasse(po)
-hasse(po12)
 }
 
 \keyword{Hasse diagram}

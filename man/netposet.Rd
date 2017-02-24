@@ -29,17 +29,18 @@ netposet(..., outcomes, treatments, small.values)
   In network meta-analysis, frequently different outcomes are
   considered which may each provide a different ordering of
   treatments. The concept of a partially ordered set (in short, a
-  \emph{poset}) of treatments can be used to gain further insights in
-  situations with apparently conflicting orderings.
+  \emph{poset}, Carlsen and Bruggemann, 2014) of treatments can be
+  used to gain further insights in situations with apparently
+  conflicting orderings.
 
   In function \code{netposet}, argument \code{\dots} can be any of the
   following:
   \itemize{
+  \item arbitrary number of \code{netrank} objects providing P-scores;
+  \item arbitrary number of \code{netmeta} objects;
   \item single ranking matrix with each column providing P-scores
     (Rücker and Schwarzer 2015) or SUCRA values (Salanti et al. 2011)
-    for an outcome and rows corresponding to treatments;
-  \item arbitrary number of \code{netrank} objects providing P-scores;
-  \item arbitrary number of \code{netmeta} objects.
+    for an outcome and rows corresponding to treatments.
   }
   Note, albeit in general a ranking matrix is not constrained to have
   values between 0 and 1, \code{netposet} stops with an error in this
@@ -88,6 +89,11 @@ netposet(..., outcomes, treatments, small.values)
 }
 
 \references{
+  Carlsen L, Bruggemann R (2014),
+  Partial order methodology: a valuable tool in chemometrics.
+  \emph{Journal of Chemometrics},
+  \bold{28} 226--34, DOI:10.1002/cem.2569
+
   Rücker G & Schwarzer G (2015),
   Ranking treatments in frequentist network meta-analysis works
   without resampling methods.
@@ -106,34 +112,149 @@ netposet(..., outcomes, treatments, small.values)
 \seealso{\code{\link{netmeta}}, \code{\link{hasse}}, \code{\link{plot.netposet}}}
 
 \examples{
-## Ribassin-Majed et al. (2017), J. Clin. Oncol.
-##
+# Use depression dataset
+#
+data(Linde2015)
+#
+# Define order of treatments
+#
+trts <- c("TCA", "SSRI", "SNRI", "NRI",
+          "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
+          "Placebo")
+#
+# Outcome labels
+#
+outcomes <- c("Early response", "Early remission",
+              "Lost to follow-up", "Lost to follow-up due to AEs",
+              "Adverse events (AEs)")
+#
+# (1) Early response
+#
+p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+               event = list(resp1, resp2, resp3),
+               n = list(n1, n2, n3),
+               studlab = id, data = Linde2015, sm = "OR")
+#
+net1 <- netmeta(p1,
+                comb.fixed = FALSE, comb.random = TRUE,
+                seq = trts, ref = "Placebo")
+#
+# (2) Early remission
+#
+p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+               event = list(remi1, remi2, remi3),
+               n = list(n1, n2, n3),
+               studlab = id, data = Linde2015, sm = "OR")
+#
+net2 <- netmeta(p2,
+                comb.fixed = FALSE, comb.random = TRUE,
+                seq = trts, ref = "Placebo")
+#
+# (3) Loss to follow-up
+#
+p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+               event = list(loss1, loss2, loss3),
+               n = list(n1, n2, n3),
+               studlab = id, data = Linde2015, sm = "OR")
+#
+net3 <- netmeta(p3,
+                comb.fixed = FALSE, comb.random = TRUE,
+                seq = trts, ref = "Placebo")
+#
+# (4) Loss to follow-up due to adverse events
+#
+p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+               event = list(loss.ae1, loss.ae2, loss.ae3),
+               n = list(n1, n2, n3),
+               studlab = id, data = subset(Linde2015, id != 55),
+               sm = "OR")
+#
+net4 <- netmeta(p4,
+                comb.fixed = FALSE, comb.random = TRUE,
+                seq = trts, ref = "Placebo")
+#
+# (5) Adverse events
+#
+p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+               event = list(ae1, ae2, ae3),
+               n = list(n1, n2, n3),
+               studlab = id, data = Linde2015, sm = "OR")
+#
+net5 <- netmeta(p5,
+                comb.fixed = FALSE, comb.random = TRUE,
+                seq = trts, ref = "Placebo")
+#
+# Partial order of treatment rankings (all five outcomes)
+#
+po.ranks <- netposet(netrank(net1, small.values = "bad"),
+                     netrank(net2, small.values = "bad"),
+                     netrank(net3, small.values = "good"),
+                     netrank(net4, small.values = "good"),
+                     netrank(net5, small.values = "good"),
+                     outcomes = outcomes)
+#
+# Same result
+#
+po.nets <- netposet(net1, net2, net3, net4, net5,
+                    small.values = c("bad", "bad", "good", "good", "good"),
+                    outcomes = outcomes)
+#
+all.equal(po.ranks, po.nets)
+#
+# Print matrix with P-scores
+#
+po.nets$P.matrix
+#
+# Hasse diagram for all outcomes
+#
+hasse(po.ranks)
+#
+# Hasse diagram for outcomes early response and early remission
+#
+po12 <- netposet(netrank(net1, small.values = "bad"),
+                 netrank(net2, small.values = "bad"),
+                 outcomes = outcomes[1:2])
+hasse(po12)
+#
+# Scatter plot
+#
+oldpar <- par(pty = "s")
+plot(po12)
+par(oldpar)
+
+
+# Example using ranking matrix with P-scores
+#
+# Ribassin-Majed L, Marguet S, Lee A.W., et al. (2017),
+# What is the best treatment of locally advanced nasopharyngeal
+# carcinoma? An individual patient data network meta-analysis.
+# Journal of Clinical Oncology.
+# 35, 498-505, DOI:10.1200/JCO.2016.67.4119
+#
 outcomes <- c("OS", "PFS", "LC", "DC")
 treatments <- c("RT", "IC-RT", "IC-CRT", "CRT",
                 "CRT-AC", "RT-AC", "IC-RT-AC")
-##
-## P-scores (from Table 1)
-##
+#
+# P-scores (from Table 1)
+#
 pscore.os  <- c(15, 33, 63, 70, 96, 28, 45) / 100
 pscore.pfs <- c( 4, 46, 79, 52, 94, 36, 39) / 100
 pscore.lc  <- c( 9, 27, 47, 37, 82, 58, 90) / 100
 pscore.dc  <- c(16, 76, 95, 48, 72, 32, 10) / 100
-
+#
 pscore.matrix <- data.frame(pscore.os, pscore.pfs, pscore.lc, pscore.dc)
 rownames(pscore.matrix) <- treatments
 colnames(pscore.matrix) <- outcomes
 pscore.matrix
-
-
+#
 po <- netposet(pscore.matrix)
 po12 <- netposet(pscore.matrix[, 1:2])
 po
 po12
-
-
+#
 hasse(po)
 hasse(po12)
-
+#
 oldpar <- par(pty = "s")
 plot(po12)
 par(oldpar)
