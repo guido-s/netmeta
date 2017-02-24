@@ -14,9 +14,10 @@ hasse(x, newpage = TRUE)
 }
 
 \arguments{
-  \item{x}{An object of class \code{netposet} (mandatory).}
-  \item{newpage}{A logical value indicating whether a new figure should
-    be printed in an existing graphics window.}
+  \item{x}{An object of class \code{netposet} (mandatory).}  
+  \item{newpage}{A logical value indicating whether a new figure
+    should be printed in an existing graphics window. Otherwise, the
+    Hasse diagram is added to the existing figure.}
 }
 
 \details{
@@ -25,10 +26,6 @@ hasse(x, newpage = TRUE)
   (Krzysztof Ciomek, \url{https://github.com/kciomek/hasseDiagram}),
   i.e., function \code{hasse} can only be used if R package
   \bold{hasseDiagram} is installed.
-}
-
-\references{
-  ...
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}

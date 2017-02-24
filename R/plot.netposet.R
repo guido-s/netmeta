@@ -13,9 +13,14 @@ plot.netposet <- function(x,
   
   
   meta:::chkclass(x, "netposet")
+  ##
+  p.matrix <- x$P.matrix
   ##  
-  n.outcomes   <- length(x$outcomes)
-  n.treatments <- length(x$treatments)
+  outcomes <- colnames(p.matrix)
+  treatments <- rownames(p.matrix)
+  ##
+  n.outcomes   <- length(outcomes)
+  n.treatments <- length(treatments)
   
   
   sel.x <- as.numeric(meta:::setchar(sel.x, seq_len(n.outcomes)))
@@ -54,24 +59,30 @@ plot.netposet <- function(x,
   meta:::chknumeric(lty.grid, min = 0, zero = 0, single = TRUE)
   meta:::chknumeric(lwd.grid, min = 0, zero = 0, single = TRUE)
   
-  
+  print(length(cex))
   if (!(length(cex) %in% c(1, n.treatments)))
-    stop("Argument 'cex' must be a single numeric or vector of length", n.treatments)
+    stop("Argument 'cex' must be a single numeric or vector of length ",
+         n.treatments, ".")
   ##
   if (!(length(col) %in% c(1, n.treatments)))
-    stop("Argument 'col' must be a character string or vector of length", n.treatments)
+    stop("Argument 'col' must be a character string or vector of length ",
+         n.treatments, ".")
   ##
   if (!(length(adj.x) %in% c(1, n.treatments)))
-    stop("Argument 'adj.x' must be a single numeric or vector of length", n.treatments)
+    stop("Argument 'adj.x' must be a single numeric or vector of length ",
+         n.treatments, ".")
   ##
   if (!(length(adj.y) %in% c(1, n.treatments)))
-    stop("Argument 'adj.y' must be a single numeric or vector of length", n.treatments)
+    stop("Argument 'adj.y' must be a single numeric or vector of length ",
+         n.treatments, ".")
   ##
   if (!(length(offset.x) %in% c(1, n.treatments)))
-    stop("Argument 'offset.x' must be a single numeric or vector of length", n.treatments)
+    stop("Argument 'offset.x' must be a single numeric or vector of length ",
+         n.treatments, ".")
   ##
   if (!(length(offset.y) %in% c(1, n.treatments)))
-    stop("Argument 'offset.y' must be a single numeric or vector of length", n.treatments)
+    stop("Argument 'offset.y' must be a single numeric or vector of length ",
+         n.treatments, ".")
   
   
   if (length(cex) == 1)
@@ -93,15 +104,12 @@ plot.netposet <- function(x,
     offset.y <- rep(offset.y, n.treatments)
   
   
-  p.matrix <- x$pscore.matrix
-  
-  
   seq.treats <- seq_len(n.treatments)
   ##
   if (is_2d) {
     plot(p.matrix[, sel.x], p.matrix[, sel.y],
          type = "n",
-         xlab = x$outcomes[sel.x], ylab = x$outcomes[sel.y],
+         xlab = outcomes[sel.x], ylab = outcomes[sel.y],
          xlim = c(0, 1), ylim = c(0, 1),
          ...)
     
@@ -119,7 +127,7 @@ plot.netposet <- function(x,
     ##
     for (i in seq.treats) {
       for (j in seq.treats) {
-        if (x$M0[i, j] == 1) {
+        if (x$M0.matrix[i, j] == 1) {
           if (arrows)
             arrows(p.matrix[i, sel.x], p.matrix[i, sel.y],
                    p.matrix[j, sel.x], p.matrix[j, sel.y],
@@ -142,13 +150,13 @@ plot.netposet <- function(x,
   }
   else {
     rgl::plot3d(p.matrix[, sel.x], p.matrix[, sel.y], p.matrix[, sel.z], 
-                xlab = x$outcomes[sel.x],
-                ylab = x$outcomes[sel.y],
-                zlab = x$outcomes[sel.z])
+                xlab = outcomes[sel.x],
+                ylab = outcomes[sel.y],
+                zlab = outcomes[sel.z])
     ##
     for (i in seq.treats)
       for (j in seq.treats)
-        if (x$M0[i, j] == 1)
+        if (x$M0.matrix[i, j] == 1)
           rgl::lines3d(x = c(p.matrix[i, sel.x], p.matrix[j, sel.x]),
                        y = c(p.matrix[i, sel.y], p.matrix[j, sel.y]),
                        z = c(p.matrix[i, sel.z], p.matrix[j, sel.z]),

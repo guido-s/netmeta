@@ -1,4 +1,4 @@
-netposet <- function(..., outcomes, small.values) {
+netposet <- function(..., outcomes, treatments, small.values) {
   
   
   args <- list(...)
@@ -9,23 +9,57 @@ netposet <- function(..., outcomes, small.values) {
       stop("First argument must be a matrix or data frame if only a single argument is provided.",
            call. = FALSE)
     ##
+    if (!missing(small.values))
+      warning("Argument 'small.values' is ignored as first argument is a ranking matrix.")
+    ##
     pscore.matrix <- args[[1]]
     ##
-    if (ncol(pscore.matrix) == 1)
+    if (any(pscore.matrix > 1) | any(pscore.matrix < 0))
+      stop("All elements of ranking matrix must be between 0 and 1.")
+    ##
+    n.outcomes <- ncol(pscore.matrix)
+    n.treatments <- nrow(pscore.matrix)
+    ##
+    if (n.outcomes == 1)
       stop("Minimum number of two outcomes (equal to number of columns of ranking matrix).",
            call. = FALSE)
     ##
     if (!missing(outcomes)) {
-      if (length(outcomes) != ncol(pscore.matrix))
+      if (length(outcomes) != n.outcomes)
         stop("Number of outcomes provided by argument 'outcomes' is different from number of columns of ranking matrix.",
              call. = FALSE)
-      colnames(pscore.matrix) <- outcomes
     }
     else
       outcomes <- colnames(pscore.matrix)
+    ##
+    if (!missing(treatments)) {
+      if (length(treatments) != n.treatments)
+        stop("Number of treatments provided by argument 'treatments' is different from number of rows of ranking matrix.",
+             call. = FALSE)
+    }
+    else
+      treatments <- rownames(pscore.matrix)
+    ##
+    if (is.null(outcomes)) {
+      warning("Outcomes are labelled 'A' to '", LETTERS[n.outcomes],
+              "' as argument 'outcomes' is missing and column names are NULL.")
+      outcomes <- LETTERS[1:n.outcomes]
+    }
+    ##
+    if (is.null(treatments)) {
+      warning("Treatments are labelled 'a' to '", letters[n.treatments],
+              "' as row names are NULL.")
+      treatments <- letters[1:n.treatments]
+    }
+    ##
+    rownames(pscore.matrix) <- treatments
+    colnames(pscore.matrix) <- outcomes
   }
   else {
     n.outcomes <- length(args)
+    ##
+    if (!missing(treatments))
+      warning("Argument 'treatments' ignored (only needed if first argument is a ranking matrix).")
     ##
     if (missing(outcomes)) {
       warning("Outcomes are labelled 'A' to '", LETTERS[n.outcomes],
@@ -123,8 +157,6 @@ netposet <- function(..., outcomes, small.values) {
   
   n <- dim(pscore.matrix)[1]
   o <- dim(pscore.matrix)[2]
-  ##
-  mean.rank <- rowMeans(pscore.matrix)
   
   
   Pos <- M <- matrix(0, nrow = n, ncol = n)
@@ -161,13 +193,9 @@ netposet <- function(..., outcomes, small.values) {
   M0 <- M - sign(M %*% M)
   
   
-  res <- list(outcomes = outcomes,
-              treatments = rownames(M0),
-              M0 = M0, M = M, PO = PO,
-              mean.rank = mean.rank,
-              pscore.matrix = pscore.matrix,
-              version = packageDescription("netmeta")$Version
-              )
+  res <- list(P.matrix = pscore.matrix,
+              M0.matrix = M0, M.matrix = M, O.matrix = PO,
+              version = packageDescription("netmeta")$Version)
   ##
   class(res) <- "netposet"
   
