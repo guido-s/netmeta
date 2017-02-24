@@ -18,10 +18,7 @@
     - checks for consistency of treatment effects and variances in
       multi-arm studies
 
-  * Imports from other libraries added:
-    - MASS (for consistency checks)
-    - Matrix (Boolean sum of Boolean powers)
-    - methods (for Hasse diagram)
+  * Import ginv() from R package MASS (for consistency checks)
 
   * Suggested packages added (for Hasse diagram):
     - hasseDiagram

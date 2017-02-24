@@ -24,6 +24,10 @@ network meta-analysis:
   - ranking of treatments based on frequentist analogue of SUCRA
     (Rücker & Schwarzer, 2015);
 
+  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset';
+
+  - split direct and indirect evidence;
+
   - automated drawing of network graphs (Rücker & Schwarzer, 2016).
 
 Furthermore, R package **netmeta** provides functions and datasets to

@@ -13,9 +13,14 @@
 \method{plot}{netposet}(x,
      sel.x = 1, sel.y = 2, sel.z = 3,
      dim = "2d",
-     col = "darkblue", col.lines = 8,
-     cex = 1, pch = 3, lty = 1, lwd = 2,
-     tcex = 0.8,
+     cex = 1.25, col = "black",
+     adj.x = 0, adj.y = 1,
+     offset.x = 0.005, offset.y = -0.005,
+     arrows = TRUE,
+     col.lines = "black", lty.lines = 1, lwd.lines = 1,
+     length = 0.05,
+     grid = TRUE,
+     col.grid = "gray", lty.grid = 2, lwd.grid = 1,
      ...)
 }
 
@@ -24,14 +29,26 @@
   \item{sel.x}{.}
   \item{sel.y}{.}
   \item{sel.z}{.}
-  \item{dim}{.}
-  \item{col}{.}
-  \item{col.lines}{.}
-  \item{cex}{.}
-  \item{pch}{.}
-  \item{lty}{.}
-  \item{lwd}{.}
-  \item{tcex}{.}
+  \item{dim}{A character string indicating whether a 2- or
+    3-dimensional plot should be produced, either \code{"2d"} or
+    \code{"3d"}.}
+  \item{cex}{The magnification to be used for treatment labels.}
+  \item{col}{A vector with with colour of treatment labels.}
+  \item{adj.x}{Value(s) in [0, 1] to specify adjustment of treatment
+    labels on x-axis; see \code{\link[graphics]{text}}.}
+  \item{adj.y}{Value(s) in [0, 1] to specify adjustment of treatment
+    labels on y-axis; see \code{\link[graphics]{text}}.}
+  \item{offset.x}{Offset of treatment labels on x-axis.}
+  \item{offset.y}{Offset of treatment labels on x-axis.}
+  \item{arrows}{A logical indicating whether arrows should be printed.}
+  \item{col.lines}{Line colour.}
+  \item{lty.lines}{Line type.}
+  \item{lwd.lines}{Line width.}
+  \item{length}{Length of arrows; see \code{\link[graphics]{arrows}}.}
+  \item{grid}{A logical indicating whether a grid lines should be added to plot.}
+  \item{col.grid}{Colour of grid lines.}
+  \item{lty.grid}{Line type of grid lines.}
+  \item{lwd.grid}{Line width of grid lines.}
   \item{\dots}{Additional graphical arguments.}
 }
 

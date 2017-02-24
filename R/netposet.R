@@ -158,8 +158,7 @@ netposet <- function(..., outcomes, small.values) {
   
   ## Skipping each direct path where a path of length 2 is found
   ##
-  M <- as(M, "nMatrix")
-  M0 <- M - M %&% M
+  M0 <- M - sign(M %*% M)
   
   
   res <- list(outcomes = outcomes,

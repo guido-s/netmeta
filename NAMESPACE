@@ -42,7 +42,3 @@ importFrom("stats", "dist", "hclust", "pchisq", "prcomp", "rnorm", "sd")
 importFrom("utils", "installed.packages", "packageDescription")
 
 importFrom("MASS", "ginv")
-
-importFrom("Matrix", "%&%")
-
-importFrom("methods", "as")
