@@ -102,7 +102,7 @@ data(Woods2010)
 p1 <- pairwise(treatment, event = r, n = N,
                studlab = author, data = Woods2010, sm = "OR")
 #
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data = p1)
+net1 <- netmeta(p1)
 #
 print(netsplit(net1), digits = 2)
 print(netsplit(net1), digits = 2,

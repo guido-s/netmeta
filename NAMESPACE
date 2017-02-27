@@ -13,7 +13,7 @@ export(netmeta,
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
 # format.TE, p.ci, tau.within, decomp.tau, stress,
-# shadowtext, chklist, chkmultiarm
+# shadowtext, chklist, chkmultiarm, lowertri
 
 S3method(as.data.frame, netmeta)
 S3method(print, netmeta)

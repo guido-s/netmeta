@@ -66,6 +66,11 @@
     new internal function to check consistency of treatment effects
     and variances in multi-arm studies; calls ginv() from MASS library
 
+  * lowertri():
+    new internal function to extract elements from the lower triangle
+    of a matrix
+
+
 *** netmeta, version 0.9-2, 2016-11-19 ***
 
  ** Major changes **

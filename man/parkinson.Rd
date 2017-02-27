@@ -57,7 +57,7 @@ p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
 p1
 
 # Conduct network meta-analysis
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data=p1)
+net1 <- netmeta(p1)
 net1
 
 # Draw network graphs

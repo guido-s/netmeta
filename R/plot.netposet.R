@@ -11,7 +11,6 @@ plot.netposet <- function(x,
                           col.grid = "gray", lty.grid = 2, lwd.grid = 1,
                           ...) {
   
-  
   meta:::chkclass(x, "netposet")
   ##
   p.matrix <- x$P.matrix

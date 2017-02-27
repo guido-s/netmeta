@@ -43,7 +43,7 @@ p1 <- pairwise(treatment, event = r, n = N,
 p1
 
 # Conduct network meta-analysis
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data = p1)
+net1 <- netmeta(p1)
 net1
 }
 

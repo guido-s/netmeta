@@ -53,12 +53,12 @@ p1
 # Conduct network meta-analysis using incidence rate ratios (sm="IRR").
 # Note, the argument 'sm' is not necessary as this is the default in R
 # function metainc called internally
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data=p1, sm="IRR")
+net1 <- netmeta(p1, sm="IRR")
 summary(net1)
 
 # Conduct network meta-analysis using incidence rate differences
 # (sm="IRD").
-net2 <- netmeta(TE, seTE, treat1, treat2, studlab, data=p1, sm="IRD")
+net2 <- netmeta(p1, sm="IRD")
 summary(net2)
 
 # Draw network graph

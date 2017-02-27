@@ -172,7 +172,7 @@ p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
 p1
 
 # Conduct network meta-analysis
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data=p1)
+net1 <- netmeta(p1)
 net1
 
 # Draw network graphs
@@ -210,7 +210,7 @@ all.equal(p1[, c("TE", "seTE", "studlab", "treat1", "treat2")],
 
 # Same result as network meta-analysis based on continuous outcomes
 # (object net1)
-\dontrun{net2 <- netmeta(TE, seTE, treat1, treat2, studlab, data=p2)
+\dontrun{net2 <- netmeta(p2)
 net2}
 
 
@@ -229,7 +229,7 @@ p3 <- pairwise(list(treat1, treat2, treat3),
 p3
 
 # Conduct network meta-analysis
-net3 <- netmeta(TE, seTE, treat1, treat2, studlab, data=p3)
+net3 <- netmeta(p3)
 net3
 
 #
@@ -248,7 +248,7 @@ p4
 # Conduct network meta-analysis using incidence rate ratios (sm="IRR").
 # Note, the argument 'sm' is not necessary as this is the default in R
 # function metainc called internally
-net4 <- netmeta(TE, seTE, treat1, treat2, studlab, data=p4, sm="IRR")
+net4 <- netmeta(p4, sm="IRR")
 summary(net4)
 
 #
@@ -265,7 +265,7 @@ p5 <- pairwise(treatment, event=r, n=N,
 p5
 
 # Conduct network meta-analysis
-net5 <- netmeta(TE, seTE, treat1, treat2, studlab, data=p5)
+net5 <- netmeta(p5)
 net5
 
 }

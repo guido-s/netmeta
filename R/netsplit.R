@@ -1,12 +1,10 @@
 netsplit <- function(x) {
-  ##
-  lowertri <- function(x)
-    x[lower.tri(x)]
-  ##
-  comparison <- names(x$prop.direct.fixed)
+  
+  meta:::chkclass(x, "netmeta")
+  
+  
   ##
   ## Fixed effect model
-  ##
   ##
   prop.fixed <- x$prop.direct.fixed
   ##
@@ -41,6 +39,8 @@ netsplit <- function(x) {
                         upper = m.fixed$upper,
                         z = m.fixed$zval,
                         p = m.fixed$pval)
+  
+  
   ##
   ## Random effects model
   ##
@@ -77,8 +77,9 @@ netsplit <- function(x) {
                          upper = m.random$upper,
                          z = m.random$zval,
                          p = m.random$pval)
-  ##
-  res <- list(comparison = comparison,
+  
+  
+  res <- list(comparison = names(x$prop.direct.fixed),
               ##
               prop.fixed = prop.fixed,
               fixed = fixed,
@@ -100,6 +101,6 @@ netsplit <- function(x) {
               )
   ##
   class(res) <- "netsplit"
-  ##
+  
   res
 }
