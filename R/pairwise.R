@@ -26,6 +26,9 @@ pairwise <- function(treat,
                data, enclos = sys.frame(sys.parent()))
   time <- eval(mf[[match("time", names(mf))]],
                data, enclos = sys.frame(sys.parent()))
+
+  args <- list(...)
+  nam.args <- names(args)
   
   
   if (is.null(treat))
@@ -260,6 +263,7 @@ pairwise <- function(treat,
   
   
   narms <- length(treat)
+  nstud <- length(studlab)
   
   
   if (type == "binary") {
@@ -320,24 +324,53 @@ pairwise <- function(treat,
     if (length(sd) != narms)
       stop("Different length of lists 'treat' and 'sd'.")
     ##
+    for (i in seq_len(narms)) {
+      ##
+      if (length(treat[[i]]) != length(n[[i]]))
+        stop("Different length of element ", i, " of lists 'treat' and 'n'.",
+             call. = FALSE)
+      if (length(treat[[i]]) != length(mean[[i]]))
+        stop("Different length of element ", i, " of lists 'treat' and 'mean'.",
+             call. = FALSE)
+      if (length(treat[[i]]) != length(sd[[i]]))
+        stop("Different length of element ", i, " of lists 'treat' and 'sd'.",
+             call. = FALSE)
+      if (length(treat[[i]]) != nstud)
+        stop("Different length of study labels and element ", i, " of list 'treat'.",
+             call. = FALSE)
+    }
+    ##
+    ## For standardized mean difference, calculate pooled standard
+    ## deviation for multi-arm studies
+    ##
+    if ("sm" %in% nam.args && (args$sm == "SMD" & narms > 2)) {
+      pooled.sd <- function(sd, n)
+        sqrt(sum((n - 1) * sd^2) / sum(n - 1))
+      ##
+      N <- matrix(unlist(n), ncol = narms, nrow = nstud, byrow = FALSE)
+      M <- matrix(unlist(mean), ncol = narms, nrow = nstud, byrow = FALSE)
+      S <- matrix(unlist(sd), ncol = narms, nrow = nstud, byrow = FALSE)
+      ##
+      sel.n <- apply(!is.na(N) & N > 0, 1, sum) > 2
+      sel.mean <- apply(!is.na(M), 1, sum) > 2
+      sel.sd <- apply(!is.na(S) & S > 0, 1, sum) > 2
+      sel <- sel.n & sel.mean & sel.sd
+      ##
+      if (any(sel)) {
+        N <- N[sel, , drop = FALSE]
+        S <- S[sel, , drop = FALSE]
+        sd.p <- rep_len(NA, nrow(N))
+        ##
+        for (i in seq_len(nrow(N)))
+          sd.p[i] <- pooled.sd(S[i, ], N[i, ])
+      }
+      ##
+      for (i in seq_len(narms))
+        sd[[i]][sel] <- sd.p
+    }
+    ##
     for (i in 1:(narms - 1)) {
-      ##
-      if (i == 1 & (length(treat[[i]]) != length(n[[i]])))
-        stop("Different length of element ", i, " of lists 'treat' and 'n'.")
-      if (i == 1 & (length(treat[[i]]) != length(mean[[i]])))
-        stop("Different length of element ", i, " of lists 'treat' and 'mean'.")
-      if (i == 1 & (length(treat[[i]]) != length(sd[[i]])))
-        stop("Different length of element ", i, " of lists 'treat' and 'sd'.")
-      ##
       for (j in (i + 1):narms) {
-        ##
-        if (length(treat[[j]]) != length(n[[j]]))
-          stop("Different length of element ", j, " of lists 'treat' and 'n'.")
-        if (length(treat[[j]]) != length(mean[[j]]))
-          stop("Different length of element ", j, " of lists 'treat' and 'mean'.")
-        if (length(treat[[j]]) != length(sd[[j]]))
-          stop("Different length of element ", j, " of lists 'treat' and 'sd'.")
-        ##
         dat <- data.frame(TE = NA, seTE = NA,
                           studlab = studlab,
                           treat1 = treat[[i]],

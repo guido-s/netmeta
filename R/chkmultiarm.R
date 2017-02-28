@@ -7,17 +7,13 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
   if (any(sel.multi)) {
     studlab.multi <- names(tabnarms)[sel.multi]
     ##
-    dat.TE <- data.frame(studlab = "",
-                         treat1 = "",
-                         treat2 = "",
-                         TE = NA,
-                         resid = NA)
+    dat.TE <- data.frame(studlab = "", treat1 = "", treat2 = "",
+                         TE = NA, resid = NA,
+                         stringsAsFactors = FALSE)
     ##
-    dat.varTE <- data.frame(studlab = "",
-                            treat1 = "",
-                            treat2 = "",
-                            varTE = NA,
-                            resid = NA)
+    dat.varTE <- data.frame(studlab = "", treat1 = "", treat2 = "",
+                            varTE = NA, resid = NA,
+                            stringsAsFactors = FALSE)
     ##
     inconsistent.TE <- inconsistent.varTE <- rep_len(NA, sum(sel.multi))
     ##
@@ -59,7 +55,8 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
                                    treat1 = treat1.s,
                                    treat2 = treat2.s,
                                    TE = round(TE.s, 8),
-                                   resid = round(TE.diff, 8)))
+                                   resid = round(TE.diff, 8),
+                                   stringsAsFactors = FALSE))
       ##
       ## Check standard errors
       ##
@@ -76,7 +73,8 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
                                       treat1 = treat1.s,
                                       treat2 = treat2.s,
                                       varTE = round(varTE.s, 8),
-                                      resid = round(varTE.diff, 8)))
+                                      resid = round(varTE.diff, 8),
+                                      stringsAsFactors = FALSE))
     }
     ##
     iTE <- sum(inconsistent.TE)

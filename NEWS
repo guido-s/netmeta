@@ -44,6 +44,10 @@
   * Consider ordering of treatments in netrank() which is defined by
     argument seq in netmeta()
 
+  * For multi-arm studoes, calculate pooled standard deviation in
+    pairwise() if means and standard deviations are provided and
+    summary measure is equal to "SMD"
+
  ** Internal changes **
 
   * netmeta():
