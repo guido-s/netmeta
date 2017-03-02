@@ -11,12 +11,18 @@
 \usage{
 netrank(x, small.values="good")
 
-\method{print}{netrank}(x, sort=TRUE, digits=max(4, .Options$digits - 3), ...)
+\method{print}{netrank}(x,
+      comb.fixed = x$x$comb.fixed, comb.random = x$x$comb.random,
+      sort=TRUE, digits=max(4, .Options$digits - 3), ...)
 }
 
 \arguments{
   \item{x}{An object of class \code{netmeta} (netrank function) or
     \code{netrank} (print function).}
+  \item{comb.fixed}{A logical indicating whether to print P-scores for
+    fixed effect model.}
+  \item{comb.random}{A logical indicating whether to print P-scores
+    for random effects model.}
   \item{small.values}{A character string specifying whether small
     treatment effects indicate a beneficial (\code{"good"}) or harmful
     (\code{"bad"}) effect, can be abbreviated.}
@@ -56,9 +62,15 @@ netrank(x, small.values="good")
 \value{
   An object of class \code{netrank} with corresponding \code{print}
   function. The object is a list containing the following components:
-  \item{Pscore}{A named numeric vector with P-scores.}
-  \item{Pmatrix}{Numeric matrix based on pairwise one-sided p-values.}
-  \item{small.values, x}{As defined above.}
+  \item{Pscore.fixed}{A named numeric vector with P-scores for fixed
+    effect model.}
+  \item{Pmatrix.fixed}{Numeric matrix based on pairwise one-sided
+    p-values for fixed effect model.}
+  \item{Pscore.random}{A named numeric vector with P-scores for random
+    effects model.}
+  \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided
+    p-values of random effects model.}
+  \item{small.values x}{As defined above.}
   \item{version}{Version of R package netmeta used to create object.}
 }
 
@@ -86,12 +98,25 @@ data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
+net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data=Senn2013, sm="MD",
+		comb.fixed=FALSE, comb.random=TRUE)
+net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data=Senn2013, sm="MD",
+		comb.random=TRUE)
 
 nr1 <- netrank(net1)
-
 nr1
-
 print(nr1, sort=FALSE)
+
+nr2 <- netrank(net2)
+nr2
+print(nr2, sort=FALSE)
+
+nr3 <- netrank(net3)
+nr3
+print(nr3, sort="fixed")
+print(nr3, sort=FALSE)
 }
 
 \keyword{print}

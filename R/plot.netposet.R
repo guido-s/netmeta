@@ -1,4 +1,5 @@
 plot.netposet <- function(x,
+                          pooled=ifelse(x$comb.random, "random", "fixed"),
                           sel.x = 1, sel.y = 2, sel.z = 3,
                           dim = "2d",
                           cex = 1, col = "black",
@@ -13,7 +14,17 @@ plot.netposet <- function(x,
   
   meta:::chkclass(x, "netposet")
   ##
-  p.matrix <- x$P.matrix
+  pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  
+  
+  if (pooled == "fixed") {
+    p.matrix <- x$P.fixed
+    M0 <- x$M0.fixed
+  }
+  else {
+    p.matrix <- x$P.random
+    M0 <- x$M0.random
+  }
   ##  
   outcomes <- colnames(p.matrix)
   treatments <- rownames(p.matrix)
@@ -58,7 +69,7 @@ plot.netposet <- function(x,
   meta:::chknumeric(lty.grid, min = 0, zero = 0, single = TRUE)
   meta:::chknumeric(lwd.grid, min = 0, zero = 0, single = TRUE)
   
-  print(length(cex))
+  
   if (!(length(cex) %in% c(1, n.treatments)))
     stop("Argument 'cex' must be a single numeric or vector of length ",
          n.treatments, ".")
@@ -126,7 +137,7 @@ plot.netposet <- function(x,
     ##
     for (i in seq.treats) {
       for (j in seq.treats) {
-        if (x$M0.matrix[i, j] == 1) {
+        if (M0[i, j] == 1) {
           if (arrows)
             arrows(p.matrix[i, sel.x], p.matrix[i, sel.y],
                    p.matrix[j, sel.x], p.matrix[j, sel.y],
@@ -155,7 +166,7 @@ plot.netposet <- function(x,
     ##
     for (i in seq.treats)
       for (j in seq.treats)
-        if (x$M0.matrix[i, j] == 1)
+        if (M0[i, j] == 1)
           rgl::lines3d(x = c(p.matrix[i, sel.x], p.matrix[j, sel.x]),
                        y = c(p.matrix[i, sel.y], p.matrix[j, sel.y]),
                        z = c(p.matrix[i, sel.z], p.matrix[j, sel.z]),

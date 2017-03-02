@@ -12,9 +12,12 @@
 }
 
 \usage{
-netposet(..., outcomes, treatments, small.values)
+netposet(..., outcomes, treatments, small.values,
+         comb.fixed, comb.random)
 
-\method{print}{netposet}(x, ...)
+\method{print}{netposet}(x,
+      pooled=ifelse(x$comb.random, "random", "fixed"),
+      ...)
 }
 
 \arguments{
@@ -22,7 +25,14 @@ netposet(..., outcomes, treatments, small.values)
   \item{outcomes}{A character vector with outcome names.}
   \item{treatments}{A character vector with treatment names.}
   \item{small.values}{See details.}
+  \item{comb.fixed}{A logical indicating whether to show results for
+    fixed effect model.}
+  \item{comb.random}{A logical indicating whether to show results for
+    random effects model.}
   \item{x}{An object of class \code{netposet}.}
+  \item{pooled}{A character string indicating whether Hasse diagram
+    show be drawn for fixed effect (\code{"fixed"}) or random effects
+    model (\code{"random"}). Can be abbreviated.}
 }
 
 \details{
@@ -80,11 +90,22 @@ netposet(..., outcomes, treatments, small.values)
   An object of class \code{netposet} with corresponding \code{print},
   \code{plot}, and \code{hasse} function. The object is a list
   containing the following components:
-  \item{P.matrix}{Ranking matrix with rows corresponding to treatments
-    and columns corresponding to outcomes.}
-  \item{M0.matrix}{Hasse matrix skipping unnecessary paths.}
-  \item{M.matrix}{"Full" Hasse matrix.}
-  \item{O.matrix}{Matrix with information about partial ordering.}
+  \item{P.fixed}{Ranking matrix with rows corresponding to treatments
+    and columns corresponding to outcomes (fixed effect model).}
+  \item{M0.fixed}{Hasse matrix skipping unnecessary paths (fixed
+    effect model).}
+  \item{M.fixed}{"Full" Hasse matrix (fixed effect model).}
+  \item{O.fixed}{Matrix with information about partial ordering (fixed
+    effect model).}
+  \item{P.random}{Ranking matrix with rows corresponding to treatments
+    and columns corresponding to outcomes (random effects model).}
+  \item{M0.random}{Hasse matrix skipping unnecessary paths (random
+    effects model).}
+  \item{M.random}{"Full" Hasse matrix (random effects model).}
+  \item{O.random}{Matrix with information about partial ordering
+    (random effects model).}
+  \item{small.values, comb.fixed, comb.random}{As.defined above.}
+  \item{call}{Function call.}
   \item{version}{Version of R package netmeta used to create object.}
 }
 
@@ -201,11 +222,11 @@ po.nets <- netposet(net1, net2, net3, net4, net5,
 #
 all.equal(po.ranks, po.nets)
 #
-# Print matrix with P-scores
+# Print matrix with P-scores (random effects model)
 #
-po.nets$P.matrix
+po.nets$P.random
 #
-# Hasse diagram for all outcomes
+# Hasse diagram for all outcomes (random effects model)
 #
 hasse(po.ranks)
 #

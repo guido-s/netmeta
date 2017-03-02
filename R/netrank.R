@@ -6,37 +6,60 @@ netrank <- function(x, small.values = "good") {
   small.values <- meta:::setchar(small.values, c("good", "bad"))
   
   
+  TE.fixed <- x$TE.fixed
+  pval.fixed <- x$pval.fixed
+  ##
   TE.random <- x$TE.random
   pval.random <- x$pval.random
-  ##
-  if (!is.null(x$seq)) {
-    TE.random <- TE.random[x$seq, x$seq]
-    pval.random <- pval.random[x$seq, x$seq]
-  }
   
   
   ## Calculate one-sided p-values
   ##
-  w <- (1 + sign(TE.random)) / 2
-  p <- pval.random
+  w.fixed <- (1 + sign(TE.fixed)) / 2
+  p.fixed <- pval.fixed
   ##
   if (small.values == "good")
-    P <- w * p / 2       + (1 - w) * (1 - p / 2)
+    P.fixed <- w.fixed * p.fixed / 2 + (1 - w.fixed) * (1 - p.fixed / 2)
   else
-    P <- w * (1 - p / 2) + (1 - w) * p / 2
+    P.fixed <- w.fixed * (1 - p.fixed / 2) + (1 - w.fixed) * p.fixed / 2
+  ##
+  w.random <- (1 + sign(TE.random)) / 2
+  p.random <- pval.random
+  ##
+  if (small.values == "good")
+    P.random <- w.random * p.random / 2 + (1 - w.random) * (1 - p.random / 2)
+  else
+    P.random <- w.random * (1 - p.random / 2) + (1 - w.random) * p.random / 2
   
   
   ## Row means provide P-scores
   ##
-  Pscore <- rowMeans(P[, ], na.rm = TRUE)
+  Pscore.fixed <- rowMeans(P.fixed, na.rm = TRUE)
+  ##
+  Pscore.random <- rowMeans(P.random, na.rm = TRUE)
   
   
-  res <- list(Pscore = Pscore,
-              Pmatrix = P,
+  ##
+  if (!x$comb.random) {
+    Pscore <- Pscore.fixed
+    Pmatrix <- P.fixed
+  }
+  else {
+    Pscore <- Pscore.random
+    Pmatrix <- P.random
+  }
+  
+  
+  res <- list(Pscore.fixed = Pscore.fixed,
+              Pmatrix.fixed = P.fixed,
+              Pscore.random = Pscore.random,
+              Pmatrix.random = P.random,
               small.values = small.values,
               x = x,
               title = x$title,
-              version = packageDescription("netmeta")$Version)
+              version = packageDescription("netmeta")$Version,
+              Pscore = "'Pscore' replaced by 'Pscore.fixed' and 'Pscore.random'.",
+              Pmatrix = "'Pmatrix' replaced by 'Pmatrix.fixed' and 'Pmatrix.random'.")
 
   class(res) <- "netrank"
   

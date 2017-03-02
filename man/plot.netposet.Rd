@@ -11,6 +11,7 @@
 
 \usage{
 \method{plot}{netposet}(x,
+     pooled=ifelse(x$comb.random, "random", "fixed"),
      sel.x = 1, sel.y = 2, sel.z = 3,
      dim = "2d",
      cex = 1, col = "black",
@@ -26,6 +27,9 @@
 
 \arguments{
   \item{x}{An object of class \code{netmeta} (mandatory).}
+  \item{pooled}{A character string indicating whether scatter plot
+    should be drawn for fixed effect (\code{"fixed"}) or random
+    effects model (\code{"random"}). Can be abbreviated.}
   \item{sel.x}{.}
   \item{sel.y}{.}
   \item{sel.z}{.}

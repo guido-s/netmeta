@@ -5,6 +5,9 @@
   * Calculate indirect treatment estimates based on direct evidence
     proportion
 
+  * Ranking of treatments based on fixed effect model added to
+    netrank()
+
   * new function netsplit() to split direct and indirect evidence
 
   * new functions netposet(), print.netposet(), and plot.netposet() to

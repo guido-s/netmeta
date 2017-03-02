@@ -10,11 +10,16 @@
 }
 
 \usage{
-hasse(x, newpage = TRUE)
+hasse(x,
+      pooled=ifelse(x$comb.random, "random", "fixed"),
+      newpage = TRUE)
 }
 
 \arguments{
-  \item{x}{An object of class \code{netposet} (mandatory).}  
+  \item{x}{An object of class \code{netposet} (mandatory).}
+  \item{pooled}{A character string indicating whether Hasse diagram
+    show be drawn for fixed effect (\code{"fixed"}) or random effects
+    model (\code{"random"}). Can be abbreviated.}
   \item{newpage}{A logical value indicating whether a new figure
     should be printed in an existing graphics window. Otherwise, the
     Hasse diagram is added to the existing figure.}

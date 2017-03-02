@@ -15,18 +15,16 @@ forest.netmeta <- function(x,
   meta:::chkclass(x, "netmeta")
   
   
-  ipool <- charmatch(tolower(pooled), c("fixed", "random"), nomatch = NA)
-  ##
-  if (is.na(ipool)) 
-        stop("Argument 'pooled' should be \"fixed\" or \"random\"")
-  ##
-  pooled <- c("fixed", "random")[ipool]
+  pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  
   
   if (pooled == "fixed") {
     TE   <- x$TE.fixed
     seTE <- x$seTE.fixed
     if (is.null(smlab))
       smlab <- "Fixed Effect Model"
+    ##
+    Pscore <- netrank(x, small.values = small.values)$Pscore.fixed
   }
   ##
   if (pooled == "random") {
@@ -34,10 +32,9 @@ forest.netmeta <- function(x,
     seTE <- x$seTE.random
     if (is.null(smlab))
       smlab <- "Random Effects Model"
+    ##
+    Pscore <- netrank(x, small.values = small.values)$Pscore.random
   }
-  
-  
-  Pscore <- netrank(x, small.values = small.values)$Pscore
   
   
   sortvar.c <- deparse(substitute(sortvar))
