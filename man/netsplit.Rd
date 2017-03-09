@@ -62,6 +62,9 @@ netsplit(x)
   Direct and indirect treatment estimates are calculated in
   \code{\link{netmeta}}. This function combines and prints these
   estimates in a user-friendly way.
+
+  A comparison of direct and indirect treatment estimates can serve as
+  check for consistency of network meta-analysis (Dias et al., 2010). 
 }
 
 \value{
@@ -94,6 +97,17 @@ netsplit(x)
 \author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}, Gerta Rücker
 \email{ruecker@imbi.uni-freiburg.de}}
 
+\references{
+  Dias S, Welton NJ, Caldwell DM, Ades AE (2010).
+  Checking consistency in mixed treatment comparison meta-analysis.
+  \emph{Statistics in Medicine}, \bold{29}, 932--44.
+
+  Puhan MA, Schünemann HJ, Murad MH, et al. (2014).  
+  A GRADE working group approach for rating the quality of treatment
+  effect estimates from network meta-analysis.
+  \emph{British Medical Journal}, \bold{349}, g5630
+}
+
 \seealso{\code{\link{netmeta}}, \code{\link{netmeasures}}}
 
 \examples{
@@ -114,4 +128,6 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab, data = Senn2013,
                 comb.random = TRUE)
 #
 print(netsplit(net2), digits = 2)
+# Layout of Puhan et al. (2014), Table 1
+print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
 }

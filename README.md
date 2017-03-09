@@ -24,9 +24,11 @@ network meta-analysis:
   - ranking of treatments based on frequentist analogue of SUCRA
     (Rücker & Schwarzer, 2015);
 
-  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset';
+  - partial order of treatment rankings ('poset') and Hasse diagram
+    for 'poset' (Carlsen & Bruggemann, 2014);
 
-  - split direct and indirect evidence;
+  - split direct and indirect evidence to check consistency (Dias et
+    al., 2010);
 
   - automated drawing of network graphs (Rücker & Schwarzer, 2016).
 
@@ -35,6 +37,10 @@ support Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
 http://meta-analysis-with-r.org/ .
 
 ### References
+
+[Carlsen L, Bruggemann R (2014), Partial order methodology: a valuable tool in chemometrics. *Journal of Chemometrics*, **28**, 226--34.](https://scholar.google.de/scholar?q=Partial+order+methodology%3A+a+valuable+tool+in+chemometrics)
+  
+[Dias S, Welton NJ, Caldwell DM, Ades AE (2010). Checking consistency in mixed treatment comparison meta-analysis. *Statistics in Medicine*, **29**, 932--44.](https://scholar.google.de/scholar?hl=de&q=Checking+consistency+in+mixed+treatment+comparison+meta-analysis)
 
 [König J, Krahn U, Binder H (2013). Visualizing the flow of evidence in network meta-analysis and characterizing mixed treatment comparisons. *Statistics in Medicine*, **32**, 5414-29.](https://scholar.google.de/scholar?q=König+Krahn+Binder+2013+Visualizing+the+flow+of+evidence+in+network+meta-analysis+and+characterizing+mixed+treatment+comparisons)
 

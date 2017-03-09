@@ -4,7 +4,9 @@
 \title{Network meta-analysis of treatments for depression}
 
 \description{
-...
+Network meta-analysis of nine classes of antidepressants including
+placebo for the primary care setting; partly shown in Linde et al.
+(2015), supplementary Table 2.
 }
 
 \usage{data(Linde2015)}

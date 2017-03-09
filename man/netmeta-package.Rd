@@ -26,8 +26,9 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
     frequentist analogue of SUCRA (Rücker & Schwarzer, 2015);
   \item partial order of treatment rankings (\code{\link{netposet}},
     \code{\link{plot.netposet}}) and Hasse diagram
-    (\code{\link{hasse}});
-  \item split direct and indirect evidence (\code{\link{netsplit}});
+    (\code{\link{hasse}}) according to Carlsen & Bruggemann (2014);
+  \item split direct and indirect evidence (\code{\link{netsplit}}) to
+    check for consistency (Dias et al., 2010);
   \item automated drawing of network graphs (\code{\link{netgraph}})
     described in Rücker & Schwarzer (2016).
   }
@@ -55,6 +56,15 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
 }
 
 \references{
+  Carlsen L, Bruggemann R (2014),
+  Partial order methodology: a valuable tool in chemometrics.
+  \emph{Journal of Chemometrics},
+  \bold{28}, 226--34, DOI:10.1002/cem.2569 .
+
+  Dias S, Welton NJ, Caldwell DM, Ades AE (2010).
+  Checking consistency in mixed treatment comparison meta-analysis.
+  \emph{Statistics in Medicine}, \bold{29}, 932--44.
+
   König J, Krahn U, Binder H (2013).
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.

@@ -1,5 +1,5 @@
 plot.netposet <- function(x,
-                          pooled=ifelse(x$comb.random, "random", "fixed"),
+                          pooled = ifelse(x$comb.random, "random", "fixed"),
                           sel.x = 1, sel.y = 2, sel.z = 3,
                           dim = "2d",
                           cex = 1, col = "black",

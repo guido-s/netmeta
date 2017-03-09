@@ -82,6 +82,14 @@ netposet(..., outcomes, treatments, small.values,
   \code{\link{netrank}}. This argument is ignored for a ranking matrix
   and \code{netrank} objects.
   
+  Arguments \code{comb.fixed} and \code{comb.random} can be used to
+  define whether results should be printed and plotted for fixed
+  effect and / or random effects model. If netmeta and netrank objects
+  are provided in argument \code{\dots}, values for \code{comb.fixed}
+  and \code{comb.random} within these objects are considered; if these
+  values are not unique, argument \code{comb.fixed} and / or
+  \code{comb.random} are set to \code{TRUE}.
+  
   In function \code{print.netposet}, argument \code{\dots} is passed on
   to the printing function.
 }
@@ -113,7 +121,7 @@ netposet(..., outcomes, treatments, small.values,
   Carlsen L, Bruggemann R (2014),
   Partial order methodology: a valuable tool in chemometrics.
   \emph{Journal of Chemometrics},
-  \bold{28} 226--34, DOI:10.1002/cem.2569
+  \bold{28}, 226--34, DOI:10.1002/cem.2569 .
 
   Rücker G & Schwarzer G (2015),
   Ranking treatments in frequentist network meta-analysis works
@@ -130,7 +138,7 @@ netposet(..., outcomes, treatments, small.values,
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\code{\link{netmeta}}, \code{\link{hasse}}, \code{\link{plot.netposet}}}
+\seealso{\code{\link{netmeta}}, \code{\link{netrank}}, \code{\link{hasse}}, \code{\link{plot.netposet}}}
 
 \examples{
 # Use depression dataset

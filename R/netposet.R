@@ -115,7 +115,8 @@ netposet <- function(..., outcomes, treatments, small.values,
       if (!missing(small.values))
         small.values <- meta:::setchar(small.values, c("good", "bad"))
       else {
-        warning("R function netrank() called internally with argument small.values = 'good' as argument 'small.values' is missing.")
+        if (any.netmeta)
+          warning("R function netrank() called internally with argument small.values = 'good' as argument 'small.values' is missing.")
         small.values <- rep("good", n.outcomes)
       }
       ##

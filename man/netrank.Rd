@@ -70,7 +70,7 @@ netrank(x, small.values="good")
     effects model.}
   \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided
     p-values of random effects model.}
-  \item{small.values x}{As defined above.}
+  \item{small.values, x}{As defined above.}
   \item{version}{Version of R package netmeta used to create object.}
 }
 
