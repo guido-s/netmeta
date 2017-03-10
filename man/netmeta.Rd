@@ -17,7 +17,7 @@
         sm, level=0.95, level.comb=0.95,
         comb.fixed=TRUE, comb.random=FALSE, reference.group="",
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
-        tol.multiarm = 1e-06, details.tol.multiarm = FALSE,
+        tol.multiarm = 0.0005, details.tol.multiarm = FALSE,
         title="", warn=TRUE)
 }
 

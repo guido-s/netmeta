@@ -8,7 +8,7 @@ netmeta <- function(TE, seTE,
                     all.treatments = NULL,
                     seq = NULL,
                     tau.preset = NULL,
-                    tol.multiarm = 1e-06,
+                    tol.multiarm = 0.0005,
                     details.tol.multiarm = FALSE,
                     title = "",
                     warn = TRUE

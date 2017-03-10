@@ -31,8 +31,8 @@ netposet(..., outcomes, treatments, small.values,
     random effects model.}
   \item{x}{An object of class \code{netposet}.}
   \item{pooled}{A character string indicating whether Hasse diagram
-    show be drawn for fixed effect (\code{"fixed"}) or random effects
-    model (\code{"random"}). Can be abbreviated.}
+    should be drawn for fixed effect (\code{"fixed"}) or random
+    effects model (\code{"random"}). Can be abbreviated.}
 }
 
 \details{
