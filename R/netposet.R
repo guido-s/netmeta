@@ -11,6 +11,9 @@ netposet <- function(..., outcomes, treatments, small.values,
     meta:::chklogical(comb.random)
   
   
+  any.netmeta <- any.netrank <- FALSE
+  
+  
   ##
   ## First argument is expected to be a ranking matrix if only a
   ## single argument is provided
@@ -100,8 +103,6 @@ netposet <- function(..., outcomes, treatments, small.values,
     if (length(outcomes) != n.outcomes)
       stop("Number of outcomes provided by argument 'outcomes' and number of rankings differ.",
            call. = FALSE)
-    ##
-    any.netmeta <- any.netrank <- FALSE
     ##
     for (i in seq_along(args)) {
       if (inherits(args[[i]], "netmeta"))
@@ -300,7 +301,7 @@ netposet <- function(..., outcomes, treatments, small.values,
   M0.random <- M.random - sign(M.random %*% M.random)
   
   
-  if (missing(small.values))
+  if (missing(small.values) | !any.netmeta | length(args) == 1)
     small.values <- NULL
   
   

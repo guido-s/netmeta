@@ -153,9 +153,7 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI",
 #
 # Outcome labels
 #
-outcomes <- c("Early response", "Early remission",
-              "Lost to follow-up", "Lost to follow-up due to AEs",
-              "Adverse events (AEs)")
+outcomes <- c("Early response", "Early remission")
 #
 # (1) Early response
 #
@@ -178,6 +176,25 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 net2 <- netmeta(p2,
                 comb.fixed = FALSE, comb.random = TRUE,
                 seq = trts, ref = "Placebo")
+#
+# Partial order of treatment rankings (all five outcomes)
+#
+po <- netposet(netrank(net1, small.values = "bad"),
+               netrank(net2, small.values = "bad"),
+               outcomes = outcomes)
+#
+# Hasse diagram
+#
+hasse(po)
+
+
+\dontrun{
+#
+# Outcome labels
+#
+outcomes <- c("Early response", "Early remission",
+              "Lost to follow-up", "Lost to follow-up due to AEs",
+              "Adverse events (AEs)")
 #
 # (3) Loss to follow-up
 #
@@ -250,6 +267,7 @@ hasse(po12)
 oldpar <- par(pty = "s")
 plot(po12)
 par(oldpar)
+}
 
 
 # Example using ranking matrix with P-scores

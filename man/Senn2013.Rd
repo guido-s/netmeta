@@ -58,17 +58,17 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data=Senn2013)
 net1
 net1$Q.decomp
 
+#
+# Forest plot
+#
+forest(net1, ref="plac")
 
+\dontrun{
 #
 # Comparison with reference group
 #
 netmeta(TE, seTE, treat1, treat2, studlab, data=Senn2013, 
         reference="plac")
-
-#
-# Forest plot
-#
-forest(net1, ref="plac")
 
 #
 # Random effects model
@@ -77,6 +77,7 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab, data=Senn2013,
                 comb.random = TRUE)
 net2
 forest(net2, ref="plac")
+}
 }
 
 \keyword{datasets}

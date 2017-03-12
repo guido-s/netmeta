@@ -18,15 +18,9 @@ decomp.design(x, tau.preset=x$tau.preset)
 }
 
 \arguments{
-   \item{x}{An object of class \code{netmeta}.}
+   \item{x}{An object of class \code{netmeta}.}   
    \item{tau.preset}{An optional value for the square-root of the
-     between-study variance \eqn{tau^2} of a random effects model on
-     which a between-designs Q statistic (see
-     \code{Q.inc.random.preset}) will be based. Design-specific
-     contributions of this Q statistic (see
-     \code{Q.inc.design.random.preset}) as well as residuals after
-     detaching of single designs (see
-     \code{residuals.inc.detach.random.preset}) can be obtained.}
+     between-study variance \eqn{\tau^2} (see Details).}
 }
 
 \details{

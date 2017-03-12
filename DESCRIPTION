@@ -7,7 +7,7 @@ Imports: magic, MASS
 Authors@R: c(person("Gerta","Rücker", role="aut"),
     person("Guido","Schwarzer", email="sc@imbi.uni-freiburg.de", role=c("aut","cre")),
     person("Ulrike","Krahn", role="aut"), person("Jochem","König", role="aut"))
-Date: 2017-03-10
+Date: 2017-03-12
 URL: https://github.com/guido-s/netmeta http://meta-analysis-with-r.org
 Description: A comprehensive set of functions providing frequentist methods for network meta-analysis and supporting Schwarzer et al. (2015) <DOI:10.1007/978-3-319-21416-0>, Chapter 8 "Network Meta-Analysis":
  - frequentist network meta-analysis following Rücker (2012) <DOI:10.1002/jrsm.1058>;
@@ -15,7 +15,7 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - measures characterizing the flow of evidence between two treatments by König et al. (2013) <DOI:10.1002/sim.6001>;
  - ranking of treatments (frequentist analogue of SUCRA) according to Rücker & Schwarzer (2015) <DOI:10.1186/s12874-015-0060-8>;
  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <DOI:10.1002/cem.2569>;
- - split direct and indirect evidence to check consistency (Dias et al., 2010) <DOI: 10.1002/sim.3767>;
+ - split direct and indirect evidence to check consistency (Dias et al., 2010) <DOI:10.1002/sim.3767>;
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <DOI:10.1002/jrsm.1143>.
 License: GPL (>= 2)
 Encoding: UTF-8
