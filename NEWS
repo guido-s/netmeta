@@ -8,12 +8,12 @@
   * Ranking of treatments based on fixed effect model added to
     netrank()
 
-  * new function netsplit() to split direct and indirect evidence
+  * New function netsplit() to split direct and indirect evidence
 
-  * new functions netposet(), print.netposet(), and plot.netposet() to
+  * New functions netposet(), print.netposet(), and plot.netposet() to
     calculate, print and plot partial ordering of rankings
 
-  * new function hasse() to draw Hasse diagram of partially ordered
+  * New function hasse() to draw Hasse diagram of partially ordered
     treatment rankings
 
   * netmeta():
