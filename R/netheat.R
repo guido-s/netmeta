@@ -11,7 +11,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
     decomp <- decomp.design(x) 
     residuals <- decomp$residuals.inc.detach 
     Q.inc.design <- decomp$Q.inc.design 
-  } 
+  }
   ## 
   if (length(tau.preset) == 1) { 
     nmak <- nma.krahn(x, tau.preset = tau.preset) 
@@ -20,7 +20,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
     decomp <- decomp.design(x, tau.preset = tau.preset) 
     residuals <- decomp$residuals.inc.detach.random.preset 
     Q.inc.design <- decomp$Q.inc.design.random.preset 
-  } 
+  }
   ## 
   if (random == TRUE & length(tau.preset) == 0) { 
     tau.within <- tau.within(x)
@@ -41,9 +41,13 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
   
   H <- nmak$H 
   V <- nmak$V 
-  design <- nmak$design 
+  design <- nmak$design
   
-  
+  if (!any(!is.na(residuals) & residuals > .Machine$double.eps^0.5)) {
+    warning("Net heat plot not available due to insufficient information about between-design heterogeneity.")
+    return(invisible(NULL))
+  }
+  ##
   Q.inc.design.typ <- apply(residuals, 2, function(x) t(x) %*% solve(V) * x)
   inc <- matrix(Q.inc.design,
                 nrow = nrow(Q.inc.design.typ),

@@ -267,5 +267,4 @@ p5
 # Conduct network meta-analysis
 net5 <- netmeta(p5)
 net5
-
 }

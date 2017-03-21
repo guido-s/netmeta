@@ -344,8 +344,16 @@ pairwise <- function(treat,
     ## deviation for multi-arm studies
     ##
     if ("sm" %in% nam.args && (args$sm == "SMD" & narms > 2)) {
-      pooled.sd <- function(sd, n)
-        sqrt(sum((n - 1) * sd^2) / sum(n - 1))
+      pooled.sd <- function(sd, n) {
+        sel <- !is.na(sd) & !is.na(n)
+        ##
+        if (any(sel))
+          res <- sqrt(sum((n[sel] - 1) * sd[sel]^2) / sum(n[sel] - 1))
+        else
+          res <- NA
+        ##
+        res
+      }
       ##
       N <- matrix(unlist(n), ncol = narms, nrow = nstud, byrow = FALSE)
       M <- matrix(unlist(mean), ncol = narms, nrow = nstud, byrow = FALSE)
@@ -366,7 +374,7 @@ pairwise <- function(treat,
       }
       ##
       for (i in seq_len(narms))
-        sd[[i]][sel] <- sd.p
+        sd[[i]][sel] <- ifelse(is.na(sd[[i]][sel]), NA, sd.p)
     }
     ##
     for (i in 1:(narms - 1)) {
