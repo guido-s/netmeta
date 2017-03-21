@@ -63,11 +63,11 @@ http://meta-analysis-with-r.org/ .
 install.packages("netmeta")
 ```
 
-### Current beta / GitHub release:
+### Current development version on GitHub:
 ```r
 install.packages("devtools")
 library("devtools")
-install_github("guido-s/netmeta")
+install_github("guido-s/netmeta", ref = "develop")
 ```
 
 ### Bug Reports:
@@ -75,3 +75,6 @@ install_github("guido-s/netmeta")
 ```r
 bug.report(package = "netmeta")
 ```
+
+The bug.report function is not supported in RStudio. Please send an
+email to Guido Schwarzer <sc@imbi.uni-freiburg.de> if you use RStudio.
