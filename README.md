@@ -70,6 +70,10 @@ library("devtools")
 install_github("guido-s/netmeta", ref = "develop")
 ```
 
+Note, the development version of **netmeta** always has version
+number 6.6-6 and date 6666-06-06.
+
+
 ### Bug Reports:
 
 ```r

@@ -1,68 +1,93 @@
-netconnection <- function(treat1, treat2,
-                          studlab,
+netconnection <- function(treat1, treat2, studlab,
                           data = NULL, subset = NULL,
-                          title = "",
-                          warn = FALSE) {
+                          title = "", warn = FALSE) {
   
+  ##
+  ##
+  ## (1) Check arguments
+  ##
+  ##
   if (missing(treat1))
     stop("Argument 'treat1' is mandatory.")
   if (missing(treat2))
     stop("Argument 'treat2' is mandatory.")
   ##
-  if (is.null(data)) data <- sys.frame(sys.parent())
+  meta:::chklogical(warn)
+  
+  
+  ##
+  ##
+  ## (2) Read data
+  ##
+  ##
+  if (is.null(data))
+    data <- sys.frame(sys.parent())
+  ##
+  mf <- match.call()
   ##
   ## Catch treat1, treat2, studlab from data:
   ##
-  mf <- match.call()
-  mf$data <- mf$subset <- mf$title <- mf$warn <- NULL
-  mf[[1]] <- as.name("data.frame")
-  mf <- eval(mf, data)
+  treat1 <- eval(mf[[match("treat1", names(mf))]],
+                 data, enclos = sys.frame(sys.parent()))
+  k.All <- length(treat1)
   ##
-  ## Catch subset (possibly) from data:
+  treat2 <- eval(mf[[match("treat2", names(mf))]],
+                 data, enclos = sys.frame(sys.parent()))
   ##
-  mf2 <- match.call()
-  mf2$treat1 <- mf2$treat2 <- NULL
-  mf2$studlab <- NULL
-  mf2$data <- mf2$title <- mf2$warn <- NULL
-  mf2[[1]] <- as.name("data.frame")
+  studlab <- eval(mf[[match("studlab", names(mf))]],
+                  data, enclos = sys.frame(sys.parent()))
+  if (length(studlab) != 0)
+    studlab <- as.character(studlab)
+  else {
+    if (warn)
+      warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
+    studlab <- as.character(seq_along(treat1))
+  }
   ##
-  mf2 <- eval(mf2, data)
+  ## Catch subset from data:
   ##
-  if (!is.null(mf2$subset))
-    if ((is.logical(mf2$subset) & (sum(mf2$subset) > length(mf$treat1))) ||
-        (length(mf2$subset) > length(mf$treat1)))
-      stop("Length of subset is larger than number of comparisons.")
-    else
-      mf <- mf[mf2$subset, ]
+  subset <- eval(mf[[match("subset", names(mf))]],
+                 data, enclos = sys.frame(sys.parent()))
+  missing.subset <- is.null(subset)
   
   
-  treat1 <- mf$treat1
-  treat2 <- mf$treat2
+  ##
+  ##
+  ## (3) Check length of essential variables
+  ##
+  ##
+  meta:::chklength(treat2, k.All, fun)
+  meta:::chklength(studlab, k.All, fun)
   ##
   if (is.factor(treat1))
     treat1 <- as.character(treat1)
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
-  ##
-  if (length(mf$studlab) != 0)
-    studlab <- as.character(mf$studlab)
-  else {
-    if (warn)
-      warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
-    studlab <- seq(along = treat1)
-  }
-  ##
-  if (length(treat1) == 0 |
-      length(treat2) == 0 |
-      length(treat1) != length(treat2))
-    stop("Arguments 'treat1' and 'treat2' must be of the same length.")
-  if (length(treat1) != length(studlab))
-    stop("Arguments 'treat1' and 'studlab' must be of the same length.")
   
+  
+  ##
+  ##
+  ## (4) Use subset for analysis
+  ##
+  ##
+  if (!missing.subset) {
+    if ((is.logical(subset) & (sum(subset) > k.All)) ||
+        (length(subset) > k.All))
+      stop("Length of subset is larger than number of studies.")
+    ##
+    treat1 <- treat1[subset]
+    treat2 <- treat2[subset]
+    studlab <- studlab[subset]
+  }
+  
+  
+  ##
+  ##
+  ## (5) Additional checks
+  ##
+  ##
   if (any(treat1 == treat2))
     stop("Treatments must be different (arguments 'treat1' and 'treat2').")
-  
-  
   ##
   ## Check for correct number of comparisons
   ##
@@ -85,6 +110,11 @@ netconnection <- function(treat1, treat2,
                sep = ""))
   
   
+  ##
+  ##
+  ## (6) Determine (sub)network(s)
+  ##
+  ##
   treats <- as.factor(c(as.character(treat1), as.character(treat2)))
   n <- length(unique(treats)) # Number of treatments
   m <- length(treat1)         # Number of comparisons
@@ -93,8 +123,8 @@ netconnection <- function(treat1, treat2,
   B <- matrix(0, nrow = m, ncol = n) # Edge-vertex incidence matrix
   ##
   for (e in 1:m) {
-    B[e, Edges[e,1]] <-  1
-    B[e, Edges[e,2]] <- -1
+    B[e, Edges[e, 1]] <-  1
+    B[e, Edges[e, 2]] <- -1
   }
   ##
   rownames(B) <- studlab
@@ -105,7 +135,7 @@ netconnection <- function(treat1, treat2,
   D <- netdistance(A)              # Distance matrix
   L <- diag(rowSums(A)) - A        # Laplacian matrix without multiplicity
   ##
-  n.subsets <- as.integer(table(round(eigen(L)$values,10) == 0)[2])
+  n.subsets <- as.integer(table(round(eigen(L)$values, 10) == 0)[2])
   ##
   if (n.subsets > 1) {
     ##
@@ -121,7 +151,8 @@ netconnection <- function(treat1, treat2,
     A <- A[order.D, order.D]
     L <- L[order.D, order.D]
   }
-  ##
+  
+  
   res <- list(treat1 = treat1,
               treat2 = treat2,
               studlab = studlab,
