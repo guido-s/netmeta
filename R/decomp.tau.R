@@ -20,19 +20,22 @@ decomp.tau <- function(x, tau.preset = 0) {
   TE.net.minus <- matrix(NA, nrow = nrow(X.obs), ncol = length(designs))
   colnames(TE.net.minus) <- designs
   ##
+  df.net.minus <- numeric(length(designs))
+  names(df.net.minus) <- designs
+  ##
   for (i in designs) {
-    Xb <- X.obs[!(rownames(X.obs) == i), ]
-    Vb <- V[!(rownames(V) == i), !(colnames(V) == i)]
-    if (qr(Xb)$rank == ncol(X.obs)) {
-      TE.net.minus[, i] <- X.obs %*% solve(t(Xb) %*% solve(Vb) %*% Xb) %*%
-        t(Xb) %*% solve(Vb) %*% design$TE.dir[!(design$design == i)]
-    }
+    narms <- design$narms[design$design == i][1]
+    Xb <- cbind(X.obs,matrix(0, nrow(X.obs), narms - 1))
+    Xb[(rownames(X.obs) == i), ] <- 0
+    Xb[(rownames(X.obs) == i), ncol(X.obs) + (1:(narms - 1))] <- diag(narms - 1)
+    TE.net.minus[, i] <- Xb %*% ginv(t(Xb) %*% solve(V) %*% Xb) %*% t(Xb) %*% solve(V) %*% design$TE.dir
+    df.net.minus[i] <- qr(Xb)$rank
   }
   ##
   rownames(TE.net.minus) <- design$design
   
   
-  freq.d  <- rep(NA, nrow(design))
+  freq.d <- rep(NA, nrow(design))
   Q.het.design <- rep(NA, nrow(design))
   ##
   for (i in unique(sort(as.character(studies$design)))) {
@@ -82,7 +85,7 @@ decomp.tau <- function(x, tau.preset = 0) {
   Q.inc.detach <- apply(residuals, 2, function(x) t(x) %*% solve(V) %*% x)
   Q.inc.detach[NAfd] <- NA
   ##
-  df.inc.detach <- nrow(X.obs) - (ncol(X.obs) + (design$narms - 1))
+  df.inc.detach <- nrow(X.obs) - df.net.minus 
   df.inc.detach[df.inc.detach < 0] <- NA
   df.inc.detach[NAfd] <- NA
   ##
@@ -127,7 +130,7 @@ decomp.tau <- function(x, tau.preset = 0) {
     Q.inc.detach = Q.inc.detach,
     Q.inc.design = Q.inc.design,
     residuals.inc.detach = residuals
-    )
+  )
   
   res
 }
