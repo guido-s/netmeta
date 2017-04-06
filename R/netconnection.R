@@ -56,9 +56,11 @@ netconnection <- function(treat1, treat2, studlab,
   ## (3) Check length of essential variables
   ##
   ##
-  meta:::chklength(treat2, k.All,
+  fun <- "netgraph"
+  ##
+  meta:::chklength(treat2, k.All, fun,
                    text = "Arguments 'treat1' and 'treat2' must have the same length.")
-  meta:::chklength(studlab, k.All,
+  meta:::chklength(studlab, k.All, fun,
                    text = "Arguments 'treat1' and 'studlab' must have the same length.")
   ##
   if (is.factor(treat1))
