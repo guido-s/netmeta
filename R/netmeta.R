@@ -10,6 +10,7 @@ netmeta <- function(TE, seTE,
                     tau.preset = NULL,
                     tol.multiarm = 0.0005,
                     details.tol.multiarm = FALSE,
+                    sep.trts = ":",
                     title = "",
                     warn = TRUE
                     ) {
@@ -112,6 +113,25 @@ netmeta <- function(TE, seTE,
   }
   ##
   labels <- sort(unique(c(treat1, treat2)))
+  ##
+  if (any(grepl(sep.trts, labels))) {
+    if (sep.trts != ":" & !any(grepl(":", labels)))
+      sep.trts <- ":"
+    else if (!any(grepl("-", labels)))
+      sep.trts <- "-"
+    else if (!any(grepl("_", labels)))
+      sep.trts <- "_"
+    else if (!any(grepl("/", labels)))
+      sep.trts <- "/"
+    else if (!any(grepl("+", labels)))
+      sep.trts <- "+"
+    else if (!any(grepl("\\.", labels)))
+      sep.trts <- "."
+    else
+      stop("All predefined separators (':', '-', '_', '/', '+', '.') are used in at least one treatment label.",
+           "\n   Please specify a different character that should be used as separator (argument 'sep.trts').",
+           call. = FALSE)
+  }
   ##
   if (!is.null(seq))
     seq <- setseq(seq, labels)
@@ -247,7 +267,8 @@ netmeta <- function(TE, seTE,
                        p0$treat1, p0$treat2,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
-                       sm, level, level.comb, p0$seTE)
+                       sm, level, level.comb, p0$seTE,
+                       sep.trts = sep.trts)
   ##
   ## Random effects model
   ##
@@ -262,7 +283,8 @@ netmeta <- function(TE, seTE,
                        p1$treat1, p1$treat2,
                        p1$treat1.pos, p1$treat2.pos,
                        p1$narms, p1$studlab, 
-                       sm, level, level.comb, p1$seTE, tau)
+                       sm, level, level.comb, p1$seTE, tau,
+                       sep.trts = sep.trts)
   
   
   ##
@@ -384,6 +406,8 @@ netmeta <- function(TE, seTE,
               ##
               seq = seq,
               ##
+              sep.trts = sep.trts,
+              ##
               title = title,
               ##
               warn = warn,
@@ -419,7 +443,7 @@ netmeta <- function(TE, seTE,
     res$prop.direct.fixed <- 1
     res$prop.direct.random <- 1
     names(res$prop.direct.fixed) <-
-      names(res$prop.direct.random) <- paste(labels, collapse = ":")
+      names(res$prop.direct.random) <- paste(labels, collapse = sep.trts)
     ##
     P.fixed  <- 1
     P.random <- 1

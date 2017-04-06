@@ -4,7 +4,7 @@ nma.ruecker <- function(TE, seTE,
                         narms, studlab,
                         sm = "",
                         level = 0.95, level.comb = 0.95,
-                        seTE.orig, tau.direct = 0) {
+                        seTE.orig, tau.direct = 0, sep.trts = ":") {
   
   
   w.pooled <- 1 / seTE^2
@@ -224,7 +224,7 @@ nma.ruecker <- function(TE, seTE,
   for (i in 1:(n - 1)) {
     for (j in (i + 1):n) {
       k <- k + 1
-      names.Cov[k] <- paste(names.treat[i], names.treat[j], sep = ":")
+      names.Cov[k] <- paste(names.treat[i], names.treat[j], sep = sep.trts)
     }
   }
   ##
