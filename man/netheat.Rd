@@ -95,7 +95,7 @@ data(Senn2013)
 # reference treatment 'plac', i.e. placebo 
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-        data=Senn2013, sm="MD", reference="plac")
+                data=Senn2013, sm="MD", reference="plac")
         
 #
 # Generate a net heat plot based on a fixed effects model

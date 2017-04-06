@@ -1,8 +1,10 @@
 print.decomp.design <- function(x,
-                                digits = 2, ...) {
+                                digits = 2, showall = FALSE,
+                                ...) {
   
   
   meta:::chkclass(x, "decomp.design")
+  meta:::chklogical(showall)
   
   
   Q.decomp <- x$Q.decomp
@@ -36,6 +38,12 @@ print.decomp.design <- function(x,
   names(Q.detach)[nam == "pval"] <- "p-value"
   nam <- names(Q.inc.random)
   names(Q.inc.random)[nam == "pval"] <- "p-value"
+  ##
+  if (!showall)
+    Q.design <- Q.design[Q.design$df > 0, ]
+  ##
+  if (!showall)
+    Q.detach <- Q.detach[Q.detach$df != Q.decomp["Between designs", "df"], ]
   ##
   Q.design <- as.matrix(Q.design)
   Q.detach <- as.matrix(Q.detach)

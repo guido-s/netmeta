@@ -1,16 +1,16 @@
-netheat <- function(x, random = FALSE, tau.preset = NULL, ...) { 
+netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
   
   
   meta:::chkclass(x, "netmeta")
   
   
-  if (random == FALSE & length(tau.preset) == 0) { 
+  if (random == FALSE & length(tau.preset) == 0) {
     nmak <- nma.krahn(x)
     if (is.null(nmak))
       return(invisible(NULL))
-    decomp <- decomp.design(x) 
-    residuals <- decomp$residuals.inc.detach 
-    Q.inc.design <- decomp$Q.inc.design 
+    decomp <- decomp.design(x)
+    residuals <- decomp$residuals.inc.detach
+    Q.inc.design <- decomp$Q.inc.design
   }
   ## 
   if (length(tau.preset) == 1) { 
@@ -27,10 +27,16 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
     nmak <- nma.krahn(x, tau.preset = tau.within)
     if (is.null(nmak))
       return(invisible(NULL))
-    decomp <- decomp.design(x, tau.preset = tau.within) 
-    residuals <- decomp$residuals.inc.detach.random.preset 
-    Q.inc.design <- decomp$Q.inc.design.random.preset 
+    decomp <- decomp.design(x, tau.preset = tau.within)
+    residuals <- decomp$residuals.inc.detach.random.preset
+    Q.inc.design <- decomp$Q.inc.design.random.preset
   }
+  sel <- names(Q.inc.design)[abs(Q.inc.design) > .Machine$double.eps^0.5]
+  ##
+  residuals <- residuals[sel, sel]
+  print(Q.inc.design)
+  Q.inc.design <- Q.inc.design[sel]
+  print(Q.inc.design)
   
   
   if (nmak$d <= 2) {
