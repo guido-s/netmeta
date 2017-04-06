@@ -18,7 +18,7 @@
         comb.fixed=TRUE, comb.random=FALSE, reference.group="",
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.tol.multiarm = FALSE,
-        title="", warn=TRUE)
+        sep.trts=":", title="", warn=TRUE)
 }
 
 \arguments{
@@ -55,7 +55,9 @@
     which are consistent by design.}
   \item{details.tol.multiarm}{A logical indicating whether treatment
     estimates and / or variances of multi-arm studies with inconsistent
-    results should be printed.} 
+    results should be printed.}
+  \item{sep.trts}{A character used in comparison names as separator
+    between treatment labels.}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero
@@ -144,6 +146,18 @@
   appropriate adjustment for multi-arm studies). Then, as in standard
   pairwise meta-analysis, the procedure is repeated with the resulting
   enlarged standard errors.
+
+  Names of treatment comparisons are created by concatenating
+  treatment labels of pairwise comparisons using \code{sep.trts} as
+  separator (see \code{\link{paste}}). These comparison names are used
+  in the covariance matrices \code{Cov.fixed} and \code{Cov.random}
+  and in some R functions, e.g, \code{\link{decomp.design}}. By
+  default, a colon is used as the separator. If any treatment label
+  contains a colon the following characters are used as separator (in
+  consecutive order): \code{-}, \code{_}, \code{/}, \code{+}, \code{.}
+  If all of these characters are used in treatment labels, a
+  corresponding error message is printed asking the user to specify a
+  different separator.
 }
 
 \value{

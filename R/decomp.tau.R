@@ -35,8 +35,8 @@ decomp.tau <- function(x, tau.preset = 0) {
   rownames(TE.net.minus) <- design$design
   
   
-  freq.d <- rep(NA, nrow(design))
-  Q.het.design <- rep(NA, nrow(design))
+  freq.d <- rep_len(NA, nrow(design))
+  Q.het.design <- rep_len(NA, nrow(design))
   ##
   for (i in unique(sort(as.character(studies$design)))) {
     Vs <- V.studies[rownames(V.studies) == i, colnames(V.studies) == i]
@@ -75,7 +75,7 @@ decomp.tau <- function(x, tau.preset = 0) {
   
   residuals <- apply(TE.net.minus, 2, function(x) design$TE.dir - x)
   residuals <- residuals[, rownames(residuals)]
-  diag(residuals) <- rep(0, nrow(residuals))
+  diag(residuals) <- rep_len(0, nrow(residuals))
   ##
   if (multiarm)
     for (i in 1:length(multicomp))
@@ -85,9 +85,8 @@ decomp.tau <- function(x, tau.preset = 0) {
   Q.inc.detach <- apply(residuals, 2, function(x) t(x) %*% solve(V) %*% x)
   Q.inc.detach[NAfd] <- NA
   ##
-  df.inc.detach <- nrow(X.obs) - df.net.minus 
-  df.inc.detach[df.inc.detach < 0] <- NA
-  df.inc.detach[NAfd] <- NA
+  df.inc.detach <- rep_len(NA, length(NAfd))
+  df.inc.detach[!NAfd]  <- nrow(X.obs) - df.net.minus 
   ##
   pval.inc.detach <- 1 - pchisq(Q.inc.detach, df = df.inc.detach)
   pval.inc.detach[df.inc.detach == 0] <- NA
