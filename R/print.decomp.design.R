@@ -14,7 +14,8 @@ print.decomp.design <- function(x,
   if (!showall) {
     sel.designs <- Q.detach$design[Q.detach$df !=
                                    Q.decomp["Between designs", "df"]]
-    Q.design <- Q.design[Q.design$design %in% sel.designs, ]
+    Q.design <- Q.design[Q.design$df > 0 |
+                         Q.design$design %in% sel.designs, ]
     Q.detach <- Q.detach[Q.detach$design %in% sel.designs, ]
   }
   ##
