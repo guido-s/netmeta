@@ -11,12 +11,12 @@ print.decomp.design <- function(x,
   Q.design <- x$Q.het.design
   Q.detach <- x$Q.inc.detach
   ##
-  if (!showall)
-    Q.design <- Q.design[Q.design$df > 0, ]
-  ##
-  if (!showall)
-    Q.detach <- Q.detach[Q.detach$df != 0 &
-                         Q.detach$df != Q.decomp["Between designs", "df"], ]
+  if (!showall) {
+    sel.designs <- Q.detach$design[Q.detach$df !=
+                                   Q.decomp["Between designs", "df"]]
+    Q.design <- Q.design[Q.design$design %in% sel.designs, ]
+    Q.detach <- Q.detach[Q.detach$design %in% sel.designs, ]
+  }
   ##
   Q.inc.random <- x$Q.inc.random
   Q.inc.random.preset <- x$Q.inc.random.preset
