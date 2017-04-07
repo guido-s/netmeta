@@ -98,7 +98,7 @@ decomp.tau <- function(x, tau.preset = 0) {
                                       pchisq(Q.het, df = df.het),
                                       pchisq(Q.inc, df = df.inc)))
   ##
-  Q.decomp$pval[c(df.net, df.net, df.inc) == 0] <- NA
+  Q.decomp$pval[c(df.net, df.het, df.inc) == 0] <- NA
   ##
   rownames(Q.decomp) <- c("Whole network",
                           "Within designs",

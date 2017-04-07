@@ -1,7 +1,9 @@
-netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
+netheat <- function(x, random = FALSE, tau.preset = NULL,
+                    showall = FALSE, ...) {
   
   
   meta:::chkclass(x, "netmeta")
+  meta:::chklogical(showall)
   
   
   if (random == FALSE & length(tau.preset) == 0) {
@@ -12,17 +14,17 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
     residuals <- decomp$residuals.inc.detach
     Q.inc.design <- decomp$Q.inc.design
   }
-  ## 
-  if (length(tau.preset) == 1) { 
-    nmak <- nma.krahn(x, tau.preset = tau.preset) 
+  ##
+  if (length(tau.preset) == 1) {
+    nmak <- nma.krahn(x, tau.preset = tau.preset)
     if (is.null(nmak))
       return(invisible(NULL))
-    decomp <- decomp.design(x, tau.preset = tau.preset) 
-    residuals <- decomp$residuals.inc.detach.random.preset 
-    Q.inc.design <- decomp$Q.inc.design.random.preset 
+    decomp <- decomp.design(x, tau.preset = tau.preset)
+    residuals <- decomp$residuals.inc.detach.random.preset
+    Q.inc.design <- decomp$Q.inc.design.random.preset
   }
-  ## 
-  if (random == TRUE & length(tau.preset) == 0) { 
+  ##
+  if (random == TRUE & length(tau.preset) == 0) {
     tau.within <- tau.within(x)
     nmak <- nma.krahn(x, tau.preset = tau.within)
     if (is.null(nmak))
@@ -31,12 +33,17 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
     residuals <- decomp$residuals.inc.detach.random.preset
     Q.inc.design <- decomp$Q.inc.design.random.preset
   }
-  sel <- names(Q.inc.design)[abs(Q.inc.design) > .Machine$double.eps^0.5]
   ##
-  residuals <- residuals[sel, sel]
-  print(Q.inc.design)
-  Q.inc.design <- Q.inc.design[sel]
-  print(Q.inc.design)
+  ## if (!showall) {
+  ##   sel.comps <- names(Q.inc.design)[abs(Q.inc.design) > .Machine$double.eps^0.5]
+  ##   ##
+  ##   residuals <- residuals[sel.comps, sel.comps]
+  ##   print(Q.inc.design)
+  ##   Q.inc.design <- Q.inc.design[sel.comps]
+  ##   print(Q.inc.design)
+  ## }
+  ## else
+  ## sel.comps <- names(Q.inc.design)
   
   
   if (nmak$d <= 2) {
@@ -45,9 +52,14 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
   }
   
   
-  H <- nmak$H 
-  V <- nmak$V 
+  H <- nmak$H
+  V <- nmak$V
   design <- nmak$design
+  ##
+  ## H <- nmak$H[, sel.comps]
+  ## V <- nmak$V[sel.comps, sel.comps]
+  ## design <- nmak$design[nmak$design$design %in% sel.comps, ]
+  
   
   if (!any(!is.na(residuals) & residuals > .Machine$double.eps^0.5)) {
     warning("Net heat plot not available due to insufficient information about between-design heterogeneity.")
@@ -217,7 +229,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
     box.cx <- c(bx[2] + (bx[2] - bx[1]) / 1000,
                 bx[2] + (bx[2] - bx[1]) / 1000 + (bx[2] - bx[1]) / 50)
     box.cy <- c(bx[3], bx[3])
-    box.sy <- (bx[4] - bx[3]) / n 
+    box.sy <- (bx[4] - bx[3]) / n
     xx <- rep(box.cx, each = 2)
     par(xpd = TRUE)
     ##
@@ -226,7 +238,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
               box.cy[1] + (box.sy * i),
               box.cy[1] + (box.sy * i),
               box.cy[1] + (box.sy * (i - 1)))
-      polygon(xx, yy, col = col[i], border = col[i]) 
+      polygon(xx, yy, col = col[i], border = col[i])
     }
     ##
     par(new = TRUE)

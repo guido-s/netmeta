@@ -11,6 +11,13 @@ print.decomp.design <- function(x,
   Q.design <- x$Q.het.design
   Q.detach <- x$Q.inc.detach
   ##
+  if (!showall)
+    Q.design <- Q.design[Q.design$df > 0, ]
+  ##
+  if (!showall)
+    Q.detach <- Q.detach[Q.detach$df != 0 &
+                         Q.detach$df != Q.decomp["Between designs", "df"], ]
+  ##
   Q.inc.random <- x$Q.inc.random
   Q.inc.random.preset <- x$Q.inc.random.preset
   ##
@@ -39,23 +46,19 @@ print.decomp.design <- function(x,
   nam <- names(Q.inc.random)
   names(Q.inc.random)[nam == "pval"] <- "p-value"
   ##
-  if (!showall)
-    Q.design <- Q.design[Q.design$df > 0, ]
-  ##
-  if (!showall)
-    Q.detach <- Q.detach[Q.detach$df != Q.decomp["Between designs", "df"], ]
-  ##
   Q.design <- as.matrix(Q.design)
   Q.detach <- as.matrix(Q.detach)
-
+  
   cat("Q statistics to assess homogeneity / consistency\n\n")
   print(Q.decomp)
-
-  cat("\nDesign-specific decomposition of within-designs Q statistic\n\n")
-  dimnames(Q.design) <- list(rep("", dim(Q.design)[[1]]),
-                             colnames(Q.design))
-  prmatrix(Q.design, quote = FALSE, right = TRUE)
-
+  
+  if (nrow(Q.design) > 0) {
+    cat("\nDesign-specific decomposition of within-designs Q statistic\n\n")
+    dimnames(Q.design) <- list(rep("", dim(Q.design)[[1]]),
+                               colnames(Q.design))
+    prmatrix(Q.design, quote = FALSE, right = TRUE)
+  }
+  
   if (nrow(Q.detach) > 0) {
     cat("\nBetween-designs Q statistic after detaching of single designs\n\n")
     dimnames(Q.detach) <- list(rep("", dim(Q.detach)[[1]]),
