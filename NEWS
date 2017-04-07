@@ -1,3 +1,14 @@
+*** netmeta, version 0.9-4, 2017-04-07 ***
+
+ ** Bug fix release **
+
+  * netsplit() used wrong comparison labels if argument
+    'reference.group' was used in netmeta()
+
+  * netmeasures() ignores value of argument 'reference.group' in
+    netmeta object
+
+
 *** netmeta, version 0.9-3, 2017-03-12 ***
 
  ** Major changes **
