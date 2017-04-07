@@ -6,6 +6,9 @@ netmeasures <- function(x,
   meta:::chkclass(x, "netmeta")
   
   
+  x$reference.group <- ""
+  
+  
   meta:::chklogical(random)
   ##
   if (!missing(random) & !random) {

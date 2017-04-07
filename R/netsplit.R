@@ -2,11 +2,12 @@ netsplit <- function(x) {
   
   meta:::chkclass(x, "netmeta")
   
+  seq.comps <- rownames(x$Cov.fixed)
   
   ##
   ## Fixed effect model
   ##
-  prop.fixed <- x$prop.direct.fixed
+  prop.fixed <- x$prop.direct.fixed[seq.comps]
   ##
   fixed <- list(TE = lowertri(x$TE.fixed),
                 seTE = lowertri(x$seTE.fixed),
@@ -44,7 +45,7 @@ netsplit <- function(x) {
   ##
   ## Random effects model
   ##
-  prop.random <- x$prop.direct.random
+  prop.random <- x$prop.direct.random[seq.comps]
   ##
   random <- list(TE = lowertri(x$TE.random),
                  seTE = lowertri(x$seTE.random),
