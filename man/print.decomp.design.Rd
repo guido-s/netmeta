@@ -9,12 +9,15 @@
 }
 
 \usage{
-\method{print}{decomp.design}(x, digits=2, ...)
+\method{print}{decomp.design}(x, digits=2, showall=FALSE, ...)
 }
 
 \arguments{
   \item{x}{An object of class \code{decomp.design}.}
-  \item{digits}{Minimal number of significant digits for Q statistics, see \code{print.default}.}
+  \item{digits}{Minimal number of significant digits for Q statistics, see \code{print.default}.}  
+  \item{showall}{A logical indicating whether results should be shown
+    for all designs or only designs contributing to \eqn{Chi^2}
+    statistics (default).}
   \item{\dots}{Additional arguments (ignored at the moment).}
 }
 

@@ -33,17 +33,6 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
     residuals <- decomp$residuals.inc.detach.random.preset
     Q.inc.design <- decomp$Q.inc.design.random.preset
   }
-  ##
-  ## if (!showall) {
-  ##   sel.comps <- names(Q.inc.design)[abs(Q.inc.design) > .Machine$double.eps^0.5]
-  ##   ##
-  ##   residuals <- residuals[sel.comps, sel.comps]
-  ##   print(Q.inc.design)
-  ##   Q.inc.design <- Q.inc.design[sel.comps]
-  ##   print(Q.inc.design)
-  ## }
-  ## else
-  ## sel.comps <- names(Q.inc.design)
   
   
   if (nmak$d <= 2) {
@@ -52,13 +41,17 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   }
   
   
+  if (!showall)
+    drop.designs <- names(Q.inc.design)[abs(Q.inc.design) <= .Machine$double.eps^0.5]
+  
+  
   H <- nmak$H
   V <- nmak$V
-  design <- nmak$design
   ##
-  ## H <- nmak$H[, sel.comps]
-  ## V <- nmak$V[sel.comps, sel.comps]
-  ## design <- nmak$design[nmak$design$design %in% sel.comps, ]
+  if (!showall)
+    design <- nmak$design[!(nmak$design$design %in% drop.designs), ]
+  else
+    design <- nmak$design
   
   
   if (!any(!is.na(residuals) & residuals > .Machine$double.eps^0.5)) {
@@ -74,8 +67,17 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   colnames(diff) <- colnames(Q.inc.design.typ)
   rownames(diff) <- rownames(residuals)
   ##
+  if (!showall)
+    diff <- diff[!(rownames(diff) %in% drop.designs),
+                 !(colnames(diff) %in% drop.designs), drop = FALSE]
+  ##
   if (all(is.na(diff))) {
     warning("Net heat plot not available as no between-design heterogeneity exists.")
+    return(invisible(NULL))
+  }
+  ##
+  if (length(diff) == 1) {
+    warning("Net heat plot not available due to small number of informative designs.")
     return(invisible(NULL))
   }
   
@@ -119,6 +121,10 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
     Hp <- H[(as.character(design$comparison)[-wi]), -wi]
   else
     Hp <- H[as.character(design$comparison), ]
+  ##
+  if (!showall)
+    Hp <- Hp[!(rownames(Hp) %in% drop.designs),
+             !(colnames(Hp) %in% drop.designs), drop = FALSE]
   ##
   Hp <- Hp[h1$order, h1$order]
   
