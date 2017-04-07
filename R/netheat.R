@@ -1,35 +1,37 @@
-netheat <- function(x, random = FALSE, tau.preset = NULL, ...) { 
+netheat <- function(x, random = FALSE, tau.preset = NULL,
+                    showall = FALSE, ...) {
   
   
   meta:::chkclass(x, "netmeta")
+  meta:::chklogical(showall)
   
   
-  if (random == FALSE & length(tau.preset) == 0) { 
+  if (random == FALSE & length(tau.preset) == 0) {
     nmak <- nma.krahn(x)
     if (is.null(nmak))
       return(invisible(NULL))
-    decomp <- decomp.design(x) 
-    residuals <- decomp$residuals.inc.detach 
-    Q.inc.design <- decomp$Q.inc.design 
+    decomp <- decomp.design(x)
+    residuals <- decomp$residuals.inc.detach
+    Q.inc.design <- decomp$Q.inc.design
   }
-  ## 
-  if (length(tau.preset) == 1) { 
-    nmak <- nma.krahn(x, tau.preset = tau.preset) 
+  ##
+  if (length(tau.preset) == 1) {
+    nmak <- nma.krahn(x, tau.preset = tau.preset)
     if (is.null(nmak))
       return(invisible(NULL))
-    decomp <- decomp.design(x, tau.preset = tau.preset) 
-    residuals <- decomp$residuals.inc.detach.random.preset 
-    Q.inc.design <- decomp$Q.inc.design.random.preset 
+    decomp <- decomp.design(x, tau.preset = tau.preset)
+    residuals <- decomp$residuals.inc.detach.random.preset
+    Q.inc.design <- decomp$Q.inc.design.random.preset
   }
-  ## 
-  if (random == TRUE & length(tau.preset) == 0) { 
+  ##
+  if (random == TRUE & length(tau.preset) == 0) {
     tau.within <- tau.within(x)
     nmak <- nma.krahn(x, tau.preset = tau.within)
     if (is.null(nmak))
       return(invisible(NULL))
-    decomp <- decomp.design(x, tau.preset = tau.within) 
-    residuals <- decomp$residuals.inc.detach.random.preset 
-    Q.inc.design <- decomp$Q.inc.design.random.preset 
+    decomp <- decomp.design(x, tau.preset = tau.within)
+    residuals <- decomp$residuals.inc.detach.random.preset
+    Q.inc.design <- decomp$Q.inc.design.random.preset
   }
   
   
@@ -39,9 +41,18 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
   }
   
   
-  H <- nmak$H 
-  V <- nmak$V 
-  design <- nmak$design
+  if (!showall)
+    drop.designs <- names(Q.inc.design)[abs(Q.inc.design) <= .Machine$double.eps^0.5]
+  
+  
+  H <- nmak$H
+  V <- nmak$V
+  ##
+  if (!showall)
+    design <- nmak$design[!(nmak$design$design %in% drop.designs), ]
+  else
+    design <- nmak$design
+  
   
   if (!any(!is.na(residuals) & residuals > .Machine$double.eps^0.5)) {
     warning("Net heat plot not available due to insufficient information about between-design heterogeneity.")
@@ -56,8 +67,17 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
   colnames(diff) <- colnames(Q.inc.design.typ)
   rownames(diff) <- rownames(residuals)
   ##
+  if (!showall)
+    diff <- diff[!(rownames(diff) %in% drop.designs),
+                 !(colnames(diff) %in% drop.designs), drop = FALSE]
+  ##
   if (all(is.na(diff))) {
     warning("Net heat plot not available as no between-design heterogeneity exists.")
+    return(invisible(NULL))
+  }
+  ##
+  if (length(diff) == 1) {
+    warning("Net heat plot not available due to small number of informative designs.")
     return(invisible(NULL))
   }
   
@@ -101,6 +121,10 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
     Hp <- H[(as.character(design$comparison)[-wi]), -wi]
   else
     Hp <- H[as.character(design$comparison), ]
+  ##
+  if (!showall)
+    Hp <- Hp[!(rownames(Hp) %in% drop.designs),
+             !(colnames(Hp) %in% drop.designs), drop = FALSE]
   ##
   Hp <- Hp[h1$order, h1$order]
   
@@ -211,7 +235,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
     box.cx <- c(bx[2] + (bx[2] - bx[1]) / 1000,
                 bx[2] + (bx[2] - bx[1]) / 1000 + (bx[2] - bx[1]) / 50)
     box.cy <- c(bx[3], bx[3])
-    box.sy <- (bx[4] - bx[3]) / n 
+    box.sy <- (bx[4] - bx[3]) / n
     xx <- rep(box.cx, each = 2)
     par(xpd = TRUE)
     ##
@@ -220,7 +244,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
               box.cy[1] + (box.sy * i),
               box.cy[1] + (box.sy * i),
               box.cy[1] + (box.sy * (i - 1)))
-      polygon(xx, yy, col = col[i], border = col[i]) 
+      polygon(xx, yy, col = col[i], border = col[i])
     }
     ##
     par(new = TRUE)

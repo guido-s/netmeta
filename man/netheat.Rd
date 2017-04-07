@@ -10,16 +10,18 @@
 }
 
 \usage{
-netheat(x, random=FALSE, tau.preset=NULL, ...)                                
+netheat(x, random=FALSE, tau.preset=NULL, showall=FALSE, ...)
 }
 
 \arguments{
   \item{x}{An object of class \code{netmeta}.}
-  \item{random}{A logical indicating whether the net heat plot should be based  
-    on a random effects model.}                                                 
+  \item{random}{A logical indicating whether the net heat plot should
+    be based on a random effects model.}
   \item{tau.preset}{An optional value for the square-root of the
     between-study variance \eqn{tau^2} for a random effects model on
     which the net heat plot will be based.}
+  \item{showall}{A logical indicating whether results should be shown
+    for all designs or only a sensible subset, see Details.}
   \item{\dots}{Additional arguments.}
 }
 
@@ -54,16 +56,17 @@ netheat(x, random=FALSE, tau.preset=NULL, ...)
   multi-arm studies are marked by '_' following the treatments of the
   design.
 
-  Designs where only one treatment is involved in other designs of the
-  network or where the removal of corresponding studies would lead to
-  a splitting of the network do not contribute to the inconsistency
-  assessment and are not incorporated into the net heat plot.
+  By default (\code{showall=FALSE}), designs where only one treatment
+  is involved in other designs of the network or where the removal of
+  corresponding studies would lead to a splitting of the network do
+  not contribute to the inconsistency assessment and are not
+  incorporated into the net heat plot.
                                                                                 
-  In the case of \code{random=TRUE}, the net heat plot is based on a random     
-  effects model generalised for multivariate meta-analysis in which the         
-  between-study variance \eqn{tau^2} is estimated by the method of moments      
-  (see Jackson et al., 2012) and embedded in a full design-by-treatment         
-  interaction model (see Higgins et al., 2012).                                 
+  In the case of \code{random=TRUE}, the net heat plot is based on a
+  random effects model generalised for multivariate meta-analysis in
+  which the between-study variance \eqn{tau^2} is estimated by the
+  method of moments (see Jackson et al., 2012) and embedded in a full
+  design-by-treatment interaction model (see Higgins et al., 2012).
 }
 
 \references{
@@ -95,7 +98,7 @@ data(Senn2013)
 # reference treatment 'plac', i.e. placebo 
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-        data=Senn2013, sm="MD", reference="plac")
+                data=Senn2013, sm="MD", reference="plac")
         
 #
 # Generate a net heat plot based on a fixed effects model
