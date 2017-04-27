@@ -4,3 +4,9 @@ cache: packages
 warnings_are_errors: false
 
 before_install: sh ./install-rgraphviz.sh
+
+r_packages:
+  - covr
+
+after_success:
+  - Rscript -e 'library(covr); codecov()'
