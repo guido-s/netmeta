@@ -14,7 +14,7 @@ nma.ruecker <- function(TE, seTE,
   n <- length(unique(c(treat1, treat2))) # Number of treatments (vertices)
   W <- diag(w.pooled,                    # Weighted degree diagonal matrix
             nrow = length(w.pooled))     # 
-  df1 <- 2 * sum(1 / narms)                  # Sum of degrees of freedom per study
+  df1 <- 2 * sum(1 / narms)              # Sum of degrees of freedom per study
   
   
   ##

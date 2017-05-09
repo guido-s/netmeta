@@ -2,7 +2,15 @@ netsplit <- function(x) {
   
   meta:::chkclass(x, "netmeta")
   
+  
   seq.comps <- rownames(x$Cov.fixed)
+  
+  
+  ##
+  ## Number of studies with direct comparisons
+  ##
+  k <- lowertri(x$A.matrix)
+  
   
   ##
   ## Fixed effect model
@@ -81,6 +89,8 @@ netsplit <- function(x) {
   
   
   res <- list(comparison = names(x$prop.direct.fixed),
+              ##
+              k = k,
               ##
               prop.fixed = prop.fixed,
               fixed = fixed,
