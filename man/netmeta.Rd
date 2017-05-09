@@ -264,6 +264,8 @@
   \item{Q.decomp}{Data frame with columns 'treat1', 'treat2', 'Q',
     'df' and 'pval.Q', providing heterogeneity statistics for each
     pairwise meta-analysis of direct comparisons.}
+  \item{P.fixed, P.random}{\emph{n}x\emph{n} matrix with direct
+    evidence proportions (fixed effect / random effects model).}
   \item{call}{Function call.}
   \item{version}{Version of R package netmeta used to create object.}
 }
@@ -316,8 +318,7 @@ net1$Q.decomp
 #
 # Comparison with reference group
 #
-netmeta(TE, seTE, treat1, treat2, studlab,
-        data=Senn2013, sm="MD", reference="plac")
+print(net1, reference="plac")
 
 #
 # Random effects model

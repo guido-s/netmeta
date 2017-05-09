@@ -401,6 +401,9 @@ netmeta <- function(TE, seTE,
               ##
               Q.decomp = res.f$Q.decomp,
               ##
+              P.fixed = NA,
+              P.random = NA,
+              ##
               reference.group = reference.group,
               all.treatments = all.treatments,
               ##
@@ -469,6 +472,9 @@ netmeta <- function(TE, seTE,
   TE.direct.random[P.random == 0] <- 0
   ##
   ## Indirect estimate is NA if only direct evidence is available
+  ##
+  res$P.fixed <- P.fixed
+  res$P.random <- P.random
   ##
   P.fixed[P.fixed == 1]   <- NA
   P.random[P.random == 1] <- NA

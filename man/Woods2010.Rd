@@ -45,6 +45,10 @@ p1
 # Conduct network meta-analysis
 net1 <- netmeta(p1)
 net1
+
+# Show forest plot
+forest(net1, ref = "Placebo", drop = TRUE,
+       leftlabs = "Contrast to Placebo")
 }
 
 \keyword{datasets}

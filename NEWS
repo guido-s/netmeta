@@ -1,3 +1,49 @@
+*** netmeta, version x.y-z, 2017-mm-yy ***
+
+ ** Major changes **
+
+  * In forest.netmeta(), reference group can be omitted from forest
+    plot and treatments can be sorted by treatment estimate (TE), standard error (seTE), 
+
+  * In decomp.design(), by default, only print designs contributing to
+    design-specific decomposition of within-designs Q statistic
+
+  * In netmeta(), separator used in comparison names to concatenate
+    treatment labels can be specified by user (default: ":")
+
+ ** User-visible changes **
+    
+  * forest.netmeta():
+    - new argument 'drop.reference.group'
+    - argument 'sortvar' can be used in the following ways:
+      sortvar = TE, sortvar = -TE, sortvar = seTE, sortvar = -seTE,
+      sortvar = k, sortvar = -k, sortvar = prop.direct, sortvar = -prop.direct
+
+  * print.decomp.design() and netheat():
+    - new argument 'showall' which defaults to FALSE
+
+  * pairwise():
+    - in multi-arm studies exclude comparisons with missing sample
+      size or standard error from calculation of pooled variance for
+      standardized mean difference (sm = "SMD")
+
+  * Help pages:
+    - examples corrected for dataset dietaryfat
+    - do not run all examples in forest.netmeta() to shorten runtime
+      of examples (requirement by CRAN: < 10s)
+    - R code to produce forest plot added to examples in dataset
+      Wood2010
+
+ ** Internal changes **
+
+  * netconnection():
+    - argument checks added
+    - better code documentation
+
+  * Internal function decomp.tau():
+    - detach all designs (including protuding edges)
+
+
 *** netmeta, version 0.9-4, 2017-04-07 ***
 
  ** Bug fix release **

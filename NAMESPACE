@@ -27,7 +27,8 @@ S3method(print, netsplit)
 S3method(print, netposet)
 S3method(plot, netposet)
 
-importFrom("meta", "forest", "metabin", "metacont", "metagen",
+importFrom("meta", "forest", "forest.meta",
+           "metabin", "metacont", "metagen",
            "metainc", "metaprop", "gs")
 
 importFrom("magic", "adiag")
