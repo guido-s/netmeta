@@ -389,6 +389,7 @@ netmeta <- function(TE, seTE,
               comb.random = comb.random,
               ##
               A.matrix = res.f$A.matrix,
+              B.matrix = res.f$B.matrix[o, ],
               L.matrix = res.f$L.matrix,
               Lplus.matrix = res.f$Lplus.matrix,
               Q.matrix = res.f$Q.matrix,

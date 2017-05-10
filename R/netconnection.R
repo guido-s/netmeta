@@ -122,14 +122,12 @@ netconnection <- function(treat1, treat2, studlab,
   treats <- as.factor(c(as.character(treat1), as.character(treat2)))
   n <- length(unique(treats)) # Number of treatments
   m <- length(treat1)         # Number of comparisons
-  Edges <- data.frame(treat1 = treats[1:m],
-                      treat2 = treats[(m + 1):(2 * m)])
-  B <- matrix(0, nrow = m, ncol = n) # Edge-vertex incidence matrix
   ##
-  for (e in 1:m) {
-    B[e, Edges[e, 1]] <-  1
-    B[e, Edges[e, 2]] <- -1
-  }
+  ## Edge-vertex incidence matrix
+  ##
+  treat1.pos <- treats[1:m]
+  treat2.pos <- treats[(m + 1):(2 * m)]
+  B <- createB(treat1.pos, treat2.pos, ncol = n)
   ##
   rownames(B) <- studlab
   colnames(B) <- levels(treats)

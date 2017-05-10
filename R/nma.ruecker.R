@@ -20,25 +20,11 @@ nma.ruecker <- function(TE, seTE,
   ##
   ## B is the edge-vertex incidence matrix (m x n)
   ##
-  B <- matrix(0, nrow = m, ncol = n)
-  for (i in 1:m) {
-    if (treat1[i] != treat2[i]) {
-      B[i, treat1.pos[i]] <-  1
-      B[i, treat2.pos[i]] <- -1
-    }
-  }
+  B <- createB(treat1.pos, treat2.pos, ncol = n)
   ##
   ## B.full is the full edge-vertex incidence matrix (m x n)
   ##
-  B.full <- matrix(0, nrow = n * (n - 1) / 2, ncol = n)
-  k <- 0
-  for (i in 1:(n - 1)) {
-    for (j in (i + 1):n) {
-      k <- k + 1
-      B.full[k, i] <-  1
-      B.full[k, j] <- -1
-    }
-  }
+  B.full <- createB(nrow = n * (n - 1) / 2, ncol = n)
   ##
   ## M is the unweighted Laplacian, D its diagonal,
   ## A is the adjacency matrix
@@ -326,6 +312,7 @@ nma.ruecker <- function(TE, seTE,
               level.comb = level.comb,
               ##
               A.matrix = A.matrix,
+              B.matrix = B,
               L.matrix = L.matrix,
               Lplus.matrix = Lplus.matrix,
               Q.matrix = Q.matrix,

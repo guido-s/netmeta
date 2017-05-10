@@ -68,30 +68,31 @@
   Network meta-analysis using R package \bold{netmeta} is described in
   detail in Schwarzer et al. (2015), Chapter 8.
 
-  Let \emph{n} be the number of different treatments in a network and
-  let \emph{m} be the number of existing comparisons (edges) between
-  the treatments. If there are only two-arm studies, \emph{m} is the
-  number of studies. Let TE and seTE be the vectors of observed
-  effects and their standard errors. Let W be the \emph{m}x\emph{m}
-  diagonal matrix that contains the inverse variance 1/seTE^2.
+  Let \emph{n} be the number of different treatments (nodes, vertices)
+  in a network and let \emph{m} be the number of existing comparisons
+  (edges) between the treatments. If there are only two-arm studies,
+  \emph{m} is the number of studies. Let TE and seTE be the vectors of
+  observed effects and their standard errors. Let W be the
+  \emph{m}x\emph{m} diagonal matrix that contains the inverse variance
+  1/seTE^2.
   
   The given comparisons define the network structure. Therefrom an
-  \emph{m}x\emph{n} design matrix B is formed; for more precise
-  information, see Rücker (2012). Moreover, the \emph{n}x\emph{n}
-  Laplacian matrix L and its Moore-Penrose pseudoinverse L+ are
-  calculated (both matrices play an important role in graph theory and
-  electrical network theory).  Using these matrices, the variances
-  based on both direct and indirect comparisons can be
-  estimated. Moreover, the hat matrix H can be estimated by \strong{H
-  = BL+B^{t}W = B(B^{t} W B)^{+}B^{t}W} and finally consistent
-  treatment effects can be estimated by applying the hat matrix to the
-  observed (potentially inconsistent) effects. H is a projection
-  matrix which maps the observed effects onto the consistent
-  (n-1)-dimensional subspace. This is the Aitken estimator (Senn et
-  al., 2013). As in pairwise meta-analysis, the Q statistic measures
-  the deviation from consistency. Q can be separated into parts for
-  each pairwise meta-analysis and a part for remaining inconsistency
-  between comparisons.
+  \emph{m}x\emph{n} design matrix B (edge-vertex incidence matrix) is
+  formed; for more precise information, see Rücker (2012). Moreover,
+  the \emph{n}x\emph{n} Laplacian matrix L and its Moore-Penrose
+  pseudoinverse L+ are calculated (both matrices play an important
+  role in graph theory and electrical network theory).  Using these
+  matrices, the variances based on both direct and indirect
+  comparisons can be estimated. Moreover, the hat matrix H can be
+  estimated by \strong{H = BL+B^{t}W = B(B^{t} W B)^{+}B^{t}W} and
+  finally consistent treatment effects can be estimated by applying
+  the hat matrix to the observed (potentially inconsistent) effects. H
+  is a projection matrix which maps the observed effects onto the
+  consistent (n-1)-dimensional subspace. This is the Aitken estimator
+  (Senn et al., 2013). As in pairwise meta-analysis, the Q statistic
+  measures the deviation from consistency. Q can be separated into
+  parts for each pairwise meta-analysis and a part for remaining
+  inconsistency between comparisons.
 
   Often multi-arm studies are included in a network meta-analysis.  In
   multi-arm studies, the treatment effects on different comparisons
@@ -251,6 +252,7 @@
   \item{Q.heterogeneity}{Overall heterogeneity statistic.}
   \item{Q.inconsistency}{Overall inconsistency statistic.}
   \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
+  \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
   \item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}
   \item{Lplus.matrix}{Moore-Penrose pseudoinverse of the Laplacian
     matrix (\emph{n}x\emph{n}).}
