@@ -155,11 +155,10 @@
   and in some R functions, e.g, \code{\link{decomp.design}}. By
   default, a colon is used as the separator. If any treatment label
   contains a colon the following characters are used as separator (in
-  consecutive order): \code{-}, \code{_}, \code{/}, \code{+}, \code{.}
-  If all of these characters are used in treatment labels, a
-  corresponding error message is printed asking the user to specify a
-  different separator.
-}
+  consecutive order): \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"},
+  \code{"."}.  If all of these characters are used in treatment
+  labels, a corresponding error message is printed asking the user to
+  specify a different separator.  }
 
 \value{
   An object of class \code{netmeta} with corresponding \code{print},

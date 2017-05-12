@@ -151,7 +151,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
     design.comb <- rep(NA, length(as.character(design2$comparison)))
     ##
     for (i in 1:(length(as.character(design2$comparison)))) {
-      if((((design2$narms)[h1$order])[i]) > 2)
+      if ((((design2$narms)[h1$order])[i]) > 2)
         design.comb[i] <- paste(as.character(design2$comparison)[h1$order][i],
                                 as.character(design2$design)[h1$order][i], sep = "_")
       else
@@ -159,8 +159,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
     }
     ##
     sc <- max(nchar(design.comb)) / 4
-    oldpar <- par(oma = c(1, 1, 1, 1) + c(0, sc, sc, 0))
-    on.exit(par(oldpar))
+    par(oma = c(1, 1, 1, 1) + c(0, sc, sc, 0))
     ##
     plot(0, type = "n", xlim = c(0.036, 0.963), ylim = c(0.036, 0.963),
          bty = "n", xlab = "", ylab = "", axes = FALSE)
@@ -258,7 +257,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   }
   
   
-  if(min(round(t1, 10)) != max(round(t1, 10)))
+  if (min(round(t1, 10)) != max(round(t1, 10)))
     legend.col(rev(mycol),
                seq(from = max(-max(t1), -8), to = min(-min(t1), 8), len = length(mycol)))
   
