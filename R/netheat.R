@@ -158,8 +158,9 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
         design.comb[i] <-as.character(design2$comparison)[h1$order][i]
     }
     ##
-    sc <- max(nchar(design.comb)) / 4
-    oldpar <- par(oma = c(1, 1, 1, 1) + c(0, sc, sc, 0))
+    sc <- max(strwidth(design.comb, "inches")) / par("cin")[2]
+    oldpar <- par(mar = c(1, 1.5 + sc, 1.5 + sc,
+                          1.5 + strwidth("-4", "inches") / par("cin")[2]))
     ##
     plot(0, type = "n", xlim = c(0.036, 0.963), ylim = c(0.036, 0.963),
          bty = "n", xlab = "", ylab = "", axes = FALSE)
@@ -229,6 +230,9 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   oldpar <- va.image(x = t(tn) + max(abs(tn)))
   
   
+  on.exit(par(oldpar))
+  
+  
   legend.col <- function(col, lev, oldpar) {
     n <- length(col)
     bx <- par()$usr
@@ -247,27 +251,24 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
       polygon(xx, yy, col = col[i], border = col[i])
     }
     ##
-    oldpar <- c(par(new = TRUE), oldpar)
+    par(new = TRUE)
     ##
     plot(0, 0, type = "n",
          ylim = c(min(lev), max(lev)),
-         axes = FALSE,
-         xlab = "", ylab = "")
+         yaxt = "n", ylab = "", xaxt = "n", xlab = "",
+         frame.plot = FALSE, yaxs = "i")
     ##
     axis(side = 4, tick = FALSE, line = .25, las = 1)
     
-    oldpar
+    invisible(NULL)
   }
   
   
   if (min(round(t1, 10)) != max(round(t1, 10)))
-    oldpar <- legend.col(rev(mycol),
-                         seq(from = max(-max(t1), -8), to = min(-min(t1), 8),
-                             len = length(mycol)),
-                         oldpar)
-  
-  
-  on.exit(par(oldpar))
+    legend.col(rev(mycol),
+               seq(from = max(-max(t1), -8), to = min(-min(t1), 8),
+                   len = length(mycol)),
+               oldpar)
   
   
   box(lwd = 1.1)
