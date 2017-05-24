@@ -2,6 +2,8 @@
 
 \alias{netmeta-package}
 
+\docType{package}
+
 \title{netmeta: Brief overview of methods and general hints}
 
 \description{

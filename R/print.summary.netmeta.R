@@ -208,7 +208,8 @@ print.summary.netmeta <- function(x,
       
       Qdata <- cbind(round(x$Q, 2), x$df,
                      ifelse(x$df == 0, "--",
-                            meta:::format.p(1 - pchisq(x$Q, df = x$df))))
+                            meta:::format.p(pchisq(x$Q, df = x$df,
+                                                   lower.tail = FALSE))))
       
       dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
       ##

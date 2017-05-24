@@ -35,7 +35,7 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       ##
       ## Create full edge-vertex incidence matrix
       ##
-      B <- createB(nrow = m, ncol = n)
+      B <- createB(ncol = n)
       ##
       ## Check treatment estimates
       ##

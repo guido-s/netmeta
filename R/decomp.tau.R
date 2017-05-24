@@ -54,7 +54,7 @@ decomp.tau <- function(x, tau.preset = 0) {
   
   
   df.het.design <- freq.d - (design$narms - 1)
-  pval.het.design <- 1 - pchisq(Q.het.design, df = df.het.design)
+  pval.het.design <- pchisq(Q.het.design, df = df.het.design, lower.tail = FALSE)
   pval.het.design[df.het.design == 0] <- NA
   ##
   Q.het <- t(studies$TE - studies$TE.dir) %*% solve(V.studies) %*% (studies$TE - studies$TE.dir)
@@ -88,15 +88,15 @@ decomp.tau <- function(x, tau.preset = 0) {
   df.inc.detach <- rep_len(NA, length(NAfd))
   df.inc.detach[!NAfd]  <- nrow(X.obs) - df.net.minus 
   ##
-  pval.inc.detach <- 1 - pchisq(Q.inc.detach, df = df.inc.detach)
+  pval.inc.detach <- pchisq(Q.inc.detach, df = df.inc.detach, lower.tail = FALSE)
   pval.inc.detach[df.inc.detach == 0] <- NA
   
   
   Q.decomp <- data.frame(Q = c(Q.net, Q.het, Q.inc),
                          df = c(df.net, df.het, df.inc),
-                         pval = 1 - c(pchisq(Q.net, df = df.net),
-                                      pchisq(Q.het, df = df.het),
-                                      pchisq(Q.inc, df = df.inc)))
+                         pval = pchisq(c(Q.net, Q.het, Q.inc),
+                                       df = c(df.net, df.het, df.inc),
+                                       lower.tail = FALSE))
   ##
   Q.decomp$pval[c(df.net, df.het, df.inc) == 0] <- NA
   ##

@@ -2,8 +2,11 @@
 
  ** Major changes **
 
-  * In forest.netmeta(), reference group can be omitted from forest
-    plot and treatments can be sorted by treatment estimate (TE), standard error (seTE), 
+  * In forest.netmeta(),
+    - reference group can be omitted from forest plot
+    - treatments can be sorted by treatment estimate (TE), standard
+      error (seTE), number of studies in direct comparison (k), and
+      proportion of direct information (prop.direct)
 
   * In decomp.design(), by default, only print designs contributing to
     design-specific decomposition of within-designs Q statistic
@@ -27,10 +30,15 @@
       size or standard error from calculation of pooled variance for
       standardized mean difference (sm = "SMD")
 
+  * print.netsplit():
+    - number of studies providing direct evidence printed
+
   * Help pages:
+    - R command 'help(netmeta)' can be used to show brief overview of
+      R package netmeta
     - examples corrected for dataset dietaryfat
-    - do not run all examples in forest.netmeta() to shorten runtime
-      of examples (requirement by CRAN: < 10s)
+    - do not run all examples in forest.netmeta() as CRAN only allows
+      a run time below 10 seconds for examples provided on a help page
     - R code to produce forest plot added to examples in dataset
       Wood2010
 
@@ -39,6 +47,10 @@
   * netmeta(): 
     - new list element 'B.matrix' with the edge-vertex incidence
       matrix
+
+  * netsplit():
+    - new list element 'k' with number of studies providing direct
+      evidence
 
   * netconnection():
     - argument checks added
@@ -52,6 +64,10 @@
 
   * netmeta(), netconnection(), multiarm(), and chkmultiarm():
     - use internal function createB() instead of dedicated R code
+
+  * print.summary.netmeta(), nma.ruecker(), and decomp.tau():
+    - use command pchisq(..., lower.tail = FALSE) instead of
+      1 - pchisq(...)
 
 
 *** netmeta, version 0.9-4, 2017-04-07 ***

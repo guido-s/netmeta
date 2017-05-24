@@ -24,7 +24,7 @@ nma.ruecker <- function(TE, seTE,
   ##
   ## B.full is the full edge-vertex incidence matrix (m x n)
   ##
-  B.full <- createB(nrow = n * (n - 1) / 2, ncol = n)
+  B.full <- createB(ncol = n)
   ##
   ## M is the unweighted Laplacian, D its diagonal,
   ## A is the adjacency matrix
@@ -168,7 +168,7 @@ nma.ruecker <- function(TE, seTE,
                          treat2 = names.treat[t2],
                          Q = q,
                          df = dfs,
-                         pval.Q = 1 - pchisq(q, dfs))
+                         pval.Q = pchisq(q, dfs, lower.tail = FALSE))
   
   
   TE.pooled <- all
@@ -301,7 +301,7 @@ nma.ruecker <- function(TE, seTE,
               n = dim(TE.pooled)[[1]],
               Q = Q,
               df = df,
-              pval.Q = 1 - pchisq(Q, df),
+              pval.Q = pchisq(Q, df, lower.tail = FALSE),
               I2 = I2,
               tau = tau,
               Q.heterogeneity = Q.heterogeneity,
