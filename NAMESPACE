@@ -7,8 +7,8 @@ export(netmeta,
        netrank, print.netrank,
        netconnection, print.netconnection, netdistance,
        netsplit, print.netsplit,
-       netposet, print.netposet, plot.netposet,
-       hasse)
+       netposet, print.netposet, plot.netposet, hasse,
+       netleague)
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,

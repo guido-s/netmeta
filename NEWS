@@ -2,6 +2,9 @@
 
  ** Major changes **
 
+  * New function netleague() to print league table with network
+    meta-analysis results
+
   * pairwise():
     - zero events for binary outcomes or incidence rates are handled
       correctly in multi-arm studies by adding an increment to all

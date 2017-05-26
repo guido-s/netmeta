@@ -30,6 +30,8 @@ network meta-analysis:
   - split direct and indirect evidence to check consistency (Dias et
     al., 2010);
 
+  - league table with network meta-analysis results;
+
   - automated drawing of network graphs (Rücker & Schwarzer, 2016).
 
 Furthermore, R package **netmeta** provides functions and datasets to
@@ -66,8 +68,7 @@ install.packages("netmeta")
 ### Current development version on GitHub:
 ```r
 install.packages("devtools")
-library("devtools")
-install_github("guido-s/netmeta", ref = "develop")
+devtools::install_github("guido-s/netmeta", ref = "develop")
 ```
 
 Note, the development version of **netmeta** always has version

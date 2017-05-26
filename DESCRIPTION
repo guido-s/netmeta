@@ -16,6 +16,7 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - ranking of treatments (frequentist analogue of SUCRA) according to Rücker & Schwarzer (2015) <DOI:10.1186/s12874-015-0060-8>;
  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <DOI:10.1002/cem.2569>;
  - split direct and indirect evidence to check consistency (Dias et al., 2010) <DOI:10.1002/sim.3767>;
+ - league table with network meta-analysis results;
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <DOI:10.1002/jrsm.1143>.
 License: GPL (>= 2)
 Encoding: UTF-8
