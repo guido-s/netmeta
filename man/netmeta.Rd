@@ -15,7 +15,8 @@
 
 \usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
-        comb.fixed=TRUE, comb.random=FALSE, reference.group="",
+        comb.fixed=TRUE, comb.random=!is.null(tau.preset),
+	reference.group="",
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.tol.multiarm = FALSE,
         sep.trts=":", title="", warn=TRUE)
@@ -243,6 +244,7 @@
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
+  \item{d}{Total number of designs.}
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
   \item{df}{Degrees of freedom for test of heterogeneity / inconsistency.}
   \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}

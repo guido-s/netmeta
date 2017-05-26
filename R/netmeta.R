@@ -3,7 +3,7 @@ netmeta <- function(TE, seTE,
                     studlab, data = NULL, subset = NULL,
                     sm,
                     level = 0.95, level.comb = 0.95,
-                    comb.fixed = TRUE, comb.random = FALSE,
+                    comb.fixed = TRUE, comb.random = !is.null(tau.preset),
                     reference.group = "",
                     all.treatments = NULL,
                     seq = NULL,
@@ -373,6 +373,7 @@ netmeta <- function(TE, seTE,
               k = res.f$k,
               m = res.f$m,
               n = res.f$n,
+              d = NA,
               Q = res.f$Q,
               df = res.f$df,
               pval.Q = res.f$pval.Q,
@@ -509,6 +510,10 @@ netmeta <- function(TE, seTE,
   ##
   res$zval.indirect.random <- ci.ir$z
   res$pval.indirect.random <- ci.ir$p
+  ##
+  ## Number of designs
+  ##
+  res$d <- nma.krahn(res)$d
   
   
   res

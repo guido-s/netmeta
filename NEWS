@@ -14,6 +14,8 @@
   * In netmeta(), separator used in comparison names to concatenate
     treatment labels can be specified by user (default: ":")
 
+  * Input to netdistance() can be either a netmeta object or a matrix
+
  ** User-visible changes **
     
   * forest.netmeta():
@@ -25,6 +27,11 @@
   * print.decomp.design() and netheat():
     - new argument 'showall' which defaults to FALSE
 
+  * print.summary.netmeta():
+    - print number of designs
+    - print preset between-study variance and corresponding
+      information if argument 'tau.preset' is not NULL in netmeta()
+
   * pairwise():
     - in multi-arm studies exclude comparisons with missing sample
       size or standard error from calculation of pooled variance for
@@ -33,6 +40,11 @@
   * print.netsplit():
     - number of studies providing direct evidence printed
 
+  * netdistance():
+    - argument name changed from 'A' to 'x' in order to reflect that
+      input of R function can be either a netmeta object or an
+      adjacency matrix
+    
   * Help pages:
     - R command 'help(netmeta)' can be used to show brief overview of
       R package netmeta
@@ -44,9 +56,14 @@
 
  ** Internal changes **
 
-  * netmeta(): 
+  * netmeta():
+    - new list element 'd' with number of designs
     - new list element 'B.matrix' with the edge-vertex incidence
       matrix
+
+  * summary.netmeta():
+    - new list element 'd' with number of designs
+    - new list element 'tau.preset'
 
   * netsplit():
     - new list element 'k' with number of studies providing direct
