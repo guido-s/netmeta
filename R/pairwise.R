@@ -1,6 +1,8 @@
 pairwise <- function(treat,
                      event, n, mean, sd, TE, seTE, time,
-                     data = NULL, studlab, ...) {
+                     data = NULL, studlab,
+                     incr = 0.5, allincr = FALSE, addincr = FALSE,
+                     ...) {
   
   
   if (is.null(data)) data <- sys.frame(sys.parent())
@@ -78,6 +80,10 @@ pairwise <- function(treat,
       chklist(time)
     else
       meta:::chknumeric(time)
+  ##
+  meta:::chknumeric(incr, min = 0, single = TRUE)
+  meta:::chklogical(allincr)
+  meta:::chklogical(addincr)
   
   
   if (!is.null(event) & !is.null(n) &
@@ -266,11 +272,51 @@ pairwise <- function(treat,
   nstud <- length(studlab)
   
   
+  ##
+  ## Auxiliary function to calculate number of arms with zero events
+  ## per study
+  ##
+  sumzero <- function(x) sum(x[!is.na(x)] == 0)
+  
+  
   if (type == "binary") {
     if (length(event) != narms)
       stop("Different length of lists 'treat' and 'event'.")
     if (length(n) != narms)
       stop("Different length of lists 'treat' and 'n'.")
+    ##
+    ## Determine increment for individual studies
+    ##
+    n.zeros <- apply(matrix(unlist(event), ncol = length(event)), 1, sumzero)
+    n.all   <- apply(matrix(unlist(n), ncol = length(event)) -
+                     matrix(unlist(event), ncol = length(event)),
+                     1, sumzero)
+    ##
+    incr.study <- rep(0, length(n.zeros))
+    ##
+    if ("sm" %in% nam.args)
+      sm <- args$sm
+    else
+      sm <- gs("smbin")
+    ##
+    sm <- meta:::setchar(sm, c("OR", "RD", "RR", "ASD"))
+    ##
+    sparse <- switch(sm,
+                     OR = (n.zeros > 0) | (n.all > 0),
+                     RD = (n.zeros > 0) | (n.all > 0),
+                     RR = (n.zeros > 0) | (n.all > 0),
+                     ASD = rep(FALSE, length(n.zeros)))
+    ##
+    if (!allincr & !addincr)
+      incr.study[sparse] <- incr
+    else if (addincr)
+      incr.study[] <- incr
+    else {
+      if (any(n.zeros > 0))
+        incr.study[] <- incr
+      else
+        incr.study[] <- 0
+    }
     ##
     for (i in 1:(narms - 1)) {
       ##
@@ -292,6 +338,7 @@ pairwise <- function(treat,
                           treat2 = treat[[j]],
                           event1 = event[[i]], n1 = n[[i]],
                           event2 = event[[j]], n2 = n[[j]],
+                          incr = incr.study,
                           stringsAsFactors = FALSE)
         ##
         dat <- dat[!(is.na(dat$event1) & is.na(dat$n1)), ]
@@ -299,7 +346,9 @@ pairwise <- function(treat,
         ##
         if (nrow(dat) > 0) {
           m1 <- metabin(dat$event1, dat$n1,
-                        dat$event2, dat$n2, ...)
+                        dat$event2, dat$n2,
+                        incr = dat$incr, addincr = TRUE,
+                        ...)
           dat$TE   <- m1$TE
           dat$seTE <- m1$seTE
           ##
@@ -343,7 +392,7 @@ pairwise <- function(treat,
     ## For standardized mean difference, calculate pooled standard
     ## deviation for multi-arm studies
     ##
-    if ("sm" %in% nam.args && (args$sm == "SMD" & narms > 2)) {
+    if ("sm" %in% nam.args && (tolower(args$sm) == "smd" & narms > 2)) {
       pooled.sd <- function(sd, n) {
         sel <- !is.na(sd) & !is.na(n)
         ##
@@ -464,6 +513,25 @@ pairwise <- function(treat,
     if (length(time) != narms)
       stop("Different length of lists 'treat' and 'time'.")
     ##
+    ## Determine increment for individual studies
+    ##
+    n.zeros <- apply(matrix(unlist(event), ncol = length(event)), 1, sumzero)
+    ##
+    incr.study <- rep(0, length(n.zeros))
+    ##
+    sparse <- n.zeros > 0
+    ##
+    if (!allincr & !addincr)
+      incr.study[sparse] <- incr
+    else if (addincr)
+      incr.study[] <- incr
+    else {
+      if (any(n.zeros > 0))
+        incr.study[] <- incr
+      else
+        incr.study[] <- 0
+    }
+    ##
     for (i in 1:(narms - 1)) {
       ##
       if (i == 1 & (length(treat[[i]]) != length(event[[i]])))
@@ -484,13 +552,16 @@ pairwise <- function(treat,
                           treat2 = treat[[j]],
                           event1 = event[[i]], time1 = time[[i]],
                           event2 = event[[j]], time2 = time[[j]],
+                          incr = incr.study,
                           stringsAsFactors = FALSE)
         dat <- dat[!(is.na(dat$event1) & is.na(dat$time1)), ]
         dat <- dat[!(is.na(dat$event2) & is.na(dat$time2)), ]
         ##
         if (nrow(dat) > 0) {
           m1 <- metainc(dat$event1, dat$time1,
-                        dat$event2, dat$time2, ...)
+                        dat$event2, dat$time2,
+                        incr = dat$incr, addincr = TRUE,
+                        ...)
           dat$TE <- m1$TE
           dat$seTE <- m1$seTE
           ##

@@ -14,7 +14,9 @@ arm-based to contrast-based format.
 
 \usage{
 pairwise(treat, event, n, mean, sd, TE, seTE, time,
-         data=NULL, studlab, ...)
+         data=NULL, studlab,
+	 incr=0.5, allincr=FALSE, addincr=FALSE,
+	 ...)
 }
 
 \arguments{
@@ -37,6 +39,14 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
   \item{data}{An optional data frame containing the study
     information.}
   \item{studlab}{A vector with study labels (optional).}
+  \item{incr}{A numerical value which is added to each cell frequency
+    for studies with a zero cell count.}
+  \item{allincr}{A logical indicating if \code{incr} is added to each
+    cell frequency of all studies if at least one study has a zero
+    cell count. If FALSE (default), \code{incr} is added only to each
+    cell frequency of studies with a zero cell count.}
+  \item{addincr}{A logical indicating if \code{incr} is added to each
+    cell frequency of all studies irrespective of zero cell counts.}
   \item{\dots}{Additional arguments passed-through to the functions to
     calculate effects.}
 }

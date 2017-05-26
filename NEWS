@@ -1,6 +1,13 @@
-*** netmeta, version x.y-z, 2017-mm-yy ***
+*** netmeta, version 0.9-5, 2017-05-26 ***
 
  ** Major changes **
+
+  * In pairwise(), zero events for binary outcomes or incidence rates
+    are handled correctly in multi-arm studies by adding an increment
+    to all treatment arms (in older versions of netmeta inconsistent
+    treatment effects for multi-arm studies were possible as
+    increments were considered in individual comparisons instead of
+    all comparisons for a multi-arm study)
 
   * In forest.netmeta(),
     - reference group can be omitted from forest plot
