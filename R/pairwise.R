@@ -2,6 +2,7 @@ pairwise <- function(treat,
                      event, n, mean, sd, TE, seTE, time,
                      data = NULL, studlab,
                      incr = 0.5, allincr = FALSE, addincr = FALSE,
+                     allstudies = FALSE,
                      ...) {
   
   
@@ -84,6 +85,7 @@ pairwise <- function(treat,
   meta:::chknumeric(incr, min = 0, single = TRUE)
   meta:::chklogical(allincr)
   meta:::chklogical(addincr)
+  meta:::chklogical(allstudies)
   
   
   if (!is.null(event) & !is.null(n) &
@@ -339,6 +341,7 @@ pairwise <- function(treat,
                           event1 = event[[i]], n1 = n[[i]],
                           event2 = event[[j]], n2 = n[[j]],
                           incr = incr.study,
+                          allstudies = allstudies,
                           stringsAsFactors = FALSE)
         ##
         dat <- dat[!(is.na(dat$event1) & is.na(dat$n1)), ]
@@ -348,14 +351,21 @@ pairwise <- function(treat,
           m1 <- metabin(dat$event1, dat$n1,
                         dat$event2, dat$n2,
                         incr = dat$incr, addincr = TRUE,
+                        allstudies = allstudies,
                         ...)
           dat$TE   <- m1$TE
           dat$seTE <- m1$seTE
           ##
-          if (i == 1 & j == 2)
+          dat.NAs <- dat[is.na(dat$TE) | is.na(dat$seTE) | dat$seTE <= 0, ]
+          ##
+          if (i == 1 & j == 2) {
             res <- dat
-          else
+            res.NAs <- dat.NAs
+          }
+          else {
             res <- rbind(res, dat)
+            res.NAs <- rbind(res.NAs, dat.NAs)
+          }
         }
         else
           if (i == 1 & j == 2)
@@ -445,10 +455,16 @@ pairwise <- function(treat,
           dat$TE   <- m1$TE
           dat$seTE <- m1$seTE
           ##
-          if (i == 1 & j == 2)
+          dat.NAs <- dat[is.na(dat$TE) | is.na(dat$seTE) | dat$seTE <= 0, ]
+          ##
+          if (i == 1 & j == 2) {
             res <- dat
-          else
+            res.NAs <- dat.NAs
+          }
+          else {
             res <- rbind(res, dat)
+            res.NAs <- rbind(res.NAs, dat.NAs)
+          }
         }
         else
           if (i == 1 & j == 2)
@@ -494,10 +510,16 @@ pairwise <- function(treat,
           dat$TE <- m1$TE
           dat$seTE <- m1$seTE
           ##
-          if (i == 1 & j == 2)
+          dat.NAs <- dat[is.na(dat$TE) | is.na(dat$seTE) | dat$seTE <= 0, ]
+          ##
+          if (i == 1 & j == 2) {
             res <- dat
-          else
+            res.NAs <- dat.NAs
+          }
+          else {
             res <- rbind(res, dat)
+            res.NAs <- rbind(res.NAs, dat.NAs)
+          }
         }
         else
           if (i == 1 & j == 2)
@@ -561,14 +583,21 @@ pairwise <- function(treat,
           m1 <- metainc(dat$event1, dat$time1,
                         dat$event2, dat$time2,
                         incr = dat$incr, addincr = TRUE,
+                        allstudies = allstudies,
                         ...)
           dat$TE <- m1$TE
           dat$seTE <- m1$seTE
           ##
-          if (i == 1 & j == 2)
+          dat.NAs <- dat[is.na(dat$TE) | is.na(dat$seTE) | dat$seTE <= 0, ]
+          ##
+          if (i == 1 & j == 2) {
             res <- dat
-          else
+            res.NAs <- dat.NAs
+          }
+          else {
             res <- rbind(res, dat)
+            res.NAs <- rbind(res.NAs, dat.NAs)
+          }
         }
         else
           if (i == 1 & j == 2)
@@ -601,9 +630,24 @@ pairwise <- function(treat,
                   "(due to single study arm or missing values):\n  ",
                   paste(paste("'", studlab[sel.study], "'", sep = ""),
                         collapse = " - "), sep = ""))
-  
-  
-  
+  ##
+  ## c) Missing treatment estimates or standard errors?
+  ##
+  if (nrow(res.NAs) > 0) {
+    warning("Comparison",
+            if (nrow(res.NAs) > 1) "s",
+            " with missing TE / seTE or zero seTE",
+            " will not be considered in network meta-analysis.",
+            call. = FALSE)
+    cat(paste("Comparison",
+              if (nrow(res.NAs) > 1) "s",
+              " will not be considered in network meta-analysis:\n",
+              sep = ""))
+    ##
+    prmatrix(res.NAs,
+             quote = FALSE, right = TRUE, na.print = "NA",
+             rowlab = rep("", nrow(res.NAs)))
+  }
   
   
   attr(res, "sm") <- m1$sm
