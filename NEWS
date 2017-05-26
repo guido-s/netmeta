@@ -21,11 +21,16 @@
       error (seTE), number of studies in direct comparison (k), and
       proportion of direct information (prop.direct)
 
+  * netmeta():
+    - additional checks for correct number of comparisons in multi-arm
+      studies and more informative error message for uncorrect number
+      of comparisons in multi-arm studies due to missing treatment
+      effects or standard errors in single comparisons
+    - separator used in comparison names to concatenate treatment
+      labels can be specified by user (default: ":")
+
   * In decomp.design(), by default, only print designs contributing to
     design-specific decomposition of within-designs Q statistic
-
-  * In netmeta(), separator used in comparison names to concatenate
-    treatment labels can be specified by user (default: ":")
 
   * Input to netdistance() can be either a netmeta object or a matrix
 

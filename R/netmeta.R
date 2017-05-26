@@ -161,6 +161,38 @@ netmeta <- function(TE, seTE,
     studlab <- seq(along = TE)
   }
   ##
+  ## Check for correct number of comparisons
+  ##
+  is.wholenumber <-
+    function(x, tol = .Machine$double.eps^0.5)
+      abs(x - round(x)) < tol
+  ##
+  tabnarms <- table(studlab)
+  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  ##
+  if (sum(sel.narms) == 1)
+    stop(paste("Study '", names(tabnarms)[sel.narms],
+               "' has a wrong number of comparisons.",
+               "\n  Please provide data for all treatment comparisons",
+               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
+               sep = ""))
+  if (sum(sel.narms) > 1)
+    stop(paste("The following studies have a wrong number of comparisons: ",
+               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
+                     collapse = ", "),
+               "\n  Please provide data for all treatment comparisons",
+               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
+               sep = ""))
+  ##
+  ## Check number of subgraphs
+  ##
+  n.subnets <- netconnection(treat1, treat2, studlab)$n.subnets
+  ##
+  if (n.subnets > 1)
+    stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
+               "Use R function 'netconnection' to identify sub-networks.",
+               sep = ""))
+  ##
   ## Check NAs and zero standard errors
   ##
   excl <- is.na(TE) | is.na(seTE) | seTE <= 0
@@ -176,7 +208,9 @@ netmeta <- function(TE, seTE,
             if (sum(excl) > 1) "s",
             " with missing TE / seTE or zero seTE not considered in network meta-analysis.",
             call. = FALSE)
-    cat("Studies not considered in network meta-analysis:\n")
+    cat(paste("Comparison",
+              if (sum(excl) > 1) "s",
+              " not considered in network meta-analysis:\n", sep = ""))
     prmatrix(dat.NAs, quote = FALSE, right = TRUE,
              rowlab = rep("", sum(excl)))
     ##
@@ -189,24 +223,28 @@ netmeta <- function(TE, seTE,
     seq <- seq[seq %in% unique(c(treat1, treat2))]
   }
   ##
-  ## Check for correct number of comparisons
+  ## Check for correct number of comparisons (after removing
+  ## comparisons with missing data)
   ##
-  is.wholenumber <-
-    function(x, tol = .Machine$double.eps^0.5)
-      abs(x - round(x)) < tol
   tabnarms <- table(studlab)
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
-    stop(paste("Study '", names(tabnarms)[sel.narms],
+    stop(paste("After removing comparisons with missing treatment effects",
+               " or standard errors,\n  study '",
+               names(tabnarms)[sel.narms],
                "' has a wrong number of comparisons.",
-               "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
+               " Please check data and\n  consider to remove study",
+               " from network meta-analysis.",
                sep = ""))
   if (sum(sel.narms) > 1)
-    stop(paste("The following studies have a wrong number of comparisons: ",
+    stop(paste("After removing comparisons with missing treatment effects",
+               " or standard errors,\n  the following studies have",
+               " a wrong number of comparisons: ",
                paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
                      collapse = ", "),
-               "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
+               "\n  Please check data and consider to remove studies",
+               " from network meta-analysis.",
                sep = ""))
   ##
   ## Check number of subgraphs
@@ -214,8 +252,11 @@ netmeta <- function(TE, seTE,
   n.subnets <- netconnection(treat1, treat2, studlab)$n.subnets
   ##
   if (n.subnets > 1)
-    stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
-               "Use R function 'netconnection' to identify sub-networks.",
+    stop(paste("After removing comparisons with missing treatment effects",
+               " or standard errors,\n  network consists of ",
+               n.subnets, " separate sub-networks.\n  ",
+               "Please check data and consider to remove studies",
+               " from network meta-analysis.",
                sep = ""))
   ##
   ## Check for correct treatment order within comparison
