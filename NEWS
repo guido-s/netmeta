@@ -47,6 +47,10 @@
       size or standard error from calculation of pooled variance for
       standardized mean difference (sm = "SMD")
 
+  * plot.netposet():
+    - new default for argument 'arrows', i.e., by default, do not show
+      arrows in scatter plot
+
   * print.netsplit():
     - number of studies providing direct evidence printed
 
