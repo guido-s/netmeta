@@ -3,13 +3,14 @@ netmeta <- function(TE, seTE,
                     studlab, data = NULL, subset = NULL,
                     sm,
                     level = 0.95, level.comb = 0.95,
-                    comb.fixed = TRUE, comb.random = FALSE,
+                    comb.fixed = TRUE, comb.random = !is.null(tau.preset),
                     reference.group = "",
                     all.treatments = NULL,
                     seq = NULL,
                     tau.preset = NULL,
                     tol.multiarm = 0.0005,
                     details.tol.multiarm = FALSE,
+                    sep.trts = ":",
                     title = "",
                     warn = TRUE
                     ) {
@@ -113,6 +114,25 @@ netmeta <- function(TE, seTE,
   ##
   labels <- sort(unique(c(treat1, treat2)))
   ##
+  if (any(grepl(sep.trts, labels))) {
+    if (sep.trts != ":" & !any(grepl(":", labels)))
+      sep.trts <- ":"
+    else if (!any(grepl("-", labels)))
+      sep.trts <- "-"
+    else if (!any(grepl("_", labels)))
+      sep.trts <- "_"
+    else if (!any(grepl("/", labels)))
+      sep.trts <- "/"
+    else if (!any(grepl("+", labels)))
+      sep.trts <- "+"
+    else if (!any(grepl("\\.", labels)))
+      sep.trts <- "."
+    else
+      stop("All predefined separators (':', '-', '_', '/', '+', '.') are used in at least one treatment label.",
+           "\n   Please specify a different character that should be used as separator (argument 'sep.trts').",
+           call. = FALSE)
+  }
+  ##
   if (!is.null(seq))
     seq <- setseq(seq, labels)
   else {
@@ -141,6 +161,38 @@ netmeta <- function(TE, seTE,
     studlab <- seq(along = TE)
   }
   ##
+  ## Check for correct number of comparisons
+  ##
+  is.wholenumber <-
+    function(x, tol = .Machine$double.eps^0.5)
+      abs(x - round(x)) < tol
+  ##
+  tabnarms <- table(studlab)
+  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  ##
+  if (sum(sel.narms) == 1)
+    stop(paste("Study '", names(tabnarms)[sel.narms],
+               "' has a wrong number of comparisons.",
+               "\n  Please provide data for all treatment comparisons",
+               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
+               sep = ""))
+  if (sum(sel.narms) > 1)
+    stop(paste("The following studies have a wrong number of comparisons: ",
+               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
+                     collapse = ", "),
+               "\n  Please provide data for all treatment comparisons",
+               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
+               sep = ""))
+  ##
+  ## Check number of subgraphs
+  ##
+  n.subnets <- netconnection(treat1, treat2, studlab)$n.subnets
+  ##
+  if (n.subnets > 1)
+    stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
+               "Use R function 'netconnection' to identify sub-networks.",
+               sep = ""))
+  ##
   ## Check NAs and zero standard errors
   ##
   excl <- is.na(TE) | is.na(seTE) | seTE <= 0
@@ -156,7 +208,9 @@ netmeta <- function(TE, seTE,
             if (sum(excl) > 1) "s",
             " with missing TE / seTE or zero seTE not considered in network meta-analysis.",
             call. = FALSE)
-    cat("Studies not considered in network meta-analysis:\n")
+    cat(paste("Comparison",
+              if (sum(excl) > 1) "s",
+              " not considered in network meta-analysis:\n", sep = ""))
     prmatrix(dat.NAs, quote = FALSE, right = TRUE,
              rowlab = rep("", sum(excl)))
     ##
@@ -169,24 +223,28 @@ netmeta <- function(TE, seTE,
     seq <- seq[seq %in% unique(c(treat1, treat2))]
   }
   ##
-  ## Check for correct number of comparisons
+  ## Check for correct number of comparisons (after removing
+  ## comparisons with missing data)
   ##
-  is.wholenumber <-
-    function(x, tol = .Machine$double.eps^0.5)
-      abs(x - round(x)) < tol
   tabnarms <- table(studlab)
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
-    stop(paste("Study '", names(tabnarms)[sel.narms],
+    stop(paste("After removing comparisons with missing treatment effects",
+               " or standard errors,\n  study '",
+               names(tabnarms)[sel.narms],
                "' has a wrong number of comparisons.",
-               "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
+               " Please check data and\n  consider to remove study",
+               " from network meta-analysis.",
                sep = ""))
   if (sum(sel.narms) > 1)
-    stop(paste("The following studies have a wrong number of comparisons: ",
+    stop(paste("After removing comparisons with missing treatment effects",
+               " or standard errors,\n  the following studies have",
+               " a wrong number of comparisons: ",
                paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
                      collapse = ", "),
-               "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
+               "\n  Please check data and consider to remove studies",
+               " from network meta-analysis.",
                sep = ""))
   ##
   ## Check number of subgraphs
@@ -194,8 +252,11 @@ netmeta <- function(TE, seTE,
   n.subnets <- netconnection(treat1, treat2, studlab)$n.subnets
   ##
   if (n.subnets > 1)
-    stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
-               "Use R function 'netconnection' to identify sub-networks.",
+    stop(paste("After removing comparisons with missing treatment effects",
+               " or standard errors,\n  network consists of ",
+               n.subnets, " separate sub-networks.\n  ",
+               "Please check data and consider to remove studies",
+               " from network meta-analysis.",
                sep = ""))
   ##
   ## Check for correct treatment order within comparison
@@ -247,7 +308,8 @@ netmeta <- function(TE, seTE,
                        p0$treat1, p0$treat2,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
-                       sm, level, level.comb, p0$seTE)
+                       sm, level, level.comb, p0$seTE,
+                       sep.trts = sep.trts)
   ##
   ## Random effects model
   ##
@@ -262,7 +324,8 @@ netmeta <- function(TE, seTE,
                        p1$treat1, p1$treat2,
                        p1$treat1.pos, p1$treat2.pos,
                        p1$narms, p1$studlab, 
-                       sm, level, level.comb, p1$seTE, tau)
+                       sm, level, level.comb, p1$seTE, tau,
+                       sep.trts = sep.trts)
   
   
   ##
@@ -351,6 +414,7 @@ netmeta <- function(TE, seTE,
               k = res.f$k,
               m = res.f$m,
               n = res.f$n,
+              d = NA,
               Q = res.f$Q,
               df = res.f$df,
               pval.Q = res.f$pval.Q,
@@ -367,6 +431,7 @@ netmeta <- function(TE, seTE,
               comb.random = comb.random,
               ##
               A.matrix = res.f$A.matrix,
+              B.matrix = res.f$B.matrix[o, ],
               L.matrix = res.f$L.matrix,
               Lplus.matrix = res.f$Lplus.matrix,
               Q.matrix = res.f$Q.matrix,
@@ -379,10 +444,15 @@ netmeta <- function(TE, seTE,
               ##
               Q.decomp = res.f$Q.decomp,
               ##
+              P.fixed = NA,
+              P.random = NA,
+              ##
               reference.group = reference.group,
               all.treatments = all.treatments,
               ##
               seq = seq,
+              ##
+              sep.trts = sep.trts,
               ##
               title = title,
               ##
@@ -419,7 +489,7 @@ netmeta <- function(TE, seTE,
     res$prop.direct.fixed <- 1
     res$prop.direct.random <- 1
     names(res$prop.direct.fixed) <-
-      names(res$prop.direct.random) <- paste(labels, collapse = ":")
+      names(res$prop.direct.random) <- paste(labels, collapse = sep.trts)
     ##
     P.fixed  <- 1
     P.random <- 1
@@ -445,6 +515,9 @@ netmeta <- function(TE, seTE,
   TE.direct.random[P.random == 0] <- 0
   ##
   ## Indirect estimate is NA if only direct evidence is available
+  ##
+  res$P.fixed <- P.fixed
+  res$P.random <- P.random
   ##
   P.fixed[P.fixed == 1]   <- NA
   P.random[P.random == 1] <- NA
@@ -478,6 +551,10 @@ netmeta <- function(TE, seTE,
   ##
   res$zval.indirect.random <- ci.ir$z
   res$pval.indirect.random <- ci.ir$p
+  ##
+  ## Number of designs
+  ##
+  res$d <- nma.krahn(res)$d
   
   
   res

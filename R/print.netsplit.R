@@ -46,6 +46,8 @@ print.netsplit <- function(x,
   ## 
   comp <- x$comparison[sel]
   ##
+  k <- x$k[sel]
+  ##
   prop.fixed <- x$prop.fixed[sel]
   ##
   TE.fixed <- x$fixed$TE[sel]
@@ -123,8 +125,9 @@ print.netsplit <- function(x,
   
   
   fixed <- list(comp = comp,
+                k = k,
                 prop = format(round(prop.fixed, 2)))
-  names.fixed <- c("comparison", "prop")
+  names.fixed <- c("comparison", "k", "prop")
   ##
   if (overall) {
     fixed$TE.fixed <- meta:::format.NA(TE.fixed, digits, text.NA = text.NA)
@@ -176,8 +179,9 @@ print.netsplit <- function(x,
   
   
   random <- list(comp = comp,
+                 k = k,
                  prop = format(round(prop.random, 2)))
-  names.random <- c("comparison", "prop")
+  names.random <- c("comparison", "k", "prop")
   ##
   if (overall) {
     random$TE.random <- meta:::format.NA(TE.random, digits, text.NA = text.NA)
@@ -246,6 +250,7 @@ print.netsplit <- function(x,
   ##
   cat("\nLegend:\n")
   cat(" comparison - Treatment comparison\n")
+  cat(" k          - Number of studies providing direct evidence\n")
   cat(" prop       - Direct evidence proportion\n")
   if (overall)
     cat(paste(" nma        - Estimated treatment effect ", sm.lab,

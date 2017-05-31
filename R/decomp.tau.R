@@ -20,20 +20,23 @@ decomp.tau <- function(x, tau.preset = 0) {
   TE.net.minus <- matrix(NA, nrow = nrow(X.obs), ncol = length(designs))
   colnames(TE.net.minus) <- designs
   ##
+  df.net.minus <- numeric(length(designs))
+  names(df.net.minus) <- designs
+  ##
   for (i in designs) {
-    Xb <- X.obs[!(rownames(X.obs) == i), ]
-    Vb <- V[!(rownames(V) == i), !(colnames(V) == i)]
-    if (qr(Xb)$rank == ncol(X.obs)) {
-      TE.net.minus[, i] <- X.obs %*% solve(t(Xb) %*% solve(Vb) %*% Xb) %*%
-        t(Xb) %*% solve(Vb) %*% design$TE.dir[!(design$design == i)]
-    }
+    narms <- design$narms[design$design == i][1]
+    Xb <- cbind(X.obs,matrix(0, nrow(X.obs), narms - 1))
+    Xb[(rownames(X.obs) == i), ] <- 0
+    Xb[(rownames(X.obs) == i), ncol(X.obs) + (1:(narms - 1))] <- diag(narms - 1)
+    TE.net.minus[, i] <- Xb %*% ginv(t(Xb) %*% solve(V) %*% Xb) %*% t(Xb) %*% solve(V) %*% design$TE.dir
+    df.net.minus[i] <- qr(Xb)$rank
   }
   ##
   rownames(TE.net.minus) <- design$design
   
   
-  freq.d  <- rep(NA, nrow(design))
-  Q.het.design <- rep(NA, nrow(design))
+  freq.d <- rep_len(NA, nrow(design))
+  Q.het.design <- rep_len(NA, nrow(design))
   ##
   for (i in unique(sort(as.character(studies$design)))) {
     Vs <- V.studies[rownames(V.studies) == i, colnames(V.studies) == i]
@@ -51,7 +54,7 @@ decomp.tau <- function(x, tau.preset = 0) {
   
   
   df.het.design <- freq.d - (design$narms - 1)
-  pval.het.design <- 1 - pchisq(Q.het.design, df = df.het.design)
+  pval.het.design <- pchisq(Q.het.design, df = df.het.design, lower.tail = FALSE)
   pval.het.design[df.het.design == 0] <- NA
   ##
   Q.het <- t(studies$TE - studies$TE.dir) %*% solve(V.studies) %*% (studies$TE - studies$TE.dir)
@@ -72,7 +75,7 @@ decomp.tau <- function(x, tau.preset = 0) {
   
   residuals <- apply(TE.net.minus, 2, function(x) design$TE.dir - x)
   residuals <- residuals[, rownames(residuals)]
-  diag(residuals) <- rep(0, nrow(residuals))
+  diag(residuals) <- rep_len(0, nrow(residuals))
   ##
   if (multiarm)
     for (i in 1:length(multicomp))
@@ -82,21 +85,20 @@ decomp.tau <- function(x, tau.preset = 0) {
   Q.inc.detach <- apply(residuals, 2, function(x) t(x) %*% solve(V) %*% x)
   Q.inc.detach[NAfd] <- NA
   ##
-  df.inc.detach <- nrow(X.obs) - (ncol(X.obs) + (design$narms - 1))
-  df.inc.detach[df.inc.detach < 0] <- NA
-  df.inc.detach[NAfd] <- NA
+  df.inc.detach <- rep_len(NA, length(NAfd))
+  df.inc.detach[!NAfd]  <- nrow(X.obs) - df.net.minus 
   ##
-  pval.inc.detach <- 1 - pchisq(Q.inc.detach, df = df.inc.detach)
+  pval.inc.detach <- pchisq(Q.inc.detach, df = df.inc.detach, lower.tail = FALSE)
   pval.inc.detach[df.inc.detach == 0] <- NA
   
   
   Q.decomp <- data.frame(Q = c(Q.net, Q.het, Q.inc),
                          df = c(df.net, df.het, df.inc),
-                         pval = 1 - c(pchisq(Q.net, df = df.net),
-                                      pchisq(Q.het, df = df.het),
-                                      pchisq(Q.inc, df = df.inc)))
+                         pval = pchisq(c(Q.net, Q.het, Q.inc),
+                                       df = c(df.net, df.het, df.inc),
+                                       lower.tail = FALSE))
   ##
-  Q.decomp$pval[c(df.net, df.net, df.inc) == 0] <- NA
+  Q.decomp$pval[c(df.net, df.het, df.inc) == 0] <- NA
   ##
   rownames(Q.decomp) <- c("Whole network",
                           "Within designs",
@@ -127,7 +129,7 @@ decomp.tau <- function(x, tau.preset = 0) {
     Q.inc.detach = Q.inc.detach,
     Q.inc.design = Q.inc.design,
     residuals.inc.detach = residuals
-    )
+  )
   
   res
 }

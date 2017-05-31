@@ -14,8 +14,7 @@ netgraph(x, seq = x$seq,
          cex = 1, col = "slateblue", offset = 0.0175, scale = 1.10,
          plastic, thickness, lwd = 5, lwd.min = lwd/2.5, lwd.max = lwd*4,
          dim = "2d",
-         highlight = NULL, col.highlight = "red2",
-         lwd.highlight = lwd, highlight.split = ":",
+         highlight = NULL, col.highlight = "red2", lwd.highlight = lwd,
          multiarm = any(x$narms > 2), col.multiarm = NULL,
          alpha.transparency = 0.5,
          points = FALSE, col.points = "red", cex.points = 1, pch.points = 20,
@@ -71,8 +70,6 @@ netgraph(x, seq = x$seq,
     \code{highlight}.}
   \item{lwd.highlight}{A numeric for the line width for highlighting
     the comparisons given by \code{highlight}.}
-  \item{highlight.split}{A character defining splitting criterion
-    (only necessary if colon is used in treatment labels).}
   \item{multiarm}{A logical indicating whether multi-arm studies
     should marked in plot.}
   \item{col.multiarm}{Either a function from R library colorspace or

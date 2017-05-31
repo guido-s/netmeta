@@ -2,6 +2,8 @@
 
 \alias{netmeta-package}
 
+\docType{package}
+
 \title{netmeta: Brief overview of methods and general hints}
 
 \description{
@@ -29,6 +31,8 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
     (\code{\link{hasse}}) according to Carlsen & Bruggemann (2014);
   \item split direct and indirect evidence (\code{\link{netsplit}}) to
     check for consistency (Dias et al., 2010);
+  \item league table with network meta-analysis results
+    (\code{\link{netleague}});
   \item automated drawing of network graphs (\code{\link{netgraph}})
     described in Rücker & Schwarzer (2016).
   }

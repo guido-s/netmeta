@@ -9,15 +9,7 @@ multiarm <- function(r) {
   ## complete graph of dimension n
   ##
   A <- 1 - diag(rep(1, n))
-  B <- matrix(0, nrow = m, ncol = n)
-  k <- 0
-  for (i in 1:(n - 1)) {
-    for (j in (i + 1):n) {
-      k <- k + 1
-      B[k, i] <-  1
-      B[k, j] <- -1
-    }
-  }
+  B <- createB(ncol = n)
   ##
   ## Distribute the edge variances on a symmetrical n x n matrix, R
   ##

@@ -1,35 +1,37 @@
-netheat <- function(x, random = FALSE, tau.preset = NULL, ...) { 
+netheat <- function(x, random = FALSE, tau.preset = NULL,
+                    showall = FALSE, ...) {
   
   
   meta:::chkclass(x, "netmeta")
+  meta:::chklogical(showall)
   
   
-  if (random == FALSE & length(tau.preset) == 0) { 
+  if (random == FALSE & length(tau.preset) == 0) {
     nmak <- nma.krahn(x)
     if (is.null(nmak))
       return(invisible(NULL))
-    decomp <- decomp.design(x) 
-    residuals <- decomp$residuals.inc.detach 
-    Q.inc.design <- decomp$Q.inc.design 
-  } 
-  ## 
-  if (length(tau.preset) == 1) { 
-    nmak <- nma.krahn(x, tau.preset = tau.preset) 
+    decomp <- decomp.design(x)
+    residuals <- decomp$residuals.inc.detach
+    Q.inc.design <- decomp$Q.inc.design
+  }
+  ##
+  if (length(tau.preset) == 1) {
+    nmak <- nma.krahn(x, tau.preset = tau.preset)
     if (is.null(nmak))
       return(invisible(NULL))
-    decomp <- decomp.design(x, tau.preset = tau.preset) 
-    residuals <- decomp$residuals.inc.detach.random.preset 
-    Q.inc.design <- decomp$Q.inc.design.random.preset 
-  } 
-  ## 
-  if (random == TRUE & length(tau.preset) == 0) { 
+    decomp <- decomp.design(x, tau.preset = tau.preset)
+    residuals <- decomp$residuals.inc.detach.random.preset
+    Q.inc.design <- decomp$Q.inc.design.random.preset
+  }
+  ##
+  if (random == TRUE & length(tau.preset) == 0) {
     tau.within <- tau.within(x)
     nmak <- nma.krahn(x, tau.preset = tau.within)
     if (is.null(nmak))
       return(invisible(NULL))
-    decomp <- decomp.design(x, tau.preset = tau.within) 
-    residuals <- decomp$residuals.inc.detach.random.preset 
-    Q.inc.design <- decomp$Q.inc.design.random.preset 
+    decomp <- decomp.design(x, tau.preset = tau.within)
+    residuals <- decomp$residuals.inc.detach.random.preset
+    Q.inc.design <- decomp$Q.inc.design.random.preset
   }
   
   
@@ -39,11 +41,24 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
   }
   
   
-  H <- nmak$H 
-  V <- nmak$V 
-  design <- nmak$design 
+  if (!showall)
+    drop.designs <- names(Q.inc.design)[abs(Q.inc.design) <= .Machine$double.eps^0.5]
   
   
+  H <- nmak$H
+  V <- nmak$V
+  ##
+  if (!showall)
+    design <- nmak$design[!(nmak$design$design %in% drop.designs), ]
+  else
+    design <- nmak$design
+  
+  
+  if (!any(!is.na(residuals) & residuals > .Machine$double.eps^0.5)) {
+    warning("Net heat plot not available due to insufficient information about between-design heterogeneity.")
+    return(invisible(NULL))
+  }
+  ##
   Q.inc.design.typ <- apply(residuals, 2, function(x) t(x) %*% solve(V) * x)
   inc <- matrix(Q.inc.design,
                 nrow = nrow(Q.inc.design.typ),
@@ -52,8 +67,17 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
   colnames(diff) <- colnames(Q.inc.design.typ)
   rownames(diff) <- rownames(residuals)
   ##
+  if (!showall)
+    diff <- diff[!(rownames(diff) %in% drop.designs),
+                 !(colnames(diff) %in% drop.designs), drop = FALSE]
+  ##
   if (all(is.na(diff))) {
     warning("Net heat plot not available as no between-design heterogeneity exists.")
+    return(invisible(NULL))
+  }
+  ##
+  if (length(diff) == 1) {
+    warning("Net heat plot not available due to small number of informative designs.")
     return(invisible(NULL))
   }
   
@@ -98,6 +122,10 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
   else
     Hp <- H[as.character(design$comparison), ]
   ##
+  if (!showall)
+    Hp <- Hp[!(rownames(Hp) %in% drop.designs),
+             !(colnames(Hp) %in% drop.designs), drop = FALSE]
+  ##
   Hp <- Hp[h1$order, h1$order]
   
   
@@ -123,16 +151,16 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
     design.comb <- rep(NA, length(as.character(design2$comparison)))
     ##
     for (i in 1:(length(as.character(design2$comparison)))) {
-      if((((design2$narms)[h1$order])[i]) > 2)
+      if ((((design2$narms)[h1$order])[i]) > 2)
         design.comb[i] <- paste(as.character(design2$comparison)[h1$order][i],
                                 as.character(design2$design)[h1$order][i], sep = "_")
       else
         design.comb[i] <-as.character(design2$comparison)[h1$order][i]
     }
     ##
-    sc <- max(nchar(design.comb)) / 4
-    oldpar <- par(oma = c(1, 1, 1, 1) + c(0, sc, sc, 0))
-    on.exit(par(oldpar))
+    sc <- max(strwidth(design.comb, "inches")) / par("cin")[2]
+    oldpar <- par(mar = c(1, 1.5 + sc, 1.5 + sc,
+                          1.5 + strwidth("-4", "inches") / par("cin")[2]))
     ##
     plot(0, type = "n", xlim = c(0.036, 0.963), ylim = c(0.036, 0.963),
          bty = "n", xlab = "", ylab = "", axes = FALSE)
@@ -194,48 +222,57 @@ netheat <- function(x, random = FALSE, tau.preset = NULL, ...) {
          labels = design.comb[length(design.comb):1], cex.axis = 1)
     axis(3, at = center.y, lty = 0, las = 3,
          labels = design.comb, cex.axis = 1)
+    
+    oldpar
   }
   
   
-  va.image(x = t(tn) + max(abs(tn)))
+  oldpar <- va.image(x = t(tn) + max(abs(tn)))
   
   
-  legend.col <- function(col, lev) {
-    opar <- par
+  on.exit(par(oldpar))
+  
+  
+  legend.col <- function(col, lev, oldpar) {
     n <- length(col)
-    bx <- par("usr")
+    bx <- par()$usr
     box.cx <- c(bx[2] + (bx[2] - bx[1]) / 1000,
                 bx[2] + (bx[2] - bx[1]) / 1000 + (bx[2] - bx[1]) / 50)
     box.cy <- c(bx[3], bx[3])
-    box.sy <- (bx[4] - bx[3]) / n 
+    box.sy <- (bx[4] - bx[3]) / n
     xx <- rep(box.cx, each = 2)
-    par(xpd = TRUE)
+    oldpar <- c(par(xpd = TRUE), oldpar)
     ##
-    for(i in 1:n) {
+    for (i in 1:n) {
       yy <- c(box.cy[1] + (box.sy * (i - 1)),
               box.cy[1] + (box.sy * i),
               box.cy[1] + (box.sy * i),
               box.cy[1] + (box.sy * (i - 1)))
-      polygon(xx, yy, col = col[i], border = col[i]) 
+      polygon(xx, yy, col = col[i], border = col[i])
     }
     ##
     par(new = TRUE)
+    ##
     plot(0, 0, type = "n",
          ylim = c(min(lev), max(lev)),
-         yaxt = "n", ylab = "",
-         xaxt = "n", xlab = "",
-         frame.plot = FALSE)
-    axis(side = 4, las = 2, tick = FALSE, line = .25)
-    par <- opar
+         yaxt = "n", ylab = "", xaxt = "n", xlab = "",
+         frame.plot = FALSE, yaxs = "i")
+    ##
+    axis(side = 4, tick = FALSE, line = .25, las = 1)
+    
+    invisible(NULL)
   }
   
   
-  if(min(round(t1, 10)) != max(round(t1, 10)))
+  if (min(round(t1, 10)) != max(round(t1, 10)))
     legend.col(rev(mycol),
-               seq(from = max(-max(t1), -8), to = min(-min(t1), 8), len = length(mycol)))
+               seq(from = max(-max(t1), -8), to = min(-min(t1), 8),
+                   len = length(mycol)),
+               oldpar)
   
   
   box(lwd = 1.1)
-
+  
+  
   invisible(NULL)
 }

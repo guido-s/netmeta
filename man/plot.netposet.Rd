@@ -17,7 +17,7 @@
      cex = 1, col = "black",
      adj.x = 0, adj.y = 1,
      offset.x = 0.005, offset.y = -0.005,
-     arrows = TRUE,
+     arrows = FALSE,
      col.lines = "black", lty.lines = 1, lwd.lines = 1,
      length = 0.05,
      grid = TRUE,

@@ -1,13 +1,20 @@
-netdistance <- function(A) {
+netdistance <- function(x) {
   
   ## Calculate distance matrix D of adjacency matrix A based on
   ## distance algorithm by Mueller et al. (1987) using triangle
   ## inequality
   
+  if (inherits(x, "netmeta"))
+    A <- x$A.matrix
+  else
+    A <- x
+  
+  
   ## Check whether A is a matrix
   ##
   if (!is.matrix(A))
-    stop("Argument 'A' must be a matrix.")
+    stop("Argument 'x' must be a netmeta object or a matrix.")
+  
   
   ## Starting value for D is sign(A), with 0 replaced by Inf
   ##

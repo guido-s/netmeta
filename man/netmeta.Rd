@@ -15,10 +15,11 @@
 
 \usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
-        comb.fixed=TRUE, comb.random=FALSE, reference.group="",
+        comb.fixed=TRUE, comb.random=!is.null(tau.preset),
+	reference.group="",
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.tol.multiarm = FALSE,
-        title="", warn=TRUE)
+        sep.trts=":", title="", warn=TRUE)
 }
 
 \arguments{
@@ -55,7 +56,9 @@
     which are consistent by design.}
   \item{details.tol.multiarm}{A logical indicating whether treatment
     estimates and / or variances of multi-arm studies with inconsistent
-    results should be printed.} 
+    results should be printed.}
+  \item{sep.trts}{A character used in comparison names as separator
+    between treatment labels.}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero
@@ -66,30 +69,31 @@
   Network meta-analysis using R package \bold{netmeta} is described in
   detail in Schwarzer et al. (2015), Chapter 8.
 
-  Let \emph{n} be the number of different treatments in a network and
-  let \emph{m} be the number of existing comparisons (edges) between
-  the treatments. If there are only two-arm studies, \emph{m} is the
-  number of studies. Let TE and seTE be the vectors of observed
-  effects and their standard errors. Let W be the \emph{m}x\emph{m}
-  diagonal matrix that contains the inverse variance 1/seTE^2.
+  Let \emph{n} be the number of different treatments (nodes, vertices)
+  in a network and let \emph{m} be the number of existing comparisons
+  (edges) between the treatments. If there are only two-arm studies,
+  \emph{m} is the number of studies. Let TE and seTE be the vectors of
+  observed effects and their standard errors. Let W be the
+  \emph{m}x\emph{m} diagonal matrix that contains the inverse variance
+  1/seTE^2.
   
   The given comparisons define the network structure. Therefrom an
-  \emph{m}x\emph{n} design matrix B is formed; for more precise
-  information, see Rücker (2012). Moreover, the \emph{n}x\emph{n}
-  Laplacian matrix L and its Moore-Penrose pseudoinverse L+ are
-  calculated (both matrices play an important role in graph theory and
-  electrical network theory).  Using these matrices, the variances
-  based on both direct and indirect comparisons can be
-  estimated. Moreover, the hat matrix H can be estimated by \strong{H
-  = BL+B^{t}W = B(B^{t} W B)^{+}B^{t}W} and finally consistent
-  treatment effects can be estimated by applying the hat matrix to the
-  observed (potentially inconsistent) effects. H is a projection
-  matrix which maps the observed effects onto the consistent
-  (n-1)-dimensional subspace. This is the Aitken estimator (Senn et
-  al., 2013). As in pairwise meta-analysis, the Q statistic measures
-  the deviation from consistency. Q can be separated into parts for
-  each pairwise meta-analysis and a part for remaining inconsistency
-  between comparisons.
+  \emph{m}x\emph{n} design matrix B (edge-vertex incidence matrix) is
+  formed; for more precise information, see Rücker (2012). Moreover,
+  the \emph{n}x\emph{n} Laplacian matrix L and its Moore-Penrose
+  pseudoinverse L+ are calculated (both matrices play an important
+  role in graph theory and electrical network theory).  Using these
+  matrices, the variances based on both direct and indirect
+  comparisons can be estimated. Moreover, the hat matrix H can be
+  estimated by \strong{H = BL+B^{t}W = B(B^{t} W B)^{+}B^{t}W} and
+  finally consistent treatment effects can be estimated by applying
+  the hat matrix to the observed (potentially inconsistent) effects. H
+  is a projection matrix which maps the observed effects onto the
+  consistent (n-1)-dimensional subspace. This is the Aitken estimator
+  (Senn et al., 2013). As in pairwise meta-analysis, the Q statistic
+  measures the deviation from consistency. Q can be separated into
+  parts for each pairwise meta-analysis and a part for remaining
+  inconsistency between comparisons.
 
   Often multi-arm studies are included in a network meta-analysis.  In
   multi-arm studies, the treatment effects on different comparisons
@@ -144,7 +148,18 @@
   appropriate adjustment for multi-arm studies). Then, as in standard
   pairwise meta-analysis, the procedure is repeated with the resulting
   enlarged standard errors.
-}
+
+  Names of treatment comparisons are created by concatenating
+  treatment labels of pairwise comparisons using \code{sep.trts} as
+  separator (see \code{\link{paste}}). These comparison names are used
+  in the covariance matrices \code{Cov.fixed} and \code{Cov.random}
+  and in some R functions, e.g, \code{\link{decomp.design}}. By
+  default, a colon is used as the separator. If any treatment label
+  contains a colon the following characters are used as separator (in
+  consecutive order): \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"},
+  \code{"."}.  If all of these characters are used in treatment
+  labels, a corresponding error message is printed asking the user to
+  specify a different separator.  }
 
 \value{
   An object of class \code{netmeta} with corresponding \code{print},
@@ -229,6 +244,7 @@
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
+  \item{d}{Total number of designs.}
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
   \item{df}{Degrees of freedom for test of heterogeneity / inconsistency.}
   \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
@@ -237,6 +253,7 @@
   \item{Q.heterogeneity}{Overall heterogeneity statistic.}
   \item{Q.inconsistency}{Overall inconsistency statistic.}
   \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
+  \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
   \item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}
   \item{Lplus.matrix}{Moore-Penrose pseudoinverse of the Laplacian
     matrix (\emph{n}x\emph{n}).}
@@ -250,6 +267,8 @@
   \item{Q.decomp}{Data frame with columns 'treat1', 'treat2', 'Q',
     'df' and 'pval.Q', providing heterogeneity statistics for each
     pairwise meta-analysis of direct comparisons.}
+  \item{P.fixed, P.random}{\emph{n}x\emph{n} matrix with direct
+    evidence proportions (fixed effect / random effects model).}
   \item{call}{Function call.}
   \item{version}{Version of R package netmeta used to create object.}
 }
@@ -302,8 +321,7 @@ net1$Q.decomp
 #
 # Comparison with reference group
 #
-netmeta(TE, seTE, treat1, treat2, studlab,
-        data=Senn2013, sm="MD", reference="plac")
+print(net1, reference="plac")
 
 #
 # Random effects model

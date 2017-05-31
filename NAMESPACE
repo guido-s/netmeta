@@ -7,13 +7,13 @@ export(netmeta,
        netrank, print.netrank,
        netconnection, print.netconnection, netdistance,
        netsplit, print.netsplit,
-       netposet, print.netposet, plot.netposet,
-       hasse)
+       netposet, print.netposet, plot.netposet, hasse,
+       netleague)
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
 # format.TE, p.ci, tau.within, decomp.tau, stress,
-# shadowtext, chklist, chkmultiarm, lowertri
+# shadowtext, chklist, chkmultiarm, lowertri, createB
 
 S3method(as.data.frame, netmeta)
 S3method(print, netmeta)
@@ -27,7 +27,8 @@ S3method(print, netsplit)
 S3method(print, netposet)
 S3method(plot, netposet)
 
-importFrom("meta", "forest", "metabin", "metacont", "metagen",
+importFrom("meta", "forest", "forest.meta",
+           "metabin", "metacont", "metagen",
            "metainc", "metaprop", "gs")
 
 importFrom("magic", "adiag")

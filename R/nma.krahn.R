@@ -1,7 +1,11 @@
-nma.krahn <- function(x, tau.preset = 0) {
+nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
   
   
   meta:::chkclass(x, "netmeta")
+  
+  
+  if (is.null(sep.trts))
+    sep.trts <- ":"
   
   
   n <- x$n
@@ -34,7 +38,7 @@ nma.krahn <- function(x, tau.preset = 0) {
   studies$treat2[sel] <- studies.pre$treat1[sel]
   studies$TE[sel] <- -studies.pre$TE[sel]
   studies <- data.frame(studies,
-                        comparison = paste(studies$treat1, studies$treat2, sep = ":"))
+                        comparison = paste(studies$treat1, studies$treat2, sep = sep.trts))
 
 
   comparison.num.poss <- n * (n - 1) / 2
@@ -46,7 +50,7 @@ nma.krahn <- function(x, tau.preset = 0) {
   k <- 1
   for (i in 1:(n - 1))
     for (j in (i + 1):n) {
-      trts.poss[k] <- paste(trts[i], trts[j], sep = ":")
+      trts.poss[k] <- paste(trts[i], trts[j], sep = sep.trts)
       k <- k + 1
     }
 
@@ -95,7 +99,7 @@ nma.krahn <- function(x, tau.preset = 0) {
     ##
     des <- lapply(multistudies,
                   function(x)
-                    paste(c(x$treat1[1], x$treat2), collapse = ":")
+                    paste(c(x$treat1[1], x$treat2), collapse = sep.trts)
                   )
     multistudies <- data.frame(unsplit(multistudies,
                                        rep(names(multistudies),
@@ -350,7 +354,7 @@ nma.krahn <- function(x, tau.preset = 0) {
 
   if (multiarm) {
     len.designs <- c(rep(1, length(direct2$comparison)),
-                     unlist(lapply(strsplit(multicomp, ":"),
+                     unlist(lapply(strsplit(multicomp, sep.trts),
                                    function(x)
                                      length(x) - 1
                                    )
@@ -365,7 +369,7 @@ nma.krahn <- function(x, tau.preset = 0) {
                   ),
                 len.designs)
     narms <- rep(c(rep(2, nrow(direct2)),
-                   unlist(lapply(strsplit(multicomp, ":"),
+                   unlist(lapply(strsplit(multicomp, sep.trts),
                                  function(x)
                                    length(x)
                                  )
@@ -374,7 +378,7 @@ nma.krahn <- function(x, tau.preset = 0) {
                  len.designs)
     ##
     design <- data.frame(design = c(direct2$comparison,
-                                    rep(multicomp, unlist(lapply(strsplit(multicomp,":"),
+                                    rep(multicomp, unlist(lapply(strsplit(multicomp, sep.trts),
                                                                  function(x)
                                                                    length(x)
                                                                  )
@@ -453,7 +457,8 @@ nma.krahn <- function(x, tau.preset = 0) {
               V = V,
               V.studies = V.studies,
               H = H,
-              H.studies = H.studies)
+              H.studies = H.studies,
+              sep.trts = sep.trts)
 
   class(res) <- "nma.krahn"
 

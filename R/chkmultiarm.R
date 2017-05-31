@@ -32,16 +32,10 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       ##
       m <- length(TE.s)
       n <- (1 + sqrt(8 * m + 1)) / 2
-      B <- matrix(0, nrow = m, ncol = n)
       ##
-      k <- 0
-      for (i in 1:(n - 1)) {
-        for (j in (i + 1):n) {
-          k <- k + 1
-          B[k, i] <-  1
-          B[k, j] <- -1
-        }
-      }
+      ## Create full edge-vertex incidence matrix
+      ##
+      B <- createB(ncol = n)
       ##
       ## Check treatment estimates
       ##

@@ -2,11 +2,12 @@ netgraph <- function(x, seq = x$seq,
                      labels = rownames(x$TE.fixed),
                      cex = 1, col = "slateblue", offset = 0.0175,
                      scale = 1.10,
-                     plastic, thickness, lwd = 5, lwd.min = lwd / 2.5, lwd.max = lwd * 4,
+                     plastic, thickness,
+                     lwd = 5, lwd.min = lwd / 2.5, lwd.max = lwd * 4,
                      dim = "2d",
                      ##
                      highlight = NULL, col.highlight = "red2",
-                     lwd.highlight = lwd, highlight.split = ":",
+                     lwd.highlight = lwd,
                      ##
                      multiarm = any(x$narms > 2),
                      col.multiarm = NULL,
@@ -63,6 +64,17 @@ netgraph <- function(x, seq = x$seq,
   
   if (missing(iterate))
     iterate <- ifelse(start.layout == "circle", FALSE, TRUE)
+  
+  
+  addargs <- names(list(...))
+  if ("highlight.split" %in% addargs)
+    warning("Argument 'highlight.split' has been removed from R function netgraph.\n",
+            "  This argument has been replaced by argument 'sep.trts' in R function netmeta.")
+  ##
+  highlight.split <- x$sep.trts
+  ##
+  if (is.null(highlight.split))
+    highlight.split <- ":"
   
   
   if (missing(plastic))
@@ -177,7 +189,6 @@ netgraph <- function(x, seq = x$seq,
                          highlight = highlight,
                          col.highlight = col.highlight,
                          lwd.highlight = lwd.highlight,
-                         highlight.split = highlight.split,
                          ## multiarm
                          col.multiarm = col.multiarm,
                          alpha.transparency = alpha.transparency,

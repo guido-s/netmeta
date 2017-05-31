@@ -61,7 +61,7 @@ print.summary.netmeta <- function(x,
     lowTE.random <- exp(lowTE.random)
     uppTE.random <- exp(uppTE.random)
   }
-  
+  ##
   TE.fixed    <- round(TE.fixed, digits)
   lowTE.fixed <- round(lowTE.fixed, digits)
   uppTE.fixed <- round(uppTE.fixed, digits)
@@ -80,16 +80,19 @@ print.summary.netmeta <- function(x,
   if (header)
     matitle(x)
   
+  
   if (reference.group != "" & missing(all.treatments))
     all.treatments <- FALSE
-  
+  ##
   if (reference.group != "")
     reference.group <- setref(reference.group, rownames(TE.fixed))
   
-  if (comb.fixed|comb.random) {
+  
+  if (comb.fixed | comb.random) {
     cat(paste("Number of studies: k = ", k, "\n", sep = ""))
     cat(paste("Number of treatments: n = ", n, "\n", sep = ""))
     cat(paste("Number of pairwise comparisons: m = ", m, "\n", sep = ""))
+    cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
     
     if (comb.fixed) {
       if (all.treatments | reference.group != "")
@@ -136,6 +139,7 @@ print.summary.netmeta <- function(x,
       }
     }
     
+    
     if (comb.random) {
       if (all.treatments | reference.group != "")
         cat("\nRandom effects model\n")
@@ -180,18 +184,24 @@ print.summary.netmeta <- function(x,
         prmatrix(res, quote = FALSE, right = TRUE)
       }
     }
+    ##
     zlab <- "z"
     
     
-    if (!is.na(x$tau))
+    if (!is.null(x$tau.preset))
+      tau <- x$tau.preset
+    else
+      tau <- x$tau
+    ##
+    if (!is.na(tau))
       cat(paste("\nQuantifying heterogeneity / inconsistency:\n",
-                if (x$tau^2 > 0 & x$tau^2 < 0.0001)
-                paste("tau^2", meta:::format.tau(x$tau^2))
+                if (tau^2 > 0 & tau^2 < 0.0001)
+                paste("tau^2", meta:::format.tau(tau^2))
                 else
                 paste("tau^2 = ",
-                      ifelse(x$tau == 0,
+                      ifelse(tau == 0,
                              "0",
-                             format(round(x$tau^2, 4), 4, nsmall = 4, scientific = FALSE)),
+                             format(round(tau^2, 4), 4, nsmall = 4, scientific = FALSE)),
                       sep = ""),
                 paste("; I^2 = ", round(I2, 1), "%",
                       "",
@@ -202,13 +212,13 @@ print.summary.netmeta <- function(x,
                       sep = ""),
                 "\n", sep = ""))
     
-
     
     if (m > 1) {
       
       Qdata <- cbind(round(x$Q, 2), x$df,
                      ifelse(x$df == 0, "--",
-                            meta:::format.p(1 - pchisq(x$Q, df = x$df))))
+                            meta:::format.p(pchisq(x$Q, df = x$df,
+                                                   lower.tail = FALSE))))
       
       dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
       ##
@@ -217,7 +227,27 @@ print.summary.netmeta <- function(x,
       ##
       ##
     }
+    
+    
+    if (!is.null(x$tau.preset)) {
+      cat("\nDetails:")
+      ##
+      tau2 <- x$tau.preset^2
+      if (tau2 > 0 & tau2 < 0.0001)
+        tau2 <- paste("tau^2", meta:::format.tau(tau2))
+      else
+        tau2 <- paste("tau^2 = ",
+                      ifelse(tau2 == 0,
+                             "0",
+                             format(round(tau2, 4), 4, nsmall = 4,
+                                    scientific = FALSE)),
+                      sep = "")
+      ##
+      cat(paste("\n- Preset between-study variance: ",
+                tau2, "\n", sep = ""))
+    }
   }
+  
   
   invisible(NULL)
 }

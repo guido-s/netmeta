@@ -4,7 +4,7 @@ nma.ruecker <- function(TE, seTE,
                         narms, studlab,
                         sm = "",
                         level = 0.95, level.comb = 0.95,
-                        seTE.orig, tau.direct = 0) {
+                        seTE.orig, tau.direct = 0, sep.trts = ":") {
   
   
   w.pooled <- 1 / seTE^2
@@ -14,31 +14,17 @@ nma.ruecker <- function(TE, seTE,
   n <- length(unique(c(treat1, treat2))) # Number of treatments (vertices)
   W <- diag(w.pooled,                    # Weighted degree diagonal matrix
             nrow = length(w.pooled))     # 
-  df1 <- 2 * sum(1 / narms)                  # Sum of degrees of freedom per study
+  df1 <- 2 * sum(1 / narms)              # Sum of degrees of freedom per study
   
   
   ##
   ## B is the edge-vertex incidence matrix (m x n)
   ##
-  B <- matrix(0, nrow = m, ncol = n)
-  for (i in 1:m) {
-    if (treat1[i] != treat2[i]) {
-      B[i, treat1.pos[i]] <-  1
-      B[i, treat2.pos[i]] <- -1
-    }
-  }
+  B <- createB(treat1.pos, treat2.pos, ncol = n)
   ##
   ## B.full is the full edge-vertex incidence matrix (m x n)
   ##
-  B.full <- matrix(0, nrow = n * (n - 1) / 2, ncol = n)
-  k <- 0
-  for (i in 1:(n - 1)) {
-    for (j in (i + 1):n) {
-      k <- k + 1
-      B.full[k, i] <-  1
-      B.full[k, j] <- -1
-    }
-  }
+  B.full <- createB(ncol = n)
   ##
   ## M is the unweighted Laplacian, D its diagonal,
   ## A is the adjacency matrix
@@ -182,7 +168,7 @@ nma.ruecker <- function(TE, seTE,
                          treat2 = names.treat[t2],
                          Q = q,
                          df = dfs,
-                         pval.Q = 1 - pchisq(q, dfs))
+                         pval.Q = pchisq(q, dfs, lower.tail = FALSE))
   
   
   TE.pooled <- all
@@ -224,7 +210,7 @@ nma.ruecker <- function(TE, seTE,
   for (i in 1:(n - 1)) {
     for (j in (i + 1):n) {
       k <- k + 1
-      names.Cov[k] <- paste(names.treat[i], names.treat[j], sep = ":")
+      names.Cov[k] <- paste(names.treat[i], names.treat[j], sep = sep.trts)
     }
   }
   ##
@@ -315,7 +301,7 @@ nma.ruecker <- function(TE, seTE,
               n = dim(TE.pooled)[[1]],
               Q = Q,
               df = df,
-              pval.Q = 1 - pchisq(Q, df),
+              pval.Q = pchisq(Q, df, lower.tail = FALSE),
               I2 = I2,
               tau = tau,
               Q.heterogeneity = Q.heterogeneity,
@@ -326,6 +312,7 @@ nma.ruecker <- function(TE, seTE,
               level.comb = level.comb,
               ##
               A.matrix = A.matrix,
+              B.matrix = B,
               L.matrix = L.matrix,
               Lplus.matrix = Lplus.matrix,
               Q.matrix = Q.matrix,

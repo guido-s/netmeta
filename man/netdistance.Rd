@@ -10,11 +10,11 @@
 }
 
 \usage{
-netdistance(A)
+netdistance(x)
 }
 
 \arguments{
-  \item{A}{An adjacency matrix.}
+  \item{x}{Either a netmeta object or an adjacency matrix.}
 }
 
 \references{
@@ -33,5 +33,6 @@ data(Senn2013)
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD")
 
+netdistance(net1)
 netdistance(net1$A.matrix)
 }
