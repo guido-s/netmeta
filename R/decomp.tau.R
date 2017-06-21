@@ -1,9 +1,12 @@
-decomp.tau <- function(x, tau.preset = 0) {
+decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
   
   
   nmak <- nma.krahn(x, tau.preset = tau.preset)
-  if (is.null(nmak))
+  if (is.null(nmak)) {
+    if (warn)
+      warning("Only a single design in network meta-analysis.", call. = FALSE)
     return(invisible(NULL))
+  }
   ##
   design <- nmak$design
   studies <- nmak$studies

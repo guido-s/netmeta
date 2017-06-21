@@ -246,12 +246,18 @@
   \item{n}{Total number of treatments.}
   \item{d}{Total number of designs.}
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
-  \item{df}{Degrees of freedom for test of heterogeneity / inconsistency.}
+  \item{df.Q}{Degrees of freedom for test of heterogeneity / inconsistency.}
   \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
   \item{I2}{I-squared.}
   \item{tau}{Square-root of between-study variance.}
   \item{Q.heterogeneity}{Overall heterogeneity statistic.}
+  \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
+    heterogeneity.}
+  \item{pval.Q.heterogeneity}{P-value for test of overall heterogeneity.}
   \item{Q.inconsistency}{Overall inconsistency statistic.}
+  \item{df.Q.inconsistency}{Degrees of freedom for test of overall
+    inconsistency.}
+  \item{pval.Q.inconsistency}{P-value for test of overall inconsistency.}
   \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
   \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
   \item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}

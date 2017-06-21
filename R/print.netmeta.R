@@ -13,6 +13,9 @@ print.netmeta <- function(x,
   meta:::chkclass(x, "netmeta")
   
   
+  x <- upgradenetmeta(x)
+  
+  
   k.all <- length(x$TE)
   ##
   if (missing(sortvar)) sortvar <- 1:k.all

@@ -326,6 +326,8 @@ netmeta <- function(TE, seTE,
                        p1$narms, p1$studlab, 
                        sm, level, level.comb, p1$seTE, tau,
                        sep.trts = sep.trts)
+  ##
+  df.Q <- res.f$df
   
   
   ##
@@ -416,13 +418,17 @@ netmeta <- function(TE, seTE,
               n = res.f$n,
               d = NA,
               Q = res.f$Q,
-              df = res.f$df,
+              df.Q = df.Q,
               pval.Q = res.f$pval.Q,
               I2 = res.f$I2,
               tau = res.f$tau,
               tau.preset = tau.preset,                                             
-              Q.heterogeneity = res.f$Q.heterogeneity,
-              Q.inconsistency = res.f$Q.inconsistency,
+              Q.heterogeneity = NA,
+              df.Q.heterogeneity = NA,
+              pval.Q.heterogeneity = NA,
+              Q.inconsistency = NA,
+              df.Q.inconsistency = NA,
+              pval.Q.inconsistency = NA,
               ##
               sm = sm,
               level = level,
@@ -471,7 +477,8 @@ netmeta <- function(TE, seTE,
   ## Print warning(s) in call of netmeasures() once
   oldopts <- options(warn = -1)
   res$prop.direct.random <- netmeasures(res, random = TRUE,
-                                        tau.preset = res$tau)$proportion
+                                        tau.preset = res$tau,
+                                        warn = FALSE)$proportion
   options(oldopts)
   if (is.logical(res$prop.direct.fixed))
     res$prop.direct.fixed <- as.numeric(res$prop.direct.fixed)
@@ -555,6 +562,24 @@ netmeta <- function(TE, seTE,
   ## Number of designs
   ##
   res$d <- nma.krahn(res)$d
+  if (is.null(res$d))
+    res$d <- 1
+  
+  
+  ##
+  ## Calculate heterogeneity and inconsistency statistics
+  ##
+  if (res$d > 1) {
+    dd <- decomp.design(res, warn = FALSE)
+    res$Q.heterogeneity <- dd$Q.decomp$Q[2]
+    res$Q.inconsistency <- dd$Q.decomp$Q[3]
+    ##
+    res$df.Q.heterogeneity <- dd$Q.decomp$df[2]
+    res$df.Q.inconsistency <- dd$Q.decomp$df[3]
+    ##
+    res$pval.Q.heterogeneity <- dd$Q.decomp$pval[2]
+    res$pval.Q.inconsistency <- dd$Q.decomp$pval[3]
+  }
   
   
   res

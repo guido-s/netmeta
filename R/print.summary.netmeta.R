@@ -12,6 +12,12 @@ print.summary.netmeta <- function(x,
   meta:::chkclass(x, "summary.netmeta")
   
   
+  if (is.null(x$df.Q))
+    oldversion <- TRUE
+  else
+    oldversion <- FALSE
+  
+  
   k <- x$k
   m <- x$m
   n <- x$n
@@ -92,7 +98,8 @@ print.summary.netmeta <- function(x,
     cat(paste("Number of studies: k = ", k, "\n", sep = ""))
     cat(paste("Number of treatments: n = ", n, "\n", sep = ""))
     cat(paste("Number of pairwise comparisons: m = ", m, "\n", sep = ""))
-    cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
+    if (!oldversion)
+      cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
     
     if (comb.fixed) {
       if (all.treatments | reference.group != "")
@@ -215,17 +222,44 @@ print.summary.netmeta <- function(x,
     
     if (m > 1) {
       
-      Qdata <- cbind(round(x$Q, 2), x$df,
-                     ifelse(x$df == 0, "--",
-                            meta:::format.p(pchisq(x$Q, df = x$df,
-                                                   lower.tail = FALSE))))
-      
-      dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
-      ##
-      cat("\nTest of heterogeneity / inconsistency:\n")
-      prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
-      ##
-      ##
+      if (oldversion) {
+        Qdata <- cbind(round(x$Q, 2), x$df,
+                       ifelse(x$df == 0, "--",
+                              meta:::format.p(x$pval.Q)))
+        
+        dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
+        ##
+        cat("\nTest of heterogeneity / inconsistency:\n")
+        prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
+      }
+      else {
+        if (x$d == 1 | is.na(x$Q.heterogeneity) | is.na(x$Q.inconsistency)) {
+          Qdata <- cbind(round(x$Q, 2), x$df.Q,
+                         ifelse(x$df.Q == 0, "--",
+                                meta:::format.p(x$pval.Q)))
+          
+          dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
+          ##
+          cat("\nTest of heterogeneity / inconsistency:\n")
+          prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
+        }
+        else {
+          Qs <- c(x$Q, x$Q.heterogeneity, x$Q.inconsistency)
+          df.Qs <- c(x$df.Q, x$df.Q.heterogeneity, x$df.Q.inconsistency)
+          pval.Qs <- c(x$pval.Q, x$pval.Q.heterogeneity, x$pval.Q.inconsistency)
+          pval.Qs <- ifelse(df.Qs == 0, "--",
+                            meta:::format.p(pval.Qs))
+          cat("\nTests of heterogeneity (within designs) and inconsistency (between designs):\n")
+          Qdata <- data.frame(Q = round(Qs, 2),
+                              df = df.Qs,
+                              pval = pval.Qs)
+          names(Qdata) <- c("Q", "d.f.", "p-value")
+          rownames(Qdata) <- c("Total",
+                               "Within designs",
+                               "Between designs")
+          print(Qdata)
+        }
+      }
     }
     
     

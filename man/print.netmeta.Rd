@@ -85,10 +85,19 @@
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
-  \item{df}{Degrees of freedom for test of heterogeneity /
+  \item{df.Q}{Degrees of freedom for test of heterogeneity /
     inconsistency.}
-  \item{tau}{Square-root of between-study variance.}
+  \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
   \item{I2}{I-squared.}
+  \item{tau}{Square-root of between-study variance.}
+  \item{Q.heterogeneity}{Overall heterogeneity statistic.}
+  \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
+    heterogeneity.}
+  \item{pval.Q.heterogeneity}{P-value for test of overall heterogeneity.}
+  \item{Q.inconsistency}{Overall inconsistency statistic.}
+  \item{df.Q.inconsistency}{Degrees of freedom for test of overall
+    inconsistency.}
+  \item{pval.Q.inconsistency}{P-value for test of overall inconsistency.}
   \item{sm}{A character string indicating underlying summary measure.}
   \item{ci.lab}{Label for confidence interval.}
   \item{comb.fixed}{A logical indicating whether result for fixed

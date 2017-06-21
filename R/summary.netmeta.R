@@ -12,14 +12,13 @@ summary.netmeta <- function(object,
   if (!inherits(object, "netmeta"))
     stop("Argument 'object' must be an object of class \"netmeta\"")
   
-  if (length(warn) == 0) {
-    warn <- TRUE
-  }
   
-  k <- object$k
-  m <- object$m
-  n <- object$n
-  Q <- object$Q
+  object <- upgradenetmeta(object)
+  
+  
+  if (length(warn) == 0)
+    warn <- TRUE
+  
   
   ci.lab <- paste(round(100 * level.comb, 1), "%-CI", sep = "")
   ##
@@ -51,8 +50,14 @@ summary.netmeta <- function(object,
               fixed = ci.f, random = ci.r,
               studies = object$studies,
               narms = object$narms,
-              k = k, m = m, n = n, d = object$d,
-              Q = Q, df = object$df,
+              k = object$k, m = object$m, n = object$n, d = object$d,
+              Q = object$Q, df.Q = object$df.Q, pval.Q = object$pval.Q,
+              Q.heterogeneity = object$Q.heterogeneity,
+              df.Q.heterogeneity = object$df.Q.heterogeneity,
+              pval.Q.heterogeneity = object$pval.Q.heterogeneity,
+              Q.inconsistency = object$Q.inconsistency,
+              df.Q.inconsistency = object$df.Q.inconsistency,
+              pval.Q.inconsistency = object$pval.Q.inconsistency,
               tau = object$tau, I2 = object$I2,
               tau.preset = object$tau.preset,
               sm = object$sm,

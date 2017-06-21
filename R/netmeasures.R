@@ -1,6 +1,6 @@
 netmeasures <- function(x,
                         random = x$comb.random | !missing(tau.preset),
-                        tau.preset = x$tau.preset) {
+                        tau.preset = x$tau.preset, warn = TRUE) {
   
   
   meta:::chkclass(x, "netmeta")
@@ -21,7 +21,7 @@ netmeasures <- function(x,
   ##
   if (!is.null(tau.preset)) {
     meta:::chknumeric(tau.preset, min = 0, single = TRUE)
-    if (!random) {
+    if (!random & warn) {
       warning("Measures calculated for random effects model (argument random=TRUE) as argument 'tau.preset' is provided.")
     }
   }
@@ -29,20 +29,29 @@ netmeasures <- function(x,
   
   if (random == FALSE & length(tau.preset) == 0) {
     nmak <- nma.krahn(x)
-    if (is.null(nmak))
+    if (is.null(nmak)) {
+      if (warn)
+        warning("Only a single design in network meta-analysis.", call. = FALSE)
       return(invisible(NULL))
+    }
   }
   ##                                                             
   if (length(tau.preset) == 1) {
     nmak <- nma.krahn(x, tau.preset = tau.preset)
-    if (is.null(nmak))
+    if (is.null(nmak)) {
+      if (warn)
+        warning("Only a single design in network meta-analysis.", call. = FALSE)
       return(invisible(NULL))
+    }
   }    
   ##                                                                            
   if (random == TRUE & length(tau.preset) == 0) {
     nmak <- nma.krahn(x, tau.preset = x$tau)
-    if (is.null(nmak))
+    if (is.null(nmak)) {
+      if (warn)
+        warning("Only a single design in network meta-analysis.", call. = FALSE)
       return(invisible(NULL))
+    }
   }
   
   

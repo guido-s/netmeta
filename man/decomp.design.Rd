@@ -14,13 +14,15 @@ meta-analysis}
 }
 
 \usage{
-decomp.design(x, tau.preset=x$tau.preset)
+decomp.design(x, tau.preset=x$tau.preset, warn=TRUE)
 }
 
 \arguments{
    \item{x}{An object of class \code{netmeta}.}   
    \item{tau.preset}{An optional value for the square-root of the
-     between-study variance \eqn{\tau^2} (see Details).}
+     between-study variance \eqn{\tau^2} (see Details).}   
+   \item{warn}{A logical indicating whether warnings should be
+     printed.}
 }
 
 \details{

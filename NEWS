@@ -1,3 +1,35 @@
+*** netmeta, version 6.6-6, 2017-mm-dd ***
+
+ ** Major changes **
+
+  * In netmeta(), Q statistics for heterogeneity and design
+    inconsistency are calculated according to Krahn et al. (2013); see
+    help page of decomp.design()
+
+  * Tests for heterogeneity and design inconsistency are shown in
+    printouts
+
+ ** User-visible changes **
+
+  * netmeta():
+    - list element 'df' renamed to 'df.Q'
+    - new list elements 'df.Q.heterogeneity',
+      'pval.Q.heterogeneity','df.Q.inconsistency', and
+      'pval.Q.inconsistency'
+
+  * print.summary.netmeta():
+    - print information on tests for overall heterogeneity and
+      inconsistency
+
+  * decomp.design() and netmeasures():
+    - new argument 'warn' to suppress printing of warnings
+
+ ** Internal changes **
+
+  * New internal function upgradenetmeta() to add missing list
+    elements to older netmeta objects
+
+
 *** netmeta, version 0.9-5, 2017-05-31 ***
 
  ** Major changes **
@@ -68,8 +100,6 @@
       adjacency matrix
     
   * Help pages:
-    - R command 'help(netmeta)' can be used to show brief overview of
-      R package netmeta
     - examples corrected for dataset dietaryfat
     - do not run all examples in forest.netmeta() as CRAN only allows
       a run time below 10 seconds for examples provided on a help page
