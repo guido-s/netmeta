@@ -16,6 +16,7 @@
 \usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
         comb.fixed=TRUE, comb.random=!is.null(tau.preset),
+	prediction=FALSE, level.predict=0.95,
 	reference.group="",
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.tol.multiarm = FALSE,
@@ -43,6 +44,10 @@
     meta-analysis should be conducted.}
   \item{comb.random}{A logical indicating whether a random effects
     meta-analysis should be conducted.}
+  \item{prediction}{A logical indicating whether prediction intervals
+    should be printed.}
+  \item{level.predict}{The level used to calculate prediction
+    intervals for a new study.}
   \item{reference.group}{Reference group.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
         \code{TRUE}, matrices with all treatment effects, and confidence

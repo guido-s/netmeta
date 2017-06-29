@@ -1,7 +1,7 @@
 print.netmeta <- function(x,
                           sortvar,
-                          level = x$level, level.comb = x$level.comb,
                           comb.fixed = x$comb.fixed, comb.random = x$comb.random,
+                          prediction = x$prediction,
                           reference.group = x$reference.group,
                           all.treatments = x$all.treatments,
                           details = TRUE, ma = TRUE, logscale = FALSE,
@@ -16,6 +16,11 @@ print.netmeta <- function(x,
   x <- upgradenetmeta(x)
   
   
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  meta:::chklogical(prediction)
+  
+  
   k.all <- length(x$TE)
   ##
   if (missing(sortvar)) sortvar <- 1:k.all
@@ -23,7 +28,7 @@ print.netmeta <- function(x,
   if (length(sortvar) != k.all)
     stop("'x' and 'sortvar' have different length")
   ##
-  ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
+  ci.lab <- paste(round(100 * x$level, 1), "%-CI", sep = "")
 
   sm <- x$sm
   
@@ -83,7 +88,7 @@ print.netmeta <- function(x,
   }
   
   
-  tsum <- summary(x, level = level, level.comb = level.comb, warn = FALSE)
+  tsum <- summary(x, warn = FALSE)
   ##
   TE.f    <- tsum$comparison.nma.fixed$TE
   lowTE.f <- tsum$comparison.nma.fixed$lower
@@ -163,6 +168,7 @@ print.netmeta <- function(x,
   if (ma)
     print(tsum, digits = digits,
           comb.fixed = comb.fixed, comb.random = comb.random,
+          prediction = prediction,
           logscale = logscale,
           all.treatments = all.treatments,
           reference.group = reference.group,

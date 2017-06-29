@@ -4,9 +4,14 @@ netmeta <- function(TE, seTE,
                     sm,
                     level = 0.95, level.comb = 0.95,
                     comb.fixed = TRUE, comb.random = !is.null(tau.preset),
+                    ##
+                    prediction = FALSE,
+                    level.predict = 0.95,
+                    ##
                     reference.group = "",
                     all.treatments = NULL,
                     seq = NULL,
+                    ##
                     tau.preset = NULL,
                     tol.multiarm = 0.0005,
                     details.tol.multiarm = FALSE,
@@ -23,8 +28,12 @@ netmeta <- function(TE, seTE,
   ##
   meta:::chklevel(level)
   meta:::chklevel(level.comb)
+  meta:::chklevel(level.predict)
+  ##
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
+  meta:::chklogical(prediction)
+  
   meta:::chklogical(warn)
   ##
   ## Check value for reference group
@@ -327,7 +336,29 @@ netmeta <- function(TE, seTE,
                        sm, level, level.comb, p1$seTE, tau,
                        sep.trts = sep.trts)
   ##
+  TE.random <- res.r$TE.pooled
+  seTE.random <- res.r$seTE.pooled
   df.Q <- res.f$df
+  ##
+  ## Prediction intervals
+  ##
+  if (df.Q == 0)
+    prediction <- FALSE
+  ##
+  if (df.Q >= 2) {
+    seTE.predict <- sqrt(seTE.random^2 + tau^2)
+    ci.p <- ci(TE.random, seTE.predict, level.predict, df.Q - 1)
+    p.lower <- ci.p$lower
+    p.upper <- ci.p$upper
+    diag(p.lower) <- 0
+    diag(p.upper) <- 0
+  }
+  else {
+    seTE.predict <- p.lower <- p.upper <- seTE.random
+    seTE.predict[!is.na(seTE.predict)] <- NA
+    p.lower[!is.na(p.lower)] <- NA
+    p.upper[!is.na(p.upper)] <- NA
+  }
   
   
   ##
@@ -372,12 +403,18 @@ netmeta <- function(TE, seTE,
               ##
               w.random = res.r$w.pooled[o],
               ##
-              TE.random = res.r$TE.pooled,
-              seTE.random = res.r$seTE.pooled,
+              TE.random = TE.random,
+              seTE.random = seTE.random,
               lower.random = res.r$lower.pooled,
               upper.random = res.r$upper.pooled,
               zval.random = res.r$zval.pooled,
               pval.random = res.r$pval.pooled,
+              ##
+              prediction = prediction,
+              seTE.predict = seTE.predict,
+              lower.predict = p.lower,
+              upper.predict = p.upper,
+              level.predict = level.predict,
               ##
               TE.direct.fixed = res.f$TE.direct,
               seTE.direct.fixed = res.f$seTE.direct,
@@ -421,7 +458,7 @@ netmeta <- function(TE, seTE,
               df.Q = df.Q,
               pval.Q = res.f$pval.Q,
               I2 = res.f$I2,
-              tau = res.f$tau,
+              tau = tau,
               tau.preset = tau.preset,                                             
               Q.heterogeneity = NA,
               df.Q.heterogeneity = NA,
@@ -531,9 +568,9 @@ netmeta <- function(TE, seTE,
   ##
   ## Fixed effect model
   ##
-  ci.if <- meta::ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
-                    sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
-                    level = level)
+  ci.if <- ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
+              sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
+              level = level)
   ##
   res$TE.indirect.fixed   <- ci.if$TE
   res$seTE.indirect.fixed <- ci.if$seTE
@@ -546,9 +583,9 @@ netmeta <- function(TE, seTE,
   ##
   ## Random effects model
   ##
-  ci.ir <- meta::ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
-                    sqrt(res$seTE.random^2 / (1 - P.random)),
-                    level = level)
+  ci.ir <- ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
+              sqrt(res$seTE.random^2 / (1 - P.random)),
+              level = level)
   ##
   res$TE.indirect.random   <- ci.ir$TE
   res$seTE.indirect.random <- ci.ir$seTE

@@ -11,19 +11,21 @@
 }
 
 \usage{
-\method{print}{netmeta}(x, sortvar, level=x$level, level.comb=x$level.comb,
+\method{print}{netmeta}(x, sortvar,
       comb.fixed=x$comb.fixed, comb.random=x$comb.random,
+      prediction=x$prediction,
       reference.group=x$reference.group, all.treatments=x$all.treatments,
       details=TRUE, ma=TRUE, logscale=FALSE,
       digits=max(4, .Options$digits - 3), ...)
 
 \method{summary}{netmeta}(object,
-        level=object$level, level.comb=object$level.comb,
         comb.fixed=object$comb.fixed, comb.random=object$comb.random,
+	prediction=object$prediction,
         reference.group=object$reference.group, all.treatments=object$all.treatments,
         warn=object$warn, ...)
 
 \method{print}{summary.netmeta}(x, comb.fixed=x$comb.fixed, comb.random=x$comb.random,
+      prediction=x$prediction,
       reference.group=x$reference.group, all.treatments=x$all.treatments,
       logscale=FALSE, header=TRUE, digits=max(3, .Options$digits - 3), ...)
 }
@@ -33,14 +35,12 @@
   \item{object}{An object of class \code{netmeta}.}
   \item{sortvar}{An optional vector used to sort individual studies
     (must be of same length as \code{x$TE}).}
-  \item{level}{The level used to calculate confidence intervals for
-    individual studies.}
-  \item{level.comb}{The level used to calculate confidence intervals for
-    pooled estimates.}
   \item{comb.fixed}{A logical indicating whether a fixed effect
     meta-analysis should be conducted.}
   \item{comb.random}{A logical indicating whether a random effects
     meta-analysis should be conducted.}
+  \item{prediction}{A logical indicating whether prediction intervals
+    should be printed.}
   \item{reference.group}{Reference group.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
     \code{TRUE}, matrices with all treatment effects, and confidence
@@ -104,10 +104,8 @@
     effect meta-analysis should be printed.}
   \item{comb.random}{A logical indicating whether result for random
     effects meta-analysis should be printed.}
-  \item{level}{The level used to calculate confidence intervals for
-    individual comparisons.}
-  \item{level.comb}{The level used to calculate confidence intervals for
-    pooled estimates.}
+  \item{prediction}{A logical indicating whether prediction intervals
+    should be printed.}
   \item{seq}{A character specifying the sequence of treatments.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
     \code{TRUE}, matrices with all treatment effects, and confidence

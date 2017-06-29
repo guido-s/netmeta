@@ -30,7 +30,7 @@ S3method(plot, netposet)
 
 importFrom("meta", "forest", "forest.meta",
            "metabin", "metacont", "metagen",
-           "metainc", "metaprop", "gs")
+           "metainc", "metaprop", "gs", "ci")
 
 importFrom("magic", "adiag")
 

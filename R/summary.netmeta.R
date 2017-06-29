@@ -1,8 +1,7 @@
 summary.netmeta <- function(object,
-                            level = object$level,
-                            level.comb = object$level.comb,
                             comb.fixed = object$comb.fixed,
                             comb.random = object$comb.random,
+                            prediction = object$prediction,
                             reference.group = object$reference.group,
                             all.treatments = object$all.treatments,
                             warn = object$warn,
@@ -18,36 +17,77 @@ summary.netmeta <- function(object,
   
   if (length(warn) == 0)
     warn <- TRUE
+
   
-  
-  ci.lab <- paste(round(100 * level.comb, 1), "%-CI", sep = "")
   ##
-  ci.comp <- meta::ci(object$TE, object$seTE, level)
-  ci.comp.nma.fixed <- meta::ci(object$TE.nma.fixed,
-                                object$seTE.nma.fixed, level)
-  ci.comp.nma.random <- meta::ci(object$TE.nma.random,
-                                 object$seTE.nma.random, level)
-  ci.f <- meta::ci(object$TE.fixed , object$seTE.fixed , level.comb)
-  ci.r <- meta::ci(object$TE.random, object$seTE.random, level.comb)
+  ##
+  ## (2) Check other arguments
+  ##
+  ##
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  meta:::chklogical(prediction)
+  ##
+  cl <- "netmeta()"
+  addargs <- names(list(...))
+  ##
+  fun <- "summary.netmeta"
+  ##
+  meta:::warnarg("level", addargs, fun, cl)
+  meta:::warnarg("level.comb", addargs, fun, cl)
   
+  
+  ci.lab <- paste(round(100 * object$level.comb, 1), "%-CI", sep = "")
+  ##
+  ci.comp <- ci(object$TE, object$seTE, object$level)
   ci.comp$studlab <- object$studlab
   ci.comp$treat1 <- object$treat1
   ci.comp$treat2 <- object$treat2
   ##
+  ci.comp.nma.fixed <- meta::ci(object$TE.nma.fixed,
+                                object$seTE.nma.fixed, object$level)
   ci.comp.nma.fixed$studlab <- object$studlab
   ci.comp.nma.fixed$treat1 <- object$treat1
   ci.comp.nma.fixed$treat2 <- object$treat2
   ci.comp.nma.fixed$leverage <- object$leverage.fixed
   ##
+  ci.comp.nma.random <- meta::ci(object$TE.nma.random,
+                                 object$seTE.nma.random, object$level)
   ci.comp.nma.random$studlab <- object$studlab
   ci.comp.nma.random$treat1 <- object$treat1
   ci.comp.nma.random$treat2 <- object$treat2
+  ##
+  ci.f <- list(TE = object$TE.fixed,
+               seTE = object$seTE.fixed,
+               lower = object$lower.fixed,
+               upper = object$upper.fixed,
+               z = object$zval.fixed,
+               p = object$pval.fixed,
+               level = object$level.comb)
+  ##
+  ci.r <- list(TE = object$TE.random,
+               seTE = object$seTE.random,
+               lower = object$lower.random,
+               upper = object$upper.random,
+               z = object$zval.random,
+               p = object$pval.random,
+               level = object$level.comb)
+  ##
+  ci.p <- list(TE = NA,
+               seTE = object$seTE.predict,
+               lower = object$lower.predict,
+               upper = object$upper.predict,
+               z = NA,
+               p = NA,
+               level = object$level.predict,
+               df = object$df.Q - 1)
   
   
   res <- list(comparison = ci.comp,
               comparison.nma.fixed = ci.comp.nma.fixed,
               comparison.nma.random = ci.comp.nma.random,
               fixed = ci.f, random = ci.r,
+              predict = ci.p,
               studies = object$studies,
               narms = object$narms,
               k = object$k, m = object$m, n = object$n, d = object$d,
@@ -64,8 +104,7 @@ summary.netmeta <- function(object,
               ci.lab = ci.lab,
               comb.fixed = comb.fixed,
               comb.random = comb.random,
-              level = level,
-              level.comb = level.comb,
+              prediction = prediction,
               seq = object$seq
               )
   

@@ -14,6 +14,7 @@ upgradenetmeta <- function(x) {
     upgrade <- TRUE
 
   if (upgrade) {
+    x$prediction <- FALSE
     x$df.Q <- x$df
     ##
     x$d <- nma.krahn(x)$d

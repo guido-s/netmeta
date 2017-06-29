@@ -2,6 +2,9 @@
 
  ** Major changes **
 
+  * Prediction intervals can be calculated for treatment estimates
+    from a network meta-analysis
+
   * In netmeta(), Q statistics for heterogeneity and design
     inconsistency are calculated according to Krahn et al. (2013); see
     help page of decomp.design()
@@ -12,15 +15,30 @@
  ** User-visible changes **
 
   * netmeta():
+    - new arguments 'prediction' and 'level.predict' to calculate
+      prediction intervals
     - list element 'df' renamed to 'df.Q'
-    - new list elements 'df.Q.heterogeneity',
+    - list elements 'Q.heterogeneity' and 'Q.inconsistency' based on
+      Krahn et al. (2013)
+    - new list elements 'prediction', 'lower.predict',
+      'upper.predict', 'df.Q.heterogeneity',
       'pval.Q.heterogeneity','df.Q.inconsistency', and
       'pval.Q.inconsistency'
+
+  * print.netmeta()
+    - new argument 'prediction' to print prediction intervals
 
   * print.summary.netmeta():
     - print information on tests for overall heterogeneity and
       inconsistency
+    - new argument 'prediction' to print prediction intervals
 
+  * summary.netmeta():
+    - new argument 'prediction' to print prediction intervals
+    - arguments 'level' and 'level.comb' removed from R function
+      (i.e., one has to re-run the netmeta() command for confidence
+      intervals with other coverage levels)
+    
   * decomp.design() and netmeasures():
     - new argument 'warn' to suppress printing of warnings
 
@@ -28,6 +46,8 @@
 
   * New internal function upgradenetmeta() to add missing list
     elements to older netmeta objects
+
+  * R function ci() from R package meta added to namespace
 
 
 *** netmeta, version 0.9-5, 2017-05-31 ***

@@ -103,7 +103,7 @@ decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
   ##
   Q.decomp$pval[c(df.net, df.het, df.inc) == 0] <- NA
   ##
-  rownames(Q.decomp) <- c("Whole network",
+  rownames(Q.decomp) <- c("Total",
                           "Within designs",
                           "Between designs")
   
