@@ -2,18 +2,18 @@
 
 \alias{plot.netposet}
 
-\title{Scatter plot of partially order of treatment ranks}
+\title{Scatter plot or bi-plot of partially order of treatment ranks}
 
 \description{
-  This function generates a scatter plot of a partial order of
-  treatment ranks.
+  This function generates a scatter plot or bi-plot of a partial order
+  of treatment ranks.
 }
 
 \usage{
 \method{plot}{netposet}(x,
      pooled=ifelse(x$comb.random, "random", "fixed"),
      sel.x = 1, sel.y = 2, sel.z = 3,
-     dim = "2d",
+     dim = "2d", plottype = "scatter",
      cex = 1, col = "black",
      adj.x = 0, adj.y = 1,
      offset.x = 0.005, offset.y = -0.005,
@@ -36,15 +36,23 @@
   \item{dim}{A character string indicating whether a 2- or
     3-dimensional plot should be produced, either \code{"2d"} or
     \code{"3d"}.}
+  \item{plottype}{A character string indicating whether a scatter plot
+    or bi-plot should be produced, either \code{"scatter"} or
+    \code{"biplot"}.}
   \item{cex}{The magnification to be used for treatment labels.}
   \item{col}{A vector with with colour of treatment labels.}
   \item{adj.x}{Value(s) in [0, 1] to specify adjustment of treatment
-    labels on x-axis; see \code{\link[graphics]{text}}.}
+    labels on x-axis (only considered in 2-D plots); see
+    \code{\link[graphics]{text}}.}
   \item{adj.y}{Value(s) in [0, 1] to specify adjustment of treatment
-    labels on y-axis; see \code{\link[graphics]{text}}.}
-  \item{offset.x}{Offset of treatment labels on x-axis.}
-  \item{offset.y}{Offset of treatment labels on x-axis.}
-  \item{arrows}{A logical indicating whether arrows should be printed.}
+    labels on y-axis (only considered in 2-D plots); see
+    \code{\link[graphics]{text}}.}
+  \item{offset.x}{Offset of treatment labels on x-axis (only
+    considered in 2-D plots).}
+  \item{offset.y}{Offset of treatment labels on x-axis (only
+    considered in 2-D plots).}
+  \item{arrows}{A logical indicating whether arrows should be printed
+    (only considered in 2-D plots).}
   \item{col.lines}{Line colour.}
   \item{lty.lines}{Line type.}
   \item{lwd.lines}{Line width.}

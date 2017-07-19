@@ -1,7 +1,7 @@
 plot.netposet <- function(x,
                           pooled = ifelse(x$comb.random, "random", "fixed"),
                           sel.x = 1, sel.y = 2, sel.z = 3,
-                          dim = "2d",
+                          dim = "2d", plottype = "scatter",
                           cex = 1, col = "black",
                           adj.x = 0, adj.y = 1,
                           offset.x = 0.005, offset.y = -0.005,
@@ -25,7 +25,7 @@ plot.netposet <- function(x,
     p.matrix <- x$P.random
     M0 <- x$M0.random
   }
-  ##  
+  ##
   outcomes <- colnames(p.matrix)
   treatments <- rownames(p.matrix)
   ##
@@ -33,15 +33,33 @@ plot.netposet <- function(x,
   n.treatments <- length(treatments)
   
   
-  sel.x <- as.numeric(meta:::setchar(sel.x, seq_len(n.outcomes)))
-  sel.y <- as.numeric(meta:::setchar(sel.y, seq_len(n.outcomes)))
-  if (n.outcomes > 2)
-    sel.z <- as.numeric(meta:::setchar(sel.z, seq_len(n.outcomes)))
-  ##  
   dim <- meta:::setchar(dim, c("2d", "3d"))
   is_2d <- dim == "2d"
   is_3d <- !is_2d
   ##
+  plottype <- meta:::setchar(plottype, c("scatter", "biplot"))
+  is_biplot <- plottype == "biplot"
+  ##
+  if (is_biplot) {
+    outcomes <- paste("Principal Component", 1:3)
+    sel.x <- 2
+    sel.y <- 1
+    ##
+    if (n.outcomes > 2 & is_3d) {
+      sel.x <- 2
+      sel.y <- 3
+      sel.z <- 1
+    }
+    p.matrix <- prcomp(p.matrix, scale = TRUE)$x
+  }
+  else {
+    sel.x <- as.numeric(meta:::setchar(sel.x, seq_len(n.outcomes)))
+    sel.y <- as.numeric(meta:::setchar(sel.y, seq_len(n.outcomes)))
+    ##
+    if (n.outcomes > 2)
+      sel.z <- as.numeric(meta:::setchar(sel.z, seq_len(n.outcomes)))
+  }
+  ##  
   if (is_3d & !meta:::is.installed.package("rgl", stop = FALSE)) {
     warning(paste("2-D plot generated as package 'rgl' is missing.",
                   "\n  ",
@@ -117,20 +135,35 @@ plot.netposet <- function(x,
   seq.treats <- seq_len(n.treatments)
   ##
   if (is_2d) {
-    plot(p.matrix[, sel.x], p.matrix[, sel.y],
-         type = "n",
-         xlab = outcomes[sel.x], ylab = outcomes[sel.y],
-         xlim = c(0, 1), ylim = c(0, 1),
-         ...)
+    ##
+    ## 2-D plot
+    ##
+    xvals <- p.matrix[, sel.x]
+    yvals <- p.matrix[, sel.y]
+    ##
+    if (is_biplot) {
+      plot(xvals, yvals,
+           type = "n",
+           xlab = outcomes[sel.x], ylab = outcomes[sel.y],
+           ...)
+    }
+    else {
+      ##
+      plot(xvals, yvals,
+           type = "n",
+           xlab = outcomes[sel.x], ylab = outcomes[sel.y],
+           xlim = c(0, 1), ylim = c(0, 1),
+           ...)
+    }
     
-    if (grid) {
+    if (grid & !is_biplot) {
       for (i in seq.treats) {
-        lines(x = c(p.matrix[i, sel.x], p.matrix[i, sel.x]),
-              y = c(0, p.matrix[i,sel.y]),
+        lines(x = c(xvals[i], xvals[i]),
+              y = c(0, yvals[i]),
               col = col.grid, lty = lty.grid, lwd = lwd.grid)
         ##
-        lines(x = c(0, p.matrix[i, sel.x]),
-              y = c(p.matrix[i, sel.y], p.matrix[i, sel.y]),
+        lines(x = c(0, xvals[i]),
+              y = c(yvals[i], yvals[i]),
               col = col.grid, lty = lty.grid, lwd = lwd.grid)
       }
     }
@@ -139,27 +172,34 @@ plot.netposet <- function(x,
       for (j in seq.treats) {
         if (M0[i, j] == 1) {
           if (arrows)
-            arrows(p.matrix[i, sel.x], p.matrix[i, sel.y],
-                   p.matrix[j, sel.x], p.matrix[j, sel.y],
+            arrows(xvals[i], yvals[i],
+                   xvals[j], yvals[j],
                    col = col.lines, lty = lty.lines, lwd = lwd.lines,
                    length = length)
           else
-            lines(c(p.matrix[i, sel.x], p.matrix[j, sel.x]),
-                  c(p.matrix[i, sel.y], p.matrix[j, sel.y]),
+            lines(c(xvals[i], xvals[j]),
+                  c(yvals[i], yvals[j]),
                    col = col.lines, lty = lty.lines, lwd = lwd.lines)
         }
       }
     }
     ##
     for (i in seq.treats)
-      text(p.matrix[i, sel.x] + offset.x[i],
-           p.matrix[i, sel.y] + offset.y[i],
-           rownames(p.matrix)[i],
+      text(xvals[i] + offset.x[i],
+           yvals[i] + offset.y[i],
+           treatments[i],
            adj = c(adj.x[i], adj.y[i]),
            col = col[i], cex = cex[i])
   }
   else {
-    rgl::plot3d(p.matrix[, sel.x], p.matrix[, sel.y], p.matrix[, sel.z], 
+    ##
+    ## 3-D plot
+    ##
+    xvals <- p.matrix[, sel.x]
+    yvals <- p.matrix[, sel.y]
+    zvals <- p.matrix[, sel.z]
+    ##
+    rgl::plot3d(xvals, yvals, zvals,
                 xlab = outcomes[sel.x],
                 ylab = outcomes[sel.y],
                 zlab = outcomes[sel.z])
@@ -167,10 +207,15 @@ plot.netposet <- function(x,
     for (i in seq.treats)
       for (j in seq.treats)
         if (M0[i, j] == 1)
-          rgl::lines3d(x = c(p.matrix[i, sel.x], p.matrix[j, sel.x]),
-                       y = c(p.matrix[i, sel.y], p.matrix[j, sel.y]),
-                       z = c(p.matrix[i, sel.z], p.matrix[j, sel.z]),
+          rgl::lines3d(x = c(xvals[i], xvals[j]),
+                       y = c(yvals[i], yvals[j]),
+                       z = c(zvals[i], zvals[j]),
                        lwd = 2)
+    ##
+    for (i in seq.treats)
+      rgl::text3d(xvals[i], yvals[i], zvals[i],
+                  treatments[i],
+                  col = col[i], cex = cex[i])
   }
   
   invisible(NULL)
