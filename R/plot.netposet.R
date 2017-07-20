@@ -1,13 +1,15 @@
 plot.netposet <- function(x,
+                          plottype = "scatter",
                           pooled = ifelse(x$comb.random, "random", "fixed"),
+                          dim = "2d",
                           sel.x = 1, sel.y = 2, sel.z = 3,
-                          dim = "2d", plottype = "scatter",
-                          cex = 1, col = "black",
+                          cex.text = 1, col.text = "black",
                           adj.x = 0, adj.y = 1,
                           offset.x = 0.005, offset.y = -0.005,
-                          arrows = FALSE,
                           col.lines = "black", lty.lines = 1, lwd.lines = 1,
+                          arrows = FALSE,
                           length = 0.05,
+                          pch = NULL, cex.points = 1, col.points = "black",
                           grid = TRUE,
                           col.grid = "gray", lty.grid = 2, lwd.grid = 1,
                           ...) {
@@ -59,7 +61,7 @@ plot.netposet <- function(x,
     if (n.outcomes > 2)
       sel.z <- as.numeric(meta:::setchar(sel.z, seq_len(n.outcomes)))
   }
-  ##  
+  ##
   if (is_3d & !meta:::is.installed.package("rgl", stop = FALSE)) {
     warning(paste("2-D plot generated as package 'rgl' is missing.",
                   "\n  ",
@@ -74,26 +76,30 @@ plot.netposet <- function(x,
     is_3d <- FALSE
   }
   ##
-  meta:::chknumeric(cex, min = 0, zero = 0)
+  use_pch <- !is.null(pch)
+  ##
+  meta:::chknumeric(cex.text, min = 0, zero = 0)
   meta:::chknumeric(adj.x)
   meta:::chknumeric(adj.y)
   meta:::chknumeric(offset.x)
   meta:::chknumeric(offset.y)
-  meta:::chklogical(arrows)
   meta:::chknumeric(lty.lines, min = 0, zero = 0, single = TRUE)
   meta:::chknumeric(lwd.lines, min = 0, zero = 0, single = TRUE)
+  meta:::chklogical(arrows)
   meta:::chknumeric(length, min = 0, zero = 0, single = TRUE)
+  if (use_pch)
+    meta:::chknumeric(cex.points, min = 0, zero = 0)
   meta:::chklogical(grid)
   meta:::chknumeric(lty.grid, min = 0, zero = 0, single = TRUE)
   meta:::chknumeric(lwd.grid, min = 0, zero = 0, single = TRUE)
   
   
-  if (!(length(cex) %in% c(1, n.treatments)))
-    stop("Argument 'cex' must be a single numeric or vector of length ",
+  if (!(length(cex.text) %in% c(1, n.treatments)))
+    stop("Argument 'cex.text' must be a single numeric or vector of length ",
          n.treatments, ".")
   ##
-  if (!(length(col) %in% c(1, n.treatments)))
-    stop("Argument 'col' must be a character string or vector of length ",
+  if (!(length(col.text) %in% c(1, n.treatments)))
+    stop("Argument 'col.text' must be a character string or vector of length ",
          n.treatments, ".")
   ##
   if (!(length(adj.x) %in% c(1, n.treatments)))
@@ -111,13 +117,27 @@ plot.netposet <- function(x,
   if (!(length(offset.y) %in% c(1, n.treatments)))
     stop("Argument 'offset.y' must be a single numeric or vector of length ",
          n.treatments, ".")
-  
-  
-  if (length(cex) == 1)
-    cex <- rep(cex, n.treatments)
   ##
-  if (length(col) == 1)
-    col <- rep(col, n.treatments)
+  if (use_pch) {
+    if (!(length(pch) %in% c(1, n.treatments)))
+      stop("Argument 'pch' must be a single numeric or vector of length ",
+           n.treatments, ".")
+    ##
+    if (!(length(cex.points) %in% c(1, n.treatments)))
+      stop("Argument 'cex.points' must be a single numeric or vector of length ",
+           n.treatments, ".")
+    ##
+    if (!(length(col.points) %in% c(1, n.treatments)))
+      stop("Argument 'col.points' must be a character string or vector of length ",
+           n.treatments, ".")
+  }
+  
+  
+  if (length(cex.text) == 1)
+    cex.text <- rep(cex.text, n.treatments)
+  ##
+  if (length(col.text) == 1)
+    col.text <- rep(col.text, n.treatments)
   ##
   if (length(adj.x) == 1)
     adj.x <- rep(adj.x, n.treatments)
@@ -130,6 +150,17 @@ plot.netposet <- function(x,
   ##
   if (length(offset.y) == 1)
     offset.y <- rep(offset.y, n.treatments)
+  ##
+  if (use_pch) {
+    if (length(pch) == 1)
+      pch <- rep(pch, n.treatments)
+    ##
+    if (length(cex.points) == 1)
+      cex.points <- rep(cex.points, n.treatments)
+    ##
+    if (length(col.points) == 1)
+      col.points <- rep(col.points, n.treatments)
+  }
   
   
   seq.treats <- seq_len(n.treatments)
@@ -168,6 +199,11 @@ plot.netposet <- function(x,
       }
     }
     ##
+    if (use_pch)
+      for (i in seq.treats)
+        points(xvals[i], yvals[i],
+               pch = pch[i], col = col.points[i], cex = cex.points[i])
+    ##
     for (i in seq.treats) {
       for (j in seq.treats) {
         if (M0[i, j] == 1) {
@@ -189,7 +225,7 @@ plot.netposet <- function(x,
            yvals[i] + offset.y[i],
            treatments[i],
            adj = c(adj.x[i], adj.y[i]),
-           col = col[i], cex = cex[i])
+           col = col.text[i], cex = cex.text[i])
   }
   else {
     ##
@@ -204,6 +240,11 @@ plot.netposet <- function(x,
                 ylab = outcomes[sel.y],
                 zlab = outcomes[sel.z])
     ##
+    if (use_pch)
+      for (i in seq.treats)
+        rgl::points3d(xvals[i], yvals[i], zvals[i],
+                      pch = pch[i], col = col.points[i], cex = cex.points[i])
+    ##
     for (i in seq.treats)
       for (j in seq.treats)
         if (M0[i, j] == 1)
@@ -215,7 +256,7 @@ plot.netposet <- function(x,
     for (i in seq.treats)
       rgl::text3d(xvals[i], yvals[i], zvals[i],
                   treatments[i],
-                  col = col[i], cex = cex[i])
+                  col = col.text[i], cex = cex.text[i])
   }
   
   invisible(NULL)
