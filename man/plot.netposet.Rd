@@ -91,7 +91,10 @@
   \code{plottype="biplot"}. This is essentially a scatter plot using
   the first two (\code{dim="2d"}) or three (\code{dim="3d"})
   components in a principal components analysis (using
-  \code{\link[stats]{prcomp}}).
+  \code{\link[stats]{prcomp}}). Note, if only two / three outcomes are
+  considered in a \code{netposet} object, a 2-D / 3-D scatter plot is
+  generated instead of a biplot as a principal component analysis is
+  superfluous in such a situation.
 
   Arguments \code{sel.x} and \code{sel.y} can be used to select
   different outcomes to show on x- and y-axis in a 2-D scatter plot;
@@ -159,19 +162,58 @@ net2 <- netmeta(p2,
 #
 # Partial order of treatment rankings
 #
-po <- netposet(netrank(net1, small.values = "bad"),
-               netrank(net2, small.values = "bad"),
-               outcomes = outcomes)
+po2 <- netposet(netrank(net1, small.values = "bad"),
+                netrank(net2, small.values = "bad"),
+                outcomes = outcomes)
 #
 # Scatter plot
 #
-plot(po)
+plot(po2)
 #
-# Biplot
+# Same scatter plot as only two outcomes considered in netposet()
 #
-plot(po, "biplot")
+plot(po2, "biplot")
+
+#
+# Consider three outcomes
+#
+#
+# Outcome labels
+#
+outcomes <- c("Early response", "Early remission", "Lost to follow-up")
+#
+# (3) Loss to follow-up
+#
+p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+               event = list(loss1, loss2, loss3),
+               n = list(n1, n2, n3),
+               studlab = id, data = Linde2015, sm = "OR")
+#
+net3 <- netmeta(p3,
+                comb.fixed = FALSE, comb.random = TRUE,
+                seq = trts, ref = "Placebo")
+#
+# Partial order of treatment rankings (with three outcomes) 
+#
+po3 <- netposet(netrank(net1, small.values = "bad"),
+                netrank(net2, small.values = "bad"),
+                netrank(net3, small.values = "good"),
+                outcomes = outcomes)
+#
+# Hasse diagram
+#
+hasse(po3)
+#
+# Scatter plot
+#
+plot(po3)
+#
+# Biplot (reverse limits of y-axis as biplot is upside down)
+#
+plot(po3, "bi", xlim = c(-1, 1.7), ylim = c(2.5, -2.5))
 }
 
-\keyword{Scatterplot of partially ordered rankings}
+\keyword{Scatter plot of partially ordered rankings}
+\keyword{Biplot of partially ordered rankings}
 \keyword{poset}
 \keyword{hplot}

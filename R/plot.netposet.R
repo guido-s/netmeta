@@ -40,8 +40,25 @@ plot.netposet <- function(x,
   is_2d <- dim == "2d"
   is_3d <- !is_2d
   ##
+  if (is_3d & n.outcomes == 2) {
+    warning("Scatter plot in 2-D generated as only two outcomes considered in netposet().")
+    is_2d <- TRUE
+    is_3d <- FALSE
+  }
+  ##
   plottype <- meta:::setchar(plottype, c("scatter", "biplot"))
   is_biplot <- plottype == "biplot"
+  ##
+  if (is_biplot) {
+    if (is_2d & n.outcomes == 2) {
+      is_biplot <- FALSE
+      warning("Scatter plot instead of biplot generated as only two outcomes considered in netposet().")
+    }
+    if (is_3d & n.outcomes == 3) {
+      is_biplot <- FALSE
+      warning("Scatter plot instead of biplot generated as only three outcomes considered in netposet().")
+    }
+  }
   ##
   if (is_biplot) {
     outcomes <- paste("Principal Component", 1:3)
