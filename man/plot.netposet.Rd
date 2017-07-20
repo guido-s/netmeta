@@ -15,13 +15,14 @@
      pooled=ifelse(x$comb.random, "random", "fixed"),
      dim = "2d",
      sel.x = 1, sel.y = 2, sel.z = 3,
-     cex.text = 1, col.text = "black",
+     cex = 1, col = "black",
+     cex.text = cex, col.text = col,
      adj.x = 0, adj.y = 1,
      offset.x = 0.005, offset.y = -0.005,
+     pch = NULL, cex.points = cex, col.points = col,
      col.lines = "black", lty.lines = 1, lwd.lines = 1,
      arrows = FALSE,
      length = 0.05,
-     pch = NULL, cex.points = 1, col.points = "black",
      grid = TRUE,
      col.grid = "gray", lty.grid = 2, lwd.grid = 1,
      ...)
@@ -44,8 +45,10 @@
     y-axis in a scatterplot (argument is not considered for a biplot).}
   \item{sel.z}{A numeric specifying number of outcome to use for the
     z-axis in a scatterplot (argument is not considered for a biplot).}
+  \item{cex}{The magnification to be used for treatment labels and points.}
+  \item{col}{Colour(s) of treatment labels and points.}
   \item{cex.text}{The magnification to be used for treatment labels.}
-  \item{col.text}{A vector with colour of treatment labels.}
+  \item{col.text}{Colour(s) of treatment labels.}
   \item{adj.x}{Value(s) in [0, 1] to specify adjustment of treatment
     labels on x-axis (only considered in 2-D plots); see
     \code{\link[graphics]{text}}.}
@@ -56,15 +59,15 @@
     considered in 2-D plots).}
   \item{offset.y}{Offset(s) of treatment labels on y-axis (only
     considered in 2-D plots).}
+  \item{pch}{Plot symbol(s) for points; no points printed if equal to \code{NULL}.}
+  \item{cex.points}{Magnification(s) to be used for points.}
+  \item{col.points}{Colour(s) of points.}
   \item{col.lines}{Line colour.}
   \item{lty.lines}{Line type.}
   \item{lwd.lines}{Line width.}
   \item{arrows}{A logical indicating whether arrows should be printed
     (only considered in 2-D plots).}
   \item{length}{Length of arrows; see \code{\link[graphics]{arrows}}.}  
-  \item{pch}{Plot symbol(s) for points; no points printed if equal to \code{NULL}.}
-  \item{cex.points}{Magnification(s) to be used for points.}
-  \item{col.points}{Colour(s) of points.}
   \item{grid}{A logical indicating whether grid lines should be added to plot.}
   \item{col.grid}{Colour of grid lines.}
   \item{lty.grid}{Line type of grid lines.}
