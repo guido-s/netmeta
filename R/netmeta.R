@@ -9,12 +9,13 @@ netmeta <- function(TE, seTE,
                     level.predict = 0.95,
                     ##
                     reference.group = "",
+                    baseline.reference = TRUE,
                     all.treatments = NULL,
                     seq = NULL,
                     ##
                     tau.preset = NULL,
                     tol.multiarm = 0.0005,
-                    details.tol.multiarm = FALSE,
+                    details.chkmultiarm = FALSE,
                     sep.trts = ":",
                     title = "",
                     warn = TRUE
@@ -43,6 +44,8 @@ netmeta <- function(TE, seTE,
       all.treatments <- TRUE
     else
       all.treatments <- FALSE
+  ##
+  meta:::chklogical(baseline.reference)
   
   
   ##
@@ -296,7 +299,8 @@ netmeta <- function(TE, seTE,
   ## multi-arm studies
   ##
   chkmultiarm(p0$treat1, p0$treat2, p0$TE, p0$seTE, p0$studlab,
-              tol = tol.multiarm, details = details.tol.multiarm)
+              treats = labels,
+              tol = tol.multiarm, details = details.chkmultiarm)
   ##
   ## Study overview
   ##
@@ -491,6 +495,7 @@ netmeta <- function(TE, seTE,
               P.random = NA,
               ##
               reference.group = reference.group,
+              baseline.reference = baseline.reference,
               all.treatments = all.treatments,
               ##
               seq = seq,

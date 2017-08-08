@@ -10,7 +10,7 @@ setseq <- function(seq, levs) {
          "' must all be disparate.", call. = FALSE)
   ##
   if (is.numeric(seq)) {
-    if (any(is.na(seq)))
+    if (anyNA(seq))
       stop("Missing values not allowed in argument '",
            name, "'.", call. = FALSE)
     if (any(!(seq %in% (1:length(levs)))))
@@ -24,7 +24,7 @@ setseq <- function(seq, levs) {
       idx <- charmatch(tolower(seq), tolower(levs), nomatch = NA)
     else
       idx <- charmatch(seq, levs, nomatch = NA)
-    if (any(is.na(idx)) || any(idx == 0))
+    if (anyNA(idx) || any(idx == 0))
       stop(paste("Argument '", name,
                  "' must be a permutation of the following values:\n  ",
                  paste(paste("'", levs, "'", sep = ""),

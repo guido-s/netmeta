@@ -45,6 +45,8 @@ upgradenetmeta <- function(x) {
     ##
     x$df <- NULL
     ##
+    x$baseline.reference <- TRUE
+    ##
     x$version <- packageDescription("netmeta")$Version
   }
   

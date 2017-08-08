@@ -3,6 +3,7 @@ summary.netmeta <- function(object,
                             comb.random = object$comb.random,
                             prediction = object$prediction,
                             reference.group = object$reference.group,
+                            baseline.reference = object$baseline.reference,
                             all.treatments = object$all.treatments,
                             warn = object$warn,
                             ...) {
@@ -27,6 +28,7 @@ summary.netmeta <- function(object,
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(prediction)
+  meta:::chklogical(baseline.reference)
   ##
   cl <- "netmeta()"
   addargs <- names(list(...))
@@ -115,6 +117,7 @@ summary.netmeta <- function(object,
     reference.group <- setref(reference.group, rownames(object$A.matrix))
   
   res$reference.group <- reference.group
+  res$baseline.reference <- baseline.reference
   res$all.treatments <- all.treatments
   ##
   res$title   <- object$title

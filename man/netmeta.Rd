@@ -17,9 +17,9 @@
         sm, level=0.95, level.comb=0.95,
         comb.fixed=TRUE, comb.random=!is.null(tau.preset),
 	prediction=FALSE, level.predict=0.95,
-	reference.group="",
+	reference.group="", baseline.reference=TRUE,
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
-        tol.multiarm = 0.0005, details.tol.multiarm = FALSE,
+        tol.multiarm = 0.0005, details.chkmultiarm = FALSE,
         sep.trts=":", title="", warn=TRUE)
 }
 
@@ -49,6 +49,10 @@
   \item{level.predict}{The level used to calculate prediction
     intervals for a new study.}
   \item{reference.group}{Reference group.}
+  \item{baseline.reference}{A logical indicating whether results
+    should be expressed as comparisons of other treatments versus the
+    reference treatment (default) or vice versa. This argument is only
+    considered if \code{reference.group} has been specified.}    
   \item{all.treatments}{A logical or value \code{"NULL"}. If
         \code{TRUE}, matrices with all treatment effects, and confidence
         limits will be printed.}
@@ -59,9 +63,9 @@
   \item{tol.multiarm}{A numeric for the tolerance for consistency of
     treatment estimates and corresponding variances in multi-arm studies
     which are consistent by design.}
-  \item{details.tol.multiarm}{A logical indicating whether treatment
+  \item{details.chkmultiarm}{A logical indicating whether treatment
     estimates and / or variances of multi-arm studies with inconsistent
-    results should be printed.}
+    results or negative multi-arm variances should be printed.}
   \item{sep.trts}{A character used in comparison names as separator
     between treatment labels.}
   \item{title}{Title of meta-analysis / systematic review.}

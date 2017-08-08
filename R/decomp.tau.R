@@ -123,7 +123,7 @@ decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
     Q.inc.detach <- Q.inc.detach[!(duplicated(Q.inc.detach$design)), ]
   }
   ##
-  if (any(is.na(Q.inc.detach$Q)))
+  if (anyNA(Q.inc.detach$Q))
     Q.inc.detach <- Q.inc.detach[!(is.na(Q.inc.detach$Q)), ]
   
   res <- list(

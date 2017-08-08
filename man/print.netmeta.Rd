@@ -14,19 +14,25 @@
 \method{print}{netmeta}(x, sortvar,
       comb.fixed=x$comb.fixed, comb.random=x$comb.random,
       prediction=x$prediction,
-      reference.group=x$reference.group, all.treatments=x$all.treatments,
+      reference.group=x$reference.group,
+      baseline.reference=x$baseline.reference,
+      all.treatments=x$all.treatments,
       details=TRUE, ma=TRUE, logscale=FALSE,
       digits=max(4, .Options$digits - 3), ...)
 
 \method{summary}{netmeta}(object,
         comb.fixed=object$comb.fixed, comb.random=object$comb.random,
 	prediction=object$prediction,
-        reference.group=object$reference.group, all.treatments=object$all.treatments,
+        reference.group=object$reference.group,
+        baseline.reference=object$baseline.reference,
+        all.treatments=object$all.treatments,
         warn=object$warn, ...)
 
 \method{print}{summary.netmeta}(x, comb.fixed=x$comb.fixed, comb.random=x$comb.random,
       prediction=x$prediction,
-      reference.group=x$reference.group, all.treatments=x$all.treatments,
+      reference.group=x$reference.group,
+      baseline.reference=x$baseline.reference,
+      all.treatments=x$all.treatments,
       logscale=FALSE, header=TRUE, digits=max(3, .Options$digits - 3), ...)
 }
 
@@ -42,6 +48,10 @@
   \item{prediction}{A logical indicating whether prediction intervals
     should be printed.}
   \item{reference.group}{Reference group.}
+  \item{baseline.reference}{A logical indicating whether results
+    should be expressed as comparisons of other treatments versus the
+    reference treatment (default) or vice versa. This argument is only
+    considered if \code{reference.group} has been specified.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
     \code{TRUE}, matrices with all treatment effects, and confidence
     limits will be printed.}

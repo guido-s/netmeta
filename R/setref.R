@@ -15,7 +15,7 @@ setref <- function(reference.group, levs) {
       idx <- charmatch(tolower(reference.group), tolower(levs), nomatch = NA)
     else
       idx <- charmatch(reference.group, levs, nomatch=NA)
-    if (any(is.na(idx)) || any(idx == 0))
+    if (anyNA(idx) || any(idx == 0))
       stop(paste("Argument 'reference.group' must be any of following values:\n  ",
                  paste(paste("'", levs, "'", sep = ""),
                        collapse = " - "), sep = ""), call. = FALSE)

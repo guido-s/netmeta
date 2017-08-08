@@ -3,6 +3,7 @@ print.summary.netmeta <- function(x,
                                   comb.random = x$comb.random,
                                   prediction = x$prediction,
                                   reference.group = x$reference.group,
+                                  baseline.reference = x$baseline.reference,
                                   all.treatments = x$all.treatments,
                                   logscale = FALSE,
                                   header = TRUE,
@@ -25,6 +26,7 @@ print.summary.netmeta <- function(x,
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(prediction)
+  meta:::chklogical(baseline.reference)
   
   
   k <- x$k
@@ -126,6 +128,28 @@ print.summary.netmeta <- function(x,
     if (!oldversion)
       cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
     
+    
+    if (reference.group != "")
+      if (baseline.reference)
+        comptext <- paste("comparison: ",
+                          if (x$n == 2)
+                            paste("'",
+                                  rownames(TE.fixed)[rownames(TE.fixed) != reference.group],
+                                  "'", sep = "")
+                          else
+                            "other treatments",
+                          " vs '", reference.group, "'", sep = "")
+      else
+        comptext <- paste("comparison: '",
+                          reference.group, "' vs ",
+                          if (x$n == 2)
+                            paste("'",
+                                  rownames(TE.fixed)[rownames(TE.fixed) != reference.group],
+                                  "'", sep = "")
+                          else
+                            "other treatments", sep = "")
+    
+    
     if (comb.fixed) {
       if (all.treatments | reference.group != "")
         cat("\nFixed effect model\n")
@@ -169,15 +193,29 @@ print.summary.netmeta <- function(x,
                      paste(paste("'", colnames(TE.fixed), "'", sep = ""),
                            collapse = " - "), sep = ""))
         ##
-        TE.fixed.b <- TE.fixed[, colnames(TE.fixed) == reference.group]
-        lowTE.fixed.b <- lowTE.fixed[, colnames(lowTE.fixed) == reference.group]
-        uppTE.fixed.b <- uppTE.fixed[, colnames(uppTE.fixed) == reference.group]
+        if (baseline.reference) {
+          TE.fixed.b <- TE.fixed[, colnames(TE.fixed) == reference.group]
+          lowTE.fixed.b <- lowTE.fixed[, colnames(lowTE.fixed) == reference.group]
+          uppTE.fixed.b <- uppTE.fixed[, colnames(uppTE.fixed) == reference.group]
+        }
+        else {
+          TE.fixed.b <- TE.fixed[rownames(TE.fixed) == reference.group, ]
+          lowTE.fixed.b <- lowTE.fixed[rownames(lowTE.fixed) == reference.group, ]
+          uppTE.fixed.b <- uppTE.fixed[rownames(uppTE.fixed) == reference.group, ]
+        }
         ##
         ## Add prediction interval (or not)
         ##
         if (!comb.random & prediction & x$df.Q >= 2) {
-          lowTE.predict.b <- lowTE.predict[, colnames(lowTE.predict) == reference.group]
-          uppTE.predict.b <- uppTE.predict[, colnames(uppTE.predict) == reference.group]
+          if (baseline.reference) {
+            lowTE.predict.b <- lowTE.predict[, colnames(lowTE.predict) == reference.group]
+            uppTE.predict.b <- uppTE.predict[, colnames(uppTE.predict) == reference.group]
+          }
+          else {
+            lowTE.predict.b <- lowTE.predict[rownames(lowTE.predict) == reference.group, ]
+            uppTE.predict.b <- uppTE.predict[rownames(uppTE.predict) == reference.group, ]
+          }
+          ##
           pi.lab <- paste(round(100 * x$predict$level, 1), "%-PI", sep = "")
           ##
           res <- cbind(format.TE(TE.fixed.b, na = TRUE),
@@ -198,7 +236,7 @@ print.summary.netmeta <- function(x,
           res[rownames(res) == reference.group, ] <- "."
         
         cat("\nTreatment estimate (sm = '", sm.lab,
-            "', reference.group = '", reference.group, "'):\n", sep = "")
+            "', ", comptext, "):\n", sep = "")
         
         prmatrix(res, quote = FALSE, right = TRUE)
       }
@@ -248,15 +286,29 @@ print.summary.netmeta <- function(x,
                      paste(paste("'", colnames(TE.random), "'", sep = ""),
                            collapse = " - "), sep = ""))
         ##
-        TE.random.b <- TE.random[, colnames(TE.random) == reference.group]
-        lowTE.random.b <- lowTE.random[, colnames(lowTE.random) == reference.group]
-        uppTE.random.b <- uppTE.random[, colnames(uppTE.random) == reference.group]
+        if (baseline.reference) {
+          TE.random.b <- TE.random[, colnames(TE.random) == reference.group]
+          lowTE.random.b <- lowTE.random[, colnames(lowTE.random) == reference.group]
+          uppTE.random.b <- uppTE.random[, colnames(uppTE.random) == reference.group]
+        }
+        else {
+          TE.random.b <- TE.random[colnames(TE.random) == reference.group]
+          lowTE.random.b <- lowTE.random[rownames(lowTE.random) == reference.group, ]
+          uppTE.random.b <- uppTE.random[rownames(uppTE.random) == reference.group, ]
+        }
         ##
         ## Add prediction interval (or not)
         ##
         if (prediction & x$df.Q >= 2) {
-          lowTE.predict.b <- lowTE.predict[, colnames(lowTE.predict) == reference.group]
-          uppTE.predict.b <- uppTE.predict[, colnames(uppTE.predict) == reference.group]
+          if (baseline.reference) {
+            lowTE.predict.b <- lowTE.predict[, colnames(lowTE.predict) == reference.group]
+            uppTE.predict.b <- uppTE.predict[, colnames(uppTE.predict) == reference.group]
+          }
+          else {
+            lowTE.predict.b <- lowTE.predict[rownames(lowTE.predict) == reference.group, ]
+            uppTE.predict.b <- uppTE.predict[rownames(uppTE.predict) == reference.group, ]
+          }
+          ##
           pi.lab <- paste(round(100 * x$predict$level, 1), "%-PI", sep = "")
           ##
           res <- cbind(format.TE(TE.random.b, na = TRUE),
@@ -276,9 +328,8 @@ print.summary.netmeta <- function(x,
         if (TE.random.b[rownames(res) == reference.group] == noeffect)
           res[rownames(res) == reference.group, ] <- "."
         
-        
         cat("\nTreatment estimate (sm = '", sm.lab,
-            "', reference.group = '", reference.group, "'):\n", sep = "")
+            "', ", comptext, "):\n", sep = "")
         
         prmatrix(res, quote = FALSE, right = TRUE)
       }

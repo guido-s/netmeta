@@ -3,6 +3,7 @@ print.netmeta <- function(x,
                           comb.fixed = x$comb.fixed, comb.random = x$comb.random,
                           prediction = x$prediction,
                           reference.group = x$reference.group,
+                          baseline.reference = x$baseline.reference,
                           all.treatments = x$all.treatments,
                           details = TRUE, ma = TRUE, logscale = FALSE,
                           digits = max(4, .Options$digits - 3),
@@ -19,6 +20,7 @@ print.netmeta <- function(x,
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(prediction)
+  meta:::chklogical(baseline.reference)
   
   
   k.all <- length(x$TE)
@@ -170,8 +172,9 @@ print.netmeta <- function(x,
           comb.fixed = comb.fixed, comb.random = comb.random,
           prediction = prediction,
           logscale = logscale,
-          all.treatments = all.treatments,
           reference.group = reference.group,
+          baseline.reference = baseline.reference,
+          all.treatments = all.treatments,
           header = FALSE)
   
   invisible(NULL)
