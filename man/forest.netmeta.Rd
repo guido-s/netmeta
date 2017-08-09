@@ -112,9 +112,7 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 forest(net1, ref="plac")
 
 forest(net1, xlim=c(-1.5,1), ref="plac",
-       xlab="HbA1c difference",
-       leftcols="studlab", rightcols=FALSE,
-       leftlabs="Contrast to placebo")
+       xlab="HbA1c difference", rightcols=FALSE)
 }
 
 #
@@ -124,17 +122,13 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD", comb.random=TRUE)
 
 forest(net2, xlim=c(-1.5,1), ref="plac",
-       xlab="HbA1c difference",
-       leftcols="studlab",
-       leftlabs="Contrast to placebo")
+       xlab="HbA1c difference")
 
 #
 # Add column with P-Scores on right side of forest plot
 #
 forest(net2, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference",
-       leftcols="studlab",
-       leftlabs="Contrast to placebo",
        rightcols=c("effect", "ci", "Pscore"),
        rightlabs="P-Score",
        just.addcols="right")
@@ -146,7 +140,7 @@ forest(net2, xlim=c(-1.5,1), ref="plac",
 forest(net2, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference",
        leftcols=c("studlab", "Pscore"),
-       leftlabs=c("Contrast to placebo", "P-Score"),
+       leftlabs=c("Treatment", "P-Score"),
        just.addcols="right")
 
 #
@@ -154,13 +148,10 @@ forest(net2, xlim=c(-1.5,1), ref="plac",
 #
 forest(net2, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference",
-       leftcols="studlab",
-       leftlabs="Contrast to placebo",
        rightcols=c("effect", "ci", "Pscore"),
        rightlabs="P-Score",
        just.addcols="right",
        sortvar=-Pscore)
-}
 
 #
 # Drop reference group and sort by and print number of studies
@@ -171,7 +162,9 @@ forest(net2, xlim=c(-1.5,1), ref="plac",
        leftcols=c("studlab", "k"),
        leftlabs=c("Contrast\nto Placebo", "Direct\nComparisons"),
        sortvar=-k,
-       drop=TRUE)
+       drop=TRUE,
+       smlab="Random Effects Model")
+}
 }
 
 \keyword{hplot}
