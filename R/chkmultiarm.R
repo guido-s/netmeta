@@ -5,10 +5,113 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
   sel.multi <- tabnarms > 1
   ##
   if (any(sel.multi)) {
+    ##
+    msgdetails <- c("  - For more details, re-run netmeta() with argument details.chkmultiarm=TRUE.\n")
+    ##
     studlab.multi <- names(tabnarms)[sel.multi]
     ##
-    dat.duplicate <- data.frame(studlab = "", treat1 = "", treat2 = "",
-                                stringsAsFactors = FALSE)
+    ## Check duplicate and incomplete comparisons
+    ##
+    dat.incomplete <- data.frame(studlab = "", treat1 = "", treat2 = "",
+                                 stringsAsFactors = FALSE)
+    dat.duplicate <- dat.incomplete
+    ##
+    incomplete <- rep_len(NA, sum(sel.multi))
+    duplicate <- rep_len(NA, sum(sel.multi))
+    ##
+    s.idx <- 0
+    ##
+    for (s in studlab.multi) {
+      s.idx <- s.idx + 1
+      sel <- studlab == s
+      ##
+      TE.s <- TE[sel]
+      studlab.s <- studlab[sel]
+      treat1.s <- treat1[sel]
+      treat2.s <- treat2[sel]
+      treats.s <- unique(c(treat1.s, treat2.s))
+      ##
+      n <- (1 + sqrt(8 * length(TE.s) + 1)) / 2
+      ##
+      incomplete[s.idx] <- length(treats.s) != n
+      duplicate[s.idx] <- any(table(interaction(treat1.s, treat2.s)) > 1)
+      ##
+      if (incomplete[s.idx])
+        dat.incomplete <- rbind(dat.incomplete,
+                               data.frame(studlab = studlab.s,
+                                          treat1 = treat1.s,
+                                          treat2 = treat2.s,
+                                          stringsAsFactors = FALSE))
+      ##
+      if (duplicate[s.idx])
+        dat.duplicate <- rbind(dat.duplicate,
+                               data.frame(studlab = studlab.s,
+                                          treat1 = treat1.s,
+                                          treat2 = treat2.s,
+                                          stringsAsFactors = FALSE))
+    }
+    ##
+    if (details & any(incomplete)) {
+      dat.incomplete <- dat.incomplete[-1, ]
+      cat("\nMulti-arm studies with incomplete treatment comparisons:\n\n")
+      prmatrix(dat.incomplete, quote = FALSE, right = TRUE,
+               rowlab = rep("", dim(dat.incomplete)[1]))
+      cat("\n")
+    }
+    ##
+    if (details & any(duplicate)) {
+      dat.duplicate <- dat.duplicate[-1, ]
+      cat("\nMulti-arm studies with duplicate treatment comparisons:\n\n")
+      prmatrix(dat.duplicate, quote = FALSE, right = TRUE,
+               rowlab = rep("", dim(dat.duplicate)[1]))
+      cat("\n")
+    }
+    ##
+    if (any(incomplete)) {
+      studlabs <- unique(dat.incomplete$studlab[-1])
+      ##
+      if (length(studlabs) == 1)
+        errmsg.incomplete <-
+          paste("  - Study '", studlabs,
+                "' has an incomplete set of comparisons.\n",
+                sep = "")
+      else
+        errmsg.incomplete <-
+          paste("  - Studies with incomplete set of comparisons: ",
+                paste(paste("'", studlabs, "'", sep = ""),
+                      collapse = ", "),
+                "\n", sep = "")
+    }
+    else
+      errmsg.incomplete <- ""
+    ##
+    if (any(duplicate)) {
+      studlabs <- unique(dat.duplicate$studlab[-1])
+      ##
+      if (length(studlabs) == 1)
+        errmsg.duplicate <-
+          paste("  - Duplicate comparison in study '", studlabs, "'.\n",
+                sep = "")
+      else
+        errmsg.duplicate <-
+          paste("  - Studies with duplicate comparisons: ",
+                paste(paste("'", studlabs, "'", sep = ""),
+                      collapse = ", "),
+                "\n", sep = "")
+    }
+    else
+      errmsg.duplicate <- ""
+    ##
+    if (any(incomplete) | any(duplicate))
+      stop("Problem",
+           if ((sum(incomplete) + sum(duplicate)) > 1) "s",
+           " in multi-arm studies!\n",
+           errmsg.incomplete, errmsg.duplicate,
+           if (!details) msgdetails, call. = FALSE)
+    ##
+    ## Additional checks:
+    ## - consistency of TE and varTE and
+    ## - negative or zero treatment arm variance
     ##
     dat.TE <- data.frame(studlab = "", treat1 = "", treat2 = "",
                          TE = NA, resid = NA,
@@ -40,14 +143,10 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       treat1.s <- treat1[sel]
       treat2.s <- treat2[sel]
       ##
-      m <- length(TE.s)
-      n <- (1 + sqrt(8 * m + 1)) / 2
+      n <- (1 + sqrt(8 * length(TE.s) + 1)) / 2
       ##
       treats.s <- unique(c(treat1.s, treat2.s))
-      studlab.s.arms <- rep_len(s, length(treats.s))
-      ##
-      if (n != length(treats.s))
-        stop("Duplicate comparison in multi-arm study '", s, "'.", call. = FALSE)
+      studlab.s.arms <- rep_len(s, n)
       ##
       ## Create full edge-vertex incidence matrix
       ##
@@ -94,7 +193,7 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
         dat.zero <- rbind(dat.zero,
                           data.frame(studlab = studlab.s.arms,
                                      treat = treats.s,
-                                     var.treat = round(sigma2, 6),
+                                     var.treat = round(sigma2, 8),
                                      stringsAsFactors = FALSE))
       ##
       if (negative.sigma2[s.idx])
@@ -138,6 +237,8 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
     if (details & (inconsistent | zero | negative)) {
       if (length(dat.TE$studlab) > 1) {
         dat.TE <- dat.TE[-1, ]
+        dat.TE$TE <- format(dat.TE$TE)
+        dat.TE$resid <- format(dat.TE$resid)
         cat("\nMulti-arm studies with inconsistent treatment effects:\n\n")
         prmatrix(dat.TE, quote = FALSE, right = TRUE,
                  rowlab = rep("", dim(dat.TE)[1]))
@@ -145,6 +246,8 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       }
       if (length(dat.varTE$studlab) > 1 & ivarTE > 0) {
         dat.varTE <- dat.varTE[-1, ]
+        dat.varTE$varTE <- format(dat.varTE$varTE)
+        dat.varTE$resid <- format(dat.varTE$resid)
         cat("\nMulti-arm studies with inconsistent variances:\n\n")
         prmatrix(dat.varTE, quote = FALSE, right = TRUE,
                  rowlab = rep("", dim(dat.varTE)[1]))
@@ -233,29 +336,16 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       else
         msgsigma2 <- ""
       ##
-      errmsg <- paste(if (inconsistent) "Inconsistent ",
-                      if (iTE > 0) "treatment effects ",
-                      if (iTE > 0 & ivarTE > 0) "and ",
-                      if (ivarTE > 0) "variances ",
-                      if (inconsistent) "in multi-arm ",
-                      if (inconsistent & length(studlab.inconsistent) > 1) "studies!",
-                      if (inconsistent & length(studlab.inconsistent) == 1) "study!",
-                      msgTE, msgvarTE,
-                      if (izero.sigma2 == 1)
-                        "Zero treatment arm variance in study!\n",
-                      if (izero.sigma2 > 1)
-                        "Zero treatment arm variance in studies!\n",
-                      msg0sigma2,
-                      if (inegative.sigma2 == 1)
-                        "Negative treatment arm variance in study!\n",
-                      if (inegative.sigma2 > 1)
-                        "Negative treatment arm variance in studies!\n",
-                      msgsigma2,
+      errmsg <- paste("Problem",
+                      if ((iTE + ivarTE + inegative.sigma2 + izero.sigma2) > 1) "s",
+                      " in multi-arm studies!\n",
+                      msgTE, msgvarTE, msg0sigma2, msgsigma2,
                       "  - Please check original data used as input to netmeta().\n",
-                      if (!details) "  - You may re-run netmeta() command with argument\n",
-                      if (!details) "    details.chkmultiarm=TRUE to inspect deviations.\n",
-                      if (inconsistent) "  - Argument tol.multiarm in netmeta() can be used to relax\n",
-                      if (inconsistent) "    consistency assumption for multi-arm studies (if appropriate).",
+                      if (!details) msgdetails,
+                      if (inconsistent)
+                        "  - Argument tol.multiarm in netmeta() can be used to relax consistency\n",
+                      if (inconsistent)
+                        "    assumption for multi-arm studies (if appropriate).",
                       sep ="")
       ##
       stop(errmsg, call. = FALSE)

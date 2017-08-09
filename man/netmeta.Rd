@@ -168,7 +168,8 @@
   consecutive order): \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"},
   \code{"."}.  If all of these characters are used in treatment
   labels, a corresponding error message is printed asking the user to
-  specify a different separator.  }
+  specify a different separator.
+}
 
 \value{
   An object of class \code{netmeta} with corresponding \code{print},
