@@ -56,12 +56,12 @@ forest.netmeta <- function(x,
     prop.direct <- x$P.fixed
     if (is.null(smlab))
       if (baseline.reference)
-        smlab <- paste("Comparison: '",
-                       reference.group, "' vs other\n(Fixed Effect Model)",
-                       sep = "")
-      else
         smlab <- paste("Comparison: other vs '",
                        reference.group, "'\n(Fixed Effect Model)",
+                       sep = "")
+      else
+        smlab <- paste("Comparison: '",
+                       reference.group, "' vs other\n(Fixed Effect Model)",
                        sep = "")
     ##
     Pscore <- netrank(x, small.values = small.values)$Pscore.fixed
@@ -73,12 +73,12 @@ forest.netmeta <- function(x,
     prop.direct <- x$P.random
     if (is.null(smlab))
       if (baseline.reference)
-        smlab <- paste("Comparison: '",
-                       reference.group, "' vs other\n(Random Effects Model)",
-                       sep = "")
-      else
         smlab <- paste("Comparison: other vs '",
                        reference.group, "'\n(Random Effects Model)",
+                       sep = "")
+      else
+        smlab <- paste("Comparison: '",
+                       reference.group, "' vs other\n(Random Effects Model)",
                        sep = "")
     ##
     Pscore <- netrank(x, small.values = small.values)$Pscore.random
