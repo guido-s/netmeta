@@ -1,3 +1,81 @@
+*** netmeta, version 0.9-6, 2017-08-09 ***
+
+ ** Major changes **
+
+  * Prediction intervals can be calculated for treatment estimates
+    from a network meta-analysis
+
+  * In netmeta(), Q statistics for heterogeneity and design
+    inconsistency are calculated according to Krahn et al. (2013);
+    see help page of decomp.design()
+
+  * In printouts and forest plots, the reference treatment can be
+    considered as treatment of interest or comparator (default),
+    i.e., either comparisons of reference vs other treatments or
+    other treatments vs reference are reported
+
+  * Tests for heterogeneity and design inconsistency are shown in
+    printouts
+
+  * A biplot can be generated to show partial ordering of treatment
+    rankings for more than two outcomes
+
+ ** User-visible changes **
+
+  * netmeta():
+    - new arguments 'prediction' and 'level.predict' to calculate
+      prediction intervals
+    - list elements 'Q.heterogeneity' and 'Q.inconsistency' based on
+      Krahn et al. (2013)
+    - new list elements 'prediction', 'lower.predict',
+      'upper.predict', 'df.Q.heterogeneity',
+      'pval.Q.heterogeneity','df.Q.inconsistency', and
+      'pval.Q.inconsistency'
+    - list element 'df' renamed to 'df.Q'
+    - stop with an informative error message if (i) any treatment arm
+      variance derived from the treatment comparison variances is
+      negative or zero, or (ii) in case of duplicate comparisons or an
+      incomplete set of treatment comparisons within a study
+    - argument 'details.tol.multiarm' renamed to 'details.chkmultiarm'
+
+  * netmeta(), forest.netmeta(), print.netmeta(),
+    print.summary.netmeta(), and summary.netmeta():
+    - new argument 'baseline.reference' to print results for
+      comparisons between reference and other treatments, or vice versa
+
+  * print.netmeta(), print.summary.netmeta(), and summary.netmeta():
+    - new argument 'prediction' to print prediction intervals
+
+  * print.summary.netmeta():
+    - print information on tests for overall heterogeneity and
+      inconsistency
+
+  * summary.netmeta():
+    - arguments 'level' and 'level.comb' removed from R function
+      (i.e., one has to re-run the netmeta() command for confidence
+      intervals with other coverage levels)
+
+  * plot.netposet():
+    - new argument 'plottype' to choose between scatter plot or biplot
+    - new arguments to modify layout ('cex.text', 'col.text', pch,
+      cex.points, col.points)
+    
+  * decomp.design() and netmeasures():
+    - new argument 'warn' to suppress printing of warnings
+
+ ** Internal changes **
+
+  * New internal function upgradenetmeta() to add missing list
+    elements to older netmeta objects
+
+  * R function ci() from R package meta added to namespace
+
+  * chkmultiarm():
+    - additional checks for (i) negative and zero variances as well as
+      (ii) duplicate treatment comparisons or incomplete sets of
+      treatment comparisons within a study
+
+
 *** netmeta, version 0.9-5, 2017-05-31 ***
 
  ** Major changes **
@@ -68,8 +146,6 @@
       adjacency matrix
     
   * Help pages:
-    - R command 'help(netmeta)' can be used to show brief overview of
-      R package netmeta
     - examples corrected for dataset dietaryfat
     - do not run all examples in forest.netmeta() as CRAN only allows
       a run time below 10 seconds for examples provided on a help page

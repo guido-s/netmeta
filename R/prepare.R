@@ -32,6 +32,7 @@ prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0) {
     subgraph$narms <- (1 + sqrt(8 * dim(subgraph)[1] + 1)) / 2
     if (dim(subgraph)[1] > 1)
       subgraph$weights <- 1 / multiarm(1 / subgraph$weights)$v # Reciprocal new weights
+    ##
     newdata <- rbind(newdata, subgraph)
   }
   res <- newdata

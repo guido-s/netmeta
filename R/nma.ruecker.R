@@ -74,7 +74,7 @@ nma.ruecker <- function(TE, seTE,
   ## Resulting effects and variances at numbered edges
   ##
   v <- as.vector(H %*% TE)
-  ci.v <- meta::ci(v, sqrt(V), level = level)
+  ci.v <- ci(v, sqrt(V), level = level)
   ##
   ## Resulting effects, all edges, as a n x n matrix:
   ##

@@ -13,7 +13,8 @@ export(netmeta,
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
 # format.TE, p.ci, tau.within, decomp.tau, stress,
-# shadowtext, chklist, chkmultiarm, lowertri, createB
+# shadowtext, chklist, chkmultiarm, lowertri, createB,
+# upgradenetmeta
 
 S3method(as.data.frame, netmeta)
 S3method(print, netmeta)
@@ -29,13 +30,13 @@ S3method(plot, netposet)
 
 importFrom("meta", "forest", "forest.meta",
            "metabin", "metacont", "metagen",
-           "metainc", "metaprop", "gs")
+           "metainc", "metaprop", "gs", "ci")
 
 importFrom("magic", "adiag")
 
 importFrom("grDevices", "col2rgb", "heat.colors", "rgb", "xy.coords")
 
-importFrom("graphics", "axis", "box", "lines", "par",
+importFrom("graphics", "axis", "box", "lines", "par", "points",
            "plot", "polygon", "rect", "text", "strheight", "strwidth")
 
 importFrom("stats", "dist", "hclust", "pchisq", "prcomp", "rnorm", "sd")

@@ -1,4 +1,4 @@
-decomp.design <- function(x, tau.preset = x$tau.preset) {
+decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE) {
   
   
   meta:::chkclass(x, "netmeta")
@@ -8,14 +8,15 @@ decomp.design <- function(x, tau.preset = x$tau.preset) {
   if (is.null(tau.within))
     return(invisible(NULL))
   ##
-  decomp.random <- decomp.tau(x, tau.preset = tau.within)
+  decomp.random <- decomp.tau(x, tau.preset = tau.within, warn = warn)
+  ##
   Q.inc.random <- decomp.random$Q.decomp["Between designs", ]
   Q.inc.design.random <- decomp.random$Q.inc.design
   residuals.detach.random <- decomp.random$residuals.detach
   
   
   if (length(tau.preset) == 1) {
-    decomp.random.preset <- decomp.tau(x, tau.preset = tau.preset)
+    decomp.random.preset <- decomp.tau(x, tau.preset = tau.preset, warn = warn)
     Q.inc.random.preset <-  decomp.random.preset$Q.decomp["Between designs",]
     Q.inc.design.random.preset <- decomp.random.preset$Q.inc.design
     residuals.inc.detach.random.preset <- decomp.random.preset$residuals.inc.detach
@@ -28,7 +29,7 @@ decomp.design <- function(x, tau.preset = x$tau.preset) {
   }
   
   
-  dct <- decomp.tau(x)
+  dct <- decomp.tau(x, warn = warn)
   
   
   res <- list(

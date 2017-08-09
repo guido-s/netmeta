@@ -13,6 +13,7 @@
 \method{forest}{netmeta}(x,
        pooled=ifelse(x$comb.random, "random", "fixed"),
        reference.group=x$reference.group,
+       baseline.reference=x$baseline.reference,
        leftcols="studlab", leftlabs="Treatment",
        rightcols=c("effect", "ci"), rightlabs=NULL,
        digits=gs("digits.forest"), small.values="good", digits.Pscore=2,
@@ -25,6 +26,9 @@
 \arguments{
   \item{x}{An object of class \code{netmeta}.}
   \item{reference.group}{Reference group.}
+  \item{baseline.reference}{A logical indicating whether results
+    should be expressed as comparisons of other treatments versus the
+    reference treatment (default) or vice versa.}
   \item{pooled}{A character string indicating whether results for
     the fixed effect (\code{"fixed"}) or random effects model
     (\code{"random"}) should be plotted. Can be abbreviated.}

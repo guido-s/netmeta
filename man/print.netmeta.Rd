@@ -11,20 +11,28 @@
 }
 
 \usage{
-\method{print}{netmeta}(x, sortvar, level=x$level, level.comb=x$level.comb,
+\method{print}{netmeta}(x, sortvar,
       comb.fixed=x$comb.fixed, comb.random=x$comb.random,
-      reference.group=x$reference.group, all.treatments=x$all.treatments,
+      prediction=x$prediction,
+      reference.group=x$reference.group,
+      baseline.reference=x$baseline.reference,
+      all.treatments=x$all.treatments,
       details=TRUE, ma=TRUE, logscale=FALSE,
       digits=max(4, .Options$digits - 3), ...)
 
 \method{summary}{netmeta}(object,
-        level=object$level, level.comb=object$level.comb,
         comb.fixed=object$comb.fixed, comb.random=object$comb.random,
-        reference.group=object$reference.group, all.treatments=object$all.treatments,
+	prediction=object$prediction,
+        reference.group=object$reference.group,
+        baseline.reference=object$baseline.reference,
+        all.treatments=object$all.treatments,
         warn=object$warn, ...)
 
 \method{print}{summary.netmeta}(x, comb.fixed=x$comb.fixed, comb.random=x$comb.random,
-      reference.group=x$reference.group, all.treatments=x$all.treatments,
+      prediction=x$prediction,
+      reference.group=x$reference.group,
+      baseline.reference=x$baseline.reference,
+      all.treatments=x$all.treatments,
       logscale=FALSE, header=TRUE, digits=max(3, .Options$digits - 3), ...)
 }
 
@@ -33,15 +41,17 @@
   \item{object}{An object of class \code{netmeta}.}
   \item{sortvar}{An optional vector used to sort individual studies
     (must be of same length as \code{x$TE}).}
-  \item{level}{The level used to calculate confidence intervals for
-    individual studies.}
-  \item{level.comb}{The level used to calculate confidence intervals for
-    pooled estimates.}
   \item{comb.fixed}{A logical indicating whether a fixed effect
     meta-analysis should be conducted.}
   \item{comb.random}{A logical indicating whether a random effects
     meta-analysis should be conducted.}
+  \item{prediction}{A logical indicating whether prediction intervals
+    should be printed.}
   \item{reference.group}{Reference group.}
+  \item{baseline.reference}{A logical indicating whether results
+    should be expressed as comparisons of other treatments versus the
+    reference treatment (default) or vice versa. This argument is only
+    considered if \code{reference.group} has been specified.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
     \code{TRUE}, matrices with all treatment effects, and confidence
     limits will be printed.}
@@ -85,20 +95,27 @@
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
-  \item{df}{Degrees of freedom for test of heterogeneity /
+  \item{df.Q}{Degrees of freedom for test of heterogeneity /
     inconsistency.}
-  \item{tau}{Square-root of between-study variance.}
+  \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
   \item{I2}{I-squared.}
+  \item{tau}{Square-root of between-study variance.}
+  \item{Q.heterogeneity}{Overall heterogeneity statistic.}
+  \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
+    heterogeneity.}
+  \item{pval.Q.heterogeneity}{P-value for test of overall heterogeneity.}
+  \item{Q.inconsistency}{Overall inconsistency statistic.}
+  \item{df.Q.inconsistency}{Degrees of freedom for test of overall
+    inconsistency.}
+  \item{pval.Q.inconsistency}{P-value for test of overall inconsistency.}
   \item{sm}{A character string indicating underlying summary measure.}
   \item{ci.lab}{Label for confidence interval.}
   \item{comb.fixed}{A logical indicating whether result for fixed
     effect meta-analysis should be printed.}
   \item{comb.random}{A logical indicating whether result for random
     effects meta-analysis should be printed.}
-  \item{level}{The level used to calculate confidence intervals for
-    individual comparisons.}
-  \item{level.comb}{The level used to calculate confidence intervals for
-    pooled estimates.}
+  \item{prediction}{A logical indicating whether prediction intervals
+    should be printed.}
   \item{seq}{A character specifying the sequence of treatments.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
     \code{TRUE}, matrices with all treatment effects, and confidence

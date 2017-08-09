@@ -155,10 +155,8 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
   ##
   direct2 <- data.frame(direct2)
   
-  if (length(unique(studies$design)) == 1) {
-    warning("Only a single design in network meta-analysis.", call. = FALSE)
+  if (length(unique(studies$design)) == 1)
     return(invisible(NULL))
-  }
   
   V.design <- diag(direct2$seTE.2arm^2,
                    nrow = length(direct2$seTE.2arm),

@@ -1,7 +1,9 @@
 print.summary.netmeta <- function(x,
                                   comb.fixed = x$comb.fixed,
                                   comb.random = x$comb.random,
+                                  prediction = x$prediction,
                                   reference.group = x$reference.group,
+                                  baseline.reference = x$baseline.reference,
                                   all.treatments = x$all.treatments,
                                   logscale = FALSE,
                                   header = TRUE,
@@ -10,6 +12,21 @@ print.summary.netmeta <- function(x,
   
   
   meta:::chkclass(x, "summary.netmeta")
+  
+  
+  if (is.null(x$df.Q))
+    oldversion <- TRUE
+  else
+    oldversion <- FALSE
+  ##
+  if (is.null(x$predict$lower))
+    prediction <- FALSE
+  
+  
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  meta:::chklogical(prediction)
+  meta:::chklogical(baseline.reference)
   
   
   k <- x$k
@@ -22,7 +39,7 @@ print.summary.netmeta <- function(x,
   if (logscale & meta:::is.relative.effect(sm))
     sm.lab <- paste("log", sm, sep = "")
 
-  ci.lab <- paste(round(100 * x$level.comb, 1), "%-CI", sep = "")
+  ci.lab <- paste(round(100 * x$fixed$level, 1), "%-CI", sep = "")
 
   
   TE.fixed    <- x$fixed$TE
@@ -35,6 +52,9 @@ print.summary.netmeta <- function(x,
   lowTE.random <- x$random$lower
   uppTE.random <- x$random$upper
   ##
+  lowTE.predict <- x$predict$lower
+  uppTE.predict <- x$predict$upper
+  ##
   if (!is.null(x$seq)) {
     TE.fixed <- TE.fixed[x$seq, x$seq]
     seTE.fixed <- seTE.fixed[x$seq, x$seq]
@@ -45,6 +65,9 @@ print.summary.netmeta <- function(x,
     seTE.random <- seTE.random[x$seq, x$seq]
     lowTE.random <- lowTE.random[x$seq, x$seq]
     uppTE.random <- uppTE.random[x$seq, x$seq]
+    ##
+    lowTE.predict <- lowTE.predict[x$seq, x$seq]
+    uppTE.predict <- uppTE.predict[x$seq, x$seq]
   }
   
   
@@ -60,6 +83,11 @@ print.summary.netmeta <- function(x,
     TE.random    <- exp(TE.random)
     lowTE.random <- exp(lowTE.random)
     uppTE.random <- exp(uppTE.random)
+    ##
+    if (prediction) {
+      lowTE.predict <- exp(lowTE.predict)
+      uppTE.predict <- exp(uppTE.predict)
+    }
   }
   ##
   TE.fixed    <- round(TE.fixed, digits)
@@ -73,6 +101,11 @@ print.summary.netmeta <- function(x,
   uppTE.random <- round(uppTE.random, digits)
   pTE.random   <- x$random$p
   zTE.random   <- round(x$random$z, digits)
+  ##
+  if (prediction) {
+    lowTE.predict <- round(lowTE.predict, digits)
+    uppTE.predict <- round(uppTE.predict, digits)
+  }
   ##
   I2 <- x$I2
   
@@ -92,27 +125,67 @@ print.summary.netmeta <- function(x,
     cat(paste("Number of studies: k = ", k, "\n", sep = ""))
     cat(paste("Number of treatments: n = ", n, "\n", sep = ""))
     cat(paste("Number of pairwise comparisons: m = ", m, "\n", sep = ""))
-    cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
+    if (!oldversion)
+      cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
+    
+    
+    if (reference.group != "")
+      if (baseline.reference)
+        comptext <- paste("comparison: ",
+                          if (x$n == 2)
+                            paste("'",
+                                  rownames(TE.fixed)[rownames(TE.fixed) != reference.group],
+                                  "'", sep = "")
+                          else
+                            "other treatments",
+                          " vs '", reference.group, "'", sep = "")
+      else
+        comptext <- paste("comparison: '",
+                          reference.group, "' vs ",
+                          if (x$n == 2)
+                            paste("'",
+                                  rownames(TE.fixed)[rownames(TE.fixed) != reference.group],
+                                  "'", sep = "")
+                          else
+                            "other treatments", sep = "")
+    
     
     if (comb.fixed) {
       if (all.treatments | reference.group != "")
         cat("\nFixed effect model\n")
       if (all.treatments) {
         cat("\nTreatment estimate (sm = '", sm.lab, "'):\n", sep = "")
-        TEf <- format(TE.fixed)
+        TEf <- meta:::format.NA(TE.fixed, digits = digits)
         if (all(diag(TE.fixed) == noeffect))
           diag(TEf) <- "."
         prmatrix(TEf, quote = FALSE, right = TRUE)
         cat("\nLower ", 100 * x$fixed$level, "%-confidence limit:\n", sep = "")
-        lowTEf <- format(lowTE.fixed)
+        lowTEf <- meta:::format.NA(lowTE.fixed, digits = digits)
         if (all(diag(lowTE.fixed) == noeffect))
           diag(lowTEf) <- "."
         prmatrix(lowTEf, quote = FALSE, right = TRUE)
         cat("\nUpper ", 100 * x$fixed$level, "%-confidence limit:\n", sep = "")
-        uppTEf <- format(uppTE.fixed)
+        uppTEf <- meta:::format.NA(uppTE.fixed, digits = digits)
         if (all(diag(uppTE.fixed) == noeffect))
           diag(uppTEf) <- "."
         prmatrix(uppTEf, quote = FALSE, right = TRUE)
+        ##
+        ## Print prediction intervals
+        ##
+        if (!comb.random & prediction & x$df.Q >= 2) {
+          cat("\nPrediction intervals\n")
+          ##
+          cat("\nLower ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          lowTEp <- meta:::format.NA(lowTE.predict, digits = digits)
+          if (all(diag(lowTE.predict) == noeffect))
+            diag(lowTEp) <- "."
+          prmatrix(lowTEp, quote = FALSE, right = TRUE)
+          cat("\nUpper ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          uppTEp <- meta:::format.NA(uppTE.predict, digits = digits)
+          if (all(diag(uppTE.predict) == noeffect))
+            diag(uppTEp) <- "."
+          prmatrix(uppTEp, quote = FALSE, right = TRUE)
+        }
       }
       if (reference.group != "") {
         if (all(colnames(TE.fixed) != reference.group))
@@ -120,20 +193,50 @@ print.summary.netmeta <- function(x,
                      paste(paste("'", colnames(TE.fixed), "'", sep = ""),
                            collapse = " - "), sep = ""))
         ##
-        TE.fixed.b <- TE.fixed[, colnames(TE.fixed) == reference.group]
-        lowTE.fixed.b <- lowTE.fixed[, colnames(lowTE.fixed) == reference.group]
-        uppTE.fixed.b <- uppTE.fixed[, colnames(uppTE.fixed) == reference.group]
+        if (baseline.reference) {
+          TE.fixed.b <- TE.fixed[, colnames(TE.fixed) == reference.group]
+          lowTE.fixed.b <- lowTE.fixed[, colnames(lowTE.fixed) == reference.group]
+          uppTE.fixed.b <- uppTE.fixed[, colnames(uppTE.fixed) == reference.group]
+        }
+        else {
+          TE.fixed.b <- TE.fixed[rownames(TE.fixed) == reference.group, ]
+          lowTE.fixed.b <- lowTE.fixed[rownames(lowTE.fixed) == reference.group, ]
+          uppTE.fixed.b <- uppTE.fixed[rownames(uppTE.fixed) == reference.group, ]
+        }
         ##
-        res <- cbind(format.TE(TE.fixed.b, na = TRUE),
-                     p.ci(format(lowTE.fixed.b), format(uppTE.fixed.b)))
-        dimnames(res) <-
-          list(colnames(TE.fixed), c(sm.lab, ci.lab))
+        ## Add prediction interval (or not)
+        ##
+        if (!comb.random & prediction & x$df.Q >= 2) {
+          if (baseline.reference) {
+            lowTE.predict.b <- lowTE.predict[, colnames(lowTE.predict) == reference.group]
+            uppTE.predict.b <- uppTE.predict[, colnames(uppTE.predict) == reference.group]
+          }
+          else {
+            lowTE.predict.b <- lowTE.predict[rownames(lowTE.predict) == reference.group, ]
+            uppTE.predict.b <- uppTE.predict[rownames(uppTE.predict) == reference.group, ]
+          }
+          ##
+          pi.lab <- paste(round(100 * x$predict$level, 1), "%-PI", sep = "")
+          ##
+          res <- cbind(format.TE(TE.fixed.b, na = TRUE),
+                       p.ci(meta:::format.NA(lowTE.fixed.b, digits = digits),
+                            meta:::format.NA(uppTE.fixed.b, digits = digits)),
+                       p.ci(meta:::format.NA(lowTE.predict.b, digits = digits),
+                            meta:::format.NA(uppTE.predict.b, digits = digits)))
+          dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab, pi.lab))
+        }
+        else {
+          res <- cbind(format.TE(TE.fixed.b, na = TRUE),
+                       p.ci(meta:::format.NA(lowTE.fixed.b, digits = digits),
+                            meta:::format.NA(uppTE.fixed.b, digits = digits)))
+          dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab))
+        }
         ##
         if (TE.fixed.b[rownames(res) == reference.group] == noeffect)
-          res[rownames(res) == reference.group, ] <- c(".", ".")
+          res[rownames(res) == reference.group, ] <- "."
         
         cat("\nTreatment estimate (sm = '", sm.lab,
-            "', reference.group = '", reference.group, "'):\n", sep = "")
+            "', ", comptext, "):\n", sep = "")
         
         prmatrix(res, quote = FALSE, right = TRUE)
       }
@@ -145,20 +248,37 @@ print.summary.netmeta <- function(x,
         cat("\nRandom effects model\n")
       if (all.treatments) {
         cat("\nTreatment estimate (sm = '", sm.lab, "'):\n", sep = "")
-        TEr <- format(TE.random)
+        TEr <- meta:::format.NA(TE.random, digits = digits)
         if (all(diag(TE.random) == noeffect))
           diag(TEr) <- "."
         prmatrix(TEr, quote = FALSE, right = TRUE)
         cat("\nLower ", 100 * x$random$level, "%-confidence limit:\n", sep = "")
-        lowTEr <- format(lowTE.random)
+        lowTEr <- meta:::format.NA(lowTE.random, digits = digits)
         if (all(diag(lowTE.random) == noeffect))
           diag(lowTEr) <- "."
         prmatrix(lowTEr, quote = FALSE, right = TRUE)
         cat("\nUpper ", 100 * x$random$level, "%-confidence limit:\n", sep = "")
-        uppTEr <- format(uppTE.random)
+        uppTEr <- meta:::format.NA(uppTE.random, digits = digits)
         if (all(diag(uppTE.random) == noeffect))
           diag(uppTEr) <- "."
         prmatrix(uppTEr, quote = FALSE, right = TRUE)
+        ##
+        ## Print prediction intervals
+        ##
+        if (prediction & x$df.Q >= 2) {
+          cat("\nPrediction intervals\n")
+          ##
+          cat("\nLower ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          lowTEp <- meta:::format.NA(lowTE.predict, digits = digits)
+          if (all(diag(lowTE.predict) == noeffect))
+            diag(lowTEp) <- "."
+          prmatrix(lowTEp, quote = FALSE, right = TRUE)
+          cat("\nUpper ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          uppTEp <- meta:::format.NA(uppTE.predict, digits = digits)
+          if (all(diag(uppTE.predict) == noeffect))
+            diag(uppTEp) <- "."
+          prmatrix(uppTEp, quote = FALSE, right = TRUE)
+        }
       }
       if (reference.group != "") {
         if (all(colnames(TE.random) != reference.group))
@@ -166,20 +286,50 @@ print.summary.netmeta <- function(x,
                      paste(paste("'", colnames(TE.random), "'", sep = ""),
                            collapse = " - "), sep = ""))
         ##
-        TE.random.b <- TE.random[, colnames(TE.random) == reference.group]
-        lowTE.random.b <- lowTE.random[, colnames(lowTE.random) == reference.group]
-        uppTE.random.b <- uppTE.random[, colnames(uppTE.random) == reference.group]
+        if (baseline.reference) {
+          TE.random.b <- TE.random[, colnames(TE.random) == reference.group]
+          lowTE.random.b <- lowTE.random[, colnames(lowTE.random) == reference.group]
+          uppTE.random.b <- uppTE.random[, colnames(uppTE.random) == reference.group]
+        }
+        else {
+          TE.random.b <- TE.random[colnames(TE.random) == reference.group]
+          lowTE.random.b <- lowTE.random[rownames(lowTE.random) == reference.group, ]
+          uppTE.random.b <- uppTE.random[rownames(uppTE.random) == reference.group, ]
+        }
         ##
-        res <- cbind(format.TE(TE.random.b, na = TRUE),
-                     p.ci(format(lowTE.random.b), format(uppTE.random.b)))
-        dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab))
+        ## Add prediction interval (or not)
+        ##
+        if (prediction & x$df.Q >= 2) {
+          if (baseline.reference) {
+            lowTE.predict.b <- lowTE.predict[, colnames(lowTE.predict) == reference.group]
+            uppTE.predict.b <- uppTE.predict[, colnames(uppTE.predict) == reference.group]
+          }
+          else {
+            lowTE.predict.b <- lowTE.predict[rownames(lowTE.predict) == reference.group, ]
+            uppTE.predict.b <- uppTE.predict[rownames(uppTE.predict) == reference.group, ]
+          }
+          ##
+          pi.lab <- paste(round(100 * x$predict$level, 1), "%-PI", sep = "")
+          ##
+          res <- cbind(format.TE(TE.random.b, na = TRUE),
+                       p.ci(meta:::format.NA(lowTE.random.b, digits = digits),
+                            meta:::format.NA(uppTE.random.b, digits = digits)),
+                       p.ci(meta:::format.NA(lowTE.predict.b, digits = digits),
+                            meta:::format.NA(uppTE.predict.b, digits = digits)))
+          dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab, pi.lab))
+        }
+        else {
+          res <- cbind(format.TE(TE.random.b, na = TRUE),
+                       p.ci(meta:::format.NA(lowTE.random.b, digits = digits),
+                            meta:::format.NA(uppTE.random.b, digits = digits)))
+          dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab))
+        }
         ##
         if (TE.random.b[rownames(res) == reference.group] == noeffect)
-          res[rownames(res) == reference.group, ] <- c(".", ".")
-        
+          res[rownames(res) == reference.group, ] <- "."
         
         cat("\nTreatment estimate (sm = '", sm.lab,
-            "', reference.group = '", reference.group, "'):\n", sep = "")
+            "', ", comptext, "):\n", sep = "")
         
         prmatrix(res, quote = FALSE, right = TRUE)
       }
@@ -215,17 +365,44 @@ print.summary.netmeta <- function(x,
     
     if (m > 1) {
       
-      Qdata <- cbind(round(x$Q, 2), x$df,
-                     ifelse(x$df == 0, "--",
-                            meta:::format.p(pchisq(x$Q, df = x$df,
-                                                   lower.tail = FALSE))))
-      
-      dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
-      ##
-      cat("\nTest of heterogeneity / inconsistency:\n")
-      prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
-      ##
-      ##
+      if (oldversion) {
+        Qdata <- cbind(round(x$Q, 2), x$df,
+                       ifelse(x$df == 0, "--",
+                              meta:::format.p(x$pval.Q)))
+        
+        dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
+        ##
+        cat("\nTest of heterogeneity / inconsistency:\n")
+        prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
+      }
+      else {
+        if (x$d == 1 | is.na(x$Q.heterogeneity) | is.na(x$Q.inconsistency)) {
+          Qdata <- cbind(round(x$Q, 2), x$df.Q,
+                         ifelse(x$df.Q == 0, "--",
+                                meta:::format.p(x$pval.Q)))
+          
+          dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
+          ##
+          cat("\nTest of heterogeneity / inconsistency:\n")
+          prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
+        }
+        else {
+          Qs <- c(x$Q, x$Q.heterogeneity, x$Q.inconsistency)
+          df.Qs <- c(x$df.Q, x$df.Q.heterogeneity, x$df.Q.inconsistency)
+          pval.Qs <- c(x$pval.Q, x$pval.Q.heterogeneity, x$pval.Q.inconsistency)
+          pval.Qs <- ifelse(df.Qs == 0, "--",
+                            meta:::format.p(pval.Qs))
+          cat("\nTests of heterogeneity (within designs) and inconsistency (between designs):\n")
+          Qdata <- data.frame(Q = round(Qs, 2),
+                              df = df.Qs,
+                              pval = pval.Qs)
+          names(Qdata) <- c("Q", "d.f.", "p-value")
+          rownames(Qdata) <- c("Total",
+                               "Within designs",
+                               "Between designs")
+          print(Qdata)
+        }
+      }
     }
     
     

@@ -16,9 +16,10 @@
 \usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
         comb.fixed=TRUE, comb.random=!is.null(tau.preset),
-	reference.group="",
+	prediction=FALSE, level.predict=0.95,
+	reference.group="", baseline.reference=TRUE,
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
-        tol.multiarm = 0.0005, details.tol.multiarm = FALSE,
+        tol.multiarm = 0.0005, details.chkmultiarm = FALSE,
         sep.trts=":", title="", warn=TRUE)
 }
 
@@ -43,7 +44,15 @@
     meta-analysis should be conducted.}
   \item{comb.random}{A logical indicating whether a random effects
     meta-analysis should be conducted.}
+  \item{prediction}{A logical indicating whether prediction intervals
+    should be printed.}
+  \item{level.predict}{The level used to calculate prediction
+    intervals for a new study.}
   \item{reference.group}{Reference group.}
+  \item{baseline.reference}{A logical indicating whether results
+    should be expressed as comparisons of other treatments versus the
+    reference treatment (default) or vice versa. This argument is only
+    considered if \code{reference.group} has been specified.}    
   \item{all.treatments}{A logical or value \code{"NULL"}. If
         \code{TRUE}, matrices with all treatment effects, and confidence
         limits will be printed.}
@@ -54,9 +63,9 @@
   \item{tol.multiarm}{A numeric for the tolerance for consistency of
     treatment estimates and corresponding variances in multi-arm studies
     which are consistent by design.}
-  \item{details.tol.multiarm}{A logical indicating whether treatment
+  \item{details.chkmultiarm}{A logical indicating whether treatment
     estimates and / or variances of multi-arm studies with inconsistent
-    results should be printed.}
+    results or negative multi-arm variances should be printed.}
   \item{sep.trts}{A character used in comparison names as separator
     between treatment labels.}
   \item{title}{Title of meta-analysis / systematic review.}
@@ -159,7 +168,8 @@
   consecutive order): \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"},
   \code{"."}.  If all of these characters are used in treatment
   labels, a corresponding error message is printed asking the user to
-  specify a different separator.  }
+  specify a different separator.
+}
 
 \value{
   An object of class \code{netmeta} with corresponding \code{print},
@@ -246,12 +256,18 @@
   \item{n}{Total number of treatments.}
   \item{d}{Total number of designs.}
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
-  \item{df}{Degrees of freedom for test of heterogeneity / inconsistency.}
+  \item{df.Q}{Degrees of freedom for test of heterogeneity / inconsistency.}
   \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
   \item{I2}{I-squared.}
   \item{tau}{Square-root of between-study variance.}
   \item{Q.heterogeneity}{Overall heterogeneity statistic.}
+  \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
+    heterogeneity.}
+  \item{pval.Q.heterogeneity}{P-value for test of overall heterogeneity.}
   \item{Q.inconsistency}{Overall inconsistency statistic.}
+  \item{df.Q.inconsistency}{Degrees of freedom for test of overall
+    inconsistency.}
+  \item{pval.Q.inconsistency}{P-value for test of overall inconsistency.}
   \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
   \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
   \item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}

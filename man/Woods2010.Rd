@@ -46,9 +46,11 @@ p1
 net1 <- netmeta(p1)
 net1
 
+\dontrun{
 # Show forest plot
 forest(net1, ref = "Placebo", drop = TRUE,
        leftlabs = "Contrast to Placebo")
+}
 }
 
 \keyword{datasets}

@@ -1,9 +1,12 @@
-decomp.tau <- function(x, tau.preset = 0) {
+decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
   
   
   nmak <- nma.krahn(x, tau.preset = tau.preset)
-  if (is.null(nmak))
+  if (is.null(nmak)) {
+    if (warn)
+      warning("Only a single design in network meta-analysis.", call. = FALSE)
     return(invisible(NULL))
+  }
   ##
   design <- nmak$design
   studies <- nmak$studies
@@ -100,7 +103,7 @@ decomp.tau <- function(x, tau.preset = 0) {
   ##
   Q.decomp$pval[c(df.net, df.het, df.inc) == 0] <- NA
   ##
-  rownames(Q.decomp) <- c("Whole network",
+  rownames(Q.decomp) <- c("Total",
                           "Within designs",
                           "Between designs")
   
@@ -120,7 +123,7 @@ decomp.tau <- function(x, tau.preset = 0) {
     Q.inc.detach <- Q.inc.detach[!(duplicated(Q.inc.detach$design)), ]
   }
   ##
-  if (any(is.na(Q.inc.detach$Q)))
+  if (anyNA(Q.inc.detach$Q))
     Q.inc.detach <- Q.inc.detach[!(is.na(Q.inc.detach$Q)), ]
   
   res <- list(

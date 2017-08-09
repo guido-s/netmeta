@@ -1,6 +1,7 @@
 forest.netmeta <- function(x,
                            pooled = ifelse(x$comb.random, "random", "fixed"),
                            reference.group = x$reference.group,
+                           baseline.reference = x$baseline.reference,
                            leftcols = "studlab",
                            leftlabs = "Treatment",
                            rightcols = c("effect", "ci"),
@@ -22,11 +23,13 @@ forest.netmeta <- function(x,
   ##
   ##
   meta:::chkclass(x, "netmeta")
-  ##  
+  x <- upgradenetmeta(x)
+  ##
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
   ##
   meta:::chknumeric(digits, min = 0, single = TRUE)
   ##
+  meta:::chklogical(baseline.reference)
   meta:::chklogical(drop.reference.group)
   ##
   meta:::chkchar(lab.NA)
@@ -38,12 +41,28 @@ forest.netmeta <- function(x,
   ##     and calculate P-scores
   ##
   ##
+  labels <- colnames(x$TE.fixed)
+  ##
+  if (reference.group == "") {
+    warning("First treatment used as reference as argument 'reference.group' is unspecified.")
+    reference.group <- labels[1]
+  }
+  else
+    reference.group <- setref(reference.group, labels)
+  ##
   if (pooled == "fixed") {
     TE   <- x$TE.fixed
     seTE <- x$seTE.fixed
     prop.direct <- x$P.fixed
     if (is.null(smlab))
-      smlab <- "Fixed Effect Model"
+      if (baseline.reference)
+        smlab <- paste("Comparison: '",
+                       reference.group, "' vs other\n(Fixed Effect Model)",
+                       sep = "")
+      else
+        smlab <- paste("Comparison: other vs '",
+                       reference.group, "'\n(Fixed Effect Model)",
+                       sep = "")
     ##
     Pscore <- netrank(x, small.values = small.values)$Pscore.fixed
   }
@@ -53,7 +72,14 @@ forest.netmeta <- function(x,
     seTE <- x$seTE.random
     prop.direct <- x$P.random
     if (is.null(smlab))
-      smlab <- "Random Effects Model"
+      if (baseline.reference)
+        smlab <- paste("Comparison: '",
+                       reference.group, "' vs other\n(Random Effects Model)",
+                       sep = "")
+      else
+        smlab <- paste("Comparison: other vs '",
+                       reference.group, "'\n(Random Effects Model)",
+                       sep = "")
     ##
     Pscore <- netrank(x, small.values = small.values)$Pscore.random
   }
@@ -64,25 +90,26 @@ forest.netmeta <- function(x,
   ## (3) Extract comparisons with reference group
   ##
   ##
-  labels <- colnames(TE)
-  ##
-  if (reference.group == "") {
-    warning("First treatment used as reference as argument 'reference.group' is unspecified.")
-    reference.group <- labels[1]
-  }
+  if (baseline.reference)
+    dat <- data.frame(TE = TE[, colnames(TE) == reference.group],
+                      seTE = seTE[, colnames(seTE) == reference.group],
+                      trts = colnames(TE),
+                      k = x$A.matrix[, colnames(TE) == reference.group],
+                      prop.direct = prop.direct[, colnames(TE) == reference.group],
+                      row.names = colnames(TE),
+                      as.is = TRUE)
   else
-    reference.group <- setref(reference.group, labels)
-  ##
-  dat <- data.frame(TE = TE[, colnames(TE) == reference.group],
-                    seTE = seTE[, colnames(seTE) == reference.group],
-                    trts = colnames(TE),
-                    k = x$A.matrix[, colnames(TE) == reference.group],
-                    prop.direct = prop.direct[, colnames(TE) == reference.group],
-                    row.names = colnames(TE),
-                    as.is = TRUE)
+    dat <- data.frame(TE = TE[rownames(TE) == reference.group, ],
+                      seTE = seTE[rownames(seTE) == reference.group, ],
+                      trts = rownames(TE),
+                      k = x$A.matrix[rownames(TE) == reference.group, ],
+                      prop.direct = prop.direct[rownames(TE) == reference.group, ],
+                      row.names = colnames(TE),
+                      as.is = TRUE)
   ##
   rm(TE)
   rm(seTE)
+  ##
   idx1 <- charmatch(tolower(rightcols), "pscore", nomatch = NA)
   sel1 <- !is.na(idx1) & idx1 == 1
   if (any(sel1)) {

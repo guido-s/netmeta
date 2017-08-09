@@ -4,12 +4,18 @@ netmeta <- function(TE, seTE,
                     sm,
                     level = 0.95, level.comb = 0.95,
                     comb.fixed = TRUE, comb.random = !is.null(tau.preset),
+                    ##
+                    prediction = FALSE,
+                    level.predict = 0.95,
+                    ##
                     reference.group = "",
+                    baseline.reference = TRUE,
                     all.treatments = NULL,
                     seq = NULL,
+                    ##
                     tau.preset = NULL,
                     tol.multiarm = 0.0005,
-                    details.tol.multiarm = FALSE,
+                    details.chkmultiarm = FALSE,
                     sep.trts = ":",
                     title = "",
                     warn = TRUE
@@ -23,8 +29,12 @@ netmeta <- function(TE, seTE,
   ##
   meta:::chklevel(level)
   meta:::chklevel(level.comb)
+  meta:::chklevel(level.predict)
+  ##
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
+  meta:::chklogical(prediction)
+  
   meta:::chklogical(warn)
   ##
   ## Check value for reference group
@@ -34,6 +44,8 @@ netmeta <- function(TE, seTE,
       all.treatments <- TRUE
     else
       all.treatments <- FALSE
+  ##
+  meta:::chklogical(baseline.reference)
   
   
   ##
@@ -287,7 +299,7 @@ netmeta <- function(TE, seTE,
   ## multi-arm studies
   ##
   chkmultiarm(p0$treat1, p0$treat2, p0$TE, p0$seTE, p0$studlab,
-              tol = tol.multiarm, details = details.tol.multiarm)
+              tol = tol.multiarm, details = details.chkmultiarm)
   ##
   ## Study overview
   ##
@@ -326,6 +338,30 @@ netmeta <- function(TE, seTE,
                        p1$narms, p1$studlab, 
                        sm, level, level.comb, p1$seTE, tau,
                        sep.trts = sep.trts)
+  ##
+  TE.random <- res.r$TE.pooled
+  seTE.random <- res.r$seTE.pooled
+  df.Q <- res.f$df
+  ##
+  ## Prediction intervals
+  ##
+  if (df.Q == 0)
+    prediction <- FALSE
+  ##
+  if (df.Q >= 2) {
+    seTE.predict <- sqrt(seTE.random^2 + tau^2)
+    ci.p <- ci(TE.random, seTE.predict, level.predict, df.Q - 1)
+    p.lower <- ci.p$lower
+    p.upper <- ci.p$upper
+    diag(p.lower) <- 0
+    diag(p.upper) <- 0
+  }
+  else {
+    seTE.predict <- p.lower <- p.upper <- seTE.random
+    seTE.predict[!is.na(seTE.predict)] <- NA
+    p.lower[!is.na(p.lower)] <- NA
+    p.upper[!is.na(p.upper)] <- NA
+  }
   
   
   ##
@@ -370,12 +406,18 @@ netmeta <- function(TE, seTE,
               ##
               w.random = res.r$w.pooled[o],
               ##
-              TE.random = res.r$TE.pooled,
-              seTE.random = res.r$seTE.pooled,
+              TE.random = TE.random,
+              seTE.random = seTE.random,
               lower.random = res.r$lower.pooled,
               upper.random = res.r$upper.pooled,
               zval.random = res.r$zval.pooled,
               pval.random = res.r$pval.pooled,
+              ##
+              prediction = prediction,
+              seTE.predict = seTE.predict,
+              lower.predict = p.lower,
+              upper.predict = p.upper,
+              level.predict = level.predict,
               ##
               TE.direct.fixed = res.f$TE.direct,
               seTE.direct.fixed = res.f$seTE.direct,
@@ -416,13 +458,17 @@ netmeta <- function(TE, seTE,
               n = res.f$n,
               d = NA,
               Q = res.f$Q,
-              df = res.f$df,
+              df.Q = df.Q,
               pval.Q = res.f$pval.Q,
               I2 = res.f$I2,
-              tau = res.f$tau,
+              tau = tau,
               tau.preset = tau.preset,                                             
-              Q.heterogeneity = res.f$Q.heterogeneity,
-              Q.inconsistency = res.f$Q.inconsistency,
+              Q.heterogeneity = NA,
+              df.Q.heterogeneity = NA,
+              pval.Q.heterogeneity = NA,
+              Q.inconsistency = NA,
+              df.Q.inconsistency = NA,
+              pval.Q.inconsistency = NA,
               ##
               sm = sm,
               level = level,
@@ -448,6 +494,7 @@ netmeta <- function(TE, seTE,
               P.random = NA,
               ##
               reference.group = reference.group,
+              baseline.reference = baseline.reference,
               all.treatments = all.treatments,
               ##
               seq = seq,
@@ -471,7 +518,8 @@ netmeta <- function(TE, seTE,
   ## Print warning(s) in call of netmeasures() once
   oldopts <- options(warn = -1)
   res$prop.direct.random <- netmeasures(res, random = TRUE,
-                                        tau.preset = res$tau)$proportion
+                                        tau.preset = res$tau,
+                                        warn = FALSE)$proportion
   options(oldopts)
   if (is.logical(res$prop.direct.fixed))
     res$prop.direct.fixed <- as.numeric(res$prop.direct.fixed)
@@ -524,9 +572,9 @@ netmeta <- function(TE, seTE,
   ##
   ## Fixed effect model
   ##
-  ci.if <- meta::ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
-                    sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
-                    level = level)
+  ci.if <- ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
+              sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
+              level = level)
   ##
   res$TE.indirect.fixed   <- ci.if$TE
   res$seTE.indirect.fixed <- ci.if$seTE
@@ -539,9 +587,9 @@ netmeta <- function(TE, seTE,
   ##
   ## Random effects model
   ##
-  ci.ir <- meta::ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
-                    sqrt(res$seTE.random^2 / (1 - P.random)),
-                    level = level)
+  ci.ir <- ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
+              sqrt(res$seTE.random^2 / (1 - P.random)),
+              level = level)
   ##
   res$TE.indirect.random   <- ci.ir$TE
   res$seTE.indirect.random <- ci.ir$seTE
@@ -555,6 +603,24 @@ netmeta <- function(TE, seTE,
   ## Number of designs
   ##
   res$d <- nma.krahn(res)$d
+  if (is.null(res$d))
+    res$d <- 1
+  
+  
+  ##
+  ## Calculate heterogeneity and inconsistency statistics
+  ##
+  if (res$d > 1) {
+    dd <- decomp.design(res, warn = FALSE)
+    res$Q.heterogeneity <- dd$Q.decomp$Q[2]
+    res$Q.inconsistency <- dd$Q.decomp$Q[3]
+    ##
+    res$df.Q.heterogeneity <- dd$Q.decomp$df[2]
+    res$df.Q.inconsistency <- dd$Q.decomp$df[3]
+    ##
+    res$pval.Q.heterogeneity <- dd$Q.decomp$pval[2]
+    res$pval.Q.inconsistency <- dd$Q.decomp$pval[3]
+  }
   
   
   res

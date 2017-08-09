@@ -16,7 +16,7 @@
 \usage{
 netmeasures(x,
             random = x$comb.random | !missing(tau.preset),
-            tau.preset = x$tau.preset)
+            tau.preset = x$tau.preset, warn = TRUE)
 }
 
 \arguments{
@@ -25,6 +25,8 @@ netmeasures(x,
     should be used to calculate network measures.}
   \item{tau.preset}{An optional value for the square-root of the
     between-study variance \eqn{\tau^2}.}
+   \item{warn}{A logical indicating whether warnings should be
+     printed.}
 }
 
 \details{
