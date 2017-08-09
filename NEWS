@@ -10,9 +10,9 @@
     see help page of decomp.design()
 
   * In printouts and forest plots, the reference treatment can be
-    considered as treatment of interest or comparator (default), i.e.,
-    either comparisons of reference vs other treatments or other
-    treatments vs reference are reported
+    considered as treatment of interest or comparator (default),
+    i.e., either comparisons of reference vs other treatments or
+    other treatments vs reference are reported
 
   * Tests for heterogeneity and design inconsistency are shown in
     printouts
@@ -32,9 +32,10 @@
       'pval.Q.heterogeneity','df.Q.inconsistency', and
       'pval.Q.inconsistency'
     - list element 'df' renamed to 'df.Q'
-    - stop with an informative error message if any treatment arm
+    - stop with an informative error message if (i) any treatment arm
       variance derived from the treatment comparison variances is
-      negative
+      negative or zero, or (ii) in case of duplicate comparisons or an
+      incomplete set of treatment comparisons within a study
     - argument 'details.tol.multiarm' renamed to 'details.chkmultiarm'
 
   * netmeta(), forest.netmeta(), print.netmeta(),
@@ -70,8 +71,9 @@
   * R function ci() from R package meta added to namespace
 
   * chkmultiarm():
-    - additional check for negative and zero variances as well as
-      duplicate treatment comparisons
+    - additional checks for (i) negative and zero variances as well as
+      (ii) duplicate treatment comparisons or incomplete sets of
+      treatment comparisons within a study
 
 
 *** netmeta, version 0.9-5, 2017-05-31 ***

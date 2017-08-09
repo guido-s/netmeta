@@ -12,9 +12,9 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
     ##
     ## Check duplicate and incomplete comparisons
     ##
-    dat.incomplete <- data.frame(studlab = "", treat1 = "", treat2 = "",
-                                 stringsAsFactors = FALSE)
-    dat.duplicate <- dat.incomplete
+    dat.duplicate <- dat.incomplete <-
+      data.frame(studlab = "", treat1 = "", treat2 = "",
+                 stringsAsFactors = FALSE)
     ##
     incomplete <- rep_len(NA, sum(sel.multi))
     duplicate <- rep_len(NA, sum(sel.multi))
