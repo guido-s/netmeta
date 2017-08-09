@@ -69,7 +69,9 @@
 
   * R function ci() from R package meta added to namespace
 
-  * Additional check for negative variances in chkmultiarm()
+  * chkmultiarm():
+    - additional check for negative and zero variances as well as
+      duplicate treatment comparisons
 
 
 *** netmeta, version 0.9-5, 2017-05-31 ***

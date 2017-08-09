@@ -1,5 +1,4 @@
 chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
-                        treats,
                         tol = .Machine$double.eps^0.5,
                         details = FALSE) {
   tabnarms <- table(studlab)
@@ -7,6 +6,9 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
   ##
   if (any(sel.multi)) {
     studlab.multi <- names(tabnarms)[sel.multi]
+    ##
+    dat.duplicate <- data.frame(studlab = "", treat1 = "", treat2 = "",
+                                stringsAsFactors = FALSE)
     ##
     dat.TE <- data.frame(studlab = "", treat1 = "", treat2 = "",
                          TE = NA, resid = NA,
@@ -16,11 +18,14 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
                             varTE = NA, resid = NA,
                             stringsAsFactors = FALSE)
     ##
-    dat.negative <- data.frame(studlab = "", treat = "",
-                               var.treat = NA, stringsAsFactors = FALSE)
+    dat.zero <- data.frame(studlab = "", treat = "", var.treat = NA,
+                           stringsAsFactors = FALSE)
+    ##
+    dat.negative <- data.frame(studlab = "", treat = "", var.treat = NA,
+                               stringsAsFactors = FALSE)
     ##
     inconsistent.TE <- inconsistent.varTE <-
-      negative.sigma2 <- rep_len(NA, sum(sel.multi))
+      zero.sigma2 <- negative.sigma2 <- rep_len(NA, sum(sel.multi))
     ##
     s.idx <- 0
     ##
@@ -37,6 +42,12 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       ##
       m <- length(TE.s)
       n <- (1 + sqrt(8 * m + 1)) / 2
+      ##
+      treats.s <- unique(c(treat1.s, treat2.s))
+      studlab.s.arms <- rep_len(s, length(treats.s))
+      ##
+      if (n != length(treats.s))
+        stop("Duplicate comparison in multi-arm study '", s, "'.", call. = FALSE)
       ##
       ## Create full edge-vertex incidence matrix
       ##
@@ -65,7 +76,10 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       varTE.diff <- varTE.s - A %*% sigma2
       ##
       inconsistent.varTE[s.idx] <- any(abs(varTE.diff) > tol)
-      negative.sigma2[s.idx] <- any(sigma2 < 0)
+      ##
+      is.zero <- abs(sigma2) < .Machine$double.eps^0.75
+      zero.sigma2[s.idx] <- any(is.zero)
+      negative.sigma2[s.idx] <- any(sigma2[!is.zero] < 0)
       ##
       if (inconsistent.varTE[s.idx])
         dat.varTE <- rbind(dat.varTE,
@@ -76,39 +90,52 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
                                       resid = round(varTE.diff, 8),
                                       stringsAsFactors = FALSE))
       ##
+      if (zero.sigma2[s.idx])
+        dat.zero <- rbind(dat.zero,
+                          data.frame(studlab = studlab.s.arms,
+                                     treat = treats.s,
+                                     var.treat = round(sigma2, 6),
+                                     stringsAsFactors = FALSE))
+      ##
       if (negative.sigma2[s.idx])
         dat.negative <- rbind(dat.negative,
-                              data.frame(studlab = studlab.s,
-                                         treat = treats,
-                                         var.treat = round(sigma2, 4),
+                              data.frame(studlab = studlab.s.arms,
+                                         treat = treats.s,
+                                         var.treat = sigma2,
                                          stringsAsFactors = FALSE))
     }
     ##
     iTE <- sum(inconsistent.TE)
     ivarTE <- sum(inconsistent.varTE)
     inconsistent <- iTE > 0 | ivarTE > 0
-    isigma2 <- sum(negative.sigma2)
-    negative <- isigma2 > 0
+    ##
+    inegative.sigma2 <- sum(negative.sigma2)
+    izero.sigma2 <- sum(zero.sigma2)
+    zero <- izero.sigma2 > 0
+    negative <- inegative.sigma2 > 0
     ##
     studlab.inconsistent.TE <- character()
     studlab.inconsistent.varTE <- character()
+    studlab.zero.sigma2 <- character()
     studlab.negative.sigma2 <- character()
     if (iTE > 0)
       studlab.inconsistent.TE <- studlab.multi[inconsistent.TE]
     if (ivarTE > 0)
       studlab.inconsistent.varTE <- studlab.multi[inconsistent.varTE]
+    if (zero)
+      studlab.zero.sigma2 <- studlab.multi[zero.sigma2]
     if (negative)
       studlab.negative.sigma2 <- studlab.multi[negative.sigma2]
     ##
     studlab.inconsistent <- unique(c(studlab.inconsistent.TE, studlab.inconsistent.varTE,
-                                     studlab.negative.sigma2))
+                                     studlab.zero.sigma2, studlab.negative.sigma2))
     
     
     ##
     ## Print information on deviations from consistency assumption in
     ## multi-arm studies
     ##
-    if (details & (inconsistent | negative)) {
+    if (details & (inconsistent | zero | negative)) {
       if (length(dat.TE$studlab) > 1) {
         dat.TE <- dat.TE[-1, ]
         cat("\nMulti-arm studies with inconsistent treatment effects:\n\n")
@@ -123,9 +150,22 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
                  rowlab = rep("", dim(dat.varTE)[1]))
         cat("\n")
       }
+      ##
+      ## Zero variance
+      ##
+      if (length(dat.zero$studlab) > 1 & zero) {
+        dat.zero <- dat.zero[-1, ]
+        cat("\nMulti-arm studies with zero treatment arm variance:\n\n")
+        prmatrix(dat.zero, quote = FALSE, right = TRUE,
+                 rowlab = rep("", dim(dat.zero)[1]))
+        cat("\n")
+      }
+      ##
+      ## Negative variance
+      ##
       if (length(dat.negative$studlab) > 1 & negative) {
         dat.negative <- dat.negative[-1, ]
-        cat("\nNegative treatment arm variance:\n\n")
+        cat("\nMulti-arm studies with negative treatment arm variance:\n\n")
         prmatrix(dat.negative, quote = FALSE, right = TRUE,
                  rowlab = rep("", dim(dat.negative)[1]))
         cat("\n")
@@ -138,7 +178,7 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
         cat(" TE    - treatment estimate\n")
       if (ivarTE > 0)
         cat(" varTE - variance of treatment estimate\n")
-      if (negative)
+      if (negative | zero)
         cat(" var.treat - treatment arm variance\n")
       cat("\n")
     }
@@ -147,7 +187,7 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
     ##
     ## Generate error message
     ##
-    if (inconsistent | negative) {
+    if (inconsistent | zero | negative) {
       ##
       if (iTE > 0)
         msgTE <- paste("  ",
@@ -171,9 +211,20 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       else
         msgvarTE <- ""
       ##
+      if (zero)
+        msg0sigma2 <- paste("  ",
+                           if (izero.sigma2 == 1) "- Study " else "- Studies ",
+                           "with zero treatment arm variance: ",
+                           paste(paste("'", studlab.zero.sigma2, "'", sep = ""),
+                                 collapse = ", "),
+                           "\n",
+                           sep = "")
+      else
+        msg0sigma2 <- ""
+      ##
       if (negative)
         msgsigma2 <- paste("  ",
-                           if (isigma2 == 1) "- Study " else "- Studies ",
+                           if (inegative.sigma2 == 1) "- Study " else "- Studies ",
                            "with negative treatment arm variance: ",
                            paste(paste("'", studlab.negative.sigma2, "'", sep = ""),
                                  collapse = ", "),
@@ -190,9 +241,14 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
                       if (inconsistent & length(studlab.inconsistent) > 1) "studies!",
                       if (inconsistent & length(studlab.inconsistent) == 1) "study!",
                       msgTE, msgvarTE,
-                      if (isigma2 == 1)
+                      if (izero.sigma2 == 1)
+                        "Zero treatment arm variance in study!\n",
+                      if (izero.sigma2 > 1)
+                        "Zero treatment arm variance in studies!\n",
+                      msg0sigma2,
+                      if (inegative.sigma2 == 1)
                         "Negative treatment arm variance in study!\n",
-                      if (isigma2 > 1)
+                      if (inegative.sigma2 > 1)
                         "Negative treatment arm variance in studies!\n",
                       msgsigma2,
                       "  - Please check original data used as input to netmeta().\n",

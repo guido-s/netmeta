@@ -299,7 +299,6 @@ netmeta <- function(TE, seTE,
   ## multi-arm studies
   ##
   chkmultiarm(p0$treat1, p0$treat2, p0$TE, p0$seTE, p0$studlab,
-              treats = labels,
               tol = tol.multiarm, details = details.chkmultiarm)
   ##
   ## Study overview
