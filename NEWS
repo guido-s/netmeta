@@ -1,3 +1,21 @@
+*** netmeta, version 6.6-6, 6666-06-06 ***
+
+ ** Major changes **
+
+  * League tables can be exported as CSV or Excel file
+
+ ** User-visible changes **
+
+  * netleague():
+    - function does not print league table, but only generates it
+      (necessary for export of league table)
+    - new arguments 'bracket' and 'separator' to define layout of
+      confidence intervals (see R function cilayout() from R package
+      meta)
+
+  * new function print.netleague() to print league table
+
+
 *** netmeta, version 0.9-6, 2017-08-09 ***
 
  ** Major changes **
@@ -19,6 +37,11 @@
 
   * A biplot can be generated to show partial ordering of treatment
     rankings for more than two outcomes
+
+  * Additional checks implemented for multi-arm studies:
+    - negative or zero treatment arm variances
+    - duplicate treatment comparisons or incomplete sets of
+      treatment comparisons within a study
 
  ** User-visible changes **
 

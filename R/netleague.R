@@ -1,7 +1,9 @@
 netleague <- function(x, y,
                       comb.fixed = x$comb.fixed, comb.random = x$comb.random,
                       seq = x$seq, ci = TRUE, backtransf = TRUE,
-                      digits = gs("digits")) {
+                      digits = gs("digits"),
+                      bracket = gs("CIbracket"),
+                      separator = gs("CIseparator")) {
   
   
   ##
@@ -43,6 +45,11 @@ netleague <- function(x, y,
   meta:::chklogical(ci)
   meta:::chklogical(backtransf)
   meta:::chknumeric(digits, min = 0, single = TRUE)
+  ##
+  bracket.old <- gs("CIbracket")
+  separator.old <- gs("CIseparator")
+  cilayout(bracket, separator)
+  on.exit(cilayout(bracket.old, separator.old))
   
   
   ##
@@ -96,41 +103,34 @@ netleague <- function(x, y,
   ## (3) Print league table for fixed effect model
   ##
   ##
-  if (comb.fixed) {
-    cat("League table (fixed effect model):\n")
-    TE.fixed.x    <- format(round(TE.fixed.x[seq.f, seq.f], digits))
-    lower.fixed.x <- round(lower.fixed.x[seq.f, seq.f], digits)
-    upper.fixed.x <- round(upper.fixed.x[seq.f, seq.f], digits)
+  TE.fixed.x    <- format(round(TE.fixed.x[seq.f, seq.f], digits))
+  lower.fixed.x <- round(lower.fixed.x[seq.f, seq.f], digits)
+  upper.fixed.x <- round(upper.fixed.x[seq.f, seq.f], digits)
+  ##
+  if (ci)
+    nl.f <- paste(TE.fixed.x, meta:::p.ci(lower.fixed.x, upper.fixed.x))
+  else
+    nl.f <- TE.fixed.x
+  ##
+  nl.f <- matrix(nl.f, nrow = nrow(TE.fixed.x), ncol = ncol(TE.fixed.x))
+  diag(nl.f) <- rownames(TE.fixed.x)
+  ##
+  if (!missing(y)) {
+    TE.fixed.y    <- format(round(TE.fixed.y[seq.f, seq.f], digits))
+    lower.fixed.y <- round(lower.fixed.y[seq.f, seq.f], digits)
+    upper.fixed.y <- round(upper.fixed.y[seq.f, seq.f], digits)
     ##
     if (ci)
-      nl.f <- paste(TE.fixed.x, meta:::p.ci(lower.fixed.x, upper.fixed.x))
+      nl.f.y <- paste(TE.fixed.y, meta:::p.ci(lower.fixed.y, upper.fixed.y))
     else
-      nl.f <- TE.fixed.x
+      nl.f.y <- TE.fixed.y
     ##
-    nl.f <- matrix(nl.f, nrow = nrow(TE.fixed.x), ncol = ncol(TE.fixed.x))
-    diag(nl.f) <- rownames(TE.fixed.x)
+    nl.f.y <- matrix(nl.f.y, nrow = nrow(TE.fixed.y), ncol = ncol(TE.fixed.y))
     ##
-    if (!missing(y)) {
-      TE.fixed.y    <- format(round(TE.fixed.y[seq.f, seq.f], digits))
-      lower.fixed.y <- round(lower.fixed.y[seq.f, seq.f], digits)
-      upper.fixed.y <- round(upper.fixed.y[seq.f, seq.f], digits)
-      ##
-      if (ci)
-        nl.f.y <- paste(TE.fixed.y, meta:::p.ci(lower.fixed.y, upper.fixed.y))
-      else
-        nl.f.y <- TE.fixed.y
-      ##
-      nl.f.y <- matrix(nl.f.y, nrow = nrow(TE.fixed.y), ncol = ncol(TE.fixed.y))
-      ##
-      nl.f[upper.tri(nl.f)] <- nl.f.y[upper.tri(nl.f)]
-    }
-    ##
-    prmatrix(nl.f, quote = FALSE, right = TRUE,
-             rowlab = rep("", nrow(TE.fixed.x)),
-             collab = rep("", ncol(TE.fixed.x)))
-    if (comb.random)
-      cat("\n")
+    nl.f[upper.tri(nl.f)] <- nl.f.y[upper.tri(nl.f)]
   }
+  ##
+  nl.f <- as.data.frame(nl.f)
   
   
   ##
@@ -138,40 +138,45 @@ netleague <- function(x, y,
   ## (4) Print league table for random effects model
   ##
   ##
-  if (comb.random) {
-    cat("League table (random effects model):\n")
-    TE.random.x    <- format(round(TE.random.x[seq.r, seq.r], digits))
-    lower.random.x <- round(lower.random.x[seq.r, seq.r], digits)
-    upper.random.x <- round(upper.random.x[seq.r, seq.r], digits)
+  TE.random.x    <- format(round(TE.random.x[seq.r, seq.r], digits))
+  lower.random.x <- round(lower.random.x[seq.r, seq.r], digits)
+  upper.random.x <- round(upper.random.x[seq.r, seq.r], digits)
+  ##
+  if (ci)
+    nl.r <- paste(TE.random.x, meta:::p.ci(lower.random.x, upper.random.x))
+  else
+    nl.r <- TE.random.x
+  ##
+  nl.r <- matrix(nl.r, nrow = nrow(TE.random.x), ncol = ncol(TE.random.x))
+  diag(nl.r) <- rownames(TE.random.x)
+  ##
+  if (!missing(y)) {
+    TE.random.y    <- format(round(TE.random.y[seq.r, seq.r], digits))
+    lower.random.y <- round(lower.random.y[seq.r, seq.r], digits)
+    upper.random.y <- round(upper.random.y[seq.r, seq.r], digits)
     ##
     if (ci)
-      nl.r <- paste(TE.random.x, meta:::p.ci(lower.random.x, upper.random.x))
+      nl.r.y <- paste(TE.random.y, meta:::p.ci(lower.random.y, upper.random.y))
     else
-      nl.r <- TE.random.x
+      nl.r.y <- TE.random.y
     ##
-    nl.r <- matrix(nl.r, nrow = nrow(TE.random.x), ncol = ncol(TE.random.x))
-    diag(nl.r) <- rownames(TE.random.x)
+    nl.r.y <- matrix(nl.r.y, nrow = nrow(TE.random.y), ncol = ncol(TE.random.y))
     ##
-    if (!missing(y)) {
-      TE.random.y    <- format(round(TE.random.y[seq.r, seq.r], digits))
-      lower.random.y <- round(lower.random.y[seq.r, seq.r], digits)
-      upper.random.y <- round(upper.random.y[seq.r, seq.r], digits)
-      ##
-      if (ci)
-        nl.r.y <- paste(TE.random.y, meta:::p.ci(lower.random.y, upper.random.y))
-      else
-        nl.r.y <- TE.random.y
-      ##
-      nl.r.y <- matrix(nl.r.y, nrow = nrow(TE.random.y), ncol = ncol(TE.random.y))
-      ##
-      nl.r[upper.tri(nl.r)] <- nl.r.y[upper.tri(nl.r)]
-    }
-    ##
-    prmatrix(nl.r, quote = FALSE, right = TRUE,
-             rowlab = rep("", nrow(TE.random.x)),
-             collab = rep("", ncol(TE.random.x)))
+    nl.r[upper.tri(nl.r)] <- nl.r.y[upper.tri(nl.r)]
   }
+  ##
+  nl.r <- as.data.frame(nl.r)
   
   
-  invisible(NULL)
+  res <- list(fixed = nl.f,
+              random = nl.r,
+              comb.fixed = comb.fixed,
+              comb.random = comb.random,
+              seq = seq, ci = ci, backtransf = backtransf,
+              digits = digits)
+  ##
+  class(res) <- "netleague"
+  
+  
+  res
 }

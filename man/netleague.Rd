@@ -1,7 +1,8 @@
 \name{netleague}
 \alias{netleague}
+\alias{print.netleague}
 
-\title{Print league table for network meta-analysis results}
+\title{Create and print league table for network meta-analysis results}
 
 \description{
   A league table is a square matrix showing all pairwise comparisons
@@ -13,11 +14,17 @@
 netleague(x, y,
           comb.fixed = x$comb.fixed, comb.random = x$comb.random,
           seq = x$seq, ci = TRUE, backtransf = TRUE,
-          digits = gs("digits"))
+          digits = gs("digits"),
+          bracket = gs("CIbracket"),
+          separator = gs("CIseparator"))
+
+\method{print}{netleague}(x,
+      comb.fixed=x$comb.fixed, comb.random=x$comb.random, ...)
 }
 
 \arguments{
-  \item{x}{An object of class \code{netmeta} (mandatory).}
+  \item{x}{An object of class \code{netmeta} or \code{netleague}
+    (mandatory).}
   \item{y}{An object of class \code{netmeta} (optional).}
   \item{comb.fixed}{A logical indicating whether a league table for
     fixed effect meta-analyses should be printed.}
@@ -33,6 +40,11 @@ netleague(x, y,
     ratios, for example.}
   \item{digits}{Minimal number of significant digits, see
     \code{print.default}.}
+  \item{bracket}{A character with bracket symbol to print lower
+    confidence interval: "[", "(", "\{", "".}
+  \item{separator}{A character string with information on separator
+    between lower and upper confidence interval.}
+    \item{\dots}{Additional arguments (ignored at the moment).}
 }
 
 \details{
@@ -63,12 +75,11 @@ p0 <- pairwise(treatment, event = r, n = N,
                studlab = author, data = Woods2010, sm = "OR")
 net0 <- netmeta(p0)
 
-cilayout(bracket = "(", separator = " - ")
 oldopts <- options(width = 100)
 
 # League table for fixed effect model
 #
-netleague(net0, digits = 2)
+netleague(net0, digits = 2, bracket = "(", separator = " - ")
 
 # League table for fixed effect and random effects model
 #
@@ -81,11 +92,35 @@ netleague(net0, comb.random = TRUE, digits = 2,
 #
 print(netrank(net0), comb.random = TRUE)
 
+\dontrun{
+# Create a CSV file with league table for random effects model
+#
+league0 <- netleague(net0, digits = 2, bracket = "(", separator = " to ")
+#
+write.table(league0$random, file = "league0-random.csv",
+            row.names = FALSE, col.names = FALSE,
+            sep = ",")
+#
+# Create Excel files with league tables (using R package WriteXLS)
+#
+library(WriteXLS)
+#
+# League table from random effects model
+#
+WriteXLS(league0$random, ExcelFileName = "league0-random.xls",
+         SheetNames = "leaguetable (random)", col.names = FALSE)
+#
+# League tables from fixed and random effects models
+#
+WriteXLS(list(league0$fixed, league0$random),
+         ExcelFileName = "league0-both.xls",
+         SheetNames = c("leaguetable (fixed)", "leaguetable (random)"),
+         col.names = FALSE)
+}
 
 # Use depression dataset
 #
 data(Linde2015)
-cilayout()
 #
 # Define order of treatments
 #

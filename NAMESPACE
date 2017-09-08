@@ -8,7 +8,7 @@ export(netmeta,
        netconnection, print.netconnection, netdistance,
        netsplit, print.netsplit,
        netposet, print.netposet, plot.netposet, hasse,
-       netleague)
+       netleague, print.netleague)
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
@@ -27,10 +27,11 @@ S3method(print, netconnection)
 S3method(print, netsplit)
 S3method(print, netposet)
 S3method(plot, netposet)
+S3method(print, netleague)
 
 importFrom("meta", "forest", "forest.meta",
            "metabin", "metacont", "metagen",
-           "metainc", "metaprop", "gs", "ci")
+           "metainc", "metaprop", "gs", "ci", "cilayout")
 
 importFrom("magic", "adiag")
 
