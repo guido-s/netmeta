@@ -13,12 +13,12 @@
 
 \format{A data frame with the following columns:
   \describe{
-  \item{event1}{Number of events in arm 1}
-  \item{n1}{Number of observations in arm 1}
-  \item{event2}{Number of events in arm 2}
-  \item{n2}{Number of observations in arm 2}
-  \item{event3}{Number of events in arm 3}
-  \item{n3}{Number of observations in arm 3}
+  \item{event1}{Number of individuals with successful smoking cessation in arm 1}
+  \item{n1}{Number of individuals in arm 1}
+  \item{event2}{Number of individuals with successful smoking cessation in arm 2}
+  \item{n2}{Number of individuals in arm 2}
+  \item{event3}{Number of individuals with successful smoking cessation in arm 3}
+  \item{n3}{Number of individuals in arm 3}
   \item{treat1}{Treatment 1}
   \item{treat2}{Treatment 2}
   \item{treat3}{Treatment 3}

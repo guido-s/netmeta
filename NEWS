@@ -4,6 +4,9 @@
 
   * League tables can be exported as CSV or Excel file
 
+  * Zero treatment arm variance in multi-arm studies results in a
+    warning instead of an error message
+
  ** User-visible changes **
 
   * netleague():
@@ -14,6 +17,11 @@
       meta)
 
   * new function print.netleague() to print league table
+
+ ** Internal changes **
+
+  * chkmultiarm():
+    - warning for zero treatment arm variance instead of an error
 
 
 *** netmeta, version 0.9-6, 2017-08-09 ***

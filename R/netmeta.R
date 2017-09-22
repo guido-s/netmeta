@@ -225,6 +225,7 @@ netmeta <- function(TE, seTE,
               " not considered in network meta-analysis:\n", sep = ""))
     prmatrix(dat.NAs, quote = FALSE, right = TRUE,
              rowlab = rep("", sum(excl)))
+    cat("\n")
     ##
     studlab <- studlab[!(excl)]
     treat1  <- treat1[!(excl)]

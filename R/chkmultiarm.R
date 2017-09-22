@@ -112,6 +112,7 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
     ## Additional checks:
     ## - consistency of TE and varTE and
     ## - negative or zero treatment arm variance
+    ##   (zero variance only results in a warning)
     ##
     dat.TE <- data.frame(studlab = "", treat1 = "", treat2 = "",
                          TE = NA, resid = NA,
@@ -262,6 +263,14 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
         prmatrix(dat.zero, quote = FALSE, right = TRUE,
                  rowlab = rep("", dim(dat.zero)[1]))
         cat("\n")
+        ##
+        warning(paste("Note, for the following multi-arm ", 
+                      if (izero.sigma2 == 1) "study " else "studies ",
+                      "a zero treatment arm variance has been calculated: ",
+                      paste(paste("'", studlab.zero.sigma2, "'", sep = ""),
+                            collapse = ", "),
+                      sep = ""),
+                call. = FALSE)
       }
       ##
       ## Negative variance
@@ -290,7 +299,7 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
     ##
     ## Generate error message
     ##
-    if (inconsistent | zero | negative) {
+    if (inconsistent | negative) {
       ##
       if (iTE > 0)
         msgTE <- paste("  ",
@@ -314,17 +323,6 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       else
         msgvarTE <- ""
       ##
-      if (zero)
-        msg0sigma2 <- paste("  ",
-                           if (izero.sigma2 == 1) "- Study " else "- Studies ",
-                           "with zero treatment arm variance: ",
-                           paste(paste("'", studlab.zero.sigma2, "'", sep = ""),
-                                 collapse = ", "),
-                           "\n",
-                           sep = "")
-      else
-        msg0sigma2 <- ""
-      ##
       if (negative)
         msgsigma2 <- paste("  ",
                            if (inegative.sigma2 == 1) "- Study " else "- Studies ",
@@ -339,7 +337,7 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       errmsg <- paste("Problem",
                       if ((iTE + ivarTE + inegative.sigma2 + izero.sigma2) > 1) "s",
                       " in multi-arm studies!\n",
-                      msgTE, msgvarTE, msg0sigma2, msgsigma2,
+                      msgTE, msgvarTE, msgsigma2,
                       "  - Please check original data used as input to netmeta().\n",
                       if (!details) msgdetails,
                       if (inconsistent)
