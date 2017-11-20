@@ -13,7 +13,8 @@
   meta-analysis (Rücker, 2012).
 }
 
-\usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
+\usage{
+netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
         comb.fixed=TRUE, comb.random=!is.null(tau.preset),
         prediction=FALSE, level.predict=0.95,
@@ -21,7 +22,7 @@
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.chkmultiarm = FALSE,
         sep.trts=":", backtransf=gs("backtransf"),
-        minlength = 666, title="", warn=TRUE)
+        nchar = 666, title="", warn=TRUE)
 }
 
 \arguments{
@@ -73,9 +74,8 @@
     back transformed in printouts and forest plots. If
     \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
     as odds ratios rather than log odds ratios, for example.}
-  \item{minlength}{A numeric defining the minium number of characters
-    used to abbreviate treatment names (see \code{\link{abbreviate}}
-    for more information).}
+  \item{nchar}{A numeric defining the minium number of characters used
+    to abbreviate treatment names (see Details).}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero
@@ -166,6 +166,12 @@
   pairwise meta-analysis, the procedure is repeated with the resulting
   enlarged standard errors.
 
+  By default, treatment names are not abbreviated in
+  printouts. However, in order to get more concise printouts, argument
+  \code{nchar} can be used to define the minimum number of characters
+  for abbreviated treatment names. R function \code{\link{treats}} is
+  utilised internally to create abbreviated treatment names.
+
   Names of treatment comparisons are created by concatenating
   treatment labels of pairwise comparisons using \code{sep.trts} as
   separator (see \code{\link{paste}}). These comparison names are used
@@ -184,9 +190,16 @@
   \code{summary}, \code{forest}, and \code{netrank} function. The
   object is a list containing the following components:
   \item{TE, seTE, studlab, treat1, treat2, sm, level, level.comb}{As
-    defined above.}
-  \item{comb.fixed, comb.random, seq, tau.preset, title, warn}{As defined
+    defined above.}    
+  \item{comb.fixed, comb.random, prediction, level.predict}{As defined
     above.}
+  \item{reference.group, baseline.reference, all.treatments}{As defined
+    above.}
+  \item{seq, tau.preset, tol.multiarm, details.chkmultiarm}{As defined
+    above.}
+  \item{reference.group, baseline.reference, all.treatments,
+    sep.trts}{As defined above.}
+  \item{backtransf, nchar, title, warn}{As defined above.}
   \item{seTE.adj}{Standard error of treatment estimate, adjusted for
     multi-arm studies.}
   \item{reference.group}{The name of the reference group, if

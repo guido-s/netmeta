@@ -26,11 +26,11 @@
 
   * new function print.netleague() to print league table
 
+  * new function treats() to create uniquely abbreviated treatment names
+
   * netmeta():
     - new argument 'backtransf' (see above)
-    - new argument 'minlength' to abbreviate treatment names in
-      printouts (see help file of abbreviate() called internally for
-      more information on this argument)
+    - new argument 'nchar' to abbreviate treatment names in printouts
 
   * netleague():
     - function does not print league table, but only generates it
@@ -64,6 +64,11 @@
   * Dataset Senn2013:
     - new columns 'treat1.long' and 'treat2.long' with full treatment
       names added
+
+  * Help pages:
+    - new help pages for forest.netsplit(), print.netleague(), and
+      treats()
+    - updated help pages for netposet() and netsplit()
 
  ** Internal changes **
 

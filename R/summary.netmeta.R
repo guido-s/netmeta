@@ -122,7 +122,7 @@ summary.netmeta <- function(object,
   ##
   res$backtransf <- object$backtransf
   ##
-  res$minlength <- object$minlength
+  res$nchar <- object$nchar
   ##
   res$title <- object$title
   ##

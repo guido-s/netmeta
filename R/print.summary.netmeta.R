@@ -6,7 +6,7 @@ print.summary.netmeta <- function(x,
                                   baseline.reference = x$baseline.reference,
                                   all.treatments = x$all.treatments,
                                   backtransf = x$backtransf,
-                                  minlength = x$minlength,
+                                  nchar = x$nchar,
                                   header = TRUE,
                                   digits = max(3, .Options$digits - 3),
                                   ...) {
@@ -26,8 +26,8 @@ print.summary.netmeta <- function(x,
   if (is.null(x$backtransf))
     backtransf <- TRUE
   ##
-  if (is.null(x$minlength))
-    minlength <- 666
+  if (is.null(x$nchar))
+    nchar <- 666
   
   
   meta:::chklogical(comb.fixed)
@@ -36,7 +36,7 @@ print.summary.netmeta <- function(x,
   meta:::chklogical(baseline.reference)
   ##
   meta:::chklogical(backtransf)
-  meta:::chknumeric(minlength, min = 1, single = TRUE)
+  meta:::chknumeric(nchar, min = 1, single = TRUE)
   
   
   ##
@@ -153,9 +153,9 @@ print.summary.netmeta <- function(x,
         comptext <- paste("comparison: ",
                           if (x$n == 2)
                             paste("'",
-                                  substring(rownames(TE.fixed),
-                                            1, minlength)[rownames(TE.fixed)
-                                                            != reference.group],
+                                  treats(rownames(TE.fixed),
+                                         nchar)[rownames(TE.fixed)
+                                                != reference.group],
                                   "'", sep = "")
                           else
                             "other treatments",
@@ -165,9 +165,9 @@ print.summary.netmeta <- function(x,
                           reference.group, "' vs ",
                           if (x$n == 2)
                             paste("'",
-                                  substring(rownames(TE.fixed),
-                                            1, minlength)[rownames(TE.fixed)
-                                                            != reference.group],
+                                  treats(rownames(TE.fixed),
+                                         nchar)[rownames(TE.fixed)
+                                                != reference.group],
                                   "'", sep = "")
                           else
                             "other treatments", sep = "")
@@ -180,8 +180,8 @@ print.summary.netmeta <- function(x,
         cat("\nTreatment estimate (sm = '", sm.lab, "'):\n", sep = "")
         ##
         TEf <- meta:::format.NA(TE.fixed, digits = digits)
-        rownames(TEf) <- treats(TEf, minlength)
-        colnames(TEf) <- treats(TEf, minlength, FALSE)
+        rownames(TEf) <- treats(TEf, nchar)
+        colnames(TEf) <- treats(TEf, nchar, FALSE)
         ##
         if (all(diag(TE.fixed) == noeffect))
           diag(TEf) <- "."
@@ -191,8 +191,8 @@ print.summary.netmeta <- function(x,
         cat("\nLower ", 100 * x$fixed$level, "%-confidence limit:\n", sep = "")
         ##
         lowTEf <- meta:::format.NA(lowTE.fixed, digits = digits)
-        rownames(lowTEf) <- treats(lowTEf, minlength)
-        colnames(lowTEf) <- treats(lowTEf, minlength, FALSE)
+        rownames(lowTEf) <- treats(lowTEf, nchar)
+        colnames(lowTEf) <- treats(lowTEf, nchar, FALSE)
         ##
         if (all(diag(lowTE.fixed) == noeffect))
           diag(lowTEf) <- "."
@@ -202,8 +202,8 @@ print.summary.netmeta <- function(x,
         cat("\nUpper ", 100 * x$fixed$level, "%-confidence limit:\n", sep = "")
         ##
         uppTEf <- meta:::format.NA(uppTE.fixed, digits = digits)
-        rownames(uppTEf) <- treats(uppTEf, minlength)
-        colnames(uppTEf) <- treats(uppTEf, minlength, FALSE)
+        rownames(uppTEf) <- treats(uppTEf, nchar)
+        colnames(uppTEf) <- treats(uppTEf, nchar, FALSE)
         ##
         if (all(diag(uppTE.fixed) == noeffect))
           diag(uppTEf) <- "."
@@ -218,8 +218,8 @@ print.summary.netmeta <- function(x,
           cat("\nLower ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
           ##
           lowTEp <- meta:::format.NA(lowTE.predict, digits = digits)
-          rownames(lowTEp) <- treats(lowTEp, minlength)
-          colnames(lowTEp) <- treats(lowTEp, minlength, FALSE)
+          rownames(lowTEp) <- treats(lowTEp, nchar)
+          colnames(lowTEp) <- treats(lowTEp, nchar, FALSE)
           ##
           if (all(diag(lowTE.predict) == noeffect))
             diag(lowTEp) <- "."
@@ -229,8 +229,8 @@ print.summary.netmeta <- function(x,
           cat("\nUpper ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
           ##
           uppTEp <- meta:::format.NA(uppTE.predict, digits = digits)
-          rownames(uppTEp) <- treats(uppTEp, minlength)
-          colnames(uppTEp) <- treats(uppTEp, minlength, FALSE)
+          rownames(uppTEp) <- treats(uppTEp, nchar)
+          colnames(uppTEp) <- treats(uppTEp, nchar, FALSE)
           ##
           if (all(diag(uppTE.predict) == noeffect))
             diag(uppTEp) <- "."
@@ -301,8 +301,8 @@ print.summary.netmeta <- function(x,
         cat("\nTreatment estimate (sm = '", sm.lab, "'):\n", sep = "")
         ##
         TEr <- meta:::format.NA(TE.random, digits = digits)
-        rownames(TEr) <- treats(TEr, minlength)
-        colnames(TEr) <- treats(TEr, minlength, FALSE)
+        rownames(TEr) <- treats(TEr, nchar)
+        colnames(TEr) <- treats(TEr, nchar, FALSE)
         ##
         if (all(diag(TE.random) == noeffect))
           diag(TEr) <- "."
@@ -312,8 +312,8 @@ print.summary.netmeta <- function(x,
         cat("\nLower ", 100 * x$random$level, "%-confidence limit:\n", sep = "")
         ##
         lowTEr <- meta:::format.NA(lowTE.random, digits = digits)
-        rownames(lowTEr) <- treats(lowTEr, minlength)
-        colnames(lowTEr) <- treats(lowTEr, minlength, FALSE)
+        rownames(lowTEr) <- treats(lowTEr, nchar)
+        colnames(lowTEr) <- treats(lowTEr, nchar, FALSE)
         ##
         if (all(diag(lowTE.random) == noeffect))
           diag(lowTEr) <- "."
@@ -323,8 +323,8 @@ print.summary.netmeta <- function(x,
         cat("\nUpper ", 100 * x$random$level, "%-confidence limit:\n", sep = "")
         ##
         uppTEr <- meta:::format.NA(uppTE.random, digits = digits)
-        rownames(uppTEr) <- treats(uppTEr, minlength)
-        colnames(uppTEr) <- treats(uppTEr, minlength, FALSE)
+        rownames(uppTEr) <- treats(uppTEr, nchar)
+        colnames(uppTEr) <- treats(uppTEr, nchar, FALSE)
         ##
         if (all(diag(uppTE.random) == noeffect))
           diag(uppTEr) <- "."
@@ -339,8 +339,8 @@ print.summary.netmeta <- function(x,
           cat("\nLower ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
           ##
           lowTEp <- meta:::format.NA(lowTE.predict, digits = digits)
-          rownames(lowTEp) <- treats(lowTEp, minlength)
-          colnames(lowTEp) <- treats(lowTEp, minlength, FALSE)
+          rownames(lowTEp) <- treats(lowTEp, nchar)
+          colnames(lowTEp) <- treats(lowTEp, nchar, FALSE)
           ##
           if (all(diag(lowTE.predict) == noeffect))
             diag(lowTEp) <- "."
@@ -350,8 +350,8 @@ print.summary.netmeta <- function(x,
           cat("\nUpper ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
           ##
           uppTEp <- meta:::format.NA(uppTE.predict, digits = digits)
-          rownames(uppTEp) <- treats(uppTEp, minlength)
-          colnames(uppTEp) <- treats(uppTEp, minlength, FALSE)
+          rownames(uppTEp) <- treats(uppTEp, nchar)
+          colnames(uppTEp) <- treats(uppTEp, nchar, FALSE)
           ##
           if (all(diag(uppTE.predict) == noeffect))
             diag(uppTEp) <- "."
@@ -495,8 +495,8 @@ print.summary.netmeta <- function(x,
   }
   
   
-  if (any(rownames(TE.fixed) != treats(TE.fixed, minlength))) {
-    abbr <- unique(treats(TE.fixed, minlength))
+  if (any(rownames(TE.fixed) != treats(TE.fixed, nchar))) {
+    abbr <- unique(treats(TE.fixed, nchar))
     full <- unique(rownames(TE.fixed))
     ##
     tmat <- data.frame(abbr, full)

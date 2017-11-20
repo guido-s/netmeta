@@ -19,7 +19,7 @@ netmeta <- function(TE, seTE,
                     sep.trts = ":",
                     ##
                     backtransf = gs("backtransf"),
-                    minlength = 666,
+                    nchar = 666,
                     title = "",
                     warn = TRUE
                     ) {
@@ -39,7 +39,7 @@ netmeta <- function(TE, seTE,
   meta:::chklogical(prediction)
   ##
   meta:::chklogical(backtransf)
-  meta:::chknumeric(minlength, min = 1, single = TRUE)
+  meta:::chknumeric(nchar, min = 1, single = TRUE)
   meta:::chklogical(warn)
   ##
   ## Check value for reference group
@@ -510,7 +510,7 @@ netmeta <- function(TE, seTE,
               sep.trts = sep.trts,
               ##
               backtransf = backtransf,
-              minlength = minlength,
+              nchar = nchar,
               ##
               title = title,
               ##

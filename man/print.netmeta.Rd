@@ -18,7 +18,7 @@
       baseline.reference=x$baseline.reference,
       all.treatments=x$all.treatments,
       details=TRUE, ma=TRUE,
-      backtransf=x$backtransf, minlength=x$minlength,
+      backtransf=x$backtransf, nchar=x$nchar,
       digits=max(4, .Options$digits - 3), ...)
 
 \method{summary}{netmeta}(object,
@@ -34,7 +34,7 @@
       reference.group=x$reference.group,
       baseline.reference=x$baseline.reference,
       all.treatments=x$all.treatments,
-      backtransf=x$backtransf, minlength=x$minlength,
+      backtransf=x$backtransf, nchar=x$nchar,
       header=TRUE, digits=max(3, .Options$digits - 3), ...)
 }
 
@@ -65,7 +65,7 @@
     back transformed in printouts and forest plots. If
     \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
     as odds ratios rather than log odds ratios, for example.}
-  \item{minlength}{A numeric defining the minium number of characters
+  \item{nchar}{A numeric defining the minium number of characters
     used to abbreviate treatment names (see \code{\link{abbreviate}}
     for more information).}
   \item{header}{A logical indicating whether information on title of
