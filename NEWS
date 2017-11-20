@@ -5,6 +5,11 @@
   * New function to produce forest plots with network, direct, and
     indirect evidence
 
+  * New default in function netsplit(): treatment comparisons are
+    selected from upper treatment estimates matrix, i.e., comparisons
+    are "A vs B", "A vs C", and "B vs C" for treatments "A", "B", and
+    "C" instead of "B vs A", etc.
+
   * Zero treatment arm variance in multi-arm studies results in a
     warning instead of an error message
 
@@ -42,11 +47,15 @@
     - do not round results to four digits
 
   * netsplit():
-   - column with comparisons added to data frames with network, direct,
-     and indirect estimates
-   - new arguments (see help file):
-     'lower', 'reference.group', 'baseline.reference',
-     'sep.trts', 'quote'
+    - bug fix: order of treatments in printouts correspond to
+      treatment comparison, e.g., "A:B" means that treatment "A" was
+      compared with treatment "B" (and not the other way around)
+    - new argument 'upper' to specify whether lower or upper triangle
+      of treatment estimate matrix should be used to build comparisons
+    - column with comparisons added to data frames with network, direct,
+      and indirect estimates
+    - additional new arguments (see help file):
+      'reference.group', 'baseline.reference', 'sep.trts', 'quote'
 
   * print.netmeta(), print.summary.netmeta():
     - new arguments 'backtransf' and 'minlength' (see above)

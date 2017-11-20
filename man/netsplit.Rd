@@ -10,7 +10,7 @@
 }
 
 \usage{
-netsplit(x, lower = FALSE,
+netsplit(x, upper = TRUE,
          reference.group = x$reference.group,
          baseline.reference = x$baseline.reference,
          sep.trts = x$sep.trts, quote = "")
@@ -31,7 +31,7 @@ netsplit(x, lower = FALSE,
 
 \arguments{
   \item{x}{An object of class \code{netmeta} or \code{netsplit}.}
-  \item{lower}{A logical indicating whether treatment comparisons
+  \item{upper}{A logical indicating whether treatment comparisons
     should be selected from the lower or upper triangle of the
     treatment effect matrices (see list elements \code{TE.fixed} and
     \code{TE.random} in the \code{netmeta} object).}

@@ -17,12 +17,6 @@ print.netmeta <- function(x,
   x <- upgradenetmeta(x)
   
   
-  ## All individual results in a single row - be on the save side:
-  ##
-  oldopts <- options(width = 200)
-  on.exit(options(oldopts))
-  
-  
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(prediction)

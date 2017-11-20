@@ -1,11 +1,11 @@
-netsplit <- function(x, lower = FALSE,
+netsplit <- function(x, upper = TRUE,
                      reference.group = x$reference.group,
                      baseline.reference = x$baseline.reference,
                      sep.trts = x$sep.trts, quote = "") {
   
   
   meta:::chkclass(x, "netmeta")
-  meta:::chklogical(lower)
+  meta:::chklogical(upper)
   meta:::chklogical(baseline.reference)
   
   
@@ -19,7 +19,7 @@ netsplit <- function(x, lower = FALSE,
   treats <- as.data.frame(treats, stringsAsFactors = FALSE)
   names(treats) <- c("treat1", "treat2")
   ##
-  if (lower) {
+  if (!upper) {
     ##
     ## Comparison names are column:row (and must be switched)
     ##
@@ -116,7 +116,7 @@ netsplit <- function(x, lower = FALSE,
                                    z = uppertri(x$zval.indirect.fixed),
                                    p = uppertri(x$pval.indirect.fixed))
   ##
-  if (lower) {
+  if (!upper) {
     fixed <- fixed.low
     direct.fixed <- direct.fixed.low
     indirect.fixed <- indirect.fixed.low
@@ -211,7 +211,7 @@ netsplit <- function(x, lower = FALSE,
                             lower = uppertri(x$lower.predict),
                             upper = uppertri(x$upper.predict))
   ##
-  if (lower) {
+  if (!upper) {
     random <- random.low
     direct.random <- direct.random.low
     indirect.random <- indirect.random.low
