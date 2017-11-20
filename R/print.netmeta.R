@@ -52,8 +52,13 @@ print.netmeta <- function(x,
     sm.lab <- paste("log", sm, sep = "")
   
   
-  treat1 <- substring(x$treat1, 1, minlength)
-  treat2 <- substring(x$treat2, 1, minlength)
+  treat1 <- abbreviate(x$treat1, minlength)
+  treat2 <- abbreviate(x$treat2, minlength)
+  ##
+  if (any(treat1 != x$treat1) | any(treat2 != x$treat2))
+    abbr <- c(treat1, treat2)
+  else
+    abbr <- NULL
   
   
   matitle(x)
@@ -192,6 +197,19 @@ print.netmeta <- function(x,
           baseline.reference = baseline.reference,
           all.treatments = all.treatments,
           header = FALSE, minlength = minlength)
+  else
+    if (!is.null(abbr)) {
+      abbr <- unique(abbr)
+      full <- unique(c(x$treat1, x$treat2))
+      ##
+      tmat <- data.frame(abbr, full)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat("Legend:\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(abbr)))
+    }
   
   invisible(NULL)
 }

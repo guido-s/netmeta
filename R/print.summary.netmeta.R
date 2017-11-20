@@ -495,5 +495,19 @@ print.summary.netmeta <- function(x,
   }
   
   
+  if (any(rownames(TE.fixed) != treats(TE.fixed, minlength))) {
+    abbr <- unique(treats(TE.fixed, minlength))
+    full <- unique(rownames(TE.fixed))
+    ##
+    tmat <- data.frame(abbr, full)
+    names(tmat) <- c("Abbreviation", "Treatment name")
+    tmat <- tmat[order(tmat$Abbreviation), ]
+    ##
+    cat("\nLegend:\n")
+    prmatrix(tmat, quote = FALSE, right = TRUE,
+             rowlab = rep("", length(abbr))) 
+  }
+  
+  
   invisible(NULL)
 }
