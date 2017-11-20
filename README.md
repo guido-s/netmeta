@@ -54,6 +54,8 @@ http://meta-analysis-with-r.org/ .
 
 [Rücker G, Schwarzer G (2016), Automated drawing of network plots in network meta-analysis. *Research Synthesis Methods*, **7**: 94-107.](https://scholar.google.de/scholar?q=Rücker+Schwarzer+2016+Automated+drawing+of+network+plots+in+network+meta-analysis)
 
+[Rücker, G, Schwarzer, G. (2017). Resolve conflicting rankings of outcomes in network meta-analysis: Partial ordering of treatments. *Research Synthesis Methods*](https://scholar.google.de/scholar?q=Rücker+Schwarzer+2017+resolve+conflicting+rankings+of+outcomes+in+network+meta-analysis)
+
 [Schwarzer G, Carpenter JR and Rücker G (2015), *Meta-Analysis with R (Use-R!)*. Springer International Publishing, Switzerland](http://www.springer.com/gp/book/9783319214153)
 
 
