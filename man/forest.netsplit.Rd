@@ -1,39 +1,49 @@
-\name{forest.netmeta}
+\name{forest.netsplit}
 
-\alias{forest.netmeta}
+\alias{forest.netsplit}
 
-\title{Forest plot}
+\title{Forest plot for direct and indirect evidence}
 
 \description{
-  Draws a forest plot in the active graphics window (using grid
-  graphics system).
+  Forest plot to show direct and indirect evidence in network
+  meta-analysis. Furthermore, estimates from network meta-analysis as
+  well as prediction intervals can be printed.
 }
 
 \usage{
-\method{forest}{netmeta}(x,
+\method{forest}{netsplit}(x,
        pooled=ifelse(x$comb.random, "random", "fixed"),
-       reference.group=x$reference.group,
-       baseline.reference=x$baseline.reference,
-       leftcols="studlab", leftlabs="Treatment",
-       rightcols=c("effect", "ci"), rightlabs=NULL,
-       digits=gs("digits.forest"), small.values="good", digits.Pscore=2,
-       smlab=NULL,
-       sortvar=x$seq, backtransf=x$backtransf,
-       lab.NA=".", add.data,
-       drop.reference.group = FALSE,
-       ...)
+       showall = FALSE, overall = TRUE,
+       direct = TRUE, indirect = TRUE,
+       prediction = x$prediction,
+       subgroup = "comparison",
+       leftcols, leftlabs,
+       rightcols = c("effect", "ci"), rightlabs = NULL,
+       digits = gs("digits.forest"), backtransf = x$backtransf,
+       lab.NA = "", smlab, ...)
 }
 
 \arguments{
-  \item{x}{An object of class \code{netmeta}.}
-  \item{reference.group}{Reference group.}
-  \item{baseline.reference}{A logical indicating whether results
-    should be expressed as comparisons of other treatments versus the
-    reference treatment (default) or vice versa.}
+  \item{x}{An object of class \code{netsplit}.}
   \item{pooled}{A character string indicating whether results for
     the fixed effect (\code{"fixed"}) or random effects model
     (\code{"random"}) should be plotted. Can be abbreviated.}
-  \item{leftcols}{A character vector specifying (additional) columns
+  \item{showall}{A logical indicating whether all comparisons
+    (default) or only comparisons contributing both direct and
+    indirect evidence should be shown in forest plot.}
+  \item{overall}{A logical indicating whether network meta-analysis
+    estimates should be printed.}
+  \item{direct}{A logical indicating whether direct estimates should
+    be printed.}
+  \item{indirect}{A logical indicating whether indirect estimates
+    should be printed.}
+  \item{prediction}{A logical indicating whether prediction intervals
+    should be printed.}
+  \item{subgroup}{A character string indicating which layout should be
+    used in forest plot: subgroups by comparisons
+    (\code{"comparison"}) or subgroups by estimates
+    (\code{"estimate"}). Can be abbreviated.}
+\item{leftcols}{A character vector specifying (additional) columns
     to be plotted on the left side of the forest plot or a logical
     value (see \code{\link{forest.meta}} help page for details).}
   \item{leftlabs}{A character vector specifying labels for
@@ -47,27 +57,14 @@
     \code{\link{forest.meta}} help page for details).}
   \item{digits}{Minimal number of significant digits for treatment
     effects and confidence intervals, see \code{print.default}.}
-  \item{small.values}{A character string specifying whether small
-    treatment effects indicate a beneficial (\code{"good"}) or harmful
-    (\code{"bad"}) effect, can be abbreviated; see
-    \code{\link{netrank}}.}
-  \item{digits.Pscore}{Minimal number of significant digits for
-    P-score, see \code{\link{print.default}} and
-    \code{\link{netrank}}.}
-  \item{smlab}{A label printed at top of figure. By default, text
-    indicating either fixed effect or random effects model is
-    printed.}
-  \item{sortvar}{An optional vector used to sort the individual studies
-    (must be of same length as the total number of treatments).}
   \item{backtransf}{A logical indicating whether results should be
     back transformed in forest plots. If \code{backtransf=TRUE},
     results for \code{sm="OR"} are presented as odds ratios rather
     than log odds ratios, for example.}
   \item{lab.NA}{A character string to label missing values.}
-  \item{add.data}{An optional data frame with additional columns to
-    print in forest plot (see Details).}
-  \item{drop.reference.group}{A logical indicating whether the
-    reference group should be printed in the forest plot.}
+  \item{smlab}{A label printed at top of figure. By default, text
+    indicating either fixed effect or random effects model is
+    printed.}
   \item{\dots}{Additional arguments for \code{\link{forest.meta}}
     function.}
 }

@@ -1,7 +1,7 @@
 export(netmeta,
        as.data.frame.netmeta, print.netmeta,
        summary.netmeta, print.summary.netmeta,
-       forest.netmeta, pairwise,
+       forest.netmeta, forest.netsplit, pairwise,
        decomp.design, print.decomp.design,
        netheat, netgraph, netheat, netmeasures,
        netrank, print.netrank,
@@ -13,14 +13,15 @@ export(netmeta,
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
 # format.TE, p.ci, tau.within, decomp.tau, stress,
-# shadowtext, chklist, chkmultiarm, lowertri, createB,
-# upgradenetmeta
+# shadowtext, chklist, chkmultiarm, lowertri, uppertri, createB,
+# upgradenetmeta, treats
 
 S3method(as.data.frame, netmeta)
 S3method(print, netmeta)
 S3method(summary, netmeta)
 S3method(print, summary.netmeta)
 S3method(forest, netmeta)
+S3method(forest, netsplit)
 S3method(print, decomp.design)
 S3method(print, netrank)
 S3method(print, netconnection)

@@ -2,12 +2,30 @@
 
  ** Major changes **
 
-  * League tables can be exported as CSV or Excel file
+  * New function to produce forest plots with network, direct, and
+    indirect evidence
 
   * Zero treatment arm variance in multi-arm studies results in a
     warning instead of an error message
 
+  * League tables can be exported as CSV or Excel file
+
+  * New argument 'backtransf' indicating whether estimates should be
+    back-transformed in printouts and plots, e.g., to show results as
+    odds ratios instead of log odds ratios
+
  ** User-visible changes **
+
+  * new function forest.netsplit() to produce forest plots with direct
+    and indirect evidence
+
+  * new function print.netleague() to print league table
+
+  * netmeta():
+    - new argument 'backtransf' (see above)
+    - new argument 'minlength' to abbreviate treatment names in
+      printouts (see help file of abbreviate() called internally for
+      more information on this argument)
 
   * netleague():
     - function does not print league table, but only generates it
@@ -16,12 +34,37 @@
       confidence intervals (see R function cilayout() from R package
       meta)
 
-  * new function print.netleague() to print league table
+  * netposet():
+    - bug fix such that the function works with a ranking matrix with
+      missing elements
+
+  * netmeasures():
+    - do not round results to four digits
+
+  * netsplit():
+   - column with comparisons added to data frames with network, direct,
+     and indirect estimates
+   - new arguments (see help file):
+     'lower', 'reference.group', 'baseline.reference',
+     'sep.trts', 'quote'
+
+  * print.netmeta(), print.summary.netmeta():
+    - new arguments 'backtransf' and 'minlength' (see above)
+    - argument 'logscale' removed (replaced by argument 'backtransf')
+
+  * Dataset Senn2013:
+    - new columns 'treat1.long' and 'treat2.long' with full treatment
+      names added
 
  ** Internal changes **
 
   * chkmultiarm():
     - warning for zero treatment arm variance instead of an error
+
+  * new internal function uppertri() to extract elements from the
+    upper triangle of a matrix
+
+  * new internal function treats() to abbreviate treatment names
 
 
 *** netmeta, version 0.9-6, 2017-08-09 ***
@@ -302,9 +345,8 @@
     new internal function to check consistency of treatment effects
     and variances in multi-arm studies; calls ginv() from MASS library
 
-  * lowertri():
-    new internal function to extract elements from the lower triangle
-    of a matrix
+  * new internal function lowertri() to extract elements from the
+    lower triangle of a matrix
 
 
 *** netmeta, version 0.9-2, 2016-11-19 ***

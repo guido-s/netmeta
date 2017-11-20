@@ -18,12 +18,15 @@
   \item{seTE}{Standard error of treatment effect}
   \item{treat1}{Treatment 1}
   \item{treat2}{Treatment 2}
+  \item{treat1.long}{Treatment 1 (full treatment names)}
+  \item{treat2.long}{Treatment 2 (full treatment names)}
   \item{studlab}{Study label}
   }
 }
 
 \details{
-  Treatment labels have been abbreviated:
+  Treatment labels provided by columns \code{treat1} and \code{treat2}
+  have been abbreviated:
   \itemize{
    \item acar = Acarbose
    \item benf = Benfluorex
@@ -36,6 +39,8 @@
    \item sulf = Sulfonylurea
    \item vild = Vildagliptin
   }
+  Full treatment names are available in columns \code{treat1.long} and
+  \code{treat2.long}.
 }
 
 \source{
@@ -54,7 +59,8 @@ data(Senn2013)
 #
 # Fixed effect model (default)
 #
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data=Senn2013)
+net1 <- netmeta(TE, seTE, treat1, treat2,
+                studlab, data=Senn2013)
 net1
 net1$Q.decomp
 
@@ -67,7 +73,8 @@ forest(net1, ref="plac")
 #
 # Comparison with reference group
 #
-netmeta(TE, seTE, treat1, treat2, studlab, data=Senn2013, 
+netmeta(TE, seTE, treat1.long, treat2.long,
+        studlab, data=Senn2013, 
         reference="plac")
 
 #

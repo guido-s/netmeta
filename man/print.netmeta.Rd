@@ -17,12 +17,13 @@
       reference.group=x$reference.group,
       baseline.reference=x$baseline.reference,
       all.treatments=x$all.treatments,
-      details=TRUE, ma=TRUE, logscale=FALSE,
+      details=TRUE, ma=TRUE,
+      backtransf=x$backtransf, minlength=x$minlength,
       digits=max(4, .Options$digits - 3), ...)
 
 \method{summary}{netmeta}(object,
         comb.fixed=object$comb.fixed, comb.random=object$comb.random,
-	prediction=object$prediction,
+        prediction=object$prediction,
         reference.group=object$reference.group,
         baseline.reference=object$baseline.reference,
         all.treatments=object$all.treatments,
@@ -33,7 +34,8 @@
       reference.group=x$reference.group,
       baseline.reference=x$baseline.reference,
       all.treatments=x$all.treatments,
-      logscale=FALSE, header=TRUE, digits=max(3, .Options$digits - 3), ...)
+      backtransf=x$backtransf, minlength=x$minlength,
+      header=TRUE, digits=max(3, .Options$digits - 3), ...)
 }
 
 \arguments{
@@ -59,9 +61,13 @@
     individual studies should be printed.}
   \item{ma}{A logical indicating whether summary results of
     meta-analysis should be printed.}
-  \item{logscale}{A logical indicating whether results for summary
-    measures 'RR', 'OR', 'HR', or 'PLN' will be printed on logarithmic
-    scale.}
+  \item{backtransf}{A logical indicating whether results should be
+    back transformed in printouts and forest plots. If
+    \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
+    as odds ratios rather than log odds ratios, for example.}
+  \item{minlength}{A numeric defining the minium number of characters
+    used to abbreviate treatment names (see \code{\link{abbreviate}}
+    for more information).}
   \item{header}{A logical indicating whether information on title of
     meta-analysis, comparison and outcome should be printed at the
     beginning of the printout.}

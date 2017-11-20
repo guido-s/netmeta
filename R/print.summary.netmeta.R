@@ -5,7 +5,8 @@ print.summary.netmeta <- function(x,
                                   reference.group = x$reference.group,
                                   baseline.reference = x$baseline.reference,
                                   all.treatments = x$all.treatments,
-                                  logscale = FALSE,
+                                  backtransf = x$backtransf,
+                                  minlength = x$minlength,
                                   header = TRUE,
                                   digits = max(3, .Options$digits - 3),
                                   ...) {
@@ -21,12 +22,30 @@ print.summary.netmeta <- function(x,
   ##
   if (is.null(x$predict$lower))
     prediction <- FALSE
+  ##
+  if (is.null(x$backtransf))
+    backtransf <- TRUE
+  ##
+  if (is.null(x$minlength))
+    minlength <- 666
   
   
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(prediction)
   meta:::chklogical(baseline.reference)
+  ##
+  meta:::chklogical(backtransf)
+  meta:::chknumeric(minlength, min = 1, single = TRUE)
+  
+  
+  ##
+  ## Additional arguments
+  ##
+  fun <- "print.summary.netmeta"
+  addargs <- names(list(...))
+  ##
+  meta:::warnarg("logscale", addargs, fun, otherarg = "backtransf")
   
   
   k <- x$k
@@ -36,7 +55,7 @@ print.summary.netmeta <- function(x,
   
   sm.lab <- sm
   ##
-  if (logscale & meta:::is.relative.effect(sm))
+  if (!backtransf & meta:::is.relative.effect(sm))
     sm.lab <- paste("log", sm, sep = "")
 
   ci.lab <- paste(round(100 * x$fixed$level, 1), "%-CI", sep = "")
@@ -73,7 +92,7 @@ print.summary.netmeta <- function(x,
   
   noeffect <- 0
   ##
-  if (!logscale & meta:::is.relative.effect(sm)) {
+  if (backtransf & meta:::is.relative.effect(sm)) {
     noeffect <- 1
     ##
     TE.fixed    <- exp(TE.fixed)
@@ -134,7 +153,9 @@ print.summary.netmeta <- function(x,
         comptext <- paste("comparison: ",
                           if (x$n == 2)
                             paste("'",
-                                  rownames(TE.fixed)[rownames(TE.fixed) != reference.group],
+                                  substring(rownames(TE.fixed),
+                                            1, minlength)[rownames(TE.fixed)
+                                                            != reference.group],
                                   "'", sep = "")
                           else
                             "other treatments",
@@ -144,7 +165,9 @@ print.summary.netmeta <- function(x,
                           reference.group, "' vs ",
                           if (x$n == 2)
                             paste("'",
-                                  rownames(TE.fixed)[rownames(TE.fixed) != reference.group],
+                                  substring(rownames(TE.fixed),
+                                            1, minlength)[rownames(TE.fixed)
+                                                            != reference.group],
                                   "'", sep = "")
                           else
                             "other treatments", sep = "")
@@ -155,19 +178,36 @@ print.summary.netmeta <- function(x,
         cat("\nFixed effect model\n")
       if (all.treatments) {
         cat("\nTreatment estimate (sm = '", sm.lab, "'):\n", sep = "")
+        ##
         TEf <- meta:::format.NA(TE.fixed, digits = digits)
+        rownames(TEf) <- treats(TEf, minlength)
+        colnames(TEf) <- treats(TEf, minlength, FALSE)
+        ##
         if (all(diag(TE.fixed) == noeffect))
           diag(TEf) <- "."
+        ##
         prmatrix(TEf, quote = FALSE, right = TRUE)
+        ##
         cat("\nLower ", 100 * x$fixed$level, "%-confidence limit:\n", sep = "")
+        ##
         lowTEf <- meta:::format.NA(lowTE.fixed, digits = digits)
+        rownames(lowTEf) <- treats(lowTEf, minlength)
+        colnames(lowTEf) <- treats(lowTEf, minlength, FALSE)
+        ##
         if (all(diag(lowTE.fixed) == noeffect))
           diag(lowTEf) <- "."
+        ##
         prmatrix(lowTEf, quote = FALSE, right = TRUE)
+        ##
         cat("\nUpper ", 100 * x$fixed$level, "%-confidence limit:\n", sep = "")
+        ##
         uppTEf <- meta:::format.NA(uppTE.fixed, digits = digits)
+        rownames(uppTEf) <- treats(uppTEf, minlength)
+        colnames(uppTEf) <- treats(uppTEf, minlength, FALSE)
+        ##
         if (all(diag(uppTE.fixed) == noeffect))
           diag(uppTEf) <- "."
+        ##
         prmatrix(uppTEf, quote = FALSE, right = TRUE)
         ##
         ## Print prediction intervals
@@ -176,14 +216,25 @@ print.summary.netmeta <- function(x,
           cat("\nPrediction intervals\n")
           ##
           cat("\nLower ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          ##
           lowTEp <- meta:::format.NA(lowTE.predict, digits = digits)
+          rownames(lowTEp) <- treats(lowTEp, minlength)
+          colnames(lowTEp) <- treats(lowTEp, minlength, FALSE)
+          ##
           if (all(diag(lowTE.predict) == noeffect))
             diag(lowTEp) <- "."
+          ##
           prmatrix(lowTEp, quote = FALSE, right = TRUE)
+          ##
           cat("\nUpper ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          ##
           uppTEp <- meta:::format.NA(uppTE.predict, digits = digits)
+          rownames(uppTEp) <- treats(uppTEp, minlength)
+          colnames(uppTEp) <- treats(uppTEp, minlength, FALSE)
+          ##
           if (all(diag(uppTE.predict) == noeffect))
             diag(uppTEp) <- "."
+          ##
           prmatrix(uppTEp, quote = FALSE, right = TRUE)
         }
       }
@@ -248,19 +299,36 @@ print.summary.netmeta <- function(x,
         cat("\nRandom effects model\n")
       if (all.treatments) {
         cat("\nTreatment estimate (sm = '", sm.lab, "'):\n", sep = "")
+        ##
         TEr <- meta:::format.NA(TE.random, digits = digits)
+        rownames(TEr) <- treats(TEr, minlength)
+        colnames(TEr) <- treats(TEr, minlength, FALSE)
+        ##
         if (all(diag(TE.random) == noeffect))
           diag(TEr) <- "."
+        ##
         prmatrix(TEr, quote = FALSE, right = TRUE)
+        ##
         cat("\nLower ", 100 * x$random$level, "%-confidence limit:\n", sep = "")
+        ##
         lowTEr <- meta:::format.NA(lowTE.random, digits = digits)
+        rownames(lowTEr) <- treats(lowTEr, minlength)
+        colnames(lowTEr) <- treats(lowTEr, minlength, FALSE)
+        ##
         if (all(diag(lowTE.random) == noeffect))
           diag(lowTEr) <- "."
+        ##
         prmatrix(lowTEr, quote = FALSE, right = TRUE)
+        ##
         cat("\nUpper ", 100 * x$random$level, "%-confidence limit:\n", sep = "")
+        ##
         uppTEr <- meta:::format.NA(uppTE.random, digits = digits)
+        rownames(uppTEr) <- treats(uppTEr, minlength)
+        colnames(uppTEr) <- treats(uppTEr, minlength, FALSE)
+        ##
         if (all(diag(uppTE.random) == noeffect))
           diag(uppTEr) <- "."
+        ##
         prmatrix(uppTEr, quote = FALSE, right = TRUE)
         ##
         ## Print prediction intervals
@@ -269,14 +337,25 @@ print.summary.netmeta <- function(x,
           cat("\nPrediction intervals\n")
           ##
           cat("\nLower ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          ##
           lowTEp <- meta:::format.NA(lowTE.predict, digits = digits)
+          rownames(lowTEp) <- treats(lowTEp, minlength)
+          colnames(lowTEp) <- treats(lowTEp, minlength, FALSE)
+          ##
           if (all(diag(lowTE.predict) == noeffect))
             diag(lowTEp) <- "."
+          ##
           prmatrix(lowTEp, quote = FALSE, right = TRUE)
+          ##
           cat("\nUpper ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          ##
           uppTEp <- meta:::format.NA(uppTE.predict, digits = digits)
+          rownames(uppTEp) <- treats(uppTEp, minlength)
+          colnames(uppTEp) <- treats(uppTEp, minlength, FALSE)
+          ##
           if (all(diag(uppTE.predict) == noeffect))
             diag(uppTEp) <- "."
+          ##
           prmatrix(uppTEp, quote = FALSE, right = TRUE)
         }
       }
@@ -345,14 +424,10 @@ print.summary.netmeta <- function(x,
     ##
     if (!is.na(tau))
       cat(paste("\nQuantifying heterogeneity / inconsistency:\n",
-                if (tau^2 > 0 & tau^2 < 0.0001)
-                paste("tau^2", meta:::format.tau(tau^2))
-                else
-                paste("tau^2 = ",
-                      ifelse(tau == 0,
-                             "0",
-                             format(round(tau^2, 4), 4, nsmall = 4, scientific = FALSE)),
-                      sep = ""),
+                meta:::format.p(tau^2,
+                                lab = TRUE, labval = "tau^2",
+                                digits = 4,
+                                lab.NA = "NA"),
                 paste("; I^2 = ", round(I2, 1), "%",
                       "",
                       ##ifelse(FALSE,
@@ -410,15 +485,9 @@ print.summary.netmeta <- function(x,
       cat("\nDetails:")
       ##
       tau2 <- x$tau.preset^2
-      if (tau2 > 0 & tau2 < 0.0001)
-        tau2 <- paste("tau^2", meta:::format.tau(tau2))
-      else
-        tau2 <- paste("tau^2 = ",
-                      ifelse(tau2 == 0,
-                             "0",
-                             format(round(tau2, 4), 4, nsmall = 4,
-                                    scientific = FALSE)),
-                      sep = "")
+      tau2 <- meta:::format.p(tau2, lab = TRUE, labval = "tau^2",
+                              digits = 4,
+                              lab.NA = "NA")
       ##
       cat(paste("\n- Preset between-study variance: ",
                 tau2, "\n", sep = ""))

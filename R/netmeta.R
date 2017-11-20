@@ -17,6 +17,9 @@ netmeta <- function(TE, seTE,
                     tol.multiarm = 0.0005,
                     details.chkmultiarm = FALSE,
                     sep.trts = ":",
+                    ##
+                    backtransf = gs("backtransf"),
+                    minlength = 666,
                     title = "",
                     warn = TRUE
                     ) {
@@ -34,7 +37,9 @@ netmeta <- function(TE, seTE,
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(prediction)
-  
+  ##
+  meta:::chklogical(backtransf)
+  meta:::chknumeric(minlength, min = 1, single = TRUE)
   meta:::chklogical(warn)
   ##
   ## Check value for reference group
@@ -321,8 +326,9 @@ netmeta <- function(TE, seTE,
                        p0$treat1, p0$treat2,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
-                       sm, level, level.comb, p0$seTE,
-                       sep.trts = sep.trts)
+                       sm,
+                       level, level.comb,
+                       p0$seTE, sep.trts = sep.trts)
   ##
   ## Random effects model
   ##
@@ -337,8 +343,9 @@ netmeta <- function(TE, seTE,
                        p1$treat1, p1$treat2,
                        p1$treat1.pos, p1$treat2.pos,
                        p1$narms, p1$studlab, 
-                       sm, level, level.comb, p1$seTE, tau,
-                       sep.trts = sep.trts)
+                       sm,
+                       level, level.comb,
+                       p1$seTE, tau, sep.trts = sep.trts)
   ##
   TE.random <- res.r$TE.pooled
   seTE.random <- res.r$seTE.pooled
@@ -502,6 +509,9 @@ netmeta <- function(TE, seTE,
               ##
               sep.trts = sep.trts,
               ##
+              backtransf = backtransf,
+              minlength = minlength,
+              ##
               title = title,
               ##
               warn = warn,
@@ -558,18 +568,18 @@ netmeta <- function(TE, seTE,
   ## (otherwise indirect estimates would be NA as direct estimates are NA)
   ##
   TE.direct.fixed <- res$TE.direct.fixed
-  TE.direct.fixed[P.fixed == 0] <- 0
-  ##
   TE.direct.random <- res$TE.direct.random
-  TE.direct.random[P.random == 0] <- 0
+  ##
+  TE.direct.fixed[abs(P.fixed) < .Machine$double.eps^0.5] <- 0
+  TE.direct.random[abs(P.random) < .Machine$double.eps^0.5] <- 0
   ##
   ## Indirect estimate is NA if only direct evidence is available
   ##
   res$P.fixed <- P.fixed
   res$P.random <- P.random
   ##
-  P.fixed[P.fixed == 1]   <- NA
-  P.random[P.random == 1] <- NA
+  P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
+  P.random[abs(P.random - 1) < .Machine$double.eps^0.5] <- NA
   ##
   ## Fixed effect model
   ##

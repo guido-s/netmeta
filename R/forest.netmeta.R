@@ -11,6 +11,7 @@ forest.netmeta <- function(x,
                            digits.Pscore = 2,
                            smlab = NULL,
                            sortvar = x$seq,
+                           backtransf = x$backtransf,
                            lab.NA = ".",
                            add.data,
                            drop.reference.group = FALSE,
@@ -32,6 +33,7 @@ forest.netmeta <- function(x,
   meta:::chklogical(baseline.reference)
   meta:::chklogical(drop.reference.group)
   ##
+  meta:::chklogical(backtransf)
   meta:::chkchar(lab.NA)
   
   
@@ -225,7 +227,8 @@ forest.netmeta <- function(x,
   trts <- dat$trts
   m1 <- metagen(TE, seTE, data = dat,
                 sm = x$sm,
-                studlab = trts, warn = FALSE)
+                studlab = trts, backtransf = backtransf,
+                warn = FALSE)
   ##
   forest.meta(m1,
               digits = digits,

@@ -120,8 +120,12 @@ summary.netmeta <- function(object,
   res$baseline.reference <- baseline.reference
   res$all.treatments <- all.treatments
   ##
-  res$title   <- object$title
-  
+  res$backtransf <- object$backtransf
+  ##
+  res$minlength <- object$minlength
+  ##
+  res$title <- object$title
+  ##
   res$call <- match.call()
   res$version <- packageDescription("netmeta")$Version
   ##

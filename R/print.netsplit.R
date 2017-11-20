@@ -8,15 +8,30 @@ print.netsplit <- function(x,
                            digits = gs("digits"),
                            digits.zval = gs("digits.zval"),
                            digits.pval = gs("digits.pval"),
-                           text.NA = ".", backtransf = TRUE,
+                           text.NA = ".",
+                           backtransf = x$backtransf,
                            ...) {
   
+  
   meta:::chkclass(x, "netsplit")
-
+  
+  
   ## All individual results in a single row - be on the save side:
   ##
   oldopts <- options(width = 200)
   on.exit(options(oldopts))
+  
+  
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  meta:::chklogical(showall)
+  meta:::chklogical(overall)
+  meta:::chklogical(ci)
+  meta:::chklogical(test)
+  ##
+  if (is.null(backtransf))
+    backtransf <- TRUE
+  meta:::chklogical(backtransf)
   
   
   sm <- x$sm

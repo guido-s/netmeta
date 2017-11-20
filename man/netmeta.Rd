@@ -16,11 +16,12 @@
 \usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
         comb.fixed=TRUE, comb.random=!is.null(tau.preset),
-	prediction=FALSE, level.predict=0.95,
-	reference.group="", baseline.reference=TRUE,
+        prediction=FALSE, level.predict=0.95,
+        reference.group="", baseline.reference=TRUE,
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.chkmultiarm = FALSE,
-        sep.trts=":", title="", warn=TRUE)
+        sep.trts=":", backtransf=gs("backtransf"),
+        minlength = 666, title="", warn=TRUE)
 }
 
 \arguments{
@@ -68,6 +69,13 @@
     results or negative multi-arm variances should be printed.}
   \item{sep.trts}{A character used in comparison names as separator
     between treatment labels.}
+  \item{backtransf}{A logical indicating whether results should be
+    back transformed in printouts and forest plots. If
+    \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
+    as odds ratios rather than log odds ratios, for example.}
+  \item{minlength}{A numeric defining the minium number of characters
+    used to abbreviate treatment names (see \code{\link{abbreviate}}
+    for more information).}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero
@@ -347,12 +355,13 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 net2
 
 #
-# Change printing order of treatments (placebo first)
+# Change printing order of treatments with placebo last and
+# use long treatment names
 #
-trts <- c("plac", "acar", "benf", "metf", "migl", "piog",
-          "rosi", "sita", "sulf", "vild")
-net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data=Senn2013, sm="MD",
-                seq=trts)
+trts <- c("acar", "benf", "metf", "migl", "piog",
+          "rosi", "sita", "sulf", "vild", "plac")
+net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
+                data=Senn2013, sm="MD", comb.random=TRUE,
+                seq=trts, reference="Placebo")
 print(summary(net3), digits=2)
 }

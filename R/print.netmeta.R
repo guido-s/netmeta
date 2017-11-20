@@ -5,22 +5,40 @@ print.netmeta <- function(x,
                           reference.group = x$reference.group,
                           baseline.reference = x$baseline.reference,
                           all.treatments = x$all.treatments,
-                          details = TRUE, ma = TRUE, logscale = FALSE,
+                          details = TRUE, ma = TRUE,
+                          backtransf = x$backtransf, minlength = x$minlength,
                           digits = max(4, .Options$digits - 3),
                           ...
                           ) {
   
   
   meta:::chkclass(x, "netmeta")
-  
-  
+  ##  
   x <- upgradenetmeta(x)
+  
+  
+  ## All individual results in a single row - be on the save side:
+  ##
+  oldopts <- options(width = 200)
+  on.exit(options(oldopts))
   
   
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(prediction)
   meta:::chklogical(baseline.reference)
+  ##
+  meta:::chklogical(backtransf)
+  meta:::chknumeric(minlength, min = 1, single = TRUE)
+  
+  
+  ##
+  ## Additional arguments
+  ##
+  fun <- "print.netmeta"
+  addargs <- names(list(...))
+  ##
+  meta:::warnarg("logscale", addargs, fun, otherarg = "backtransf")
   
   
   k.all <- length(x$TE)
@@ -36,9 +54,13 @@ print.netmeta <- function(x,
   
   sm.lab <- sm
   ##
-  if (logscale & meta:::is.relative.effect(sm))
+  if (!backtransf & meta:::is.relative.effect(sm))
     sm.lab <- paste("log", sm, sep = "")
-
+  
+  
+  treat1 <- substring(x$treat1, 1, minlength)
+  treat2 <- substring(x$treat2, 1, minlength)
+  
   
   matitle(x)
   
@@ -51,8 +73,8 @@ print.netmeta <- function(x,
                      ""),
               ":\n\n", sep = ""))
     
-    res <- data.frame(treat1 = x$treat1,
-                      treat2 = x$treat2,
+    res <- data.frame(treat1,
+                      treat2,
                       TE = format.TE(round(x$TE, digits), na = TRUE),
                       seTE = format(round(x$seTE, digits)))
     ##
@@ -96,7 +118,7 @@ print.netmeta <- function(x,
   lowTE.f <- tsum$comparison.nma.fixed$lower
   uppTE.f <- tsum$comparison.nma.fixed$upper
   ##
-  if (!logscale & meta:::is.relative.effect(sm)) {
+  if (backtransf & meta:::is.relative.effect(sm)) {
     TE.f    <- exp(TE.f)
     lowTE.f <- exp(lowTE.f)
     uppTE.f <- exp(uppTE.f)
@@ -111,7 +133,7 @@ print.netmeta <- function(x,
   lowTE.r <- tsum$comparison.nma.random$lower
   uppTE.r <- tsum$comparison.nma.random$upper
   ##
-  if (!logscale & meta:::is.relative.effect(sm)) {
+  if (backtransf & meta:::is.relative.effect(sm)) {
     TE.r    <- exp(TE.r)
     lowTE.r <- exp(lowTE.r)
     uppTE.r <- exp(uppTE.r)
@@ -122,7 +144,7 @@ print.netmeta <- function(x,
   uppTE.r <- round(uppTE.r, digits)
   
   
-  res.f <- cbind(x$treat1, x$treat2,
+  res.f <- cbind(treat1, treat2,
                  format.TE(TE.f, na = TRUE),
                  p.ci(format(lowTE.f), format(uppTE.f)),
                  if (comb.fixed) format(round(x$Q.fixed, 2)),
@@ -134,7 +156,7 @@ print.netmeta <- function(x,
                       if (comb.fixed) "leverage"))
   
   
-  res.r <- cbind(x$treat1, x$treat2,
+  res.r <- cbind(treat1, treat2,
                  format.TE(TE.r, na = TRUE),
                  p.ci(format(lowTE.r), format(uppTE.r)))
   dimnames(res.r) <-
@@ -171,11 +193,11 @@ print.netmeta <- function(x,
     print(tsum, digits = digits,
           comb.fixed = comb.fixed, comb.random = comb.random,
           prediction = prediction,
-          logscale = logscale,
+          backtransf = backtransf,
           reference.group = reference.group,
           baseline.reference = baseline.reference,
           all.treatments = all.treatments,
-          header = FALSE)
+          header = FALSE, minlength = minlength)
   
   invisible(NULL)
 }

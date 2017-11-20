@@ -120,11 +120,13 @@ netmeasures <- function(x,
                         )
   
   
-  res <- list(proportion = round(proportion, 4),
-              meanpath = round(meanpath, 4),
-              minpar = round(minpar, 4),
-              minpar.study = round(minpar.study, 4),
-              H.tilde = H.tilde)
+  res <- list(proportion = proportion,
+              meanpath = meanpath,
+              minpar = minpar,
+              minpar.study = minpar.study,
+              H.tilde = H.tilde,
+              random = random,
+              tau.preset = tau.preset)
   ##
   res
 }

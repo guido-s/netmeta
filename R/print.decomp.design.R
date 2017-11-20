@@ -32,8 +32,8 @@ print.decomp.design <- function(x,
   Q.detach$pval <- meta:::format.p(Q.detach$pval)
   ##
   Q.inc.random$Q <- round(Q.inc.random$Q, digits)
-  Q.inc.random$tau2.within <- meta:::format.tau(Q.inc.random$tau.within^2)
-  Q.inc.random$tau.within  <- meta:::format.tau(Q.inc.random$tau.within)
+  Q.inc.random$tau2.within <- meta:::format.p(Q.inc.random$tau.within^2)
+  Q.inc.random$tau.within  <- meta:::format.p(Q.inc.random$tau.within)
   Q.inc.random$pval <- meta:::format.p(Q.inc.random$pval)
   ##
   nam <- names(Q.decomp)

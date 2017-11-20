@@ -5,15 +5,26 @@ upgradenetmeta <- function(x) {
     major <- version[1]
     minor <- version[2]
     ##
-    if (!((major == 0.9 & minor > 5) | major > 0.9))
-      upgrade <- TRUE
-    else
-      upgrade <- FALSE
+    if (!((major == 0.9 & minor > 5) | major > 0.9)) {
+      upgrade.096 <- TRUE
+      upgrade.097 <- TRUE
+    }
+    if (!((major == 0.9 & minor > 6) | major > 0.9)) {
+      upgrade.096 <- FALSE
+      upgrade.097 <- TRUE
+    }
+    else {
+      upgrade.096 <- FALSE
+      upgrade.097 <- FALSE
+    }
   }
-  else
-    upgrade <- TRUE
+  else {
+    upgrade.096 <- TRUE
+    upgrade.097 <- TRUE
+  }
 
-  if (upgrade) {
+  
+  if (upgrade.096) {
     x$prediction <- FALSE
     x$df.Q <- x$df
     ##
@@ -49,6 +60,10 @@ upgradenetmeta <- function(x) {
     ##
     x$version <- packageDescription("netmeta")$Version
   }
+  
+  
+  if (upgrade.097)
+    x$backtransf <- TRUE
   
   
   x
