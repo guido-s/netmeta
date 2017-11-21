@@ -1,16 +1,41 @@
 forest.netsplit <- function(x,
                             pooled = ifelse(x$comb.random, "random", "fixed"),
                             showall = FALSE,
+                            ##
+                            subgroup = "comparison",
+                            ##
                             overall = TRUE,
                             direct = TRUE,
                             indirect = TRUE,
                             prediction = x$prediction,
-                            subgroup = "comparison",
+                            ##
+                            text.overall = "Network estimate",
+                            text.direct = "Direct estimate",
+                            text.indirect = "Indirect estimate",
+                            text.predict = "Prediction interval",
+                            ##
+                            type.overall,
+                            type.direct,
+                            type.indirect,
+                            ##
+                            col.square = "gray",
+                            col.square.lines = col.square,
+                            col.inside = "white",
+                            col.diamond = "gray",
+                            col.diamond.lines = "black",
+                            col.predict = "red",
+                            col.predict.lines = "black",
+                            ##
+                            equal.size = FALSE,
+                            ##
                             leftcols,
                             leftlabs,
                             rightcols = c("effect", "ci"),
                             rightlabs = NULL,
+                            ##
                             digits = gs("digits.forest"),
+                            digits.prop = max(gs("digits.pval") - 2, 2),
+                            ##
                             backtransf = x$backtransf,
                             lab.NA = "",
                             smlab,
@@ -26,23 +51,55 @@ forest.netsplit <- function(x,
   ## x <- upgradenetmeta(x)
   ##
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
-  ##
   meta:::chklogical(showall)
+  ##
+  subgroup <- meta:::setchar(subgroup, c("comparison", "estimate"))
+  ##
   meta:::chklogical(overall)
   meta:::chklogical(direct)
   meta:::chklogical(indirect)
   meta:::chklogical(prediction)
   ##
-  subgroup <- meta:::setchar(subgroup, c("comparison", "estimate"))
+  meta:::chkchar(text.overall)
+  meta:::chkchar(text.direct)
+  meta:::chkchar(text.indirect)
+  meta:::chkchar(text.predict)
+  ##
+  missing.type.overall <- missing(type.overall)
+  if (missing.type.overall)
+    type.overall <- "diamond"
+  else
+    type.overall <- meta:::setchar(type.overall, c("diamond", "square"))
+  ##
+  if (missing(type.direct))
+    type.direct <- "square"
+  else
+    type.direct <- meta:::setchar(type.direct, c("diamond", "square"))
+  if (missing(type.indirect))
+    type.indirect <- "square"
+  else
+    type.indirect <- meta:::setchar(type.indirect, c("diamond", "square"))
+  ##
+  meta:::chkchar(col.square)
+  meta:::chkchar(col.square.lines)
+  meta:::chkchar(col.inside)
+  meta:::chkchar(col.diamond)
+  meta:::chkchar(col.diamond.lines)
+  meta:::chkchar(col.predict)
+  meta:::chkchar(col.predict.lines)
+  ##
+  meta:::chklogical(equal.size)
   ##
   meta:::chknumeric(digits, min = 0, single = TRUE)
+  meta:::chknumeric(digits.prop, min = 0, single = TRUE)
   meta:::chklogical(backtransf)
   ##
   meta:::chkchar(lab.NA)
   ##
   if (pooled == "fixed")
     prediction <- FALSE
-  ##
+  
+  
   if (!any(c(overall, direct, indirect)))
     stop("At least, one of the following estimates must be included in forest plot:\n- network estimates (argument 'overall')\n- direct estimates (argument 'direct')\n- indirect estimates (argument 'indirect')")
   ##
@@ -52,11 +109,18 @@ forest.netsplit <- function(x,
     else
       leftcols <- "studlab"
   ##
-  if (missing(leftlabs))
-    if (direct)
-      leftlabs <- c("Comparison", "Number of\nStudies", "Direct\nEvidence")
-    else
-      leftlabs <- "Comparison"
+  if (missing(leftlabs)) {
+    leftlabs <- rep(NA, length(leftcols))
+    leftlabs[leftcols == "studlab"] <- "Comparison"
+    leftlabs[leftcols == "k"] <- "Number of\nStudies"
+    leftlabs[leftcols == "prop"] <- "Direct\nEvidence"
+  }
+  ##
+  n.subgroup <- direct + indirect + overall + prediction
+  missing.smlab <- missing(smlab)
+  ##
+  if (n.subgroup == 1 & overall & missing.type.overall)
+    type.overall <- "square"
   
   
   ##
@@ -69,11 +133,11 @@ forest.netsplit <- function(x,
     dat.indirect <- x$indirect.fixed
     dat.overall <- x$fixed
     ##
-    dat.direct$prop <- x$prop.fixed
+    dat.direct$prop <- meta:::format.p(x$prop.fixed, digits = digits.prop)
     dat.indirect$prop <- NA
     dat.overall$prop <- NA
     ##
-    if (missing(smlab))
+    if (missing.smlab)
       smlab <- "Fixed effect model"
   }
   else {
@@ -81,18 +145,31 @@ forest.netsplit <- function(x,
     dat.indirect <- x$indirect.random
     dat.overall <- x$random
     ##
-    dat.direct$prop <- x$prop.random
+    dat.direct$prop <- meta:::format.p(x$prop.random, digits = digits.prop)
     dat.indirect$prop <- NA
     dat.overall$prop <- NA
     ##
-    if (missing(smlab))
+    if (missing.smlab)
       smlab <- "Random effects model"
   }
   ##
-  dat.predict <- data.frame(TE = NA, seTE = NA,
-                            lower = x$predict$lower,
-                            upper = x$predict$upper,
-                            z = NA, p = NA, prop = NA)
+  if (missing.smlab & n.subgroup == 1)
+    smlab <- paste(if (direct)
+                     paste(text.direct, "\n", sep = ""),
+                   if (indirect)
+                     paste(text.indirect, "\n", sep = ""),
+                   if (overall)
+                     paste(text.overall, "\n", sep = ""),
+                   "(",
+                   tolower(smlab),
+                   ")",
+                   sep = "")
+  ##
+  dat.predict <- x$predict
+  dat.predict$TE <- dat.predict$seTE <-
+    dat.predict$z <- dat.predict$p <- dat.predict$prop <- NA
+  dat.predict <- dat.predict[, c("comparison", "TE", "seTE",
+                                 "lower", "upper", "z", "p", "prop")]
   ##
   dat.direct$comps <- dat.indirect$comps <-
     dat.overall$comps <- dat.predict$comps <- x$comparison
@@ -100,15 +177,49 @@ forest.netsplit <- function(x,
   dat.direct$k <- x$k
   dat.indirect$k <- dat.overall$k <- dat.predict$k <- NA
   ##
-  dat.direct$evidence   <- " Direct estimate"
-  dat.indirect$evidence <- " Indirect estimate"
-  dat.overall$evidence  <- " Network estimate"
-  dat.predict$evidence  <- " Prediction interval"
+  dat.direct$evidence   <- text.direct
+  dat.indirect$evidence <- text.indirect
+  dat.overall$evidence  <- text.overall
+  dat.predict$evidence  <- text.predict
   ##
-  dat.direct$type.study <- "square"
-  dat.indirect$type.study <- "square"
-  dat.overall$type.study <- "diamond"
-  dat.predict$type.study <- "diamond" # prediction
+  dat.direct$type.study <- type.direct
+  dat.indirect$type.study <- type.indirect
+  dat.overall$type.study <- type.overall
+  dat.predict$type.study <- "predict"
+  ##
+  dat.direct$col.estimate <- if (type.direct == "square")
+                               col.square
+                             else
+                               col.diamond
+  dat.indirect$col.estimate <- if (type.indirect == "square")
+                                 col.square
+                               else
+                                 col.diamond
+  dat.overall$col.estimate <- if (type.overall == "square")
+                                col.square
+                              else
+                                col.diamond
+  ##
+  dat.direct$col.lines <- if (type.direct == "square")
+                            col.square.lines
+                          else
+                            col.diamond.lines
+  dat.indirect$col.lines <- if (type.indirect == "square")
+                              col.square.lines
+                            else
+                              col.diamond
+  dat.overall$col.lines <- if (type.overall == "square")
+                             col.square.lines
+                           else
+                             col.diamond.lines
+  ##
+  dat.predict$col.estimate <- col.predict
+  dat.predict$col.lines <- col.predict.lines
+  ##
+  ## col.square.lines = col.square,
+  ## col.inside = "white",
+  ## col.diamond.lines = "black",
+  ## col.predict.lines = "black",
   ##
   dat.predict$TE <- dat.overall$TE
   dat.predict$seTE <- sqrt(dat.overall$seTE^2 + x$tau^2)
@@ -129,13 +240,11 @@ forest.netsplit <- function(x,
       if (prediction) dat.predict
     )
     ##
-    n.rows <- direct + indirect + overall + prediction
-    ##
-    if (n.rows > 1)
+    if (n.subgroup > 1)
       m <- metagen(dat$TE, dat$seTE, studlab = dat$evidence, data = dat,
-                   byvar = dat$comps, print.byvar = FALSE)
+                   sm = x$sm, byvar = dat$comps, print.byvar = FALSE)
     else
-      m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat)
+      m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat, sm = x$sm)
     ##
     forest(m,
            digits = digits,
@@ -149,6 +258,9 @@ forest.netsplit <- function(x,
            smlab = smlab,
            backtransf = backtransf,
            type.study = dat$type.study,
+           col.square = dat$col.estimate,
+           col.square.lines = dat$col.lines,
+           weight.study = if (equal.size) "same" else "fixed",
            ...)
   }
   else {
@@ -159,13 +271,11 @@ forest.netsplit <- function(x,
       if (prediction) dat.predict
     )
     ##
-    n.rows <- direct + indirect + overall + prediction
-    ##
-    if (n.rows > 1)
+    if (n.subgroup > 1)
       m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat,
-                   byvar = dat$evidence, print.byvar = FALSE)
+                   sm = x$sm, byvar = dat$evidence, print.byvar = FALSE)
     else
-      m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat)
+      m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat, sm = x$sm)
     ##
     forest(m,
            digits = digits,
@@ -179,6 +289,9 @@ forest.netsplit <- function(x,
            backtransf = backtransf,
            smlab = smlab,
            type.study = dat$type.study,
+           col.square = dat$col.estimate,
+           col.square.lines = dat$col.lines,
+           weight.study = if (equal.size) "same" else "fixed",
            ...)
   }
   
