@@ -141,7 +141,7 @@ print.netsplit <- function(x,
   
   fixed <- list(comp = comp,
                 k = k,
-                prop = format(round(prop.fixed, 2)))
+                prop = meta:::format.p(prop.fixed, digits = digits.pval))
   names.fixed <- c("comparison", "k", "prop")
   ##
   if (overall) {
@@ -195,7 +195,7 @@ print.netsplit <- function(x,
   
   random <- list(comp = comp,
                  k = k,
-                 prop = format(round(prop.random, 2)))
+                 prop = meta:::format.p(prop.random, digits = digits.pval))
   names.random <- c("comparison", "k", "prop")
   ##
   if (overall) {

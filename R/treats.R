@@ -1,6 +1,6 @@
-treats <- function(x, nchar = 8, row = TRUE) {
+treats <- function(x, nchar.trts = 8, row = TRUE) {
   
-  meta:::chknumeric(nchar, min = 1, single = TRUE)
+  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
   meta:::chklogical(row)
   
   if (is.matrix(x)) {
@@ -12,14 +12,14 @@ treats <- function(x, nchar = 8, row = TRUE) {
   else
     trts <- x
   ##
-  ## Default: first 'nchar' character of treatment names
+  ## Default: first 'nchar.trts' character of treatment names
   ##
-  res <- substring(trts, 1, nchar)
+  res <- substring(trts, 1, nchar.trts)
   ##
   ## Use abbreviated treatment names if necessary
   ##
   if (length(unique(res)) != length(unique(trts)))
-    res <- as.character(abbreviate(trts, nchar))
+    res <- as.character(abbreviate(trts, nchar.trts))
   ##
   res
 }

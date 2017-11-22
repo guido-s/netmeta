@@ -14,12 +14,15 @@ netmeta <- function(TE, seTE,
                     seq = NULL,
                     ##
                     tau.preset = NULL,
+                    ##
                     tol.multiarm = 0.0005,
                     details.chkmultiarm = FALSE,
+                    ##
                     sep.trts = ":",
+                    nchar.trts = 666,
                     ##
                     backtransf = gs("backtransf"),
-                    nchar = 666,
+                    ##
                     title = "",
                     warn = TRUE
                     ) {
@@ -38,8 +41,23 @@ netmeta <- function(TE, seTE,
   meta:::chklogical(comb.random)
   meta:::chklogical(prediction)
   ##
+  meta:::chklogical(baseline.reference)
+  ##
+  if (!is.null(all.treatments))
+    meta:::chklogical(all.treatments)
+  ##
+  if (!is.null(tau.preset))
+    meta:::chknumeric(tau.preset, min = 0, single = TRUE)
+  ##
+  meta:::chknumeric(tol.multiarm, min = 0, single = TRUE)
+  meta:::chklogical(details.chkmultiarm)
+  ##
+  meta:::chkchar(sep.trts)
+  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  ##
   meta:::chklogical(backtransf)
-  meta:::chknumeric(nchar, min = 1, single = TRUE)
+  ##
+  meta:::chkchar(title)
   meta:::chklogical(warn)
   ##
   ## Check value for reference group
@@ -509,8 +527,8 @@ netmeta <- function(TE, seTE,
               ##
               sep.trts = sep.trts,
               ##
+              nchar.trts = nchar.trts,
               backtransf = backtransf,
-              nchar = nchar,
               ##
               title = title,
               ##

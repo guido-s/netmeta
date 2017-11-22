@@ -120,9 +120,9 @@ summary.netmeta <- function(object,
   res$baseline.reference <- baseline.reference
   res$all.treatments <- all.treatments
   ##
-  res$backtransf <- object$backtransf
+  res$nchar.trts <- object$nchar.trts
   ##
-  res$nchar <- object$nchar
+  res$backtransf <- object$backtransf
   ##
   res$title <- object$title
   ##

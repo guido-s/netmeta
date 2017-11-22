@@ -6,7 +6,7 @@ print.netmeta <- function(x,
                           baseline.reference = x$baseline.reference,
                           all.treatments = x$all.treatments,
                           details = TRUE, ma = TRUE,
-                          backtransf = x$backtransf, nchar = x$nchar,
+                          backtransf = x$backtransf, nchar.trts = x$nchar.trts,
                           digits = max(4, .Options$digits - 3),
                           ...
                           ) {
@@ -23,7 +23,7 @@ print.netmeta <- function(x,
   meta:::chklogical(baseline.reference)
   ##
   meta:::chklogical(backtransf)
-  meta:::chknumeric(nchar, min = 1, single = TRUE)
+  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
   
   
   ##
@@ -52,8 +52,8 @@ print.netmeta <- function(x,
     sm.lab <- paste("log", sm, sep = "")
   
   
-  treat1 <- treats(x$treat1, nchar)
-  treat2 <- treats(x$treat2, nchar)
+  treat1 <- treats(x$treat1, nchar.trts)
+  treat2 <- treats(x$treat2, nchar.trts)
   ##
   if (any(treat1 != x$treat1) | any(treat2 != x$treat2))
     abbr <- c(treat1, treat2)
@@ -196,7 +196,7 @@ print.netmeta <- function(x,
           reference.group = reference.group,
           baseline.reference = baseline.reference,
           all.treatments = all.treatments,
-          header = FALSE, nchar = nchar)
+          header = FALSE, nchar.trts = nchar.trts)
   else
     if (!is.null(abbr)) {
       abbr <- unique(abbr)

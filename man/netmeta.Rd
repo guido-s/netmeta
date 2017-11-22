@@ -21,8 +21,8 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         reference.group="", baseline.reference=TRUE,
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.chkmultiarm = FALSE,
-        sep.trts=":", backtransf=gs("backtransf"),
-        nchar = 666, title="", warn=TRUE)
+        sep.trts=":", nchar.trts=666,
+        backtransf=gs("backtransf"), title="", warn=TRUE)
 }
 
 \arguments{
@@ -74,8 +74,8 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     back transformed in printouts and forest plots. If
     \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
     as odds ratios rather than log odds ratios, for example.}
-  \item{nchar}{A numeric defining the minium number of characters used
-    to abbreviate treatment names (see Details).}
+  \item{nchar.trts}{A numeric defining the minium number of characters
+    used to abbreviate treatment names (see Details).}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero
@@ -168,9 +168,10 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
 
   By default, treatment names are not abbreviated in
   printouts. However, in order to get more concise printouts, argument
-  \code{nchar} can be used to define the minimum number of characters
-  for abbreviated treatment names. R function \code{\link{treats}} is
-  utilised internally to create abbreviated treatment names.
+  \code{nchar.trts} can be used to define the minimum number of
+  characters for abbreviated treatment names. R function
+  \code{\link{treats}} is utilised internally to create abbreviated
+  treatment names.
 
   Names of treatment comparisons are created by concatenating
   treatment labels of pairwise comparisons using \code{sep.trts} as
@@ -199,7 +200,7 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     above.}
   \item{reference.group, baseline.reference, all.treatments,
     sep.trts}{As defined above.}
-  \item{backtransf, nchar, title, warn}{As defined above.}
+  \item{backtransf, nchar.trts, title, warn}{As defined above.}
   \item{seTE.adj}{Standard error of treatment estimate, adjusted for
     multi-arm studies.}
   \item{reference.group}{The name of the reference group, if

@@ -13,7 +13,8 @@
 netsplit(x, upper = TRUE,
          reference.group = x$reference.group,
          baseline.reference = x$baseline.reference,
-         sep.trts = x$sep.trts, quote = "")
+         sep.trts = x$sep.trts, quote.trts = "",
+         tol.direct = 0.0005)
 
 \method{print}{netsplit}(x,
       comb.fixed = x$comb.fixed,
@@ -42,7 +43,11 @@ netsplit(x, upper = TRUE,
     considered if \code{reference.group} is not equal to \code{""}.} 
   \item{sep.trts}{A character string used in comparison names as
     separator between treatment labels, e.g., " vs ".}
-  \item{quote}{A character used to print around treatment labels.}
+  \item{quote.trts}{A character used to print around treatment
+    labels.}
+  \item{tol.direct}{A numeric defining the maximum deviation of the
+    direct evidence proportion from 0 or 1 to classify a comparison as
+    providing only indirect or direct evidence, respectively.}
   \item{comb.fixed}{A logical indicating whether results for fixed
     effect model should be printed.}
   \item{comb.random}{A logical indicating whether results for random
