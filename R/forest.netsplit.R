@@ -48,7 +48,6 @@ forest.netsplit <- function(x,
   ##
   ##
   meta:::chkclass(x, "netsplit")
-  ## x <- upgradenetmeta(x)
   ##
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
   meta:::chklogical(showall)
@@ -96,10 +95,12 @@ forest.netsplit <- function(x,
   ##
   meta:::chkchar(lab.NA)
   ##
-  if (pooled == "fixed")
+  if (pooled == "fixed") {
+    if (!(missing(prediction)) & prediction)
+      warning("Prediction intervals not shown for estimates from fixed effect model.")
     prediction <- FALSE
-  
-  
+  }
+  ##
   if (!any(c(overall, direct, indirect)))
     stop("At least, one of the following estimates must be included in forest plot:\n- network estimates (argument 'overall')\n- direct estimates (argument 'direct')\n- indirect estimates (argument 'indirect')")
   ##
@@ -121,6 +122,12 @@ forest.netsplit <- function(x,
   ##
   if (n.subgroup == 1 & overall & missing.type.overall)
     type.overall <- "square"
+  ##
+  if (missing(text.predict))
+    if (!(length(x$level.predict) == 0) &&
+        x$level.comb != x$level.predict)
+      text.predict <- paste(text.predict, " (",
+                            round(x$level.predict * 100), "%-PI)", sep = "")
   
   
   ##

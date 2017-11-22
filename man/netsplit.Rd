@@ -83,7 +83,7 @@ netsplit(x, upper = TRUE,
   check for consistency of network meta-analysis (Dias et al.,
   2010). This function provides a back-calculation method to derive
   indirect estimates from direct pairwise comparisons and network
-  estimates. The direct evidence proportion as describe in König et
+  estimates. The direct evidence proportion as described in König et
   al. (2013) is used to calculate the indirect evidence.
 }
 
@@ -100,7 +100,7 @@ netsplit(x, upper = TRUE,
     TE, seTE, lower, upper, z, and p.}  
   \item{direct.fixed, direct.random}{Network meta-analysis results
     based on direct evidence (fixed effect / random effects model),
-    i.e., data frame with columsn comparison, TE, seTE, lower, upper,
+    i.e., data frame with columns comparison, TE, seTE, lower, upper,
     z, and p.}
   \item{indirect.fixed, indirect.random}{Network meta-analysis results
     based on indirect evidence (fixed effect / random effects model),
