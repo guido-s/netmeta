@@ -66,8 +66,7 @@
     \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
     as odds ratios rather than log odds ratios, for example.}
   \item{nchar.trts}{A numeric defining the minium number of characters
-    used to abbreviate treatment names (see \code{\link{abbreviate}}
-    for more information).}
+    used to create unique treatment names.}
   \item{header}{A logical indicating whether information on title of
     meta-analysis, comparison and outcome should be printed at the
     beginning of the printout.}

@@ -75,7 +75,7 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
     as odds ratios rather than log odds ratios, for example.}
   \item{nchar.trts}{A numeric defining the minium number of characters
-    used to abbreviate treatment names (see Details).}
+    used to create unique treatment names (see Details).}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero

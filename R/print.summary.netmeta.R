@@ -159,10 +159,17 @@ print.summary.netmeta <- function(x,
                                   "'", sep = "")
                           else
                             "other treatments",
-                          " vs '", reference.group, "'", sep = "")
+                          " vs '",
+                          treats(rownames(TE.fixed),
+                                 nchar.trts)[rownames(TE.fixed)
+                                             == reference.group],
+                          "'", sep = "")
       else
         comptext <- paste("comparison: '",
-                          reference.group, "' vs ",
+                          treats(rownames(TE.fixed),
+                                 nchar.trts)[rownames(TE.fixed)
+                                             == reference.group],
+                          "' vs ",
                           if (x$n == 2)
                             paste("'",
                                   treats(rownames(TE.fixed),
@@ -285,6 +292,8 @@ print.summary.netmeta <- function(x,
         ##
         if (TE.fixed.b[rownames(res) == reference.group] == noeffect)
           res[rownames(res) == reference.group, ] <- "."
+        ##
+        rownames(res) <- treats(rownames(res), nchar.trts)
         
         cat("\nTreatment estimate (sm = '", sm.lab,
             "', ", comptext, "):\n", sep = "")
@@ -406,6 +415,8 @@ print.summary.netmeta <- function(x,
         ##
         if (TE.random.b[rownames(res) == reference.group] == noeffect)
           res[rownames(res) == reference.group, ] <- "."
+        ##
+        rownames(res) <- treats(rownames(res), nchar.trts)
         
         cat("\nTreatment estimate (sm = '", sm.lab,
             "', ", comptext, "):\n", sep = "")

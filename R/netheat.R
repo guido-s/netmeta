@@ -1,9 +1,31 @@
 netheat <- function(x, random = FALSE, tau.preset = NULL,
-                    showall = FALSE, ...) {
+                    showall = FALSE,
+                    nchar.trts = x$nchar.trts,
+                    ...) {
   
   
   meta:::chkclass(x, "netmeta")
   meta:::chklogical(showall)
+  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  
+  
+  if (is.null(x$nchar.trts))
+    nchar.trts <- 666
+  ##
+  trts <- colnames(x$A.matrix)
+  trts.abbr <- treats(trts, nchar.trts)
+  ##
+  x$treat1 <- as.character(factor(x$treat1,
+                                  levels = trts,
+                                  labels = trts.abbr))
+  ##
+  x$treat2 <- as.character(factor(x$treat2,
+                                  levels = trts,
+                                  labels = trts.abbr))
+  ##
+  colnames(x$A.matrix) <- trts.abbr
+  ##
+  x$reference.group <- trts.abbr[trts == x$reference.group]
   
   
   if (random == FALSE & length(tau.preset) == 0) {
