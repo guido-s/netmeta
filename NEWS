@@ -21,16 +21,16 @@
 
  ** User-visible changes **
 
-  * new function forest.netsplit() to produce forest plots with direct
-    and indirect evidence
-
-  * new function print.netleague() to print league table
-
-  * new function treats() to create uniquely abbreviated treatment names
+  * new functions:
+    - forest.netsplit() to produce forest plots with direct and
+      indirect evidence
+    - print.netleague() to print league table
+    - treats() to create uniquely abbreviated treatment names
 
   * netmeta():
     - new argument 'backtransf' (see above)
-    - new argument 'nchar' to abbreviate treatment names in printouts
+    - new argument 'nchar.trts' to abbreviate treatment names in
+      printouts
 
   * netleague():
     - function does not print league table, but only generates it
@@ -39,17 +39,7 @@
       confidence intervals (see R function cilayout() from R package
       meta)
 
-  * netposet():
-    - bug fix such that the function works with a ranking matrix with
-      missing elements
-
-  * netmeasures():
-    - do not round results to four digits
-
   * netsplit():
-    - bug fix: order of treatments in printouts correspond to
-      treatment comparison, e.g., "A:B" means that treatment "A" was
-      compared with treatment "B" (and not the other way around)
     - new argument 'upper' to specify whether lower or upper triangle
       of treatment estimate matrix should be used to build comparisons
     - column with comparisons added to data frames with network, direct,
@@ -57,8 +47,11 @@
     - additional new arguments (see help file):
       'reference.group', 'baseline.reference', 'sep.trts', 'quote'
 
+  * netmeasures():
+    - do not round results to four digits
+
   * print.netmeta(), print.summary.netmeta():
-    - new arguments 'backtransf' and 'minlength' (see above)
+    - new arguments 'backtransf' and 'nchar.trts' (see above)
     - argument 'logscale' removed (replaced by argument 'backtransf')
 
   * Dataset Senn2013:
@@ -69,6 +62,24 @@
     - new help pages for forest.netsplit(), print.netleague(), and
       treats()
     - updated help pages for netposet() and netsplit()
+
+ ** Bug fixes **
+
+  * netsplit():
+    - order of treatments in printouts corresponds to treatment
+      comparison, e.g., "A:B" means that treatment "A" was compared
+      with treatment "B" (and not the other way around).
+      Side note, not sure whether this is a bug or a feature as "A:B"
+      noted the design "comparison A and B" so far.
+
+  * netposet():
+    - function works with a ranking matrix that contains missing
+      elements, i.e., rankings that do not include all treatments
+
+  * netgraph():
+    - areas for multi-arm studies are printed at the correct locations
+      if argument 'start.layout' is not equal to "circle" and argument
+      'seq' defines a specific treatment order
 
  ** Internal changes **
 
