@@ -79,7 +79,8 @@
   * netgraph():
     - areas for multi-arm studies are printed at the correct locations
       if argument 'start.layout' is not equal to "circle" and argument
-      'seq' defines a specific treatment order
+      'seq' defines a specific treatment order (this bug was
+      introduced in netmeta, version 0.7-0)
 
  ** Internal changes **
 
