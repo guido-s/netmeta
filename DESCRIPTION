@@ -1,7 +1,7 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
 Version: 6.6-6
-Depends: meta (>= 4.8-3)
+Depends: meta (>= 4.8-5)
 Suggests: colorspace, rgl, hasseDiagram (>= 0.1.3), grid
 Imports: magic, MASS
 Authors@R: c(person("Gerta","Rücker", role="aut"),
@@ -14,9 +14,10 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - net heat plot and design-based decomposition of Cochran's Q according to Krahn et al. (2013) <DOI:10.1186/1471-2288-13-35>;
  - measures characterizing the flow of evidence between two treatments by König et al. (2013) <DOI:10.1002/sim.6001>;
  - ranking of treatments (frequentist analogue of SUCRA) according to Rücker & Schwarzer (2015) <DOI:10.1186/s12874-015-0060-8>;
- - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <DOI:10.1002/cem.2569>;
+ - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <DOI:10.1002/cem.2569>; (Rücker & Schwarzer, 2017) <DOI:10.1002/jrsm.1270>;
  - split direct and indirect evidence to check consistency (Dias et al., 2010) <DOI:10.1002/sim.3767>;
  - league table with network meta-analysis results;
+ - additive network meta-analysis for combinations of treatments;
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <DOI:10.1002/jrsm.1143>.
 License: GPL (>= 2)
 Encoding: UTF-8

@@ -25,7 +25,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   ##
   colnames(x$A.matrix) <- trts.abbr
   ##
-  x$reference.group <- trts.abbr[trts == x$reference.group]
+  if (x$reference.group != "")
+    x$reference.group <- trts.abbr[trts == x$reference.group]
   
   
   if (random == FALSE & length(tau.preset) == 0) {

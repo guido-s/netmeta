@@ -25,12 +25,15 @@ network meta-analysis:
     (Rücker & Schwarzer, 2015);
 
   - partial order of treatment rankings ('poset') and Hasse diagram
-    for 'poset' (Carlsen & Bruggemann, 2014);
+    for 'poset' (Carlsen & Bruggemann, 2014; Rücker & Schwarzer,
+    2017);
 
   - split direct and indirect evidence to check consistency (Dias et
     al., 2010);
 
   - league table with network meta-analysis results;
+
+  - additive network meta-analysis for combinations of treatments;
 
   - automated drawing of network graphs (Rücker & Schwarzer, 2016).
 

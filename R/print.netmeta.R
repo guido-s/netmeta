@@ -24,6 +24,8 @@ print.netmeta <- function(x,
   ##
   meta:::chklogical(backtransf)
   meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  ##
+  meta:::chknumeric(digits, min = 0, single = TRUE)
   
   
   ##

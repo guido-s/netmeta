@@ -5,6 +5,9 @@
   * New function to produce forest plots with network, direct, and
     indirect evidence
 
+  * New function to estimate additive network meta-analysis for
+    combinations of treatments
+
   * New default in function netsplit(): treatment comparisons are
     selected from upper treatment estimates matrix, i.e., comparisons
     are "A vs B", "A vs C", and "B vs C" for treatments "A", "B", and
@@ -26,6 +29,10 @@
       indirect evidence
     - print.netleague() to print league table
     - treats() to create uniquely abbreviated treatment names
+    - netcomb() and netcomb.netmeta() to estimate additive network
+      meta-analysis models for combinations of treatments   
+    - summary.netcomb(), print.netcomb(), and print.summary.netcomb()
+      to print (summaries of) netcomb objects
 
   * netmeta():
     - new argument 'backtransf' (see above)
@@ -91,6 +98,15 @@
     upper triangle of a matrix
 
   * new internal function treats() to abbreviate treatment names
+
+  * new internal function nma.additive() for estimation of additive
+    network meta-analysis models
+    
+  * new internal function createC() to create C matrix used as input
+    to nma.additive()
+    
+  * new internal functions prcombs() and prcomps() for printing of
+    netcomb objects
 
 
 *** netmeta, version 0.9-6, 2017-08-09 ***
