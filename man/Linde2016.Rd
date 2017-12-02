@@ -13,7 +13,7 @@ care) for the primary care of depression.
 \format{A data frame with the following columns:
   \describe{
   \item{id}{Study ID}
-  \item{lnOR}{Log odds ratio}
+  \item{lnOR}{Response after treatment (log odds ratio)}
   \item{selnOR}{Standard error of log odds ratio}
   \item{treat1}{First treatment}
   \item{treat2}{Second treatment}

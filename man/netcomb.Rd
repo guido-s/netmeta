@@ -51,8 +51,7 @@ Schwarzer, 2017).
 
 The underlying multivariate model is given by
 
-\deqn{\bold{\delta} = \bold{B} \bold{\theta}, \quad \bold{\theta} =
-\bold{C} \bold{\beta}}
+\deqn{\bold{\delta} = \bold{B} \bold{\theta}, \bold{\theta} = \bold{C} \bold{\beta}}
 
 with
 \itemize{
@@ -99,19 +98,16 @@ A list containing the following components:
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
   \item{df.Q}{Degrees of freedom for test of heterogeneity /
     inconsistency.}
-  \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
-  \item{Q.comp.fixed, Q.comp.random}{Test statistic for model fit
-    (fixed and random effects model).}
-  \item{df.Q.comp.fixed, df.Q.comp.random}{Degrees of freedom for test
-    of model fit (fixed and random effects model).}
-  \item{pval.Q.comp.fixed, pval.Q.comp.random}{P-value for test of
-    model fit (fixed and random effects model).}
-  \item{Q.comp.fixed, Q.comp.random}{Test statistic for \strong{???}
-    (fixed and random effects model).}
+  \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}   
+  \item{Q.comp.fixed, Q.comp.random}{Test statistic for difference in
+    goodness of fit between standard model and additive model (fixed and
+    random effects model).}
   \item{df.Q.comp.fixed, df.Q.comp.random}{Degrees of freedom for
-    \strong{???} (fixed and random effects model).}
-  \item{pval.Q.comp.fixed, pval.Q.comp.random}{P-value for
-    \strong{???} (fixed and random effects model).}
+    difference in goodness of fit between standard model and additive
+    model (fixed and random effects model).}
+  \item{pval.Q.comp.fixed, pval.Q.comp.random}{P-value for difference
+    in goodness of fit between standard model and additive model
+    (fixed and random effects model).}
   \item{backtransf}{A logical indicating whether results should be
     back transformed in printouts and forest plots.}
   \item{nchar.trts}{A numeric defining the minium number of characters
