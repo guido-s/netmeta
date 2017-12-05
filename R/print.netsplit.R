@@ -8,12 +8,23 @@ print.netsplit <- function(x,
                            digits = gs("digits"),
                            digits.zval = gs("digits.zval"),
                            digits.pval = gs("digits.pval"),
+                           digits.prop = max(gs("digits.pval") - 2, 2),
                            text.NA = ".",
                            backtransf = x$backtransf,
+                           scientific.pval = gs("scientific.pval"),
+                           big.mark = gs("big.mark"),
                            ...) {
   
   
   meta:::chkclass(x, "netsplit")
+  ##
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
+  formatCI <- meta:::formatCI
+  formatN <- meta:::formatN
+  formatPT <- meta:::formatPT
+  is.relative.effect <- meta:::is.relative.effect
+  rmSpace <- meta:::rmSpace
   
   
   ## All individual results in a single row - be on the save side:
@@ -22,22 +33,28 @@ print.netsplit <- function(x,
   on.exit(options(oldopts))
   
   
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chklogical(showall)
-  meta:::chklogical(overall)
-  meta:::chklogical(ci)
-  meta:::chklogical(test)
+  chklogical(comb.fixed)
+  chklogical(comb.random)
+  chklogical(showall)
+  chklogical(overall)
+  chklogical(ci)
+  chklogical(test)
+  ##
+  chknumeric(digits, min = 0, single = TRUE)
+  chknumeric(digits.zval, min = 0, single = TRUE)
+  chknumeric(digits.pval, min = 1, single = TRUE)
+  chknumeric(digits.prop, min = 0, single = TRUE)
   ##
   if (is.null(backtransf))
     backtransf <- TRUE
-  meta:::chklogical(backtransf)
+  chklogical(backtransf)
+  chklogical(scientific.pval)
   
   
   sm <- x$sm
   sm.lab <- sm
   ##
-  relative <- meta:::is.relative.effect(sm)
+  relative <- is.relative.effect(sm)
   ##
   if (!backtransf & relative)
     sm.lab <- paste("log", sm, sep = "")
@@ -141,52 +158,58 @@ print.netsplit <- function(x,
   
   fixed <- list(comp = comp,
                 k = k,
-                prop = meta:::format.p(prop.fixed, digits = digits.pval))
+                prop = formatPT(prop.fixed, digits = digits.prop))
   names.fixed <- c("comparison", "k", "prop")
   ##
   if (overall) {
-    fixed$TE.fixed <- meta:::format.NA(TE.fixed, digits, text.NA = text.NA)
+    fixed$TE.fixed <- formatN(TE.fixed, digits, text.NA = text.NA,
+                              big.mark = big.mark)
     names.fixed <- c(names.fixed, "nma")
     if (ci) {
-      fixed$ci.fixed <- meta:::p.ci(round(lower.fixed, digits),
-                                    round(upper.fixed, digits))
+      fixed$ci.fixed <- formatCI(round(lower.fixed, digits),
+                                 round(upper.fixed, digits))
       fixed$ci.fixed[is.na(fixed$ci.fixed)] <- text.NA
       names.fixed <- c(names.fixed, ci.lab)
     }
   }
   ##
-  fixed$TE.direct.fixed <- meta:::format.NA(TE.direct.fixed, digits, text.NA = text.NA)
+  fixed$TE.direct.fixed <- formatN(TE.direct.fixed, digits, text.NA = text.NA,
+                                   big.mark = big.mark)
   names.fixed <- c(names.fixed, "direct")
   if (ci) {
-    fixed$ci.direct.fixed <- meta:::p.ci(round(lower.direct.fixed, digits),
-                                         round(upper.direct.fixed, digits))
+    fixed$ci.direct.fixed <- formatCI(round(lower.direct.fixed, digits),
+                                      round(upper.direct.fixed, digits))
     fixed$ci.direct.fixed[is.na(fixed$ci.direct.fixed)] <- text.NA
     names.fixed <- c(names.fixed, ci.lab)
   }
   ##
-  fixed$TE.indirect.fixed <- meta:::format.NA(TE.indirect.fixed, digits, text.NA = text.NA)
+  fixed$TE.indirect.fixed <- formatN(TE.indirect.fixed, digits, text.NA = text.NA,
+                                     big.mark = big.mark)
   names.fixed <- c(names.fixed, "indir.")
   if (ci) {
-    fixed$ci.indirect.fixed <- meta:::p.ci(round(lower.indirect.fixed, digits),
-                                           round(upper.indirect.fixed, digits))
+    fixed$ci.indirect.fixed <- formatCI(round(lower.indirect.fixed, digits),
+                                        round(upper.indirect.fixed, digits))
     fixed$ci.indirect.fixed[is.na(fixed$ci.indirect.fixed)] <- text.NA
     names.fixed <- c(names.fixed, ci.lab)
   }
   ##
   if (test) {
-    fixed$diff <- meta:::format.NA(TE.compare.fixed, digits, text.NA = text.NA)
+    fixed$diff <- formatN(TE.compare.fixed, digits, text.NA = text.NA,
+                          big.mark = big.mark)
     names.fixed <- c(names.fixed, if (backtransf & relative) "RoR" else "Diff")
     if (ci) {
-      fixed$ci.diff <- meta:::p.ci(round(lower.compare.fixed, digits),
-                                   round(upper.compare.fixed, digits))
+      fixed$ci.diff <- formatCI(round(lower.compare.fixed, digits),
+                                round(upper.compare.fixed, digits))
       fixed$ci.diff[is.na(fixed$ci.diff)] <- text.NA
       names.fixed <- c(names.fixed, ci.lab)
     }
     ##
-    fixed$z <- meta:::format.NA(zval.compare.fixed, digits.zval)
+    fixed$z <- formatN(zval.compare.fixed, digits.zval,
+                       big.mark = big.mark)
     fixed$z[fixed$z == "--"] <- text.NA
-    fixed$p <- meta:::format.p(pval.compare.fixed, digits = digits.pval)
-    fixed$p[meta:::rmSpace(fixed$p) == "--"] <- text.NA
+    fixed$p <- formatPT(pval.compare.fixed, digits = digits.pval,
+                        scientific = scientific.pval)
+    fixed$p[rmSpace(fixed$p) == "--"] <- text.NA
     names.fixed <- c(names.fixed, c("z", "p-value"))
   }
   fixed <- as.data.frame(fixed)
@@ -195,52 +218,60 @@ print.netsplit <- function(x,
   
   random <- list(comp = comp,
                  k = k,
-                 prop = meta:::format.p(prop.random, digits = digits.pval))
+                 prop = formatPT(prop.random, digits = digits.prop))
   names.random <- c("comparison", "k", "prop")
   ##
   if (overall) {
-    random$TE.random <- meta:::format.NA(TE.random, digits, text.NA = text.NA)
+    random$TE.random <- formatN(TE.random, digits, text.NA = text.NA,
+                                big.mark = big.mark)
     names.random <- c(names.random, "nma")
     if (ci) {
-      random$ci.random <- meta:::p.ci(round(lower.random, digits),
-                                      round(upper.random, digits))
+      random$ci.random <- formatCI(round(lower.random, digits),
+                                   round(upper.random, digits))
       random$ci.random[is.na(random$ci.random)] <- text.NA
       names.random <- c(names.random, ci.lab)
     }
   }
   ##
-  random$TE.direct.random <- meta:::format.NA(TE.direct.random, digits, text.NA = text.NA)
+  random$TE.direct.random <- formatN(TE.direct.random, digits,
+                                     text.NA = text.NA,
+                                     big.mark = big.mark)
   names.random <- c(names.random, "direct")
   if (ci) {
-    random$ci.direct.random <- meta:::p.ci(round(lower.direct.random, digits),
-                                           round(upper.direct.random, digits))
+    random$ci.direct.random <- formatCI(round(lower.direct.random, digits),
+                                        round(upper.direct.random, digits))
     random$ci.direct.random[is.na(random$ci.direct.random)] <- text.NA
     names.random <- c(names.random, ci.lab)
   }
   ##
-  random$TE.indirect.random <- meta:::format.NA(TE.indirect.random, digits, text.NA = text.NA)
+  random$TE.indirect.random <- formatN(TE.indirect.random, digits,
+                                       text.NA = text.NA,
+                                       big.mark = big.mark)
   names.random <- c(names.random, "indir.")
   if (ci) {
-    random$ci.indirect.random <- meta:::p.ci(round(lower.indirect.random, digits),
-                                             round(upper.indirect.random, digits))
+    random$ci.indirect.random <- formatCI(round(lower.indirect.random, digits),
+                                          round(upper.indirect.random, digits))
     random$ci.indirect.random[is.na(random$ci.indirect.random)] <- text.NA
     names.random <- c(names.random, ci.lab)
   }
   ##
   if (test) {
-    random$diff <- meta:::format.NA(TE.compare.random, digits, text.NA = text.NA)
+    random$diff <- formatN(TE.compare.random, digits, text.NA = text.NA,
+                           big.mark = big.mark)
     names.random <- c(names.random, if (backtransf & relative) "RoR" else "Diff")
     if (ci) {
-      random$ci.diff <- meta:::p.ci(round(lower.compare.random, digits),
-                                    round(upper.compare.random, digits))
+      random$ci.diff <- formatCI(round(lower.compare.random, digits),
+                                 round(upper.compare.random, digits))
       random$ci.diff[is.na(random$ci.diff)] <- text.NA
       names.random <- c(names.random, ci.lab)
     }
     ##
-    random$z <- meta:::format.NA(zval.compare.random, digits.zval)
+    random$z <- formatN(zval.compare.random, digits.zval,
+                        big.mark = big.mark)
     random$z[random$z == "--"] <- text.NA
-    random$p <- meta:::format.p(pval.compare.random, digits = digits.pval)
-    random$p[meta:::rmSpace(random$p) == "--"] <- text.NA
+    random$p <- formatPT(pval.compare.random, digits = digits.pval,
+                         scientific = scientific.pval)
+    random$p[rmSpace(random$p) == "--"] <- text.NA
     names.random <- c(names.random, c("z", "p-value"))
   }
   random <- as.data.frame(random)

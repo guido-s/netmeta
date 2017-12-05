@@ -15,20 +15,25 @@ print.summary.netcomb <- function(x,
   
   
   meta:::chkclass(x, "summary.netcomb")
+  ##  
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
+  formatN <- meta:::formatN
+  formatPT <- meta:::formatPT
   
   
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chklogical(backtransf)
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  chklogical(comb.fixed)
+  chklogical(comb.random)
+  chklogical(backtransf)
+  chknumeric(nchar.trts, min = 1, single = TRUE)
   ##
-  meta:::chknumeric(digits, min = 0, single = TRUE)
-  meta:::chknumeric(digits.zval, min = 0, single = TRUE)
-  meta:::chknumeric(digits.pval, min = 1, single = TRUE)
-  meta:::chknumeric(digits.pval.Q, min = 1, single = TRUE)
-  meta:::chknumeric(digits.Q, min = 0, single = TRUE)
+  chknumeric(digits, min = 0, single = TRUE)
+  chknumeric(digits.zval, min = 0, single = TRUE)
+  chknumeric(digits.pval, min = 1, single = TRUE)
+  chknumeric(digits.pval.Q, min = 1, single = TRUE)
+  chknumeric(digits.Q, min = 0, single = TRUE)
   ##
-  meta:::chklogical(scientific.pval)
+  chklogical(scientific.pval)
   
   
   if (comb.fixed | comb.random) {
@@ -98,13 +103,13 @@ print.summary.netcomb <- function(x,
   cat("Heterogeneity statistics:\n")
   
   
-  print(data.frame(Q = meta:::format.NA(c(x$Q.comp.fixed, x$Q, x$Q.diff.fixed),
-                                        digits.Q),
+  print(data.frame(Q = formatN(c(x$Q.comp.fixed, x$Q, x$Q.diff.fixed),
+                               digits.Q),
                    df.Q = c(x$df.Q.comp, x$df.Q, x$df.Q.diff),
-                   pval = meta:::format.p(c(x$pval.Q.comp.fixed, x$pval.Q,
-                                            x$pval.Q.diff.fixed),
-                                          digits = digits.pval.Q,
-                                          scientific = scientific.pval),
+                   pval = formatPT(c(x$pval.Q.comp.fixed, x$pval.Q,
+                                     x$pval.Q.diff.fixed),
+                                   digits = digits.pval.Q,
+                                   scientific = scientific.pval),
                    row.names = c("Additive model", "Standard model", "Difference")))
   
   

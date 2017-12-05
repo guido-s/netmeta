@@ -69,7 +69,7 @@ print.netcomb <- function(x,
           digits = digits,
           digits.zval = digits.zval,
           digits.pval = digits.pval,
-          digits.pval.Q =digits.pval.Q,
+          digits.pval.Q = digits.pval.Q,
           digits.Q = digits.Q,
           scientific.pval = scientific.pval,
           big.mark = big.mark, ...)

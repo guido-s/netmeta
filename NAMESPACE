@@ -14,7 +14,7 @@ export(netmeta,
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
-# format.TE, p.ci, tau.within, decomp.tau, stress,
+# tau.within, decomp.tau, stress,
 # shadowtext, chklist, chkmultiarm, lowertri, uppertri, createB,
 # upgradenetmeta, treats, createC, nma.additive,
 # prcombs, prcomps

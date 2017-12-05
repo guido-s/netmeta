@@ -1,9 +1,22 @@
 print.decomp.design <- function(x,
-                                digits = 2, showall = FALSE,
-                                ...) {
+                                digits.Q = gs("digits.Q"),
+                                showall = FALSE,
+                                digits.pval.Q = gs("digits.pval.Q"),
+                                digits.tau2 = gs("digits.tau2"),
+                                scientific.pval = gs("scientific.pval"),
+                                big.mark = gs("big.mark"), ...) {
   
   
   meta:::chkclass(x, "decomp.design")
+  ##
+  formatPT <- meta:::formatPT
+  formatN <- meta:::formatN
+  chknumeric <- meta:::chknumeric
+  ##
+  chknumeric(digits.Q, min = 0, single = TRUE)
+  chknumeric(digits.pval.Q, min = 0, single = TRUE)
+  chknumeric(digits.tau2, min = 0, single = TRUE)
+  ##
   meta:::chklogical(showall)
   
   
@@ -22,19 +35,31 @@ print.decomp.design <- function(x,
   Q.inc.random <- x$Q.inc.random
   Q.inc.random.preset <- x$Q.inc.random.preset
   ##
-  Q.decomp$Q <- round(Q.decomp$Q, digits)
-  Q.decomp$pval <- meta:::format.p(Q.decomp$pval)
+  Q.decomp$Q <- formatN(round(Q.decomp$Q, digits.Q), digits.Q, "NA",
+                        big.mark = big.mark)
+  Q.decomp$pval <- formatPT(Q.decomp$pval, digits = digits.pval.Q,
+                            scientific = scientific.pval)
   ##
-  Q.design$Q <- round(Q.design$Q, digits)
-  Q.design$pval <- meta:::format.p(Q.design$pval)
+  Q.design$Q <- formatN(round(Q.design$Q, digits.Q), digits.Q, "NA",
+                        big.mark = big.mark)
+  Q.design$pval <- formatPT(Q.design$pval, digits = digits.pval.Q,
+                            scientific = scientific.pval)
   ##
-  Q.detach$Q <- round(Q.detach$Q, digits)
-  Q.detach$pval <- meta:::format.p(Q.detach$pval)
+  Q.detach$Q <- formatN(round(Q.detach$Q, digits.Q), digits.Q, "NA",
+                        big.mark = big.mark)
+  Q.detach$pval <- formatPT(Q.detach$pval, digits = digits.pval.Q,
+                            scientific = scientific.pval)
   ##
-  Q.inc.random$Q <- round(Q.inc.random$Q, digits)
-  Q.inc.random$tau2.within <- meta:::format.p(Q.inc.random$tau.within^2)
-  Q.inc.random$tau.within  <- meta:::format.p(Q.inc.random$tau.within)
-  Q.inc.random$pval <- meta:::format.p(Q.inc.random$pval)
+  Q.inc.random$Q <- formatN(round(Q.inc.random$Q, digits.Q), digits.Q, "NA",
+                            big.mark = big.mark)
+  Q.inc.random$tau2.within <- formatPT(Q.inc.random$tau.within^2,
+                                       digits = digits.tau2,
+                                       lab.NA = "NA", big.mark = big.mark)
+  Q.inc.random$tau.within <- formatPT(Q.inc.random$tau.within,
+                                      digits = digits.tau2,
+                                      lab.NA = "NA", big.mark = big.mark)
+  Q.inc.random$pval <- formatPT(Q.inc.random$pval, digits = digits.pval.Q,
+                                scientific = scientific.pval)
   ##
   nam <- names(Q.decomp)
   names(Q.decomp)[nam == "pval"] <- "p-value"

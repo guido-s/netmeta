@@ -49,51 +49,57 @@ forest.netsplit <- function(x,
   ##
   meta:::chkclass(x, "netsplit")
   ##
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
-  meta:::chklogical(showall)
+  chkchar <- meta:::chkchar
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
+  formatPT <- meta:::formatPT
+  setchar <- meta:::setchar
   ##
-  subgroup <- meta:::setchar(subgroup, c("comparison", "estimate"))
+  pooled <- setchar(pooled, c("fixed", "random"))
+  chklogical(showall)
   ##
-  meta:::chklogical(overall)
-  meta:::chklogical(direct)
-  meta:::chklogical(indirect)
-  meta:::chklogical(prediction)
+  subgroup <- setchar(subgroup, c("comparison", "estimate"))
   ##
-  meta:::chkchar(text.overall)
-  meta:::chkchar(text.direct)
-  meta:::chkchar(text.indirect)
-  meta:::chkchar(text.predict)
+  chklogical(overall)
+  chklogical(direct)
+  chklogical(indirect)
+  chklogical(prediction)
+  ##
+  chkchar(text.overall)
+  chkchar(text.direct)
+  chkchar(text.indirect)
+  chkchar(text.predict)
   ##
   missing.type.overall <- missing(type.overall)
   if (missing.type.overall)
     type.overall <- "diamond"
   else
-    type.overall <- meta:::setchar(type.overall, c("diamond", "square"))
+    type.overall <- setchar(type.overall, c("diamond", "square"))
   ##
   if (missing(type.direct))
     type.direct <- "square"
   else
-    type.direct <- meta:::setchar(type.direct, c("diamond", "square"))
+    type.direct <- setchar(type.direct, c("diamond", "square"))
   if (missing(type.indirect))
     type.indirect <- "square"
   else
-    type.indirect <- meta:::setchar(type.indirect, c("diamond", "square"))
+    type.indirect <- setchar(type.indirect, c("diamond", "square"))
   ##
-  meta:::chkchar(col.square)
-  meta:::chkchar(col.square.lines)
-  meta:::chkchar(col.inside)
-  meta:::chkchar(col.diamond)
-  meta:::chkchar(col.diamond.lines)
-  meta:::chkchar(col.predict)
-  meta:::chkchar(col.predict.lines)
+  chkchar(col.square)
+  chkchar(col.square.lines)
+  chkchar(col.inside)
+  chkchar(col.diamond)
+  chkchar(col.diamond.lines)
+  chkchar(col.predict)
+  chkchar(col.predict.lines)
   ##
-  meta:::chklogical(equal.size)
+  chklogical(equal.size)
   ##
-  meta:::chknumeric(digits, min = 0, single = TRUE)
-  meta:::chknumeric(digits.prop, min = 0, single = TRUE)
-  meta:::chklogical(backtransf)
+  chknumeric(digits, min = 0, single = TRUE)
+  chknumeric(digits.prop, min = 0, single = TRUE)
+  chklogical(backtransf)
   ##
-  meta:::chkchar(lab.NA)
+  chkchar(lab.NA)
   ##
   if (pooled == "fixed") {
     if (!(missing(prediction)) & prediction)
@@ -140,7 +146,7 @@ forest.netsplit <- function(x,
     dat.indirect <- x$indirect.fixed
     dat.overall <- x$fixed
     ##
-    dat.direct$prop <- meta:::format.p(x$prop.fixed, digits = digits.prop)
+    dat.direct$prop <- formatPT(x$prop.fixed, digits = digits.prop)
     dat.indirect$prop <- NA
     dat.overall$prop <- NA
     ##
@@ -152,7 +158,7 @@ forest.netsplit <- function(x,
     dat.indirect <- x$indirect.random
     dat.overall <- x$random
     ##
-    dat.direct$prop <- meta:::format.p(x$prop.random, digits = digits.prop)
+    dat.direct$prop <- formatPT(x$prop.random, digits = digits.prop)
     dat.indirect$prop <- NA
     dat.overall$prop <- NA
     ##

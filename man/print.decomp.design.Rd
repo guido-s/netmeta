@@ -9,16 +9,29 @@
 }
 
 \usage{
-\method{print}{decomp.design}(x, digits=2, showall=FALSE, ...)
+\method{print}{decomp.design}(x, digits.Q=gs("digits.Q"),
+      showall=FALSE,
+      digits.pval.Q=gs("digits.pval.Q"),
+      digits.tau2=gs("digits.tau2"),
+      scientific.pval=gs("scientific.pval"),
+      big.mark=gs("big.mark"), ...)
 }
 
 \arguments{
   \item{x}{An object of class \code{decomp.design}.}
-  \item{digits}{Minimal number of significant digits for Q statistics,
-    see \code{print.default}.}
+  \item{digits.Q}{Minimal number of significant digits for Q
+    statistics, see \code{print.default}.}
   \item{showall}{A logical indicating whether results should be shown
     for all designs or only designs contributing to chi-squared
     statistics (default).}
+  \item{digits.pval.Q}{Minimal number of significant digits for
+    p-value of heterogeneity tests, see \code{print.default}.}
+  \item{digits.tau2}{Minimal number of significant digits for
+    between-study variance, see \code{print.default}.}
+  \item{scientific.pval}{A logical specifying whether p-values should
+    be printed in scientific notation, e.g., 1.2345e-01 instead of
+    0.12345.}
+  \item{big.mark}{A character used as thousands separator.} 
   \item{\dots}{Additional arguments (ignored at the moment).}
 }
 

@@ -5,9 +5,11 @@ prcomps <- function(x,
                     scientific.pval, big.mark) {
   
   
-  sm.lab <- sm
-  ##
+  formatN <- meta:::formatN
   relative <- meta:::is.relative.effect(sm)
+  
+  
+  sm.lab <- sm
   ##
   if (!backtransf & relative)
     sm.lab <- paste("log", sm, sep = "")
@@ -29,13 +31,13 @@ prcomps <- function(x,
   res$treat2 <- as.character(factor(res$treat2,
                                     levels = trts, labels = trts.abbr))
   ##
-  res$TE <- meta:::format.NA(res$TE, digits, "NA", big.mark)
-  res$lower <- meta:::p.ci(meta:::format.NA(round(res$lower, digits),
-                                            digits, "NA", big.mark),
-                           meta:::format.NA(round(res$upper, digits),
-                                            digits, "NA", big.mark))
-  res$z <- meta:::format.NA(res$z, digits.zval, big.mark = big.mark)
-  res$p <- meta:::format.p(res$p,
+  res$TE <- formatN(res$TE, digits, "NA", big.mark)
+  res$lower <- meta:::formatCI(formatN(round(res$lower, digits),
+                                       digits, "NA", big.mark),
+                               formatN(round(res$upper, digits),
+                                       digits, "NA", big.mark))
+  res$z <- formatN(res$z, digits.zval, big.mark = big.mark)
+  res$p <- meta:::formatPT(res$p,
                            digits = digits.pval.Q,
                            scientific = scientific.pval)
   ##

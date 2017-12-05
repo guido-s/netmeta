@@ -10,23 +10,26 @@
 }
 
 \usage{
-netsplit(x, upper = TRUE,
-         reference.group = x$reference.group,
-         baseline.reference = x$baseline.reference,
-         sep.trts = x$sep.trts, quote.trts = "",
-         tol.direct = 0.0005)
+netsplit(x, upper=TRUE,
+         reference.group=x$reference.group,
+         baseline.reference=x$baseline.reference,
+         sep.trts=x$sep.trts, quote.trts="",
+         tol.direct=0.0005)
 
 \method{print}{netsplit}(x,
-      comb.fixed = x$comb.fixed,
-      comb.random = x$comb.random,
-      showall = TRUE,
-      overall = TRUE,
-      ci = FALSE,
-      test = TRUE,
-      digits = gs("digits"),
-      digits.zval = gs("digits.zval"),
-      digits.pval = gs("digits.pval"),
-      text.NA = ".", backtransf = x$backtransf,
+      comb.fixed=x$comb.fixed,
+      comb.random=x$comb.random,
+      showall=TRUE,
+      overall=TRUE,
+      ci=FALSE,
+      test=TRUE,
+      digits=gs("digits"),
+      digits.zval=gs("digits.zval"),
+      digits.pval=gs("digits.pval"),
+      digits.prop=max(gs("digits.pval")-2, 2),
+      text.NA=".", backtransf=x$backtransf,
+      scientific.pval=gs("scientific.pval"),
+      big.mark=gs("big.mark"),
       ...)
 }
 
@@ -70,12 +73,18 @@ netsplit(x, upper = TRUE,
   \item{digits.pval}{Minimal number of significant digits for p-value
     of test of agreement between direct and indirect evidence, see
     \code{print.default}.}
+  \item{digits.prop}{Minimal number of significant digits for direct
+    evidence proportions, see \code{print.default}.}
+  \item{text.NA}{A character string specifying text printed for
+    missing values.}
   \item{backtransf}{A logical indicating whether printed results
     should be back transformed. For example, if
     \code{backtransf=TRUE}, results for \code{sm="OR"} are printed as
     odds ratios rather than log odds ratios.}
-  \item{text.NA}{A character string specifying text printed for
-    missing values.}
+  \item{scientific.pval}{A logical specifying whether p-values should
+    be printed in scientific notation, e.g., 1.2345e-01 instead of
+    0.12345.}
+  \item{big.mark}{A character used as thousands separator.} 
   \item{...}{Additional arguments (ignored at the moment)}
 }
 
@@ -145,22 +154,22 @@ netsplit(x, upper = TRUE,
 \examples{
 data(Woods2010)
 #
-p1 <- pairwise(treatment, event = r, n = N,
-               studlab = author, data = Woods2010, sm = "OR")
+p1 <- pairwise(treatment, event=r, n=N,
+               studlab=author, data=Woods2010, sm="OR")
 #
 net1 <- netmeta(p1)
 #
-print(netsplit(net1), digits = 2)
-print(netsplit(net1), digits = 2,
-      backtransf = FALSE, comb.random = TRUE)
+print(netsplit(net1), digits=2)
+print(netsplit(net1), digits=2,
+      backtransf=FALSE, comb.random=TRUE)
 
 data(Senn2013)
 #
 net2 <- netmeta(TE, seTE, treat1.long, treat2.long,
-                studlab, data = Senn2013,
-                comb.random = TRUE)
+                studlab, data=Senn2013,
+                comb.random=TRUE)
 #
-print(netsplit(net2), digits = 2)
+print(netsplit(net2), digits=2)
 # Layout of Puhan et al. (2014), Table 1
-print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
+print(netsplit(net2), digits=2, ci=TRUE, test=FALSE)
 }

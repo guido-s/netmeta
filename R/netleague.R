@@ -13,6 +13,11 @@ netleague <- function(x, y,
   ##
   meta:::chkclass(x, "netmeta")
   ##
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
+  formatCI <- meta:::formatCI
+  is.relative.effect <- meta:::is.relative.effect
+  ##
   if (!missing(y)) {
     meta:::chkclass(y, "netmeta")
     ##
@@ -22,8 +27,8 @@ netleague <- function(x, y,
       stop("Arguments 'x' and 'y' must have the same treatments.")
   }
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
+  chklogical(comb.fixed)
+  chklogical(comb.random)
   ##
   if (missing(seq)) {
     seq.f <- seq.r <- seq
@@ -42,9 +47,9 @@ netleague <- function(x, y,
       seq.f <- seq.r <- setseq(seq, x$seq)
   }
   ##
-  meta:::chklogical(ci)
-  meta:::chklogical(backtransf)
-  meta:::chknumeric(digits, min = 0, single = TRUE)
+  chklogical(ci)
+  chklogical(backtransf)
+  chknumeric(digits, min = 0, single = TRUE)
   ##
   bracket.old <- gs("CIbracket")
   separator.old <- gs("CIseparator")
@@ -57,7 +62,7 @@ netleague <- function(x, y,
   ## (2) Back-transform log odds ratios & Co
   ##
   ##
-  if (backtransf & meta:::is.relative.effect(x$sm)) {
+  if (backtransf & is.relative.effect(x$sm)) {
     TE.fixed.x    <- exp(x$TE.fixed)
     lower.fixed.x <- exp(x$lower.fixed)
     upper.fixed.x <- exp(x$upper.fixed)
@@ -77,7 +82,7 @@ netleague <- function(x, y,
   }
   ##  
   if (!missing(y)) {
-    if (backtransf & meta:::is.relative.effect(y$sm)) {
+    if (backtransf & is.relative.effect(y$sm)) {
       TE.fixed.y    <- exp(y$TE.fixed)
       lower.fixed.y <- exp(y$lower.fixed)
       upper.fixed.y <- exp(y$upper.fixed)
@@ -108,7 +113,7 @@ netleague <- function(x, y,
   upper.fixed.x <- round(upper.fixed.x[seq.f, seq.f], digits)
   ##
   if (ci)
-    nl.f <- paste(TE.fixed.x, meta:::p.ci(lower.fixed.x, upper.fixed.x))
+    nl.f <- paste(TE.fixed.x, formatCI(lower.fixed.x, upper.fixed.x))
   else
     nl.f <- TE.fixed.x
   ##
@@ -121,7 +126,7 @@ netleague <- function(x, y,
     upper.fixed.y <- round(upper.fixed.y[seq.f, seq.f], digits)
     ##
     if (ci)
-      nl.f.y <- paste(TE.fixed.y, meta:::p.ci(lower.fixed.y, upper.fixed.y))
+      nl.f.y <- paste(TE.fixed.y, formatCI(lower.fixed.y, upper.fixed.y))
     else
       nl.f.y <- TE.fixed.y
     ##
@@ -143,7 +148,7 @@ netleague <- function(x, y,
   upper.random.x <- round(upper.random.x[seq.r, seq.r], digits)
   ##
   if (ci)
-    nl.r <- paste(TE.random.x, meta:::p.ci(lower.random.x, upper.random.x))
+    nl.r <- paste(TE.random.x, formatCI(lower.random.x, upper.random.x))
   else
     nl.r <- TE.random.x
   ##
@@ -156,7 +161,7 @@ netleague <- function(x, y,
     upper.random.y <- round(upper.random.y[seq.r, seq.r], digits)
     ##
     if (ci)
-      nl.r.y <- paste(TE.random.y, meta:::p.ci(lower.random.y, upper.random.y))
+      nl.r.y <- paste(TE.random.y, formatCI(lower.random.y, upper.random.y))
     else
       nl.r.y <- TE.random.y
     ##

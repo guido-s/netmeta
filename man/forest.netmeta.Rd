@@ -129,6 +129,7 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 forest(net2, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference")
 
+\dontrun{
 #
 # Add column with P-Scores on right side of forest plot
 #
@@ -138,7 +139,6 @@ forest(net2, xlim=c(-1.5,1), ref="plac",
        rightlabs="P-Score",
        just.addcols="right")
 
-\dontrun{
 #
 # Add column with P-Scores on left side of forest plot
 #

@@ -19,7 +19,12 @@
       all.treatments=x$all.treatments,
       details=TRUE, ma=TRUE,
       backtransf=x$backtransf, nchar.trts=x$nchar.trts,
-      digits=max(4, .Options$digits - 3), ...)
+      digits=gs("digits"), digits.se=gs("digits.se"),
+      digits.pval.Q=max(gs("digits.pval.Q"), 2),
+      digits.Q=gs("digits.Q"), digits.tau2=gs("digits.tau2"),
+      digits.I2=gs("digits.I2"),
+      scientific.pval=gs("scientific.pval"),
+      big.mark=gs("big.mark"), ...)
 
 \method{summary}{netmeta}(object,
         comb.fixed=object$comb.fixed, comb.random=object$comb.random,
@@ -35,7 +40,14 @@
       baseline.reference=x$baseline.reference,
       all.treatments=x$all.treatments,
       backtransf=x$backtransf, nchar.trts=x$nchar.trts,
-      header=TRUE, digits=max(3, .Options$digits - 3), ...)
+      header=TRUE,
+      digits=gs("digits"),
+      digits.pval.Q=max(gs("digits.pval.Q"), 2),
+      digits.Q=gs("digits.Q"),
+      digits.tau2=gs("digits.tau2"),
+      digits.I2=gs("digits.I2"),
+      scientific.pval=gs("scientific.pval"),
+      big.mark=gs("big.mark"), ...)
 }
 
 \arguments{
@@ -70,7 +82,22 @@
   \item{header}{A logical indicating whether information on title of
     meta-analysis, comparison and outcome should be printed at the
     beginning of the printout.}
-  \item{digits}{Minimal number of significant digits, see \code{print.default}.}
+  \item{digits}{Minimal number of significant digits, see
+    \code{print.default}.}
+  \item{digits.se}{Minimal number of significant digits for standard
+    deviations and standard errors, see \code{print.default}.}
+  \item{digits.pval.Q}{Minimal number of significant digits for
+    p-value of heterogeneity tests, see \code{print.default}.}
+  \item{digits.Q}{Minimal number of significant digits for
+    heterogeneity statistics, see \code{print.default}.}
+  \item{digits.tau2}{Minimal number of significant digits for
+    between-study variance, see \code{print.default}.}  
+  \item{digits.I2}{Minimal number of significant digits for I-squared
+    statistic, see \code{print.default}.}
+  \item{scientific.pval}{A logical specifying whether p-values should
+    be printed in scientific notation, e.g., 1.2345e-01 instead of
+    0.12345.}
+  \item{big.mark}{A character used as thousands separator.} 
   \item{warn}{A logical indicating whether the use of
     \code{summary.meta} in connection with \code{metacum} or
     \code{metainf} should result in a warning.}
