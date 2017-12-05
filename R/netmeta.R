@@ -14,9 +14,15 @@ netmeta <- function(TE, seTE,
                     seq = NULL,
                     ##
                     tau.preset = NULL,
+                    ##
                     tol.multiarm = 0.0005,
                     details.chkmultiarm = FALSE,
+                    ##
                     sep.trts = ":",
+                    nchar.trts = 666,
+                    ##
+                    backtransf = gs("backtransf"),
+                    ##
                     title = "",
                     warn = TRUE
                     ) {
@@ -34,7 +40,24 @@ netmeta <- function(TE, seTE,
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(prediction)
-  
+  ##
+  meta:::chklogical(baseline.reference)
+  ##
+  if (!is.null(all.treatments))
+    meta:::chklogical(all.treatments)
+  ##
+  if (!is.null(tau.preset))
+    meta:::chknumeric(tau.preset, min = 0, single = TRUE)
+  ##
+  meta:::chknumeric(tol.multiarm, min = 0, single = TRUE)
+  meta:::chklogical(details.chkmultiarm)
+  ##
+  meta:::chkchar(sep.trts)
+  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  ##
+  meta:::chklogical(backtransf)
+  ##
+  meta:::chkchar(title)
   meta:::chklogical(warn)
   ##
   ## Check value for reference group
@@ -225,6 +248,7 @@ netmeta <- function(TE, seTE,
               " not considered in network meta-analysis:\n", sep = ""))
     prmatrix(dat.NAs, quote = FALSE, right = TRUE,
              rowlab = rep("", sum(excl)))
+    cat("\n")
     ##
     studlab <- studlab[!(excl)]
     treat1  <- treat1[!(excl)]
@@ -320,8 +344,9 @@ netmeta <- function(TE, seTE,
                        p0$treat1, p0$treat2,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
-                       sm, level, level.comb, p0$seTE,
-                       sep.trts = sep.trts)
+                       sm,
+                       level, level.comb,
+                       p0$seTE, sep.trts = sep.trts)
   ##
   ## Random effects model
   ##
@@ -336,8 +361,9 @@ netmeta <- function(TE, seTE,
                        p1$treat1, p1$treat2,
                        p1$treat1.pos, p1$treat2.pos,
                        p1$narms, p1$studlab, 
-                       sm, level, level.comb, p1$seTE, tau,
-                       sep.trts = sep.trts)
+                       sm,
+                       level, level.comb,
+                       p1$seTE, tau, sep.trts = sep.trts)
   ##
   TE.random <- res.r$TE.pooled
   seTE.random <- res.r$seTE.pooled
@@ -501,6 +527,9 @@ netmeta <- function(TE, seTE,
               ##
               sep.trts = sep.trts,
               ##
+              nchar.trts = nchar.trts,
+              backtransf = backtransf,
+              ##
               title = title,
               ##
               warn = warn,
@@ -557,18 +586,18 @@ netmeta <- function(TE, seTE,
   ## (otherwise indirect estimates would be NA as direct estimates are NA)
   ##
   TE.direct.fixed <- res$TE.direct.fixed
-  TE.direct.fixed[P.fixed == 0] <- 0
-  ##
   TE.direct.random <- res$TE.direct.random
-  TE.direct.random[P.random == 0] <- 0
+  ##
+  TE.direct.fixed[abs(P.fixed) < .Machine$double.eps^0.5] <- 0
+  TE.direct.random[abs(P.random) < .Machine$double.eps^0.5] <- 0
   ##
   ## Indirect estimate is NA if only direct evidence is available
   ##
   res$P.fixed <- P.fixed
   res$P.random <- P.random
   ##
-  P.fixed[P.fixed == 1]   <- NA
-  P.random[P.random == 1] <- NA
+  P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
+  P.random[abs(P.random - 1) < .Machine$double.eps^0.5] <- NA
   ##
   ## Fixed effect model
   ##

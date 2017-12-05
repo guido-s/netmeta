@@ -31,7 +31,8 @@ netposet <- function(..., outcomes, treatments, small.values,
     ##
     pscore.matrix <- args[[1]]
     ##
-    if (any(pscore.matrix > 1) | any(pscore.matrix < 0))
+    if (any(pscore.matrix[!is.na(pscore.matrix)] > 1) |
+        any(pscore.matrix[!is.na(pscore.matrix)] < 0))
       stop("All elements of ranking matrix must be between 0 and 1.")
     ##
     n.outcomes <- ncol(pscore.matrix)

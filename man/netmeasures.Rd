@@ -62,6 +62,8 @@ netmeasures(x,
 \value{
 A list containing the following components:
 
+  \item{random, tau.preset}{As defined above.}
+  
   \item{proportion}{A named vector of the direct evidence proportion            
     of each network estimate.}
 

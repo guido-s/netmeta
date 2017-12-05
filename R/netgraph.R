@@ -396,7 +396,7 @@ netgraph <- function(x, seq = x$seq,
           treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
           multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
           ##
-          pdm <- pd[pd$seq %in% multiarm.labels[[i]], ]
+          pdm <- pd[pd$labels %in% multiarm.labels[[i]], ]
           if (nrow(pdm) == 0)
             pdm <- pd[pd$labels %in% multiarm.labels[[i]], ]
           ##
@@ -572,7 +572,7 @@ netgraph <- function(x, seq = x$seq,
           treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
           multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
           ##
-          pdm <- pd[pd$seq %in% multiarm.labels[[i]], ]
+          pdm <- pd[pd$labels %in% multiarm.labels[[i]], ]
           if (nrow(pdm) == 0)
             pdm <- pd[pd$labels %in% multiarm.labels[[i]], ]
           if (nrow(pdm) == 3)

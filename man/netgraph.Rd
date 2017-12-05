@@ -71,7 +71,7 @@ netgraph(x, seq = x$seq,
   \item{lwd.highlight}{A numeric for the line width for highlighting
     the comparisons given by \code{highlight}.}
   \item{multiarm}{A logical indicating whether multi-arm studies
-    should marked in plot.}
+    should be marked in plot.}
   \item{col.multiarm}{Either a function from R library colorspace or
     grDevice to define colors for multi-arm studies or a character
     vector with colors to highlight multi-arm studies.}

@@ -1,3 +1,138 @@
+*** netmeta, version 0.9-7, 2017-12-06 ***
+
+ ** Major changes **
+
+  * Version of R package meta must be larger or equal 4.9-0
+
+  * New function to produce forest plots with network, direct, and
+    indirect evidence
+
+  * New function to estimate additive network meta-analysis for
+    combinations of treatments
+
+  * New default in function netsplit(): treatment comparisons are
+    selected from upper treatment estimates matrix, i.e., comparisons
+    are "A vs B", "A vs C", and "B vs C" for treatments "A", "B", and
+    "C" instead of "B vs A", etc.
+
+  * Zero treatment arm variance in multi-arm studies results in a
+    warning instead of an error message
+
+  * League tables can be exported as CSV or Excel file
+
+  * New argument 'backtransf' indicating whether estimates should be
+    back-transformed in printouts and plots, e.g., to show results as
+    odds ratios instead of log odds ratios
+
+  * P-values can be printed in scientific notation
+
+  * P-values equal to 0 are actually printed as "0" instead of
+    "< 0.0001"
+
+  * Thousands separator can be used in printouts and forest plots for
+    large numbers
+
+ ** User-visible changes **
+
+  * new functions:
+    - forest.netsplit() to produce forest plots with direct and
+      indirect evidence
+    - print.netleague() to print league table
+    - treats() to create uniquely abbreviated treatment names
+    - netcomb() and netcomb.netmeta() to estimate additive network
+      meta-analysis models for combinations of treatments   
+    - summary.netcomb(), print.netcomb(), and print.summary.netcomb()
+      to print (summaries of) netcomb objects
+
+  * print.decomp.design(), print.netmeta(), print.netsplit(), and
+    print.summary.netmeta():
+    - new argument 'big.mark' to specify character printed as
+      thousands separator, e.g., big.mark = "," will result in
+      printing of 1,000 for the number 1000
+    - new argument 'scientific.pval' to print p-values in scientific
+      notation, e.g., 1.2345e-01 instead of 0.12345
+
+  * netmeta():
+    - new argument 'backtransf' (see above)
+    - new argument 'nchar.trts' to abbreviate treatment names in
+      printouts
+
+  * netleague():
+    - function does not print league table, but only generates it
+      (necessary for export of league table)
+    - new arguments 'bracket' and 'separator' to define layout of
+      confidence intervals (see R function cilayout() from R package
+      meta)
+
+  * netsplit():
+    - new argument 'upper' to specify whether lower or upper triangle
+      of treatment estimate matrix should be used to build comparisons
+    - column with comparisons added to data frames with network, direct,
+      and indirect estimates
+    - additional new arguments (see help file):
+      'reference.group', 'baseline.reference', 'sep.trts', 'quote'
+
+  * netmeasures():
+    - do not round results to four digits
+
+  * print.netmeta(), print.summary.netmeta():
+    - new arguments 'backtransf' and 'nchar.trts' (see above)
+    - argument 'logscale' removed (replaced by argument 'backtransf')
+
+  * Dataset Senn2013:
+    - new columns 'treat1.long' and 'treat2.long' with full treatment
+      names added
+
+  * Help pages:
+    - new help pages for forest.netsplit(), print.netleague(), and
+      treats()
+    - updated help pages for netposet() and netsplit()
+
+ ** Bug fixes **
+
+  * netsplit():
+    - order of treatments in printouts corresponds to treatment
+      comparison, e.g., "A:B" means that treatment "A" was compared
+      with treatment "B" (and not the other way around).
+      Side note, not sure whether this is a bug or a feature as "A:B"
+      noted the design "comparison A and B" so far.
+
+  * netposet():
+    - function works with a ranking matrix that contains missing
+      elements, i.e., rankings that do not include all treatments
+
+  * netgraph():
+    - areas for multi-arm studies are printed at the correct locations
+      if argument 'start.layout' is not equal to "circle" and argument
+      'seq' defines a specific treatment order (this bug was
+      introduced in netmeta, version 0.7-0)
+
+ ** Internal changes **
+
+  * chkmultiarm():
+    - warning for zero treatment arm variance instead of an error
+
+  * new internal function uppertri() to extract elements from the
+    upper triangle of a matrix
+
+  * new internal function treats() to abbreviate treatment names
+
+  * new internal function nma.additive() for estimation of additive
+    network meta-analysis models
+    
+  * new internal function createC() to create C matrix used as input
+    to nma.additive()
+    
+  * new internal functions prcombs() and prcomps() for printing of
+    netcomb objects
+
+  * Internal function p.ci() replaced with formatCI() from R package
+    meta
+
+  * Internal function format.TE() replaced with formatN() from R
+    package meta
+
+
 *** netmeta, version 0.9-6, 2017-08-09 ***
 
  ** Major changes **
@@ -19,6 +154,11 @@
 
   * A biplot can be generated to show partial ordering of treatment
     rankings for more than two outcomes
+
+  * Additional checks implemented for multi-arm studies:
+    - negative or zero treatment arm variances
+    - duplicate treatment comparisons or incomplete sets of
+      treatment comparisons within a study
 
  ** User-visible changes **
 
@@ -271,9 +411,8 @@
     new internal function to check consistency of treatment effects
     and variances in multi-arm studies; calls ginv() from MASS library
 
-  * lowertri():
-    new internal function to extract elements from the lower triangle
-    of a matrix
+  * new internal function lowertri() to extract elements from the
+    lower triangle of a matrix
 
 
 *** netmeta, version 0.9-2, 2016-11-19 ***

@@ -18,7 +18,8 @@
        rightcols=c("effect", "ci"), rightlabs=NULL,
        digits=gs("digits.forest"), small.values="good", digits.Pscore=2,
        smlab=NULL,
-       sortvar=x$seq, lab.NA=".", add.data,
+       sortvar=x$seq, backtransf=x$backtransf,
+       lab.NA=".", add.data,
        drop.reference.group = FALSE,
        ...)
 }
@@ -58,6 +59,10 @@
     printed.}
   \item{sortvar}{An optional vector used to sort the individual studies
     (must be of same length as the total number of treatments).}
+  \item{backtransf}{A logical indicating whether results should be
+    back transformed in forest plots. If \code{backtransf=TRUE},
+    results for \code{sm="OR"} are presented as odds ratios rather
+    than log odds ratios, for example.}
   \item{lab.NA}{A character string to label missing values.}
   \item{add.data}{An optional data frame with additional columns to
     print in forest plot (see Details).}
@@ -124,6 +129,7 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 forest(net2, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference")
 
+\dontrun{
 #
 # Add column with P-Scores on right side of forest plot
 #
@@ -133,7 +139,6 @@ forest(net2, xlim=c(-1.5,1), ref="plac",
        rightlabs="P-Score",
        just.addcols="right")
 
-\dontrun{
 #
 # Add column with P-Scores on left side of forest plot
 #

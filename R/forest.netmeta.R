@@ -11,6 +11,7 @@ forest.netmeta <- function(x,
                            digits.Pscore = 2,
                            smlab = NULL,
                            sortvar = x$seq,
+                           backtransf = x$backtransf,
                            lab.NA = ".",
                            add.data,
                            drop.reference.group = FALSE,
@@ -25,13 +26,17 @@ forest.netmeta <- function(x,
   meta:::chkclass(x, "netmeta")
   x <- upgradenetmeta(x)
   ##
+  chklogical <- meta:::chklogical
+  formatN <- meta:::formatN
+  ##
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
   ##
   meta:::chknumeric(digits, min = 0, single = TRUE)
   ##
-  meta:::chklogical(baseline.reference)
-  meta:::chklogical(drop.reference.group)
+  chklogical(baseline.reference)
+  chklogical(drop.reference.group)
   ##
+  chklogical(backtransf)
   meta:::chkchar(lab.NA)
   
   
@@ -113,16 +118,16 @@ forest.netmeta <- function(x,
   idx1 <- charmatch(tolower(rightcols), "pscore", nomatch = NA)
   sel1 <- !is.na(idx1) & idx1 == 1
   if (any(sel1)) {
-    dat$Pscore <- meta:::format.NA(Pscore, digits = digits.Pscore,
-                                   text.NA = lab.NA)
+    dat$Pscore <- formatN(Pscore, digits = digits.Pscore,
+                          text.NA = lab.NA)
     rightcols[sel1] <- "Pscore"
   }
   ##
   idx2 <- charmatch(tolower(leftcols), "pscore", nomatch = NA)
   sel2 <- !is.na(idx2) & idx2 == 1
   if (any(sel2)) {
-    dat$Pscore <- meta:::format.NA(Pscore, digits = digits.Pscore,
-                                   text.NA = lab.NA)
+    dat$Pscore <- formatN(Pscore, digits = digits.Pscore,
+                          text.NA = lab.NA)
     leftcols[sel2] <- "Pscore"
   }
   ##
@@ -219,13 +224,14 @@ forest.netmeta <- function(x,
   if (drop.reference.group)
     dat <- subset(dat, trts != reference.group)
   ##
-  dat$prop.direct <- meta:::format.NA(dat$prop.direct,
-                                      digits = digits.Pscore, text.NA = lab.NA)
+  dat$prop.direct <- formatN(dat$prop.direct,
+                             digits = digits.Pscore, text.NA = lab.NA)
   ##
   trts <- dat$trts
   m1 <- metagen(TE, seTE, data = dat,
                 sm = x$sm,
-                studlab = trts, warn = FALSE)
+                studlab = trts, backtransf = backtransf,
+                warn = FALSE)
   ##
   forest.meta(m1,
               digits = digits,

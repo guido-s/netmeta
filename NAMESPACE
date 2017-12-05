@@ -1,36 +1,45 @@
 export(netmeta,
        as.data.frame.netmeta, print.netmeta,
        summary.netmeta, print.summary.netmeta,
-       forest.netmeta, pairwise,
+       forest.netmeta, forest.netsplit, pairwise,
        decomp.design, print.decomp.design,
        netheat, netgraph, netheat, netmeasures,
+       netcomb, summary.netcomb,
+       print.netcomb, print.summary.netcomb,
        netrank, print.netrank,
        netconnection, print.netconnection, netdistance,
        netsplit, print.netsplit,
        netposet, print.netposet, plot.netposet, hasse,
-       netleague)
+       netleague, print.netleague, treats)
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
-# format.TE, p.ci, tau.within, decomp.tau, stress,
-# shadowtext, chklist, chkmultiarm, lowertri, createB,
-# upgradenetmeta
+# tau.within, decomp.tau, stress,
+# shadowtext, chklist, chkmultiarm, lowertri, uppertri, createB,
+# upgradenetmeta, treats, createC, nma.additive,
+# prcombs, prcomps
 
 S3method(as.data.frame, netmeta)
 S3method(print, netmeta)
 S3method(summary, netmeta)
 S3method(print, summary.netmeta)
 S3method(forest, netmeta)
+S3method(forest, netsplit)
+S3method(netcomb, netmeta)
+S3method(print, netcomb)
+S3method(summary, netcomb)
+S3method(print, summary.netcomb)
 S3method(print, decomp.design)
 S3method(print, netrank)
 S3method(print, netconnection)
 S3method(print, netsplit)
 S3method(print, netposet)
 S3method(plot, netposet)
+S3method(print, netleague)
 
 importFrom("meta", "forest", "forest.meta",
            "metabin", "metacont", "metagen",
-           "metainc", "metaprop", "gs", "ci")
+           "metainc", "metaprop", "gs", "ci", "cilayout")
 
 importFrom("magic", "adiag")
 

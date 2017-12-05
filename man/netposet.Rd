@@ -39,9 +39,10 @@ netposet(..., outcomes, treatments, small.values,
   In network meta-analysis, frequently different outcomes are
   considered which may each provide a different ordering of
   treatments. The concept of a partially ordered set (in short, a
-  \emph{poset}, Carlsen and Bruggemann, 2014) of treatments can be
-  used to gain further insights in situations with apparently
-  conflicting orderings.
+  \emph{poset}, Carlsen & Bruggemann, 2014) of treatments can be used
+  to gain further insights in situations with apparently conflicting
+  orderings. This implementation for rankings in network meta-analyis
+  is described in Rücker & Schwarzer (2017).
 
   In function \code{netposet}, argument \code{\dots} can be any of the
   following:
@@ -123,11 +124,17 @@ netposet(..., outcomes, treatments, small.values,
   \emph{Journal of Chemometrics},
   \bold{28}, 226--34, DOI:10.1002/cem.2569 .
 
-  Rücker G & Schwarzer G (2015),
+  Rücker G, Schwarzer G (2015),
   Ranking treatments in frequentist network meta-analysis works
   without resampling methods.
   \emph{BMC Medical Research Methodology},
   \bold{15}, 58, DOI:10.1186/s12874-015-0060-8 .
+
+  Rücker, G, Schwarzer, G. (2017).
+  Resolve conflicting rankings of outcomes in network meta-analysis:
+  Partial ordering of treatments.
+  \emph{Research Synthesis Methods},
+  DOI:10.1002/jrsm.1270 .
 
   Salanti G, Ades AE, Ioannidis JP (2011). 
   Graphical methods and numerical summaries for presenting results

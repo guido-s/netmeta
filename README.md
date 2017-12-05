@@ -25,12 +25,15 @@ network meta-analysis:
     (Rücker & Schwarzer, 2015);
 
   - partial order of treatment rankings ('poset') and Hasse diagram
-    for 'poset' (Carlsen & Bruggemann, 2014);
+    for 'poset' (Carlsen & Bruggemann, 2014; Rücker & Schwarzer,
+    2017);
 
   - split direct and indirect evidence to check consistency (Dias et
     al., 2010);
 
   - league table with network meta-analysis results;
+
+  - additive network meta-analysis for combinations of treatments;
 
   - automated drawing of network graphs (Rücker & Schwarzer, 2016).
 
@@ -53,6 +56,8 @@ http://meta-analysis-with-r.org/ .
 [Rücker G, Schwarzer G (2015), Ranking treatments in frequentist network meta-analysis works without resampling methods. *BMC Medical Research Methodology*, *15*: 58](https://scholar.google.de/scholar?q=Rücker+Schwarzer+2015+Ranking+treatments+in+frequentist+network+meta-analysis+works+without+resampling+methods)
 
 [Rücker G, Schwarzer G (2016), Automated drawing of network plots in network meta-analysis. *Research Synthesis Methods*, **7**: 94-107.](https://scholar.google.de/scholar?q=Rücker+Schwarzer+2016+Automated+drawing+of+network+plots+in+network+meta-analysis)
+
+[Rücker G, Schwarzer G (2017). Resolve conflicting rankings of outcomes in network meta-analysis: Partial ordering of treatments. *Research Synthesis Methods*](https://scholar.google.de/scholar?q=Rücker+Schwarzer+2017+resolve+conflicting+rankings+of+outcomes+in+network+meta-analysis)
 
 [Schwarzer G, Carpenter JR and Rücker G (2015), *Meta-Analysis with R (Use-R!)*. Springer International Publishing, Switzerland](http://www.springer.com/gp/book/9783319214153)
 

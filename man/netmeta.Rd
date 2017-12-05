@@ -13,14 +13,16 @@
   meta-analysis (Rücker, 2012).
 }
 
-\usage{netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
+\usage{
+netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
         comb.fixed=TRUE, comb.random=!is.null(tau.preset),
-	prediction=FALSE, level.predict=0.95,
-	reference.group="", baseline.reference=TRUE,
+        prediction=FALSE, level.predict=0.95,
+        reference.group="", baseline.reference=TRUE,
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.chkmultiarm = FALSE,
-        sep.trts=":", title="", warn=TRUE)
+        sep.trts=":", nchar.trts=666,
+        backtransf=gs("backtransf"), title="", warn=TRUE)
 }
 
 \arguments{
@@ -68,6 +70,12 @@
     results or negative multi-arm variances should be printed.}
   \item{sep.trts}{A character used in comparison names as separator
     between treatment labels.}
+  \item{backtransf}{A logical indicating whether results should be
+    back transformed in printouts and forest plots. If
+    \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
+    as odds ratios rather than log odds ratios, for example.}
+  \item{nchar.trts}{A numeric defining the minium number of characters
+    used to create unique treatment names (see Details).}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero
@@ -158,6 +166,13 @@
   pairwise meta-analysis, the procedure is repeated with the resulting
   enlarged standard errors.
 
+  By default, treatment names are not abbreviated in
+  printouts. However, in order to get more concise printouts, argument
+  \code{nchar.trts} can be used to define the minimum number of
+  characters for abbreviated treatment names. R function
+  \code{\link{treats}} is utilised internally to create abbreviated
+  treatment names.
+
   Names of treatment comparisons are created by concatenating
   treatment labels of pairwise comparisons using \code{sep.trts} as
   separator (see \code{\link{paste}}). These comparison names are used
@@ -176,9 +191,16 @@
   \code{summary}, \code{forest}, and \code{netrank} function. The
   object is a list containing the following components:
   \item{TE, seTE, studlab, treat1, treat2, sm, level, level.comb}{As
-    defined above.}
-  \item{comb.fixed, comb.random, seq, tau.preset, title, warn}{As defined
+    defined above.}    
+  \item{comb.fixed, comb.random, prediction, level.predict}{As defined
     above.}
+  \item{reference.group, baseline.reference, all.treatments}{As defined
+    above.}
+  \item{seq, tau.preset, tol.multiarm, details.chkmultiarm}{As defined
+    above.}
+  \item{reference.group, baseline.reference, all.treatments,
+    sep.trts}{As defined above.}
+  \item{backtransf, nchar.trts, title, warn}{As defined above.}
   \item{seTE.adj}{Standard error of treatment estimate, adjusted for
     multi-arm studies.}
   \item{reference.group}{The name of the reference group, if
@@ -347,12 +369,13 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 net2
 
 #
-# Change printing order of treatments (placebo first)
+# Change printing order of treatments with placebo last and
+# use long treatment names
 #
-trts <- c("plac", "acar", "benf", "metf", "migl", "piog",
-          "rosi", "sita", "sulf", "vild")
-net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data=Senn2013, sm="MD",
-                seq=trts)
+trts <- c("acar", "benf", "metf", "migl", "piog",
+          "rosi", "sita", "sulf", "vild", "plac")
+net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
+                data=Senn2013, sm="MD", comb.random=TRUE,
+                seq=trts, reference="Placebo")
 print(summary(net3), digits=2)
 }
