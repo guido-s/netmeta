@@ -35,20 +35,7 @@ createC <- function(x,
     stop(paste("Argument '", "sep.components",
                "' must be a single character.", sep = ""))
   ##
-  if (sep.components == "+")
-    sep.components <- "\\+"
-  else if (sep.components == ".")
-    sep.components <- "\\."
-  else if (sep.components == "&")
-    sep.components <- "\\&"
-  else if (sep.components == "$")
-    sep.components <- "\\$"
-  else if (sep.components == "#")
-    sep.components <- "\\#"
-  else if (sep.components == "|")
-    sep.components <- "\\|"
-  ##
-  components.list <- strsplit(trts, sep.components)
+  components.list <- compsplit(trts, sep.components)
   ##
   ## Remove blanks (at start and end)
   ##

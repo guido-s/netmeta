@@ -1,3 +1,17 @@
+*** netmeta, version 6.6-6, 6666-06-06 ***
+
+ ** Major changes **
+
+  * Treatment separators (argument 'sep.trts') can be special
+    characters from regular expressions
+
+ ** Internal changes **
+
+  * new internal functions compmatch() and compsplit() for argument
+    'sep.trts' taking special characters from regular expressions into
+    account, e.g., sep.trts = "."
+
+
 *** netmeta, version 0.9-7, 2017-12-06 ***
 
  ** Major changes **

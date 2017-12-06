@@ -181,9 +181,9 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   default, a colon is used as the separator. If any treatment label
   contains a colon the following characters are used as separator (in
   consecutive order): \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"},
-  \code{"."}.  If all of these characters are used in treatment
-  labels, a corresponding error message is printed asking the user to
-  specify a different separator.
+  \code{"."}, \code{"|"}, and \code{"*"}.  If all of these characters
+  are used in treatment labels, a corresponding error message is
+  printed asking the user to specify a different separator.
 }
 
 \value{

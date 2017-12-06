@@ -8,3 +8,5 @@ function (libname, pkgname)
                sep = "")
   packageStartupMessage(msg)
 }
+
+.special.characters <- c("+", ".", "&", "$", "#", "|", "*", "^")

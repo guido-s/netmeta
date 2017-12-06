@@ -11,11 +11,8 @@ netsplit <- function(x, upper = TRUE,
   
   
   seq.comps <- rownames(x$Cov.fixed)
-  x.sep.trts <- x$sep.trts
-  if (x.sep.trts == ".")
-    x.sep.trts <- "\\."
   ##
-  trts <- matrix(unlist(strsplit(seq.comps, x.sep.trts)),
+  trts <- matrix(unlist(compsplit(seq.comps, x$sep.trts)),
                  ncol = 2, byrow = TRUE)
   trts <- as.data.frame(trts, stringsAsFactors = FALSE)
   names(trts) <- c("treat1", "treat2")

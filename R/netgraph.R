@@ -464,7 +464,7 @@ netgraph <- function(x, seq = x$seq,
     ##
     if (!is.null(highlight)) {
       for (high in highlight) {
-        highs <- unlist(strsplit(high, split = highlight.split))
+        highs <- unlist(compsplit(high, split = highlight.split))
         if (length(highs) != 2)
           stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
         ##
@@ -540,7 +540,7 @@ netgraph <- function(x, seq = x$seq,
     ##
     if (!is.null(highlight)) {
       for (high in highlight) {
-        highs <- unlist(strsplit(high, split = highlight.split))
+        highs <- unlist(compsplit(high, split = highlight.split))
         if (length(highs) != 2)
           stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
         ##

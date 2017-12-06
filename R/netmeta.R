@@ -27,7 +27,6 @@ netmeta <- function(TE, seTE,
                     warn = TRUE
                     ) {
   
-  
   ##
   ##
   ## (1) Check arguments
@@ -52,6 +51,7 @@ netmeta <- function(TE, seTE,
   meta:::chknumeric(tol.multiarm, min = 0, single = TRUE)
   meta:::chklogical(details.chkmultiarm)
   ##
+  missing.sep.trts <- missing(sep.trts)
   meta:::chkchar(sep.trts)
   meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
   ##
@@ -149,21 +149,28 @@ netmeta <- function(TE, seTE,
   ##
   labels <- sort(unique(c(treat1, treat2)))
   ##
-  if (any(grepl(sep.trts, labels))) {
-    if (sep.trts != ":" & !any(grepl(":", labels)))
+  if (compmatch(labels, sep.trts)) {
+    if (!missing.sep.trts)
+      warning("Separator '", sep.trts, "' used in at least one treatment label. Try to use predefined separators: ':', '-', '_', '/', '+', '.', '|', '*'.")
+    ##
+    if (!compmatch(labels, ":"))
       sep.trts <- ":"
-    else if (!any(grepl("-", labels)))
+    else if (!compmatch(labels, "-"))
       sep.trts <- "-"
-    else if (!any(grepl("_", labels)))
+    else if (!compmatch(labels, "_"))
       sep.trts <- "_"
-    else if (!any(grepl("/", labels)))
+    else if (!compmatch(labels, "/"))
       sep.trts <- "/"
-    else if (!any(grepl("+", labels)))
+    else if (!compmatch(labels, "+"))
       sep.trts <- "+"
-    else if (!any(grepl("\\.", labels)))
-      sep.trts <- "."
+    else if (!compmatch(labels, "."))
+      sep.trts <- "-"
+    else if (!compmatch(labels, "|"))
+      sep.trts <- "|"
+    else if (!compmatch(labels, "*"))
+      sep.trts <- "*"
     else
-      stop("All predefined separators (':', '-', '_', '/', '+', '.') are used in at least one treatment label.",
+      stop("All predefined separators (':', '-', '_', '/', '+', '.', '|', '*') are used in at least one treatment label.",
            "\n   Please specify a different character that should be used as separator (argument 'sep.trts').",
            call. = FALSE)
   }
