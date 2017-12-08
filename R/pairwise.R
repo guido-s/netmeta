@@ -615,11 +615,11 @@ pairwise <- function(treat,
   ##
   sel.treat <- as.character(res$treat1) == as.character(res$treat2)
   ##
-  if (any(sel.treat)) {
+  if (any(sel.treat))
     stop(paste("Identical treatments for the following studies:\n  ",
-                paste(paste("'", studlab[sel.treat], "'", sep = ""),
-                      collapse = " - "), sep = ""))
-  }
+               paste(paste("'", unique(sort(res$studlab[sel.treat])),
+                           "'", sep = ""),
+                     collapse = " - "), sep = ""))
   ##
   ## b) Studies missing ?
   ##

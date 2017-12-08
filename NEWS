@@ -2,13 +2,19 @@
 
  ** Major changes **
 
-  * Treatment separators (argument 'sep.trts') can be special
-    characters from regular expressions
+  * Treatment separator (argument 'sep.trts') can be special character
+    from regular expressions
+
+ ** User-visible changes **
+
+  * pairwise():
+    - print correct labels in error message for studies with duplicate
+      treatments
 
  ** Internal changes **
 
   * new internal functions compmatch() and compsplit() for argument
-    'sep.trts' taking special characters from regular expressions into
+    'sep.trts' taking special character from regular expression into
     account, e.g., sep.trts = "."
 
 
