@@ -115,15 +115,15 @@ nma.ruecker <- function(TE, seTE,
       E[i, j] <- as.numeric(studlab[i] == studlab[j])
   ##
   if (df == 0) {
-    tau2 <- 0
-    I2 <- 0
+    tau2 <- NA
+    tau <- NA
+    I2 <- NA
   }
   else {
     tau2 <- max(0, (Q - df) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
+    tau <- sqrt(tau2)
     I2 <- max(0, 100 * (Q - df) / Q)
   }
-  ##
-  tau <- sqrt(tau2)
   ##
   ## Decomposition of total Q into parts from pairwise meta-analyses
   ## and residual inconsistency
@@ -245,7 +245,7 @@ nma.ruecker <- function(TE, seTE,
     ##
     m.i <- metagen(TE, seTE.orig, subset = selstud, tau.preset = tau.direct)
     ##
-    if (tau.direct == 0) {
+    if (is.na(tau.direct) | tau.direct == 0) {
       TE.i   <- m.i$TE.fixed
       seTE.i <- m.i$seTE.fixed
     }

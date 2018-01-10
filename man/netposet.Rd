@@ -184,7 +184,7 @@ net2 <- netmeta(p2,
                 comb.fixed = FALSE, comb.random = TRUE,
                 seq = trts, ref = "Placebo")
 #
-# Partial order of treatment rankings (all five outcomes)
+# Partial order of treatment rankings (two outcomes)
 #
 po <- netposet(netrank(net1, small.values = "bad"),
                netrank(net2, small.values = "bad"),

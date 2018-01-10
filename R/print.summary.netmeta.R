@@ -467,16 +467,13 @@ print.summary.netmeta <- function(x,
     else
       tau <- x$tau
     ##
-    if (!is.na(tau))
-      cat(paste("\nQuantifying heterogeneity / inconsistency:\n",
-                formatPT(tau^2,
-                         lab = TRUE, labval = "tau^2",
-                         digits = digits.tau2,
-                         lab.NA = "NA", big.mark = big.mark),
-                paste("; I^2 = ", round(I2, digits.I2), "%",
-                      "",
-                      sep = ""),
-                "\n", sep = ""))
+    cat(paste("\nQuantifying heterogeneity / inconsistency:\n",
+              formatPT(tau^2,
+                       lab = TRUE, labval = "tau^2",
+                       digits = digits.tau2,
+                       lab.NA = "NA", big.mark = big.mark),
+              if (!is.na(I2)) paste("; I^2 = ", round(I2, digits.I2), "%", "", sep = ""),
+              "\n", sep = ""))
     
     
     if (m > 1) {
