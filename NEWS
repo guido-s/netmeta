@@ -17,6 +17,9 @@
   * print.netmeta():
     - print uniquely abbreviated treatment names
 
+  * netconnection() and print.netconnection():
+    - new argument 'sep.trts' to print abbreviated treatment names
+
  ** Internal changes **
 
   * new internal functions compmatch() and compsplit() for argument

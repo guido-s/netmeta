@@ -1,5 +1,6 @@
 netconnection <- function(treat1, treat2, studlab,
                           data = NULL, subset = NULL,
+                          nchar.trts = 666,
                           title = "", warn = FALSE) {
   
   ##
@@ -11,6 +12,8 @@ netconnection <- function(treat1, treat2, studlab,
     stop("Argument 'treat1' is mandatory.")
   if (missing(treat2))
     stop("Argument 'treat2' is mandatory.")
+  ##
+  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
   ##
   meta:::chklogical(warn)
   
@@ -120,8 +123,10 @@ netconnection <- function(treat1, treat2, studlab,
   ##
   ##
   treats <- as.factor(c(as.character(treat1), as.character(treat2)))
-  n <- length(unique(treats)) # Number of treatments
-  m <- length(treat1)         # Number of comparisons
+  trts <- levels(treats)
+  ##
+  n <- length(trts)   # Number of treatments
+  m <- length(treat1) # Number of comparisons
   ##
   ## Edge-vertex incidence matrix
   ##
@@ -130,7 +135,7 @@ netconnection <- function(treat1, treat2, studlab,
   B <- createB(treat1.pos, treat2.pos, ncol = n)
   ##
   rownames(B) <- studlab
-  colnames(B) <- levels(treats)
+  colnames(B) <- trts
   ##
   L.mult <- t(B) %*% B             # Laplacian matrix with multiplicity
   A <- diag(diag(L.mult)) - L.mult # Adjacency matrix
@@ -167,6 +172,8 @@ netconnection <- function(treat1, treat2, studlab,
               D.matrix = D,
               A.matrix = A,
               L.matrix = L,
+              ##
+              nchar.trts = nchar.trts,
               ##
               title = title,
               ##
