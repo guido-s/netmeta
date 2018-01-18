@@ -27,6 +27,9 @@
       for network meta-analyses with a single design which resulted in
       an error using forest.netmeta()
 
+  * print.summary.netcomb():
+    - use correct (abbreviated) names for treatment components
+
  ** Internal changes **
 
   * new internal functions compmatch() and compsplit() for argument

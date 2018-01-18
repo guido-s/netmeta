@@ -24,18 +24,21 @@ nma.additive <- function(TE, weights, studlab,
   ##
   ## beta = effects of components
   ##
-  beta <- Lplus %*% t(X) %*% W %*% TE
+  beta <- as.vector(Lplus %*% t(X) %*% W %*% TE)
   se.beta <- sqrt(diag(Lplus))
+  names(beta) <- names(se.beta)
   ##
   ## theta = estimates for combination treatments
   ##
-  theta <- C.matrix %*% beta
+  theta <- as.vector(C.matrix %*% beta)
   se.theta <- sqrt(diag(C.matrix %*% Lplus %*% t(C.matrix)))
+  names(theta) <- names(se.theta)
   ##
   ## delta = estimates for observed comparisons
   ##
-  delta <- X %*% beta # = B.matrix %*% theta = H %*% TE
+  delta <- as.vector(X %*% beta) # = B.matrix %*% theta = H %*% TE
   se.delta <- sqrt(diag(X %*% Lplus %*% t(X)))
+  names(delta) <- names(se.delta)
   
   
   comparisons <- c(list(studlab = studlab, treat1 = treat1, treat2 = treat2),

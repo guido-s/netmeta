@@ -48,6 +48,9 @@ print.summary.netcomb <- function(x,
   
   trts <- rownames(x$x$TE.fixed)
   trts.abbr <- treats(trts, nchar.trts)
+  ##
+  comps <- names(x$components.fixed$TE)
+  comps.abbr <- treats(comps, nchar.trts)
   
   
   dat1.f <- prcombs(x$combinations.fixed,
@@ -77,13 +80,13 @@ print.summary.netcomb <- function(x,
   
   dat2.f <- prcombs(x$components.fixed,
                     backtransf, x$sm, x$level,
-                    trts, trts.abbr,
+                    comps, comps.abbr,
                     digits, digits.zval, digits.pval.Q,
                     scientific.pval, big.mark)
   ##
   dat2.r <- prcombs(x$components.random,
                     backtransf, x$sm, x$level,
-                    trts, trts.abbr,
+                    comps, comps.abbr,
                     digits, digits.zval, digits.pval.Q,
                     scientific.pval, big.mark)
   ##
@@ -113,15 +116,34 @@ print.summary.netcomb <- function(x,
                    row.names = c("Additive model", "Standard model", "Difference")))
   
   
-  if ((comb.fixed | comb.random) & any(trts != trts.abbr)) {
+  if ((comb.fixed | comb.random)) {
+    any.trts <- any(trts != trts.abbr)
+    any.comps <- any(comps != comps.abbr)
     ##
-    tmat <- data.frame(trts.abbr, trts)
-    names(tmat) <- c("Abbreviation", "Treatment name")
-    tmat <- tmat[order(tmat$Abbreviation), ]
+    if (any.trts | any.comps)
+      cat("\nLegend", if (any.trts & any.comps) "s", ":", sep = "")
     ##
-    cat("\nLegend:\n")
-    prmatrix(tmat, quote = FALSE, right = TRUE,
-             rowlab = rep("", length(trts.abbr))) 
+    if (any.trts) {
+      ##
+      tmat <- data.frame(trts.abbr, trts)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat("\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(trts.abbr))) 
+    }
+    ##
+    if (any.comps) {
+      ##
+      tmat <- data.frame(comps.abbr, comps)
+      names(tmat) <- c("Abbreviation", " Component name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat("\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(comps.abbr))) 
+    }
   }
   
   
