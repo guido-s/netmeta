@@ -575,8 +575,9 @@ netmeta <- function(TE, seTE,
     names(res$prop.direct.fixed) <-
       names(res$prop.direct.random) <- paste(labels, collapse = sep.trts)
     ##
-    P.fixed  <- 1
-    P.random <- 1
+    sel <- row(P.fixed) != col(P.fixed)
+    P.fixed[sel] <- 1
+    P.random[sel] <- 1
   }
   else {
     k <- 0

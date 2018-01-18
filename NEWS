@@ -20,6 +20,13 @@
   * netconnection() and print.netconnection():
     - new argument 'sep.trts' to print abbreviated treatment names
 
+ ** Bug fixes **
+
+  * netmeta():
+    - list elements 'P.fixed' and 'P.random' contained wrong values
+      for network meta-analyses with a single design which resulted in
+      an error using forest.netmeta()
+
  ** Internal changes **
 
   * new internal functions compmatch() and compsplit() for argument
