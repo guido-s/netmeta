@@ -14,9 +14,12 @@
 netleague(x, y,
           comb.fixed = x$comb.fixed, comb.random = x$comb.random,
           seq = x$seq, ci = TRUE, backtransf = TRUE,
+          direct = FALSE,
           digits = gs("digits"),
           bracket = gs("CIbracket"),
-          separator = gs("CIseparator"))
+          separator = gs("CIseparator"),
+          text.NA = ".",
+          big.mark = gs("big.mark"))
 
 \method{print}{netleague}(x,
       comb.fixed=x$comb.fixed, comb.random=x$comb.random, ...)
@@ -38,26 +41,55 @@ netleague(x, y,
     should be back transformed. If \code{backtransf=TRUE}, results for
     \code{sm="OR"} are printed as odds ratios rather than log odds
     ratios, for example.}
+  \item{direct}{A logical indicating whether league table with network
+    estimates (default) or estimates from direct comparisons should be
+    generated if argument \code{y} is not missing.}
   \item{digits}{Minimal number of significant digits, see
     \code{print.default}.}
   \item{bracket}{A character with bracket symbol to print lower
     confidence interval: "[", "(", "\{", "".}
   \item{separator}{A character string with information on separator
     between lower and upper confidence interval.}
-    \item{\dots}{Additional arguments (ignored at the moment).}
+  \item{text.NA}{A character string to label missing values.}
+  \item{big.mark}{A character used as thousands separator.} 
+  \item{\dots}{Additional arguments (ignored at the moment).}
 }
 
 \details{
+  A league table is a square matrix showing all pairwise comparisons
+  in a network meta-analysis. Typically, both treatment estimates and
+  confidence intervals are shown.
+  
   If argument \code{y} is not provided, the league table contains the
-  same information in the lower and upper triangle, i.e., treatment
-  comparisons and confidence intervals for network meta-analysis
-  object \code{x}.
+  network estimates from network meta-analysis object \code{x} in the
+  lower triangle and the direct treatment estimates from pairwise
+  comparisons in the upper triangle.
 
   If argument \code{y} is provided, the league table contains
   information on treatment comparisons from network meta-analysis
   object \code{x} in the lower triangle and from network meta-analysis
-  object \code{y} in the upper triangle.
+  object \code{y} in the upper triangle. This is, for example, useful
+  to print information on efficacy and safety in the same league
+  table.
+  
+  This implementation reports pairwise comparisons of the treatment in
+  the row versus the treatment in the column in the lower triangle and
+  column versus row in the upper triangle. This is a common
+  presentation for network meta-analyses which allows to easily
+  compare direction and magnitude of treatment effects. For example,
+  given treatments A, B, and C, the results reported in the first row
+  and second column as well as second row and first column are from
+  the pairwise comparison A versus B. Note, this presentation is
+  different from the printout of a network meta-analysis object which
+  reports opposite pairwise comparisons in the lower and upper
+  triangle, e.g., A versus B in the first row and second column and B
+  versus A in the second row and first column.
 
+  If the same network meta-analysis object is used for arguments
+  \code{x} and \code{y}, reciprocal treatment estimates will be shown
+  in the upper triangle (see examples), e.g., the comparison B versus
+  A.
+  
   R function \code{\link{netrank}} can be used to change the order of
   rows and columns in the league table (see examples).
 }
@@ -77,7 +109,9 @@ net0 <- netmeta(p0)
 
 oldopts <- options(width = 100)
 
-# League table for fixed effect model
+# League table for fixed effect model with
+# - network estimates in lower triangle
+# - direct estimates in upper triangle
 #
 netleague(net0, digits = 2, bracket = "(", separator = " - ")
 
@@ -159,6 +193,11 @@ netleague(net1, digits = 2)
 
 netleague(net1, digits = 2, ci = FALSE)
 netleague(net2, digits = 2, ci = FALSE)
+
+# League table for two outcomes with
+# - network estimates of first outcome in lower triangle
+# - network estimates of second outcome in upper triangle
+#
 netleague(net1, net2, digits = 2, ci = FALSE)
 
 netleague(net1, net2, seq = netrank(net1, small = "bad"), ci = FALSE)
@@ -166,6 +205,14 @@ netleague(net1, net2, seq = netrank(net2, small = "bad"), ci = FALSE)
 
 print(netrank(net1, small = "bad"), comb.random = TRUE)
 print(netrank(net2, small = "bad"), comb.random = TRUE)
+
+
+# Report results for network meta-analysis twice
+#
+netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
+          backtransf = FALSE)
+netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
+          backtransf = FALSE, direct = TRUE)
 
 options(oldopts)
 

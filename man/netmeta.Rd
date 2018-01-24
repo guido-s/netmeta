@@ -16,7 +16,8 @@
 \usage{
 netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
-        comb.fixed=TRUE, comb.random=!is.null(tau.preset),
+        comb.fixed=TRUE,
+        comb.random=!is.null(tau.preset) | !comb.fixed,
         prediction=FALSE, level.predict=0.95,
         reference.group="", baseline.reference=TRUE,
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
@@ -85,7 +86,7 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
 \details{
   Network meta-analysis using R package \bold{netmeta} is described in
   detail in Schwarzer et al. (2015), Chapter 8.
-
+  
   Let \emph{n} be the number of different treatments (nodes, vertices)
   in a network and let \emph{m} be the number of existing comparisons
   (edges) between the treatments. If there are only two-arm studies,
@@ -165,6 +166,20 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   appropriate adjustment for multi-arm studies). Then, as in standard
   pairwise meta-analysis, the procedure is repeated with the resulting
   enlarged standard errors.
+  
+  Internally, both fixed effects and random effects models are
+  calculated regardless of values choosen for arguments
+  \code{comb.fixed} and \code{comb.random}. Accordingly, the network
+  estimates for the random effects model can be extracted from
+  component \code{TE.random} of an object of class \code{"netmeta"}
+  even if argument \code{comb.random=FALSE}. However, all functions in
+  R package \bold{netmeta} will adequately consider the values for
+  \code{comb.fixed} and \code{comb.random}. E.g. function
+  \code{\link{print.summary.netmeta}} will not print results for the
+  random effects model if \code{comb.random=FALSE}. By default
+  (\code{comb.fixed=TRUE}), a fixed effects network meta-analysis is
+  reported. Use argument \code{comb.random=TRUE} to report results
+  of a random effects model.
 
   By default, treatment names are not abbreviated in
   printouts. However, in order to get more concise printouts, argument
