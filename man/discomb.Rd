@@ -1,6 +1,6 @@
-\name{netcomb}
+\name{discomb}
 
-\alias{netcomb}
+\alias{discomb}
 
 \title{Additive network meta-analysis for combinations of treatments}
 
@@ -14,19 +14,79 @@
 }
 
 \usage{
-netcomb(x,
+discomb(TE, seTE,
+        treat1, treat2,
+        studlab, data = NULL, subset = NULL,
+        ##
         inactive = NULL,
-        sep.components = "+",
-        C.matrix, ...)
+        sep.components = "+", 
+        C.matrix,
+        ##
+        sm,
+        level.comb = gs("level.comb"),
+        comb.fixed = gs("comb.fixed"),
+        comb.random = FALSE | !is.null(tau.preset),
+        ##
+        tau.preset = NULL,
+        ##
+        tol.multiarm = 0.0005,
+        details.chkmultiarm = FALSE,
+        ##
+        sep.trts = ":",
+        nchar.trts = 666,
+        ##
+        backtransf = gs("backtransf"),
+        ##
+        title = "",
+        warn = TRUE,
+        ...)
 }
 
 \arguments{
-  \item{x}{An object of class \code{netmeta}.}
+  \item{TE}{Estimate of treatment effect, i.e. difference between
+   first and second treatment (e.g. log odds ratio, mean difference,
+   or log hazard ratio).}
+  \item{seTE}{Standard error of treatment estimate.}
+  \item{treat1}{Label/Number for first treatment.}
+  \item{treat2}{Label/Number for second treatment.}
+  \item{studlab}{An optional - but important! - vector with study
+    labels (see \code{\link{netmeta}}).}
+  \item{data}{An optional data frame containing the study information.}
+  \item{subset}{An optional vector specifying a subset of studies to be used.}
   \item{inactive}{A character string defining the inactive treatment
     (see Details).}
   \item{sep.components}{A single character to define separator between
     treatment components.}
   \item{C.matrix}{C matrix (see Details).}
+  \item{sm}{A character string indicating underlying summary measure,
+    e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
+    \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.}
+  \item{level.comb}{The level used to calculate confidence intervals for
+    pooled estimates.}
+  \item{comb.fixed}{A logical indicating whether a fixed effect
+    meta-analysis should be conducted.}
+  \item{comb.random}{A logical indicating whether a random effects
+    meta-analysis should be conducted.}
+  \item{tau.preset}{An optional value for the square-root of the
+    between-study variance \eqn{\tau^2}.}
+  \item{tol.multiarm}{A numeric for the tolerance for consistency of
+    treatment estimates and corresponding variances in multi-arm studies
+    which are consistent by design.}
+  \item{details.chkmultiarm}{A logical indicating whether treatment
+    estimates and / or variances of multi-arm studies with inconsistent
+    results or negative multi-arm variances should be printed.}
+  \item{sep.trts}{A character used in comparison names as separator
+    between treatment labels.}
+  \item{backtransf}{A logical indicating whether results should be
+    back transformed in printouts and forest plots. If
+    \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
+    as odds ratios rather than log odds ratios, for example.}
+  \item{nchar.trts}{A numeric defining the minium number of characters
+    used to create unique treatment names (see Details).}
+  \item{title}{Title of meta-analysis / systematic review.}
+  \item{warn}{A logical indicating whether warnings should be printed
+    (e.g., if studies are excluded from meta-analysis due to zero
+    standard errors).}
   \item{\dots}{Additional arguments.}
 }
 
@@ -41,6 +101,10 @@ common components, an additive NMA model can be used to evaluate the
 influence of individual components. This model assumes that the effect
 of a treatment combination is the sum of the effects of its components
 which implies that common components cancel out in comparisons.
+
+This R function can be used for disconnected networks. Use
+\code{\link{netmeta}} and \code{\link{netcomb}} for connected
+networks.
 
 The additive network meta-analysis model has been implemented using
 Bayesian methods (Mills et al., 2012; Welton et al., 2013). This
@@ -147,42 +211,54 @@ A list containing the following components:
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
 Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\link{netmeta}, \link{print.netcomb}}
+\seealso{\link{netcomb}, \link{netmeta}, \link{print.netcomb}}
 
 \examples{
-data(Linde2016)
-#
-# Specify, order of treatments
-#
-trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
-          "rMAO-A", "Ind drug", "Hypericum", "Face-to-face CBT",
-          "Face-to-face PST", "Face-to-face interpsy", "Face-to-face psychodyn",
-          "Other face-to-face", "Remote CBT", "Self-help CBT", "No contact CBT",
-          "Face-to-face CBT + SSRI", "Face-to-face interpsy + SSRI",
-          "Face-to-face PST + SSRI", "UC", "Placebo")
-#
-# Note, three treatments are actually combinations of 'SSRI' with
-# other components:
-#
-# "Face-to-face CBT + SSRI",
-# "Face-to-face interpsy + SSRI",
-# "Face-to-face PST + SSRI"
+# Edges/comparisons:
+treat1 <- c("A + B","A + C",    "A","A"    ,"D","D","E")
+treat2 <- c("C",        "B","B + C","A + D","E","F","F")
+treat <- unique(c(treat1,treat2))
+TE <- c(4.1,2.05,0,0,0.1,0.1,0.05)
+seTE <- rep(0.1,7)
+studlab <- c(1:4,5,5,5)
+#studlab <- 1:7
+dat <- data.frame(TE, seTE, treat1, treat2, studlab)
+dat$treat1 <- as.character(dat$treat1)
+dat$treat2 <- as.character(dat$treat2)
 
-# Standard Network meta-analysis
-#
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = Linde2016, ref = "placebo",
-		seq = trts,
-                sm = "OR", comb.fixed = FALSE, comb.random = TRUE)
-#
-summary(net1)
 
-# Additive model for treatment components (with placebo as inactive
-# treatment)
+C.matrix <- rbind(c(1,1,0,0,0,0),  # A + B
+                  c(0,0,1,0,0,0),  # C
+                  c(1,0,1,0,0,0),  # A + C
+                  c(0,1,0,0,0,0),  # B
+                  c(1,0,0,0,0,0),  # A
+                  c(0,1,1,0,0,0),  # B + C
+                  c(1,0,0,1,0,0),  # A + D
+                  c(0,0,0,1,0,0),  # D
+                  c(0,0,0,0,1,0),  # E
+                  c(0,0,0,0,0,1))  # F
+#                  
+colnames(C.matrix) <- c("A", "B", "C", "D", "E", "F")
+rownames(C.matrix) <- c("A + B", "C", "A + C", "B", "A", "B + C", "A + D", "D", "E", "F")
+
+
+nc1 <- discomb(TE, seTE, treat1, treat2, studlab, tau = 0, C.matrix = C.matrix) 
+nc1$C.matrix
+
+seq <- rownames(nc1$C.matrix)
+nc2 <- discomb(TE, seTE, treat1, treat2, studlab, tau = 0, seq = seq)
+nc2$C.matrix
+
+
+all.equal(nc1$C.matrix, nc2$C.matrix)
+
+
+nc1$call <- nc2$call <- NULL
 #
-nc1 <- netcomb(net1, inactive = "placebo")
-#
-summary(nc1)
+all.equal(nc1, nc2)
+
+
+nc1
 }                                                                 
 
 \keyword{Network meta-analysis}
