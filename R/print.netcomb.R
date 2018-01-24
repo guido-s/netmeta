@@ -35,13 +35,13 @@ print.netcomb <- function(x,
   trts.abbr <- treats(trts, nchar.trts)
   ##
   dat.f <- prcomps(x$comparisons.fixed,
-                   backtransf, x$sm, x$level,
+                   backtransf, x$sm, x$level.comb,
                    trts, trts.abbr,
                    digits, digits.zval, digits.pval.Q,
                    scientific.pval, big.mark)
   ##
   dat.r <- prcomps(x$comparisons.random,
-                   backtransf, x$sm, x$level,
+                   backtransf, x$sm, x$level.comb,
                    trts, trts.abbr,
                    digits, digits.zval, digits.pval.Q,
                    scientific.pval, big.mark)

@@ -1,7 +1,7 @@
 \name{netcomb}
 
 \alias{netcomb}
-\alias{netcomb.netmeta}
+\alias{discomb}
 
 \title{Additive network meta-analysis for combinations of treatments}
 
@@ -15,20 +15,85 @@
 }
 
 \usage{
-netcomb(x, ...)
-
-\method{netcomb}{netmeta}(x,
-        reference.group = x$reference.group,
+netcomb(x,
+        inactive = NULL,
         sep.components = "+",
         C.matrix, ...)
+
+discomb(TE, seTE,
+        treat1, treat2,
+        studlab, data = NULL, subset = NULL,
+        ##
+        sep.components = "+", 
+        C.matrix,
+        inactive = NULL,
+        ##
+        sm,
+        level.comb = gs("level.comb"),
+        comb.fixed = gs("comb.fixed"),
+        comb.random = FALSE | !is.null(tau.preset),
+        ##
+        tau.preset = NULL,
+        ##
+        tol.multiarm = 0.0005,
+        details.chkmultiarm = FALSE,
+        ##
+        sep.trts = ":",
+        nchar.trts = 666,
+        ##
+        backtransf = gs("backtransf"),
+        ##
+        title = "",
+        warn = TRUE,
+        ...)
 }
 
 \arguments{
   \item{x}{An object of class \code{netmeta}.}
-  \item{reference.group}{Reference group.}
+  \item{inactive}{A character string defining the inactive treatment
+    (see Details).}
   \item{sep.components}{A single character to define separator between
     treatment components.}
   \item{C.matrix}{C matrix (see Details).}
+  \item{TE}{Estimate of treatment effect, i.e. difference between
+   first and second treatment (e.g. log odds ratio, mean difference,
+   or log hazard ratio).}
+  \item{seTE}{Standard error of treatment estimate.}
+  \item{treat1}{Label/Number for first treatment.}
+  \item{treat2}{Label/Number for second treatment.}
+  \item{studlab}{An optional - but important! - vector with study
+    labels (see \code{\link{netmeta}}).}
+  \item{data}{An optional data frame containing the study information.}
+  \item{subset}{An optional vector specifying a subset of studies to be used.}
+  \item{sm}{A character string indicating underlying summary measure,
+    e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
+    \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.}
+  \item{level.comb}{The level used to calculate confidence intervals for
+    pooled estimates.}
+  \item{comb.fixed}{A logical indicating whether a fixed effect
+    meta-analysis should be conducted.}
+  \item{comb.random}{A logical indicating whether a random effects
+    meta-analysis should be conducted.}
+  \item{tau.preset}{An optional value for the square-root of the
+    between-study variance \eqn{\tau^2}.}
+  \item{tol.multiarm}{A numeric for the tolerance for consistency of
+    treatment estimates and corresponding variances in multi-arm studies
+    which are consistent by design.}
+  \item{details.chkmultiarm}{A logical indicating whether treatment
+    estimates and / or variances of multi-arm studies with inconsistent
+    results or negative multi-arm variances should be printed.}
+  \item{sep.trts}{A character used in comparison names as separator
+    between treatment labels.}
+  \item{backtransf}{A logical indicating whether results should be
+    back transformed in printouts and forest plots. If
+    \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
+    as odds ratios rather than log odds ratios, for example.}
+  \item{nchar.trts}{A numeric defining the minium number of characters
+    used to create unique treatment names (see Details).}
+  \item{title}{Title of meta-analysis / systematic review.}
+  \item{warn}{A logical indicating whether warnings should be printed
+    (e.g., if studies are excluded from meta-analysis due to zero
+    standard errors).}
   \item{\dots}{Additional arguments.}
 }
 
@@ -68,6 +133,12 @@ treatment components.
 }
 All parameters are estimated using weighted least squares regression.
 
+Argument \code{inactive} can be used to specify a single component
+that does not have any therapeutic value. Accordingly, it is assumed
+that the treatment effect of the combination of this component with an
+additional treatment component is equal to the treatment effect of the
+additional component alone.
+
 Argument \code{sep.components} can be used to specify the separator
 between individual components. By default, the matrix \strong{C} is
 calculated internally from treatment names. However, it is possible to
@@ -77,7 +148,7 @@ specify a different matrix using argument \code{C.matrix}.
 \value{
 A list containing the following components:
 
-  \item{x, reference.group, sep.components, C.matrix}{As defined above.}  
+  \item{x, inactive, sep.components, C.matrix}{As defined above.}  
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
@@ -92,7 +163,7 @@ A list containing the following components:
     TE, seTE, lower, upper, z, p level, df (fixed and random effects
     model).}
   \item{sm}{Summary measure.}
-  \item{level}{Level for confidence intervals.}
+  \item{level.comb}{Level for confidence intervals.}
   \item{comb.fixed}{Fixed effect model}
   \item{comb.random}{Random effects model}
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
@@ -167,18 +238,19 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 # Standard Network meta-analysis
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = Linde2016, reference.group = "placebo",
+                data = Linde2016, ref = "placebo",
 		seq = trts,
                 sm = "OR", comb.fixed = FALSE, comb.random = TRUE)
 #
 summary(net1)
 
-# Additive model for treatment components
+# Additive model for treatment components (with placebo as inactive
+# treatment)
 #
-nc1 <- netcomb(net1)
+nc1 <- netcomb(net1, inactive = "placebo")
 #
 summary(nc1)
-}                                                                              
+}                                                                 
 
 \keyword{Network meta-analysis}
 \keyword{Additive network meta-analysis}

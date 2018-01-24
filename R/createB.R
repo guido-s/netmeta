@@ -1,4 +1,6 @@
 createB <- function (pos1, pos2, ncol) {
+  
+  
   if (missing(pos1) | missing(pos2)) {
     ##
     ## Create full edge-vertex incidence matrix

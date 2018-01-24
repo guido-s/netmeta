@@ -56,8 +56,8 @@ net1
 
 # Draw network graph
 netgraph(net1, points=TRUE, cex.points=3, cex=1.25)
-tname <- c("No intervention","Self-help","Individual counselling","Group
-counselling")
+tname <- c("No intervention", "Self-help",
+           "Individual counselling", "Group counselling")
 netgraph(net1, points=TRUE, cex.points=3, cex=1.25, labels=tname)
 }
 

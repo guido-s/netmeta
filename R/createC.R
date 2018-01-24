@@ -1,28 +1,27 @@
 createC <- function(x,
-                    reference.group = x$reference.group,
-                    sep.components = "+") {
+                    sep.components = "+",
+                    inactive = NULL) {
   
   
-  meta:::chkclass(x, "netmeta")
+  meta:::chkclass(x, c("netconnection", "netmeta"))
   ##
   ## Set of all treatments
   ##
-  trts <- rownames(x$TE.fixed)
+  if (class(x) == "netconnection")
+    trts <- rownames(x$D.matrix)
+  else
+    trts <- rownames(x$TE.fixed)
   ##
-  ## Reference group must be empty or one of the treatments
+  ## Inactive treatment must be empty or one of the treatments
   ##
-  if (reference.group != "") {
-    reference.group <- meta:::setchar(reference.group, trts)
+  inactive.given <- !is.null(inactive)
+  ##
+  if (inactive.given) {
+    inactive <- meta:::setchar(inactive, trts)
     ##
-    ## Remove reference group from treatment vector
-    ##
-    if (all(trts != reference.group))
-      stop("No treatment equal to reference treatment (argument 'reference.group')",
-           call. = FALSE)
-    ##
-    trts <- trts[trts != reference.group]
+    trts <- trts[trts != inactive]
     if (length(trts) == 0)
-      stop("All treatments equal to reference treatment (argument 'reference.group')",
+      stop("All treatments equal to reference treatment (argument 'inactive')",
            call. = FALSE)
   }
   
@@ -48,11 +47,12 @@ createC <- function(x,
   ##
   components <- unique(sort(unlist(components.list)))
   ##
-  ## Remove reference treatment from list of components
+  ## Remove inactive treatment from list of components
   ##
-  components <- components[components != reference.group]
+  if (inactive.given)
+    components <- components[components != inactive]
   
-
+  
   ##
   ## Create C matrix
   ##
@@ -73,13 +73,20 @@ createC <- function(x,
   ##
   ## Add row for reference group (and convert to matrix with numeric values)
   ##
-  C <- rbind(C, rep(0, length(components)))
+  if (inactive.given)
+    C <- rbind(C, rep(0, length(components)))
+  else
+    C <- 1L * C
   ##
   ## Convert to data frame
   ##
   C <- data.frame(C)
   names(C) <- components
-  rownames(C) <- c(trts, reference.group)
+  ##
+  if (inactive.given)
+    rownames(C) <- c(trts, inactive)
+  else
+    rownames(C) <- trts
   
   
   C

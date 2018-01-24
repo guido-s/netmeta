@@ -4,7 +4,7 @@ export(netmeta,
        forest.netmeta, forest.netsplit, pairwise,
        decomp.design, print.decomp.design,
        netheat, netgraph, netheat, netmeasures,
-       netcomb, summary.netcomb,
+       netcomb, discomb, summary.netcomb,
        print.netcomb, print.summary.netcomb,
        netrank, print.netrank,
        netconnection, print.netconnection, netdistance,
@@ -25,7 +25,6 @@ S3method(summary, netmeta)
 S3method(print, summary.netmeta)
 S3method(forest, netmeta)
 S3method(forest, netsplit)
-S3method(netcomb, netmeta)
 S3method(print, netcomb)
 S3method(summary, netcomb)
 S3method(print, summary.netcomb)

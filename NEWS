@@ -2,6 +2,10 @@
 
  ** Major changes **
 
+  * By default, results for fixed effects and random effects network
+    meta-analysis are reported (only fixed effects model was reported
+    in older versions)
+
   * Netleague tables
     - show the direct treatment estimates from pairwise comparisons in
       the upper triangle if the table is created for a single network
@@ -10,6 +14,10 @@
       the treatment in the column in the lower triangle and column
       versus row in the upper triangle (common presentation for
       network meta-analyses)
+
+  * New function discomb() for disconnected networks sharing at least
+    one common treatment component to apply the additive network model
+    for combinations of treatments
 
   * Treatment separator (argument 'sep.trts') can be special character
     from regular expressions
@@ -20,8 +28,9 @@
  ** User-visible changes **
 
   * netmeta():
-    - automatically select random effects model (comb.random = TRUE),
-      if fixed effect model is deselected (comb.fixed = FALSE)
+    - settings for printing of results are defined by settings.meta(),
+      i.e., new default is to print results for both fixed effects and
+      random effects model
 
   * pairwise():
     - print correct labels in error message for studies with duplicate
@@ -57,6 +66,11 @@
   * new internal functions compmatch() and compsplit() for argument
     'sep.trts' taking special character from regular expression into
     account, e.g., sep.trts = "."
+
+  * createC() can be used with netconnection() objects (for
+    disconnected networks)
+
+  * netcomb.netmeta() has been renamed to netcomb()
 
 
 *** netmeta, version 0.9-7, 2017-12-06 ***

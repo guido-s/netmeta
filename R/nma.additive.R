@@ -56,7 +56,7 @@ nma.additive <- function(TE, weights, studlab,
   ## Difference to standard network meta-analysis model
   ##
   Q.diff <- Q.comp - Q
-  if (abs(Q.diff) < .Machine$double.eps^0.75)
+  if (!is.na(Q.diff) && abs(Q.diff) < .Machine$double.eps^0.75)
     Q.diff <- 0
   ##
   pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)

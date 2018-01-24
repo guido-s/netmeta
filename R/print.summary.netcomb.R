@@ -108,7 +108,7 @@ print.summary.netcomb <- function(x,
   
   print(data.frame(Q = formatN(c(x$Q.comp.fixed, x$Q, x$Q.diff.fixed),
                                digits.Q),
-                   df.Q = c(x$df.Q.comp, x$df.Q, x$df.Q.diff),
+                   df.Q = formatN(c(x$df.Q.comp, x$df.Q, x$df.Q.diff), 0),
                    pval = formatPT(c(x$pval.Q.comp.fixed, x$pval.Q,
                                      x$pval.Q.diff.fixed),
                                    digits = digits.pval.Q,
