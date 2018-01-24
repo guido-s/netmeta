@@ -9,22 +9,22 @@ createC <- function(x,
   ##
   trts <- rownames(x$TE.fixed)
   ##
-  ## Reference group must be one of the treatments
+  ## Reference group must be empty or one of the treatments
   ##
-  reference.group <- meta:::setchar(reference.group, trts)
-  
-  
-  ##
-  ## Remove reference group from treatment vector
-  ##
-  if (all(trts != reference.group))
-    stop("No treatment equal to reference treatment (argument 'reference.group')",
-         call. = FALSE)
-  ##
-  trts <- trts[trts != reference.group]
-  if (length(trts) == 0)
-    stop("All treatments equal to reference treatment (argument 'reference.group')",
-         call. = FALSE)
+  if (reference.group != "") {
+    reference.group <- meta:::setchar(reference.group, trts)
+    ##
+    ## Remove reference group from treatment vector
+    ##
+    if (all(trts != reference.group))
+      stop("No treatment equal to reference treatment (argument 'reference.group')",
+           call. = FALSE)
+    ##
+    trts <- trts[trts != reference.group]
+    if (length(trts) == 0)
+      stop("All treatments equal to reference treatment (argument 'reference.group')",
+           call. = FALSE)
+  }
   
   
   ##
