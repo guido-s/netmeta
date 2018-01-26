@@ -1,9 +1,10 @@
 nma.additive <- function(TE, weights, studlab,
                          treat1, treat2, level,
                          X, C.matrix,
-                         Q, df.Q.comp, df.Q.diff) {
+                         Q, df.Q.additive, df.Q.diff) {
   
   
+  m <- length(TE)
   ##
   ## Adjusted weights
   ##
@@ -48,31 +49,58 @@ nma.additive <- function(TE, weights, studlab,
   ##
   combinations <- meta::ci(theta, se.theta, level = level)
   ##
-  ## Model fit
+  ## Test of total heterogeneity / inconsistency:
   ##
-  Q.comp <- as.vector(t(delta - TE) %*% W %*% (delta - TE))
-  pval.Q.comp <- 1 - pchisq(Q.comp, df.Q.comp)
+  Q.additive <- as.vector(t(delta - TE) %*% W %*% (delta - TE))
+  pval.Q.additive <- 1 - pchisq(Q.additive, df.Q.additive)
   ##
   ## Difference to standard network meta-analysis model
   ##
-  Q.diff <- Q.comp - Q
+  Q.diff <- Q.additive - Q
   if (!is.na(Q.diff) && abs(Q.diff) < .Machine$double.eps^0.75)
     Q.diff <- 0
   ##
   pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)
+  ##
+  if (is.na(df.Q.diff) | df.Q.diff == 0) {
+    pval.Q.diff <- NA
+  }
+  ##
+  ## Heterogeneity variance
+  ##
+  I <- diag(m)
+  E <- matrix(0, nrow = m, ncol = m)
+  for (i in 1:m)
+    for (j in 1:m)
+      E[i, j] <- as.numeric(studlab[i] ==  studlab[j])
+  ##
+  if (df.Q.additive == 0) {
+    tau2 <- NA
+    tau <- NA
+    I2 <- NA
+  }
+  else {
+    tau2 <- max(0, (Q.additive - df.Q.additive) /
+                   sum(diag((I - H) %*% (X %*% t(X) * E / 2) %*% W)))
+    tau <- sqrt(tau2)
+    I2 <- meta:::isquared(Q.additive, df.Q.additive, 0.95)$TE
+  }
   
   
   res <- list(comparisons = comparisons,
               components = components,
               combinations = combinations,
               ##
-              Q.comp = Q.comp,
-              df.Q.comp = df.Q.comp,
-              pval.Q.comp = pval.Q.comp,
+              Q.additive = Q.additive,
+              df.Q.additive = df.Q.additive,
+              pval.Q.additive = pval.Q.additive,
               ##
               Q.diff = Q.diff,
               df.Q.diff = df.Q.diff,
-              pval.Q.diff = pval.Q.diff)
+              pval.Q.diff = pval.Q.diff,
+              ##
+              tau = tau,
+              I2 = I2)
   
   
   res

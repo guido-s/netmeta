@@ -49,6 +49,9 @@ netsplit <- function(x, upper = TRUE,
     else
       wo[grep(reference.group, trts$treat2)] <- TRUE
   }
+  else
+    if (!missing(baseline.reference))
+      warning("Argument 'baseline.reference' ignored as reference group is not defined (argument 'reference.group').")
   ##
   if (any(wo)) {
     t1.wo <- trts$treat1[wo]

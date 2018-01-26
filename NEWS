@@ -32,6 +32,10 @@
       i.e., new default is to print results for both fixed effects and
       random effects model
 
+  * netgraph():
+    - new argument 'adj' to specify the adjustment of treatment labels
+    - (invisibly) return values used to produce plots
+
   * pairwise():
     - print correct labels in error message for studies with duplicate
       treatments
@@ -51,6 +55,12 @@
     - new argument 'direct' to print direct treatment estimates (if
       argument 'y' is not missing)
 
+  * print.netsplit():
+    - new argument 'legend' to suppress printing of the legend
+
+  * print.summary.netcomb():
+    - new arguments 'digits.tau2' and 'digits.I2'
+
  ** Bug fixes **
 
   * netmeta():
@@ -60,6 +70,10 @@
 
   * print.summary.netcomb():
     - use correct (abbreviated) names for treatment components
+
+  * netcomb():
+     - use correct between-study variance in random effects additive
+       network analysis model
 
  ** Internal changes **
 
@@ -71,6 +85,21 @@
     disconnected networks)
 
   * netcomb.netmeta() has been renamed to netcomb()
+
+  * netmeta():
+    - report I2 as value between 0 and 1 (instead of 0 and 100)
+    - new list element 'trts' (character vector with treatment names)
+
+  * Internal function nma.ruecker():
+    - use internal function isquared() from package meta to calculate
+      I2
+
+  * Internal function nma.additve():
+    - calcuate between-study variance tau2 and heterogeneity statistic
+      I2
+
+  * Internal function prcombs():
+    - new argument 'seq' to order treatments
 
 
 *** netmeta, version 0.9-7, 2017-12-06 ***

@@ -14,10 +14,10 @@
 }
 
 \usage{
-netcomb(x,
-        inactive = NULL,
-        sep.components = "+",
-        C.matrix, ...)
+netcomb(x, inactive = NULL, sep.components = "+", C.matrix,
+        comb.fixed = x$comb.fixed,
+        comb.random = x$comb.random | !is.null(tau.preset),
+        tau.preset = NULL)
 }
 
 \arguments{
@@ -27,7 +27,12 @@ netcomb(x,
   \item{sep.components}{A single character to define separator between
     treatment components.}
   \item{C.matrix}{C matrix (see Details).}
-  \item{\dots}{Additional arguments.}
+  \item{comb.fixed}{A logical indicating whether a fixed effect
+    meta-analysis should be conducted.}
+  \item{comb.random}{A logical indicating whether a random effects
+    meta-analysis should be conducted.}
+  \item{tau.preset}{An optional value for the square-root of the
+    between-study variance \eqn{\tau^2}.}
 }
 
 \details{
@@ -82,6 +87,7 @@ specify a different matrix using argument \code{C.matrix}.
 A list containing the following components:
 
   \item{x, inactive, sep.components, C.matrix}{As defined above.}  
+  \item{comb.fixed, comb.random, tau.preset}{As defined above.}  
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
@@ -97,21 +103,27 @@ A list containing the following components:
     model).}
   \item{sm}{Summary measure.}
   \item{level.comb}{Level for confidence intervals.}
-  \item{comb.fixed}{Fixed effect model}
-  \item{comb.random}{Random effects model}
-  \item{Q}{Overall heterogeneity / inconsistency statistic.}
-  \item{df.Q}{Degrees of freedom for test of heterogeneity /
-    inconsistency.}
-  \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}   
-  \item{Q.comp.fixed, Q.comp.random}{Test statistic for difference in
-    goodness of fit between standard model and additive model (fixed and
+  \item{Q.additive}{Overall heterogeneity / inconsistency statistic
+    (additive model).}
+  \item{df.Q.additive}{Degrees of freedom for test of heterogeneity /
+    inconsistency (additive model).}
+  \item{pval.Q.additive}{P-value for test of heterogeneity /
+    inconsistency (additive model).}
+  \item{Q.standard}{Overall heterogeneity / inconsistency statistic
+    (standard model).}
+  \item{df.Q.standard}{Degrees of freedom for test of heterogeneity /
+    inconsistency (standard model).}
+  \item{pval.Q.standard}{P-value for test of heterogeneity /
+    inconsistency (standard model).}
+  \item{Q.diff.fixed, Q.diff.random}{Test statistic for difference in
+    goodness of fit between standard and additive model (fixed and
     random effects model).}
-  \item{df.Q.comp.fixed, df.Q.comp.random}{Degrees of freedom for
-    difference in goodness of fit between standard model and additive
-    model (fixed and random effects model).}
-  \item{pval.Q.comp.fixed, pval.Q.comp.random}{P-value for difference
-    in goodness of fit between standard model and additive model
+  \item{df.Q.diff.fixed, df.Q.diff.random}{Degrees of freedom for
+    difference in goodness of fit between standard and additive model
     (fixed and random effects model).}
+  \item{pval.Q.diff.fixed, pval.Q.diff.random}{P-value for difference
+    in goodness of fit between standard and additive model (fixed and
+    random effects model).}
   \item{backtransf}{A logical indicating whether results should be
     back transformed in printouts and forest plots.}
   \item{nchar.trts}{A numeric defining the minium number of characters
@@ -147,7 +159,7 @@ A list containing the following components:
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
 Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\link{netmeta}, \link{print.netcomb}}
+\seealso{\link{netmeta}, \link{print.netcomb}, \link{discomb}}
 
 \examples{
 data(Linde2016)

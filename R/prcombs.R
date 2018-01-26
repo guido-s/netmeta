@@ -2,7 +2,8 @@ prcombs <- function(x,
                     backtransf, sm, level,
                     trts, trts.abbr,
                     digits, digits.zval, digits.pval.Q,
-                    scientific.pval, big.mark) {
+                    scientific.pval, big.mark,
+                    seq = NULL) {
   
   
   formatN <- meta:::formatN
@@ -19,6 +20,8 @@ prcombs <- function(x,
   
   
   res <- as.data.frame(x, stringsAsFactors = FALSE)
+  if (!is.null(seq))
+    res <- res[seq, ]
   ##
   if (backtransf & relative) {
     res$TE <- exp(res$TE)

@@ -265,6 +265,7 @@ netmeta <- function(TE, seTE,
     seTE    <- seTE[!(excl)]
     ##
     seq <- seq[seq %in% unique(c(treat1, treat2))]
+    labels <- labels[labels %in% unique(c(treat1, treat2))]
   }
   ##
   ## Check for correct number of comparisons (after removing
@@ -531,6 +532,7 @@ netmeta <- function(TE, seTE,
               baseline.reference = baseline.reference,
               all.treatments = all.treatments,
               ##
+              trts = rownames(res.f$TE.pooled),
               seq = seq,
               ##
               sep.trts = sep.trts,

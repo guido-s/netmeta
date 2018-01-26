@@ -37,6 +37,8 @@
       digits.pval = gs("digits.pval"),
       digits.pval.Q = max(gs("digits.pval.Q"), 2),
       digits.Q = gs("digits.Q"),
+      digits.tau2 = gs("digits.tau2"),
+      digits.I2 = gs("digits.I2"),
       scientific.pval = gs("scientific.pval"),
       big.mark = gs("big.mark"),
       ...)
@@ -65,6 +67,10 @@
     p-value of heterogeneity tests, see \code{print.default}.}
   \item{digits.Q}{Minimal number of significant digits for
     heterogeneity statistics, see \code{print.default}.}
+  \item{digits.tau2}{Minimal number of significant digits for
+    between-study variance, see \code{print.default}.}  
+  \item{digits.I2}{Minimal number of significant digits for I-squared
+    statistic, see \code{print.default}.}
   \item{scientific.pval}{A logical specifying whether p-values should
     be printed in scientific notation, e.g., 1.2345e-01 instead of
     0.12345.}

@@ -1,19 +1,29 @@
 netcomb <- function(x,
                     inactive = NULL,
                     sep.components = "+",
-                    C.matrix, ...) {
+                    C.matrix,
+                    comb.fixed = x$comb.fixed,
+                    comb.random = x$comb.random | !is.null(tau.preset),
+                    tau.preset = NULL) {
   
   
   meta:::chkclass(x, "netmeta")
   ##
   meta:::chkchar(sep.components)
+  ##
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  ##
+  if (!is.null(tau.preset))
+    meta:::chknumeric(tau.preset, min = 0, single = TRUE)
   
   
   n <- x$n # number of treatments / combinations
   m <- x$m # number of comparisons
   ##
+  trts <- x$trts
+  ##
   B.matrix <- x$B.matrix
-  trts <- colnames(B.matrix) # list of treatments
   
   
   if (missing(C.matrix)) {
@@ -78,20 +88,37 @@ netcomb <- function(x,
   
   
   ##
-  ## Fixed and random effects models
+  ## Fixed effects models
   ##
-  df.Q.comp <- x$df.Q + x$n - c
+  df.Q.additive <- x$df.Q + x$n - c
   df.Q.diff <- x$n - c
   ##
   res.f <- nma.additive(x$TE, x$w.fixed, x$studlab,
                         x$treat1, x$treat2, x$level.comb,
                         X, C.matrix,
-                        x$Q, df.Q.comp, df.Q.diff)
+                        x$Q, df.Q.additive, df.Q.diff)
+  
+  
   ##
-  res.r <- nma.additive(x$TE, x$w.random, x$studlab,
+  ## Calculate heterogeneity statistics (additive model)
+  ##
+  Q.additive <- res.f$Q.additive
+  ##
+  if (!is.null(tau.preset))
+    tau <- tau.preset
+  else
+    tau <- res.f$tau
+  ##
+  I2 <- res.f$I2
+  
+  
+  ##
+  ## Random effects models
+  ##
+  res.r <- nma.additive(x$TE, 1 / (1 / x$w.fixed + tau^2), x$studlab,
                         x$treat1, x$treat2, x$level.comb,
                         X, C.matrix,
-                        x$Q, df.Q.comp, df.Q.diff)
+                        x$Q, df.Q.additive, df.Q.diff)
   
   
   res <- list(k = x$k, n = n, m = m, c = c,
@@ -104,28 +131,34 @@ netcomb <- function(x,
               components.random = res.r$components,
               combinations.random = res.r$combinations,
               ##
+              tau = tau,
+              I2 = I2,
+              ##
               sm = x$sm,
               level.comb = x$level.comb,
               comb.fixed = x$comb.fixed,
               comb.random = x$comb.random,
               ##
-              Q = x$Q,
-              df.Q = x$df.Q,
-              pval.Q = x$pval.Q,
+              Q.additive = Q.additive,
+              df.Q.additive = df.Q.additive,
+              pval.Q.additive = res.f$pval.Q.additive,
               ##
-              Q.comp.fixed = res.f$Q.comp,
-              Q.comp.random = res.r$Q.comp,
-              df.Q.comp = df.Q.comp,
-              pval.Q.comp.fixed = res.f$pval.Q.comp,
-              pval.Q.comp.random = res.r$pval.Q.comp,
+              Q.standard = x$Q,
+              df.Q.standard = x$df.Q,
+              pval.Q.standard = x$pval.Q,
               ##
-              Q.diff.fixed = res.f$Q.diff,
-              Q.diff.random = res.r$Q.diff,
+              Q.diff = res.f$Q.diff,
               df.Q.diff = df.Q.diff,
-              pval.Q.diff.fixed = res.f$pval.Q.diff,
-              pval.Q.diff.random = res.r$pval.Q.diff,
+              pval.Q.diff = res.f$pval.Q.diff, 
               ##
               C.matrix = C.matrix, B.matrix = B.matrix, X = X,
+              ##
+              trts = x$trts,
+              seq = x$seq,
+              ##
+              tau.preset = tau.preset,
+              ##
+              sep.trts = x$sep.trts,
               ##
               backtransf = x$backtransf,
               nchar.trts = x$nchar.trts,

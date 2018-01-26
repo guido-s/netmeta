@@ -9,7 +9,9 @@ discomb <- function(TE, seTE,
                     sm,
                     level.comb = gs("level.comb"),
                     comb.fixed = gs("comb.fixed"),
-                    comb.random = FALSE | !is.null(tau.preset),
+                    comb.random = gs("comb.random") | !is.null(tau.preset),
+                    ##
+                    seq = NULL,
                     ##
                     tau.preset = NULL,
                     ##
@@ -22,8 +24,7 @@ discomb <- function(TE, seTE,
                     backtransf = gs("backtransf"),
                     ##
                     title = "",
-                    warn = TRUE,
-                    ...) {
+                    warn = TRUE) {
   
   
   ##
@@ -38,8 +39,6 @@ discomb <- function(TE, seTE,
   ##
   if (!is.null(tau.preset))
     meta:::chknumeric(tau.preset, min = 0, single = TRUE)
-  else
-    tau.preset <- 0
   ##
   meta:::chknumeric(tol.multiarm, min = 0, single = TRUE)
   meta:::chklogical(details.chkmultiarm)
@@ -145,6 +144,14 @@ discomb <- function(TE, seTE,
            "\n   Please specify a different character that should be used as separator (argument 'sep.trts').",
            call. = FALSE)
   }
+  ##
+  if (!is.null(seq))
+    seq <- setseq(seq, labels)
+  else {
+    seq <- labels
+    if (is.numeric(seq))
+      seq <- as.character(seq)
+  }
   
   
   ##
@@ -213,6 +220,9 @@ discomb <- function(TE, seTE,
     treat2  <- treat2[!(excl)]
     TE      <- TE[!(excl)]
     seTE    <- seTE[!(excl)]
+    ##
+    seq <- seq[seq %in% unique(c(treat1, treat2))]
+    labels <- labels[labels %in% unique(c(treat1, treat2))]
   }
   ##
   ## Check for correct number of comparisons (after removing
@@ -296,7 +306,6 @@ discomb <- function(TE, seTE,
   
   
   p0 <- prepare(TE, seTE, treat1, treat2, studlab)
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau.preset)
   ##
   o <- order(p0$order)
   ##
@@ -304,12 +313,17 @@ discomb <- function(TE, seTE,
   ##
   colnames(B.matrix) <- trts
   rownames(B.matrix) <- studlab
+  
+  
+  ##
+  ## Design matrix based on treatment components
   ##
   X <- B.matrix %*% C.matrix
   ##
   colnames(X) <- colnames(C.matrix)
   rownames(X) <- studlab
-  ##  
+  
+  
   tdata <- data.frame(studies = p0$studlab, narms = p0$narms)
   tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
   ##
@@ -324,21 +338,51 @@ discomb <- function(TE, seTE,
   n <- length(trts)
   m <- length(TE)
   k <- length(unique(studlab))
+  
+  
   ##
-  df.Q.comp <- n.a - k - (c - 1)
-  df.Q.diff <- NA
-  Q <- df.Q <- pval.Q <- NA
+  ## Fixed effects models
+  ##
+  df.Q.additive <- n.a - k - (c - 1)
+  df.Q.diff <- n - c
+  ##
+  if (netc$n.subnets == 1) {
+    net <- netmeta(TE, seTE, treat1, treat2, studlab)
+    Q <- net$Q
+    df.Q <- net$df.Q
+    pval.Q <- net$pval.Q
+  }
+  else
+    Q <- df.Q <- pval.Q <- NA
   
   
   res.f <- nma.additive(p0$TE, p0$weights, p0$studlab,
                         p0$treat1, p0$treat2, level.comb,
                         X, C.matrix,
-                        NA, df.Q.comp, df.Q.diff)
+                        Q, df.Q.additive, df.Q.diff)
+  
+  
   ##
+  ## Calculate heterogeneity statistics (additive model)
+  ##
+  Q.additive <- res.f$Q.additive
+  ##
+  if (!is.null(tau.preset))
+    tau <- tau.preset
+  else
+    tau <- res.f$tau
+  ##
+  I2 <- res.f$I2
+  
+  
+  ##
+  ## Random effects models
+  ##
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau^2)
   res.r <- nma.additive(p1$TE, p1$weights, p1$studlab,
                         p1$treat1, p1$treat2, level.comb,
                         X, C.matrix,
-                        NA, df.Q.comp, df.Q.diff)
+                        NA, df.Q.additive, df.Q.diff)
   
   
   res <- list(k = k, n = n, m = m, c = c,
@@ -351,35 +395,40 @@ discomb <- function(TE, seTE,
               components.random = res.r$components, 
               combinations.random = res.r$combinations, 
               ##
+              tau = tau,
+              I2 = I2,
+              ##
               sm = sm,
               level.comb = level.comb,
               comb.fixed = comb.fixed,
               comb.random = comb.random, 
               ##
-              Q = Q,
-              df.Q = df.Q,
-              pval.Q = pval.Q, 
+              Q.additive = Q.additive, 
+              df.Q.additive = df.Q.additive, 
+              pval.Q.additive = res.f$pval.Q.additive,
               ##
-              Q.comp.fixed = res.f$Q.comp, 
-              Q.comp.random = res.r$Q.comp, 
-              df.Q.comp = df.Q.comp, 
-              pval.Q.comp.fixed = res.f$pval.Q.comp,
-              pval.Q.comp.random = res.r$pval.Q.comp, 
+              Q.standard = Q,
+              df.Q.standard = df.Q,
+              pval.Q.standard = pval.Q, 
               ##
-              Q.diff.fixed = res.f$Q.diff,
-              Q.diff.random = res.r$Q.diff, 
+              Q.diff = res.f$Q.diff,
               df.Q.diff = df.Q.diff,
-              pval.Q.diff.fixed = res.f$pval.Q.diff, 
-              pval.Q.diff.random = res.r$pval.Q.diff, 
+              pval.Q.diff = res.f$pval.Q.diff, 
               ##
               C.matrix = C.matrix, B.matrix = B.matrix, X = X, 
+              ##
+              trts = trts,
+              seq = seq,
+              ##
+              tau.preset = tau.preset,
+              ##
+              sep.trts = sep.trts,
               ##
               backtransf = backtransf, 
               nchar.trts = nchar.trts,
               ##
               title = title,
               ##
-              x = list(TE.fixed = C.matrix, row.names = trts), 
               call = match.call(),
               version = packageDescription("netmeta")$Version
               )

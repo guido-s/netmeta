@@ -122,7 +122,7 @@ nma.ruecker <- function(TE, seTE,
   else {
     tau2 <- max(0, (Q - df) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
     tau <- sqrt(tau2)
-    I2 <- max(0, 100 * (Q - df) / Q)
+    I2 <- meta:::isquared(Q, df, 0.95)$TE
   }
   ##
   ## Decomposition of total Q into parts from pairwise meta-analyses

@@ -1,6 +1,7 @@
 netgraph <- function(x, seq = x$seq,
                      labels = rownames(x$TE.fixed),
-                     cex = 1, col = "slateblue", offset = 0.0175,
+                     cex = 1, col = "slateblue", adj = NULL,
+                     offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
                      scale = 1.10,
                      plastic, thickness,
                      lwd = 5, lwd.min = lwd / 2.5, lwd.max = lwd * 4,
@@ -177,6 +178,7 @@ netgraph <- function(x, seq = x$seq,
                          labels = labels,
                          cex = cex,
                          col = col,
+                         adj = adj,
                          offset = offset,
                          scale = scale,
                          ##
@@ -222,30 +224,99 @@ netgraph <- function(x, seq = x$seq,
   ## Generate dataset for plotting
   ##
   if (is_2d)
-    pd <- data.frame(xpos, ypos, labels, seq)
+    pd <- data.frame(labels, seq, xpos, ypos,
+                     xpos.labels = NA, ypos.labels = NA)
   else
-    pd <- data.frame(xpos, ypos, zpos, labels, seq)
+    pd <- data.frame(labels, seq, xpos, ypos, zpos,
+                     xpos.labels = NA, ypos.labels = NA, zpos.labels = NA)
   ##
-  pd$adj1 <- NA
-  pd$adj2 <- NA
-  pd$adj3 <- NA
-  ##
-  pd$adj1[pd$xpos >= 0] <- 0
-  pd$adj1[pd$xpos <  0] <- 1
-  ##
-  pd$adj2[pd$ypos >  0] <- 0
-  pd$adj2[pd$ypos <= 0] <- 1
-  ##
-  if (!is_2d) {
-    pd$adj3[pd$zpos >  0] <- 0
-    pd$adj3[pd$zpos <= 0] <- 1
+  if (is.null(adj)) {
+    pd$adj.x <- NA
+    pd$adj.y <- NA
+    if (!is_2d)
+      pd$adj.z <- NA
+    ##
+    pd$adj.x[pd$xpos >= 0] <- 0
+    pd$adj.x[pd$xpos <  0] <- 1
+    ##
+    pd$adj.y[pd$ypos >  0] <- 0
+    pd$adj.y[pd$ypos <= 0] <- 1
+    ##
+    if (!is_2d) {
+      pd$adj.z[pd$zpos >  0] <- 0
+      pd$adj.z[pd$zpos <= 0] <- 1
+    }
+  }
+  else {
+    pd$adj.x <- NA
+    pd$adj.y <- NA
+    ##
+    if (length(adj) == 1) {
+      pd$adj.x <- adj
+      pd$adj.y <- adj
+      if (!is_2d)
+        pd$adj.z <- adj
+    }
+    else if (length(adj) == 2) {
+      pd$adj.x <- adj[1]
+      pd$adj.y <- adj[2]
+      if (!is_2d)
+        pd$adj.z <- 0.5
+    }
+    else if (length(adj) == 3 & !is_2d) {
+      pd$adj.x <- adj[1]
+      pd$adj.y <- adj[2]
+      pd$adj.z <- adj[3]
+    }
+    else if (is.vector(adj)) {
+        if (length(adj) != length(labels))
+          stop("Length of vector 'adj' must be equal to number of treatments.")
+        ##
+        pd$adj.x <- adj
+        pd$adj.y <- adj
+        ##
+        if (!is_2d)
+          pd$adj.z <- adj
+    }
+    else if (is.matrix(adj)) {
+      if (nrow(adj) != length(labels))
+        stop("Number of rows of matrix 'adj' must be equal to number of treatments.")
+      pd$adj.x <- adj[, 1]
+      pd$adj.y <- adj[, 2]
+      ##
+      if (!is_2d & ncol(adj) >= 3)
+        pd$adj.z <- adj[, 3]
+    }
   }
   ##
-  offset <- offset * 2 * d
-  ##
   if (is_2d) {
-    pd$xpos.labels <- pd$xpos - offset + 2 * (pd$adj1 == 0) * offset
-    pd$ypos.labels <- pd$ypos - offset + 2 * (pd$adj2 == 0) * offset
+    offset <- offset * 2 * d
+    ##
+    if (length(offset) == 1) {
+      offset.x <- offset
+      offset.y <- offset
+    }
+    else if (length(offset) == 2) {
+      offset.x <- offset[1]
+      offset.y <- offset[2]
+    }
+    else if (is.vector(offset)) {
+      if (length(offset) != length(labels))
+        stop("Length of vector 'offset' must be equal to number of treatments.")
+      ##
+      offset.x <- offset
+      offset.y <- offset
+    }
+    else if (is.matrix(adj)) {
+      if (nrow(offset) != length(labels))
+        stop("Number of rows of matrix 'offset' must be equal to number of treatments.")
+      ##
+      offset.x <- offset[, 1]
+      offset.y <- offset[, 2]
+    }
+    ##
+    pd$xpos.labels <- pd$xpos - offset.x + 2 * (pd$adj.x == 0) * offset.x
+    pd$ypos.labels <- pd$ypos - offset.y + 2 * (pd$adj.y == 0) * offset.y
   }
   else {
     pd$xpos.labels <- pd$xpos
@@ -496,7 +567,7 @@ netgraph <- function(x, seq = x$seq,
         text(pd$xpos.labels[i], pd$ypos.labels[i],
              labels = pd$labels[i],
              cex = cex,
-             adj = c(pd$adj1[i], pd$adj2[i]))
+             adj = c(pd$adj.x[i], pd$adj.y[i]))
     ##
     ## Print number of treatments
     ##
@@ -534,7 +605,7 @@ netgraph <- function(x, seq = x$seq,
         rgl::text3d(pd$xpos.labels[i], pd$ypos.labels[i], pd$zpos.labels[i],
                     texts = pd$labels[i],
                     cex = cex,
-                    adj = c(pd$adj1[i], pd$adj2[i]))
+                    adj = c(pd$adj.x[i], pd$adj.y[i]))
     ##
     ## Add highlighted comparisons
     ##
@@ -600,5 +671,13 @@ netgraph <- function(x, seq = x$seq,
   }
   
   
-  invisible(NULL)
+  if (!is_2d) {
+    pd$xpos.labels <- NULL
+    pd$ypos.labels <- NULL
+  }
+  ##  
+  pd$zpos.labels <- NULL
+  
+  
+  invisible(pd)
 }

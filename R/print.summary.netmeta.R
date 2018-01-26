@@ -142,7 +142,7 @@ print.summary.netmeta <- function(x,
     uppTE.predict <- round(uppTE.predict, digits)
   }
   ##
-  I2 <- x$I2
+  I2 <- round(100 * x$I2, digits.I2)
   
   
   if (header)

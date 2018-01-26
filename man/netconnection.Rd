@@ -13,7 +13,10 @@
   (\code{studlab}). The function calculates the number of subnetworks
   (connectivity components; value of 1 corresponds to a fully
   connected network) and the distance matrix (in block-diagonal form
-  in the case of subnetworks).
+  in the case of subnetworks). If some treatments are combinations of
+  other treatments or have common components, an analysis based on the
+  additive network meta-analysis model might be possible, see
+  \link{netcomb} function.
 }
 
 \usage{

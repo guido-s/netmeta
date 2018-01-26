@@ -11,7 +11,9 @@
 \usage{
 netgraph(x, seq = x$seq,
          labels = rownames(x$TE.fixed),
-         cex = 1, col = "slateblue", offset = 0.0175, scale = 1.10,
+         cex = 1, col = "slateblue", adj = NULL,
+	 offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
+	 scale = 1.10,
          plastic, thickness, lwd = 5, lwd.min = lwd/2.5, lwd.max = lwd*4,
          dim = "2d",
          highlight = NULL, col.highlight = "red2", lwd.highlight = lwd,
@@ -40,9 +42,13 @@ netgraph(x, seq = x$seq,
   \item{cex}{The magnification to be used for treatment labels.}
   \item{col}{Color of lines connecting treatments if argument
     \code{plastic = FALSE}.}
+  \item{adj}{One, two, or three values in [0, 1] (or a vector / matrix
+    with length / number of rows equal to the number of treatments)
+    specifying the x (and optionally y and z) adjustment for treatment
+    labels.}
   \item{offset}{Distance between edges (i.e. treatments) in graph and
-    treatment labels (value of 0.0175 corresponds to a difference of
-    1.75\% of the range on x- and y-axis).}
+    treatment labels for 2-D plots (value of 0.0175 corresponds to a
+    difference of 1.75\% of the range on x- and y-axis).}
   \item{scale}{Additional space added outside of edges
     (i.e. treatments). Increase this value for larger treatment labels
     (value of 1.10 corresponds to an additional space of 10\% around
@@ -191,6 +197,21 @@ netgraph(x, seq = x$seq,
   In order to generate 3-D plots (argument \code{dim = "3d"}), R
   package \bold{rgl} is necessary. Note, under macOS the X.Org X
   Window System must be available (see \url{https://www.xquartz.org}).
+}
+
+\value{
+  An data frame containing the following columns
+
+  \item{labels}{Treatment labels.}
+  \item{seq}{Sequence of treatment labels.}
+  \item{xpos}{Position of treatment / edge on x-axis.}
+  \item{ypos}{Position of treatment / edge on y-axis.}
+  \item{zpos}{Position of treatment / edge on z-axis (for 3-D plots).}
+  \item{xpos.labels}{Position of treatment labels on x-axis (for 2-D plots).}
+  \item{ypos.labels}{Position of treatment labels on y-axis (for 2-D plots).}
+  \item{adj.x}{Adjustment for treatment label on x-axis.}
+  \item{adj.y}{Adjustment for treatment label on y-axis.}
+  \item{adj.z}{Adjustment for treatment label on z-axis (for 3-D plots).}
 }
 
 \references{

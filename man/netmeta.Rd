@@ -223,6 +223,7 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   \item{all.treatments}{A logical or value \code{"NULL"}. If
         \code{TRUE}, matrices with all treatment effects, and
         confidence limits will be printed.}
+  \item{trts}{Treatments included in network meta-analysis.}
   \item{studies}{Study labels coerced into a factor with its levels
     sorted alphabetically.}
   \item{narms}{Number of arms for each study.}

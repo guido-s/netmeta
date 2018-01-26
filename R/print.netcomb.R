@@ -31,7 +31,7 @@ print.netcomb <- function(x,
   meta:::chklogical(scientific.pval)
   
   
-  trts <- rownames(x$x$TE.fixed)
+  trts <- x$trts
   trts.abbr <- treats(trts, nchar.trts)
   ##
   dat.f <- prcomps(x$comparisons.fixed,
