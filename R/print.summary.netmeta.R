@@ -492,9 +492,8 @@ print.summary.netmeta <- function(x,
       else {
         if (x$d == 1 | is.na(x$Q.heterogeneity) | is.na(x$Q.inconsistency)) {
           Qdata <- cbind(round(x$Q, digits.Q), x$df.Q,
-                         ifelse(x$df.Q == 0, "--",
-                                formatPT(x$pval.Q, digits = digits.pval.Q,
-                                         scientific = scientific.pval)))
+                         formatPT(x$pval.Q, digits = digits.pval.Q,
+                                  scientific = scientific.pval))
           
           dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
           ##
@@ -505,9 +504,8 @@ print.summary.netmeta <- function(x,
           Qs <- c(x$Q, x$Q.heterogeneity, x$Q.inconsistency)
           df.Qs <- c(x$df.Q, x$df.Q.heterogeneity, x$df.Q.inconsistency)
           pval.Qs <- c(x$pval.Q, x$pval.Q.heterogeneity, x$pval.Q.inconsistency)
-          pval.Qs <- ifelse(df.Qs == 0, "--",
-                            formatPT(pval.Qs, digits = digits.pval.Q,
-                                     scientific = scientific.pval))
+          pval.Qs <- formatPT(pval.Qs, digits = digits.pval.Q,
+                              scientific = scientific.pval)
           cat("\nTests of heterogeneity (within designs) and inconsistency (between designs):\n")
           Qdata <- data.frame(Q = round(Qs, digits.Q),
                               df = df.Qs,

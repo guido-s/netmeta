@@ -110,12 +110,14 @@ netcomb <- function(x,
     tau <- res.f$tau
   ##
   I2 <- res.f$I2
+  ##
+  tau2.calc <- if (is.na(tau)) 0 else tau^2
   
   
   ##
   ## Random effects models
   ##
-  res.r <- nma.additive(x$TE, 1 / (1 / x$w.fixed + tau^2), x$studlab,
+  res.r <- nma.additive(x$TE, 1 / (1 / x$w.fixed + tau2.calc), x$studlab,
                         x$treat1, x$treat2, x$level.comb,
                         X, C.matrix,
                         x$Q, df.Q.additive, df.Q.diff)

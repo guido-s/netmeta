@@ -52,7 +52,11 @@ nma.additive <- function(TE, weights, studlab,
   ## Test of total heterogeneity / inconsistency:
   ##
   Q.additive <- as.vector(t(delta - TE) %*% W %*% (delta - TE))
-  pval.Q.additive <- 1 - pchisq(Q.additive, df.Q.additive)
+  ##
+  if (is.na(df.Q.additive) | df.Q.additive == 0)
+    pval.Q.additive <- NA
+  else
+    pval.Q.additive <- 1 - pchisq(Q.additive, df.Q.additive)
   ##
   ## Difference to standard network meta-analysis model
   ##
@@ -60,11 +64,10 @@ nma.additive <- function(TE, weights, studlab,
   if (!is.na(Q.diff) && abs(Q.diff) < .Machine$double.eps^0.75)
     Q.diff <- 0
   ##
-  pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)
-  ##
-  if (is.na(df.Q.diff) | df.Q.diff == 0) {
+  if (is.na(df.Q.diff) | df.Q.diff == 0)
     pval.Q.diff <- NA
-  }
+  else
+    pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)
   ##
   ## Heterogeneity variance
   ##

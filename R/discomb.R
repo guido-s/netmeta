@@ -344,16 +344,20 @@ discomb <- function(TE, seTE,
   ## Fixed effects models
   ##
   df.Q.additive <- n.a - k - (c - 1)
-  df.Q.diff <- n - c
   ##
   if (netc$n.subnets == 1) {
     net <- netmeta(TE, seTE, treat1, treat2, studlab)
+    ##
     Q <- net$Q
     df.Q <- net$df.Q
     pval.Q <- net$pval.Q
+    ##
+    df.Q.diff <- n - c
   }
-  else
+  else {
     Q <- df.Q <- pval.Q <- NA
+    df.Q.diff <- NA
+  }
   
   
   res.f <- nma.additive(p0$TE, p0$weights, p0$studlab,
@@ -378,11 +382,11 @@ discomb <- function(TE, seTE,
   ##
   ## Random effects models
   ##
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau^2)
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
   res.r <- nma.additive(p1$TE, p1$weights, p1$studlab,
                         p1$treat1, p1$treat2, level.comb,
                         X, C.matrix,
-                        NA, df.Q.additive, df.Q.diff)
+                        Q, df.Q.additive, df.Q.diff)
   
   
   res <- list(k = k, n = n, m = m, c = c,

@@ -105,6 +105,10 @@ nma.ruecker <- function(TE, seTE,
   ##
   Q <- as.vector(t(TE - v) %*% W %*% (TE - v))
   df <- df1 - (n - 1)
+  if (df == 0)
+    pval.Q <-  NA
+  else
+    pval.Q <- pchisq(Q, df, lower.tail = FALSE)
   ##
   ## Heterogeneity variance
   ##
@@ -169,6 +173,8 @@ nma.ruecker <- function(TE, seTE,
                          Q = q,
                          df = dfs,
                          pval.Q = pchisq(q, dfs, lower.tail = FALSE))
+  ##
+  Q.decomp$pval.Q[Q.decomp$df == 0] <- NA
   
   
   TE.pooled <- all
@@ -301,7 +307,7 @@ nma.ruecker <- function(TE, seTE,
               n = dim(TE.pooled)[[1]],
               Q = Q,
               df = df,
-              pval.Q = pchisq(Q, df, lower.tail = FALSE),
+              pval.Q = pval.Q,
               I2 = I2,
               tau = tau,
               Q.heterogeneity = Q.heterogeneity,
