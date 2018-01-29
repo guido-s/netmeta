@@ -7,6 +7,11 @@ netcomb <- function(x,
                     tau.preset = NULL) {
   
   
+  ##
+  ##
+  ## (1) Check arguments
+  ##
+  ##
   meta:::chkclass(x, "netmeta")
   ##
   meta:::chkchar(sep.components)
@@ -18,14 +23,30 @@ netcomb <- function(x,
     meta:::chknumeric(tau.preset, min = 0, single = TRUE)
   
   
+  ##
+  ##
+  ## (2) Get data
+  ##
+  ##
   n <- x$n # number of treatments / combinations
   m <- x$m # number of comparisons
   ##
   trts <- x$trts
   ##
+  TE <- x$TE
+  seTE <- x$seTE
+  treat1 <- x$treat1
+  treat2 <- x$treat2
+  studlab <- x$studlab
+  ##
   B.matrix <- x$B.matrix
   
   
+  ##
+  ##
+  ## (3) Create C.matrix
+  ##
+  ##
   if (missing(C.matrix)) {
     ##
     ## Create C-matrix from netmeta object
@@ -79,24 +100,43 @@ netcomb <- function(x,
   c <- ncol(C.matrix) # number of components
   
   
+  p0 <- prepare(TE, seTE, treat1, treat2, studlab)
+  ##
+  o <- order(p0$order)
+  ##
+  B.matrix <- createB(p0$treat1.pos, p0$treat2.pos)
+  ##
+  colnames(B.matrix) <- trts
+  rownames(B.matrix) <- studlab
+  
+  
   ##
   ## Design matrix based on treatment components
   ##
   X <- B.matrix %*% C.matrix
+  ##
   colnames(X) <- colnames(C.matrix)
-  rownames(X) <- x$studlab
+  rownames(X) <- studlab
   
   
   ##
   ## Fixed effects models
   ##
   df.Q.additive <- x$df.Q + x$n - c
-  df.Q.diff <- x$n - c
   ##
-  res.f <- nma.additive(x$TE, x$w.fixed, x$studlab,
-                        x$treat1, x$treat2, x$level.comb,
+  net <- netmeta(TE, seTE, treat1, treat2, studlab)
+  ##
+  Q <- net$Q
+  df.Q <- net$df.Q
+  pval.Q <- net$pval.Q
+  ##
+  df.Q.diff <- x$n - c
+  
+  
+  res.f <- nma.additive(p0$TE, p0$weights, p0$studlab,
+                        p0$treat1, p0$treat2, x$level.comb,
                         X, C.matrix,
-                        x$Q, df.Q.additive, df.Q.diff)
+                        Q, df.Q.additive, df.Q.diff)
   
   
   ##
@@ -117,10 +157,11 @@ netcomb <- function(x,
   ##
   ## Random effects models
   ##
-  res.r <- nma.additive(x$TE, 1 / (1 / x$w.fixed + tau2.calc), x$studlab,
-                        x$treat1, x$treat2, x$level.comb,
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
+  res.r <- nma.additive(p1$TE, p1$weights, p1$studlab,
+                        p1$treat1, p1$treat2, x$level.comb,
                         X, C.matrix,
-                        x$Q, df.Q.additive, df.Q.diff)
+                        Q, df.Q.additive, df.Q.diff)
   
   
   res <- list(k = x$k, n = n, m = m, c = c,

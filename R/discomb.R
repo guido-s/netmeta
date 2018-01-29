@@ -303,6 +303,8 @@ discomb <- function(TE, seTE,
   }
   if (is.data.frame(C.matrix))
     C.matrix <- as.matrix(C.matrix)
+  ##
+  c <- ncol(C.matrix) # number of components
   
   
   p0 <- prepare(TE, seTE, treat1, treat2, studlab)
@@ -330,8 +332,6 @@ discomb <- function(TE, seTE,
   studies <- tdata$studies
   narms <- tdata$narms
   n.a <- sum(narms)  
-  ##
-  c <- ncol(C.matrix)
   ##
   comps <- colnames(C.matrix) # treatment components
   ##
