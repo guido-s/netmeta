@@ -1,9 +1,9 @@
 netgraph <- function(x, seq = x$seq,
-                     labels = rownames(x$TE.fixed),
-                     cex = 1, col = "slateblue", adj = NULL,
+                     labels = x$trts,
+                     cex = 1, adj = NULL,
                      offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
                      scale = 1.10,
-                     plastic, thickness,
+                     col = "slateblue", plastic, thickness,
                      lwd = 5, lwd.min = lwd / 2.5, lwd.max = lwd * 4,
                      dim = "2d",
                      ##
@@ -21,6 +21,7 @@ netgraph <- function(x, seq = x$seq,
                      cex.number.of.studies = cex,
                      col.number.of.studies = "white",
                      bg.number.of.studies = "black",
+                     pos.number.of.studies = 0.5,
                      ##
                      start.layout = ifelse(dim == "2d", "circle", "eigen"),
                      eig1 = 2, eig2 = 3, eig3 = 4,
@@ -35,6 +36,9 @@ netgraph <- function(x, seq = x$seq,
   
   
   meta:::chkclass(x, "netmeta")
+  ##
+  n.edges <- sum(x$A.matrix[upper.tri(x$A.matrix)] > 0)
+  n.trts <- length(x$trts)
   
   
   dim <- meta:::setchar(dim, c("2d", "3d"))
@@ -62,6 +66,38 @@ netgraph <- function(x, seq = x$seq,
   ##
   if (!missing(labels) & is.null(labels))
     stop("Argument 'labels' must be not NULL.")
+  ##
+  n.col <- length(col)
+  if (n.col == 1)
+    col <- rep(col, n.edges)
+  else if (n.col != n.edges)
+    stop("Length of argument 'col' (",
+         n.col, ") is different from the number of direct pairwise comparisons (",
+         n.edges, ")")
+  ##
+  n.pos <- length(pos.number.of.studies)
+  if (n.pos == 1)
+    pos.number.of.studies <- rep(pos.number.of.studies, n.edges)
+  else if (n.pos != n.edges)
+    stop("Length of argument 'pos.number.of.studies' (",
+         n.pos, ") is different from the number of direct pairwise comparisons (",
+         n.edges, ")")
+  ##
+  if (length(cex.points) == 1)
+    cex.points <- rep(cex.points, n.trts)
+  else if (length(cex.points) != n.trts)
+    stop("Length of argument 'cex.points' must be equal to the number of treatments.")
+  ##
+  if (length(col.points) == 1)
+    col.points <- rep(col.points, n.trts)
+  else if (length(col.points) != n.trts)
+    stop("Length of argument 'col.points' must be equal to the number of treatments.")
+  ##
+  if (length(pch.points) == 1)
+    pch.points <- rep(pch.points, n.trts)
+  else if (length(pch.points) != n.trts)
+    stop("Length of argument 'pch.points' must be equal to number of treatments.")
+  
   
   if (missing(iterate))
     iterate <- ifelse(start.layout == "circle", FALSE, TRUE)
@@ -144,9 +180,28 @@ netgraph <- function(x, seq = x$seq,
     seq1 <- charmatch(setseq(seq, rn), rn)
   }
   ##
+  col.matrix <- matrix("", nrow = n.trts, ncol = n.trts)
+  dimnames(col.matrix) <- dimnames(A.matrix)
+  col.matrix <- t(col.matrix)
+  col.matrix[lower.tri(col.matrix) & t(A.matrix) > 0] <- col
+  tcm <- col.matrix
+  col.matrix <- t(col.matrix)
+  col.matrix[lower.tri(col.matrix)] <- tcm[lower.tri(tcm)]
+  ##
+  pos.matrix <- matrix(NA, nrow = n.trts, ncol = n.trts)
+  dimnames(pos.matrix) <- dimnames(A.matrix)
+  pos.matrix <- t(pos.matrix)
+  pos.matrix[lower.tri(pos.matrix) & t(A.matrix) > 0] <- pos.number.of.studies
+  tam <- pos.matrix
+  pos.matrix <- t(pos.matrix)
+  pos.matrix[lower.tri(pos.matrix)] <- tam[lower.tri(tam)]
+  ##
   A.matrix <- A.matrix[seq1, seq1]
   N.matrix <- N.matrix[seq1, seq1]
   D.matrix <- D.matrix[seq1, seq1]
+  ##
+  col.matrix <- col.matrix[seq1, seq1]
+  pos.matrix <- pos.matrix[seq1, seq1]
   ##
   if (thick == "matrix")
     W.matrix <- W.matrix[seq1, seq1]
@@ -202,6 +257,7 @@ netgraph <- function(x, seq = x$seq,
                          cex.number.of.studies = cex.number.of.studies,
                          col.number.of.studies = col.number.of.studies,
                          bg.number.of.studies = bg.number.of.studies,
+                         pos.number.of.studies = pos.number.of.studies,
                          ##
                          ...)
     ##
@@ -220,72 +276,87 @@ netgraph <- function(x, seq = x$seq,
   d <- scale * max(abs(c(min(c(xpos, ypos), na.rm = TRUE),
                          max(c(xpos, ypos), na.rm = TRUE))))
   
-  
-  ## Generate dataset for plotting
+
   ##
+  ##
+  ## Generate datasets for plotting
+  ##
+  ##
+  ##
+  ## Dataset for nodes
+  ##
+  dat.nodes <- data.frame(labels, seq,
+                          xpos, ypos, zpos = NA,
+                          xpos.labels = NA, ypos.labels = NA,
+                          cex = cex.points,
+                          col = col.points,
+                          pch = pch.points,
+                          stringsAsFactors = FALSE)
   if (is_2d)
-    pd <- data.frame(labels, seq, xpos, ypos,
-                     xpos.labels = NA, ypos.labels = NA)
-  else
-    pd <- data.frame(labels, seq, xpos, ypos, zpos,
-                     xpos.labels = NA, ypos.labels = NA, zpos.labels = NA)
+    dat.nodes$zpos <- NULL
+  else {
+    dat.nodes$zpos <- zpos
+    dat.nodes$zpos.labels <- NA
+  }
   ##
   if (is.null(adj)) {
-    pd$adj.x <- NA
-    pd$adj.y <- NA
+    dat.nodes$adj.x <- NA
+    dat.nodes$adj.y <- NA
     if (!is_2d)
-      pd$adj.z <- NA
+      dat.nodes$adj.z <- NA
     ##
-    pd$adj.x[pd$xpos >= 0] <- 0
-    pd$adj.x[pd$xpos <  0] <- 1
+    dat.nodes$adj.x[dat.nodes$xpos >= 0] <- 0
+    dat.nodes$adj.x[dat.nodes$xpos <  0] <- 1
     ##
-    pd$adj.y[pd$ypos >  0] <- 0
-    pd$adj.y[pd$ypos <= 0] <- 1
+    dat.nodes$adj.y[dat.nodes$ypos >  0] <- 0
+    dat.nodes$adj.y[dat.nodes$ypos <= 0] <- 1
     ##
     if (!is_2d) {
-      pd$adj.z[pd$zpos >  0] <- 0
-      pd$adj.z[pd$zpos <= 0] <- 1
+      dat.nodes$adj.z[dat.nodes$zpos >  0] <- 0
+      dat.nodes$adj.z[dat.nodes$zpos <= 0] <- 1
     }
   }
   else {
-    pd$adj.x <- NA
-    pd$adj.y <- NA
+    dat.nodes$adj.x <- NA
+    dat.nodes$adj.y <- NA
     ##
     if (length(adj) == 1) {
-      pd$adj.x <- adj
-      pd$adj.y <- adj
+      dat.nodes$adj.x <- adj
+      dat.nodes$adj.y <- adj
       if (!is_2d)
-        pd$adj.z <- adj
+        dat.nodes$adj.z <- adj
     }
     else if (length(adj) == 2) {
-      pd$adj.x <- adj[1]
-      pd$adj.y <- adj[2]
+      dat.nodes$adj.x <- adj[1]
+      dat.nodes$adj.y <- adj[2]
       if (!is_2d)
-        pd$adj.z <- 0.5
+        dat.nodes$adj.z <- 0.5
     }
     else if (length(adj) == 3 & !is_2d) {
-      pd$adj.x <- adj[1]
-      pd$adj.y <- adj[2]
-      pd$adj.z <- adj[3]
+      dat.nodes$adj.x <- adj[1]
+      dat.nodes$adj.y <- adj[2]
+      dat.nodes$adj.z <- adj[3]
     }
     else if (is.vector(adj)) {
         if (length(adj) != length(labels))
           stop("Length of vector 'adj' must be equal to number of treatments.")
         ##
-        pd$adj.x <- adj
-        pd$adj.y <- adj
+        names(adj) <- x$trts
+        dat.nodes$adj.x <- adj[seq1]
+        dat.nodes$adj.y <- adj[seq1]
         ##
         if (!is_2d)
-          pd$adj.z <- adj
+          dat.nodes$adj.z <- adj[seq1]
     }
     else if (is.matrix(adj)) {
       if (nrow(adj) != length(labels))
         stop("Number of rows of matrix 'adj' must be equal to number of treatments.")
-      pd$adj.x <- adj[, 1]
-      pd$adj.y <- adj[, 2]
+      rownames(adj) <- x$trts
+      dat.nodes$adj.x <- adj[seq1, 1]
+      dat.nodes$adj.y <- adj[seq1, 2]
       ##
       if (!is_2d & ncol(adj) >= 3)
-        pd$adj.z <- adj[, 3]
+        dat.nodes$adj.z <- adj[seq1, 3]
     }
   }
   ##
@@ -304,24 +375,57 @@ netgraph <- function(x, seq = x$seq,
       if (length(offset) != length(labels))
         stop("Length of vector 'offset' must be equal to number of treatments.")
       ##
-      offset.x <- offset
-      offset.y <- offset
+      rownames(offset) <- x$trts
+      offset.x <- offset[seq1]
+      offset.y <- offset[seq1]
     }
     else if (is.matrix(adj)) {
       if (nrow(offset) != length(labels))
         stop("Number of rows of matrix 'offset' must be equal to number of treatments.")
       ##
-      offset.x <- offset[, 1]
-      offset.y <- offset[, 2]
+      rownames(offset) <- x$trts
+      offset.x <- offset[seq1, 1]
+      offset.y <- offset[seq1, 2]
     }
     ##
-    pd$xpos.labels <- pd$xpos - offset.x + 2 * (pd$adj.x == 0) * offset.x
-    pd$ypos.labels <- pd$ypos - offset.y + 2 * (pd$adj.y == 0) * offset.y
+    dat.nodes$xpos.labels <- dat.nodes$xpos - offset.x +
+      2 * (dat.nodes$adj.x == 0) * offset.x
+    dat.nodes$ypos.labels <- dat.nodes$ypos - offset.y +
+      2 * (dat.nodes$adj.y == 0) * offset.y
   }
   else {
-    pd$xpos.labels <- pd$xpos
-    pd$ypos.labels <- pd$ypos
-    pd$zpos.labels <- pd$zpos
+    dat.nodes$xpos.labels <- dat.nodes$xpos
+    dat.nodes$ypos.labels <- dat.nodes$ypos
+    dat.nodes$zpos.labels <- dat.nodes$zpos
+  }
+  ##
+  ## Dataset for edges
+  ##
+  dat.edges <- data.frame(treat1 = rep("", n.edges),
+                          treat2 = "",
+                          n.stud = NA,
+                          xpos = NA, ypos = NA,
+                          adj = NA, pos.number.of.studies,
+                          col = "",
+                          stringsAsFactors = FALSE)
+  ##
+  comp.i <- 1
+  ##
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      if (A.sign[i, j] > 0) {
+        ##
+        dat.edges$treat1[comp.i] <- rownames(A.matrix)[i]
+        dat.edges$treat2[comp.i] <- colnames(A.matrix)[j]
+        dat.edges$n.stud[comp.i] <- A.matrix[i, j]
+        dat.edges$adj[comp.i] <- lambda <- pos.matrix[i, j]
+        dat.edges$xpos[comp.i] <- lambda * xpos[i] + (1 - lambda) * xpos[j]
+        dat.edges$ypos[comp.i] <- lambda * ypos[i] + (1 - lambda) * ypos[j]
+        dat.edges$col[comp.i] <- col.matrix[i, j]
+        ##
+        comp.i <- comp.i + 1
+      }
+    }
   }
   
   
@@ -467,9 +571,9 @@ netgraph <- function(x, seq = x$seq,
           treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
           multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
           ##
-          pdm <- pd[pd$labels %in% multiarm.labels[[i]], ]
-          if (nrow(pdm) == 0)
-            pdm <- pd[pd$labels %in% multiarm.labels[[i]], ]
+          dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
+          if (nrow(dat.multi) == 0)
+            dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
           ##
           ## Clockwise ordering of polygon coordinates
           ##
@@ -487,9 +591,9 @@ netgraph <- function(x, seq = x$seq,
             res
           }
           ##
-          pdm <- pdm[polysort(pdm$xpos, pdm$ypos), ]
+          dat.multi <- dat.multi[polysort(dat.multi$xpos, dat.multi$ypos), ]
           ##
-          polygon(pdm$xpos, pdm$ypos,
+          polygon(dat.multi$xpos, dat.multi$ypos,
                   col = col.polygon[i], border = NA)
         }
       }
@@ -519,13 +623,17 @@ netgraph <- function(x, seq = x$seq,
       cols.highlight <- col.highlight
     }
     ##
+    comp.i <- 1
+    ##
     for (n.plines in 1:length(lwd.multiply)) {
       for (i in 1:(n - 1)) {
         for (j in (i + 1):n) {
           if (A.sign[i, j] > 0) {
             lines(c(xpos[i], xpos[j]), c(ypos[i], ypos[j]),
                   lwd = W.matrix[i, j] * lwd.multiply[n.plines],
-                  col = cols[n.plines])
+                  col = col.matrix[i, j])
+            ##
+            comp.i <- comp.i + 1
           }
         }
       }
@@ -539,16 +647,16 @@ netgraph <- function(x, seq = x$seq,
         if (length(highs) != 2)
           stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
         ##
-        if (sum(pd$labels %in% highs) != 2)
+        if (sum(dat.nodes$labels %in% highs) != 2)
           stop(paste("Argument 'highlight' must contain two of the following values (separated by \":\"):\n  ",
-                     paste(paste("'", pd$labels, "'", sep = ""),
+                     paste(paste("'", dat.nodes$labels, "'", sep = ""),
                            collapse = " - "), sep = ""))
         ##
-        pdh <- pd[pd$labels %in% highs, ]
+        dat.high <- dat.nodes[dat.nodes$labels %in% highs, ]
         ##
         if (is_2d)
           for (n.plines in 1:length(lwd.multiply))
-            lines(pdh$xpos, pdh$ypos,
+            lines(dat.high$xpos, dat.high$ypos,
                   lwd = W.matrix[labels == highs[1], labels == highs[2]] * lwd.multiply[n.plines],
                   col = cols.highlight[n.plines])
       }
@@ -564,23 +672,28 @@ netgraph <- function(x, seq = x$seq,
     ##
     if (!is.null(labels))
       for (i in 1:n)
-        text(pd$xpos.labels[i], pd$ypos.labels[i],
-             labels = pd$labels[i],
+        text(dat.nodes$xpos.labels[i], dat.nodes$ypos.labels[i],
+             labels = dat.nodes$labels[i],
              cex = cex,
-             adj = c(pd$adj.x[i], pd$adj.y[i]))
+             adj = c(dat.nodes$adj.x[i], dat.nodes$adj.y[i]))
     ##
     ## Print number of treatments
     ##
     if (number.of.studies) {
+      comp.i <- 1
+      ##
       for (i in 1:(n - 1)) {
         for (j in (i + 1):n) {
           if (A.sign[i, j] > 0) {
-            shadowtext((xpos[i] + xpos[j]) / 2,
-                       (ypos[i] + ypos[j]) / 2,
-                       labels = A.matrix[i, j],
+            ##
+            shadowtext(dat.edges$xpos[comp.i],
+                       dat.edges$ypos[comp.i],
+                       labels = dat.edges$n.stud[comp.i],
                        cex = cex.number.of.studies,
                        col = col.number.of.studies,
                        bg = bg.number.of.studies)
+            ##
+            comp.i <- comp.i + 1
           }
         }
       }
@@ -602,10 +715,11 @@ netgraph <- function(x, seq = x$seq,
     ##
     if (!is.null(labels))
       for (i in 1:n)
-        rgl::text3d(pd$xpos.labels[i], pd$ypos.labels[i], pd$zpos.labels[i],
-                    texts = pd$labels[i],
+        rgl::text3d(dat.nodes$xpos.labels[i], dat.nodes$ypos.labels[i],
+                    dat.nodes$zpos.labels[i],
+                    texts = dat.nodes$labels[i],
                     cex = cex,
-                    adj = c(pd$adj.x[i], pd$adj.y[i]))
+                    adj = c(dat.nodes$adj.x[i], dat.nodes$adj.y[i]))
     ##
     ## Add highlighted comparisons
     ##
@@ -615,14 +729,15 @@ netgraph <- function(x, seq = x$seq,
         if (length(highs) != 2)
           stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
         ##
-        if (sum(pd$labels %in% highs) != 2)
+        if (sum(dat.nodes$labels %in% highs) != 2)
           stop(paste("Argument 'highlight' must contain two of the following values (separated by \":\"):\n  ",
-                     paste(paste("'", pd$labels, "'", sep = ""),
+                     paste(paste("'", dat.nodes$labels, "'", sep = ""),
                            collapse = " - "), sep = ""))
         ##
-        pdh <- pd[pd$labels %in% highs, ]
+        dat.high <- dat.nodes[dat.nodes$labels %in% highs, ]
         ##
-        rgl::lines3d(pdh$xpos * (1 + 1e-4), pdh$ypos * (1 + 1e-4), pdh$zpos * (1 + 1e-4),
+        rgl::lines3d(dat.high$xpos * (1 + 1e-4), dat.high$ypos * (1 + 1e-4),
+                     dat.high$zpos * (1 + 1e-4),
                      lwd = W.matrix[labels == highs[1], labels == highs[2]],
                      col = col.highlight)
       }
@@ -643,11 +758,11 @@ netgraph <- function(x, seq = x$seq,
           treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
           multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
           ##
-          pdm <- pd[pd$labels %in% multiarm.labels[[i]], ]
-          if (nrow(pdm) == 0)
-            pdm <- pd[pd$labels %in% multiarm.labels[[i]], ]
-          if (nrow(pdm) == 3)
-            rgl::triangles3d(pdm$xpos, pdm$ypos, pdm$zpos,
+          dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
+          if (nrow(dat.multi) == 0)
+            dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
+          if (nrow(dat.multi) == 3)
+            rgl::triangles3d(dat.multi$xpos, dat.multi$ypos, dat.multi$zpos,
                              col = col.polygon[i])
           else
             morethan3 <- TRUE
@@ -669,15 +784,30 @@ netgraph <- function(x, seq = x$seq,
       }
     }
   }
-  
-  
+
+
+  is.zero <- function(x) abs(x) < .Machine$double.eps^0.75
+  ##
+  dat.nodes$xpos[is.zero(dat.nodes$xpos)] <- 0
+  dat.nodes$ypos[is.zero(dat.nodes$ypos)] <- 0
+  ##
   if (!is_2d) {
-    pd$xpos.labels <- NULL
-    pd$ypos.labels <- NULL
+    dat.nodes$zpos[is.zero(dat.nodes$zpos)] <- 0
+    ##
+    dat.nodes$xpos.labels <- NULL
+    dat.nodes$ypos.labels <- NULL
   }
-  ##  
-  pd$zpos.labels <- NULL
+  else {
+    dat.nodes$xpos.labels[is.zero(dat.nodes$xpos.labels)] <- 0
+    dat.nodes$ypos.labels[is.zero(dat.nodes$ypos.labels)] <- 0
+  }
+  ##
+  dat.nodes$zpos.labels <- NULL
   
   
-  invisible(pd)
+  dat.edges$xpos[is.zero(dat.edges$xpos)] <- 0
+  dat.edges$ypos[is.zero(dat.edges$ypos)] <- 0
+  
+  
+  invisible(list(nodes = dat.nodes, edges = dat.edges))
 }

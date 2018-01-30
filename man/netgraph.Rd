@@ -10,11 +10,12 @@
 
 \usage{
 netgraph(x, seq = x$seq,
-         labels = rownames(x$TE.fixed),
-         cex = 1, col = "slateblue", adj = NULL,
+         labels = x$trts,
+         cex = 1, adj = NULL,
 	 offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
 	 scale = 1.10,
-         plastic, thickness, lwd = 5, lwd.min = lwd/2.5, lwd.max = lwd*4,
+         col = "slateblue", plastic, thickness,
+         lwd = 5, lwd.min = lwd/2.5, lwd.max = lwd*4,
          dim = "2d",
          highlight = NULL, col.highlight = "red2", lwd.highlight = lwd,
          multiarm = any(x$narms > 2), col.multiarm = NULL,
@@ -24,6 +25,7 @@ netgraph(x, seq = x$seq,
          cex.number.of.studies = cex,
          col.number.of.studies = "white",
          bg.number.of.studies = "black",
+         pos.number.of.studies = 0.5,
          start.layout = ifelse(dim  == "2d", "circle", "eigen"),
          eig1 = 2, eig2 = 3, eig3 = 4,
          iterate, tol = 0.0001, maxit = 500, allfigures = FALSE,
@@ -40,8 +42,9 @@ netgraph(x, seq = x$seq,
     \code{start.layout = "circle"}).}
   \item{labels}{An optional vector with treatment labels.}
   \item{cex}{The magnification to be used for treatment labels.}
-  \item{col}{Color of lines connecting treatments if argument
-    \code{plastic = FALSE}.}
+  \item{col}{A single color (or vector of colors) for lines connecting
+    treatments (edges) if argument \code{plastic = FALSE}. Length of
+    the vector must be equal to the number of edges.}
   \item{adj}{One, two, or three values in [0, 1] (or a vector / matrix
     with length / number of rows equal to the number of treatments)
     specifying the x (and optionally y and z) adjustment for treatment
@@ -87,7 +90,8 @@ netgraph(x, seq = x$seq,
   \item{points}{A logical indicating whether points should be printed
     at nodes (i.e. treatments) of the network graph.}
   \item{col.points, cex.points, pch.points}{Corresponding color, size,
-    type for points.}
+    type for points. Can be a vector with length equal to the number
+    of treatments.}
   \item{number.of.studies}{A logical indicating whether number of
     studies should be added to network graph.}
   \item{cex.number.of.studies}{The magnification to be used for number
@@ -95,6 +99,10 @@ netgraph(x, seq = x$seq,
   \item{col.number.of.studies}{Color for number of studies.}
   \item{bg.number.of.studies}{Color for shadow around number of
     studies.}
+  \item{pos.number.of.studies}{A single value (or vector of values) in
+    [0, 1] specifying the position of the number of studies on the
+    lines connecting treatments (edges). Length of the vector must be
+    equal to the number of edges.}
   \item{start.layout}{A character string indicating which starting
     layout is used if \code{iterate = TRUE}. If "circle" (default), the
     iteration starts with a circular ordering of the vertices; if

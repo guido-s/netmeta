@@ -15,6 +15,9 @@
       versus row in the upper triangle (common presentation for
       network meta-analyses)
 
+  * Network graphs are much more flexible, e.g., color of lines /
+    edges can be specified for each direct pairwise comparison
+
   * New function discomb() for disconnected networks sharing at least
     one common treatment component to apply the additive network model
     for combinations of treatments
@@ -33,8 +36,16 @@
       random effects model
 
   * netgraph():
+    - argument 'col' can be used to specify the color of lines / edges
+      for each direct pairwise comparison
+    - arguments 'col.points', 'cex.points', and 'pch.points' can be
+      used to specify the color, size, and plotting symbol for each
+      treatment
     - new argument 'adj' to specify the adjustment of treatment labels
-    - (invisibly) return values used to produce plots
+    - new argument 'pos.number.of.studies' to specify the position of
+      the number of treatments on the edges
+    - (invisibly) returns a list with information on nodes and edges
+      (position, color, etc.) used to produce the network graph
 
   * pairwise():
     - print correct labels in error message for studies with duplicate
@@ -68,12 +79,12 @@
       for network meta-analyses with a single design which resulted in
       an error using forest.netmeta()
 
-  * print.summary.netcomb():
-    - use correct (abbreviated) names for treatment components
-
   * netcomb():
      - use correct between-study variance in random effects additive
-       network analysis model
+       network meta-analysis model
+
+  * print.summary.netcomb():
+    - use correct (abbreviated) names for treatment components
 
  ** Internal changes **
 
