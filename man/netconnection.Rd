@@ -16,7 +16,7 @@
   in the case of subnetworks). If some treatments are combinations of
   other treatments or have common components, an analysis based on the
   additive network meta-analysis model might be possible, see
-  \link{netcomb} function.
+  \link{discomb} function.
 }
 
 \usage{
@@ -62,7 +62,7 @@ netconnection(treat1, treat2, studlab, data = NULL, subset = NULL,
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\code{\link{netmeta}}, \code{\link{netdistance}}}
+\seealso{\code{\link{netmeta}}, \code{\link{netdistance}}, \code{\link{discomb}}}
 
 \examples{
 data(Senn2013)

@@ -144,7 +144,7 @@ Argument \code{sep.components} can be used to specify the separator
 between individual components. By default, the matrix \strong{C} is
 calculated internally from treatment names. However, it is possible to
 specify a different matrix using argument \code{C.matrix}.
-}                                                              
+}                  
 
 \value{
 A list containing the following components:
@@ -216,7 +216,7 @@ A list containing the following components:
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
 Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\link{netcomb}, \link{print.netcomb}, \link{netmeta}}
+\seealso{\link{netcomb}, \link{print.netcomb}, \link{netmeta}, \link{netconnection}}
 
 \examples{
 # Artificial dataset
@@ -236,6 +236,11 @@ trts <- c("A", "A + B", "A + C", "A + D",
           "B", "B + C", "C", "D", "E", "F")
 #
 comps <- LETTERS[1:6]
+
+
+# Use netconnection() to display network
+#
+netconnection(t1, t2, study)
 
 
 nc1 <- discomb(mean, se.mean, t1, t2, study, seq = trts)
