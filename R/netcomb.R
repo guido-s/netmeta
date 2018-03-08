@@ -104,7 +104,7 @@ netcomb <- function(x,
   ##
   o <- order(p0$order)
   ##
-  B.matrix <- createB(p0$treat1.pos, p0$treat2.pos)
+  B.matrix <- createB(p0$treat1.pos[o], p0$treat2.pos[o])
   ##
   colnames(B.matrix) <- trts
   rownames(B.matrix) <- studlab
@@ -122,7 +122,7 @@ netcomb <- function(x,
   ##
   ## Fixed effects models
   ##
-  df.Q.additive <- x$df.Q + x$n - c
+  df.Q.additive <- x$df.Q + x$n - 1 - qr(X)$rank
   ##
   net <- netmeta(TE, seTE, treat1, treat2, studlab)
   ##
@@ -130,12 +130,12 @@ netcomb <- function(x,
   df.Q <- net$df.Q
   pval.Q <- net$pval.Q
   ##
-  df.Q.diff <- x$n - c
+  df.Q.diff <- x$n - 1 - qr(X)$rank
   
   
-  res.f <- nma.additive(p0$TE, p0$weights, p0$studlab,
-                        p0$treat1, p0$treat2, x$level.comb,
-                        X, C.matrix,
+  res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
+                        p0$treat1[o], p0$treat2[o], x$level.comb,
+                        X, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff)
   
   
@@ -158,9 +158,9 @@ netcomb <- function(x,
   ## Random effects models
   ##
   p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
-  res.r <- nma.additive(p1$TE, p1$weights, p1$studlab,
-                        p1$treat1, p1$treat2, x$level.comb,
-                        X, C.matrix,
+  res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
+                        p1$treat1[o], p1$treat2[o], x$level.comb,
+                        X, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff)
   
   

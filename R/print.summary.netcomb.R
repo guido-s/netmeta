@@ -46,7 +46,7 @@ print.summary.netcomb <- function(x,
   if (comb.fixed | comb.random) {
     cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
     cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
-    cat(paste("Number of components: c = ", x$c, "\n", sep = ""))
+    cat(paste("Number of active components: c = ", x$c, "\n", sep = ""))
     cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
     ##
     cat("\n")
@@ -73,13 +73,13 @@ print.summary.netcomb <- function(x,
                     scientific.pval, big.mark, x$seq)
   ##
   if (comb.fixed) {
-    cat("Results for combinations (componentwise analysis, fixed effects model):\n")
+    cat("Results for combinations (additive model, fixed effects model):\n")
     print(dat1.f)
     cat("\n")
   }
   ##
   if (comb.random) {
-    cat("Results for combinations (componentwise analysis, random effects model):\n")
+    cat("Results for combinations (additive model, random effects model):\n")
     print(dat1.r)
     cat("\n")
   }

@@ -10,7 +10,8 @@ export(netmeta,
        netconnection, print.netconnection, netdistance,
        netsplit, print.netsplit,
        netposet, print.netposet, plot.netposet, hasse,
-       netleague, print.netleague, treats)
+       netleague, print.netleague, treats,
+       netmatrix)
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,

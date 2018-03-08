@@ -47,13 +47,13 @@ print.netcomb <- function(x,
                    scientific.pval, big.mark)
   ##
   if (comb.fixed) {
-    cat("Componentwise analysis (fixed effects model):\n")
+    cat("Additive model (fixed effects model):\n")
     prmatrix(dat.f, quote = FALSE, right = TRUE, ...)
     cat("\n")
   }
   ##
   if (comb.random) {
-    cat("Componentwise analysis (random effects model):\n")
+    cat("Additive model (random effects model):\n")
     prmatrix(dat.r, quote = FALSE, right = TRUE, ...)
     cat("\n")
   }

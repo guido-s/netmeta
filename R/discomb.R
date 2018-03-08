@@ -273,7 +273,7 @@ discomb <- function(TE, seTE,
   ##
   if (missing(C.matrix)) {
     C.matrix <- createC(netc, sep.components, inactive)
-    C.matrix <- C.matrix[trts, , drop = TRUE]
+    C.matrix <- C.matrix[trts, , drop = FALSE]
   }
   else {
     ##
@@ -311,7 +311,7 @@ discomb <- function(TE, seTE,
   ##
   o <- order(p0$order)
   ##
-  B.matrix <- createB(p0$treat1.pos, p0$treat2.pos)
+  B.matrix <- createB(p0$treat1.pos[o], p0$treat2.pos[o])
   ##
   colnames(B.matrix) <- trts
   rownames(B.matrix) <- studlab
@@ -326,7 +326,7 @@ discomb <- function(TE, seTE,
   rownames(X) <- studlab
   
   
-  tdata <- data.frame(studies = p0$studlab, narms = p0$narms)
+  tdata <- data.frame(studies = p0$studlab[o], narms = p0$narms[o])
   tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
   ##
   studies <- tdata$studies
@@ -360,9 +360,9 @@ discomb <- function(TE, seTE,
   }
   
   
-  res.f <- nma.additive(p0$TE, p0$weights, p0$studlab,
-                        p0$treat1, p0$treat2, level.comb,
-                        X, C.matrix,
+  res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
+                        p0$treat1[o], p0$treat2[o], level.comb,
+                        X, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff)
   
   
@@ -383,9 +383,10 @@ discomb <- function(TE, seTE,
   ## Random effects models
   ##
   p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
-  res.r <- nma.additive(p1$TE, p1$weights, p1$studlab,
-                        p1$treat1, p1$treat2, level.comb,
-                        X, C.matrix,
+  ##
+  res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
+                        p1$treat1[o], p1$treat2[o], level.comb,
+                        X, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff)
   
   

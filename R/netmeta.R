@@ -22,9 +22,15 @@ netmeta <- function(TE, seTE,
                     sep.trts = ":",
                     nchar.trts = 666,
                     ##
+                    n1 = NULL,
+                    n2 = NULL,
+                    event1 = NULL,
+                    event2 = NULL,
+                    ##
                     backtransf = gs("backtransf"),
                     ##
                     title = "",
+                    keepdata = gs("keepdata"),
                     warn = TRUE
                     ) {
   
@@ -33,33 +39,39 @@ netmeta <- function(TE, seTE,
   ## (1) Check arguments
   ##
   ##
-  meta:::chklevel(level)
-  meta:::chklevel(level.comb)
-  meta:::chklevel(level.predict)
+  chkchar <- meta:::chkchar
+  chklevel <- meta:::chklevel
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chklogical(prediction)
+  chklevel(level)
+  chklevel(level.comb)
+  chklevel(level.predict)
   ##
-  meta:::chklogical(baseline.reference)
+  chklogical(comb.fixed)
+  chklogical(comb.random)
+  chklogical(prediction)
+  ##
+  chklogical(baseline.reference)
   ##
   if (!is.null(all.treatments))
-    meta:::chklogical(all.treatments)
+    chklogical(all.treatments)
   ##
   if (!is.null(tau.preset))
-    meta:::chknumeric(tau.preset, min = 0, single = TRUE)
+    chknumeric(tau.preset, min = 0, single = TRUE)
   ##
-  meta:::chknumeric(tol.multiarm, min = 0, single = TRUE)
-  meta:::chklogical(details.chkmultiarm)
+  chknumeric(tol.multiarm, min = 0, single = TRUE)
+  chklogical(details.chkmultiarm)
   ##
   missing.sep.trts <- missing(sep.trts)
-  meta:::chkchar(sep.trts)
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  chkchar(sep.trts)
+  chknumeric(nchar.trts, min = 1, single = TRUE)
   ##
-  meta:::chklogical(backtransf)
+  chklogical(backtransf)
   ##
-  meta:::chkchar(title)
-  meta:::chklogical(warn)
+  chkchar(title)
+  chklogical(keepdata)
+  chklogical(warn)
   ##
   ## Check value for reference group
   ##
@@ -69,7 +81,7 @@ netmeta <- function(TE, seTE,
     else
       all.treatments <- FALSE
   ##
-  meta:::chklogical(baseline.reference)
+  chklogical(baseline.reference)
   
   
   ##
@@ -96,9 +108,24 @@ netmeta <- function(TE, seTE,
     treat1 <- TE$treat1
     treat2 <- TE$treat2
     studlab <- TE$studlab
+    ##
+    if (!is.null(TE$n1))
+      n1 <- TE$n1
+    if (!is.null(TE$n2))
+      n2 <- TE$n2
+    if (!is.null(TE$event1))
+      event1 <- TE$event1
+    if (!is.null(TE$event2))
+      event2 <- TE$event2
+    ##
+    is.pairwise <- TRUE
+    pairdata <- TE
+    data <- TE
+    ##
     TE <- TE$TE
   }
   else {
+    is.pairwise <- FALSE
     if (missing(sm))
       if (!is.null(data) && !is.null(attr(data, "sm")))
         sm <- attr(data, "sm")
@@ -116,6 +143,18 @@ netmeta <- function(TE, seTE,
     ##
     studlab <- eval(mf[[match("studlab", names(mf))]],
                     data, enclos = sys.frame(sys.parent()))
+    ##
+    n1 <- eval(mf[[match("n1", names(mf))]],
+               data, enclos = sys.frame(sys.parent()))
+    ##
+    n2 <- eval(mf[[match("n2", names(mf))]],
+               data, enclos = sys.frame(sys.parent()))
+    ##
+    event1 <- eval(mf[[match("event1", names(mf))]],
+                   data, enclos = sys.frame(sys.parent()))
+    ##
+    event2 <- eval(mf[[match("event2", names(mf))]],
+                   data, enclos = sys.frame(sys.parent()))
   }
   ##
   k.Comp <- length(TE)
@@ -126,6 +165,80 @@ netmeta <- function(TE, seTE,
     treat2 <- as.character(treat2)
   if (is.factor(studlab))
     studlab <- as.character(studlab)
+  ##
+  subset <- eval(mf[[match("subset", names(mf))]],
+                 data, enclos = sys.frame(sys.parent()))
+  missing.subset <- is.null(subset)
+  ##
+  if (!is.null(event1) & !is.null(event2))
+    available.events <- TRUE
+  else
+    available.events <- FALSE
+  ##
+  if (!is.null(n1) & !is.null(n2))
+    available.n <- TRUE
+  else
+    available.n <- FALSE
+  
+  
+  ##
+  ##
+  ## (2b) Store complete dataset in list object data
+  ##      (if argument keepdata is TRUE)
+  ##
+  ##
+  if (keepdata) {
+    if (nulldata & !is.pairwise)
+      data <- data.frame(.TE = TE)
+    else if (nulldata & is.pairwise) {
+      data <- pairdata
+      data$.TE <- TE
+    }
+    else
+      data$.TE <- TE
+    ##
+    data$.seTE <- seTE
+    data$.treat1 <- treat1
+    data$.treat2 <- treat2
+    data$.studlab <- studlab
+    ##
+    data$.n1 <- n1
+    data$.n2 <- n2
+    data$.event1 <- event1
+    data$.event2 <- event2
+    ##
+    ## Check for correct treatment order within comparison
+    ##
+    wo <- data$.treat1 > data$.treat2
+    ##
+    if (any(wo)) {
+      data$.TE[wo] <- -data$.TE[wo]
+      ttreat1 <- data$.treat1
+      data$.treat1[wo] <- data$.treat2[wo]
+      data$.treat2[wo] <- ttreat1[wo]
+      ##
+      if (!is.null(data$.n1) & !is.null(data$.n2)) {
+        tn1 <- data$.n1
+        data$.n1[wo] <- data$.n2[wo]
+        data$.n2[wo] <- tn1[wo]
+      }
+      ##
+      if (!is.null(data$.event1) & !is.null(data$.event2)) {
+        tevent1 <- data$.event1
+        data$.event1[wo] <- data$.event2[wo]
+        data$.event2[wo] <- tevent1[wo]
+      }
+    }
+    ##
+    if (!missing.subset) {
+      if (length(subset) == dim(data)[1])
+        data$.subset <- subset
+      else {
+        data$.subset <- FALSE
+        data$.subset[subset] <- TRUE
+      }
+    }
+  }
   
   
   ##
@@ -133,10 +246,7 @@ netmeta <- function(TE, seTE,
   ## (3) Use subset for analysis
   ##
   ##
-  subset <- eval(mf[[match("subset", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
-  ##
-  if (!is.null(subset)) {
+  if (!missing.subset) {
     if ((is.logical(subset) & (sum(subset) > k.Comp)) ||
         (length(subset) > k.Comp))
       stop("Length of subset is larger than number of studies.")
@@ -146,6 +256,15 @@ netmeta <- function(TE, seTE,
     treat1 <- treat1[subset]
     treat2 <- treat2[subset]
     studlab <- studlab[subset]
+    ##
+    if (!is.null(n1))
+      n1 <- n1[subset]
+    if (!is.null(n2))
+      n2 <- n2[subset]
+    if (!is.null(event1))
+      event1 <- event1[subset]
+    if (!is.null(event2))
+      event2 <- event2[subset]
   }
   ##
   labels <- sort(unique(c(treat1, treat2)))
@@ -241,6 +360,8 @@ netmeta <- function(TE, seTE,
   excl <- is.na(TE) | is.na(seTE) | seTE <= 0
   ##
   if (any(excl)) {
+    data$.excl <- excl
+    ##
     dat.NAs <- data.frame(studlab = studlab[excl],
                           treat1 = treat1[excl],
                           treat2 = treat2[excl],
@@ -263,6 +384,15 @@ netmeta <- function(TE, seTE,
     treat2  <- treat2[!(excl)]
     TE      <- TE[!(excl)]
     seTE    <- seTE[!(excl)]
+    ##
+    if (!is.null(n1))
+      n1 <- n1[!excl]
+    if (!is.null(n2))
+      n2 <- n2[!excl]
+    if (!is.null(event1))
+      event1 <- event1[!excl]
+    if (!is.null(event2))
+      event2 <- event2[!excl]
     ##
     seq <- seq[seq %in% unique(c(treat1, treat2))]
     labels <- labels[labels %in% unique(c(treat1, treat2))]
@@ -315,6 +445,18 @@ netmeta <- function(TE, seTE,
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]
     treat2[wo] <- ttreat1[wo]
+    ##
+    if (available.n) {
+      tn1 <- n1
+      n1[wo] <- n2[wo]
+      n2[wo] <- tn1[wo]
+    }
+    ##
+    if (available.events) {
+      tevent1 <- event1
+      event1[wo] <- event2[wo]
+      event2[wo] <- tevent1[wo]
+    }       
   }
   
   
@@ -340,7 +482,7 @@ netmeta <- function(TE, seTE,
   tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
   studies <- tdata$studies
   narms <- tdata$narms
-
+  
   
   ##
   ##
@@ -485,6 +627,14 @@ netmeta <- function(TE, seTE,
               zval.indirect.random = NA,
               pval.indirect.random = NA,
               ##
+              n1 = n1,
+              n2 = n2,
+              event1 = event1,
+              event2 = event2,
+              ##
+              N.matrix = if (available.n) NA else NULL,
+              E.matrix = if (available.events) NA else NULL,
+              ##
               treat1.pos = res.f$treat1.pos[o],
               treat2.pos = res.f$treat2.pos[o],
               ##
@@ -533,6 +683,8 @@ netmeta <- function(TE, seTE,
               all.treatments = all.treatments,
               ##
               trts = rownames(res.f$TE.pooled),
+              trts.n = if (available.n) NA else NULL,
+              trts.events = if (available.events) NA else NULL,
               seq = seq,
               ##
               sep.trts = sep.trts,
@@ -660,6 +812,28 @@ netmeta <- function(TE, seTE,
     ##
     res$pval.Q.heterogeneity <- dd$Q.decomp$pval[2]
     res$pval.Q.inconsistency <- dd$Q.decomp$pval[3]
+  }
+  
+  
+  if (keepdata) {
+    res$data <- data
+    res$subset <- res$subset
+  }
+  ##
+  if (available.events) {
+    res$E.matrix <- netmatrix(res, event1 + event2, func = "sum")
+    ##
+    dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)
+    rownames(dat.e) <- dat.e$indices
+    res$trts.events <- dat.e[res$trts, "sum"]
+  }
+  ##
+  if (available.n) {
+    res$N.matrix <- netmatrix(res, n1 + n2, func = "sum")
+    ##
+    dat.n <- bySummary(c(n1, n2), c(treat1, treat2), long = FALSE)
+    rownames(dat.n) <- dat.n$indices
+    res$trts.n <- dat.n[res$trts, "sum"]
   }
   
   

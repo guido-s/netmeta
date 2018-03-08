@@ -23,7 +23,9 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.chkmultiarm = FALSE,
         sep.trts=":", nchar.trts=666,
-        backtransf=gs("backtransf"), title="", warn=TRUE)
+        n1=NULL, n2=NULL, event1=NULL, event2=NULL,
+        backtransf=gs("backtransf"), title="",
+        keepdata=gs("keepdata"), warn=TRUE)
 }
 
 \arguments{
@@ -77,7 +79,13 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     as odds ratios rather than log odds ratios, for example.}
   \item{nchar.trts}{A numeric defining the minium number of characters
     used to create unique treatment names (see Details).}
+  \item{n1}{Number of observations in first treatment group.}
+  \item{n2}{Number of observations in second treatment group.}
+  \item{event1}{Number of events in first treatment group.}
+  \item{event2}{Number of events in second treatment group.}
   \item{title}{Title of meta-analysis / systematic review.}
+  \item{keepdata}{A logical indicating whether original data (set)
+    should be kept in netmeta object.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero
     standard errors).}

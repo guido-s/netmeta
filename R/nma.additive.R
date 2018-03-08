@@ -1,6 +1,6 @@
 nma.additive <- function(TE, weights, studlab,
                          treat1, treat2, level,
-                         X, C.matrix,
+                         X, C.matrix, B.matrix,
                          Q, df.Q.additive, df.Q.diff) {
   
   
@@ -84,7 +84,8 @@ nma.additive <- function(TE, weights, studlab,
   }
   else {
     tau2 <- max(0, (Q.additive - df.Q.additive) /
-                   sum(diag((I - H) %*% (X %*% t(X) * E / 2) %*% W)))
+                   sum(diag((I - H) %*%
+                            (B.matrix %*% t(B.matrix) * E / 2) %*% W)))
     tau <- sqrt(tau2)
     I2 <- meta:::isquared(Q.additive, df.Q.additive, 0.95)$TE
   }

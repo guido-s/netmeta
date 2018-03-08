@@ -238,7 +238,7 @@ trts <- c("A", "A + B", "A + C", "A + D",
 comps <- LETTERS[1:6]
 
 
-# Use netconnection() to display network
+# Use netconnection() to display network information
 #
 netconnection(t1, t2, study)
 

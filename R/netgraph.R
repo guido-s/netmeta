@@ -41,7 +41,18 @@ netgraph <- function(x, seq = x$seq,
   n.trts <- length(x$trts)
   
   
-  dim <- meta:::setchar(dim, c("2d", "3d"))
+  setchar <- meta:::setchar
+  chknumeric <- meta:::chknumeric
+  ##
+  chknumeric(lwd, min = 0, zero = TRUE, single = TRUE)
+  chknumeric(lwd.min, min = 0, zero = TRUE, single = TRUE)
+  chknumeric(lwd.max, min = 0, zero = TRUE, single = TRUE)
+  chknumeric(lwd.highlight, min = 0, zero = TRUE, single = TRUE)
+  ##
+  if (lwd.min > lwd.max)
+    stop("Argument 'lwd.min' must be smaller than 'lwd.max'.")
+  ##
+  dim <- setchar(dim, c("2d", "3d"))
   is_2d <- dim == "2d"
   is_3d <- !is_2d
   ##
@@ -59,7 +70,7 @@ netgraph <- function(x, seq = x$seq,
     is_3d <- FALSE
   }
   ##
-  start.layout <- meta:::setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
+  start.layout <- setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
   ##
   if (!missing(seq) & is.null(seq))
     stop("Argument 'seq' must be not NULL.")
@@ -67,7 +78,27 @@ netgraph <- function(x, seq = x$seq,
   if (!missing(labels) & is.null(labels))
     stop("Argument 'labels' must be not NULL.")
   ##
+  ## Colors of edges
+  ##
+  if (is.matrix(col)) {
+    if ((dim(col)[1] != dim(A.matrix)[1]) |
+        (dim(col)[2] != dim(A.matrix)[2]))
+      stop("Dimension of argument 'A.matrix' and 'col' are different.")
+    if (is.null(dimnames(col)))
+      stop("Matrix 'col' must have row and column names identical to argument 'A.matrix'.")
+    else {
+      if (any(rownames(col) != rownames(A.matrix)))
+        stop("Row names of matrix 'col' must be identical to argument 'A.matrix'.")
+      if (any(colnames(col) != colnames(A.matrix)))
+        stop("Column names of matrix 'col' must be identical to argument 'A.matrix'.")
+    }
+    ##
+    col <- col[lower.tri(col)]
+    col <- col[!is.na(col)]
+  }
+  ##
   n.col <- length(col)
+  ##
   if (n.col == 1)
     col <- rep(col, n.edges)
   else if (n.col != n.edges)
@@ -134,9 +165,9 @@ netgraph <- function(x, seq = x$seq,
   else {
     if (!is.matrix(thickness)) {
       if (length(thickness) == 1 & is.character(thickness))
-        thick <- meta:::setchar(thickness,
-                                c("equal", "number.of.studies",
-                                  "se.fixed", "se.random", "w.fixed", "w.random"))
+        thick <- setchar(thickness,
+                         c("equal", "number.of.studies",
+                           "se.fixed", "se.random", "w.fixed", "w.random"))
       ##
       else if (length(thickness) == 1 & is.logical(thickness)) {
         if (thickness)
@@ -207,6 +238,10 @@ netgraph <- function(x, seq = x$seq,
     W.matrix <- W.matrix[seq1, seq1]
   ##
   labels <- labels[seq1]
+  ##
+  col.points <- col.points[seq1]
+  cex.points <- cex.points[seq1]
+  pch.points <- pch.points[seq1]
   
   
   A.sign <- sign(A.matrix)
@@ -628,10 +663,16 @@ netgraph <- function(x, seq = x$seq,
     for (n.plines in 1:length(lwd.multiply)) {
       for (i in 1:(n - 1)) {
         for (j in (i + 1):n) {
+          ##
+          if (plastic)
+            col.ij <- cols[n.plines]
+          else
+            col.ij <- col.matrix[i, j]
+          ##
           if (A.sign[i, j] > 0) {
             lines(c(xpos[i], xpos[j]), c(ypos[i], ypos[j]),
                   lwd = W.matrix[i, j] * lwd.multiply[n.plines],
-                  col = col.matrix[i, j])
+                  col = col.ij)
             ##
             comp.i <- comp.i + 1
           }

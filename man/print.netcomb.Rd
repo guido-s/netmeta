@@ -80,7 +80,7 @@
 
 \value{
   A list is returned by the function \code{summary.netcomb} with the
-  same elements as a \code{\link{netcomb}}linknetcomb object.
+  same elements as a \code{\link{netcomb}} object.
 }
 
 \author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}

@@ -3,10 +3,13 @@ pairwise <- function(treat,
                      data = NULL, studlab,
                      incr = 0.5, allincr = FALSE, addincr = FALSE,
                      allstudies = FALSE,
+                     keep = NULL, func = "mode", ties.method = "random",
                      ...) {
   
   
-  if (is.null(data)) data <- sys.frame(sys.parent())
+  null.data <- is.null(data)
+  if (null.data)
+    data <- sys.frame(sys.parent())
   ##
   ## Catch studlab, treat, event, n, mean, sd, time from data:
   ##
@@ -29,7 +32,8 @@ pairwise <- function(treat,
                data, enclos = sys.frame(sys.parent()))
   time <- eval(mf[[match("time", names(mf))]],
                data, enclos = sys.frame(sys.parent()))
-
+  
+  
   args <- list(...)
   nam.args <- names(args)
   
@@ -116,27 +120,91 @@ pairwise <- function(treat,
   
   
   ##
-  ## Transform long format to list format
+  ## Determine whether data is in wide or long arm-based format
   ##
-  treat.list <- list()
-  event.list <- list()
-  n.list     <- list()
-  mean.list  <- list()
-  sd.list    <- list()
-  TE.list    <- list()
-  seTE.list  <- list()
-  time.list  <- list()
+  if (type == "binary")
+    wide.armbased <- is.list(event) & is.list(n)
+  else if (type == "continuous")
+    wide.armbased <- is.list(n) & is.list(mean) & is.list(sd)
+  else if (type == "count")
+    wide.armbased <- is.list(event) & is.list(time)
+  else if (type == "generic")
+    wide.armbased <- is.list(TE) & is.list(seTE)
+  
+  
+  
+  
+  
   ##
-  if (type == "binary") {
-    listformat <- is.list(event) & is.list(n)
-    if (!listformat) {
-      if (is.null(studlab))
-        stop("Argument 'studlab' mandatory if argument 'event' is a vector.")
+  ## Transform long arm-based format to list format
+  ##
+  if (!wide.armbased) {
+    if (is.null(studlab))
+      stop("Argument 'studlab' mandatory if argument 'event' is a vector.")
+    ##
+    studlab <- as.character(studlab)
+    ##
+    treat.list <- list()
+    event.list <- list()
+    n.list     <- list()
+    mean.list  <- list()
+    sd.list    <- list()
+    TE.list    <- list()
+    seTE.list  <- list()
+    time.list  <- list()
+    ##
+    if (!is.null(keep))
+      if (null.data) {
+        warning("Argument 'keep' ignored as argument 'data' is missing.")
+        keep <- NULL
+      }
+      else if (any(!(keep %in% names(data))))
+        stop("Argument 'keep' must contain variable names from dataset (argument 'data').")
+    ##
+    if (!is.null(keep) & !is.null(func)) {
+      for (i in seq(along = func))
+        func[i] <- meta:::setchar(func[i],
+                                  c("mode", "min", "max", "mean", "median", "sum"),
+                                  name = "func")
+      if (length(func) == 1)
+        func <- rep(func, length(keep))
+    }
+    ##
+    ## Add variable(s) to exported dataset (defined by argument 'keep')
+    ##
+    if (!is.null(keep)) {
+      j <- 0
+        for (i in keep) {
+          j <- j + 1
+          ##
+          dat.i <- bySummary(data[, i],
+                             studlab, ties.method = ties.method)
+          dat.i <- dat.i[, c("index1", func[j])]
+          ##
+          dat.i <- dat.i[!duplicated(dat.i), , drop = FALSE]
+          ##
+          if (j == 1) {
+            adddata <- data.frame(studlab = dat.i$index1)
+            adddata[i] <- dat.i[, 2]
+          }
+          else
+            adddata[i] <- dat.i[, 2]
+        }
+    }
+    else
+      adddata <- NULL
+    ##
+    treat <- as.character(treat)
+    ##
+    ttab <- table(studlab, treat)
+    n.arms <- apply(ttab, 1, sum)
+    ##
+    if (type == "binary") {
       ##
-      ttab <- table(as.character(studlab), as.character(treat))
-      n.arms <- apply(ttab, 1, sum)
+      ## Generate lists
       ##
-      tdat <- data.frame(studlab, treat, event, n, stringsAsFactors = FALSE)
+      tdat <- data.frame(studlab, treat, event, n,
+                         stringsAsFactors = FALSE)
       tdat <- tdat[order(tdat$studlab, tdat$treat), ]
       ##
       studlab <- names(n.arms)
@@ -157,17 +225,13 @@ pairwise <- function(treat,
       event <- event.list
       n     <- n.list
     }
-  }
-  else if (type == "continuous") {
-    listformat <- is.list(n) & is.list(mean) & is.list(sd)
-    if (!listformat) {
-      if (is.null(studlab))
-        stop("Argument 'studlab' mandatory if argument 'mean' is a vector.")
+    ##
+    else if (type == "continuous") {
       ##
-      ttab <- table(as.character(studlab), as.character(treat))
-      n.arms <- apply(ttab, 1, sum)
+      ## Generate lists
       ##
-      tdat <- data.frame(studlab, treat, n, mean, sd, stringsAsFactors = FALSE)
+      tdat <- data.frame(studlab, treat, n, mean, sd,
+                         stringsAsFactors = FALSE)
       tdat <- tdat[order(tdat$studlab, tdat$treat), ]
       ##
       studlab <- names(n.arms)
@@ -190,17 +254,13 @@ pairwise <- function(treat,
       mean  <- mean.list
       sd    <- sd.list
     }
-  }
-  else if (type == "count") {
-    listformat <- is.list(event) & is.list(time)
-    if (!listformat) {
-      if (is.null(studlab))
-        stop("Argument 'studlab' mandatory if argument 'event' is a vector.")
+    ##
+    else if (type == "count") {
       ##
-      ttab <- table(as.character(studlab), as.character(treat))
-      n.arms <- apply(ttab, 1, sum)
+      ## Generate lists
       ##
-      tdat <- data.frame(studlab, treat, event, time, stringsAsFactors = FALSE)
+      tdat <- data.frame(studlab, treat, event, time,
+                         stringsAsFactors = FALSE)
       tdat <- tdat[order(tdat$studlab, tdat$treat), ]
       ##
       studlab <- names(n.arms)
@@ -221,17 +281,13 @@ pairwise <- function(treat,
       event <- event.list
       time  <- time.list
     }
-  }
-  else if (type == "generic") {
-    listformat <- is.list(TE) & is.list(seTE)
-    if (!listformat) {
-      if (is.null(studlab))
-        stop("Argument 'studlab' mandatory if argument 'TE' is a vector.")
+    ##
+    else if (type == "generic") {
       ##
-      ttab <- table(as.character(studlab), as.character(treat))
-      n.arms <- apply(ttab, 1, sum)
+      ## Generate lists
       ##
-      tdat <- data.frame(studlab, treat, TE, seTE, stringsAsFactors = FALSE)
+      tdat <- data.frame(studlab, treat, TE, seTE,
+                         stringsAsFactors = FALSE)
       tdat <- tdat[order(tdat$studlab, tdat$treat), ]
       ##
       studlab <- names(n.arms)
@@ -253,9 +309,6 @@ pairwise <- function(treat,
       seTE  <- seTE.list
     }
   }
-  
-  
-  
   
   
   ##
@@ -343,6 +396,16 @@ pairwise <- function(treat,
                           incr = incr.study,
                           allstudies = allstudies,
                           stringsAsFactors = FALSE)
+        ##
+        if (wide.armbased) {
+          dat <- cbind(dat, data, stringsAsFactors = FALSE)
+          dupl <- duplicated(names(dat))
+          if (any(dupl))
+            names(dat)[dupl] <- paste(names(dat)[dupl], "orig", sep = ".")
+        }
+        else if (!is.null(adddata))
+          dat <- merge(dat, adddata, by = "studlab",
+                       suffixes = c("",".orig"))
         ##
         dat <- dat[!(is.na(dat$event1) & is.na(dat$n1)), ]
         dat <- dat[!(is.na(dat$event2) & is.na(dat$n2)), ]
@@ -445,6 +508,17 @@ pairwise <- function(treat,
                           n1 = n[[i]], mean1 = mean[[i]], sd1 = sd[[i]],
                           n2 = n[[j]], mean2 = mean[[j]], sd2 = sd[[j]],
                           stringsAsFactors = FALSE)
+        ##
+        if (wide.armbased) {
+          dat <- cbind(dat, data, stringsAsFactors = FALSE)
+          dupl <- duplicated(names(dat))
+          if (any(dupl))
+            names(dat)[dupl] <- paste(names(dat)[dupl], "orig", sep = ".")
+        }
+        else if (!is.null(adddata))
+          dat <- merge(dat, adddata, by = "studlab",
+                       suffixes = c("",".orig"))
+        ##
         dat <- dat[!(is.na(dat$n1) & is.na(dat$mean1) & is.na(dat$sd1)), ]
         dat <- dat[!(is.na(dat$n2) & is.na(dat$mean2) & is.na(dat$sd2)), ]
         ##
@@ -501,6 +575,17 @@ pairwise <- function(treat,
                           TE1 = TE[[i]], seTE1 = seTE[[i]],
                           TE2 = TE[[j]], seTE2 = seTE[[j]],
                           stringsAsFactors = FALSE)
+        ##
+        if (wide.armbased) {
+          dat <- cbind(dat, data, stringsAsFactors = FALSE)
+          dupl <- duplicated(names(dat))
+          if (any(dupl))
+            names(dat)[dupl] <- paste(names(dat)[dupl], "orig", sep = ".")
+        }
+        else if (!is.null(adddata))
+          dat <- merge(dat, adddata, by = "studlab",
+                       suffixes = c("",".orig"))
+        ##
         dat <- dat[!(is.na(dat$TE1) & is.na(dat$seTE1)), ]
         dat <- dat[!(is.na(dat$TE2) & is.na(dat$seTE2)), ]
         ##
@@ -576,6 +661,17 @@ pairwise <- function(treat,
                           event2 = event[[j]], time2 = time[[j]],
                           incr = incr.study,
                           stringsAsFactors = FALSE)
+        ##
+        if (wide.armbased) {
+          dat <- cbind(dat, data, stringsAsFactors = FALSE)
+          dupl <- duplicated(names(dat))
+          if (any(dupl))
+            names(dat)[dupl] <- paste(names(dat)[dupl], "orig", sep = ".")
+        }
+        else if (!is.null(adddata))
+          dat <- merge(dat, adddata, by = "studlab",
+                       suffixes = c("",".orig"))
+        ##
         dat <- dat[!(is.na(dat$event1) & is.na(dat$time1)), ]
         dat <- dat[!(is.na(dat$event2) & is.na(dat$time2)), ]
         ##
@@ -605,8 +701,8 @@ pairwise <- function(treat,
       }
     }
   }
-
-
+  
+  
   ##
   ## Additional checks
   ##
