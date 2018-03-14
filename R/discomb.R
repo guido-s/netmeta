@@ -343,7 +343,7 @@ discomb <- function(TE, seTE,
   ##
   ## Fixed effects models
   ##
-  df.Q.additive <- n.a - k - (c - 1)
+  df.Q.additive <- n.a - k - qr(X)$rank
   ##
   if (netc$n.subnets == 1) {
     net <- netmeta(TE, seTE, treat1, treat2, studlab)
@@ -352,7 +352,7 @@ discomb <- function(TE, seTE,
     df.Q <- net$df.Q
     pval.Q <- net$pval.Q
     ##
-    df.Q.diff <- n - c
+    df.Q.diff <- n - 1 - qr(X)$rank
   }
   else {
     Q <- df.Q <- pval.Q <- NA
