@@ -243,8 +243,8 @@ comps <- LETTERS[1:6]
 netconnection(t1, t2, study)
 
 
-nc1 <- discomb(mean, se.mean, t1, t2, study, seq = trts)
-nc1
+dc1 <- discomb(mean, se.mean, t1, t2, study, seq = trts)
+dc1
 
 
 # Define C matrix
@@ -263,12 +263,12 @@ C <- rbind(c(1, 0, 0, 0, 0, 0),  # A
 colnames(C) <- comps
 rownames(C) <- trts
 #
-nc2 <- discomb(mean, se.mean, t1, t2, study, seq = trts,
+dc2 <- discomb(mean, se.mean, t1, t2, study, seq = trts,
                C.matrix = C)
 #
 # Compare C matrices
 #
-all.equal(nc1$C.matrix, nc2$C.matrix)
+all.equal(dc1$C.matrix, dc2$C.matrix)
 }                                                                 
 
 \keyword{Network meta-analysis}

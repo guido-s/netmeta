@@ -269,11 +269,10 @@ discomb <- function(TE, seTE,
   ##
   ##
   netc <- netconnection(treat1, treat2, studlab)
-  trts <- rownames(netc$D.matrix) # treatments (combinations)
   ##
   if (missing(C.matrix)) {
     C.matrix <- createC(netc, sep.components, inactive)
-    C.matrix <- C.matrix[trts, , drop = FALSE]
+    C.matrix <- C.matrix[labels, , drop = FALSE]
   }
   else {
     ##
@@ -285,21 +284,21 @@ discomb <- function(TE, seTE,
     if (is.null(rownames(C.matrix)))
       wrong.labels <- TRUE
     else {
-      if (length(unique(trts)) == length(unique(tolower(trts)))) 
+      if (length(unique(labels)) == length(unique(tolower(labels)))) 
         idx <- charmatch(tolower(rownames(C.matrix)), 
-                         tolower(trts), nomatch = NA)
-      else idx <- charmatch(rownames(C.matrix), trts, nomatch = NA)
+                         tolower(labels), nomatch = NA)
+      else idx <- charmatch(rownames(C.matrix), labels, nomatch = NA)
       if (any(is.na(idx)) || any(idx == 0)) 
         wrong.labels <- TRUE
     }
     if (wrong.labels) 
       stop(paste("Row names of argument 'C.matrix' must be a ", 
                  "permutation of treatment names:\n  ",
-                 paste(paste("'", trts, "'", sep = ""), collapse = " - "),
+                 paste(paste("'", labels, "'", sep = ""), collapse = " - "),
                  sep = ""),
            call. = FALSE)
     ##
-    C.matrix <- C.matrix[trts, , drop = FALSE]
+    C.matrix <- C.matrix[labels, , drop = FALSE]
   }
   if (is.data.frame(C.matrix))
     C.matrix <- as.matrix(C.matrix)
@@ -313,7 +312,7 @@ discomb <- function(TE, seTE,
   ##
   B.matrix <- createB(p0$treat1.pos[o], p0$treat2.pos[o])
   ##
-  colnames(B.matrix) <- trts
+  colnames(B.matrix) <- labels
   rownames(B.matrix) <- studlab
   
   
@@ -335,7 +334,7 @@ discomb <- function(TE, seTE,
   ##
   comps <- colnames(C.matrix) # treatment components
   ##
-  n <- length(trts)
+  n <- length(labels)
   m <- length(TE)
   k <- length(unique(studlab))
   
@@ -422,7 +421,7 @@ discomb <- function(TE, seTE,
               ##
               C.matrix = C.matrix, B.matrix = B.matrix, X = X, 
               ##
-              trts = trts,
+              trts = labels,
               seq = seq,
               ##
               tau.preset = tau.preset,
