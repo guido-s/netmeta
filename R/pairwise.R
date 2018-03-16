@@ -317,10 +317,10 @@ pairwise <- function(treat,
   if (is.null(studlab))
     studlab <- seq(along = treat[[1]])
   ##
-  if (length(studlab) != length(unique(studlab)))
+  if (length(treat) != 2 && length(studlab) != length(unique(studlab)))
     stop("Study labels must all be distinct.")
   ##
-  levs <- studlab
+  levs <- unique(studlab)
   
   
   narms <- length(treat)

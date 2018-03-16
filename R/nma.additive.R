@@ -8,7 +8,8 @@ nma.additive <- function(TE, weights, studlab,
   ##
   ## Adjusted weights
   ##
-  W <- diag(weights)
+  W <- diag(weights,
+            nrow = length(weights))
   ##
   ## Laplacian matrix and pseudoinverse of L
   ##
@@ -38,6 +39,7 @@ nma.additive <- function(TE, weights, studlab,
   ## delta = estimates for observed comparisons
   ##
   delta <- as.vector(X %*% beta) # = B.matrix %*% theta = H %*% TE
+  ##
   se.delta <- sqrt(diag(X %*% Lplus %*% t(X)))
   names(delta) <- names(se.delta)
   
