@@ -111,6 +111,7 @@
      - use correct between-study variance in random effects additive
        network meta-analysis model
      - use correct order of studies to calculate treatment estimates
+     - can be used with single pairwise comparison
 
   * print.summary.netcomb():
     - use correct (abbreviated) names for treatment components

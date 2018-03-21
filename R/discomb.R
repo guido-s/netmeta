@@ -32,6 +32,8 @@ discomb <- function(TE, seTE,
   ## (1) Check arguments
   ##
   ##
+  meta:::chkchar(sep.components, nchar = 1)
+  ##
   meta:::chklevel(level.comb)
   ##
   meta:::chklogical(comb.fixed)

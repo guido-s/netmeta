@@ -3,7 +3,6 @@ pairwise <- function(treat,
                      data = NULL, studlab,
                      incr = 0.5, allincr = FALSE, addincr = FALSE,
                      allstudies = FALSE,
-                     keep = NULL, func = "mode", ties.method = "random",
                      ...) {
   
   
@@ -144,60 +143,23 @@ pairwise <- function(treat,
     ##
     studlab <- as.character(studlab)
     ##
-    treat.list <- list()
-    event.list <- list()
-    n.list     <- list()
-    mean.list  <- list()
-    sd.list    <- list()
-    TE.list    <- list()
-    seTE.list  <- list()
-    time.list  <- list()
-    ##
-    if (!is.null(keep))
-      if (null.data) {
-        warning("Argument 'keep' ignored as argument 'data' is missing.")
-        keep <- NULL
-      }
-      else if (any(!(keep %in% names(data))))
-        stop("Argument 'keep' must contain variable names from dataset (argument 'data').")
-    ##
-    if (!is.null(keep) & !is.null(func)) {
-      for (i in seq(along = func))
-        func[i] <- meta:::setchar(func[i],
-                                  c("mode", "min", "max", "mean", "median", "sum"),
-                                  name = "func")
-      if (length(func) == 1)
-        func <- rep(func, length(keep))
-    }
-    ##
-    ## Add variable(s) to exported dataset (defined by argument 'keep')
-    ##
-    if (!is.null(keep)) {
-      j <- 0
-        for (i in keep) {
-          j <- j + 1
-          ##
-          dat.i <- bySummary(data[, i],
-                             studlab, ties.method = ties.method)
-          dat.i <- dat.i[, c("index1", func[j])]
-          ##
-          dat.i <- dat.i[!duplicated(dat.i), , drop = FALSE]
-          ##
-          if (j == 1) {
-            adddata <- data.frame(studlab = dat.i$index1)
-            adddata[i] <- dat.i[, 2]
-          }
-          else
-            adddata[i] <- dat.i[, 2]
-        }
-    }
-    else
-      adddata <- NULL
-    ##
     treat <- as.character(treat)
     ##
     ttab <- table(studlab, treat)
     n.arms <- apply(ttab, 1, sum)
+    max.arms <- max(n.arms)
+    ##
+    treat.list <- vector("list", max.arms)
+    event.list <- vector("list", max.arms)
+    n.list     <- vector("list", max.arms)
+    mean.list  <- vector("list", max.arms)
+    sd.list    <- vector("list", max.arms)
+    TE.list    <- vector("list", max.arms)
+    seTE.list  <- vector("list", max.arms)
+    time.list  <- vector("list", max.arms)
+    ##
+    if (!null.data)
+      adddata <- vector("list", max.arms)
     ##
     if (type == "binary") {
       ##
@@ -205,20 +167,35 @@ pairwise <- function(treat,
       ##
       tdat <- data.frame(studlab, treat, event, n,
                          stringsAsFactors = FALSE)
+      ##
+      if (!null.data) {
+        tdat <- cbind(tdat, data)
+        dupl <- duplicated(names(tdat))
+        if (any(dupl))
+          names(tdat)[dupl] <- paste(names(tdat)[dupl], "orig", sep = ".")
+      }
+      ##
       tdat <- tdat[order(tdat$studlab, tdat$treat), ]
       ##
       studlab <- names(n.arms)
-      tres <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      dat.studlab <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
       ##
-      for (i in 1:max(n.arms)) {
-        tdat.i <- tdat[!duplicated(tdat$studlab), ]
-        tres.i <- merge(tres, tdat.i, by = "studlab", all.x = TRUE)
+      for (i in 1:max.arms) {
+        sel.i <- !duplicated(tdat$studlab)
+        tdat.i <- merge(dat.studlab, tdat[sel.i, ],
+                        by = "studlab", all.x = TRUE)
         ##
-        treat.list[[i]] <- tres.i$treat
-        event.list[[i]] <- tres.i$event
-        n.list[[i]]     <- tres.i$n
+        treat.list[[i]] <- tdat.i$treat
+        event.list[[i]] <- tdat.i$event
+        n.list[[i]]     <- tdat.i$n
         ##
-        tdat <- tdat[duplicated(tdat$studlab), ]
+        tdat.i$event <- NULL
+        tdat.i$n     <- NULL
+        ##
+        if (!null.data)
+          adddata[[i]] <- tdat.i
+        ##
+        tdat <- tdat[!sel.i, ]
       }
       ##
       treat <- treat.list
@@ -232,21 +209,37 @@ pairwise <- function(treat,
       ##
       tdat <- data.frame(studlab, treat, n, mean, sd,
                          stringsAsFactors = FALSE)
+      ##
+      if (!null.data) {
+        tdat <- cbind(tdat, data)
+        dupl <- duplicated(names(tdat))
+        if (any(dupl))
+          names(tdat)[dupl] <- paste(names(tdat)[dupl], "orig", sep = ".")
+      }
+      ##
       tdat <- tdat[order(tdat$studlab, tdat$treat), ]
       ##
       studlab <- names(n.arms)
-      tres <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      dat.studlab <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
       ##
-      for (i in 1:max(n.arms)) {
-        tdat.i <- tdat[!duplicated(tdat$studlab), ]
-        tres.i <- merge(tres, tdat.i, by = "studlab", all.x = TRUE)
+      for (i in 1:max.arms) {
+        sel.i <- !duplicated(tdat$studlab)
+        tdat.i <- merge(dat.studlab, tdat[sel.i, ],
+                        by = "studlab", all.x = TRUE)
         ##
-        treat.list[[i]] <- tres.i$treat
-        n.list[[i]]     <- tres.i$n
-        mean.list[[i]]  <- tres.i$mean
-        sd.list[[i]]    <- tres.i$sd
+        treat.list[[i]] <- tdat.i$treat
+        n.list[[i]]     <- tdat.i$n
+        mean.list[[i]]  <- tdat.i$mean
+        sd.list[[i]]    <- tdat.i$sd
         ##
-        tdat <- tdat[duplicated(tdat$studlab), ]
+        tdat.i$n    <- NULL
+        tdat.i$mean <- NULL
+        tdat.i$sd   <- NULL
+        ##
+        if (!null.data)
+          adddata[[i]] <- tdat.i
+        ##
+        tdat <- tdat[!sel.i, ]
       }
       ##
       treat <- treat.list
@@ -261,20 +254,35 @@ pairwise <- function(treat,
       ##
       tdat <- data.frame(studlab, treat, event, time,
                          stringsAsFactors = FALSE)
+      ##
+      if (!null.data) {
+        tdat <- cbind(tdat, data)
+        dupl <- duplicated(names(tdat))
+        if (any(dupl))
+          names(tdat)[dupl] <- paste(names(tdat)[dupl], "orig", sep = ".")
+      }
+      ##
       tdat <- tdat[order(tdat$studlab, tdat$treat), ]
       ##
       studlab <- names(n.arms)
-      tres <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      dat.studlab <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
       ##
-      for (i in 1:max(n.arms)) {
-        tdat.i <- tdat[!duplicated(tdat$studlab), ]
-        tres.i <- merge(tres, tdat.i, by = "studlab", all.x = TRUE)
+      for (i in 1:max.arms) {
+        sel.i <- !duplicated(tdat$studlab)
+        tdat.i <- merge(dat.studlab, tdat[sel.i, ],
+                        by = "studlab", all.x = TRUE)
         ##
-        treat.list[[i]] <- tres.i$treat
-        event.list[[i]] <- tres.i$event
-        time.list[[i]]  <- tres.i$time
+        treat.list[[i]] <- tdat.i$treat
+        event.list[[i]] <- tdat.i$event
+        time.list[[i]]  <- tdat.i$time
         ##
-        tdat <- tdat[duplicated(tdat$studlab), ]
+        tdat.i$event <- NULL
+        tdat.i$time  <- NULL
+        ##
+        if (!null.data)
+          adddata[[i]] <- tdat.i
+        ##
+        tdat <- tdat[!sel.i, ]
       }
       ##
       treat <- treat.list
@@ -288,20 +296,35 @@ pairwise <- function(treat,
       ##
       tdat <- data.frame(studlab, treat, TE, seTE,
                          stringsAsFactors = FALSE)
+      ##
+      if (!null.data) {
+        tdat <- cbind(tdat, data)
+        dupl <- duplicated(names(tdat))
+        if (any(dupl))
+          names(tdat)[dupl] <- paste(names(tdat)[dupl], "orig", sep = ".")
+      }
+      ##
       tdat <- tdat[order(tdat$studlab, tdat$treat), ]
       ##
       studlab <- names(n.arms)
-      tres <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      dat.studlab <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
       ##
-      for (i in 1:max(n.arms)) {
-        tdat.i <- tdat[!duplicated(tdat$studlab), ]
-        tres.i <- merge(tres, tdat.i, by = "studlab", all.x = TRUE)
+      for (i in 1:max.arms) {
+        sel.i <- !duplicated(tdat$studlab)
+        tdat.i <- merge(dat.studlab, tdat[sel.i, ],
+                        by = "studlab", all.x = TRUE)
         ##
-        treat.list[[i]] <- tres.i$treat
-        TE.list[[i]]    <- tres.i$TE
-        seTE.list[[i]]  <- tres.i$seTE
+        treat.list[[i]] <- tdat.i$treat
+        TE.list[[i]]    <- tdat.i$TE
+        seTE.list[[i]]  <- tdat.i$seTE
         ##
-        tdat <- tdat[duplicated(tdat$studlab), ]
+        tdat.i$TE   <- NULL
+        tdat.i$seTE <- NULL
+        ##
+        if (!null.data)
+          adddata[[i]] <- tdat.i
+        ##
+        tdat <- tdat[!sel.i, ]
       }
       ##
       treat <- treat.list
@@ -328,13 +351,75 @@ pairwise <- function(treat,
   
   
   ##
-  ## Auxiliary function to calculate number of arms with zero events
-  ## per study
+  ## Auxiliary functions
   ##
-  sumzero <- function(x) sum(x[!is.na(x)] == 0)
+  sumzero <- function(x)
+    sum(x[!is.na(x)] == 0)
+  ##
+  anytrue <- function(x)
+    any(x == TRUE, na.rm = TRUE)
+
+
+  ##
+  ##
+  ## Generate dataset with variables from original dataset
+  ##
+  ##
+  if (!null.data & !wide.armbased) {
+    names.adddata <- names(adddata[[1]])
+    ##
+    notunique <- matrix(NA,
+                        ncol = length(names.adddata),
+                        nrow = narms * (narms - 1) / 2)
+    colnames(notunique) <- names.adddata
+    ##
+    n.ij <- 0
+    ##
+    for (i in 1:(narms - 1)) {
+      for (j in (i + 1):narms) {
+        n.ij <- n.ij + 1
+        notunique[n.ij, ] <- apply(adddata[[i]] != adddata[[j]], 2, anytrue)
+      }
+    }
+    ##
+    notunique <- apply(notunique, 2, anytrue)
+    ##
+    for (i in 1:(narms - 1)) {
+      for (j in (i + 1):narms) {
+        dat.i <- adddata[[i]]
+        dat.j <- adddata[[j]]
+        ##
+        if (any(!notunique))
+          dat.ij <- dat.i[, names.adddata[!notunique]]
+        else
+          stop("Study label must be unique for single treatment arm.")
+        ##
+        for (nam in names.adddata[notunique]) {
+          dat.ij[, paste(nam, 1, sep = "")] <- adddata[[i]][nam]
+          dat.ij[, paste(nam, 2, sep = "")] <- adddata[[j]][nam]
+        }
+        ##
+        if (i == 1 & j == 2)
+          newdata <- dat.ij
+        else
+          newdata <- rbind(newdata, dat.ij)
+      }
+    }
+    ##
+    names.basic <- c("studlab", "treat1", "treat2")
+    names.newdata <- names(newdata)
+    ##
+    newdata <- newdata[, c(names.basic,
+                           names.newdata[!(names.newdata %in% names.basic)])]
+    newdata <- newdata[!is.na(newdata$treat1) & !is.na(newdata$treat2), ]
+  }
+  
+  
+  
   
   
   if (type == "binary") {
+    ##
     if (length(event) != narms)
       stop("Different length of lists 'treat' and 'event'.")
     if (length(n) != narms)
@@ -403,9 +488,6 @@ pairwise <- function(treat,
           if (any(dupl))
             names(dat)[dupl] <- paste(names(dat)[dupl], "orig", sep = ".")
         }
-        else if (!is.null(adddata))
-          dat <- merge(dat, adddata, by = "studlab",
-                       suffixes = c("",".orig"))
         ##
         dat <- dat[!(is.na(dat$event1) & is.na(dat$n1)), ]
         dat <- dat[!(is.na(dat$event2) & is.na(dat$n2)), ]
@@ -515,9 +597,6 @@ pairwise <- function(treat,
           if (any(dupl))
             names(dat)[dupl] <- paste(names(dat)[dupl], "orig", sep = ".")
         }
-        else if (!is.null(adddata))
-          dat <- merge(dat, adddata, by = "studlab",
-                       suffixes = c("",".orig"))
         ##
         dat <- dat[!(is.na(dat$n1) & is.na(dat$mean1) & is.na(dat$sd1)), ]
         dat <- dat[!(is.na(dat$n2) & is.na(dat$mean2) & is.na(dat$sd2)), ]
@@ -582,9 +661,6 @@ pairwise <- function(treat,
           if (any(dupl))
             names(dat)[dupl] <- paste(names(dat)[dupl], "orig", sep = ".")
         }
-        else if (!is.null(adddata))
-          dat <- merge(dat, adddata, by = "studlab",
-                       suffixes = c("",".orig"))
         ##
         dat <- dat[!(is.na(dat$TE1) & is.na(dat$seTE1)), ]
         dat <- dat[!(is.na(dat$TE2) & is.na(dat$seTE2)), ]
@@ -668,9 +744,6 @@ pairwise <- function(treat,
           if (any(dupl))
             names(dat)[dupl] <- paste(names(dat)[dupl], "orig", sep = ".")
         }
-        else if (!is.null(adddata))
-          dat <- merge(dat, adddata, by = "studlab",
-                       suffixes = c("",".orig"))
         ##
         dat <- dat[!(is.na(dat$event1) & is.na(dat$time1)), ]
         dat <- dat[!(is.na(dat$event2) & is.na(dat$time2)), ]
@@ -701,6 +774,15 @@ pairwise <- function(treat,
       }
     }
   }
+  ##
+  if (!null.data & !wide.armbased)
+    res <- merge(res, newdata,
+                 by = c("studlab", "treat1", "treat2"),
+                 suffixes = c("",".orig"),
+                 all.x = TRUE)
+  
+  
+  
   
   
   ##

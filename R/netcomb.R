@@ -14,7 +14,7 @@ netcomb <- function(x,
   ##
   meta:::chkclass(x, "netmeta")
   ##
-  meta:::chkchar(sep.components)
+  meta:::chkchar(sep.components, nchar = 1)
   ##
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)

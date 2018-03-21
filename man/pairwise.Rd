@@ -16,7 +16,6 @@ arm-based to contrast-based format.
 pairwise(treat, event, n, mean, sd, TE, seTE, time,
          data=NULL, studlab,
          incr=0.5, allincr=FALSE, addincr=FALSE, allstudies=FALSE,
-         keep=NULL, func="mode", ties.method="random",
          ...)
 }
 
@@ -52,12 +51,6 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
     events in two treatment arms are to be included in the
     meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
     or \code{"OR"}).}
-  \item{keep}{A vector with names of variables to keep in dataset
-    (only relevant for data in long arm-based format, see Details).}
-  \item{func}{A vector with function names to summarize values within
-    individual studies; see Details.}
-  \item{ties.method}{A character string describing how ties are
-    handled if \code{func="mode"}; see Details.}
   \item{\dots}{Additional arguments passed-through to the functions to
     calculate effects.}
 }
@@ -150,24 +143,18 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
   label ((\code{studlab})). Further columns are added according to
   type of data.
 
-  If data are provided in the wide arm-based format, all variables
-  from the original dataset are also part of the output dataset. If
-  data are provided in the long arm-based format, no variable will be
-  added to the output dataset by default. However, using argument
-  \code{keep}, a vector with variable names can be provided that
-  should be added to the output dataset. In this case, for each study,
-  unique values will be calculated for the additional variable(s)
-  based on the argument \code{func} (which must be of length 1 or the
-  same length as argument \code{keep}): "mode" (most common value),
-  "min" (minimum value), "max", "mean", "median", and "sum". In order
-  to determine the most common value, the argument \code{ties.method}
-  can be used in the case of ties with "first" meaning that the first
-  / smallest value will be selected; similar for "last" (last /
-  largest value) and "random" (random selection).
+  All variables from the original dataset are also part of the output
+  dataset. If data are provided in the long arm-based format, the
+  value of a variable can differ between treatment arms; for example,
+  the mean age or percentage of women in the treatment arm. In this
+  situation, two variables instead of one variable will be included in
+  the output dataset. The values "1" and "2" are added to the names
+  for these variables, e.g. "mean.age1" and "mean.age2" for the mean
+  age.
   
-  Any variable names in the original dataset that are identical to the
-  main variables (i.e., "TE", "seTE", ...) will be renamed to variable
-  name with ending ".orig".
+  In general, any variable names in the original dataset that are
+  identical to the main variable names (i.e., "TE", "seTE", ...) will
+  be renamed to variable names with ending ".orig".
 }
 
 \value{
@@ -192,8 +179,8 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
   \item{time1}{Person time at risk for first treatment arm (for metainc).}
   \item{time2}{Person time at risk for second treatment arm (for metainc).}
 
-  Additional columns are available in the data frame depending on the
-  specific arm-based format and argument \code{keep}; see Details.
+  All variables from the original dataset are also part of the output
+  dataset; see Details.
 }
 
 \author{Gerta Rücker\email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}

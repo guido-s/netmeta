@@ -10,7 +10,7 @@ createC <- function(x,
   if (class(x) == "netconnection")
     trts <- rownames(x$D.matrix)
   else
-    trts <- rownames(x$TE.fixed)
+    trts <- x$trts
   ##
   ## Inactive treatment must be empty or one of the treatments
   ##
@@ -28,11 +28,6 @@ createC <- function(x,
   
   ##
   ## Create list with all treatment components
-  ##
-  if (length(sep.components) != 1 || !is.character(sep.components) ||
-      nchar(sep.components) != 1)
-    stop(paste("Argument '", "sep.components",
-               "' must be a single character.", sep = ""))
   ##
   components.list <- compsplit(trts, sep.components)
   ##
