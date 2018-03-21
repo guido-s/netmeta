@@ -11,11 +11,7 @@
       are considered from R objects created with pairwise() function)
 
   * Function pairwise():
-    - for data provided in wide arm-based format (see help page), all
-      variables from the original dataset are kept in the output
-      dataset
-    - for data provided in long arm-based format (see help page),
-      variables specified by the user can be kept in the output
+    - all variables from the original dataset are kept in the output
       dataset
 
   * Netleague tables
@@ -69,11 +65,8 @@
   * pairwise():
     - print correct labels in error message for studies with duplicate
       treatments
-    - new arguments 'keep', 'func', and 'ties.method' to keep
-      additional variables in the output dataset (only considered for
-      long arm-based format)
    - all variables from the original dataset are kept in the output
-     dataset (only for wide arm-based format)
+     dataset
 
   * print.netmeta():
     - print uniquely abbreviated treatment names
