@@ -30,6 +30,7 @@ netsplit(x, upper=TRUE,
       text.NA=".", backtransf=x$backtransf,
       scientific.pval=gs("scientific.pval"),
       big.mark=gs("big.mark"),
+      legend=TRUE,
       ...)
 }
 
@@ -84,7 +85,9 @@ netsplit(x, upper=TRUE,
   \item{scientific.pval}{A logical specifying whether p-values should
     be printed in scientific notation, e.g., 1.2345e-01 instead of
     0.12345.}
-  \item{big.mark}{A character used as thousands separator.} 
+  \item{big.mark}{A character used as thousands separator.}
+  \item{legend}{A logical indicating whether a legend show be
+    printed.}
   \item{...}{Additional arguments (ignored at the moment)}
 }
 

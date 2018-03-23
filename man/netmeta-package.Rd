@@ -33,6 +33,9 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
     check for consistency (Dias et al., 2010);
   \item league table with network meta-analysis results
     (\code{\link{netleague}});
+  \item additive network meta-analysis for combinations of treatments
+    (\code{\link{netcomb}}, \code{\link{discomb}} for disconnected
+    networks);
   \item automated drawing of network graphs (\code{\link{netgraph}})
     described in Rücker & Schwarzer (2016).
   }

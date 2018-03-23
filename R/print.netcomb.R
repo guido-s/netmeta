@@ -31,29 +31,29 @@ print.netcomb <- function(x,
   meta:::chklogical(scientific.pval)
   
   
-  trts <- rownames(x$x$TE.fixed)
+  trts <- x$trts
   trts.abbr <- treats(trts, nchar.trts)
   ##
   dat.f <- prcomps(x$comparisons.fixed,
-                   backtransf, x$sm, x$level,
+                   backtransf, x$sm, x$level.comb,
                    trts, trts.abbr,
                    digits, digits.zval, digits.pval.Q,
                    scientific.pval, big.mark)
   ##
   dat.r <- prcomps(x$comparisons.random,
-                   backtransf, x$sm, x$level,
+                   backtransf, x$sm, x$level.comb,
                    trts, trts.abbr,
                    digits, digits.zval, digits.pval.Q,
                    scientific.pval, big.mark)
   ##
   if (comb.fixed) {
-    cat("Componentwise analysis (fixed effects model):\n")
+    cat("Additive model (fixed effects model):\n")
     prmatrix(dat.f, quote = FALSE, right = TRUE, ...)
     cat("\n")
   }
   ##
   if (comb.random) {
-    cat("Componentwise analysis (random effects model):\n")
+    cat("Additive model (random effects model):\n")
     prmatrix(dat.r, quote = FALSE, right = TRUE, ...)
     cat("\n")
   }

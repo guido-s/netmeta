@@ -9,6 +9,8 @@ print.summary.netcomb <- function(x,
                                   digits.pval = gs("digits.pval"),
                                   digits.pval.Q = max(gs("digits.pval.Q"), 2),
                                   digits.Q = gs("digits.Q"),
+                                  digits.tau2 = gs("digits.tau2"),
+                                  digits.I2 = gs("digits.I2"),
                                   scientific.pval = gs("scientific.pval"),
                                   big.mark = gs("big.mark"),
                                   ...) {
@@ -32,44 +34,52 @@ print.summary.netcomb <- function(x,
   chknumeric(digits.pval, min = 1, single = TRUE)
   chknumeric(digits.pval.Q, min = 1, single = TRUE)
   chknumeric(digits.Q, min = 0, single = TRUE)
+  chknumeric(digits.tau2, min = 0, single = TRUE)
+  chknumeric(digits.I2, min = 0, single = TRUE)
   ##
   chklogical(scientific.pval)
+  
+  
+  I2 <- round(100 * x$I2, digits.I2)
   
   
   if (comb.fixed | comb.random) {
     cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
     cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
-    cat(paste("Number of components: c = ", x$c, "\n", sep = ""))
+    cat(paste("Number of active components: c = ", x$c, "\n", sep = ""))
     cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
     ##
     cat("\n")
   }
   
   
-  trts <- rownames(x$x$TE.fixed)
+  trts <- x$trts
   trts.abbr <- treats(trts, nchar.trts)
+  ##
+  comps <- names(x$components.fixed$TE)
+  comps.abbr <- treats(comps, nchar.trts)
   
   
   dat1.f <- prcombs(x$combinations.fixed,
                     backtransf, x$sm, x$level,
                     trts, trts.abbr,
                     digits, digits.zval, digits.pval.Q,
-                    scientific.pval, big.mark)
+                    scientific.pval, big.mark, x$seq)
   ##
   dat1.r <- prcombs(x$combinations.random,
                     backtransf, x$sm, x$level,
                     trts, trts.abbr,
                     digits, digits.zval, digits.pval.Q,
-                    scientific.pval, big.mark)
+                    scientific.pval, big.mark, x$seq)
   ##
   if (comb.fixed) {
-    cat("Results for combinations (componentwise analysis, fixed effects model):\n")
+    cat("Results for combinations (additive model, fixed effects model):\n")
     print(dat1.f)
     cat("\n")
   }
   ##
   if (comb.random) {
-    cat("Results for combinations (componentwise analysis, random effects model):\n")
+    cat("Results for combinations (additive model, random effects model):\n")
     print(dat1.r)
     cat("\n")
   }
@@ -77,13 +87,13 @@ print.summary.netcomb <- function(x,
   
   dat2.f <- prcombs(x$components.fixed,
                     backtransf, x$sm, x$level,
-                    trts, trts.abbr,
+                    comps, comps.abbr,
                     digits, digits.zval, digits.pval.Q,
                     scientific.pval, big.mark)
   ##
   dat2.r <- prcombs(x$components.random,
                     backtransf, x$sm, x$level,
-                    trts, trts.abbr,
+                    comps, comps.abbr,
                     digits, digits.zval, digits.pval.Q,
                     scientific.pval, big.mark)
   ##
@@ -96,32 +106,64 @@ print.summary.netcomb <- function(x,
   if (comb.random) {
     cat("Results for components (random effects model):\n")
     print(dat2.r)
-    cat("\n")
   }
   
   
-  cat("Heterogeneity statistics:\n")
+  cat(paste("\nQuantifying heterogeneity / inconsistency:\n",
+            formatPT(x$tau^2,
+                     lab = TRUE, labval = "tau^2",
+                     digits = digits.tau2,
+                     lab.NA = "NA", big.mark = big.mark),
+            if (!is.na(I2))
+              paste("; I^2 = ", round(I2, digits.I2), "%", "", sep = ""),
+            "\n", sep = ""))
   
   
-  print(data.frame(Q = formatN(c(x$Q.comp.fixed, x$Q, x$Q.diff.fixed),
+  cat("\nHeterogeneity statistics:\n")
+  
+  print(data.frame(Q = formatN(c(x$Q.additive,
+                                 x$Q.standard,
+                                 x$Q.diff),
                                digits.Q),
-                   df.Q = c(x$df.Q.comp, x$df.Q, x$df.Q.diff),
-                   pval = formatPT(c(x$pval.Q.comp.fixed, x$pval.Q,
-                                     x$pval.Q.diff.fixed),
+                   df.Q = formatN(c(x$df.Q.additive,
+                                    x$df.Q.standard,
+                                    x$df.Q.diff), 0),
+                   pval = formatPT(c(x$pval.Q.additive,
+                                     x$pval.Q.standard,
+                                     x$pval.Q.diff),
                                    digits = digits.pval.Q,
                                    scientific = scientific.pval),
                    row.names = c("Additive model", "Standard model", "Difference")))
   
   
-  if ((comb.fixed | comb.random) & any(trts != trts.abbr)) {
+  if ((comb.fixed | comb.random)) {
+    any.trts <- any(trts != trts.abbr)
+    any.comps <- any(comps != comps.abbr)
     ##
-    tmat <- data.frame(trts.abbr, trts)
-    names(tmat) <- c("Abbreviation", "Treatment name")
-    tmat <- tmat[order(tmat$Abbreviation), ]
+    if (any.trts | any.comps)
+      cat("\nLegend", if (any.trts & any.comps) "s", ":", sep = "")
     ##
-    cat("\nLegend:\n")
-    prmatrix(tmat, quote = FALSE, right = TRUE,
-             rowlab = rep("", length(trts.abbr))) 
+    if (any.trts) {
+      ##
+      tmat <- data.frame(trts.abbr, trts)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat("\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(trts.abbr))) 
+    }
+    ##
+    if (any.comps) {
+      ##
+      tmat <- data.frame(comps.abbr, comps)
+      names(tmat) <- c("Abbreviation", " Component name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat("\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(comps.abbr))) 
+    }
   }
   
   

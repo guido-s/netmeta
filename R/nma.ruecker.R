@@ -105,6 +105,10 @@ nma.ruecker <- function(TE, seTE,
   ##
   Q <- as.vector(t(TE - v) %*% W %*% (TE - v))
   df <- df1 - (n - 1)
+  if (df == 0)
+    pval.Q <-  NA
+  else
+    pval.Q <- pchisq(Q, df, lower.tail = FALSE)
   ##
   ## Heterogeneity variance
   ##
@@ -115,15 +119,15 @@ nma.ruecker <- function(TE, seTE,
       E[i, j] <- as.numeric(studlab[i] == studlab[j])
   ##
   if (df == 0) {
-    tau2 <- 0
-    I2 <- 0
+    tau2 <- NA
+    tau <- NA
+    I2 <- NA
   }
   else {
     tau2 <- max(0, (Q - df) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
-    I2 <- max(0, 100 * (Q - df) / Q)
+    tau <- sqrt(tau2)
+    I2 <- meta:::isquared(Q, df, 0.95)$TE
   }
-  ##
-  tau <- sqrt(tau2)
   ##
   ## Decomposition of total Q into parts from pairwise meta-analyses
   ## and residual inconsistency
@@ -169,6 +173,8 @@ nma.ruecker <- function(TE, seTE,
                          Q = q,
                          df = dfs,
                          pval.Q = pchisq(q, dfs, lower.tail = FALSE))
+  ##
+  Q.decomp$pval.Q[Q.decomp$df == 0] <- NA
   
   
   TE.pooled <- all
@@ -245,7 +251,7 @@ nma.ruecker <- function(TE, seTE,
     ##
     m.i <- metagen(TE, seTE.orig, subset = selstud, tau.preset = tau.direct)
     ##
-    if (tau.direct == 0) {
+    if (is.na(tau.direct) | tau.direct == 0) {
       TE.i   <- m.i$TE.fixed
       seTE.i <- m.i$seTE.fixed
     }
@@ -301,7 +307,7 @@ nma.ruecker <- function(TE, seTE,
               n = dim(TE.pooled)[[1]],
               Q = Q,
               df = df,
-              pval.Q = pchisq(Q, df, lower.tail = FALSE),
+              pval.Q = pval.Q,
               I2 = I2,
               tau = tau,
               Q.heterogeneity = Q.heterogeneity,

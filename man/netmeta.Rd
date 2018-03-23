@@ -16,13 +16,16 @@
 \usage{
 netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
         sm, level=0.95, level.comb=0.95,
-        comb.fixed=TRUE, comb.random=!is.null(tau.preset),
+        comb.fixed=gs("comb.fixed"),
+        comb.random=gs("comb.random") | !is.null(tau.preset),
         prediction=FALSE, level.predict=0.95,
         reference.group="", baseline.reference=TRUE,
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.chkmultiarm = FALSE,
         sep.trts=":", nchar.trts=666,
-        backtransf=gs("backtransf"), title="", warn=TRUE)
+        n1=NULL, n2=NULL, event1=NULL, event2=NULL,
+        backtransf=gs("backtransf"), title="",
+        keepdata=gs("keepdata"), warn=TRUE)
 }
 
 \arguments{
@@ -76,7 +79,13 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     as odds ratios rather than log odds ratios, for example.}
   \item{nchar.trts}{A numeric defining the minium number of characters
     used to create unique treatment names (see Details).}
+  \item{n1}{Number of observations in first treatment group.}
+  \item{n2}{Number of observations in second treatment group.}
+  \item{event1}{Number of events in first treatment group.}
+  \item{event2}{Number of events in second treatment group.}
   \item{title}{Title of meta-analysis / systematic review.}
+  \item{keepdata}{A logical indicating whether original data (set)
+    should be kept in netmeta object.}
   \item{warn}{A logical indicating whether warnings should be printed
     (e.g., if studies are excluded from meta-analysis due to zero
     standard errors).}
@@ -85,7 +94,7 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
 \details{
   Network meta-analysis using R package \bold{netmeta} is described in
   detail in Schwarzer et al. (2015), Chapter 8.
-
+  
   Let \emph{n} be the number of different treatments (nodes, vertices)
   in a network and let \emph{m} be the number of existing comparisons
   (edges) between the treatments. If there are only two-arm studies,
@@ -165,6 +174,20 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   appropriate adjustment for multi-arm studies). Then, as in standard
   pairwise meta-analysis, the procedure is repeated with the resulting
   enlarged standard errors.
+  
+  Internally, both fixed effects and random effects models are
+  calculated regardless of values choosen for arguments
+  \code{comb.fixed} and \code{comb.random}. Accordingly, the network
+  estimates for the random effects model can be extracted from
+  component \code{TE.random} of an object of class \code{"netmeta"}
+  even if argument \code{comb.random=FALSE}. However, all functions in
+  R package \bold{netmeta} will adequately consider the values for
+  \code{comb.fixed} and \code{comb.random}. E.g. function
+  \code{\link{print.summary.netmeta}} will not print results for the
+  random effects model if \code{comb.random=FALSE}. By default
+  (\code{comb.fixed=TRUE}), a fixed effects network meta-analysis is
+  reported. Use argument \code{comb.random=TRUE} to report results
+  of a random effects model.
 
   By default, treatment names are not abbreviated in
   printouts. However, in order to get more concise printouts, argument
@@ -181,9 +204,9 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   default, a colon is used as the separator. If any treatment label
   contains a colon the following characters are used as separator (in
   consecutive order): \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"},
-  \code{"."}.  If all of these characters are used in treatment
-  labels, a corresponding error message is printed asking the user to
-  specify a different separator.
+  \code{"."}, \code{"|"}, and \code{"*"}.  If all of these characters
+  are used in treatment labels, a corresponding error message is
+  printed asking the user to specify a different separator.
 }
 
 \value{
@@ -208,6 +231,7 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   \item{all.treatments}{A logical or value \code{"NULL"}. If
         \code{TRUE}, matrices with all treatment effects, and
         confidence limits will be printed.}
+  \item{trts}{Treatments included in network meta-analysis.}
   \item{studies}{Study labels coerced into a factor with its levels
     sorted alphabetically.}
   \item{narms}{Number of arms for each study.}

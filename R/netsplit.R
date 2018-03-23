@@ -11,11 +11,8 @@ netsplit <- function(x, upper = TRUE,
   
   
   seq.comps <- rownames(x$Cov.fixed)
-  x.sep.trts <- x$sep.trts
-  if (x.sep.trts == ".")
-    x.sep.trts <- "\\."
   ##
-  trts <- matrix(unlist(strsplit(seq.comps, x.sep.trts)),
+  trts <- matrix(unlist(compsplit(seq.comps, x$sep.trts)),
                  ncol = 2, byrow = TRUE)
   trts <- as.data.frame(trts, stringsAsFactors = FALSE)
   names(trts) <- c("treat1", "treat2")
@@ -52,6 +49,9 @@ netsplit <- function(x, upper = TRUE,
     else
       wo[grep(reference.group, trts$treat2)] <- TRUE
   }
+  else
+    if (!missing(baseline.reference))
+      warning("Argument 'baseline.reference' ignored as reference group is not defined (argument 'reference.group').")
   ##
   if (any(wo)) {
     t1.wo <- trts$treat1[wo]
@@ -148,7 +148,8 @@ netsplit <- function(x, upper = TRUE,
                           lower = lowertri(x$lower.fixed),
                           upper = lowertri(x$upper.fixed),
                           z = lowertri(x$zval.fixed),
-                          p = lowertri(x$pval.fixed))
+                          p = lowertri(x$pval.fixed),
+                          stringsAsFactors = FALSE)
   ##
   direct.fixed.low <- data.frame(comparison,
                                  TE = lowertri(TE.direct.fixed),
@@ -156,7 +157,8 @@ netsplit <- function(x, upper = TRUE,
                                  lower = lowertri(lower.direct.fixed),
                                  upper = lowertri(upper.direct.fixed),
                                  z = lowertri(zval.direct.fixed),
-                                 p = lowertri(pval.direct.fixed))
+                                 p = lowertri(pval.direct.fixed),
+                                 stringsAsFactors = FALSE)
   ##
   indirect.fixed.low <- data.frame(comparison,
                                    TE = lowertri(TE.indirect.fixed),
@@ -164,7 +166,8 @@ netsplit <- function(x, upper = TRUE,
                                    lower = lowertri(lower.indirect.fixed),
                                    upper = lowertri(upper.indirect.fixed),
                                    z = lowertri(zval.indirect.fixed),
-                                   p = lowertri(pval.indirect.fixed))
+                                   p = lowertri(pval.indirect.fixed),
+                                   stringsAsFactors = FALSE)
   ##
   fixed.upp <- data.frame(comparison,
                           TE = uppertri(x$TE.fixed),
@@ -172,7 +175,8 @@ netsplit <- function(x, upper = TRUE,
                           lower = uppertri(x$lower.fixed),
                           upper = uppertri(x$upper.fixed),
                           z = uppertri(x$zval.fixed),
-                          p = uppertri(x$pval.fixed))
+                          p = uppertri(x$pval.fixed),
+                          stringsAsFactors = FALSE)
   ##
   direct.fixed.upp <- data.frame(comparison,
                                  TE = uppertri(TE.direct.fixed),
@@ -180,7 +184,8 @@ netsplit <- function(x, upper = TRUE,
                                  lower = uppertri(lower.direct.fixed),
                                  upper = uppertri(upper.direct.fixed),
                                  z = uppertri(zval.direct.fixed),
-                                 p = uppertri(pval.direct.fixed))
+                                 p = uppertri(pval.direct.fixed),
+                                 stringsAsFactors = FALSE)
   ##
   indirect.fixed.upp <- data.frame(comparison,
                                    TE = uppertri(TE.indirect.fixed),
@@ -188,7 +193,8 @@ netsplit <- function(x, upper = TRUE,
                                    lower = uppertri(lower.indirect.fixed),
                                    upper = uppertri(upper.indirect.fixed),
                                    z = uppertri(zval.indirect.fixed),
-                                   p = uppertri(pval.indirect.fixed))
+                                   p = uppertri(pval.indirect.fixed),
+                                   stringsAsFactors = FALSE)
   ##
   if (!upper) {
     fixed <- fixed.low
@@ -223,7 +229,8 @@ netsplit <- function(x, upper = TRUE,
                               lower = m.fixed$lower,
                               upper = m.fixed$upper,
                               z = m.fixed$zval,
-                              p = m.fixed$pval)
+                              p = m.fixed$pval,
+                              stringsAsFactors = FALSE)
   
   
   ##
@@ -235,7 +242,8 @@ netsplit <- function(x, upper = TRUE,
                            lower = lowertri(x$lower.random),
                            upper = lowertri(x$upper.random),
                            z = lowertri(x$zval.random),
-                           p = lowertri(x$pval.random))
+                           p = lowertri(x$pval.random),
+                           stringsAsFactors = FALSE)
   ##
   direct.random.low <- data.frame(comparison,
                                   TE = lowertri(TE.direct.random),
@@ -243,7 +251,8 @@ netsplit <- function(x, upper = TRUE,
                                   lower = lowertri(lower.direct.random),
                                   upper = lowertri(upper.direct.random),
                                   z = lowertri(zval.direct.random),
-                                  p = lowertri(pval.direct.random))
+                                  p = lowertri(pval.direct.random),
+                                  stringsAsFactors = FALSE)
   ##
   indirect.random.low <- data.frame(comparison,
                                     TE = lowertri(TE.indirect.random),
@@ -251,11 +260,13 @@ netsplit <- function(x, upper = TRUE,
                                     lower = lowertri(lower.indirect.random),
                                     upper = lowertri(upper.indirect.random),
                                     z = lowertri(zval.indirect.random),
-                                    p = lowertri(pval.indirect.random))
+                                    p = lowertri(pval.indirect.random),
+                                    stringsAsFactors = FALSE)
   ##
   predict.low <- data.frame(comparison,
                             lower = lowertri(x$lower.predict),
-                            upper = lowertri(x$upper.predict))
+                            upper = lowertri(x$upper.predict),
+                            stringsAsFactors = FALSE)
   ##
   random.upp <- data.frame(comparison,
                            TE = uppertri(x$TE.random),
@@ -263,7 +274,8 @@ netsplit <- function(x, upper = TRUE,
                            lower = uppertri(x$lower.random),
                            upper = uppertri(x$upper.random),
                            z = uppertri(x$zval.random),
-                           p = uppertri(x$pval.random))
+                           p = uppertri(x$pval.random),
+                           stringsAsFactors = FALSE)
   ##
   direct.random.upp <- data.frame(comparison,
                                   TE = uppertri(TE.direct.random),
@@ -271,7 +283,8 @@ netsplit <- function(x, upper = TRUE,
                                   lower = uppertri(lower.direct.random),
                                   upper = uppertri(upper.direct.random),
                                   z = uppertri(zval.direct.random),
-                                  p = uppertri(pval.direct.random))
+                                  p = uppertri(pval.direct.random),
+                                  stringsAsFactors = FALSE)
   ##
   indirect.random.upp <- data.frame(comparison,
                                     TE = uppertri(TE.indirect.random),
@@ -279,11 +292,13 @@ netsplit <- function(x, upper = TRUE,
                                     lower = uppertri(lower.indirect.random),
                                     upper = uppertri(upper.indirect.random),
                                     z = uppertri(zval.indirect.random),
-                                    p = uppertri(pval.indirect.random))
+                                    p = uppertri(pval.indirect.random),
+                                    stringsAsFactors = FALSE)
   ##
   predict.upp <- data.frame(comparison,
                             lower = uppertri(x$lower.predict),
-                            upper = uppertri(x$upper.predict))
+                            upper = uppertri(x$upper.predict),
+                            stringsAsFactors = FALSE)
   ##
   if (!upper) {
     random <- random.low
@@ -322,7 +337,8 @@ netsplit <- function(x, upper = TRUE,
                                lower = m.random$lower,
                                upper = m.random$upper,
                                z = m.random$zval,
-                               p = m.random$pval)
+                               p = m.random$pval,
+                               stringsAsFactors = FALSE)
   
   
   res <- list(comparison = comparison,

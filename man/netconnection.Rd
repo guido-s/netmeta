@@ -13,14 +13,18 @@
   (\code{studlab}). The function calculates the number of subnetworks
   (connectivity components; value of 1 corresponds to a fully
   connected network) and the distance matrix (in block-diagonal form
-  in the case of subnetworks).
+  in the case of subnetworks). If some treatments are combinations of
+  other treatments or have common components, an analysis based on the
+  additive network meta-analysis model might be possible, see
+  \link{discomb} function.
 }
 
 \usage{
 netconnection(treat1, treat2, studlab, data = NULL, subset = NULL,
-              title = "", warn = FALSE)
+              nchar.trts = 666, title = "", warn = FALSE)
 
-\method{print}{netconnection}(x, digits = max(4, .Options$digits - 3), ...)
+\method{print}{netconnection}(x, digits = max(4, .Options$digits - 3),
+      nchar.trts = x$nchar.trts, ...)
 }
 
 \arguments{
@@ -30,6 +34,8 @@ netconnection(treat1, treat2, studlab, data = NULL, subset = NULL,
   \item{data}{An optional data frame containing the study information.}
   \item{subset}{An optional vector specifying a subset of studies to be used.}
   \item{title}{Title of meta-analysis / systematic review.}
+  \item{nchar.trts}{A numeric defining the minium number of characters
+    used to create unique treatment names.}
   \item{warn}{A logical indicating whether warnings should be printed.}
   \item{x}{An object of class \code{netconnection}.}
   \item{digits}{Minimal number of significant digits, see
@@ -42,7 +48,7 @@ netconnection(treat1, treat2, studlab, data = NULL, subset = NULL,
   \code{print} function. The object is a list containing the following
   components:
 
-  \item{treat1, treat2, studlab, title, warn}{As defined above.}
+  \item{treat1, treat2, studlab, title, warn, nchar.trts}{As defined above.}
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
@@ -56,7 +62,7 @@ netconnection(treat1, treat2, studlab, data = NULL, subset = NULL,
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\code{\link{netmeta}}, \code{\link{netdistance}}}
+\seealso{\code{\link{netmeta}}, \code{\link{netdistance}}, \code{\link{discomb}}}
 
 \examples{
 data(Senn2013)

@@ -1,8 +1,9 @@
-\name{netcomb}
+\name{discomb}
 
-\alias{netcomb}
+\alias{discomb}
 
-\title{Additive network meta-analysis for combinations of treatments}
+\title{Additive network meta-analysis for combinations of treatments
+ (disconnected networks)}
 
 \description{
   Some treatments in a network meta-analysis may be combinations of
@@ -10,29 +11,87 @@
   individual components can be evaluated in an additive network
   meta-analysis model assuming that the effect of treatment
   combinations is the sum of the effects of its components. This
-  function implements this additive model in a frequentist way.
+  function implements this additive model in a frequentist way and is
+  particularly intended for disconnected networks.
 }
 
 \usage{
-netcomb(x, inactive = NULL, sep.components = "+", C.matrix,
-        comb.fixed = x$comb.fixed,
-        comb.random = x$comb.random | !is.null(tau.preset),
-        tau.preset = NULL)
+discomb(TE, seTE,
+        treat1, treat2,
+        studlab, data = NULL, subset = NULL,
+        ##
+        inactive = NULL,
+        sep.components = "+", 
+        C.matrix,
+        ##
+        sm,
+        level.comb = gs("level.comb"),
+        comb.fixed = gs("comb.fixed"),
+        comb.random = gs("comb.random") | !is.null(tau.preset),
+        ##
+        seq = NULL,
+        ##
+        tau.preset = NULL,
+        ##
+        tol.multiarm = 0.0005,
+        details.chkmultiarm = FALSE,
+        ##
+        sep.trts = ":",
+        nchar.trts = 666,
+        ##
+        backtransf = gs("backtransf"),
+        ##
+        title = "",
+        warn = TRUE)
 }
 
 \arguments{
-  \item{x}{An object of class \code{netmeta}.}
+  \item{TE}{Estimate of treatment effect, i.e. difference between
+   first and second treatment (e.g. log odds ratio, mean difference,
+   or log hazard ratio).}
+  \item{seTE}{Standard error of treatment estimate.}
+  \item{treat1}{Label/Number for first treatment.}
+  \item{treat2}{Label/Number for second treatment.}
+  \item{studlab}{An optional - but important! - vector with study
+    labels (see \code{\link{netmeta}}).}
+  \item{data}{An optional data frame containing the study information.}
+  \item{subset}{An optional vector specifying a subset of studies to be used.}
   \item{inactive}{A character string defining the inactive treatment
     (see Details).}
   \item{sep.components}{A single character to define separator between
     treatment components.}
   \item{C.matrix}{C matrix (see Details).}
+  \item{sm}{A character string indicating underlying summary measure,
+    e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
+    \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.}
+  \item{level.comb}{The level used to calculate confidence intervals for
+    pooled estimates.}
   \item{comb.fixed}{A logical indicating whether a fixed effect
     meta-analysis should be conducted.}
   \item{comb.random}{A logical indicating whether a random effects
     meta-analysis should be conducted.}
+  \item{seq}{A character or numerical vector specifying the sequence
+    of treatments in printouts.}
   \item{tau.preset}{An optional value for the square-root of the
     between-study variance \eqn{\tau^2}.}
+  \item{tol.multiarm}{A numeric for the tolerance for consistency of
+    treatment estimates and corresponding variances in multi-arm studies
+    which are consistent by design.}
+  \item{details.chkmultiarm}{A logical indicating whether treatment
+    estimates and / or variances of multi-arm studies with inconsistent
+    results or negative multi-arm variances should be printed.}
+  \item{sep.trts}{A character used in comparison names as separator
+    between treatment labels.}
+  \item{backtransf}{A logical indicating whether results should be
+    back transformed in printouts and forest plots. If
+    \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
+    as odds ratios rather than log odds ratios, for example.}
+  \item{nchar.trts}{A numeric defining the minium number of characters
+    used to create unique treatment names (see Details).}
+  \item{title}{Title of meta-analysis / systematic review.}
+  \item{warn}{A logical indicating whether warnings should be printed
+    (e.g., if studies are excluded from meta-analysis due to zero
+    standard errors).}
 }
 
 \details{
@@ -46,6 +105,10 @@ common components, an additive NMA model can be used to evaluate the
 influence of individual components. This model assumes that the effect
 of a treatment combination is the sum of the effects of its components
 which implies that common components cancel out in comparisons.
+
+This R function can be used for disconnected networks. Use
+\code{\link{netmeta}} and \code{\link{netcomb}} for connected
+networks.
 
 The additive network meta-analysis model has been implemented using
 Bayesian methods (Mills et al., 2012; Welton et al., 2013). This
@@ -81,13 +144,13 @@ Argument \code{sep.components} can be used to specify the separator
 between individual components. By default, the matrix \strong{C} is
 calculated internally from treatment names. However, it is possible to
 specify a different matrix using argument \code{C.matrix}.
-}                                                              
+}                  
 
 \value{
 A list containing the following components:
-
-  \item{x, inactive, sep.components, C.matrix}{As defined above.}  
-  \item{comb.fixed, comb.random, tau.preset}{As defined above.}  
+  \item{inactive, sep.components, C.matrix, sm}{As defined above.}  
+  \item{level.comb, comb.fixed, comb.random, seq}{As defined above.}  
+  \item{tau.preset, sep.trts, nchar.trts, backtransf}{As defined above.}  
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
@@ -101,8 +164,6 @@ A list containing the following components:
   \item{combinations.fixed, combinations.random}{Lists with components
     TE, seTE, lower, upper, z, p level, df (fixed and random effects
     model).}
-  \item{sm}{Summary measure.}
-  \item{level.comb}{Level for confidence intervals.}
   \item{Q.additive}{Overall heterogeneity / inconsistency statistic
     (additive model).}
   \item{df.Q.additive}{Degrees of freedom for test of heterogeneity /
@@ -115,19 +176,15 @@ A list containing the following components:
     inconsistency (standard model).}
   \item{pval.Q.standard}{P-value for test of heterogeneity /
     inconsistency (standard model).}
-  \item{Q.diff.fixed, Q.diff.random}{Test statistic for difference in
-    goodness of fit between standard and additive model (fixed and
-    random effects model).}
-  \item{df.Q.diff.fixed, df.Q.diff.random}{Degrees of freedom for
-    difference in goodness of fit between standard and additive model
-    (fixed and random effects model).}
-  \item{pval.Q.diff.fixed, pval.Q.diff.random}{P-value for difference
-    in goodness of fit between standard and additive model (fixed and
-    random effects model).}
-  \item{backtransf}{A logical indicating whether results should be
-    back transformed in printouts and forest plots.}
-  \item{nchar.trts}{A numeric defining the minium number of characters
-    used to create unique treatment and component names.}
+  \item{Q.diff}{Test statistic for difference in goodness of fit
+    between standard and additive model.}
+  \item{df.Q.diff}{Degrees of freedom for difference in goodness of
+    fit between standard and additive model.}
+  \item{pval.Q.diff}{P-value for difference in goodness of fit between
+    standard and additive model.}
+  \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
+  \item{X}{Full design matrix (\emph{m}x\emph{n}).}
+  \item{trts}{Treatments included in network meta-analysis.}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{call}{Function call.}
   \item{version}{Version of R package netmeta used to create object.}
@@ -159,42 +216,59 @@ A list containing the following components:
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
 Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\link{netmeta}, \link{print.netcomb}, \link{discomb}}
+\seealso{\link{netcomb}, \link{print.netcomb}, \link{netmeta}, \link{netconnection}}
 
 \examples{
-data(Linde2016)
+# Artificial dataset
 #
-# Specify, order of treatments
+t1 <- c("A + B", "A + C", "A"    , "A"    , "D", "D", "E")
+t2 <- c("C"    , "B"    , "B + C", "A + D", "E", "F", "F")
 #
-trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
-          "rMAO-A", "Ind drug", "Hypericum", "Face-to-face CBT",
-          "Face-to-face PST", "Face-to-face interpsy", "Face-to-face psychodyn",
-          "Other face-to-face", "Remote CBT", "Self-help CBT", "No contact CBT",
-          "Face-to-face CBT + SSRI", "Face-to-face interpsy + SSRI",
-          "Face-to-face PST + SSRI", "UC", "Placebo")
+mean    <- c(4.1, 2.05, 0, 0, 0.1, 0.1, 0.05)
+se.mean <- rep(0.1, 7)
+##
+study <- paste("study", c(1:4, 5, 5, 5))
 #
-# Note, three treatments are actually combinations of 'SSRI' with
-# other components:
+dat <- data.frame(mean, se.mean, t1, t2, study,
+                  stringsAsFactors = FALSE)
 #
-# "Face-to-face CBT + SSRI",
-# "Face-to-face interpsy + SSRI",
-# "Face-to-face PST + SSRI"
+trts <- c("A", "A + B", "A + C", "A + D",
+          "B", "B + C", "C", "D", "E", "F")
+#
+comps <- LETTERS[1:6]
 
-# Standard Network meta-analysis
-#
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = Linde2016, ref = "placebo",
-		seq = trts,
-                sm = "OR", comb.fixed = FALSE, comb.random = TRUE)
-#
-summary(net1)
 
-# Additive model for treatment components (with placebo as inactive
-# treatment)
+# Use netconnection() to display network information
 #
-nc1 <- netcomb(net1, inactive = "placebo")
+netconnection(t1, t2, study)
+
+
+dc1 <- discomb(mean, se.mean, t1, t2, study, seq = trts)
+dc1
+
+
+# Define C matrix
 #
-summary(nc1)
+C <- rbind(c(1, 0, 0, 0, 0, 0),  # A
+           c(1, 1, 0, 0, 0, 0),  # A + B
+           c(1, 0, 1, 0, 0, 0),  # A + C
+           c(1, 0, 0, 1, 0, 0),  # A + D
+           c(0, 1, 0, 0, 0, 0),  # B
+           c(0, 1, 1, 0, 0, 0),  # B + C
+           c(0, 0, 1, 0, 0, 0),  # C
+           c(0, 0, 0, 1, 0, 0),  # D
+           c(0, 0, 0, 0, 1, 0),  # E
+           c(0, 0, 0, 0, 0, 1))  # F
+#                  
+colnames(C) <- comps
+rownames(C) <- trts
+#
+dc2 <- discomb(mean, se.mean, t1, t2, study, seq = trts,
+               C.matrix = C)
+#
+# Compare C matrices
+#
+all.equal(dc1$C.matrix, dc2$C.matrix)
 }                                                                 
 
 \keyword{Network meta-analysis}

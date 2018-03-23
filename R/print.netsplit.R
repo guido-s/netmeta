@@ -13,6 +13,7 @@ print.netsplit <- function(x,
                            backtransf = x$backtransf,
                            scientific.pval = gs("scientific.pval"),
                            big.mark = gs("big.mark"),
+                           legend = TRUE,
                            ...) {
   
   
@@ -49,6 +50,7 @@ print.netsplit <- function(x,
     backtransf <- TRUE
   chklogical(backtransf)
   chklogical(scientific.pval)
+  chklogical(legend)
   
   
   sm <- x$sm
@@ -294,25 +296,28 @@ print.netsplit <- function(x,
              rowlab = rep("", dim(random)[1]))
   }
   ##
-  cat("\nLegend:\n")
-  cat(" comparison - Treatment comparison\n")
-  cat(" k          - Number of studies providing direct evidence\n")
-  cat(" prop       - Direct evidence proportion\n")
-  if (overall)
-    cat(paste(" nma        - Estimated treatment effect ", sm.lab,
-              "in network meta-analysis\n", sep = ""))
-  cat(paste(" direct     - Estimated treatment effect ", sm.lab,
-            "derived from direct evidence\n", sep = ""))
-  cat(paste(" indir.     - Estimated treatment effect ", sm.lab,
-            "derived from indirect evidence\n", sep = ""))
-  if (test) {
-    if (backtransf & relative)
-      cat(" RoR        - Ratio of Ratios (direct versus indirect)\n")
-    else
-      cat(" Diff       - Difference between direct and indirect treatment estimates\n")
-    cat(" z          - z-value of test for disagreement (direct versus indirect)\n")
-    cat(" p-value    - p-value of test for disagreement (direct versus indirect)\n")
+  if (legend) {
+    cat("\nLegend:\n")
+    cat(" comparison - Treatment comparison\n")
+    cat(" k          - Number of studies providing direct evidence\n")
+    cat(" prop       - Direct evidence proportion\n")
+    if (overall)
+      cat(paste(" nma        - Estimated treatment effect ", sm.lab,
+                "in network meta-analysis\n", sep = ""))
+    cat(paste(" direct     - Estimated treatment effect ", sm.lab,
+              "derived from direct evidence\n", sep = ""))
+    cat(paste(" indir.     - Estimated treatment effect ", sm.lab,
+              "derived from indirect evidence\n", sep = ""))
+    if (test) {
+      if (backtransf & relative)
+        cat(" RoR        - Ratio of Ratios (direct versus indirect)\n")
+      else
+        cat(" Diff       - Difference between direct and indirect treatment estimates\n")
+      cat(" z          - z-value of test for disagreement (direct versus indirect)\n")
+      cat(" p-value    - p-value of test for disagreement (direct versus indirect)\n")
+    }
   }
-  ##
+  
+  
   invisible(NULL)
 }

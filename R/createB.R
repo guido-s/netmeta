@@ -1,4 +1,6 @@
 createB <- function (pos1, pos2, ncol) {
+  
+  
   if (missing(pos1) | missing(pos2)) {
     ##
     ## Create full edge-vertex incidence matrix
@@ -21,7 +23,7 @@ createB <- function (pos1, pos2, ncol) {
     ## Create edge-vertex incidence matrix
     ##
     nrow <- length(pos1)
-    ncol = length(unique(c(pos1, pos2)))
+    ncol <- length(unique(c(pos1, pos2)))
     ##
     B <- matrix(0, nrow = nrow, ncol = ncol)
     ##

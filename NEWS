@@ -1,3 +1,144 @@
+*** netmeta, version 0.9-8, 2018-03-23 ***
+
+ ** Major changes **
+
+  * Main function netmeta():
+    - by default, results for fixed effects and random effects network
+      meta-analysis are reported (only results for fixed effects model
+      were reported in older versions)
+    - keep dataset used to conduct network meta-analysis
+    - number of events and number of observations can be provided (and
+      are considered from R objects created with pairwise() function)
+
+  * Function pairwise():
+    - all variables from the original dataset are kept in the output
+      dataset
+
+  * Netleague tables
+    - show the direct treatment estimates from pairwise comparisons in
+      the upper triangle if the table is created for a single network
+      meta-analysis
+    - report pairwise comparisons of the treatment in the row versus
+      the treatment in the column in the lower triangle and column
+      versus row in the upper triangle (common presentation for
+      network meta-analyses)
+
+  * Network graphs are much more flexible, e.g., color of lines /
+    edges can be specified for each direct pairwise comparison
+
+  * New function discomb() for disconnected networks sharing at least
+    one common treatment component to apply the additive network model
+    for combinations of treatments
+
+  * Treatment separator (argument 'sep.trts') can be special character
+    from regular expressions
+
+  * Between-study variance tau-squared is reported as NA instead of 0
+    in networks without heterogeneity / inconsistency
+
+ ** User-visible changes **
+
+  * netmeta():
+    - settings for printing of results are defined by settings.meta(),
+      i.e., new default is to print results for both fixed effects and
+      random effects model
+    - new arguments 'event1', 'event2', 'n1', and 'n2' to provide
+      number of events and observations for the two treatment groups
+    - new argument 'keepdata' to choose whether original dataset
+      should be part of network meta-analysis object    
+    - new list element 'data' to keep dataset used to conduct network
+      meta-analysis (if argument 'keepdata' is TRUE)
+
+  * netgraph():
+    - argument 'col' can be a matrix, e.g., created with netmatrix(),
+      to specify the color of lines / edges for each direct pairwise
+      comparison
+    - arguments 'col.points', 'cex.points', and 'pch.points' can be
+      used to specify the color, size, and plotting symbol for each
+      treatment separately
+    - new argument 'adj' to specify the adjustment of treatment labels
+    - new argument 'pos.number.of.studies' to specify the position of
+      the number of treatments on the edges
+    - (invisibly) returns a list with information on nodes and edges
+      (position, color, etc.) used to produce the network graph
+
+  * pairwise():
+    - print correct labels in error message for studies with duplicate
+      treatments
+   - all variables from the original dataset are kept in the output
+     dataset
+
+  * print.netmeta():
+    - print uniquely abbreviated treatment names
+
+  * netconnection() and print.netconnection():
+    - new argument 'sep.trts' to print abbreviated treatment names
+
+  * netleague():
+    - new argument 'big.mark' to specify character printed as
+      thousands separator, e.g., big.mark = "," will result in
+      printing of 1,000 for the number 1000
+    - new argument 'text.NA' to label missing values, i.e., for
+      pairwise comparisons without direct evidence
+    - new argument 'direct' to print direct treatment estimates (if
+      argument 'y' is not missing)
+
+  * print.netsplit():
+    - new argument 'legend' to suppress printing of the legend
+
+  * print.summary.netcomb():
+    - new arguments 'digits.tau2' and 'digits.I2'
+
+  * New auxiliary function netmatrix() to create a matrix with
+    additional information for pairwise comparisons (e.g., risk of
+    bias assessment)
+
+ ** Bug fixes **
+
+  * netmeta():
+    - list elements 'P.fixed' and 'P.random' contained wrong values
+      for network meta-analyses with a single design which resulted in
+      an error using forest.netmeta()
+
+  * netcomb():
+     - use correct between-study variance in random effects additive
+       network meta-analysis model
+     - use correct order of studies to calculate treatment estimates
+     - can be used with single pairwise comparison
+
+  * print.summary.netcomb():
+    - use correct (abbreviated) names for treatment components
+
+ ** Internal changes **
+
+  * new internal functions compmatch() and compsplit() for argument
+    'sep.trts' taking special character from regular expression into
+    account, e.g., sep.trts = "."
+
+  * new internal functions bySummary() which is used in netmeta(),
+    netmatrix(), and pairwise()
+
+  * createC() can be used with netconnection() objects (for
+    disconnected networks)
+
+  * netcomb.netmeta() has been renamed to netcomb()
+
+  * netmeta():
+    - report I2 as value between 0 and 1 (instead of 0 and 100)
+    - new list element 'trts' (character vector with treatment names)
+
+  * Internal function nma.ruecker():
+    - use internal function isquared() from package meta to calculate
+      I2
+
+  * Internal function nma.additive():
+    - calcuate between-study variance tau2 and heterogeneity statistic
+      I2
+
+  * Internal function prcombs():
+    - new argument 'seq' to order treatments
+
+
 *** netmeta, version 0.9-7, 2017-12-06 ***
 
  ** Major changes **

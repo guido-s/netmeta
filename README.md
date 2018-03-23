@@ -72,8 +72,8 @@ install.packages("netmeta")
 
 ### Current development version on GitHub:
 ```r
-install.packages("devtools")
-devtools::install_github("guido-s/netmeta", ref = "develop")
+install.packages("ghit")
+ghit::install_github("guido-s/netmeta[develop]")
 ```
 
 Note, the development version of **netmeta** always has version

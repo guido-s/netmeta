@@ -77,8 +77,8 @@ print.netmeta <- function(x,
   trts <- rownames(x$TE.fixed)
   trts.abbr <- treats(trts, nchar.trts)
   ##
-  treat1 <- as.character(x$treat1, levels = trts, labels = trts.abbr)
-  treat2 <- as.character(x$treat2, levels = trts, labels = trts.abbr)
+  treat1 <- as.character(factor(x$treat1, levels = trts, labels = trts.abbr))
+  treat2 <- as.character(factor(x$treat2, levels = trts, labels = trts.abbr))
   ##
   if (any(treat1 != x$treat1) | any(treat2 != x$treat2))
     abbr <- c(treat1, treat2)

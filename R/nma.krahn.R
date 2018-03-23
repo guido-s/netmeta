@@ -4,6 +4,10 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
   meta:::chkclass(x, "netmeta")
   
   
+  if (is.na(tau.preset))
+    tau.preset <- 0
+  
+  
   if (is.null(sep.trts))
     sep.trts <- ":"
   
@@ -20,7 +24,8 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
 
   studies.pre <- data.frame(studlab = x$studlab,
                             treat1 = x$treat1, treat2 = x$treat2,
-                            TE = -x$TE, seTE = sqrt(x$seTE^2 + tau.preset^2),
+                            TE = -x$TE,
+                            seTE = sqrt(x$seTE^2 + tau.preset^2),
                             narms = x$narms[match(x$studlab, x$studies)],
                             stringsAsFactors = FALSE)
   ##
@@ -352,7 +357,7 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
 
   if (multiarm) {
     len.designs <- c(rep(1, length(direct2$comparison)),
-                     unlist(lapply(strsplit(multicomp, sep.trts),
+                     unlist(lapply(compsplit(multicomp, sep.trts),
                                    function(x)
                                      length(x) - 1
                                    )
@@ -367,7 +372,7 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
                   ),
                 len.designs)
     narms <- rep(c(rep(2, nrow(direct2)),
-                   unlist(lapply(strsplit(multicomp, sep.trts),
+                   unlist(lapply(compsplit(multicomp, sep.trts),
                                  function(x)
                                    length(x)
                                  )
@@ -376,11 +381,12 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
                  len.designs)
     ##
     design <- data.frame(design = c(direct2$comparison,
-                                    rep(multicomp, unlist(lapply(strsplit(multicomp, sep.trts),
-                                                                 function(x)
-                                                                   length(x)
-                                                                 )
-                                                          ) - 1
+                                    rep(multicomp,
+                                        unlist(lapply(compsplit(multicomp, sep.trts),
+                                                      function(x)
+                                                        length(x)
+                                                      )
+                                               ) - 1
                                         )
                                     ),
                          comparison = c(direct2$comparison,
@@ -389,7 +395,7 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
                                                                    function(x)
                                                                      as.character(
                                                                        unlist(
-                                                                         split(x,x$studlab)[[1]]["comparison"]
+                                                                         split(x, x$studlab)[[1]]["comparison"]
                                                                        )
                                                                      )
                                                                    )

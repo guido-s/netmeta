@@ -4,20 +4,21 @@ export(netmeta,
        forest.netmeta, forest.netsplit, pairwise,
        decomp.design, print.decomp.design,
        netheat, netgraph, netheat, netmeasures,
-       netcomb, summary.netcomb,
+       netcomb, discomb, summary.netcomb,
        print.netcomb, print.summary.netcomb,
        netrank, print.netrank,
        netconnection, print.netconnection, netdistance,
        netsplit, print.netsplit,
        netposet, print.netposet, plot.netposet, hasse,
-       netleague, print.netleague, treats)
+       netleague, print.netleague, treats,
+       netmatrix)
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
 # tau.within, decomp.tau, stress,
 # shadowtext, chklist, chkmultiarm, lowertri, uppertri, createB,
 # upgradenetmeta, treats, createC, nma.additive,
-# prcombs, prcomps
+# prcombs, prcomps, compmatch, compsplit
 
 S3method(as.data.frame, netmeta)
 S3method(print, netmeta)
@@ -25,7 +26,6 @@ S3method(summary, netmeta)
 S3method(print, summary.netmeta)
 S3method(forest, netmeta)
 S3method(forest, netsplit)
-S3method(netcomb, netmeta)
 S3method(print, netcomb)
 S3method(summary, netcomb)
 S3method(print, summary.netcomb)

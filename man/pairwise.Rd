@@ -1,12 +1,12 @@
 \name{pairwise}
 \alias{pairwise}
 
-\title{Transform meta-analysis data from arm-based format into
+\title{Transform meta-analysis data from two arm-based formats into
 contrast-based format}
 
-\description{This function transforms data that are given in an
-arm-based format (e.g. input format for WinBUGS) to a contrast-based
-format that is needed as input to R function
+\description{This function transforms data that are given in wide or
+long arm-based format (e.g. input format for WinBUGS) to a
+contrast-based format that is needed as input to R function
 \code{\link{netmeta}}. The function can transform data with binary,
 continuous, or generic outcomes as well as incidence rates from
 arm-based to contrast-based format.
@@ -15,8 +15,8 @@ arm-based to contrast-based format.
 \usage{
 pairwise(treat, event, n, mean, sd, TE, seTE, time,
          data=NULL, studlab,
-	 incr=0.5, allincr=FALSE, addincr=FALSE, allstudies=FALSE,
-	 ...)
+         incr=0.5, allincr=FALSE, addincr=FALSE, allstudies=FALSE,
+         ...)
 }
 
 \arguments{
@@ -57,33 +57,34 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
 
 \details{
   R function \code{\link{netmeta}} expects data in a
-  \emph{contrast-based format}, where each row corresponds to a
+  \bold{contrast-based format}, where each row corresponds to a
   comparison of two treatments and contains a measure of the treatment
   effect comparing two treatments with standard error, labels for the
   two treatments and an optional study label. In contrast-based
   format, a three-arm study contributes three rows with treatment
   comparison and corresponding standard error for pairwise comparison
-  \emph{A} vs \emph{B}, \emph{A} vs \emph{C}, and \emph{B} vs
-  \emph{C} whereas a four-arm study contributes six rows / pairwise
+  \emph{A} vs \emph{B}, \emph{A} vs \emph{C}, and \emph{B} vs \emph{C}
+  whereas a four-arm study contributes six rows / pairwise
   comparisons: \emph{A} vs \emph{B}, \emph{A} vs \emph{C}, \dots,
   \emph{C} vs \emph{D}.
 
   Other programs for network meta-analysis in WinBUGS and Stata
-  require data in an \emph{arm-based format}, i.e. treatment estimate
-  for each treatment arm instead of a difference of two
-  treatments. This format consists of one data row per study,
-  containing treatment and other necessary information for all study
-  arms. For example, a four-arm study contributes one row with four
-  treatment estimates and corresponding standard errors for treatments
-  \emph{A}, \emph{B}, \emph{C}, and \emph{D}. Another possible
-  arm-based format is a long format where each row corresponds to a
-  single study arm. Accordingly, in the long format a study
-  contributes as many rows as treatments considered in the study.
+  require data in an \emph{arm-based} format, i.e. treatment estimate
+  for each treatment arm instead of a difference of two treatments. A
+  common \bold{(wide) arm-based format} consists of one data row per
+  study, containing treatment and other necessary information for all
+  study arms. For example, a four-arm study contributes one row with
+  four treatment estimates and corresponding standard errors for
+  treatments \emph{A}, \emph{B}, \emph{C}, and \emph{D}. Another
+  possible arm-based format is a long format where each row
+  corresponds to a single study arm. Accordingly, in the \bold{long
+  arm-based format} a study contributes as many rows as treatments
+  considered in the study.
   
-  The pairwise function transforms data given in arm-based format into
-  the contrast-based format which consists of \emph{pairwise}
-  comparisons and is needed as input to the \code{\link{netmeta}}
-  function.
+  The pairwise function transforms data given in (wide or long)
+  arm-based format into the contrast-based format which consists of
+  \emph{pairwise} comparisons and is needed as input to the
+  \code{\link{netmeta}} function.
 
   The pairwise function can transform data with binary outcomes (using
   the \code{\link{metabin}} function from R package meta), continuous
@@ -100,28 +101,28 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
   
   Argument \code{treat} is mandatory to identify the individual
   treatments. The other arguments contain outcome specific data. These
-  arguments must be either lists (one-row-per-study) or vectors (long
-  format, i.e. multiple-rows-per-study) of the same length.
+  arguments must be either lists (wide arm-based format, i.e., one row
+  per study) or vectors (long arm-based format, i.e. multiple rows per
+  study) of the same length.
 
-  For the one-row-per-study format, each list consists of as many
-  vectors of the same length as the multi-arm study with the largest
-  number of treatments. If a single multi-arm study has five arms,
-  five vectors have to be provided for each lists. Two-arm studies
-  have entries with \code{NA} for the third and subsequent
-  vectors. Each list entry is a vector with information for each
-  individual study; i.e. the length of this vector corresponds to the
-  total number of studies incorporated in the network
-  meta-analysis. Typically, list elements are part of a data frame
-  (argument \code{data}, optional); see Examples. An optional vector
-  with study labels can be provided which can be part of the data
-  frame.
+  For the wide arm-based format, each list consists of as many vectors
+  of the same length as the multi-arm study with the largest number of
+  treatments. If a single multi-arm study has five arms, five vectors
+  have to be provided for each lists. Two-arm studies have entries
+  with \code{NA} for the third and subsequent vectors. Each list entry
+  is a vector with information for each individual study; i.e. the
+  length of this vector corresponds to the total number of studies
+  incorporated in the network meta-analysis. Typically, list elements
+  are part of a data frame (argument \code{data}, optional); see
+  Examples. An optional vector with study labels can be provided which
+  can be part of the data frame.
 
-  In the long format, argument \code{studlab} is mandatory to identify
-  rows contributing to individual studies.
+  In the long arm-based format, argument \code{studlab} is mandatory
+  to identify rows contributing to individual studies.
 
-  Additional arguments for these functions can be provided using
-  argument \code{'\dots'}. The following is a list of some important
-  arguments:
+  Additional arguments for meta-analysis functions can be provided
+  using argument \code{'\dots'}. The following is a list of some
+  important arguments:
   \tabular{cll}{
    Argument \tab Description \tab R function \cr
    \code{sm} \tab Summary measure \tab \code{\link{metabin}}, \code{\link{metacont}}, \code{\link{metainc}}, \code{\link{metagen}} \cr
@@ -141,6 +142,19 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
   treatments compared ((\code{treat1}), (\code{treat2})) and the study
   label ((\code{studlab})). Further columns are added according to
   type of data.
+
+  All variables from the original dataset are also part of the output
+  dataset. If data are provided in the long arm-based format, the
+  value of a variable can differ between treatment arms; for example,
+  the mean age or percentage of women in the treatment arm. In this
+  situation, two variables instead of one variable will be included in
+  the output dataset. The values "1" and "2" are added to the names
+  for these variables, e.g. "mean.age1" and "mean.age2" for the mean
+  age.
+  
+  In general, any variable names in the original dataset that are
+  identical to the main variable names (i.e., "TE", "seTE", ...) will
+  be renamed to variable names with ending ".orig".
 }
 
 \value{
@@ -164,6 +178,9 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
   \item{seTE2}{Standard error of estimated treatment effect for second treatment arm (for metagen).}
   \item{time1}{Person time at risk for first treatment arm (for metainc).}
   \item{time2}{Person time at risk for second treatment arm (for metainc).}
+
+  All variables from the original dataset are also part of the output
+  dataset; see Details.
 }
 
 \author{Gerta Rücker\email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
