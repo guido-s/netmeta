@@ -1,5 +1,13 @@
 *** netmeta, version 0.9-8, 2018-03-23 ***
 
+ ** Internal changes **
+
+  * netcomb() and discomb():
+    - check if argument 'sep.components' is a single character
+
+
+*** netmeta, version 0.9-8, 2018-03-23 ***
+
  ** Major changes **
 
   * Main function netmeta():
