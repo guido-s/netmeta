@@ -1,4 +1,12 @@
-*** netmeta, version 0.9-8, 2018-03-23 ***
+*** netmeta, version 6.6-6, 6666-06-06 ***
+
+ ** Bug fixes **
+
+  * netsplit():
+    - do not reorder a treatment comparison if reference treatment
+      (argument 'reference.group') is part of a combined treatment,
+      e.g., for reference.group = "A" and treatment comparison "A + B"
+      vs "C", the comparison will not be reordered as "C" vs "A + B"
 
  ** Internal changes **
 

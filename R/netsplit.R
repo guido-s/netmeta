@@ -45,9 +45,9 @@ netsplit <- function(x, upper = TRUE,
     reference.group <- setref(reference.group, colnames(x$TE.fixed))
     ##
     if (baseline.reference)
-      wo[grep(reference.group, trts$treat1)] <- TRUE
+      wo <- trts$treat1 == reference.group
     else
-      wo[grep(reference.group, trts$treat2)] <- TRUE
+      wo <- trts$treat2 == reference.group
   }
   else
     if (!missing(baseline.reference))
