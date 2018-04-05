@@ -546,6 +546,8 @@ netmeta <- function(TE, seTE,
   ## (7) Generate R object
   ##
   ##
+  trts <- rownames(res.f$A.matrix)
+  ##
   o <- order(p0$order)
   ##
   res <- list(studlab = res.f$studlab[o],
@@ -555,6 +557,21 @@ netmeta <- function(TE, seTE,
               TE = res.f$TE[o],
               seTE = res.f$seTE.orig[o],
               seTE.adj = res.f$seTE[o],
+              ##
+              n1 = n1,
+              n2 = n2,
+              event1 = event1,
+              event2 = event2,
+              ##
+              k = res.f$k,
+              m = res.f$m,
+              n = res.f$n,
+              d = NA,
+              ##
+              trts = trts,
+              k.trts = rowSums(res.f$A.matrix),
+              n.trts = if (available.n) NA else NULL,
+              events.trts = if (available.events) NA else NULL,
               ##
               studies = studies,
               narms = narms,
@@ -566,6 +583,7 @@ netmeta <- function(TE, seTE,
               ##
               leverage.fixed = res.f$leverage[o],
               w.fixed = res.f$w.pooled[o],
+              Q.fixed = res.f$Q.pooled[o],
               ##
               TE.fixed = res.f$TE.pooled,
               seTE.fixed = res.f$seTE.pooled,
@@ -573,8 +591,6 @@ netmeta <- function(TE, seTE,
               upper.fixed = res.f$upper.pooled,
               zval.fixed = res.f$zval.pooled,
               pval.fixed = res.f$pval.pooled,
-              ##
-              Q.fixed = res.f$Q.pooled[o],
               ##
               TE.nma.random = res.r$TE.nma[o],
               seTE.nma.random = res.r$seTE.nma[o],
@@ -590,11 +606,12 @@ netmeta <- function(TE, seTE,
               zval.random = res.r$zval.pooled,
               pval.random = res.r$pval.pooled,
               ##
-              prediction = prediction,
               seTE.predict = seTE.predict,
               lower.predict = p.lower,
               upper.predict = p.upper,
-              level.predict = level.predict,
+              ##
+              prop.direct.fixed = NA,
+              prop.direct.random = NA,
               ##
               TE.direct.fixed = res.f$TE.direct,
               seTE.direct.fixed = res.f$seTE.direct,
@@ -610,9 +627,6 @@ netmeta <- function(TE, seTE,
               zval.direct.random = res.r$zval.direct,
               pval.direct.random = res.r$pval.direct,
               ##
-              prop.direct.fixed = NA,
-              prop.direct.random = NA,
-              ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
               lower.indirect.fixed = NA,
@@ -627,27 +641,11 @@ netmeta <- function(TE, seTE,
               zval.indirect.random = NA,
               pval.indirect.random = NA,
               ##
-              n1 = n1,
-              n2 = n2,
-              event1 = event1,
-              event2 = event2,
-              ##
-              N.matrix = if (available.n) NA else NULL,
-              E.matrix = if (available.events) NA else NULL,
-              ##
-              treat1.pos = res.f$treat1.pos[o],
-              treat2.pos = res.f$treat2.pos[o],
-              ##
-              k = res.f$k,
-              m = res.f$m,
-              n = res.f$n,
-              d = NA,
               Q = res.f$Q,
               df.Q = df.Q,
               pval.Q = res.f$pval.Q,
               I2 = res.f$I2,
               tau = tau,
-              tau.preset = tau.preset,                                             
               Q.heterogeneity = NA,
               df.Q.heterogeneity = NA,
               pval.Q.heterogeneity = NA,
@@ -655,11 +653,7 @@ netmeta <- function(TE, seTE,
               df.Q.inconsistency = NA,
               pval.Q.inconsistency = NA,
               ##
-              sm = sm,
-              level = level,
-              level.comb = level.comb,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              Q.decomp = res.f$Q.decomp,
               ##
               A.matrix = res.f$A.matrix,
               B.matrix = res.f$B.matrix[o, ],
@@ -670,26 +664,40 @@ netmeta <- function(TE, seTE,
               G.matrix = res.f$G.matrix[o, o],
               H.matrix = res.f$H.matrix[o, o],
               ##
-              Cov.fixed = res.f$Cov,
-              Cov.random = res.r$Cov,
-              ##
-              Q.decomp = res.f$Q.decomp,
+              n.matrix = if (available.n) NA else NULL,
+              events.matrix = if (available.events) NA else NULL,
               ##
               P.fixed = NA,
               P.random = NA,
               ##
+              Cov.fixed = res.f$Cov,
+              Cov.random = res.r$Cov,
+              ##
+              treat1.pos = res.f$treat1.pos[o],
+              treat2.pos = res.f$treat2.pos[o],
+              ##
+              sm = sm,
+              level = level,
+              level.comb = level.comb,
+              comb.fixed = comb.fixed,
+              comb.random = comb.random,
+              ##
+              prediction = prediction,
+              level.predict = level.predict,
+              ##
               reference.group = reference.group,
               baseline.reference = baseline.reference,
               all.treatments = all.treatments,
-              ##
-              trts = rownames(res.f$TE.pooled),
-              trts.n = if (available.n) NA else NULL,
-              trts.events = if (available.events) NA else NULL,
               seq = seq,
               ##
-              sep.trts = sep.trts,
+              tau.preset = tau.preset,
               ##
+              tol.multiarm = tol.multiarm,
+              details.chkmultiarm = details.chkmultiarm,
+              ##
+              sep.trts = sep.trts,
               nchar.trts = nchar.trts,
+              ##
               backtransf = backtransf,
               ##
               title = title,
@@ -719,7 +727,7 @@ netmeta <- function(TE, seTE,
   ##
   P.fixed <- P.random <- matrix(NA, n, n)
   colnames(P.fixed) <- rownames(P.fixed) <-
-    colnames(P.random) <- rownames(P.random) <- colnames(res$TE.direct.fixed)
+    colnames(P.random) <- rownames(P.random) <- trts
   ##
   if (n == 2) {
     ##
@@ -821,19 +829,21 @@ netmeta <- function(TE, seTE,
   }
   ##
   if (available.events) {
-    res$E.matrix <- netmatrix(res, event1 + event2, func = "sum")
+    res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
     ##
     dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)
     rownames(dat.e) <- dat.e$indices
-    res$trts.events <- dat.e[res$trts, "sum"]
+    res$events.trts <- dat.e[trts, "sum"]
+    names(res$events.trts) <- trts
   }
   ##
   if (available.n) {
-    res$N.matrix <- netmatrix(res, n1 + n2, func = "sum")
+    res$n.matrix <- netmatrix(res, n1 + n2, func = "sum")
     ##
     dat.n <- bySummary(c(n1, n2), c(treat1, treat2), long = FALSE)
     rownames(dat.n) <- dat.n$indices
-    res$trts.n <- dat.n[res$trts, "sum"]
+    res$n.trts <- dat.n[trts, "sum"]
+    names(res$n.trts) <- trts
   }
   
   

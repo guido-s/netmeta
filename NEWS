@@ -1,5 +1,15 @@
 *** netmeta, version 6.6-6, 6666-06-06 ***
 
+ ** User-visible changes **
+
+  * netmeta():
+    - new list elements:
+      - 'k.trts' with number of studies evaluating a treatment
+      - 'n.trts' with number of observations receiving a treatment
+      - 'events.trts' with number of events observed for a treatment
+      - 'n.matrix' with number of observations in direct comparisons
+      - 'events.matrix' with number of events in direct comparisons
+
  ** Bug fixes **
 
   * netsplit():
