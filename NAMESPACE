@@ -26,6 +26,7 @@ S3method(summary, netmeta)
 S3method(print, summary.netmeta)
 S3method(forest, netmeta)
 S3method(forest, netsplit)
+S3method(funnel, netmeta)
 S3method(print, netcomb)
 S3method(summary, netcomb)
 S3method(print, summary.netcomb)
@@ -38,6 +39,7 @@ S3method(plot, netposet)
 S3method(print, netleague)
 
 importFrom("meta", "forest", "forest.meta",
+           "funnel", "funnel.meta", "metabias",
            "metabin", "metacont", "metagen",
            "metainc", "metaprop", "gs", "ci", "cilayout")
 

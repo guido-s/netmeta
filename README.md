@@ -35,6 +35,8 @@ network meta-analysis:
 
   - additive network meta-analysis for combinations of treatments;
 
+  - 'comparison-adjusted' funnel plot (Chaimani et al., 2013);
+
   - automated drawing of network graphs (Rücker & Schwarzer, 2016).
 
 Furthermore, R package **netmeta** provides functions and datasets to
@@ -43,21 +45,23 @@ http://meta-analysis-with-r.org/ .
 
 ### References
 
-[Carlsen L, Bruggemann R (2014), Partial order methodology: a valuable tool in chemometrics. *Journal of Chemometrics*, **28**, 226--34.](https://scholar.google.de/scholar?q=Partial+order+methodology%3A+a+valuable+tool+in+chemometrics)
-  
-[Dias S, Welton NJ, Caldwell DM, Ades AE (2010). Checking consistency in mixed treatment comparison meta-analysis. *Statistics in Medicine*, **29**, 932--44.](https://scholar.google.de/scholar?hl=de&q=Checking+consistency+in+mixed+treatment+comparison+meta-analysis)
+[Carlsen L, Bruggemann R (2014), Partial order methodology: a valuable tool in chemometrics. *Journal of Chemometrics*, **28**, 226--34.](https://scholar.google.com/scholar?q=Partial+order+methodology%3A+a+valuable+tool+in+chemometrics)
 
-[König J, Krahn U, Binder H (2013). Visualizing the flow of evidence in network meta-analysis and characterizing mixed treatment comparisons. *Statistics in Medicine*, **32**, 5414-29.](https://scholar.google.de/scholar?q=König+Krahn+Binder+2013+Visualizing+the+flow+of+evidence+in+network+meta-analysis+and+characterizing+mixed+treatment+comparisons)
+[Chaimani A, Higgins JP, Mavridis D, Spyridonos P, Salanti G (2013). Graphical tools for network meta-analysis in STATA. *PLOS ONE*, **8**, e76654.](https://scholar.google.com/scholar?q=Graphical+tools+for+network+meta-analysis+in+STATA)
 
-[Krahn U, Binder H, König J (2013), A graphical tool for locating inconsistency in network meta-analyses. *BMC Medical Research Methodology*, **13**, 35.](https://scholar.google.de/scholar?q=Krahn+Binder+König+2013+A+graphical+tool+for+locating+inconsistency+in+network+meta-analyses)
+[Dias S, Welton NJ, Caldwell DM, Ades AE (2010). Checking consistency in mixed treatment comparison meta-analysis. *Statistics in Medicine*, **29**, 932--44.](https://scholar.google.com/scholar?q=Checking+consistency+in+mixed+treatment+comparison+meta-analysis)
 
-[Rücker G (2012), Network meta-analysis, electrical networks and graph theory. *Research Synthesis Methods*, **3**, 312-324.](https://scholar.google.de/scholar?q=Rücker+2012+Network+meta-analysis+electrical+networks+and+graph+theory)
+[König J, Krahn U, Binder H (2013). Visualizing the flow of evidence in network meta-analysis and characterizing mixed treatment comparisons. *Statistics in Medicine*, **32**, 5414-29.](https://scholar.google.com/scholar?q=König+Krahn+Binder+2013+Visualizing+the+flow+of+evidence+in+network+meta-analysis+and+characterizing+mixed+treatment+comparisons)
 
-[Rücker G, Schwarzer G (2015), Ranking treatments in frequentist network meta-analysis works without resampling methods. *BMC Medical Research Methodology*, *15*: 58](https://scholar.google.de/scholar?q=Rücker+Schwarzer+2015+Ranking+treatments+in+frequentist+network+meta-analysis+works+without+resampling+methods)
+[Krahn U, Binder H, König J (2013), A graphical tool for locating inconsistency in network meta-analyses. *BMC Medical Research Methodology*, **13**, 35.](https://scholar.google.com/scholar?q=Krahn+Binder+König+2013+A+graphical+tool+for+locating+inconsistency+in+network+meta-analyses)
 
-[Rücker G, Schwarzer G (2016), Automated drawing of network plots in network meta-analysis. *Research Synthesis Methods*, **7**: 94-107.](https://scholar.google.de/scholar?q=Rücker+Schwarzer+2016+Automated+drawing+of+network+plots+in+network+meta-analysis)
+[Rücker G (2012), Network meta-analysis, electrical networks and graph theory. *Research Synthesis Methods*, **3**, 312-324.](https://scholar.google.com/scholar?q=Rücker+2012+Network+meta-analysis+electrical+networks+and+graph+theory)
 
-[Rücker G, Schwarzer G (2017). Resolve conflicting rankings of outcomes in network meta-analysis: Partial ordering of treatments. *Research Synthesis Methods*](https://scholar.google.de/scholar?q=Rücker+Schwarzer+2017+resolve+conflicting+rankings+of+outcomes+in+network+meta-analysis)
+[Rücker G, Schwarzer G (2015), Ranking treatments in frequentist network meta-analysis works without resampling methods. *BMC Medical Research Methodology*, *15*: 58](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2015+Ranking+treatments+in+frequentist+network+meta-analysis+works+without+resampling+methods)
+
+[Rücker G, Schwarzer G (2016), Automated drawing of network plots in network meta-analysis. *Research Synthesis Methods*, **7**: 94-107.](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2016+Automated+drawing+of+network+plots+in+network+meta-analysis)
+
+[Rücker G, Schwarzer G (2017). Resolve conflicting rankings of outcomes in network meta-analysis: Partial ordering of treatments. *Research Synthesis Methods*](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2017+resolve+conflicting+rankings+of+outcomes+in+network+meta-analysis)
 
 [Schwarzer G, Carpenter JR and Rücker G (2015), *Meta-Analysis with R (Use-R!)*. Springer International Publishing, Switzerland](http://www.springer.com/gp/book/9783319214153)
 

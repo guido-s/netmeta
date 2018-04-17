@@ -36,6 +36,9 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
   \item additive network meta-analysis for combinations of treatments
     (\code{\link{netcomb}}, \code{\link{discomb}} for disconnected
     networks);
+  \item{\sQuote{comparison-adjusted} funnel plot
+    (\code{\link{funnel.netmeta}}) to assess funnel plot asymmetry in
+    network meta-analysis (Chaimani et al., 2013)}
   \item automated drawing of network graphs (\code{\link{netgraph}})
     described in Rücker & Schwarzer (2016).
   }
@@ -67,7 +70,11 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
   Partial order methodology: a valuable tool in chemometrics.
   \emph{Journal of Chemometrics},
   \bold{28}, 226--34, DOI:10.1002/cem.2569 .
-
+  
+  Chaimani A, Higgins JP, Mavridis D, Spyridonos P, Salanti G (2013),
+  Graphical tools for network meta-analysis in STATA.
+  PLOS ONE, \bold{8}, e76654.
+  
   Dias S, Welton NJ, Caldwell DM, Ades AE (2010).
   Checking consistency in mixed treatment comparison meta-analysis.
   \emph{Statistics in Medicine}, \bold{29}, 932--44.

@@ -1,5 +1,10 @@
 *** netmeta, version 6.6-6, 6666-06-06 ***
 
+ ** Major changes **
+
+  * New function funnel.netmeta() for 'comparison-adjusted' funnel
+    plots
+
  ** User-visible changes **
 
   * netmeta():
