@@ -32,6 +32,7 @@ netgraph <- function(x, seq = x$seq,
                      D.matrix = netdistance(N.matrix),
                      ##
                      xpos = NULL, ypos = NULL, zpos = NULL,
+                     figure = TRUE,
                      ...) {
   
   
@@ -43,6 +44,7 @@ netgraph <- function(x, seq = x$seq,
   
   setchar <- meta:::setchar
   chknumeric <- meta:::chknumeric
+  chklogical <- meta:::chklogical
   ##
   chknumeric(lwd, min = 0, zero = TRUE, single = TRUE)
   chknumeric(lwd.min, min = 0, zero = TRUE, single = TRUE)
@@ -128,6 +130,8 @@ netgraph <- function(x, seq = x$seq,
     pch.points <- rep(pch.points, n.trts)
   else if (length(pch.points) != n.trts)
     stop("Length of argument 'pch.points' must be equal to number of treatments.")
+  ##
+  chklogical(figure)
   
   
   if (missing(iterate))
@@ -201,8 +205,21 @@ netgraph <- function(x, seq = x$seq,
   }
   
   
-  if (is.null(seq) | !(start.layout == "circle" & iterate == FALSE)) {
+  if (is.null(seq))
     seq1 <- 1:length(labels)
+  else if (length(seq) == 1 & x$d > 1) {
+    seq <- setchar(seq, "optimal", "should be equal to 'optimal' or a permutation of treatments")
+    ##
+    if (missing(start.layout))
+      start.layout <- "eigen"
+    ##
+    seq1 <- optcircle(x, start.layout = start.layout)$seq
+    ##
+    start.layout <- "circle"
+  }
+  else if (!(start.layout == "circle" & iterate == FALSE)) {
+    seq1 <- 1:length(labels)
+    ##
     if (!missing(seq) & !is.null(seq) & (is.null(xpos) & is.null(ypos)))
       warning("Argument 'seq' only considered if start.layout=\"circle\" and iterate=FALSE.")
   }
@@ -373,15 +390,15 @@ netgraph <- function(x, seq = x$seq,
       dat.nodes$adj.z <- adj[3]
     }
     else if (is.vector(adj)) {
-        if (length(adj) != length(labels))
-          stop("Length of vector 'adj' must be equal to number of treatments.")
-        ##
-        names(adj) <- x$trts
-        dat.nodes$adj.x <- adj[seq1]
-        dat.nodes$adj.y <- adj[seq1]
-        ##
-        if (!is_2d)
-          dat.nodes$adj.z <- adj[seq1]
+      if (length(adj) != length(labels))
+        stop("Length of vector 'adj' must be equal to number of treatments.")
+      ##
+      names(adj) <- x$trts
+      dat.nodes$adj.x <- adj[seq1]
+      dat.nodes$adj.y <- adj[seq1]
+      ##
+      if (!is_2d)
+        dat.nodes$adj.z <- adj[seq1]
     }
     else if (is.matrix(adj)) {
       if (nrow(adj) != length(labels))
@@ -581,251 +598,252 @@ netgraph <- function(x, seq = x$seq,
   ## Plot graph
   ##
   ##
-  range <- c(-d, d)
-  ##
-  if (is_2d) {
-    oldpar <- par(xpd = TRUE, pty = "s")
-    on.exit(par(oldpar))
+  if (figure) {
+    range <- c(-d, d)
     ##
-    plot(xpos, ypos,
-         xlim = range, ylim = range,
-         type = "n", axes = FALSE, bty = "n",
-         xlab = "", ylab = "",
-         ...)
-    ##
-    ## Add coloured regions for multi-arm studies
-    ##
-    if (multiarm) {
+    if (is_2d) {
+      oldpar <- par(xpd = TRUE, pty = "s")
+      on.exit(par(oldpar))
       ##
-      if (n.multi > 0) {
-        multiarm.labels <- vector("list", n.multi)
-        if (length(col.polygon) == 1)
-          col.polygon <- rep(col.polygon, n.multi)
-        for (i in 1:n.multi) {
-          treat1 <- x$treat1[x$studlab %in% multiarm.studies[i]]
-          treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
-          multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
-          ##
-          dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
-          if (nrow(dat.multi) == 0)
+      plot(xpos, ypos,
+           xlim = range, ylim = range,
+           type = "n", axes = FALSE, bty = "n",
+           xlab = "", ylab = "",
+           ...)
+      ##
+      ## Add coloured regions for multi-arm studies
+      ##
+      if (multiarm) {
+        ##
+        if (n.multi > 0) {
+          multiarm.labels <- vector("list", n.multi)
+          if (length(col.polygon) == 1)
+            col.polygon <- rep(col.polygon, n.multi)
+          for (i in 1:n.multi) {
+            treat1 <- x$treat1[x$studlab %in% multiarm.studies[i]]
+            treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
+            multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
+            ##
             dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
-          ##
-          ## Clockwise ordering of polygon coordinates
-          ##
-          polysort <- function(x, y) {
-            xnorm <- (x - mean(x)) / sd(x) # Normalise coordinate x
-            ynorm <- (y - mean(y)) / sd(y) # Normalise coordinate y
-            r <- sqrt(xnorm^2 + ynorm^2)   # Calculate polar coordinates
-            cosphi <- xnorm / r
-            sinphi <- ynorm / r
-            s <- as.numeric(sinphi > 0) # Define angles to lie in [0, 2 * pi]
-            phi <- acos(cosphi)
-            alpha <- s * phi + (1 - s) * (2 * pi - phi)
+            if (nrow(dat.multi) == 0)
+              dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
             ##
-            res <- order(alpha)
-            res
-          }
-          ##
-          dat.multi <- dat.multi[polysort(dat.multi$xpos, dat.multi$ypos), ]
-          ##
-          polygon(dat.multi$xpos, dat.multi$ypos,
-                  col = col.polygon[i], border = NA)
-        }
-      }
-    }
-    ##
-    ## Draw lines
-    ##
-    if (plastic) {
-      n.plastic <- 30
-      lwd.multiply <- rep(NA, n.plastic)
-      cols <- cols.highlight <- rep("", n.plastic)
-      j <- 0
-      for (i in n.plastic:1) {
-        j <- j + 1
-        lwd.multiply[j] <- sin(pi * i / 2 / n.plastic)
-        cols[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
-        cols.highlight[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
-      }
-      if (substring(col.highlight, nchar(col.highlight)) %in% 1:4)
-        col.highlight <- substring(col.highlight, 1, nchar(col.highlight) - 1)
-      cols.highlight[1:12] <- rep(paste(col.highlight, 4:1, sep = ""), rep(3, 4))
-      cols.highlight[13:15] <- rep(col.highlight, 3)
-    }
-    else {
-      lwd.multiply <- 1
-      cols <- col
-      cols.highlight <- col.highlight
-    }
-    ##
-    comp.i <- 1
-    ##
-    for (n.plines in 1:length(lwd.multiply)) {
-      for (i in 1:(n - 1)) {
-        for (j in (i + 1):n) {
-          ##
-          if (plastic)
-            col.ij <- cols[n.plines]
-          else
-            col.ij <- col.matrix[i, j]
-          ##
-          if (A.sign[i, j] > 0) {
-            lines(c(xpos[i], xpos[j]), c(ypos[i], ypos[j]),
-                  lwd = W.matrix[i, j] * lwd.multiply[n.plines],
-                  col = col.ij)
+            ## Clockwise ordering of polygon coordinates
             ##
-            comp.i <- comp.i + 1
+            polysort <- function(x, y) {
+              xnorm <- (x - mean(x)) / sd(x) # Normalise coordinate x
+              ynorm <- (y - mean(y)) / sd(y) # Normalise coordinate y
+              r <- sqrt(xnorm^2 + ynorm^2)   # Calculate polar coordinates
+              cosphi <- xnorm / r
+              sinphi <- ynorm / r
+              s <- as.numeric(sinphi > 0) # Define angles to lie in [0, 2 * pi]
+              phi <- acos(cosphi)
+              alpha <- s * phi + (1 - s) * (2 * pi - phi)
+              ##
+              res <- order(alpha)
+              res
+            }
+            ##
+            dat.multi <- dat.multi[polysort(dat.multi$xpos, dat.multi$ypos), ]
+            ##
+            polygon(dat.multi$xpos, dat.multi$ypos,
+                    col = col.polygon[i], border = NA)
           }
         }
       }
-    }
-    ##
-    ## Add highlighted comparisons
-    ##
-    if (!is.null(highlight)) {
-      for (high in highlight) {
-        highs <- unlist(compsplit(high, split = highlight.split))
-        if (length(highs) != 2)
-          stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
-        ##
-        if (sum(dat.nodes$labels %in% highs) != 2)
-          stop(paste("Argument 'highlight' must contain two of the following values (separated by \":\"):\n  ",
-                     paste(paste("'", dat.nodes$labels, "'", sep = ""),
-                           collapse = " - "), sep = ""))
-        ##
-        dat.high <- dat.nodes[dat.nodes$labels %in% highs, ]
-        ##
-        if (is_2d)
-          for (n.plines in 1:length(lwd.multiply))
-            lines(dat.high$xpos, dat.high$ypos,
-                  lwd = W.matrix[labels == highs[1], labels == highs[2]] * lwd.multiply[n.plines],
-                  col = cols.highlight[n.plines])
+      ##
+      ## Draw lines
+      ##
+      if (plastic) {
+        n.plastic <- 30
+        lwd.multiply <- rep(NA, n.plastic)
+        cols <- cols.highlight <- rep("", n.plastic)
+        j <- 0
+        for (i in n.plastic:1) {
+          j <- j + 1
+          lwd.multiply[j] <- sin(pi * i / 2 / n.plastic)
+          cols[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
+          cols.highlight[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
+        }
+        if (substring(col.highlight, nchar(col.highlight)) %in% 1:4)
+          col.highlight <- substring(col.highlight, 1, nchar(col.highlight) - 1)
+        cols.highlight[1:12] <- rep(paste(col.highlight, 4:1, sep = ""), rep(3, 4))
+        cols.highlight[13:15] <- rep(col.highlight, 3)
       }
-    }
-    ##
-    ## Add points for labels
-    ##
-    if (points)
-      points(xpos, ypos,
-             pch = pch.points, cex = cex.points, col = col.points)
-    ##
-    ## Print treatment labels
-    ##
-    if (!is.null(labels))
-      for (i in 1:n)
-        text(dat.nodes$xpos.labels[i], dat.nodes$ypos.labels[i],
-             labels = dat.nodes$labels[i],
-             cex = cex,
-             adj = c(dat.nodes$adj.x[i], dat.nodes$adj.y[i]))
-    ##
-    ## Print number of treatments
-    ##
-    if (number.of.studies) {
+      else {
+        lwd.multiply <- 1
+        cols <- col
+        cols.highlight <- col.highlight
+      }
+      ##
       comp.i <- 1
       ##
+      for (n.plines in 1:length(lwd.multiply)) {
+        for (i in 1:(n - 1)) {
+          for (j in (i + 1):n) {
+            ##
+            if (plastic)
+              col.ij <- cols[n.plines]
+            else
+              col.ij <- col.matrix[i, j]
+            ##
+            if (A.sign[i, j] > 0) {
+              lines(c(xpos[i], xpos[j]), c(ypos[i], ypos[j]),
+                    lwd = W.matrix[i, j] * lwd.multiply[n.plines],
+                    col = col.ij)
+              ##
+              comp.i <- comp.i + 1
+            }
+          }
+        }
+      }
+      ##
+      ## Add highlighted comparisons
+      ##
+      if (!is.null(highlight)) {
+        for (high in highlight) {
+          highs <- unlist(compsplit(high, split = highlight.split))
+          if (length(highs) != 2)
+            stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
+          ##
+          if (sum(dat.nodes$labels %in% highs) != 2)
+            stop(paste("Argument 'highlight' must contain two of the following values (separated by \":\"):\n  ",
+                       paste(paste("'", dat.nodes$labels, "'", sep = ""),
+                             collapse = " - "), sep = ""))
+          ##
+          dat.high <- dat.nodes[dat.nodes$labels %in% highs, ]
+          ##
+          if (is_2d)
+            for (n.plines in 1:length(lwd.multiply))
+              lines(dat.high$xpos, dat.high$ypos,
+                    lwd = W.matrix[labels == highs[1], labels == highs[2]] * lwd.multiply[n.plines],
+                    col = cols.highlight[n.plines])
+        }
+      }
+      ##
+      ## Add points for labels
+      ##
+      if (points)
+        points(xpos, ypos,
+               pch = pch.points, cex = cex.points, col = col.points)
+      ##
+      ## Print treatment labels
+      ##
+      if (!is.null(labels))
+        for (i in 1:n)
+          text(dat.nodes$xpos.labels[i], dat.nodes$ypos.labels[i],
+               labels = dat.nodes$labels[i],
+               cex = cex,
+               adj = c(dat.nodes$adj.x[i], dat.nodes$adj.y[i]))
+      ##
+      ## Print number of treatments
+      ##
+      if (number.of.studies) {
+        comp.i <- 1
+        ##
+        for (i in 1:(n - 1)) {
+          for (j in (i + 1):n) {
+            if (A.sign[i, j] > 0) {
+              ##
+              shadowtext(dat.edges$xpos[comp.i],
+                         dat.edges$ypos[comp.i],
+                         labels = dat.edges$n.stud[comp.i],
+                         cex = cex.number.of.studies,
+                         col = col.number.of.studies,
+                         bg = bg.number.of.studies)
+              ##
+              comp.i <- comp.i + 1
+            }
+          }
+        }
+      }
+    }
+    else {
+      rgl::plot3d(xpos, ypos, zpos,
+                  size = 10, col = col.points, cex = cex.points,
+                  axes = FALSE, box = FALSE,
+                  xlab = "", ylab = "", zlab = "")
+      ##
+      ## Add points for labels
+      ##
+      if (points)
+        rgl::points3d(xpos, ypos, zpos,
+                      pch = pch.points, cex = cex.points, col = col.points)
+      ##
+      ## Print treatment labels
+      ##
+      if (!is.null(labels))
+        for (i in 1:n)
+          rgl::text3d(dat.nodes$xpos.labels[i], dat.nodes$ypos.labels[i],
+                      dat.nodes$zpos.labels[i],
+                      texts = dat.nodes$labels[i],
+                      cex = cex,
+                      adj = c(dat.nodes$adj.x[i], dat.nodes$adj.y[i]))
+      ##
+      ## Add highlighted comparisons
+      ##
+      if (!is.null(highlight)) {
+        for (high in highlight) {
+          highs <- unlist(compsplit(high, split = highlight.split))
+          if (length(highs) != 2)
+            stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
+          ##
+          if (sum(dat.nodes$labels %in% highs) != 2)
+            stop(paste("Argument 'highlight' must contain two of the following values (separated by \":\"):\n  ",
+                       paste(paste("'", dat.nodes$labels, "'", sep = ""),
+                             collapse = " - "), sep = ""))
+          ##
+          dat.high <- dat.nodes[dat.nodes$labels %in% highs, ]
+          ##
+          rgl::lines3d(dat.high$xpos * (1 + 1e-4), dat.high$ypos * (1 + 1e-4),
+                       dat.high$zpos * (1 + 1e-4),
+                       lwd = W.matrix[labels == highs[1], labels == highs[2]],
+                       col = col.highlight)
+        }
+      }
+      ##
+      ## Add coloured regions for multi-arm studies
+      ##
+      if (multiarm) {
+        ##
+        morethan3 <- FALSE
+        ##
+        if (n.multi > 0) {
+          multiarm.labels <- vector("list", n.multi)
+          if (length(col.polygon) == 1)
+            col.polygon <- rep(col.polygon, n.multi)
+          for (i in 1:n.multi) {
+            treat1 <- x$treat1[x$studlab %in% multiarm.studies[i]]
+            treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
+            multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
+            ##
+            dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
+            if (nrow(dat.multi) == 0)
+              dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
+            if (nrow(dat.multi) == 3)
+              rgl::triangles3d(dat.multi$xpos, dat.multi$ypos, dat.multi$zpos,
+                               col = col.polygon[i])
+            else
+              morethan3 <- TRUE
+          }
+        }
+        if (morethan3)
+          warning("Multi-arm studies with more than three treatments not shown in 3-D plot.")
+      }
+      ##
+      ## Draw lines
+      ##
       for (i in 1:(n - 1)) {
         for (j in (i + 1):n) {
           if (A.sign[i, j] > 0) {
-            ##
-            shadowtext(dat.edges$xpos[comp.i],
-                       dat.edges$ypos[comp.i],
-                       labels = dat.edges$n.stud[comp.i],
-                       cex = cex.number.of.studies,
-                       col = col.number.of.studies,
-                       bg = bg.number.of.studies)
-            ##
-            comp.i <- comp.i + 1
+            rgl::lines3d(c(xpos[i], xpos[j]), c(ypos[i], ypos[j]), c(zpos[i], zpos[j]),
+                         lwd = W.matrix[i, j],
+                         col = col)
           }
         }
       }
     }
   }
-  else {
-    rgl::plot3d(xpos, ypos, zpos,
-                size = 10, col = col.points, cex = cex.points,
-                axes = FALSE, box = FALSE,
-                xlab = "", ylab = "", zlab = "")
-    ##
-    ## Add points for labels
-    ##
-    if (points)
-      rgl::points3d(xpos, ypos, zpos,
-                    pch = pch.points, cex = cex.points, col = col.points)
-    ##
-    ## Print treatment labels
-    ##
-    if (!is.null(labels))
-      for (i in 1:n)
-        rgl::text3d(dat.nodes$xpos.labels[i], dat.nodes$ypos.labels[i],
-                    dat.nodes$zpos.labels[i],
-                    texts = dat.nodes$labels[i],
-                    cex = cex,
-                    adj = c(dat.nodes$adj.x[i], dat.nodes$adj.y[i]))
-    ##
-    ## Add highlighted comparisons
-    ##
-    if (!is.null(highlight)) {
-      for (high in highlight) {
-        highs <- unlist(compsplit(high, split = highlight.split))
-        if (length(highs) != 2)
-          stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
-        ##
-        if (sum(dat.nodes$labels %in% highs) != 2)
-          stop(paste("Argument 'highlight' must contain two of the following values (separated by \":\"):\n  ",
-                     paste(paste("'", dat.nodes$labels, "'", sep = ""),
-                           collapse = " - "), sep = ""))
-        ##
-        dat.high <- dat.nodes[dat.nodes$labels %in% highs, ]
-        ##
-        rgl::lines3d(dat.high$xpos * (1 + 1e-4), dat.high$ypos * (1 + 1e-4),
-                     dat.high$zpos * (1 + 1e-4),
-                     lwd = W.matrix[labels == highs[1], labels == highs[2]],
-                     col = col.highlight)
-      }
-    }
-    ##
-    ## Add coloured regions for multi-arm studies
-    ##
-    if (multiarm) {
-      ##
-      morethan3 <- FALSE
-      ##
-      if (n.multi > 0) {
-        multiarm.labels <- vector("list", n.multi)
-        if (length(col.polygon) == 1)
-          col.polygon <- rep(col.polygon, n.multi)
-        for (i in 1:n.multi) {
-          treat1 <- x$treat1[x$studlab %in% multiarm.studies[i]]
-          treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
-          multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
-          ##
-          dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
-          if (nrow(dat.multi) == 0)
-            dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
-          if (nrow(dat.multi) == 3)
-            rgl::triangles3d(dat.multi$xpos, dat.multi$ypos, dat.multi$zpos,
-                             col = col.polygon[i])
-          else
-            morethan3 <- TRUE
-        }
-      }
-      if (morethan3)
-        warning("Multi-arm studies with more than three treatments not shown in 3-D plot.")
-    }
-    ##
-    ## Draw lines
-    ##
-    for (i in 1:(n - 1)) {
-      for (j in (i + 1):n) {
-        if (A.sign[i, j] > 0) {
-          rgl::lines3d(c(xpos[i], xpos[j]), c(ypos[i], ypos[j]), c(zpos[i], zpos[j]),
-                       lwd = W.matrix[i, j],
-                       col = col)
-        }
-      }
-    }
-  }
-
 
   is.zero <- function(x) abs(x) < .Machine$double.eps^0.75
   ##

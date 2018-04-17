@@ -18,7 +18,8 @@ export(netmeta,
 # tau.within, decomp.tau, stress,
 # shadowtext, chklist, chkmultiarm, lowertri, uppertri, createB,
 # upgradenetmeta, treats, createC, nma.additive,
-# prcombs, prcomps, compmatch, compsplit
+# prcombs, prcomps, compmatch, compsplit,
+# optcircle
 
 S3method(as.data.frame, netmeta)
 S3method(print, netmeta)

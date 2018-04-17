@@ -12,8 +12,8 @@
 netgraph(x, seq = x$seq,
          labels = x$trts,
          cex = 1, adj = NULL,
-	 offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
-	 scale = 1.10,
+         offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
+         scale = 1.10,
          col = "slateblue", plastic, thickness,
          lwd = 5, lwd.min = lwd/2.5, lwd.max = lwd*4,
          dim = "2d",
@@ -30,9 +30,9 @@ netgraph(x, seq = x$seq,
          eig1 = 2, eig2 = 3, eig3 = 4,
          iterate, tol = 0.0001, maxit = 500, allfigures = FALSE,
          A.matrix = x$A.matrix, N.matrix = sign(A.matrix),
-	 D.matrix = netdistance(N.matrix),
+         D.matrix = netdistance(N.matrix),
          xpos = NULL, ypos = NULL, zpos = NULL,
-         ...)
+         figure = TRUE, ...)
 }
 
 \arguments{
@@ -148,6 +148,8 @@ netgraph(x, seq = x$seq,
   \item{xpos}{Vector (\emph{n}) of x coordinates.}
   \item{ypos}{Vector (\emph{n}) of y coordinates.}
   \item{zpos}{Vector (\emph{n}) of z coordinates.}
+  \item{figure}{A logical indicating whether network graph should be
+    shown.}
   \item{\dots}{Additional graphical arguments.}
 }
 
@@ -169,6 +171,13 @@ netgraph(x, seq = x$seq,
   algorithm, Hall 1970), calculated in different ways, or
   random. Moreover, it can be chosen whether the iteration steps are
   shown (argument \code{allfigures = TRUE}).
+
+  An optimal circular presentation with minimum number of crossings
+  can be achieved by using argument \code{seq = "optimal"} in
+  combination with argument \code{start.layout}. Note, is is not
+  possible of prespecify the best value for argument
+  \code{start.layout} for any situation as the result depends on the
+  network structure.
 
   Argument \code{thickness} providing the line width of the nodes
   (comparisons) can be a matrix of the same dimension as argument
@@ -208,7 +217,7 @@ netgraph(x, seq = x$seq,
 }
 
 \value{
-  An data frame containing the following columns
+  A data frame containing the following columns
 
   \item{labels}{Treatment labels.}
   \item{seq}{Sequence of treatment labels.}

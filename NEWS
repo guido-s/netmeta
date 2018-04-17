@@ -5,6 +5,8 @@
   * New function funnel.netmeta() for 'comparison-adjusted' funnel
     plots
 
+  * Circular network graphs with minimal number of crossings
+
  ** User-visible changes **
 
   * netmeta():

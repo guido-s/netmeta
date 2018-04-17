@@ -122,19 +122,17 @@
 
 \value{
   A data frame with the following columns:
-  \tabular{lll}{
-   \bold{Variable} \tab \bold{Definition} \cr
-   studlab \tab Study label \cr
-   treat1 \tab Label/Number for first treatment \cr
-   treat2 \tab Label/Number for second treatment \cr
-   comparison \tab Treatment comparison \cr
-   TE \tab Estimate of treatment effect, e.g., log odds ratio \cr
-   TE.direct \tab Pooled estimate from direct evidence \cr
-   TE.adj \tab \sQuote{Comparison-adjusted} treatment effect (TE - TE.direct) \cr
-   seTE \tab Standard error of treatment estimate \cr
-   pch \tab Plotting symbol(s) \cr
-   col \tab Colour of plotting symbol(s) \cr
-  }  
+
+  \item{studlab}{Study label.}
+  \item{treat1}{Label/Number for first treatment.}
+  \item{treat2}{Label/Number for second treatment.}
+  \item{comparison}{Treatment comparison.}
+  \item{TE}{Estimate of treatment effect, e.g., log odds ratio.}
+  \item{TE.direct}{Pooled estimate from direct evidence.}
+  \item{TE.adj}{\sQuote{Comparison-adjusted} treatment effect (TE - TE.direct).}
+  \item{seTE}{Standard error of treatment estimate.}
+  \item{pch}{Plotting symbol(s).}
+  \item{col}{Colour of plotting symbol(s).}
 }
 
 \references{
