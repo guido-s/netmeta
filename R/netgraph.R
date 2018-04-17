@@ -132,6 +132,29 @@ netgraph <- function(x, seq = x$seq,
     stop("Length of argument 'pch.points' must be equal to number of treatments.")
   ##
   chklogical(figure)
+  ##  
+  if (is.null(seq))
+    seq1 <- 1:length(labels)
+  else if (length(seq) == 1 & x$d > 1) {
+    seq <- setchar(seq, "optimal", "should be equal to 'optimal' or a permutation of treatments")
+    ##
+    if (missing(start.layout))
+      start.layout <- "eigen"
+    ##
+    seq1 <- optcircle(x, start.layout = start.layout)$seq
+    ##
+    start.layout <- "circle"
+  }
+  else if (!(start.layout == "circle" & (missing(iterate) || iterate == FALSE))) {
+    seq1 <- 1:length(labels)
+    ##
+    if (!missing(seq) & !is.null(seq) & (is.null(xpos) & is.null(ypos)))
+      warning("Argument 'seq' only considered if start.layout=\"circle\" and iterate=FALSE.")
+  }
+  else {
+    rn <- rownames(x$TE.fixed)
+    seq1 <- charmatch(setseq(seq, rn), rn)
+  }
   
   
   if (missing(iterate))
@@ -205,29 +228,6 @@ netgraph <- function(x, seq = x$seq,
   }
   
   
-  if (is.null(seq))
-    seq1 <- 1:length(labels)
-  else if (length(seq) == 1 & x$d > 1) {
-    seq <- setchar(seq, "optimal", "should be equal to 'optimal' or a permutation of treatments")
-    ##
-    if (missing(start.layout))
-      start.layout <- "eigen"
-    ##
-    seq1 <- optcircle(x, start.layout = start.layout)$seq
-    ##
-    start.layout <- "circle"
-  }
-  else if (!(start.layout == "circle" & iterate == FALSE)) {
-    seq1 <- 1:length(labels)
-    ##
-    if (!missing(seq) & !is.null(seq) & (is.null(xpos) & is.null(ypos)))
-      warning("Argument 'seq' only considered if start.layout=\"circle\" and iterate=FALSE.")
-  }
-  else {
-    rn <- rownames(x$TE.fixed)
-    seq1 <- charmatch(setseq(seq, rn), rn)
-  }
-  ##
   col.matrix <- matrix("", nrow = n.trts, ncol = n.trts)
   dimnames(col.matrix) <- dimnames(A.matrix)
   col.matrix <- t(col.matrix)
