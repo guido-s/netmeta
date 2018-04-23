@@ -72,6 +72,7 @@ netgraph <- function(x, seq = x$seq,
     is_3d <- FALSE
   }
   ##
+  missing.start.layout <- missing(start.layout)
   start.layout <- setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
   ##
   if (!missing(seq) & is.null(seq))
@@ -138,7 +139,7 @@ netgraph <- function(x, seq = x$seq,
   else if (length(seq) == 1 & x$d > 1) {
     seq <- setchar(seq, "optimal", "should be equal to 'optimal' or a permutation of treatments")
     ##
-    if (missing(start.layout))
+    if (missing.start.layout)
       start.layout <- "eigen"
     ##
     seq1 <- optcircle(x, start.layout = start.layout)$seq

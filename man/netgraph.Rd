@@ -172,12 +172,12 @@ netgraph(x, seq = x$seq,
   random. Moreover, it can be chosen whether the iteration steps are
   shown (argument \code{allfigures = TRUE}).
 
-  An optimal circular presentation with minimum number of crossings
-  can be achieved by using argument \code{seq = "optimal"} in
-  combination with argument \code{start.layout}. Note, is is not
-  possible of prespecify the best value for argument
-  \code{start.layout} for any situation as the result depends on the
-  network structure.
+  An optimized circular presentation which typically has a reduced
+  (sometimes minimal) number of crossings can be achieved by using
+  argument \code{seq = "optimal"} in combination with argument
+  \code{start.layout}. Note, is is not possible of prespecify the best
+  value for argument \code{start.layout} for any situation as the
+  result depends on the network structure.
 
   Argument \code{thickness} providing the line width of the nodes
   (comparisons) can be a matrix of the same dimension as argument

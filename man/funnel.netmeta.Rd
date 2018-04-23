@@ -94,8 +94,8 @@
 }
 
 \details{
-  A \sQuote{comparison-adjusted} funnel plot (Chaimani et al., 2013)
-  is drawn in the active graphics window.
+  A \sQuote{comparison-adjusted} funnel plot (Chaimani & Salanti,
+  2012) is drawn in the active graphics window.
 
   Argument \code{order} is mandatory to determine the order of
   treatments (Chaimani et al., 2013):
@@ -136,6 +136,11 @@
 }
 
 \references{
+  Chaimani A & Salanti G (2012),
+  Using network meta-analysis to evaluate the existence of small-study
+  effects in a network of interventions.
+  Research Synthesis Methods, \bold{3}(2), 161--176
+
   Chaimani A, Higgins JP, Mavridis D, Spyridonos P, Salanti G (2013),
   Graphical tools for network meta-analysis in STATA.
   PLOS ONE, \bold{8}, e76654.
