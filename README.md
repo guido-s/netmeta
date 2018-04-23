@@ -35,7 +35,7 @@ network meta-analysis:
 
   - additive network meta-analysis for combinations of treatments;
 
-  - 'comparison-adjusted' funnel plot (Chaimani et al., 2013);
+  - 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012);
 
   - automated drawing of network graphs (Rücker & Schwarzer, 2016).
 
@@ -45,11 +45,11 @@ http://meta-analysis-with-r.org/ .
 
 ### References
 
-[Carlsen L, Bruggemann R (2014), Partial order methodology: a valuable tool in chemometrics. *Journal of Chemometrics*, **28**, 226--34.](https://scholar.google.com/scholar?q=Partial+order+methodology%3A+a+valuable+tool+in+chemometrics)
+[Carlsen L, Bruggemann R (2014), Partial order methodology: a valuable tool in chemometrics. *Journal of Chemometrics*, **28**, 226-34.](https://scholar.google.com/scholar?q=Partial+order+methodology%3A+a+valuable+tool+in+chemometrics)
 
-[Chaimani A, Higgins JP, Mavridis D, Spyridonos P, Salanti G (2013). Graphical tools for network meta-analysis in STATA. *PLOS ONE*, **8**, e76654.](https://scholar.google.com/scholar?q=Graphical+tools+for+network+meta-analysis+in+STATA)
+[Chaimani A, Salanti G (2012). Using network meta-analysis to evaluate the existence of small-study effects in a network of interventions. *Research Synthesis Methods*, **3**, 161-76.](https://scholar.google.com/scholar?q=Chaimani+Salanti+Using+network+meta-analysis+to+evaluate+the+existence+of+small-study+effects+in+a+network+of+interventions)
 
-[Dias S, Welton NJ, Caldwell DM, Ades AE (2010). Checking consistency in mixed treatment comparison meta-analysis. *Statistics in Medicine*, **29**, 932--44.](https://scholar.google.com/scholar?q=Checking+consistency+in+mixed+treatment+comparison+meta-analysis)
+[Dias S, Welton NJ, Caldwell DM, Ades AE (2010). Checking consistency in mixed treatment comparison meta-analysis. *Statistics in Medicine*, **29**, 932-44.](https://scholar.google.com/scholar?q=Checking+consistency+in+mixed+treatment+comparison+meta-analysis)
 
 [König J, Krahn U, Binder H (2013). Visualizing the flow of evidence in network meta-analysis and characterizing mixed treatment comparisons. *Statistics in Medicine*, **32**, 5414-29.](https://scholar.google.com/scholar?q=König+Krahn+Binder+2013+Visualizing+the+flow+of+evidence+in+network+meta-analysis+and+characterizing+mixed+treatment+comparisons)
 

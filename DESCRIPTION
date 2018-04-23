@@ -18,7 +18,7 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - split direct and indirect evidence to check consistency (Dias et al., 2010) <DOI:10.1002/sim.3767>;
  - league table with network meta-analysis results;
  - additive network meta-analysis for combinations of treatments;
- - 'comparison-adjusted' funnel plot (Chaimani et al., 2013) <DOI:10.1371/journal.pone.0076654>;
+ - 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012) <DOI:10.1002/jrsm.57>;
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <DOI:10.1002/jrsm.1143>.
 License: GPL (>= 2)
 Encoding: UTF-8

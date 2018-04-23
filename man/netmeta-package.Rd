@@ -38,7 +38,7 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
     networks);
   \item{\sQuote{comparison-adjusted} funnel plot
     (\code{\link{funnel.netmeta}}) to assess funnel plot asymmetry in
-    network meta-analysis (Chaimani et al., 2013)}
+    network meta-analysis (Chaimani & Salanti, 2012)}
   \item automated drawing of network graphs (\code{\link{netgraph}})
     described in Rücker & Schwarzer (2016).
   }
@@ -71,9 +71,10 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
   \emph{Journal of Chemometrics},
   \bold{28}, 226--34, DOI:10.1002/cem.2569 .
   
-  Chaimani A, Higgins JP, Mavridis D, Spyridonos P, Salanti G (2013),
-  Graphical tools for network meta-analysis in STATA.
-  PLOS ONE, \bold{8}, e76654.
+  Chaimani A & Salanti G (2012),
+  Using network meta-analysis to evaluate the existence of small-study
+  effects in a network of interventions.
+  Research Synthesis Methods, \bold{3}(2), 161--176
   
   Dias S, Welton NJ, Caldwell DM, Ades AE (2010).
   Checking consistency in mixed treatment comparison meta-analysis.
