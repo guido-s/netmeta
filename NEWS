@@ -2,6 +2,13 @@
 
  ** Major changes **
 
+  * Orestis Efthimiou <oremiou@gmail.com> is a new co-author of R
+    package netmeta
+
+  * New function netmetabin() for network meta-analysis of binary data
+    using the Mantel-Haenszel method or the non-central hypergeometric
+    distribution distribution
+
   * New function funnel.netmeta() for 'comparison-adjusted' funnel
     plots
 
@@ -16,6 +23,7 @@
       - 'events.trts' with number of events observed for a treatment
       - 'n.matrix' with number of observations in direct comparisons
       - 'events.matrix' with number of events in direct comparisons
+      - 'designs' with treatment designs
 
  ** Bug fixes **
 
@@ -29,6 +37,8 @@
 
   * netcomb() and discomb():
     - check if argument 'sep.components' is a single character
+
+  * netleague() is a generic function
 
 
 *** netmeta, version 0.9-8, 2018-03-23 ***

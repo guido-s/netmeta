@@ -172,7 +172,8 @@ nma.ruecker <- function(TE, seTE,
                          treat2 = names.treat[t2],
                          Q = q,
                          df = dfs,
-                         pval.Q = pchisq(q, dfs, lower.tail = FALSE))
+                         pval.Q = pchisq(q, dfs, lower.tail = FALSE),
+                         stringsAsFactors = FALSE)
   ##
   Q.decomp$pval.Q[Q.decomp$df == 0] <- NA
   

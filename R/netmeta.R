@@ -1,6 +1,6 @@
 netmeta <- function(TE, seTE,
-                    treat1, treat2,
-                    studlab, data = NULL, subset = NULL,
+                    treat1, treat2, studlab,
+                    data = NULL, subset = NULL,
                     sm,
                     level = 0.95, level.comb = 0.95,
                     comb.fixed = gs("comb.fixed"),
@@ -33,6 +33,7 @@ netmeta <- function(TE, seTE,
                     keepdata = gs("keepdata"),
                     warn = TRUE
                     ) {
+  
   
   ##
   ##
@@ -102,6 +103,8 @@ netmeta <- function(TE, seTE,
              data, enclos = sys.frame(sys.parent()))
   ##
   if (inherits(TE, "pairwise")) {
+    is.pairwise <- TRUE
+    ##
     sm <- attr(TE, "sm")
     ##
     seTE <- TE$seTE
@@ -118,7 +121,6 @@ netmeta <- function(TE, seTE,
     if (!is.null(TE$event2))
       event2 <- TE$event2
     ##
-    is.pairwise <- TRUE
     pairdata <- TE
     data <- TE
     ##
@@ -189,23 +191,24 @@ netmeta <- function(TE, seTE,
   ##
   if (keepdata) {
     if (nulldata & !is.pairwise)
-      data <- data.frame(.TE = TE)
+      data <- data.frame(.studlab = studlab, stringsAsFactors = FALSE)
     else if (nulldata & is.pairwise) {
       data <- pairdata
-      data$.TE <- TE
+      data$.studlab <- studlab
     }
     else
-      data$.TE <- TE
+      data$.studlab <- studlab
     ##
-    data$.seTE <- seTE
     data$.treat1 <- treat1
     data$.treat2 <- treat2
-    data$.studlab <- studlab
     ##
-    data$.n1 <- n1
-    data$.n2 <- n2
+    data$.TE <- TE
+    data$.seTE <- seTE
+    ##
     data$.event1 <- event1
+    data$.n1 <- n1
     data$.event2 <- event2
+    data$.n2 <- n2
     ##
     ## Check for correct treatment order within comparison
     ##
@@ -249,7 +252,8 @@ netmeta <- function(TE, seTE,
   if (!missing.subset) {
     if ((is.logical(subset) & (sum(subset) > k.Comp)) ||
         (length(subset) > k.Comp))
-      stop("Length of subset is larger than number of studies.")
+      stop("Length of subset is larger than number of studies.",
+           call. = FALSE)
     ##
     TE <- TE[subset]
     seTE <- seTE[subset]
@@ -313,7 +317,8 @@ netmeta <- function(TE, seTE,
   ##
   ##
   if (any(treat1 == treat2))
-    stop("Treatments must be different (arguments 'treat1' and 'treat2').")
+    stop("Treatments must be different (arguments 'treat1' and 'treat2').",
+         call. = FALSE)
   ##
   if (length(studlab) != 0)
     studlab <- as.character(studlab)
@@ -337,14 +342,16 @@ netmeta <- function(TE, seTE,
                "' has a wrong number of comparisons.",
                "\n  Please provide data for all treatment comparisons",
                " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   if (sum(sel.narms) > 1)
     stop(paste("The following studies have a wrong number of comparisons: ",
                paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
                      collapse = ", "),
                "\n  Please provide data for all treatment comparisons",
                " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   ##
   ## Check number of subgraphs
   ##
@@ -353,7 +360,8 @@ netmeta <- function(TE, seTE,
   if (n.subnets > 1)
     stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
                "Use R function 'netconnection' to identify sub-networks.",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   ##
   ## Check NAs and zero standard errors
   ##
@@ -366,7 +374,8 @@ netmeta <- function(TE, seTE,
                           treat1 = treat1[excl],
                           treat2 = treat2[excl],
                           TE = format(round(TE[excl], 4)),
-                          seTE = format(round(seTE[excl], 4))
+                          seTE = format(round(seTE[excl], 4)),
+                          stringsAsFactors = FALSE
                           )
     warning("Comparison",
             if (sum(excl) > 1) "s",
@@ -411,7 +420,8 @@ netmeta <- function(TE, seTE,
                "' has a wrong number of comparisons.",
                " Please check data and\n  consider to remove study",
                " from network meta-analysis.",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   if (sum(sel.narms) > 1)
     stop(paste("After removing comparisons with missing treatment effects",
                " or standard errors,\n  the following studies have",
@@ -420,7 +430,8 @@ netmeta <- function(TE, seTE,
                      collapse = ", "),
                "\n  Please check data and consider to remove studies",
                " from network meta-analysis.",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   ##
   ## Check number of subgraphs
   ##
@@ -432,7 +443,8 @@ netmeta <- function(TE, seTE,
                n.subnets, " separate sub-networks.\n  ",
                "Please check data and consider to remove studies",
                " from network meta-analysis.",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   ##
   ## Check for correct treatment order within comparison
   ##
@@ -478,7 +490,8 @@ netmeta <- function(TE, seTE,
   ##
   ## Study overview
   ##
-  tdata <- data.frame(studies = p0$studlab, narms = p0$narms)
+  tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
+                      stringsAsFactors = FALSE)
   tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
   studies <- tdata$studies
   narms <- tdata$narms
@@ -575,6 +588,8 @@ netmeta <- function(TE, seTE,
               ##
               studies = studies,
               narms = narms,
+              ##
+              designs = NA,
               ##
               TE.nma.fixed = res.f$TE.nma[o],
               seTE.nma.fixed = res.f$seTE.nma[o],
@@ -706,7 +721,7 @@ netmeta <- function(TE, seTE,
               call = match.call(),
               version = packageDescription("netmeta")$Version
               )
-  ##  
+  ##
   class(res) <- "netmeta"
   ##
   ## Add results for indirect treatment estimates
@@ -802,9 +817,12 @@ netmeta <- function(TE, seTE,
   ##
   ## Number of designs
   ##
-  res$d <- nma.krahn(res)$d
+  krahn <- nma.krahn(res)
+  res$d <- krahn$d
   if (is.null(res$d))
     res$d <- 1
+  ##
+  res$designs <- as.character(krahn$design$design)
   
   
   ##
@@ -824,8 +842,20 @@ netmeta <- function(TE, seTE,
   
   
   if (keepdata) {
-    res$data <- data
-    res$subset <- res$subset
+    if (is.null(krahn))
+      ddat <- data.frame(.studlab = data$.studlab,
+                         .design = paste(data$.treat1, data$.treat2,
+                                        sep = sep.trts),
+                         stringsAsFactors = FALSE)
+    else {
+      ddat <- unique(krahn$studies[, c("studlab", "design")])
+      names(ddat) <- paste0(".", names(ddat))
+    }
+    ##
+    res$data <- merge(data, ddat,
+                      by = ".studlab",
+                      suffixes = c(".orig", ""),
+                      stringsAsFactors = FALSE)
   }
   ##
   if (available.events) {

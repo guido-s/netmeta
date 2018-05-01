@@ -1,4 +1,4 @@
-export(netmeta,
+export(netmeta, netmetabin,
        as.data.frame.netmeta, print.netmeta,
        summary.netmeta, print.summary.netmeta,
        forest.netmeta, forest.netsplit, pairwise,
@@ -51,7 +51,8 @@ importFrom("grDevices", "col2rgb", "heat.colors", "rgb", "xy.coords")
 importFrom("graphics", "axis", "box", "lines", "par", "points",
            "plot", "polygon", "rect", "text", "strheight", "strwidth")
 
-importFrom("stats", "dist", "hclust", "pchisq", "prcomp", "rnorm", "sd")
+importFrom("stats", "dist", "hclust", "optim", "pchisq", "prcomp",
+           "reshape", "rnorm", "sd")
 
 importFrom("utils", "installed.packages", "packageDescription")
 

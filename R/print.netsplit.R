@@ -1,10 +1,10 @@
 print.netsplit <- function(x,
                            comb.fixed = x$comb.fixed,
                            comb.random = x$comb.random,
-                           showall = TRUE,
+                           show = "all",
                            overall = TRUE,
                            ci = FALSE,
-                           test = TRUE,
+                           test = show %in% c("all", "both"),
                            digits = gs("digits"),
                            digits.zval = gs("digits.zval"),
                            digits.pval = gs("digits.pval"),
@@ -26,6 +26,7 @@ print.netsplit <- function(x,
   formatPT <- meta:::formatPT
   is.relative.effect <- meta:::is.relative.effect
   rmSpace <- meta:::rmSpace
+  setchar <- meta:::setchar
   
   
   ## All individual results in a single row - be on the save side:
@@ -36,7 +37,6 @@ print.netsplit <- function(x,
   
   chklogical(comb.fixed)
   chklogical(comb.random)
-  chklogical(showall)
   chklogical(overall)
   chklogical(ci)
   chklogical(test)
@@ -51,6 +51,32 @@ print.netsplit <- function(x,
   chklogical(backtransf)
   chklogical(scientific.pval)
   chklogical(legend)
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  ## Check whether first argument is a list. In this case only use
+  ## this list as input.
+  if (length(args) > 0 && is.list(args[[1]]))
+    args <- args[[1]]
+  ##
+  additional.arguments <- names(args)
+  ##
+  if (length(additional.arguments) > 0) {
+    if (!is.na(charmatch("showa", additional.arguments)))
+      if (!missing(show))
+        warning("Deprecated argument 'showall' ignored as argument 'show' is also provided.")
+      else {
+        warning("Deprecated argument 'showall' has been replaced by argument 'show'.")
+        show <- args[[charmatch("showa", additional.arguments)]]
+        if (show)
+          show <- "all"
+        else
+          show <- "both"
+      }
+  }
+  ##
+  show <- setchar(show, c("all", "both", "direct.only", "indirect.only"))
   
   
   sm <- x$sm
@@ -71,12 +97,17 @@ print.netsplit <- function(x,
   ci.lab <- paste(100 * level.comb, "%-CI", sep ="")
   
   
-  if (!showall) {
-    sel <- !is.na(x$direct.fixed$TE) & !is.na(x$indirect.fixed$TE) &
-      !is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE)
-  }
-  else
+  if (show == "all")
     sel <- rep_len(TRUE, length(x$direct.fixed$TE))
+  else if (show == "both")
+    sel <- (!is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
+            !is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+  else if (show == "direct.only")
+    sel <- (!is.na(x$direct.fixed$TE)  & is.na(x$indirect.fixed$TE) &
+            !is.na(x$direct.random$TE) & is.na(x$indirect.random$TE))
+  else if (show == "indirect.only")
+    sel <- (is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
+            is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
   ## 
   comp <- x$comparison[sel]
   ##
@@ -185,9 +216,10 @@ print.netsplit <- function(x,
     names.fixed <- c(names.fixed, ci.lab)
   }
   ##
-  fixed$TE.indirect.fixed <- formatN(TE.indirect.fixed, digits, text.NA = text.NA,
-                                     big.mark = big.mark)
+  fixed$TE.indirect.fixed <- formatN(TE.indirect.fixed, digits,
+                                     text.NA = text.NA, big.mark = big.mark)
   names.fixed <- c(names.fixed, "indir.")
+  ##
   if (ci) {
     fixed$ci.indirect.fixed <- formatCI(round(lower.indirect.fixed, digits),
                                         round(upper.indirect.fixed, digits))

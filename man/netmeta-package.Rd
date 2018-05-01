@@ -35,7 +35,10 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
     (\code{\link{netleague}});
   \item additive network meta-analysis for combinations of treatments
     (\code{\link{netcomb}}, \code{\link{discomb}} for disconnected
-    networks);
+    networks);  
+  \item network meta-analysis of binary data using the Mantel-Haenszel
+    or non-central hypergeometric distribution method
+    (\code{\link{netmetabin}});
   \item{\sQuote{comparison-adjusted} funnel plot
     (\code{\link{funnel.netmeta}}) to assess funnel plot asymmetry in
     network meta-analysis (Chaimani & Salanti, 2012)}

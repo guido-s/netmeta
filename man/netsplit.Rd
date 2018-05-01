@@ -10,27 +10,27 @@
 }
 
 \usage{
-netsplit(x, upper=TRUE,
-         reference.group=x$reference.group,
-         baseline.reference=x$baseline.reference,
-         sep.trts=x$sep.trts, quote.trts="",
-         tol.direct=0.0005)
+netsplit(x, upper = TRUE,
+         reference.group = x$reference.group,
+         baseline.reference = x$baseline.reference,
+         sep.trts = x$sep.trts, quote.trts = "",
+         tol.direct = 0.0005)
 
 \method{print}{netsplit}(x,
-      comb.fixed=x$comb.fixed,
-      comb.random=x$comb.random,
-      showall=TRUE,
-      overall=TRUE,
-      ci=FALSE,
-      test=TRUE,
-      digits=gs("digits"),
-      digits.zval=gs("digits.zval"),
-      digits.pval=gs("digits.pval"),
-      digits.prop=max(gs("digits.pval")-2, 2),
-      text.NA=".", backtransf=x$backtransf,
-      scientific.pval=gs("scientific.pval"),
-      big.mark=gs("big.mark"),
-      legend=TRUE,
+      comb.fixed = x$comb.fixed,
+      comb.random = x$comb.random,
+      show = "all",
+      overall = TRUE,
+      ci = FALSE,
+      test = show \%in\% c("all", "both"),
+      digits = gs("digits"),
+      digits.zval = gs("digits.zval"),
+      digits.pval = gs("digits.pval"),
+      digits.prop = max(gs("digits.pval")-2, 2),
+      text.NA = ".", backtransf = x$backtransf,
+      scientific.pval = gs("scientific.pval"),
+      big.mark = gs("big.mark"),
+      legend = TRUE,
       ...)
 }
 
@@ -56,9 +56,8 @@ netsplit(x, upper=TRUE,
     effect model should be printed.}
   \item{comb.random}{A logical indicating whether results for random
     effects model should be printed.}
-  \item{showall}{A logical indicating whether all comparisons
-    (default) or only comparisons contributing both direct and
-    indirect evidence should be printed.} 
+  \item{show}{A character string indicating which comparisons should
+    be printed (see Details).}
   \item{overall}{A logical indicating whether estimates from network
     meta-analyis should be printed in addition to direct and indirect
     estimates.}
@@ -102,6 +101,14 @@ netsplit(x, upper=TRUE,
   indirect estimates from direct pairwise comparisons and network
   estimates. The direct evidence proportion as described in König et
   al. (2013) is used to calculate the indirect evidence.
+
+  Argument \code{show} determines which comparsions are printed:
+  \tabular{ll}{
+  \dQuote{all} \tab All comparisons \cr
+  \dQuote{both} \tab Only comparisons contributing both direct and indirect evidence \cr
+  \dQuote{direct.only} \tab Comparisons providing only direct evidence \cr
+  \dQuote{indirect.only} \tab Comparisons providing only indirect evidence \cr
+  }
 }
 
 \value{

@@ -35,7 +35,10 @@ network meta-analysis:
 
   - additive network meta-analysis for combinations of treatments;
 
-  - 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012);
+  - network meta-analysis of binary data using the Mantel-Haenszel
+    method or the non-central hypergeometric distribution;
+
+- 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012);
 
   - automated drawing of network graphs (Rücker & Schwarzer, 2016).
 
@@ -77,16 +80,16 @@ install.packages("netmeta")
 ### Current development version on GitHub:
 
 Installation using R package
-[**ghit**](https://cran.r-project.org/package=ghit) without
-[Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows:
+[**ghit**](https://cran.r-project.org/package=ghit) (without
+[Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows):
 ```r
 install.packages("ghit")
 ghit::install_github("guido-s/netmeta[develop]")
 ```
 
 Installation using R package
-[**devtools**](https://cran.r-project.org/package=devtools) with
-[Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows:
+[**devtools**](https://cran.r-project.org/package=devtools) (with
+[Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows):
 ```r
 install.packages("devtools")
 devtools::install_github("guido-s/netmeta", ref = "develop")
