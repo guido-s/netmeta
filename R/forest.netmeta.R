@@ -26,6 +26,8 @@ forest.netmeta <- function(x,
   meta:::chkclass(x, "netmeta")
   x <- upgradenetmeta(x)
   ##
+  is.bin <- inherits(x, "netmetabin")
+  ##
   chklogical <- meta:::chklogical
   formatN <- meta:::formatN
   ##
@@ -59,14 +61,24 @@ forest.netmeta <- function(x,
     TE   <- x$TE.fixed
     seTE <- x$seTE.fixed
     prop.direct <- x$P.fixed
+    ##
+    text.fixed <- "(Fixed Effect Model)"
+    ##
+    if (x$method == "MH")
+      text.fixed <- "(Mantel-Haenszel method)"
+    else if (x$method == "NCH")
+      text.fixed <- "(Non-central hypergeometric)"
+    ##
     if (is.null(smlab))
       if (baseline.reference)
         smlab <- paste("Comparison: other vs '",
-                       reference.group, "'\n(Fixed Effect Model)",
+                       reference.group, "'\n",
+                       text.fixed,
                        sep = "")
       else
         smlab <- paste("Comparison: '",
-                       reference.group, "' vs other\n(Fixed Effect Model)",
+                       reference.group, "' vs other\n",
+                       text.fixed,
                        sep = "")
     ##
     Pscore <- netrank(x, small.values = small.values)$Pscore.fixed
@@ -100,7 +112,7 @@ forest.netmeta <- function(x,
                       seTE = seTE[, colnames(seTE) == reference.group],
                       trts = colnames(TE),
                       k = x$A.matrix[, colnames(TE) == reference.group],
-                      prop.direct = prop.direct[, colnames(TE) == reference.group],
+                      prop.direct = if (is.bin) prop.direct else prop.direct[, colnames(TE) == reference.group],
                       row.names = colnames(TE),
                       as.is = TRUE)
   else
@@ -108,7 +120,7 @@ forest.netmeta <- function(x,
                       seTE = seTE[rownames(seTE) == reference.group, ],
                       trts = rownames(TE),
                       k = x$A.matrix[rownames(TE) == reference.group, ],
-                      prop.direct = prop.direct[rownames(TE) == reference.group, ],
+                      prop.direct = if (is.bin) prop.direct else prop.direct[rownames(TE) == reference.group, ],
                       row.names = colnames(TE),
                       as.is = TRUE)
   ##

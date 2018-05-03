@@ -57,155 +57,162 @@ print.netmeta <- function(x,
   meta:::warnarg("logscale", addargs, fun, otherarg = "backtransf")
   
   
-  k.all <- length(x$TE)
-  ##
-  if (missing(sortvar)) sortvar <- 1:k.all
-  ##
-  if (length(sortvar) != k.all)
-    stop("'x' and 'sortvar' have different length")
-  ##
-  ci.lab <- paste(round(100 * x$level, 1), "%-CI", sep = "")
-
-  sm <- x$sm
-  
-  sm.lab <- sm
-  ##
-  if (!backtransf & meta:::is.relative.effect(sm))
-    sm.lab <- paste("log", sm, sep = "")
-  
-  
-  trts <- rownames(x$TE.fixed)
-  trts.abbr <- treats(trts, nchar.trts)
-  ##
-  treat1 <- as.character(factor(x$treat1, levels = trts, labels = trts.abbr))
-  treat2 <- as.character(factor(x$treat2, levels = trts, labels = trts.abbr))
-  ##
-  if (any(treat1 != x$treat1) | any(treat2 != x$treat2))
-    abbr <- c(treat1, treat2)
-  else
-    abbr <- NULL
-  
-  
-  matitle(x)
-  
-  
-  if (details) {
-
-    cat(paste("Original data",
-              ifelse(any(x$narms > 2),
-                     " (with adjusted standard errors for multi-arm studies)",
-                     ""),
-              ":\n\n", sep = ""))
+  if (!inherits(x, "netmetabin")) {
+    k.all <- length(x$TE)
+    ##
+    if (missing(sortvar)) sortvar <- 1:k.all
+    ##
+    if (length(sortvar) != k.all)
+      stop("'x' and 'sortvar' have different length")
+    ##
+    ci.lab <- paste(round(100 * x$level, 1), "%-CI", sep = "")
     
-    res <- data.frame(treat1,
-                      treat2,
-                      TE = formatN(x$TE, digits, text.NA = "NA",
-                                   big.mark = big.mark),
-                      seTE = formatN(x$seTE, digits.se, text.NA = "NA",
-                                     big.mark = big.mark))
+    sm <- x$sm
+    
+    sm.lab <- sm
     ##
-    if (any(x$narms > 2))
-      res$seTE.adj <- format(round(x$seTE.adj, digits.se))
+    if (!backtransf & meta:::is.relative.effect(sm))
+      sm.lab <- paste("log", sm, sep = "")
+    
+    
+    trts <- rownames(x$TE.fixed)
+    trts.abbr <- treats(trts, nchar.trts)
     ##
-    res$studlab <- x$studlab
+    treat1 <- as.character(factor(x$treat1, levels = trts, labels = trts.abbr))
+    treat2 <- as.character(factor(x$treat2, levels = trts, labels = trts.abbr))
     ##
-    if (any(x$narms > 2)) {
-      tdata1 <- data.frame(studlab = as.character(x$studies),
-                           narms = x$narms)
-      res$OrDeR <- 1:dim(res)[[1]]
-      res <- merge(res, tdata1,
-                   by = "studlab", all.x = TRUE, all.y = FALSE,
-                   sort = FALSE)
-      res <- res[order(res$OrDeR), ]
-      res$multiarm <- ifelse(res$narms > 2, "*", "")
-      res$OrDeR <- NULL
-      res$studlab <- NULL
-      res <- as.matrix(res)
-    }
+    if (any(treat1 != x$treat1) | any(treat2 != x$treat2))
+      abbr <- c(treat1, treat2)
     else
-      res$studlab <- NULL
+      abbr <- NULL
+    
+    
+    matitle(x)
+    
+    
+    if (details) {
+
+      cat(paste("Original data",
+                ifelse(any(x$narms > 2),
+                       " (with adjusted standard errors for multi-arm studies)",
+                       ""),
+                ":\n\n", sep = ""))
+      
+      res <- data.frame(treat1,
+                        treat2,
+                        TE = formatN(x$TE, digits, text.NA = "NA",
+                                     big.mark = big.mark),
+                        seTE = formatN(x$seTE, digits.se, text.NA = "NA",
+                                       big.mark = big.mark))
+      ##
+      if (any(x$narms > 2))
+        res$seTE.adj <- format(round(x$seTE.adj, digits.se))
+      ##
+      res$studlab <- x$studlab
+      ##
+      if (any(x$narms > 2)) {
+        tdata1 <- data.frame(studlab = as.character(x$studies),
+                             narms = x$narms)
+        res$OrDeR <- 1:dim(res)[[1]]
+        res <- merge(res, tdata1,
+                     by = "studlab", all.x = TRUE, all.y = FALSE,
+                     sort = FALSE)
+        res <- res[order(res$OrDeR), ]
+        res$multiarm <- ifelse(res$narms > 2, "*", "")
+        res$OrDeR <- NULL
+        res$studlab <- NULL
+        res <- as.matrix(res)
+      }
+      else
+        res$studlab <- NULL
+      ##
+      dimnames(res)[[1]] <- x$studlab
+      
+      prmatrix(res[order(sortvar), ],
+               quote = FALSE, right = TRUE)
+      cat("\n")
+      
+      cat("Number of treatment arms (by study):\n")
+      prmatrix(data.frame(narms = x$narms, row.names = x$studies),
+               quote = FALSE, right = TRUE)
+      cat("\n")
+    }
+    
+    
+    tsum <- summary(x, warn = FALSE)
     ##
-    dimnames(res)[[1]] <- x$studlab
+    TE.f    <- tsum$comparison.nma.fixed$TE
+    lowTE.f <- tsum$comparison.nma.fixed$lower
+    uppTE.f <- tsum$comparison.nma.fixed$upper
+    ##
+    if (backtransf & meta:::is.relative.effect(sm)) {
+      TE.f    <- exp(TE.f)
+      lowTE.f <- exp(lowTE.f)
+      uppTE.f <- exp(uppTE.f)
+    }
+    ##
+    ##
+    TE.r    <- tsum$comparison.nma.random$TE
+    lowTE.r <- tsum$comparison.nma.random$lower
+    uppTE.r <- tsum$comparison.nma.random$upper
+    ##
+    if (backtransf & meta:::is.relative.effect(sm)) {
+      TE.r    <- exp(TE.r)
+      lowTE.r <- exp(lowTE.r)
+      uppTE.r <- exp(uppTE.r)
+    }
     
-    prmatrix(res[order(sortvar), ],
-             quote = FALSE, right = TRUE)
-    cat("\n")
     
-    cat("Number of treatment arms (by study):\n")
-    prmatrix(data.frame(narms = x$narms, row.names = x$studies),
-             quote = FALSE, right = TRUE)
-    cat("\n")
+    res.f <- cbind(treat1, treat2,
+                   formatN(TE.f, digits, text.NA = "NA", big.mark = big.mark),
+                   formatCI(formatN(round(lowTE.f, digits), digits, "NA",
+                                    big.mark = big.mark),
+                            formatN(round(uppTE.f, digits), digits, "NA",
+                                    big.mark = big.mark)),
+                   if (comb.fixed)
+                     formatN(round(x$Q.fixed, digits.Q), digits.Q, "NA",
+                             big.mark = big.mark),
+                   if (comb.fixed) format(round(x$leverage.fixed, 2)))
+    dimnames(res.f) <-
+      list(x$studlab, c("treat1", "treat2",
+                        sm.lab, ci.lab,
+                        if (comb.fixed) "Q",
+                        if (comb.fixed) "leverage"))
+    
+    
+    res.r <- cbind(treat1, treat2,
+                   formatN(TE.r, digits, text.NA = "NA", big.mark = big.mark),
+                   formatCI(formatN(round(lowTE.r, digits), digits, "NA",
+                                    big.mark = big.mark),
+                            formatN(round(uppTE.r, digits), digits, "NA",
+                                    big.mark = big.mark)))
+    dimnames(res.r) <-
+      list(x$studlab, c("treat1", "treat2", sm.lab, ci.lab))
+    
+    
+    if (comb.fixed) {
+      cat("Results (fixed effect model):\n\n")
+      
+      prmatrix(res.f[order(sortvar), , drop = FALSE],
+               quote = FALSE, right = TRUE)
+      
+      cat("\n")
+    }
+    
+    if (comb.random) {
+      cat("Results (random effects model):\n\n")
+      
+      prmatrix(res.r[order(sortvar), , drop = FALSE],
+               quote = FALSE, right = TRUE)
+      
+      cat("\n")
+    }
+  }
+  else {
+    tsum <- summary(x, warn = FALSE)
+    abbr <- NULL
   }
   
-  
-  tsum <- summary(x, warn = FALSE)
-  ##
-  TE.f    <- tsum$comparison.nma.fixed$TE
-  lowTE.f <- tsum$comparison.nma.fixed$lower
-  uppTE.f <- tsum$comparison.nma.fixed$upper
-  ##
-  if (backtransf & meta:::is.relative.effect(sm)) {
-    TE.f    <- exp(TE.f)
-    lowTE.f <- exp(lowTE.f)
-    uppTE.f <- exp(uppTE.f)
-  }
-  ##
-  ##
-  TE.r    <- tsum$comparison.nma.random$TE
-  lowTE.r <- tsum$comparison.nma.random$lower
-  uppTE.r <- tsum$comparison.nma.random$upper
-  ##
-  if (backtransf & meta:::is.relative.effect(sm)) {
-    TE.r    <- exp(TE.r)
-    lowTE.r <- exp(lowTE.r)
-    uppTE.r <- exp(uppTE.r)
-  }
-  
-  
-  res.f <- cbind(treat1, treat2,
-                 formatN(TE.f, digits, text.NA = "NA", big.mark = big.mark),
-                 formatCI(formatN(round(lowTE.f, digits), digits, "NA",
-                                  big.mark = big.mark),
-                          formatN(round(uppTE.f, digits), digits, "NA",
-                                  big.mark = big.mark)),
-                 if (comb.fixed)
-                   formatN(round(x$Q.fixed, digits.Q), digits.Q, "NA",
-                           big.mark = big.mark),
-                 if (comb.fixed) format(round(x$leverage.fixed, 2)))
-  dimnames(res.f) <-
-    list(x$studlab, c("treat1", "treat2",
-                      sm.lab, ci.lab,
-                      if (comb.fixed) "Q",
-                      if (comb.fixed) "leverage"))
-  
-  
-  res.r <- cbind(treat1, treat2,
-                 formatN(TE.r, digits, text.NA = "NA", big.mark = big.mark),
-                 formatCI(formatN(round(lowTE.r, digits), digits, "NA",
-                                  big.mark = big.mark),
-                          formatN(round(uppTE.r, digits), digits, "NA",
-                                  big.mark = big.mark)))
-  dimnames(res.r) <-
-    list(x$studlab, c("treat1", "treat2", sm.lab, ci.lab))
-  
-  
-  if (comb.fixed) {
-    cat("Results (fixed effect model):\n\n")
-    
-    prmatrix(res.f[order(sortvar), , drop = FALSE],
-             quote = FALSE, right = TRUE)
-    
-    cat("\n")
-  }
-  
-  if (comb.random) {
-    cat("Results (random effects model):\n\n")
-    
-    prmatrix(res.r[order(sortvar), , drop = FALSE],
-             quote = FALSE, right = TRUE)
-    
-    cat("\n")
-  }
   
   if (reference.group != "" & missing(all.treatments))
     all.treatments <- FALSE

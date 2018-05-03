@@ -571,10 +571,10 @@ netmeta <- function(TE, seTE,
               seTE = res.f$seTE.orig[o],
               seTE.adj = res.f$seTE[o],
               ##
-              n1 = n1,
-              n2 = n2,
               event1 = event1,
               event2 = event2,
+              n1 = n1,
+              n2 = n2,
               ##
               k = res.f$k,
               m = res.f$m,
@@ -692,6 +692,7 @@ netmeta <- function(TE, seTE,
               treat2.pos = res.f$treat2.pos[o],
               ##
               sm = sm,
+              method = "Inverse",
               level = level,
               level.comb = level.comb,
               comb.fixed = comb.fixed,
@@ -858,15 +859,6 @@ netmeta <- function(TE, seTE,
                       stringsAsFactors = FALSE)
   }
   ##
-  if (available.events) {
-    res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
-    ##
-    dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)
-    rownames(dat.e) <- dat.e$indices
-    res$events.trts <- dat.e[trts, "sum"]
-    names(res$events.trts) <- trts
-  }
-  ##
   if (available.n) {
     res$n.matrix <- netmatrix(res, n1 + n2, func = "sum")
     ##
@@ -874,6 +866,15 @@ netmeta <- function(TE, seTE,
     rownames(dat.n) <- dat.n$indices
     res$n.trts <- dat.n[trts, "sum"]
     names(res$n.trts) <- trts
+  }
+  ##
+  if (available.events) {
+    res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
+    ##
+    dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)
+    rownames(dat.e) <- dat.e$indices
+    res$events.trts <- dat.e[trts, "sum"]
+    names(res$events.trts) <- trts
   }
   
   

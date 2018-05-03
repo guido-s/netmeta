@@ -9,6 +9,8 @@ pairwise <- function(treat,
   null.data <- is.null(data)
   if (null.data)
     data <- sys.frame(sys.parent())
+  else
+    data$...order <- seq_len(nrow(data))
   ##
   ## Catch studlab, treat, event, n, mean, sd, time from data:
   ##
@@ -822,6 +824,10 @@ pairwise <- function(treat,
               " will not be considered in network meta-analysis:\n",
               sep = ""))
     ##
+    res.NAs$...order <- NULL
+    res.NAs$...order1 <- NULL
+    res.NAs$...order2 <- NULL
+    ##
     prmatrix(res.NAs,
              quote = FALSE, right = TRUE, na.print = "NA",
              rowlab = rep("", nrow(res.NAs)))
@@ -832,8 +838,19 @@ pairwise <- function(treat,
   attr(res, "method") <- m1$method
   attr(res, "version") <- packageDescription("netmeta")$Version
   
-  
-  res <- res[order(factor(res$studlab, levels = levs), res$treat1, res$treat2), ]
+
+  if (!is.null(res$...order1)) {
+    res <- res[order(res$...order1), ]
+    res$...order1 <- NULL
+    res$...order2 <- NULL
+  }
+  else if (!is.null(res$...order)) {
+    res <- res[order(res$...order), ]
+    res$...order <- NULL
+  }
+  else
+    res <- res[order(factor(res$studlab, levels = levs),
+                     res$treat1, res$treat2), ]
   ##
   rownames(res) <- 1:nrow(res)
   class(res) <- c(class(res), "pairwise")

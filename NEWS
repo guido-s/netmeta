@@ -25,6 +25,9 @@
       - 'events.matrix' with number of events in direct comparisons
       - 'designs' with treatment designs
 
+  * pairwise():
+    - keep original order of studies
+    
  ** Bug fixes **
 
   * netsplit():

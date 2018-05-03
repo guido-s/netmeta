@@ -36,7 +36,10 @@ netrank <- function(x, small.values = "good") {
   ##
   Pscore.fixed <- rowMeans(P.fixed, na.rm = TRUE)
   ##
-  Pscore.random <- rowMeans(P.random, na.rm = TRUE)
+  if (!all(is.na(TE.random)))
+    Pscore.random <- rowMeans(P.random, na.rm = TRUE)
+  else
+    Pscore.random <- NA
   
   
   ##

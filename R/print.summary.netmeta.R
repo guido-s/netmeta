@@ -100,13 +100,15 @@ print.summary.netmeta <- function(x,
     lowTE.fixed <- lowTE.fixed[x$seq, x$seq]
     uppTE.fixed <- uppTE.fixed[x$seq, x$seq]
     ##
-    TE.random <- TE.random[x$seq, x$seq]
-    seTE.random <- seTE.random[x$seq, x$seq]
-    lowTE.random <- lowTE.random[x$seq, x$seq]
-    uppTE.random <- uppTE.random[x$seq, x$seq]
-    ##
-    lowTE.predict <- lowTE.predict[x$seq, x$seq]
-    uppTE.predict <- uppTE.predict[x$seq, x$seq]
+    if (!all(is.na(TE.random))) {
+      TE.random <- TE.random[x$seq, x$seq]
+      seTE.random <- seTE.random[x$seq, x$seq]
+      lowTE.random <- lowTE.random[x$seq, x$seq]
+      uppTE.random <- uppTE.random[x$seq, x$seq]
+      ##
+      lowTE.predict <- lowTE.predict[x$seq, x$seq]
+      uppTE.predict <- uppTE.predict[x$seq, x$seq]
+    }
   }
   
   
@@ -197,8 +199,17 @@ print.summary.netmeta <- function(x,
     
     
     if (comb.fixed) {
-      if (all.treatments | reference.group != "")
-        cat("\nFixed effect model\n")
+      if (all.treatments | reference.group != "") {
+        text.fixed <- "Fixed effect model"
+        ##
+        if (x$method == "MH")
+          text.fixed <- paste(text.fixed, "(Mantel-Haenszel method)")
+        else if (x$method == "NCH")
+          text.fixed <- paste(text.fixed, "(Non-central hypergeometric distribution)")
+        ##
+        cat(paste0("\n", text.fixed, "\n"))
+      }
+      ##
       if (all.treatments) {
         cat("\nTreatment estimate (sm = '", sm.lab, "'):\n", sep = "")
         ##

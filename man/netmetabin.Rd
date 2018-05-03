@@ -15,9 +15,10 @@ netmetabin(event1, n1, event2, n2,
            data = NULL, subset = NULL,
            sm,
            method = "MH",
-           incr = if (method == "Inverse") 0.5 else 0,
-           allincr = FALSE, addincr = FALSE,
-           allstudies = FALSE,
+           incr = gs("incr"),
+           allincr = gs("allincr"), addincr = gs("addincr"),
+           allstudies = gs("allstudies"),
+           MH.exact = TRUE,
            level = 0.95, level.comb = 0.95,
            comb.fixed = gs("comb.fixed"),
            comb.random = method == "Inverse" &
@@ -43,50 +44,86 @@ netmetabin(event1, n1, event2, n2,
            ##
            title = "",
            keepdata = gs("keepdata"),
-           warn = TRUE,
-           ...)
+           warn = TRUE)
 }
 
 \arguments{
-  \item{event1}{...}
-  \item{n1}{...}
-  \item{event2}{...}
-  \item{n2}{...}
-  \item{treat1}{...}
-  \item{treat2}{...}
-  \item{studlab}{...}
-  \item{data}{...}
-  \item{subset}{...}
-  \item{sm}{...}
-  \item{method}{...}
-  \item{incr}{...}
-  \item{allincr}{...}
-  \item{addincr}{...}
-  \item{allstudies}{...}
-  \item{level}{...}
-  \item{level.comb}{...}
-  \item{comb.fixed}{...}
-  \item{comb.random}{...}
-  \item{prediction}{...}
-  \item{level.predict}{...}
-  \item{reference.group}{...}
-  \item{baseline.reference}{...}
-  \item{all.treatments}{...}
-  \item{seq}{...}
-  \item{tau.preset}{...}
-  \item{tol.multiarm}{...}
-  \item{details.chkmultiarm}{...}
-  \item{sep.trts}{...}
-  \item{nchar.trts}{...}
-  \item{backtransf}{...}
-  \item{title}{...}
-  \item{keepdata}{...}
-  \item{warn}{...}
-  \item{\dots}{...}
+  \item{event1}{Number of events (first treatment).}
+  \item{n1}{Number of observations (first treatment).}
+  \item{event2}{Number of events (second treatment).}
+  \item{n2}{Number of observations (second treatment)}
+  \item{treat1}{Label/Number for first treatment.}
+  \item{treat2}{Label/Number for second treatment.}
+  \item{studlab}{An optional - but important! - vector with study labels (see Details).}
+  \item{data}{An optional data frame containing the study information.}
+  \item{subset}{An optional vector specifying a subset of studies to be used.}
+  \item{sm}{A character string indicating underlying summary measure,
+    i.e., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"}.}
+  \item{method}{A character string indicating which method is to be
+    used for pooling of studies. One of \code{"Inverse"}, \code{"MH"},
+    or \code{"NCH"}, can be abbreviated.}
+  \item{incr}{A numerical value which is added to each cell frequency
+    for studies with a zero cell count.}
+  \item{allincr}{A logical indicating if \code{incr} is added to each
+    cell frequency of all studies if at least one study has a zero cell
+    count. If FALSE (default), \code{incr} is added only to each cell frequency of
+    studies with a zero cell count.}
+  \item{addincr}{A logical indicating if \code{incr} is added to each cell
+    frequency of all studies irrespective of zero cell counts.}
+  \item{allstudies}{A logical indicating if studies with zero or all
+    events in both groups are to be included in the meta-analysis
+    (applies only if \code{sm} is equal to \code{"RR"} or \code{"OR"}).}
+  \item{MH.exact}{A logical indicating if \code{incr} is not to be added
+    to all cell frequencies for studies with a zero cell count to
+    calculate the pooled estimate based on the Mantel-Haenszel method.}
+  \item{level}{The level used to calculate confidence intervals for
+    individual studies.}
+  \item{level.comb}{The level used to calculate confidence intervals for
+    pooled estimates.}
+  \item{comb.fixed}{A logical indicating whether a fixed effect
+    meta-analysis should be conducted.}
+  \item{comb.random}{A logical indicating whether a random effects
+    meta-analysis should be conducted.}
+  \item{prediction}{A logical indicating whether a prediction interval
+    should be printed.}
+  \item{level.predict}{The level used to calculate prediction interval
+    for a new study.}
+  \item{reference.group}{Reference group.}
+  \item{baseline.reference}{A logical indicating whether results
+    should be expressed as comparisons of other treatments versus the
+    reference treatment (default) or vice versa. This argument is only
+    considered if \code{reference.group} has been specified.}    
+  \item{all.treatments}{A logical or value \code{"NULL"}. If
+        \code{TRUE}, matrices with all treatment effects, and confidence
+        limits will be printed.}
+  \item{seq}{A character or numerical vector specifying the sequence
+    of treatments in printouts.}
+  \item{tau.preset}{An optional value for the square-root of the
+    between-study variance \eqn{\tau^2}.}
+  \item{tol.multiarm}{A numeric for the tolerance for consistency of
+    treatment estimates and corresponding variances in multi-arm studies
+    which are consistent by design.}
+  \item{details.chkmultiarm}{A logical indicating whether treatment
+    estimates and / or variances of multi-arm studies with inconsistent
+    results or negative multi-arm variances should be printed.}
+  \item{sep.trts}{A character used in comparison names as separator
+    between treatment labels.}
+  \item{backtransf}{A logical indicating whether results should be
+    back transformed in printouts and forest plots. If
+    \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
+    as odds ratios rather than log odds ratios, for example.}
+  \item{nchar.trts}{A numeric defining the minium number of characters
+    used to create unique treatment names (see Details).}
+  \item{title}{Title of meta-analysis / systematic review.}
+  \item{keepdata}{A logical indicating whether original data (set)
+    should be kept in netmeta object.}
+  \item{warn}{A logical indicating whether warnings should be printed
+    (e.g., if studies are excluded from meta-analysis due to zero
+    standard errors).}
 }
 
 \details{
-  ... more details ...
+  \bold{... more details ...}
 
   Comparisons belonging to multi-arm studies are identified by
   identical study labels (argument \code{studlab}). It is therefore
@@ -157,13 +194,21 @@ netmetabin(event1, n1, event2, n2,
   following components:
   \item{studlab, treat1, treat2}{As defined above.}
   \item{n1, n2, event1, event2}{As defined above.}
+  \item{TE}{Estimate of treatment effect, i.e. difference between
+   first and second treatment (e.g. log odds ratio).}
+  \item{seTE}{Standard error of treatment estimate.}   
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
   \item{d}{Total number of designs.}
   \item{trts}{Treatments included in network meta-analysis.}
+  \item{k.trts}{Number of studies evaluating a treatment.}
+  \item{n.trts}{Number of observations receiving a treatment.}
+  \item{events.trts}{Number of events observed for a treatment.}
   \item{studies}{Study labels coerced into a factor with its levels
     sorted alphabetically.}
+  \item{narms}{Number of arms for each study.}
+  \item{designs}{Designs.}
   \item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with estimated overall
     treatment effects (fixed effect / random effects model).}
   \item{seTE.fixed, seTE.random}{\emph{n}x\emph{n} matrix with standard errors
@@ -191,13 +236,23 @@ netmetabin(event1, n1, event2, n2,
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
   \item{df.Q}{Degrees of freedom for test of heterogeneity / inconsistency.}
   \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
-  \item{y}{??? REMOVE or DESCRIBE ???}
-  \item{V}{??? REMOVE or DESCRIBE ???}
-  \item{H}{??? REMOVE or DESCRIBE ???}
-  \item{X}{??? REMOVE or DESCRIBE ???}
+  \item{I2}{I-squared.}
+  \item{tau}{Square-root of between-study variance.}
+  \item{y}{\bold{??? REMOVE or DESCRIBE ???}}
+  \item{V}{\bold{??? REMOVE or DESCRIBE ???}}
+  \item{H}{\bold{??? REMOVE or DESCRIBE ???}}
+  \item{X}{\bold{??? REMOVE or DESCRIBE ???}}
   \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
+  \item{H.matrix}{Hat matrix (\emph{m}x\emph{m})}
+  \item{n.matrix}{\emph{n}x\emph{n} matrix with number of observations
+    in direct comparisons.}
+  \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
+    in direct comparisons.}
   \item{data}{Data (contrast-based format).}
-  \item{data.long}{Data (arm-based format).}
+  \item{data.wide}{Data in wide (contrast-based) format. \bold{DECISION: KEEP OR DROP ???}}
+  \item{data.long}{Data in long (arm-based) format. \bold{DECISION: KEEP OR DROP ???}}
+  \item{data.design}{List with data in arm-based format (each list
+    element corresponds to a single design). \bold{DECISION: KEEP OR DROP ???}}
   \item{sm, level, level.comb}{As defined above.}
   \item{comb.fixed, comb.random}{As defined above.}
   \item{prediction, level.predict}{As defined above.}
