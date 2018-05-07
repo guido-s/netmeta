@@ -548,7 +548,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##           if argument 'MH.exact' is FALSE and argument 'incr' is
   ##           larger than zero
   ##
-  if (method != "MH") {
+  if (method != "Inverse") {
     ##
     d.events <- with(dat, tapply(event, list(design, treat), sum))
     ##
