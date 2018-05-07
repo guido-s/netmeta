@@ -221,15 +221,16 @@ netgraph(net1, points=TRUE, cex.points=3, cex = 1.5,
 # Example using generic outcomes (internal call of function metagen)
 #
 # Calculate standard error for means y1, y2, y3
-parkinson$se1 <- with(parkinson, sqrt(sd1^2/n1))
-parkinson$se2 <- with(parkinson, sqrt(sd2^2/n2))
-parkinson$se3 <- with(parkinson, sqrt(sd3^2/n3))
+parkinson$se1 <- with(parkinson, sqrt(sd1^2 / n1))
+parkinson$se2 <- with(parkinson, sqrt(sd2^2 / n2))
+parkinson$se3 <- with(parkinson, sqrt(sd3^2 / n3))
 # Transform data from arm-based format to contrast-based format using
 # means and standard errors (note, argument 'sm' has to be used to
 # specify that argument 'TE' is a mean difference)
 p2 <- pairwise(list(Treatment1, Treatment2, Treatment3),
                TE=list(y1, y2, y3),
                seTE=list(se1, se2, se3),
+               n=list(n1, n2, n3),
                data=parkinson, studlab=Study,
                sm="MD")
 p2
@@ -241,8 +242,10 @@ all.equal(p1[, c("TE", "seTE", "studlab", "treat1", "treat2")],
 
 # Same result as network meta-analysis based on continuous outcomes
 # (object net1)
-\dontrun{net2 <- netmeta(p2)
-net2}
+\dontrun{
+  net2 <- netmeta(p2)
+  net2
+}
 
 
 #

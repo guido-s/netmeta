@@ -33,8 +33,8 @@ netmetabin <- function(event1, n1, event2, n2,
                        title = "",
                        keepdata = gs("keepdata"),
                        warn = TRUE) {
-  
-  
+
+
   ##
   ##
   ## (1) Check arguments
@@ -114,8 +114,8 @@ netmetabin <- function(event1, n1, event2, n2,
       all.treatments <- FALSE
   ##
   chklogical(baseline.reference)
-  
-  
+
+
   ##
   ##
   ## (2) Read data
@@ -145,7 +145,7 @@ netmetabin <- function(event1, n1, event2, n2,
       if (!missing(sm) && tolower(sm) != "or")
         warning("Argument 'sm' set to 'OR'.")
       sm <- "OR"
-    }        
+    }
     ##
     n1 <- event1$n1
     event2 <- event1$event2
@@ -172,7 +172,7 @@ netmetabin <- function(event1, n1, event2, n2,
       if (!missing(sm) && tolower(sm) != "or")
         warning("Argument 'sm' set to 'OR'.")
       sm <- "OR"
-    }   
+    }
     ##
     n1 <- eval(mf[[match("n1", names(mf))]],
                data, enclos = sys.frame(sys.parent()))
@@ -228,8 +228,8 @@ netmetabin <- function(event1, n1, event2, n2,
     treat1[wo] <- treat2[wo]
     treat2[wo] <- ttreat1[wo]
   }
-  
-  
+
+
   ##
   ##
   ## (2b) Store complete dataset in list object data
@@ -263,8 +263,8 @@ netmetabin <- function(event1, n1, event2, n2,
       }
     }
   }
-  
-  
+
+
   ##
   ##
   ## (3) Use subset for analysis
@@ -318,8 +318,8 @@ netmetabin <- function(event1, n1, event2, n2,
     reference.group <- setref(reference.group, labels)
   ##
   rm(labels)
-  
-  
+
+
   ##
   ##
   ## (4) Additional checks
@@ -376,7 +376,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ## Catch 'incr' from data:
   ##
   if (!missing(incr))
-    incr <- eval(mf[[match("incr", names(mf))]], 
+    incr <- eval(mf[[match("incr", names(mf))]],
                  data, enclos = sys.frame(sys.parent()))
   chknumeric(incr, min = 0)
   ##
@@ -388,8 +388,8 @@ netmetabin <- function(event1, n1, event2, n2,
   }
   ##
   lengthunique <- function(x) length(unique(x))
-  
-  
+
+
   ##
   ##
   ## (5) Create analysis dataset
@@ -498,8 +498,8 @@ netmetabin <- function(event1, n1, event2, n2,
   data <- data[order(data$...order), ]
   ##
   rm(dat.design)
-  
-  
+
+
   ##
   ##
   ## (6) Stage I: setting up the data (Efthimiou et al., 2018)
@@ -548,7 +548,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##           if argument 'MH.exact' is FALSE and argument 'incr' is
   ##           larger than zero
   ##
-  if (method == "MH") {
+  if (method != "MH") {
     ##
     d.events <- with(dat, tapply(event, list(design, treat), sum))
     ##
@@ -722,8 +722,8 @@ netmetabin <- function(event1, n1, event2, n2,
   TE.direct.fixed <- seTE.direct.fixed <- Z
   ##
   rm(Z)
-  
-  
+
+
   ##
   ##
   ## (7) Conduct classic network meta-analysis using inverse variance
@@ -758,8 +758,8 @@ netmetabin <- function(event1, n1, event2, n2,
                       warn = warn)
     return(net.iv)
   }
-  
-  
+
+
   ##
   ##
   ## (8) Stage 2: Direct meta-analyses per design (MH and NCH methods)
@@ -775,7 +775,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ddat <- vector("list", d)
   names(ddat) <- designs
   ##
-  for (i in seq.d) 
+  for (i in seq.d)
     ddat[[i]] <- dat.incr[dat.incr$design == designs[i], , drop = FALSE]
   ##
   if (method == "MH") {
@@ -816,8 +816,8 @@ netmetabin <- function(event1, n1, event2, n2,
       for (j in seq_along(ddat[[i]]$studlab))
         ddat[[i]]$n.study[j] <-
           sum(ddat[[i]]$n[which(ddat[[i]]$study == ddat[[i]]$study[j])])
-    
-    
+
+
     ##
     ## Define c.xy and d.xy
     ##
@@ -845,7 +845,7 @@ netmetabin <- function(event1, n1, event2, n2,
             ##
             d.xy[[i]][t1, t2, st] <-
               (sum(ddat[[i]]$event[which(ddat[[i]]$id.s == st &
-                                         ddat[[i]]$id.t == t1)]) + 
+                                         ddat[[i]]$id.t == t1)]) +
                sum(ddat[[i]]$non.event[which(ddat[[i]]$id.s == st &
                                              ddat[[i]]$id.t == t2)])) /
               ddat[[i]]$n.study[ddat[[i]]$id.s == st][1]
@@ -899,7 +899,7 @@ netmetabin <- function(event1, n1, event2, n2,
     for (i in seq.d)
       for (j in seq_len(k.d[i]))
         t.pl[[i]][,, j] <- ddat[[i]]$n.study[ddat[[i]]$id.s == j][1]
-    ##    
+    ##
     U.xyz <- vector("list", d)
     ##
     for (i in seq.d)
@@ -925,32 +925,32 @@ netmetabin <- function(event1, n1, event2, n2,
               ps1[[i]][st] <-
                 ddat[[i]]$event[sel1] /
                 (t.pl[[i]][1, 1, st])^2 *
-                                        ddat[[i]]$non.event[sel2] * 
-                                        ddat[[i]]$non.event[sel3] * 
+                                        ddat[[i]]$non.event[sel2] *
+                                        ddat[[i]]$non.event[sel3] *
                                         (t1 != t2) * (t1 != t3) * (t2 != t3)
               ##
               ps2[[i]][st] <- ddat[[i]]$n[sel1] /
-                (t.pl[[i]][1, 1, st])^2 * 
-                                        ddat[[i]]$non.event[sel2] * 
+                (t.pl[[i]][1, 1, st])^2 *
+                                        ddat[[i]]$non.event[sel2] *
                                         ddat[[i]]$event[sel3] *
                                         (t1 != t2) * (t1 != t3) * (t2 != t3)
               ##
               ps3[[i]][st] <- ddat[[i]]$n[sel1] /
-                (t.pl[[i]][1, 1, st])^2 * 
-                                        ddat[[i]]$event[sel2] * 
-                                        ddat[[i]]$non.event[sel3] * 
+                (t.pl[[i]][1, 1, st])^2 *
+                                        ddat[[i]]$event[sel2] *
+                                        ddat[[i]]$non.event[sel3] *
                                         (t1 != t2) * (t1 != t3) * (t2 != t3)
               ##
               ps4[[i]][st] <- ddat[[i]]$non.event[sel1] /
-                (t.pl[[i]][1, 1, st])^2 * 
-                                        ddat[[i]]$event[sel2] * 
-                                        ddat[[i]]$event[sel3] * 
+                (t.pl[[i]][1, 1, st])^2 *
+                                        ddat[[i]]$event[sel2] *
+                                        ddat[[i]]$event[sel3] *
                                         (t1 != t2) * (t1 != t3) * (t2 != t3)
             }
             ##
-            U.xyz[[i]][t1, t2, t3] <- sum(ps1[[i]][]) / (3 * C.xy[[i]][t1, t2] * C.xy[[i]][t1, t3]) + 
-              sum(ps2[[i]][]) / (3 * C.xy[[i]][t1, t2] * C.xy[[i]][t3, t1]) + 
-              sum(ps3[[i]][]) / (3 * C.xy[[i]][t2, t1] * C.xy[[i]][t1, t3]) + 
+            U.xyz[[i]][t1, t2, t3] <- sum(ps1[[i]][]) / (3 * C.xy[[i]][t1, t2] * C.xy[[i]][t1, t3]) +
+              sum(ps2[[i]][]) / (3 * C.xy[[i]][t1, t2] * C.xy[[i]][t3, t1]) +
+              sum(ps3[[i]][]) / (3 * C.xy[[i]][t2, t1] * C.xy[[i]][t1, t3]) +
               sum(ps4[[i]][]) / (3 * C.xy[[i]][t2, t1] * C.xy[[i]][t3, t1])
           }
     ##
@@ -995,7 +995,7 @@ netmetabin <- function(event1, n1, event2, n2,
           for (t3 in seq_len(n.d[i]))
             U.new[[i]][t1, t2, t3] <-
               (t1 != t2) * (t1 != t3) * (t2 != t3) *
-              U.xyz[[i]][t1, t2, t3] + 
+              U.xyz[[i]][t1, t2, t3] +
               (t1 != t2) * (t2 == t3) * U.xyy[[i]][t1, t2]
     ##
     U.plus.xy <- vector("list", d)
@@ -1037,7 +1037,7 @@ netmetabin <- function(event1, n1, event2, n2,
             (U.plus.xx[[i]][1] - U.plus.xy[[i]][1, t2] -
              U.plus.xy[[i]][t1, 1] +
              U.plus.xy[[i]][t1, t2]) / n.d[i]^2
-    }    
+    }
     ##
     ## Create y, the vector of treatment effects from each study. Only
     ## effects vs the first treatment are needed. y is coded as OR
@@ -1052,8 +1052,8 @@ netmetabin <- function(event1, n1, event2, n2,
       for (j in seq_len(n.d[i] - 1))
         y[j + counter] <- L.bar.xy[[i]][1, j + 1]
       ##
-      counter <- counter + n.d[i] - 1 
-    }    
+      counter <- counter + n.d[i] - 1
+    }
     ##
     ## Create V, the matrix of covariances of treatment effects from
     ## each study. Only covariances of effects vs the first treatment
@@ -1108,7 +1108,7 @@ netmetabin <- function(event1, n1, event2, n2,
         for (j in 1:(n.treat - 1))
           H[i + n.treat - 1, j] <- -(h1[i, 1] == j + 1) + (h1[i, 2] == j + 1)
     }
-    ##    
+    ##
     ## Define matrix X
     ##
     X <- matrix(0, nrow = Dim.y, ncol = n.treat - 1)
@@ -1132,7 +1132,7 @@ netmetabin <- function(event1, n1, event2, n2,
         list1[N.j[i] + j, 1] <- ddat[[i]]$id.t2[[1]]
         list1[N.j[i] + j, 2] <- ddat[[i]]$id.t2[[j + 1]]
       }
-    ##    
+    ##
     basic.contrasts <- c(2:n.treat)
     ##
     for (i in 1:Dim.y)
@@ -1143,14 +1143,14 @@ netmetabin <- function(event1, n1, event2, n2,
           X[i, k] = 1
       }
     ##
-    ## Estimate NMA 
+    ## Estimate NMA
     ##
     W <- solve(V)
     ## Basic parameters
     TE.basic <- solve(t(X) %*% W %*% X) %*% t(X) %*% W %*% y
     ##
     d.hat <- H %*% TE.basic
-    cov.d.hat <- H %*% solve(t(X) %*% W %*% X) %*% t(H)    
+    cov.d.hat <- H %*% solve(t(X) %*% W %*% X) %*% t(H)
     ##
     ## Inconsistency global
     ##
@@ -1170,7 +1170,7 @@ netmetabin <- function(event1, n1, event2, n2,
   else if (method == "NCH") {
     ##
     ## NCH method
-    ##    
+    ##
     dat$ttt <- 0
     ##
     for (k in 1:n.treat)
@@ -1237,12 +1237,12 @@ netmetabin <- function(event1, n1, event2, n2,
       x <- mypar
       myLogLik1 <- rep(0, length(d1$studlab))
       myLogLik2 <- rep(0, length(d1$studlab))
-      myLogLik3 <- rep(0, length(d1$studlab))  
+      myLogLik3 <- rep(0, length(d1$studlab))
       ##
       for (i in seq_along(d1$studlab))
         for (k in 2:d1$narms[i])
           myLogLik1[i] <-
-            myLogLik1[i] + 
+            myLogLik1[i] +
             d1[, colnames(d1) == paste("r", k, sep = "")][i] *
             (x[d1[, colnames(d1) == paste("t", k, sep = "")][i]] -
              x[d1$t1[i]] * (d1$t1[i] != 1))
@@ -1264,18 +1264,18 @@ netmetabin <- function(event1, n1, event2, n2,
       ##
       myLogLik
     }
-    ##    
+    ##
     init.val <- rep(0, n.treat)
     ##
     results <- optim(init.val, myLik1, method = "L-BFGS-B",
-                     lower = -Inf, upper = Inf, 
+                     lower = -Inf, upper = Inf,
                      control = list(fnscale = -1, maxit = 10000),
                      hessian = TRUE)
-    ##    
+    ##
     W <- solve(-results$hessian[2:n.treat, 2:n.treat])
     TE.basic <- -(results$par)[2:n.treat]
     ##
-    ## Se <- sqrt(diag(W))  
+    ## Se <- sqrt(diag(W))
     ## round(exp(TE.basic), digits = n.treat)
     ## round(exp(TE.basic + 1.96 * Se), digits = n.treat)
     ## round(exp(TE.basic - 1.96 * Se), digits = n.treat)
@@ -1302,7 +1302,7 @@ netmetabin <- function(event1, n1, event2, n2,
       for (i in 1:((n.treat - 1) * (n.treat - 2) / 2))
         for (j in 1:(n.treat - 1))
           H[i + n.treat - 1, j] <- -(h1[i, 1] == j + 1) + (h1[i, 2] == j + 1)
-    }  
+    }
     ##
     ## All relative effects
     ##
@@ -1316,7 +1316,7 @@ netmetabin <- function(event1, n1, event2, n2,
     V <- NA
     X <- NA
   }
-  ##  
+  ##
   TE.fixed[lower.tri(TE.fixed, diag = FALSE)] <- d.hat
   TE.fixed <- t(TE.fixed)
   TE.fixed[lower.tri(TE.fixed, diag = FALSE)] <- -d.hat
@@ -1328,8 +1328,8 @@ netmetabin <- function(event1, n1, event2, n2,
   diag(seTE.fixed) <- 0
   ##
   ci.f <- ci(TE.fixed, seTE.fixed, level = level.comb)
-  
-  
+
+
   ##
   ##
   ## (9) Inconsistency evaluation: direct MH estimates
@@ -1344,9 +1344,8 @@ netmetabin <- function(event1, n1, event2, n2,
     sel.treat2 <- colnames(C.matrix)[C.matrix[i, ] == -1]
     selstud <- treat1 == sel.treat1 & treat2 == sel.treat2
     ##
-    m.i <- metabin(event1, n1, event2, n2,
-                   subset = selstud,
-                   sm = "OR", MH.exact = TRUE)
+    m.i <- metabin(event1, n1, event2, n2, subset = selstud,
+                   sm = "OR", MH.exact = MH.exact)
     ##
     TE.i   <- m.i$TE.fixed
     seTE.i <- m.i$seTE.fixed
@@ -1361,8 +1360,8 @@ netmetabin <- function(event1, n1, event2, n2,
   rm(sel.treat1, sel.treat2, selstud, m.i, TE.i, seTE.i)
   ##
   ci.d <- meta::ci(TE.direct.fixed, seTE.direct.fixed, level = level.comb)
-  
-  
+
+
   labels <- sort(unique(c(treat1, treat2)))
   ##
   if (!is.null(seq))
@@ -1372,8 +1371,8 @@ netmetabin <- function(event1, n1, event2, n2,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
-  
-  
+
+
   res <- list(studlab = studlab,
               treat1 = treat1,
               treat2 = treat2,
@@ -1507,7 +1506,7 @@ netmetabin <- function(event1, n1, event2, n2,
               )
   ##
   class(res) <- c("netmetabin", "netmeta")
-  
+
 
   res$data <- res$data[order(res$data$...order), ]
   res$data$...order <- NULL
@@ -1526,22 +1525,22 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   res$studies <- names(tab)
   res$narms <- as.vector(tab)
-  
-  
+
+
   res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
   ##
   dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)
   rownames(dat.e) <- dat.e$indices
   res$events.trts <- dat.e[trts, "sum"]
   names(res$events.trts) <- trts
-  ##  
+  ##
   res$n.matrix <- netmatrix(res, n1 + n2, func = "sum")
   ##
   dat.n <- bySummary(c(n1, n2), c(treat1, treat2), long = FALSE)
   rownames(dat.n) <- dat.n$indices
   res$n.trts <- dat.n[trts, "sum"]
   names(res$n.trts) <- trts
-  
-  
+
+
   res
 }

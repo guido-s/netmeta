@@ -27,6 +27,10 @@
 
   * pairwise():
     - keep original order of studies
+    - arguments 'event' and 'n' can be used for generic meta-analysis
+      method based on arguments 'TE' and 'seTE'
+    - argument 'n' can be used for meta-analysis with count outcomes
+      (based on arguments 'event' and 'time')
     
  ** Bug fixes **
 

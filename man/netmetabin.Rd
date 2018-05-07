@@ -249,10 +249,10 @@ netmetabin(event1, n1, event2, n2,
   \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
     in direct comparisons.}
   \item{data}{Data (contrast-based format).}
-  \item{data.wide}{Data in wide (contrast-based) format. \bold{DECISION: KEEP OR DROP ???}}
-  \item{data.long}{Data in long (arm-based) format. \bold{DECISION: KEEP OR DROP ???}}
+  \item{data.wide}{Data in wide (contrast-based) format. \bold{KEEP OR DROP ???}}
+  \item{data.long}{Data in long (arm-based) format. \bold{KEEP OR DROP ???}}
   \item{data.design}{List with data in arm-based format (each list
-    element corresponds to a single design). \bold{DECISION: KEEP OR DROP ???}}
+    element corresponds to a single design). \bold{KEEP OR DROP ???}}
   \item{sm, level, level.comb}{As defined above.}
   \item{comb.fixed, comb.random}{As defined above.}
   \item{prediction, level.predict}{As defined above.}
