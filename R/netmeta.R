@@ -33,8 +33,8 @@ netmeta <- function(TE, seTE,
                     keepdata = gs("keepdata"),
                     warn = TRUE
                     ) {
-  
-  
+
+
   ##
   ##
   ## (1) Check arguments
@@ -83,8 +83,8 @@ netmeta <- function(TE, seTE,
       all.treatments <- FALSE
   ##
   chklogical(baseline.reference)
-  
-  
+
+
   ##
   ##
   ## (2) Read data
@@ -181,8 +181,8 @@ netmeta <- function(TE, seTE,
     available.n <- TRUE
   else
     available.n <- FALSE
-  
-  
+
+
   ##
   ##
   ## (2b) Store complete dataset in list object data
@@ -198,6 +198,8 @@ netmeta <- function(TE, seTE,
     }
     else
       data$.studlab <- studlab
+    ##
+    data$.order <- seq_along(studlab)
     ##
     data$.treat1 <- treat1
     data$.treat2 <- treat2
@@ -242,8 +244,8 @@ netmeta <- function(TE, seTE,
       }
     }
   }
-  
-  
+
+
   ##
   ##
   ## (3) Use subset for analysis
@@ -309,8 +311,8 @@ netmeta <- function(TE, seTE,
   ##
   if (reference.group != "")
     reference.group <- setref(reference.group, labels)
-  
-  
+
+
   ##
   ##
   ## (4) Additional checks
@@ -468,10 +470,10 @@ netmeta <- function(TE, seTE,
       tevent1 <- event1
       event1[wo] <- event2[wo]
       event2[wo] <- tevent1[wo]
-    }       
+    }
   }
-  
-  
+
+
   ##
   ##
   ## (5) Generate analysis dataset
@@ -495,8 +497,8 @@ netmeta <- function(TE, seTE,
   tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
   studies <- tdata$studies
   narms <- tdata$narms
-  
-  
+
+
   ##
   ##
   ## (6) Conduct network meta-analysis
@@ -524,7 +526,7 @@ netmeta <- function(TE, seTE,
   res.r <- nma.ruecker(p1$TE, sqrt(1 / p1$weights),
                        p1$treat1, p1$treat2,
                        p1$treat1.pos, p1$treat2.pos,
-                       p1$narms, p1$studlab, 
+                       p1$narms, p1$studlab,
                        sm,
                        level, level.comb,
                        p1$seTE, tau, sep.trts = sep.trts)
@@ -552,8 +554,8 @@ netmeta <- function(TE, seTE,
     p.lower[!is.na(p.lower)] <- NA
     p.upper[!is.na(p.upper)] <- NA
   }
-  
-  
+
+
   ##
   ##
   ## (7) Generate R object
@@ -824,8 +826,8 @@ netmeta <- function(TE, seTE,
     res$d <- 1
   ##
   res$designs <- as.character(krahn$design$design)
-  
-  
+
+
   ##
   ## Calculate heterogeneity and inconsistency statistics
   ##
@@ -840,8 +842,8 @@ netmeta <- function(TE, seTE,
     res$pval.Q.heterogeneity <- dd$Q.decomp$pval[2]
     res$pval.Q.inconsistency <- dd$Q.decomp$pval[3]
   }
-  
-  
+
+
   if (keepdata) {
     if (is.null(krahn))
       ddat <- data.frame(.studlab = data$.studlab,
@@ -857,6 +859,8 @@ netmeta <- function(TE, seTE,
                       by = ".studlab",
                       suffixes = c(".orig", ""),
                       stringsAsFactors = FALSE)
+    res$data <- res$data[order(res$data$.order), ]
+    res$data$.order <- NULL
   }
   ##
   if (available.n) {
@@ -876,7 +880,7 @@ netmeta <- function(TE, seTE,
     res$events.trts <- dat.e[trts, "sum"]
     names(res$events.trts) <- trts
   }
-  
-  
+
+
   res
 }

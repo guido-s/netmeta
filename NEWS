@@ -42,6 +42,9 @@
 
  ** Internal changes **
 
+  * netmeta():
+    - keep original order of studies in list element 'data'
+
   * netcomb() and discomb():
     - check if argument 'sep.components' is a single character
 

@@ -9,8 +9,6 @@ pairwise <- function(treat,
   null.data <- is.null(data)
   if (null.data)
     data <- sys.frame(sys.parent())
-  else
-    data$...order <- seq_len(nrow(data))
   ##
   ## Catch studlab, treat, event, n, mean, sd, time from data:
   ##
@@ -161,6 +159,7 @@ pairwise <- function(treat,
       ## Generate lists
       ##
       tdat <- data.frame(studlab, treat, event, n,
+                         .order = seq_along(studlab),
                          stringsAsFactors = FALSE)
       ##
       if (!null.data) {
@@ -170,10 +169,8 @@ pairwise <- function(treat,
           names(tdat)[dupl] <- paste(names(tdat)[dupl], "orig", sep = ".")
       }
       ##
-      tdat <- tdat[order(tdat$studlab, tdat$treat), ]
-      ##
       studlab <- names(n.arms)
-      dat.studlab <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      dat.studlab <- data.frame(studlab, stringsAsFactors = FALSE)
       ##
       for (i in 1:max.arms) {
         sel.i <- !duplicated(tdat$studlab)
@@ -203,6 +200,7 @@ pairwise <- function(treat,
       ## Generate lists
       ##
       tdat <- data.frame(studlab, treat, n, mean, sd,
+                         .order = seq_along(studlab),
                          stringsAsFactors = FALSE)
       ##
       if (!null.data) {
@@ -212,10 +210,8 @@ pairwise <- function(treat,
           names(tdat)[dupl] <- paste(names(tdat)[dupl], "orig", sep = ".")
       }
       ##
-      tdat <- tdat[order(tdat$studlab, tdat$treat), ]
-      ##
       studlab <- names(n.arms)
-      dat.studlab <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      dat.studlab <- data.frame(studlab, stringsAsFactors = FALSE)
       ##
       for (i in 1:max.arms) {
         sel.i <- !duplicated(tdat$studlab)
@@ -248,6 +244,7 @@ pairwise <- function(treat,
       ## Generate lists
       ##
       tdat <- data.frame(studlab, treat, event, time,
+                         .order = seq_along(studlab),
                          stringsAsFactors = FALSE)
       ##
       if (!is.null(n))
@@ -260,10 +257,8 @@ pairwise <- function(treat,
           names(tdat)[dupl] <- paste(names(tdat)[dupl], "orig", sep = ".")
       }
       ##
-      tdat <- tdat[order(tdat$studlab, tdat$treat), ]
-      ##
       studlab <- names(n.arms)
-      dat.studlab <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      dat.studlab <- data.frame(studlab, stringsAsFactors = FALSE)
       ##
       for (i in 1:max.arms) {
         sel.i <- !duplicated(tdat$studlab)
@@ -293,6 +288,7 @@ pairwise <- function(treat,
       ## Generate lists
       ##
       tdat <- data.frame(studlab, treat, TE, seTE,
+                         .order = seq_along(studlab),
                          stringsAsFactors = FALSE)
       ##
       if (!is.null(n))
@@ -308,10 +304,8 @@ pairwise <- function(treat,
           names(tdat)[dupl] <- paste(names(tdat)[dupl], "orig", sep = ".")
       }
       ##
-      tdat <- tdat[order(tdat$studlab, tdat$treat), ]
-      ##
       studlab <- names(n.arms)
-      dat.studlab <- data.frame(studlab = studlab, stringsAsFactors = FALSE)
+      dat.studlab <- data.frame(studlab, stringsAsFactors = FALSE)
       ##
       for (i in 1:max.arms) {
         sel.i <- !duplicated(tdat$studlab)
@@ -336,6 +330,9 @@ pairwise <- function(treat,
       seTE  <- seTE.list
     }
   }
+
+
+
 
 
   ##
@@ -477,11 +474,11 @@ pairwise <- function(treat,
           stop("Different length of element ", j, " of lists 'event' and 'n'.")
         ##
         dat <- data.frame(TE = NA, seTE = NA,
-                          studlab = studlab,
-                          treat1 = treat[[i]],
-                          treat2 = treat[[j]],
+                          studlab,
+                          treat1 = treat[[i]], treat2 = treat[[j]],
                           event1 = event[[i]], n1 = n[[i]],
                           event2 = event[[j]], n2 = n[[j]],
+                          .order = seq_along(studlab),
                           incr = incr.study,
                           allstudies = allstudies,
                           stringsAsFactors = FALSE)
@@ -588,11 +585,12 @@ pairwise <- function(treat,
     for (i in 1:(narms - 1)) {
       for (j in (i + 1):narms) {
         dat <- data.frame(TE = NA, seTE = NA,
-                          studlab = studlab,
+                          studlab,
                           treat1 = treat[[i]],
                           treat2 = treat[[j]],
                           n1 = n[[i]], mean1 = mean[[i]], sd1 = sd[[i]],
                           n2 = n[[j]], mean2 = mean[[j]], sd2 = sd[[j]],
+                          .order = seq_along(studlab),
                           stringsAsFactors = FALSE)
         ##
         if (wide.armbased) {
@@ -659,11 +657,12 @@ pairwise <- function(treat,
                call. = FALSE)
         ##
         dat <- data.frame(TE = NA, seTE = NA,
-                          studlab = studlab,
+                          studlab,
                           treat1 = treat[[i]],
                           treat2 = treat[[j]],
                           TE1 = TE[[i]], seTE1 = seTE[[i]],
                           TE2 = TE[[j]], seTE2 = seTE[[j]],
+                          .order = seq_along(studlab),
                           stringsAsFactors = FALSE)
         ##
         if (!is.null(event)) {
@@ -773,12 +772,13 @@ pairwise <- function(treat,
                call. = FALSE)
         ##
         dat <- data.frame(TE = NA, seTE = NA,
-                          studlab = studlab,
+                          studlab,
                           treat1 = treat[[i]],
                           treat2 = treat[[j]],
                           event1 = event[[i]], time1 = time[[i]],
                           event2 = event[[j]], time2 = time[[j]],
                           incr = incr.study,
+                          .order = seq_along(studlab),
                           stringsAsFactors = FALSE)
         ##
         if (wide.armbased) {
@@ -864,9 +864,9 @@ pairwise <- function(treat,
               " will not be considered in network meta-analysis:\n",
               sep = ""))
     ##
-    res.NAs$...order <- NULL
-    res.NAs$...order1 <- NULL
-    res.NAs$...order2 <- NULL
+    res.NAs$.order <- NULL
+    res.NAs$.order1 <- NULL
+    res.NAs$.order2 <- NULL
     ##
     prmatrix(res.NAs,
              quote = FALSE, right = TRUE, na.print = "NA",
@@ -879,18 +879,23 @@ pairwise <- function(treat,
   attr(res, "version") <- packageDescription("netmeta")$Version
 
 
-  if (!is.null(res$...order1)) {
-    res <- res[order(res$...order1), ]
-    res$...order1 <- NULL
-    res$...order2 <- NULL
+  if (!is.null(res$.order1)) {
+    res <- res[order(res$.order1), ]
+    res$.order1 <- NULL
+    res$.order2 <- NULL
+    res$.order <- NULL
+    res <- unique(res)
   }
-  else if (!is.null(res$...order)) {
-    res <- res[order(res$...order), ]
-    res$...order <- NULL
+  else if (!is.null(res$.order)) {
+    res <- res[order(res$.order), ]
+    res$.order <- NULL
+    res$.order.orig <- NULL
+    res <- unique(res)
   }
-  else
+  else {
     res <- res[order(factor(res$studlab, levels = levs),
                      res$treat1, res$treat2), ]
+  }
   ##
   rownames(res) <- 1:nrow(res)
   class(res) <- c(class(res), "pairwise")

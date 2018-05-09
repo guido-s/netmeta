@@ -7,19 +7,19 @@ summary.netmeta <- function(object,
                             all.treatments = object$all.treatments,
                             warn = object$warn,
                             ...) {
-  
-  
+
+
   if (!inherits(object, "netmeta"))
     stop("Argument 'object' must be an object of class \"netmeta\"")
-  
-  
+
+
   object <- upgradenetmeta(object)
-  
-  
+
+
   if (length(warn) == 0)
     warn <- TRUE
 
-  
+
   ##
   ##
   ## (2) Check other arguments
@@ -37,8 +37,8 @@ summary.netmeta <- function(object,
   ##
   meta:::warnarg("level", addargs, fun, cl)
   meta:::warnarg("level.comb", addargs, fun, cl)
-  
-  
+
+
   ci.lab <- paste(round(100 * object$level.comb, 1), "%-CI", sep = "")
   ##
   ci.comp <- ci(object$TE, object$seTE, object$level)
@@ -83,8 +83,8 @@ summary.netmeta <- function(object,
                p = NA,
                level = object$level.predict,
                df = object$df.Q - 1)
-  
-  
+
+
   res <- list(comparison = ci.comp,
               comparison.nma.fixed = ci.comp.nma.fixed,
               comparison.nma.random = ci.comp.nma.random,
@@ -104,19 +104,24 @@ summary.netmeta <- function(object,
               tau.preset = object$tau.preset,
               sm = object$sm,
               method = object$method,
+              incr = object$incr,
+              allincr = object$allincr,
+              addincr = object$addincr,
+              allstudies = object$allstudies,
+              cc.pooled = object$cc.pooled,
               ci.lab = ci.lab,
               comb.fixed = comb.fixed,
               comb.random = comb.random,
               prediction = prediction,
               seq = object$seq
               )
-  
+
   if (reference.group != "" & missing(all.treatments))
     all.treatments <- FALSE
-  
+
   if (reference.group != "")
     reference.group <- setref(reference.group, rownames(object$A.matrix))
-  
+
   res$reference.group <- reference.group
   res$baseline.reference <- baseline.reference
   res$all.treatments <- all.treatments
@@ -131,6 +136,6 @@ summary.netmeta <- function(object,
   res$version <- packageDescription("netmeta")$Version
   ##
   class(res) <- "summary.netmeta"
-  
+
   res
 }

@@ -18,7 +18,7 @@ netmetabin(event1, n1, event2, n2,
            incr = gs("incr"),
            allincr = gs("allincr"), addincr = gs("addincr"),
            allstudies = gs("allstudies"),
-           MH.exact = TRUE,
+           cc.pooled = FALSE,
            level = 0.95, level.comb = 0.95,
            comb.fixed = gs("comb.fixed"),
            comb.random = method == "Inverse" &
@@ -73,9 +73,9 @@ netmetabin(event1, n1, event2, n2,
   \item{allstudies}{A logical indicating if studies with zero or all
     events in both groups are to be included in the meta-analysis
     (applies only if \code{sm} is equal to \code{"RR"} or \code{"OR"}).}
-  \item{MH.exact}{A logical indicating if \code{incr} is not to be added
-    to all cell frequencies for studies with a zero cell count to
-    calculate the pooled estimate based on the Mantel-Haenszel method.}
+  \item{cc.pooled}{A logical indicating if \code{incr} is considered as
+    continuity correction to calculate the network meta-analysis
+    estimates.}
   \item{level}{The level used to calculate confidence intervals for
     individual studies.}
   \item{level.comb}{The level used to calculate confidence intervals for

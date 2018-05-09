@@ -6,7 +6,7 @@ netmetabin <- function(event1, n1, event2, n2,
                        incr = gs("incr"),
                        allincr = gs("allincr"), addincr = gs("addincr"),
                        allstudies = gs("allstudies"),
-                       MH.exact = TRUE,
+                       cc.pooled = FALSE,
                        level = 0.95, level.comb = 0.95,
                        comb.fixed = gs("comb.fixed"),
                        comb.random = method == "Inverse" &
@@ -56,7 +56,7 @@ netmetabin <- function(event1, n1, event2, n2,
   chklogical(allincr)
   chklogical(addincr)
   chklogical(allstudies)
-  chklogical(MH.exact)
+  chklogical(cc.pooled)
   ##
   chklevel(level)
   chklevel(level.comb)
@@ -68,19 +68,22 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   if (method != "Inverse" & !comb.fixed) {
     warning("Argument 'comb.fixed' set to TRUE for Mantel-Haenszel ",
-            "method and non-central hypergeometric distribution.")
+            "method and non-central hypergeometric distribution.",
+            call. = FALSE)
     comb.fixed <- TRUE
   }
   ##
   if (method != "Inverse" & comb.random) {
     warning("Argument 'comb.random' set to FALSE for Mantel-Haenszel ",
-            "method and non-central hypergeometric distribution.")
+            "method and non-central hypergeometric distribution.",
+            call. = FALSE)
     comb.random <- FALSE
   }
   ##
   if (method != "Inverse" & prediction) {
     warning("Argument 'prediction' set to FALSE for Mantel-Haenszel ",
-            "method and non-central hypergeometric distribution.")
+            "method and non-central hypergeometric distribution.",
+            call. = FALSE)
     prediction <- FALSE
   }
   ##
@@ -125,8 +128,6 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   if (nulldata)
     data <- sys.frame(sys.parent())
-  else
-    data$...order <- seq_len(nrow(data))
   ##
   mf <- match.call()
   ##
@@ -143,7 +144,7 @@ netmetabin <- function(event1, n1, event2, n2,
       sm <- attr(event1, "sm")
     else if (method != "Inverse") {
       if (!missing(sm) && tolower(sm) != "or")
-        warning("Argument 'sm' set to 'OR'.")
+        warning("Argument 'sm' set to 'OR'.", call. = FALSE)
       sm <- "OR"
     }
     ##
@@ -170,7 +171,7 @@ netmetabin <- function(event1, n1, event2, n2,
     }
     else if (method != "Inverse") {
       if (!missing(sm) && tolower(sm) != "or")
-        warning("Argument 'sm' set to 'OR'.")
+        warning("Argument 'sm' set to 'OR'.", call. = FALSE)
       sm <- "OR"
     }
     ##
@@ -201,6 +202,10 @@ netmetabin <- function(event1, n1, event2, n2,
     treat2 <- as.character(treat2)
   if (is.factor(studlab))
     studlab <- as.character(studlab)
+  ##
+  ## Keep original order of studies
+  ##
+  .order <- seq_along(studlab)
   ##
   subset <- eval(mf[[match("subset", names(mf))]],
                  data, enclos = sys.frame(sys.parent()))
@@ -241,7 +246,7 @@ netmetabin <- function(event1, n1, event2, n2,
       data <- data.frame(.event1 = event1)
     else if (nulldata & is.pairwise) {
       data <- pairdata
-      data$...order <- seq_len(nrow(data))
+      data$.order <- .order
       data$.event1 <- event1
     }
     else
@@ -253,6 +258,7 @@ netmetabin <- function(event1, n1, event2, n2,
     data$.treat1 <- treat1
     data$.treat2 <- treat2
     data$.studlab <- studlab
+    data$.order <- .order
     ##
     if (!missing.subset) {
       if (length(subset) == dim(data)[1])
@@ -290,7 +296,10 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   if (compmatch(labels, sep.trts)) {
     if (!missing.sep.trts)
-      warning("Separator '", sep.trts, "' used in at least one treatment label. Try to use predefined separators: ':', '-', '_', '/', '+', '.', '|', '*'.")
+      warning("Separator '", sep.trts, "' used in at least ",
+              "one treatment label. Try to use predefined separators: ",
+              "':', '-', '_', '/', '+', '.', '|', '*'.",
+              call. = FALSE)
     ##
     if (!compmatch(labels, ":"))
       sep.trts <- ":"
@@ -334,7 +343,8 @@ netmetabin <- function(event1, n1, event2, n2,
   else {
     if (warn)
       warning("No information given for argument 'studlab'. ",
-              "Assuming that comparisons are from independent studies.")
+              "Assuming that comparisons are from independent studies.",
+              call. = FALSE)
     studlab <- seq(along = event1)
   }
   ##
@@ -383,9 +393,13 @@ netmetabin <- function(event1, n1, event2, n2,
   if (method != "Inverse" & length(incr) > 1) {
     warning("Argument 'incr' must be a single value for ",
             "Mantel-Haenszel and common-effects non-central ",
-            "hypergeometric method. Set to zero.")
+            "hypergeometric method. Set to zero.",
+            call. = FALSE)
     incr <- 0
   }
+  ##
+  if (all(incr == 0) & method != "Inverse" & cc.pooled == TRUE)
+    cc.pooled <- FALSE
   ##
   lengthunique <- function(x) length(unique(x))
 
@@ -396,18 +410,19 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ##
   dat <- rbind(data.frame(studlab, treat = treat1, event = event1, n = n1,
+                          .order,
                           stringsAsFactors = FALSE),
                data.frame(studlab, treat = treat2, event = event2, n = n2,
+                          .order,
                           stringsAsFactors = FALSE))
-  dat$...order <- seq_len(nrow(dat))
   ##
   d1 <- d2 <- data.frame(studlab = studlab, treat1 = treat1, treat2 = treat2,
                          event1 = event1, n1 = n1, event2 = event2, n2 = n2,
+                         .order,
                          stringsAsFactors = FALSE)
   d1$.first <- TRUE
   d2$.first <- FALSE
   dat1 <- rbind(d1, d2)
-  dat1$...order <- seq_len(nrow(dat1))
   rm(d1, d2)
   ##
   data$.drop <- rep(FALSE, nrow(data))
@@ -462,11 +477,13 @@ netmetabin <- function(event1, n1, event2, n2,
     if (warn)
       if (sum(single) == 1)
         warning("Single-arm study '", first[single],
-                "' excluded from network meta-analysis.")
+                "' excluded from network meta-analysis.",
+                call. = FALSE)
       else
         warning("Single-arm studies excluded from network meta-analysis: ",
                 paste(paste0("'", first[single], "'"),
-                      collapse = ", "))
+                      collapse = ", "),
+                call. = FALSE)
     ##
     dat  <-  dat[!(dat$studlab  %in% first[single]), ]
     dat1 <- dat1[!(dat1$studlab %in% first[single]), ]
@@ -484,18 +501,19 @@ netmetabin <- function(event1, n1, event2, n2,
                                            treat = dat$treat,
                                            event = dat$event,
                                            n = dat$n,
+                                           data = dat,
                                            sm = "RD"))
                           )$studies[, c("studlab", "design")]
   ##
   dat  <- merge(dat,  unique(dat.design), by = "studlab")
   dat1 <- merge(dat1, unique(dat.design), by = "studlab")
   ##
-  dat  <-  dat[order(dat$...order), ]
-  dat1 <- dat1[order(dat1$...order), ]
+  dat  <-  dat[order(dat$.order), ]
+  dat1 <- dat1[order(dat1$.order), ]
   ##
   names(dat.design) <- c("studlab", ".design")
   data <- merge(data, unique(dat.design), by = "studlab")
-  data <- data[order(data$...order), ]
+  data <- data[order(data$.order), ]
   ##
   rm(dat.design)
 
@@ -515,12 +533,14 @@ netmetabin <- function(event1, n1, event2, n2,
     if (warn)
       if (sum(allzero) == 1)
         warning("Study '", names(n.events)[allzero],
-                "' without any events excluded from network meta-analysis.")
+                "' without any events excluded from network meta-analysis.",
+                call. = FALSE)
       else
         warning("Studies without any events excluded ",
                 "from network meta-analysis: ",
                 paste(paste0("'", names(n.events)[allzero], "'"),
-                      collapse = ", "))
+                      collapse = ", "),
+                call. = FALSE)
     ##
     dat  <-  dat[dat$studlab %in% names(n.events)[!allzero], , drop = FALSE]
     dat1 <- dat1[dat$studlab %in% names(n.events)[!allzero], , drop = FALSE]
@@ -544,8 +564,8 @@ netmetabin <- function(event1, n1, event2, n2,
   dat1 <- dat1[o, ]
   ##
   ## Step iii. Drop treatment arms without events from individual
-  ##           designs (argument 'MH.exact' is TRUE) or add increment
-  ##           if argument 'MH.exact' is FALSE and argument 'incr' is
+  ##           designs (argument 'cc.pooled' is FALSE) or add increment
+  ##           if argument 'cc.pooled' is TRUE and argument 'incr' is
   ##           larger than zero
   ##
   if (method != "Inverse") {
@@ -588,12 +608,13 @@ netmetabin <- function(event1, n1, event2, n2,
         seld <- rep(TRUE, length(data$.event1))
       }
       ##
-      if (MH.exact) {
+      if (!cc.pooled) {
         if (warn)
           if (sum(zero, na.rm = TRUE) == 1)
             warning("Treatment arm '", zerocells$treat,
                     "' without events in design '",
-                    zerocells$design, "' excluded from network meta-analysis.")
+                    zerocells$design, "' excluded from network meta-analysis.",
+                    call. = FALSE)
           else
             warning("Treatment arms without events in a design excluded ",
                     "from network meta-analysis:\n    ",
@@ -601,7 +622,8 @@ netmetabin <- function(event1, n1, event2, n2,
                            paste0(paste0(zerocells$treat, " in "),
                                   zerocells$design),
                            "'",
-                           collapse = ", "))
+                           collapse = ", "),
+                    call. = FALSE)
         ##
         dat  <-  dat[!sel, , drop = FALSE]
         dat1 <- dat1[!sel1, , drop = FALSE]
@@ -646,12 +668,14 @@ netmetabin <- function(event1, n1, event2, n2,
       if (sum(single) == 1)
         warning("Design '", design.single,
                 "' with single treatment arm excluded ",
-                "from network meta-analysis.")
+                "from network meta-analysis.",
+                call. = FALSE)
       else
         warning("Designs with single treatment arm excluded ",
                 "from network meta-analysis: ",
                 paste(paste0("'", design.single, "'"),
-                      collapse = ", "))
+                      collapse = ", "),
+                call. = FALSE)
     ##
     dat <- dat[!(dat$design %in% design.single), , drop = FALSE]
     dat1 <- dat1[!(dat1$design %in% design.single), , drop = FALSE]
@@ -668,11 +692,11 @@ netmetabin <- function(event1, n1, event2, n2,
   dat1 <- dat1[dat1$.first, ]
   ##
   dat  <-  dat[, c("studlab", "treat", "event", "non.event", "n",
-                   "design", "study", "...order")]
+                   "design", "study", ".order")]
   dat1 <- dat1[, c("studlab", "treat1", "treat2",
                    "event1", "event2", "non.event1", "non.event2",
                    "n1", "n2",
-                   "design", "study", "...order")]
+                   "design", "study", ".order")]
   ##
   dat$studlab <- as.character(dat$studlab)
   dat$design <- as.character(dat$design)
@@ -683,7 +707,7 @@ netmetabin <- function(event1, n1, event2, n2,
   dat1$treat1 <- as.character(dat1$treat1)
   dat1$treat2 <- as.character(dat1$treat2)
   ##
-  o <- order(dat1$...order)
+  o <- order(dat1$.order)
   studlab <- dat1$studlab[o]
   treat1 <- dat1$treat1[o]
   treat2 <- dat1$treat2[o]
@@ -731,14 +755,18 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ##
   if (method == "Inverse") {
+    dat <- dat[order(dat$.order), ]
+    ##
     p.iv <- pairwise(studlab = dat$studlab,
                      treat = dat$treat,
                      event = dat$event,
                      n = dat$n,
+                     data = dat,
                      sm = sm,
                      incr = incr,
                      allincr = allincr, addincr = addincr,
                      allstudies = allstudies)
+    ##
     net.iv <- netmeta(p.iv,
                       level = level, level.comb = level.comb,
                       comb.fixed = comb.fixed, comb.random = comb.random,
@@ -1345,7 +1373,9 @@ netmetabin <- function(event1, n1, event2, n2,
     selstud <- treat1 == sel.treat1 & treat2 == sel.treat2
     ##
     m.i <- metabin(event1, n1, event2, n2, subset = selstud,
-                   sm = "OR", MH.exact = MH.exact)
+                   sm = "OR",
+                   incr = incr, allincr = allincr, addincr = addincr,
+                   allstudies = allstudies, MH.exact = !cc.pooled)
     ##
     TE.i   <- m.i$TE.fixed
     seTE.i <- m.i$seTE.fixed
@@ -1466,7 +1496,7 @@ netmetabin <- function(event1, n1, event2, n2,
               allincr = allincr,
               addincr = addincr,
               allstudies = allstudies,
-              MH.exact = MH.exact,
+              cc.pooled = cc.pooled,
               ##
               level = level,
               level.comb = level.comb,
@@ -1508,21 +1538,22 @@ netmetabin <- function(event1, n1, event2, n2,
   class(res) <- c("netmetabin", "netmeta")
 
 
-  res$data <- res$data[order(res$data$...order), ]
-  res$data$...order <- NULL
+  res$data <- res$data[order(res$data$.order), ]
+  res$data$.order <- NULL
   rownames(res$data) <- seq_len(nrow(res$data))
   ##
-  res$data.wide <- res$data.wide[order(res$data.wide$...order), ]
-  res$data.wide$...order <- NULL
+  res$data.wide <- res$data.wide[order(res$data.wide$.order), ]
+  res$data.wide$.order <- NULL
   rownames(res$data.wide) <- seq_len(nrow(res$data.wide))
   ##
-  res$data.long <- res$data.long[order(res$data.long$...order), ]
-  res$data.long$...order <- NULL
+  res$data.long <- res$data.long[order(res$data.long$.order), ]
+  res$data.long$.order <- NULL
   rownames(res$data.long) <- seq_len(nrow(res$data.long))
 
 
   tab <- table(res$studlab)
   ##
+  tab <- tab[unique(res$studlab)]
   res$studies <- names(tab)
   res$narms <- as.vector(tab)
 
