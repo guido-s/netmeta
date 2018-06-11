@@ -1,6 +1,6 @@
 forest.netsplit <- function(x,
                             pooled = ifelse(x$comb.random, "random", "fixed"),
-                            showall = FALSE,
+                            show = "both",
                             ##
                             subgroup = "comparison",
                             ##
@@ -40,8 +40,8 @@ forest.netsplit <- function(x,
                             lab.NA = "",
                             smlab,
                             ...) {
-  
-  
+
+
   ##
   ##
   ## (1) Check and set arguments
@@ -56,7 +56,6 @@ forest.netsplit <- function(x,
   setchar <- meta:::setchar
   ##
   pooled <- setchar(pooled, c("fixed", "random"))
-  chklogical(showall)
   ##
   subgroup <- setchar(subgroup, c("comparison", "estimate"))
   ##
@@ -134,8 +133,34 @@ forest.netsplit <- function(x,
         x$level.comb != x$level.predict)
       text.predict <- paste(text.predict, " (",
                             round(x$level.predict * 100), "%-PI)", sep = "")
-  
-  
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  ## Check whether first argument is a list. In this case only use
+  ## this list as input.
+  if (length(args) > 0 && is.list(args[[1]]))
+    args <- args[[1]]
+  ##
+  additional.arguments <- names(args)
+  ##
+  if (length(additional.arguments) > 0) {
+    if (!is.na(charmatch("showa", additional.arguments)))
+      if (!missing(show))
+        warning("Deprecated argument 'showall' ignored as argument 'show' is also provided.")
+      else {
+        warning("Deprecated argument 'showall' has been replaced by argument 'show'.")
+        show <- args[[charmatch("showa", additional.arguments)]]
+        if (show)
+          show <- "all"
+        else
+          show <- "both"
+      }
+  }
+  ##
+  show <- setchar(show, c("all", "with.direct", "both", "direct.only", "indirect.only"))
+
+
   ##
   ##
   ## (2) Extract results for fixed effect and random effects model
@@ -236,15 +261,38 @@ forest.netsplit <- function(x,
   ##
   dat.predict$TE <- dat.overall$TE
   dat.predict$seTE <- sqrt(dat.overall$seTE^2 + x$tau^2)
+
+
   ##
-  if (!showall) {
-    dat.direct <- dat.direct[x$k > 0, ]
-    dat.indirect <- dat.indirect[x$k > 0, ]
-    dat.overall <- dat.overall[x$k > 0, ]
-    dat.predict <- dat.predict[x$k > 0, ]
-  }
-  
-  
+  ##
+  ## (3) Select treatment comparisons to show in forest plot
+  ##
+  ##
+  if (show == "all")
+    sel <- rep_len(TRUE, length(x$direct.fixed$TE))
+  else if (show == "with.direct")
+    sel <- (!is.na(x$direct.fixed$TE) & !is.na(x$direct.random$TE))
+  else if (show == "both")
+    sel <- (!is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
+            !is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+  else if (show == "direct.only")
+    sel <- (!is.na(x$direct.fixed$TE)  & is.na(x$indirect.fixed$TE) &
+            !is.na(x$direct.random$TE) & is.na(x$indirect.random$TE))
+  else if (show == "indirect.only")
+    sel <- (is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
+            is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+  ##
+  dat.direct <- dat.direct[sel, ]
+  dat.indirect <- dat.indirect[sel, ]
+  dat.overall <- dat.overall[sel, ]
+  dat.predict <- dat.predict[sel, ]
+
+
+  ##
+  ##
+  ## (4) Forest plot
+  ##
+  ##
   if (subgroup == "comparison") {
     dat <- rbind(
       if (direct) dat.direct,
@@ -307,7 +355,7 @@ forest.netsplit <- function(x,
            weight.study = if (equal.size) "same" else "fixed",
            ...)
   }
-  
-  
+
+
   invisible(NULL)
 }

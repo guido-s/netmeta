@@ -13,7 +13,7 @@
 \usage{
 \method{forest}{netsplit}(x,
        pooled=ifelse(x$comb.random, "random", "fixed"),
-       showall = FALSE,
+       show = "both",
        subgroup = "comparison",
        overall = TRUE, direct = TRUE, indirect = TRUE,
        prediction = x$prediction,
@@ -40,9 +40,8 @@
   \item{pooled}{A character string indicating whether results for
     the fixed effect (\code{"fixed"}) or random effects model
     (\code{"random"}) should be plotted. Can be abbreviated.}
-  \item{showall}{A logical indicating whether all comparisons
-    (default) or only comparisons contributing both direct and
-    indirect evidence should be shown in forest plot.}
+  \item{show}{A character string indicating which comparisons should
+    be printed (see Details).}
   \item{overall}{A logical indicating whether network meta-analysis
     estimates should be printed.}
   \item{direct}{A logical indicating whether direct estimates should
@@ -129,6 +128,15 @@
      
   For more information see help page of \code{\link{forest.meta}}
   function.
+
+  Argument \code{show} determines which comparisons are printed:
+  \tabular{ll}{
+  \dQuote{all} \tab All comparisons \cr
+  \dQuote{both} \tab Only comparisons contributing both direct and indirect evidence \cr
+  \dQuote{with.direct} \tab Comparisons providing direct evidence \cr
+  \dQuote{direct.only} \tab Comparisons providing only direct evidence \cr
+  \dQuote{indirect.only} \tab Comparisons providing only indirect evidence \cr
+  }
 }
 
 \author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
@@ -137,70 +145,24 @@
 
 \examples{
 data(Senn2013)
-
-\dontrun{
 #
-# Fixed effect model (default)
+net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
+                studlab, data = Senn2013,
+                comb.fixed = FALSE)
 #
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data=Senn2013, sm="MD")
+ns1 <- netsplit(net1)
 
-forest(net1, ref="plac")
+# Forest plot showing comparisons contributing both direct and
+# indirect evidence
+#
+forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
 
-forest(net1, xlim=c(-1.5,1), ref="plac",
-       xlab="HbA1c difference", rightcols=FALSE)
+
+# Forest plot showing comparisons contributing direct evidence
+#
+forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
+       show = "with.direct")
 }
 
-#
-# Random effects effect model
-#
-net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data=Senn2013, sm="MD", comb.random=TRUE)
-
-forest(net2, xlim=c(-1.5,1), ref="plac",
-       xlab="HbA1c difference")
-
-#
-# Add column with P-Scores on right side of forest plot
-#
-forest(net2, xlim=c(-1.5,1), ref="plac",
-       xlab="HbA1c difference",
-       rightcols=c("effect", "ci", "Pscore"),
-       rightlabs="P-Score",
-       just.addcols="right")
-
-\dontrun{
-#
-# Add column with P-Scores on left side of forest plot
-#
-forest(net2, xlim=c(-1.5,1), ref="plac",
-       xlab="HbA1c difference",
-       leftcols=c("studlab", "Pscore"),
-       leftlabs=c("Treatment", "P-Score"),
-       just.addcols="right")
-
-#
-# Sort forest plot by descending P-Score
-#
-forest(net2, xlim=c(-1.5,1), ref="plac",
-       xlab="HbA1c difference",
-       rightcols=c("effect", "ci", "Pscore"),
-       rightlabs="P-Score",
-       just.addcols="right",
-       sortvar=-Pscore)
-
-#
-# Drop reference group and sort by and print number of studies
-# with direct treatment comparisons
-#
-forest(net2, xlim=c(-1.5,1), ref="plac",
-       xlab="HbA1c difference",
-       leftcols=c("studlab", "k"),
-       leftlabs=c("Contrast\nto Placebo", "Direct\nComparisons"),
-       sortvar=-k,
-       drop=TRUE,
-       smlab="Random Effects Model")
-}
-}
 
 \keyword{hplot}

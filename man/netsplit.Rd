@@ -22,7 +22,7 @@ netsplit(x, upper = TRUE,
       show = "all",
       overall = TRUE,
       ci = FALSE,
-      test = show \%in\% c("all", "both"),
+      test = show \%in\% c("all", "with.direct", "both"),
       digits = gs("digits"),
       digits.zval = gs("digits.zval"),
       digits.pval = gs("digits.pval"),
@@ -102,10 +102,11 @@ netsplit(x, upper = TRUE,
   estimates. The direct evidence proportion as described in König et
   al. (2013) is used to calculate the indirect evidence.
 
-  Argument \code{show} determines which comparsions are printed:
+  Argument \code{show} determines which comparisons are printed:
   \tabular{ll}{
   \dQuote{all} \tab All comparisons \cr
   \dQuote{both} \tab Only comparisons contributing both direct and indirect evidence \cr
+  \dQuote{with.direct} \tab Comparisons providing direct evidence \cr
   \dQuote{direct.only} \tab Comparisons providing only direct evidence \cr
   \dQuote{indirect.only} \tab Comparisons providing only indirect evidence \cr
   }

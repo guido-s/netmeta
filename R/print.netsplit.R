@@ -4,7 +4,7 @@ print.netsplit <- function(x,
                            show = "all",
                            overall = TRUE,
                            ci = FALSE,
-                           test = show %in% c("all", "both"),
+                           test = show %in% c("all", "with.direct", "both"),
                            digits = gs("digits"),
                            digits.zval = gs("digits.zval"),
                            digits.pval = gs("digits.pval"),
@@ -15,8 +15,8 @@ print.netsplit <- function(x,
                            big.mark = gs("big.mark"),
                            legend = TRUE,
                            ...) {
-  
-  
+
+
   meta:::chkclass(x, "netsplit")
   ##
   chklogical <- meta:::chklogical
@@ -27,14 +27,14 @@ print.netsplit <- function(x,
   is.relative.effect <- meta:::is.relative.effect
   rmSpace <- meta:::rmSpace
   setchar <- meta:::setchar
-  
-  
+
+
   ## All individual results in a single row - be on the save side:
   ##
   oldopts <- options(width = 200)
   on.exit(options(oldopts))
-  
-  
+
+
   chklogical(comb.fixed)
   chklogical(comb.random)
   chklogical(overall)
@@ -72,13 +72,13 @@ print.netsplit <- function(x,
         if (show)
           show <- "all"
         else
-          show <- "both"
+          show <- "with.direct"
       }
   }
   ##
-  show <- setchar(show, c("all", "both", "direct.only", "indirect.only"))
-  
-  
+  show <- setchar(show, c("all", "with.direct", "both", "direct.only", "indirect.only"))
+
+
   sm <- x$sm
   sm.lab <- sm
   ##
@@ -91,14 +91,16 @@ print.netsplit <- function(x,
     sm.lab <- paste("(", sm.lab, ") ", sep = "")
   else
     sm.lab <- ""
-  
-  
+
+
   level.comb <- x$level.comb
   ci.lab <- paste(100 * level.comb, "%-CI", sep ="")
-  
-  
+
+
   if (show == "all")
     sel <- rep_len(TRUE, length(x$direct.fixed$TE))
+  else if (show == "with.direct")
+    sel <- (!is.na(x$direct.fixed$TE) & !is.na(x$direct.random$TE))
   else if (show == "both")
     sel <- (!is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
             !is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
@@ -108,7 +110,7 @@ print.netsplit <- function(x,
   else if (show == "indirect.only")
     sel <- (is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
             is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
-  ## 
+  ##
   comp <- x$comparison[sel]
   ##
   k <- x$k[sel]
@@ -152,8 +154,8 @@ print.netsplit <- function(x,
   upper.compare.random <- x$compare.random$upper[sel]
   zval.compare.random <- x$compare.random$z[sel]
   pval.compare.random <- x$compare.random$p[sel]
-  
-  
+
+
   if (backtransf & relative) {
     TE.fixed <- exp(TE.fixed)
     lower.fixed <- exp(lower.fixed)
@@ -185,10 +187,10 @@ print.netsplit <- function(x,
     ##
     TE.compare.random <- exp(TE.compare.random)
     lower.compare.random <- exp(lower.compare.random)
-    upper.compare.random <- exp(upper.compare.random) 
+    upper.compare.random <- exp(upper.compare.random)
   }
-  
-  
+
+
   fixed <- list(comp = comp,
                 k = k,
                 prop = formatPT(prop.fixed, digits = digits.prop))
@@ -248,8 +250,8 @@ print.netsplit <- function(x,
   }
   fixed <- as.data.frame(fixed)
   names(fixed) <- names.fixed
-  
-  
+
+
   random <- list(comp = comp,
                  k = k,
                  prop = formatPT(prop.random, digits = digits.prop))
@@ -310,8 +312,8 @@ print.netsplit <- function(x,
   }
   random <- as.data.frame(random)
   names(random) <- names.random
-  
-  
+
+
   if (comb.fixed) {
     cat("Fixed effect model: \n\n")
     fixed[is.na(fixed)] <- text.NA
@@ -349,7 +351,7 @@ print.netsplit <- function(x,
       cat(" p-value    - p-value of test for disagreement (direct versus indirect)\n")
     }
   }
-  
-  
+
+
   invisible(NULL)
 }

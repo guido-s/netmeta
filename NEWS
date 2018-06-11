@@ -31,6 +31,9 @@
       method based on arguments 'TE' and 'seTE'
     - argument 'n' can be used for meta-analysis with count outcomes
       (based on arguments 'event' and 'time')
+
+  * forest.netsplit() and print.netsplit():
+    - argument 'showall' replaced with 'show' (see help pages)
     
  ** Bug fixes **
 
@@ -53,6 +56,9 @@
     - check if argument 'sep.components' is a single character
 
   * netleague() is a generic function
+
+  * Help pages:
+    - examples added for forest.netsplit()
 
 
 *** netmeta, version 0.9-8, 2018-03-23 ***
