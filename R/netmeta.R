@@ -848,12 +848,17 @@ netmeta <- function(TE, seTE,
     if (is.null(krahn))
       ddat <- data.frame(.studlab = data$.studlab,
                          .design = paste(data$.treat1, data$.treat2,
-                                        sep = sep.trts),
+                                         sep = sep.trts),
                          stringsAsFactors = FALSE)
     else {
       ddat <- unique(krahn$studies[, c("studlab", "design")])
       names(ddat) <- paste0(".", names(ddat))
     }
+
+    data <- merge(data,
+                  data.frame(.studlab = res$studies,
+                             .narms = res$narms),
+                  by = ".studlab")
     ##
     res$data <- merge(data, ddat,
                       by = ".studlab",

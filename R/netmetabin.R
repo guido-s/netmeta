@@ -434,8 +434,17 @@ netmetabin <- function(event1, n1, event2, n2,
   dat1$non.event1 <- dat1$n1 - dat1$event1
   dat1$non.event2 <- dat1$n2 - dat1$event2
   ##
+  ## Remove duplicated rows from dataset (due to multi-arm studies)
+  ##
+  dupl <- duplicated(dat[, c("studlab", "treat", "event", "n")])
+  ##
+  if (any(dupl))
+    dat  <-  dat[!dupl, ]
+  ##
+  rm(dupl)
+  ##
   ## Pool events and totals in studies with multiple arms of the same
-  ## treat
+  ## treatment
   ##
   dupl <- duplicated(dat[, c("studlab", "treat")])
   ##
@@ -1538,6 +1547,26 @@ netmetabin <- function(event1, n1, event2, n2,
   class(res) <- c("netmetabin", "netmeta")
 
 
+  ##
+  ## Study overview
+  ##
+  p0 <- prepare(rep(1, nrow(res$data.wide)),
+                rep(1, nrow(res$data.wide)),
+                res$data.wide$treat1,
+                res$data.wide$treat2,
+                res$data.wide$studlab)
+  tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
+                      stringsAsFactors = FALSE)
+  tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
+  res$studies <- tdata$studies
+  res$narms <- tdata$narms
+  ##
+  res$data <- merge(res$data,
+                    data.frame(.studlab = res$studies,
+                               .narms = res$narms),
+                    by = ".studlab")
+
+
   res$data <- res$data[order(res$data$.order), ]
   res$data$.order <- NULL
   rownames(res$data) <- seq_len(nrow(res$data))
@@ -1549,13 +1578,6 @@ netmetabin <- function(event1, n1, event2, n2,
   res$data.long <- res$data.long[order(res$data.long$.order), ]
   res$data.long$.order <- NULL
   rownames(res$data.long) <- seq_len(nrow(res$data.long))
-
-
-  tab <- table(res$studlab)
-  ##
-  tab <- tab[unique(res$studlab)]
-  res$studies <- names(tab)
-  res$narms <- as.vector(tab)
 
 
   res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")

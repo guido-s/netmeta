@@ -34,14 +34,14 @@ netgraph <- function(x, seq = x$seq,
                      xpos = NULL, ypos = NULL, zpos = NULL,
                      figure = TRUE,
                      ...) {
-  
-  
+
+
   meta:::chkclass(x, "netmeta")
   ##
   n.edges <- sum(x$A.matrix[upper.tri(x$A.matrix)] > 0)
   n.trts <- length(x$trts)
-  
-  
+
+
   setchar <- meta:::setchar
   chknumeric <- meta:::chknumeric
   chklogical <- meta:::chklogical
@@ -133,7 +133,7 @@ netgraph <- function(x, seq = x$seq,
     stop("Length of argument 'pch.points' must be equal to number of treatments.")
   ##
   chklogical(figure)
-  ##  
+  ##
   if (is.null(seq))
     seq1 <- 1:length(labels)
   else if (length(seq) == 1 & x$d > 1) {
@@ -156,12 +156,21 @@ netgraph <- function(x, seq = x$seq,
     rn <- rownames(x$TE.fixed)
     seq1 <- charmatch(setseq(seq, rn), rn)
   }
-  
-  
+
+
   if (missing(iterate))
     iterate <- ifelse(start.layout == "circle", FALSE, TRUE)
-  
-  
+  else if (length(seq) == 1 && seq == "optimal") {
+    warning("Argument 'iterate' ignored as argument 'seq' is equal to \"optimal\".")
+    iterate <- FALSE
+  }
+  ##
+  if (!missing(allfigures) && length(seq) == 1 && seq == "optimal") {
+    warning("Argument 'allfigures' ignored as argument 'seq' is equal to \"optimal\".")
+    allfigures <- FALSE
+  }
+
+
   addargs <- names(list(...))
   if ("highlight.split" %in% addargs)
     warning("Argument 'highlight.split' has been removed from R function netgraph.\n",
@@ -171,15 +180,15 @@ netgraph <- function(x, seq = x$seq,
   ##
   if (is.null(highlight.split))
     highlight.split <- ":"
-  
-  
+
+
   if (missing(plastic))
     if (start.layout == "circle" & iterate == FALSE & is_2d)
       plastic <- TRUE
     else
       plastic <- FALSE
-  
-  
+
+
   if (missing(thickness)) {
     if (start.layout == "circle" & iterate == FALSE & plastic == TRUE) {
       thick <- "se.fixed"
@@ -221,14 +230,14 @@ netgraph <- function(x, seq = x$seq,
       thick <- "matrix"
     }
   }
-  
-  
+
+
   if (allfigures & is_3d) {
     warning("Argument 'allfigures' set to FALSE for 3-D network plot.")
     allfigures <- FALSE
   }
-  
-  
+
+
   col.matrix <- matrix("", nrow = n.trts, ncol = n.trts)
   dimnames(col.matrix) <- dimnames(A.matrix)
   col.matrix <- t(col.matrix)
@@ -260,11 +269,11 @@ netgraph <- function(x, seq = x$seq,
   col.points <- col.points[seq1]
   cex.points <- cex.points[seq1]
   pch.points <- pch.points[seq1]
-  
-  
+
+
   A.sign <- sign(A.matrix)
-  
-  
+
+
   if ((is_2d & (is.null(xpos) & is.null(ypos))) |
       (is_3d & (is.null(xpos) & is.null(ypos) & is.null(zpos)))) {
     stressdata <- stress(x,
@@ -319,16 +328,16 @@ netgraph <- function(x, seq = x$seq,
     if (is_3d)
       zpos <- stressdata$z
   }
-  
-  
+
+
   if (allfigures)
     return(invisible(NULL))
-  
-  
+
+
   n <- dim(A.matrix)[1]
   d <- scale * max(abs(c(min(c(xpos, ypos), na.rm = TRUE),
                          max(c(xpos, ypos), na.rm = TRUE))))
-  
+
 
   ##
   ##
@@ -480,8 +489,8 @@ netgraph <- function(x, seq = x$seq,
       }
     }
   }
-  
-  
+
+
   ##
   ## Define coloured regions for multi-arm studies
   ##
@@ -589,11 +598,11 @@ netgraph <- function(x, seq = x$seq,
       W.matrix <- lwd.max * W.matrix / max(W.matrix, na.rm = TRUE)
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   ##
   ##
   ## Plot graph
@@ -863,11 +872,11 @@ netgraph <- function(x, seq = x$seq,
   }
   ##
   dat.nodes$zpos.labels <- NULL
-  
-  
+
+
   dat.edges$xpos[is.zero(dat.edges$xpos)] <- 0
   dat.edges$ypos[is.zero(dat.edges$ypos)] <- 0
-  
-  
+
+
   invisible(list(nodes = dat.nodes, edges = dat.edges))
 }
