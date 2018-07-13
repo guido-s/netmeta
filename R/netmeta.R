@@ -858,12 +858,14 @@ netmeta <- function(TE, seTE,
     data <- merge(data,
                   data.frame(.studlab = res$studies,
                              .narms = res$narms),
-                  by = ".studlab")
+                  by = ".studlab",
+                  stringsAsFactors = FALSE)
     ##
     res$data <- merge(data, ddat,
                       by = ".studlab",
                       suffixes = c(".orig", ""),
                       stringsAsFactors = FALSE)
+    res$data$.design <- as.character(res$data$.design)
     res$data <- res$data[order(res$data$.order), ]
     res$data$.order <- NULL
   }

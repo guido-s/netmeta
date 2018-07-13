@@ -834,22 +834,29 @@ pairwise <- function(treat,
   ##
   sel.treat <- as.character(res$treat1) == as.character(res$treat2)
   ##
-  if (any(sel.treat))
-    stop(paste("Identical treatments for the following studies:\n  ",
-               paste(paste("'", unique(sort(res$studlab[sel.treat])),
-                           "'", sep = ""),
-                     collapse = " - "), sep = ""),
+  if (any(sel.treat)) {
+    sel.stud <- unique(sort(res$studlab[sel.treat]))
+    ##
+    stop(paste0("Identical treatments for the following stud",
+                if (length(sel.stud) == 1) "y: " else "ies:\n  ",
+                paste0(paste0("'", sel.stud, "'"),
+                       collapse = " - "),
+                "\n  Please check dataset."),
          call. = FALSE)
+  }
   ##
   ## b) Studies missing ?
   ##
   sel.study <- !(studlab %in% unique(as.character(res$studlab)))
   ##
   if (any(sel.study))
-    warning(paste("The following studies are not considered in the analysis\n  ",
-                  "(due to single study arm or missing values):\n  ",
-                  paste(paste("'", studlab[sel.study], "'", sep = ""),
-                        collapse = " - "), sep = ""))
+    warning(paste0("The following stud",
+                   if (sum(sel.study) == 1) "y is " else "ies are ",
+                   "excluded from the analysis\n  ",
+                   "(due to a single study arm or missing values):",
+                   if (sum(sel.study) == 1) " " else "\n  ",
+                   paste0(paste0("'", studlab[sel.study], "'"),
+                          collapse = " - ")))
   ##
   ## c) Missing treatment estimates or standard errors?
   ##

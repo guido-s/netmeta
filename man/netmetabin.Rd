@@ -15,10 +15,10 @@ netmetabin(event1, n1, event2, n2,
            data = NULL, subset = NULL,
            sm,
            method = "MH",
+           cc.pooled = FALSE,
            incr = gs("incr"),
            allincr = gs("allincr"), addincr = gs("addincr"),
            allstudies = gs("allstudies"),
-           cc.pooled = FALSE,
            level = 0.95, level.comb = 0.95,
            comb.fixed = gs("comb.fixed"),
            comb.random = method == "Inverse" &
@@ -62,20 +62,23 @@ netmetabin(event1, n1, event2, n2,
   \item{method}{A character string indicating which method is to be
     used for pooling of studies. One of \code{"Inverse"}, \code{"MH"},
     or \code{"NCH"}, can be abbreviated.}
+  \item{cc.pooled}{A logical indicating if \code{incr} is considered as
+    continuity correction to calculate the network meta-analysis
+    estimates.}
   \item{incr}{A numerical value which is added to each cell frequency
     for studies with a zero cell count.}
   \item{allincr}{A logical indicating if \code{incr} is added to each
     cell frequency of all studies if at least one study has a zero cell
-    count. If FALSE (default), \code{incr} is added only to each cell frequency of
+    count (only considered if \code{method="Inverse"}). If FALSE
+    (default), \code{incr} is added only to each cell frequency of
     studies with a zero cell count.}
-  \item{addincr}{A logical indicating if \code{incr} is added to each cell
-    frequency of all studies irrespective of zero cell counts.}
+  \item{addincr}{A logical indicating if \code{incr} is added to each
+    cell frequency of all studies irrespective of zero cell counts (only
+    considered if \code{method="Inverse"}).}
   \item{allstudies}{A logical indicating if studies with zero or all
-    events in both groups are to be included in the meta-analysis
-    (applies only if \code{sm} is equal to \code{"RR"} or \code{"OR"}).}
-  \item{cc.pooled}{A logical indicating if \code{incr} is considered as
-    continuity correction to calculate the network meta-analysis
-    estimates.}
+    events in both groups are to be included in an inverse variance
+    meta-analysis (applies only if \code{sm} is equal to \code{"RR"} or
+    \code{"OR"}).}
   \item{level}{The level used to calculate confidence intervals for
     individual studies.}
   \item{level.comb}{The level used to calculate confidence intervals for

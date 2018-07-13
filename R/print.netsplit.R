@@ -72,11 +72,11 @@ print.netsplit <- function(x,
         if (show)
           show <- "all"
         else
-          show <- "with.direct"
+          show <- "both"
       }
   }
   ##
-  show <- setchar(show, c("all", "with.direct", "both", "direct.only", "indirect.only"))
+  show <- setchar(show, c("all", "both", "with.direct", "direct.only", "indirect.only"))
 
 
   sm <- x$sm

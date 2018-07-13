@@ -158,7 +158,7 @@ forest.netsplit <- function(x,
       }
   }
   ##
-  show <- setchar(show, c("all", "with.direct", "both", "direct.only", "indirect.only"))
+  show <- setchar(show, c("all", "both", "with.direct", "direct.only", "indirect.only"))
 
 
   ##
