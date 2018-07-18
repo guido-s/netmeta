@@ -2,7 +2,7 @@ pairwise <- function(treat,
                      event, n, mean, sd, TE, seTE, time,
                      data = NULL, studlab,
                      incr = 0.5, allincr = FALSE, addincr = FALSE,
-                     allstudies = FALSE,
+                     allstudies = FALSE, warn = TRUE,
                      ...) {
 
 
@@ -89,6 +89,7 @@ pairwise <- function(treat,
   meta:::chklogical(allincr)
   meta:::chklogical(addincr)
   meta:::chklogical(allstudies)
+  meta:::chklogical(warn)
 
 
   if (!is.null(TE) & !is.null(seTE))
@@ -849,18 +850,19 @@ pairwise <- function(treat,
   ##
   sel.study <- !(studlab %in% unique(as.character(res$studlab)))
   ##
-  if (any(sel.study))
+  if (any(sel.study) & warn)
     warning(paste0("The following stud",
                    if (sum(sel.study) == 1) "y is " else "ies are ",
                    "excluded from the analysis\n  ",
                    "(due to a single study arm or missing values):",
                    if (sum(sel.study) == 1) " " else "\n  ",
                    paste0(paste0("'", studlab[sel.study], "'"),
-                          collapse = " - ")))
+                          collapse = " - ")),
+            call. = FALSE)
   ##
   ## c) Missing treatment estimates or standard errors?
   ##
-  if (nrow(res.NAs) > 0) {
+  if (nrow(res.NAs) > 0 & warn) {
     warning("Comparison",
             if (nrow(res.NAs) > 1) "s",
             " with missing TE / seTE or zero seTE",
