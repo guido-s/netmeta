@@ -34,6 +34,12 @@
 
   * forest.netsplit() and print.netsplit():
     - argument 'showall' replaced with 'show' (see help pages)
+
+  * forest.netsplit():
+    - show prediction intervals as colored bars
+    - forest plot with layout 'subgroups by comparisons':
+      omit treatment estimates in rows with prediction intervals if
+      network estimates are also shown
     
  ** Bug fixes **
 
@@ -42,6 +48,9 @@
       (argument 'reference.group') is part of a combined treatment,
       e.g., for reference.group = "A" and treatment comparison "A + B"
       vs "C", the comparison will not be reordered as "C" vs "A + B"
+
+  * forest.netsplit():
+    - show correct prediction intervals
 
   * netgraph():
     - arguments 'iterate' and 'allfigures' ignored if argument 'seq'

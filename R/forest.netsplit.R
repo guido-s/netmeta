@@ -134,6 +134,24 @@ forest.netsplit <- function(x,
       text.predict <- paste(text.predict, " (",
                             round(x$level.predict * 100), "%-PI)", sep = "")
   ##
+  if (overall & n.subgroup > 1) {
+    if (text.overall == text.predict)
+      stop("Text must be different for arguments 'text.overall' and 'text.predict'.")
+    if (text.overall == text.direct)
+      stop("Text must be different for arguments 'text.overall' and 'text.direct'.")
+    if (text.overall == text.indirect)
+      stop("Text must be different for arguments 'text.overall' and 'text.indirect'.")
+  }
+  ##
+  if (prediction & n.subgroup > 1) {
+    if (text.predict == text.overall)
+      stop("Text must be different for arguments 'text.predict' and 'text.overall'.")
+    if (text.predict == text.direct)
+      stop("Text must be different for arguments 'text.predict' and 'text.direct'.")
+    if (text.predict == text.indirect)
+      stop("Text must be different for arguments 'text.predict' and 'text.indirect'.")
+  }
+  ##
   ## Check for deprecated arguments in '...'
   ##
   args  <- list(...)
@@ -204,8 +222,14 @@ forest.netsplit <- function(x,
                    sep = "")
   ##
   dat.predict <- x$predict
-  dat.predict$TE <- dat.predict$seTE <-
-    dat.predict$z <- dat.predict$p <- dat.predict$prop <- NA
+  ##
+  if ( (subgroup == "estimate") | (prediction & !overall) )
+    dat.predict$TE <- dat.overall$TE
+  else
+    dat.predict$TE <- NA
+  ##
+  dat.predict$seTE <- dat.predict$z <- dat.predict$p <- dat.predict$prop <- NA
+  ##
   dat.predict <- dat.predict[, c("comparison", "TE", "seTE",
                                  "lower", "upper", "z", "p", "prop")]
   ##
@@ -258,11 +282,8 @@ forest.netsplit <- function(x,
   ## col.inside = "white",
   ## col.diamond.lines = "black",
   ## col.predict.lines = "black",
-  ##
-  dat.predict$TE <- dat.overall$TE
-  dat.predict$seTE <- sqrt(dat.overall$seTE^2 + x$tau^2)
-
-
+  
+  
   ##
   ##
   ## (3) Select treatment comparisons to show in forest plot
@@ -307,6 +328,19 @@ forest.netsplit <- function(x,
     else
       m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat, sm = x$sm)
     ##
+    if (overall) {
+      m$w.fixed[m$studlab == text.overall] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.random[m$studlab == text.overall] <- max(m$w.random, na.rm = TRUE)
+    }
+    ##
+    if (prediction) {
+      m$lower[m$studlab == text.predict] <- dat.predict$lower
+      m$upper[m$studlab == text.predict] <- dat.predict$upper
+      ##
+      m$w.fixed[m$studlab == text.predict] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.random[m$studlab == text.predict] <- max(m$w.random, na.rm = TRUE)
+    }
+    ##
     forest(m,
            digits = digits,
            comb.fixed = FALSE, comb.random = FALSE,
@@ -337,6 +371,19 @@ forest.netsplit <- function(x,
                    sm = x$sm, byvar = dat$evidence, print.byvar = FALSE)
     else
       m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat, sm = x$sm)
+    ##
+    if (overall) {
+      m$w.fixed[m$byvar == text.overall] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.random[m$byvar == text.overall] <- max(m$w.random, na.rm = TRUE)
+    }
+    ##
+    if (prediction) {
+      m$lower[m$byvar == text.predict] <- dat.predict$lower
+      m$upper[m$byvar == text.predict] <- dat.predict$upper
+      ##
+      m$w.fixed[m$byvar == text.predict] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.random[m$byvar == text.predict] <- max(m$w.random, na.rm = TRUE)
+    }
     ##
     forest(m,
            digits = digits,

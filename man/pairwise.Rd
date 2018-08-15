@@ -16,7 +16,7 @@ arm-based to contrast-based format.
 pairwise(treat, event, n, mean, sd, TE, seTE, time,
          data=NULL, studlab,
          incr=0.5, allincr=FALSE, addincr=FALSE, allstudies=FALSE,
-         ...)
+         warn = gs("warn"), ...)
 }
 
 \arguments{
@@ -51,6 +51,9 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
     events in two treatment arms are to be included in the
     meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
     or \code{"OR"}).}
+  \item{warn}{A logical indicating whether warnings should be printed
+    (e.g., if studies are excluded due to only providing a single
+    treatment arm).}
   \item{\dots}{Additional arguments passed-through to the functions to
     calculate effects.}
 }

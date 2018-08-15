@@ -33,8 +33,8 @@ netmetabin <- function(event1, n1, event2, n2,
                        title = "",
                        keepdata = gs("keepdata"),
                        warn = TRUE) {
-
-
+  
+  
   ##
   ##
   ## (1) Check arguments
@@ -320,8 +320,10 @@ netmetabin <- function(event1, n1, event2, n2,
     else if (!compmatch(labels, "*"))
       sep.trts <- "*"
     else
-      stop("All predefined separators (':', '-', '_', '/', '+', '.', '|', '*') are used in at least one treatment label.",
-           "\n   Please specify a different character that should be used as separator (argument 'sep.trts').",
+      stop("All predefined separators (':', '-', '_', '/', '+', '.', '|', '*') ",
+           "are used in at least one treatment label.\n   ",
+           "Please specify a different character that should be used ",
+           " as separator (argument 'sep.trts').",
            call. = FALSE)
   }
   ##
@@ -360,19 +362,17 @@ netmetabin <- function(event1, n1, event2, n2,
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
-    stop(paste("Study '", names(tabnarms)[sel.narms],
-               "' has a wrong number of comparisons.",
-               "\n  Please provide data for all treatment comparisons",
-               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""),
+    stop(paste0("Study '", names(tabnarms)[sel.narms],
+                "' has a wrong number of comparisons.",
+                "\n  Please provide data for all treatment comparisons",
+                " (two-arm: 1; three-arm: 3; four-arm: 6, ...)."),
          call. = FALSE)
   if (sum(sel.narms) > 1)
-    stop(paste("The following studies have a wrong number of comparisons: ",
-               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
-                     collapse = " - "),
-               "\n  Please provide data for all treatment comparisons",
-               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""),
+    stop(paste0("The following studies have a wrong number of comparisons: ",
+                paste(paste0("'", names(tabnarms)[sel.narms], "'"),
+                      collapse = " - "),
+                "\n  Please provide data for all treatment comparisons",
+                " (two-arm: 1; three-arm: 3; four-arm: 6, ...)."),
          call. = FALSE)
   ##
   ## Check number of subgraphs
@@ -380,9 +380,8 @@ netmetabin <- function(event1, n1, event2, n2,
   n.subnets <- netconnection(treat1, treat2, studlab)$n.subnets
   ##
   if (n.subnets > 1)
-    stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
-               "Use R function 'netconnection' to identify sub-networks.",
-               sep = ""),
+    stop(paste0("Network consists of ", n.subnets, " separate sub-networks.\n",
+                "  Use R function 'netconnection' to identify sub-networks."),
          call. = FALSE)
   ##
   ## Catch 'incr' from data:
@@ -555,6 +554,10 @@ netmetabin <- function(event1, n1, event2, n2,
   dat.wide <- dat.wide[order(dat.wide$studlab,
                              dat.wide$treat1, dat.wide$treat2), ]
   ##
+  dat.long$incr <- 0
+  dat.wide$incr <- 0
+  data$.incr <- 0
+  ##
   ## Step iii. Drop treatment arms without events from individual
   ##           designs (argument 'cc.pooled' is FALSE) or add
   ##           increment if argument 'cc.pooled' is TRUE and argument
@@ -612,20 +615,19 @@ netmetabin <- function(event1, n1, event2, n2,
         ##
         dat.long <- dat.long[!zero.long, , drop = FALSE]
         dat.wide <- dat.wide[!zero.wide, , drop = FALSE]
-        data$.incr <- 0
         data$.drop <- data$.drop | zero.data
         ##
         rm(zero, zerocells, zero.long, zero.wide, zero.data)
       }
       else {
+        dat.long$incr[zero.long] <- incr
+        ##
         dat.long$event[zero.long] <- dat.long$event[zero.long] + incr
         dat.long$non.event[zero.long] <- dat.long$non.event[zero.long] + incr
         dat.long$n[zero.long] <- dat.long$n[zero.long] + 2 * incr
         ##
-        dat.wide$incr <- 0
         dat.wide$incr[zero.wide] <- incr
         ##
-        data$.incr <- 0
         data$.incr[zero.data] <- incr
         ##
         rm(zero.long)
@@ -715,11 +717,12 @@ netmetabin <- function(event1, n1, event2, n2,
                                dat.wide$treat1, dat.wide$treat2), ]
   }
   ##
-  dat.long  <-  dat.long[, c("studlab", "treat", "event", "non.event", "n",
-                             "design", "study", ".order")]
+  dat.long <- dat.long[, c("studlab", "treat",
+                           "event", "non.event", "n", "incr",
+                           "design", "study", ".order")]
   dat.wide <- dat.wide[, c("studlab", "treat1", "treat2",
                            "event1", "event2", "non.event1", "non.event2",
-                           "n1", "n2",
+                           "n1", "n2", "incr",
                            "design", "study", ".order")]
   ##
   dat.long$studlab <- as.character(dat.long$studlab)
@@ -830,30 +833,6 @@ netmetabin <- function(event1, n1, event2, n2,
   for (i in seq.d)
     dat.design[[i]] <- dat.long[dat.long$design == designs[i], , drop = FALSE]
   ##
-  ## Define H matrix
-  ##
-  H <- matrix(0,
-              nrow = n.treat * ((n.treat - 1) / 2),
-              ncol = n.treat - 1)
-  ##
-  diag(H) <- 1
-  ##
-  if (n.treat > 2) {
-    t1 <- c()
-    t2 <- c()
-    for (i in 2:(n.treat - 1))
-      for (j in (i + 1):(n.treat)) {
-        t1 <- rbind(t1, i)
-        t2 <- rbind(t2, j)
-      }
-    ##
-    h1 <- matrix(c(t1, t2), nrow = nrow(t1))
-    ##
-    for (i in 1:((n.treat - 1) * (n.treat - 2) / 2))
-      for (j in 1:(n.treat - 1))
-        H[i + n.treat - 1, j] <- -(h1[i, 1] == j + 1) + (h1[i, 2] == j + 1)
-  }
-  ##
   if (method == "MH") {
     ##
     ## MH method
@@ -885,17 +864,18 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     CoVar.Lbar <- vector("list", d)
     ##
-    Dim.y <- sum(n.d - 1)
-    y <- c(rep(0, Dim.y))
+    length.y <- sum(n.d - 1)
     ##
-    V1 <- matrix(rep(0, Dim.y * Dim.y), nrow = Dim.y)
-    V2 <- matrix(rep(0, Dim.y * Dim.y), nrow = Dim.y)
+    y <- c(rep(0, length.y))
     ##
-    X <- matrix(0, nrow = Dim.y, ncol = n.treat - 1)
+    V1 <- matrix(rep(0, length.y * length.y), nrow = length.y)
+    V2 <- matrix(rep(0, length.y * length.y), nrow = length.y)
+    ##
+    X <- matrix(0, nrow = length.y, ncol = n.treat - 1)
     ##
     counter1 <- counter2 <- counter3 <- 0
     ##
-    list1 <- matrix(0, nrow = Dim.y, ncol = 2)
+    list1 <- matrix(0, nrow = length.y, ncol = 2)
     ##
     N.j <- rep(0, d)
     ##
@@ -1147,7 +1127,7 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     basic.contrasts <- c(2:n.treat)
     ##
-    for (i in 1:Dim.y)
+    for (i in 1:length.y)
       for (k in 1:(n.treat - 1)) {
         if (list1[i, 1] == basic.contrasts[k])
           X[i, k] = -1
@@ -1155,22 +1135,9 @@ netmetabin <- function(event1, n1, event2, n2,
           X[i, k] = 1
       }
     ##
-    ## Estimate NMA
-    ##
     W <- solve(V)
     ##
-    ## Basic parameters
-    ##
     TE.basic <- solve(t(X) %*% W %*% X) %*% t(X) %*% W %*% y
-    ##
-    d.hat <- H %*% TE.basic
-    cov.d.hat <- H %*% solve(t(X) %*% W %*% X) %*% t(H)
-    ##
-    ## Inconsistency global
-    ##
-    Q <- as.vector(t(y - X %*% TE.basic) %*% solve(V) %*% (y - X %*% TE.basic))
-    df.Q <- sum(n.d - 1) - n.treat + 1
-    pval.Q <- pvalQ(Q, df.Q)
   }
   else if (method == "NCH") {
     ##
@@ -1190,12 +1157,12 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     dat.long <- dat.long[order(dat.long$studlab, dat.long$treat), ] # necessary ???
     ##
-    for (j in unique(dat.long$studlab)) {
-      k <- 1
-      for (i in seq_along(dat.long$studlab))
-        if (dat.long$studlab[i] == j) {
-          dat.long$count[i] <- k
-          k <- k + 1
+    for (i in unique(dat.long$studlab)) {
+      counter <- 1
+      for (j in seq_along(dat.long$studlab))
+        if (dat.long$studlab[j] == i) {
+          dat.long$count[j] <- counter
+          counter <- counter + 1
         }
     }
     ##
@@ -1210,8 +1177,8 @@ netmetabin <- function(event1, n1, event2, n2,
     d1$narms <- 0
     ##
     for (i in seq_len(max.arms)) {
-      ev <- paste("event.", i, sep = "")
-      tot <- paste("n.", i, sep = "")
+      ev <- paste0("event.", i)
+      tot <- paste0("n.", i)
       d1$N1 <- rowSums(cbind(d1$N1, d1[, colnames(d1) == ev]),
                        na.rm = TRUE)
       ## d1$n.all <- rowSums(cbind(d1$n.all, d1[, colnames(d1) == tot]), na.rm = TRUE)
@@ -1219,21 +1186,21 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     for (i in seq_along(d1$studlab))
       for (k in 1:max.arms) {
-        ev <- paste("event.", k, sep = "")
+        ev <- paste0("event.", k)
         if (!is.na(d1[, colnames(d1) == ev][i]))
           d1$narms[i] <- k
       }
     ##
     for (i in seq_along(colnames(d1)))
       for (k in seq_along(colnames(d1))) {
-        if (colnames(d1)[k] == paste("treat.", i, sep = ""))
-          colnames(d1)[k] = paste("t", i, sep = "")
+        if (colnames(d1)[k] == paste0("treat.", i))
+          colnames(d1)[k] = paste0("t", i)
         ##
-        if (colnames(d1)[k] == paste("event.", i, sep = ""))
-          colnames(d1)[k] = paste("r", i, sep = "")
+        if (colnames(d1)[k] == paste0("event.", i))
+          colnames(d1)[k] = paste0("r", i)
         ##
-        if (colnames(d1)[k] == paste("n.", i, sep = ""))
-          colnames(d1)[k] = paste("n", i, sep = "")
+        if (colnames(d1)[k] == paste0("n.", i))
+          colnames(d1)[k] = paste0("n", i)
       }
     ##
     ## Likelihood function
@@ -1247,14 +1214,14 @@ netmetabin <- function(event1, n1, event2, n2,
         for (k in 2:d1$narms[i]) {
           myLogLik1[i] <-
             myLogLik1[i] +
-            d1[, colnames(d1) == paste("r", k, sep = "")][i] *
-            (x[d1[, colnames(d1) == paste("t", k, sep = "")][i]] -
+            d1[, colnames(d1) == paste0("r", k)][i] *
+            (x[d1[, colnames(d1) == paste0("t", k)][i]] -
              x[d1$t1[i]] * (d1$t1[i] != 1))
           ##
           myLogLik2[i] <-
             myLogLik2[i] +
-            d1[, colnames(d1) == paste("n", k, sep = "")][i] *
-            exp(x[d1[, colnames(d1) == paste("t", k, sep = "")][i]] -
+            d1[, colnames(d1) == paste0("n", k)][i] *
+            exp(x[d1[, colnames(d1) == paste0("t", k)][i]] -
                 x[d1$t1[i]] * (d1$t1[i] != 1))
           ##
           myLogLik3[i] <- -d1$N1[i] * log(d1$n1[i] + myLogLik2[i])
@@ -1266,47 +1233,78 @@ netmetabin <- function(event1, n1, event2, n2,
       myLogLik
     }
     ##
-    init.val <- rep(0, n.treat)
+    opt <- optim(rep(0, n.treat), myLik1, method = "L-BFGS-B",
+                 lower = -Inf, upper = Inf,
+                 control = list(fnscale = -1, maxit = 10000),
+                 hessian = TRUE)
     ##
-    results <- optim(init.val, myLik1, method = "L-BFGS-B",
-                     lower = -Inf, upper = Inf,
-                     control = list(fnscale = -1, maxit = 10000),
-                     hessian = TRUE)
+    W <- solve(-opt$hessian[2:n.treat, 2:n.treat])
     ##
-    W <- solve(-results$hessian[2:n.treat, 2:n.treat])
-    TE.basic <- -(results$par)[2:n.treat]
-    ##
-    ## Se <- sqrt(diag(W))
-    ## round(exp(TE.basic), digits = n.treat)
-    ## round(exp(TE.basic + 1.96 * Se), digits = n.treat)
-    ## round(exp(TE.basic - 1.96 * Se), digits = n.treat)
-    ##
-    ## All relative effects
-    ##
-    d.hat <- H %*% TE.basic
-    cov.d.hat <- H %*% W %*% t(H)
-    ##
-    Q <- NA
-    df.Q <- NA
-    pval.Q <- NA
-    y <- NA
-    V <- NA
-    X <- NA
+    TE.basic <- -(opt$par)[2:n.treat]
   }
   ##
-  ## Fixed effects matrices
-  ##  
-  TE.fixed[lower.tri(TE.fixed, diag = FALSE)] <- d.hat
+  ## Define H matrix
+  ##
+  H <- matrix(0,
+              nrow = n.treat * ((n.treat - 1) / 2),
+              ncol = n.treat - 1)
+  ##
+  diag(H) <- 1
+  ##
+  if (n.treat > 2) {
+    t1 <- c()
+    t2 <- c()
+    for (i in 2:(n.treat - 1))
+      for (j in (i + 1):(n.treat)) {
+        t1 <- rbind(t1, i)
+        t2 <- rbind(t2, j)
+      }
+    ##
+    h1 <- matrix(c(t1, t2), nrow = nrow(t1))
+    ##
+    for (i in 1:((n.treat - 1) * (n.treat - 2) / 2))
+      for (j in 1:(n.treat - 1))
+        H[i + n.treat - 1, j] <- -(h1[i, 1] == j + 1) + (h1[i, 2] == j + 1)
+  }
+  ##
+  ## Fixed effects matrix
+  ##
+  d.hat <- H %*% TE.basic
+  ##
+  TE.fixed[lower.tri(TE.fixed, diag = FALSE)] <-  d.hat
   TE.fixed <- t(TE.fixed)
   TE.fixed[lower.tri(TE.fixed, diag = FALSE)] <- -d.hat
   diag(TE.fixed) <- 0
+  ##
+  ## Matrix with standard errors
+  ##
+  if (method == "MH")
+    cov.d.hat <- H %*% solve(t(X) %*% W %*% X) %*% t(H)
+  else
+    cov.d.hat <- H %*% W %*% t(H)
   ##
   seTE.fixed[lower.tri(seTE.fixed, diag = FALSE)] <- sqrt(diag(cov.d.hat))
   seTE.fixed <- t(seTE.fixed)
   seTE.fixed[lower.tri(seTE.fixed, diag = FALSE)] <- sqrt(diag(cov.d.hat))
   diag(seTE.fixed) <- 0
   ##
+  ## Confidence intervals
+  ##
   ci.f <- ci(TE.fixed, seTE.fixed, level = level.comb)
+  ##
+  ## Inconsistency global
+  ##
+  if (method == "MH") {
+    Q <- as.vector(t(y - X %*% TE.basic) %*% solve(V) %*%
+                    (y - X %*% TE.basic))
+    df.Q <- sum(n.d - 1) - (n.treat - 1)
+    pval.Q <- pvalQ(Q, df.Q)
+  }
+  else {
+    Q <- NA
+    df.Q <- NA
+    pval.Q <- NA
+  }
   
   
   ##
@@ -1341,8 +1339,8 @@ netmetabin <- function(event1, n1, event2, n2,
   rm(sel.treat1, sel.treat2, selstud, m.i, TE.i, seTE.i)
   ##
   ci.d <- meta::ci(TE.direct.fixed, seTE.direct.fixed, level = level.comb)
-
-
+  
+  
   labels <- sort(unique(c(treat1, treat2)))
   ##
   if (!is.null(seq))
@@ -1352,8 +1350,8 @@ netmetabin <- function(event1, n1, event2, n2,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
-
-
+  
+  
   res <- list(studlab = studlab,
               treat1 = treat1,
               treat2 = treat2,
@@ -1479,7 +1477,9 @@ netmetabin <- function(event1, n1, event2, n2,
               data.long = dat.long,
               data.design = dat.design,
               ##
-              y = y, V = V, X = X,
+              y = if (method == "MH") y else NULL,
+              V = if (method == "MH") V else NULL,
+              X = if (method == "MH") X else NULL,
               ##
               warn = warn,
               call = match.call(),
@@ -1487,8 +1487,8 @@ netmetabin <- function(event1, n1, event2, n2,
               )
   ##
   class(res) <- c("netmetabin", "netmeta")
-
-
+  
+  
   ##
   ## Study overview
   ##
@@ -1507,8 +1507,8 @@ netmetabin <- function(event1, n1, event2, n2,
                     data.frame(.studlab = res$studies,
                                .narms = res$narms),
                     by = ".studlab", all.x = TRUE)
-
-
+  
+  
   res$data <- res$data[order(res$data$.order), ]
   res$data$.order <- NULL
   rownames(res$data) <- seq_len(nrow(res$data))
@@ -1520,8 +1520,8 @@ netmetabin <- function(event1, n1, event2, n2,
   res$data.long <- res$data.long[order(res$data.long$.order), ]
   res$data.long$.order <- NULL
   rownames(res$data.long) <- seq_len(nrow(res$data.long))
-
-
+  
+  
   res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
   ##
   dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)
@@ -1535,7 +1535,7 @@ netmetabin <- function(event1, n1, event2, n2,
   rownames(dat.n) <- dat.n$indices
   res$n.trts <- dat.n[trts, "sum"]
   names(res$n.trts) <- trts
-
-
+  
+  
   res
 }
