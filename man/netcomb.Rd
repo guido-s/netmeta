@@ -50,7 +50,7 @@ which implies that common components cancel out in comparisons.
 The additive network meta-analysis model has been implemented using
 Bayesian methods (Mills et al., 2012; Welton et al., 2013). This
 function implements the additive model in a frequentist way (Rücker &
-Schwarzer, 2017).
+Schwarzer, 2018).
 
 The underlying multivariate model is given by
 
@@ -134,26 +134,27 @@ A list containing the following components:
 }
 
 \references{
-  König J, Krahn U, Binder H (2013).
+  König J, Krahn U, Binder H (2013),
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
-  \emph{Statistics in Medicine}, \bold{32}(30), 5414--29.
+  \emph{Statistics in Medicine},
+  \bold{32}(30), 5414--29
 
-  Mills EJ, Thorlund K, Ioannidis JP (2012).
+  Mills EJ, Thorlund K, Ioannidis JP (2012),
   Calculating additive treatment effects from multiple randomized
   trials provides useful estimates of combination therapies.
-  \emph{Journal of Clinical Epidemiology}, \bold{65}(12), 1282--8.
-  Doi: 10.1016/j.jclinepi.2012.07.012.
+  \emph{Journal of Clinical Epidemiology},
+  \bold{65}(12), 1282--8, DOI:10.1016/j.jclinepi.2012.07.012
 
-  Rücker G, Schwarzer G (2017).
+  Rücker G, Schwarzer G (2018),
   Network meta-analysis of combinations of treatments.
-  Manuscript.
+  Manuscript, submitted.
 
-  Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009).
+  Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009),
   Mixed treatment comparison meta-analysis of complex interventions:
   psychological interventions in coronary heart disease.
-  \emph{American Journal of Epidemiology}, \bold{169}(9): 1158--65.
-  Doi: 10.1093/aje/kwp014.
+  \emph{American Journal of Epidemiology},
+  \bold{169}(9): 1158--65, DOI:10.1093/aje/kwp014.
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido

@@ -110,13 +110,13 @@
   Carlsen L, Bruggemann R (2014),
   Partial order methodology: a valuable tool in chemometrics.
   \emph{Journal of Chemometrics},
-  \bold{28} 226--34, DOI:10.1002/cem.2569
+  \bold{28}, 226--34, DOI:10.1002/cem.2569
 
   Gabriel KR (1971),
   The biplot graphic display of matrices with application to principal
   component analysis.
   \emph{Biometrika},
-  \bold{58} 453--67
+  \bold{58}, 453--67
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}

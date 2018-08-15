@@ -21,11 +21,11 @@ care) for the primary care of depression.
 }
 
 \source{
-  Linde K, Rücker G, Schneider A et al. (2016).
+  Linde K, Rücker G, Schneider A et al. (2016),
   Questionable assumptions hampered interpretation of a network
   meta-analysis of primary care depression treatments.
   \emph{Journal of Clinical Epidemiology}
-  \bold{71}, 86--96.
+  \bold{71}, 86--96
 }
 
 \seealso{\code{\link{netmeta}}, \code{\link{netcomb}}}

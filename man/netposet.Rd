@@ -50,7 +50,7 @@ netposet(..., outcomes, treatments, small.values,
   \item arbitrary number of \code{netrank} objects providing P-scores;
   \item arbitrary number of \code{netmeta} objects;
   \item single ranking matrix with each column providing P-scores
-    (Rücker and Schwarzer 2015) or SUCRA values (Salanti et al. 2011)
+    (Rücker & Schwarzer 2015) or SUCRA values (Salanti et al. 2011)
     for an outcome and rows corresponding to treatments.
   }
   Note, albeit in general a ranking matrix is not constrained to have
@@ -122,25 +122,25 @@ netposet(..., outcomes, treatments, small.values,
   Carlsen L, Bruggemann R (2014),
   Partial order methodology: a valuable tool in chemometrics.
   \emph{Journal of Chemometrics},
-  \bold{28}, 226--34, DOI:10.1002/cem.2569 .
+  \bold{28}, 226--34, DOI:10.1002/cem.2569
 
   Rücker G, Schwarzer G (2015),
   Ranking treatments in frequentist network meta-analysis works
   without resampling methods.
   \emph{BMC Medical Research Methodology},
-  \bold{15}, 58, DOI:10.1186/s12874-015-0060-8 .
+  \bold{15}, 58, DOI:10.1186/s12874-015-0060-8
 
-  Rücker, G, Schwarzer, G. (2017).
+  Rücker G, Schwarzer G (2017),
   Resolve conflicting rankings of outcomes in network meta-analysis:
   Partial ordering of treatments.
   \emph{Research Synthesis Methods},
-  DOI:10.1002/jrsm.1270 .
+  \bold{8}, 526--36, DOI:10.1002/jrsm.1270
 
-  Salanti G, Ades AE, Ioannidis JP (2011). 
+  Salanti G, Ades AE, Ioannidis JP (2011),
   Graphical methods and numerical summaries for presenting results
   from multiple-treatment meta-analysis: an overview and tutorial.
   \emph{Journal of Clinical Epidemiology},
-  \bold{64}(2), 163--171.
+  \bold{64}(2), 163--71
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}

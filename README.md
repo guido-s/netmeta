@@ -13,7 +13,8 @@ Official GitHub repository of R package **netmeta**
 A comprehensive set of functions providing frequentist methods for
 network meta-analysis:
 
-  - frequentist network meta-analysis (Rücker, 2012);
+  - frequentist network meta-analysis (Rücker, 2012; Rücker &
+    Schwarzer, 2014);
 
   - net heat plot and design-based decomposition of Cochran's Q (Krahn
     et al., 2013);
@@ -38,7 +39,7 @@ network meta-analysis:
   - network meta-analysis of binary data using the Mantel-Haenszel
     method or the non-central hypergeometric distribution;
 
-- 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012);
+  - 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012);
 
   - automated drawing of network graphs (Rücker & Schwarzer, 2016).
 
@@ -58,13 +59,15 @@ http://meta-analysis-with-r.org/ .
 
 [Krahn U, Binder H, König J (2013), A graphical tool for locating inconsistency in network meta-analyses. *BMC Medical Research Methodology*, **13**, 35.](https://scholar.google.com/scholar?q=Krahn+Binder+König+2013+A+graphical+tool+for+locating+inconsistency+in+network+meta-analyses)
 
-[Rücker G (2012), Network meta-analysis, electrical networks and graph theory. *Research Synthesis Methods*, **3**, 312-324.](https://scholar.google.com/scholar?q=Rücker+2012+Network+meta-analysis+electrical+networks+and+graph+theory)
+[Rücker G (2012), Network meta-analysis, electrical networks and graph theory. *Research Synthesis Methods*, **3**, 312-24.](https://scholar.google.com/scholar?q=Rücker+2012+Network+meta-analysis+electrical+networks+and+graph+theory)
 
-[Rücker G, Schwarzer G (2015), Ranking treatments in frequentist network meta-analysis works without resampling methods. *BMC Medical Research Methodology*, *15*: 58](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2015+Ranking+treatments+in+frequentist+network+meta-analysis+works+without+resampling+methods)
+[Rücker G, Schwarzer G (2014), Reduce dimension or reduce weights? Comparing two approaches to multi-arm studies in network meta-analysis. *Statistics in Medicine*, **33**: 4353-69](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2014+Reduce+dimension+or+reduce+weights)
+
+[Rücker G, Schwarzer G (2015), Ranking treatments in frequentist network meta-analysis works without resampling methods. *BMC Medical Research Methodology*, **15**: 58](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2015+Ranking+treatments+in+frequentist+network+meta-analysis+works+without+resampling+methods)
 
 [Rücker G, Schwarzer G (2016), Automated drawing of network plots in network meta-analysis. *Research Synthesis Methods*, **7**: 94-107.](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2016+Automated+drawing+of+network+plots+in+network+meta-analysis)
 
-[Rücker G, Schwarzer G (2017). Resolve conflicting rankings of outcomes in network meta-analysis: Partial ordering of treatments. *Research Synthesis Methods*](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2017+resolve+conflicting+rankings+of+outcomes+in+network+meta-analysis)
+[Rücker G, Schwarzer G (2017). Resolve conflicting rankings of outcomes in network meta-analysis: Partial ordering of treatments. *Research Synthesis Methods*, **8**: 526-36](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2017+resolve+conflicting+rankings+of+outcomes+in+network+meta-analysis)
 
 [Schwarzer G, Carpenter JR and Rücker G (2015), *Meta-Analysis with R (Use-R!)*. Springer International Publishing, Switzerland](http://www.springer.com/gp/book/9783319214153)
 

@@ -347,32 +347,31 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
 }
 
 \references{
-  Jackson D, White IR and Riley RD (2012),
+  Jackson D, White IR, Riley RD (2012),
   Quantifying the impact of between-study heterogeneity in multivariate
   meta-analyses.
   \emph{Statistics in Medicine},
-  \bold{31}(29), 3805--3820.
+  \bold{31}(29), 3805--20
 
   Rücker G (2012),
   Network meta-analysis, electrical networks and graph theory.
   \emph{Research Synthesis Methods},
-  \bold{3}, 312--24.
+  \bold{3}, 312--24
 
-  Rücker G and Schwarzer G (2014),
+  Rücker G, Schwarzer G (2014),
   Reduce dimension or reduce weights? Comparing two approaches to
   multi-arm studies in network meta-analysis.
   \emph{Statistics in Medicine},
-  \bold{33}, 4353--4369.
+  \bold{33}, 4353--69
 
-  Schwarzer G, Carpenter JR and Rücker G (2015),
+  Schwarzer G, Carpenter JR, Rücker G (2015),
   \emph{Meta-Analysis with R (Use-R!)}.
   Springer International Publishing, Switzerland
 
-  Senn S, Gavini F, Magrez D, and Scheen A (2013),
+  Senn S, Gavini F, Magrez D, Scheen A (2013),
   Issues in performing a network meta-analysis.
   \emph{Statistical Methods in Medical Research},
-  \bold{22}(2), 169--189.
-  First published online 2012 Jan 3.
+  \bold{22}(2), 169--89
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido

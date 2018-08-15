@@ -83,10 +83,11 @@ A list containing the following components:
 }
 
 \references{
-  König J, Krahn U, Binder H (2013).
+  König J, Krahn U, Binder H (2013),
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
-  \emph{Statistics in Medicine}, \bold{32}(30), 5414--29.
+  \emph{Statistics in Medicine},
+  \bold{32}(30), 5414--29
 }
 
 \author{Ulrike Krahn \email{ulrike.krahn@bayer.com}, Jochem König \email{koenigjo@uni-mainz.de}}

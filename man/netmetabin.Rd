@@ -270,11 +270,10 @@ netmetabin(event1, n1, event2, n2,
 }
 
 \references{
-  Senn S, Gavini F, Magrez D, and Scheen A (2013),
+  Senn S, Gavini F, Magrez D, Scheen A (2013),
   Issues in performing a network meta-analysis.
   \emph{Statistical Methods in Medical Research},
-  \bold{22}(2), 169--189.
-  First published online 2012 Jan 3.
+  \bold{22}(2), 169--89
 }
 
 \author{Orestis Efthimiou \email{oremiou@gmail.com}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}

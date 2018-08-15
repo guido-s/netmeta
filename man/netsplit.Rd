@@ -145,19 +145,22 @@ netsplit(x, upper = TRUE,
 \email{ruecker@imbi.uni-freiburg.de}}
 
 \references{
-  Dias S, Welton NJ, Caldwell DM, Ades AE (2010).
+  Dias S, Welton NJ, Caldwell DM, Ades AE (2010),
   Checking consistency in mixed treatment comparison meta-analysis.
-  \emph{Statistics in Medicine}, \bold{29}, 932--44.
+  \emph{Statistics in Medicine},
+  \bold{29}, 932--44
 
-  König J, Krahn U, Binder H (2013).
+  König J, Krahn U, Binder H (2013),
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
-  \emph{Statistics in Medicine}, \bold{32}(30), 5414--29.
+  \emph{Statistics in Medicine},
+  \bold{32}(30), 5414--29
   
-  Puhan MA, Schünemann HJ, Murad MH, et al. (2014).  
+  Puhan MA, Schünemann HJ, Murad MH, et al. (2014),  
   A GRADE working group approach for rating the quality of treatment
   effect estimates from network meta-analysis.
-  \emph{British Medical Journal}, \bold{349}, g5630
+  \emph{British Medical Journal},
+  \bold{349}, g5630
 }
 
 \seealso{\code{\link{netmeta}}, \code{\link{netmeasures}}}

@@ -44,12 +44,12 @@ placebo for the primary care setting; partly shown in Linde et al.
 }
 
 \source{
-  Linde K, Kriston L, Rücker G, et al. (2015).
+  Linde K, Kriston L, Rücker G, et al. (2015),
   Efficacy and acceptability of pharmacological treatments for
   depressive disorders in primary care: Systematic review and network
   meta-analysis.
   \emph{Annals of Family Medicine}
-  \bold{13}, 69--79.
+  \bold{13}, 69--79
 }
 
 \seealso{\code{\link{pairwise}}, \code{\link{metabin}}, \code{\link{netmeta}}, \code{\link{netposet}}}
