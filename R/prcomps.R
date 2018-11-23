@@ -17,8 +17,10 @@ prcomps <- function(x,
   ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
   
   
-  res <- as.data.frame(x, row.names = seq_along(x$TE),
-                       stringsAsFactors = FALSE)
+  ## First column contains row names
+  ##
+  rnam <- x[, 1]
+  res <- x[, -1]
   ##
   if (backtransf & relative) {
     res$TE <- exp(res$TE)
@@ -41,11 +43,7 @@ prcomps <- function(x,
                            digits = digits.pval.Q,
                            scientific = scientific.pval)
   ##
-  res$seTE <- NULL
   res$upper <- NULL
-  res$level <- NULL
-  res$df <- NULL
-  res$null.effect <- NULL
   ##
   sel <- names(res) == "TE"
   names(res)[sel] <- sm.lab
@@ -53,10 +51,11 @@ prcomps <- function(x,
   sel <- names(res) == "lower"
   names(res)[sel] <- ci.lab
   ##
-  nam <- names(res)
+  colnames <- names(res)
+  ##
   res <- as.matrix(res)
   ##
-  dimnames(res) <- list(rep("", dim(res)[1]), nam)
+  dimnames(res) <- list(rnam, colnames)
   
   
   res

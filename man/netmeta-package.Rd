@@ -34,10 +34,12 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
   \item split direct and indirect evidence (\code{\link{netsplit}}) to
     check for consistency (Dias et al., 2010);
   \item league table with network meta-analysis results
-    (\code{\link{netleague}});
+  (\code{\link{netleague}});
+  
   \item additive network meta-analysis for combinations of treatments
     (\code{\link{netcomb}}, \code{\link{discomb}} for disconnected
-    networks) (Rücker & Schwarzer, 2018);  
+    networks) (Rücker et al., 2018);
+    
   \item network meta-analysis of binary data using the Mantel-Haenszel
     or non-central hypergeometric distribution method
     (\code{\link{netmetabin}});
@@ -127,8 +129,8 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
   \emph{Research Synthesis Methods},
   \bold{8}, 526--36, DOI:10.1002/jrsm.1270
 
-  Rücker G, Schwarzer G (2018),
-  Network meta-analysis of combinations of treatments.
+  Rücker G, Petropoulou M, Schwarzer G (2018),
+  Network meta-analysis of multicomponent interventions,
   Manuscript, submitted.
 
   Schwarzer G, Carpenter JR and Rücker G (2015),

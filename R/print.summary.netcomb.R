@@ -56,19 +56,17 @@ print.summary.netcomb <- function(x,
   trts <- x$trts
   trts.abbr <- treats(trts, nchar.trts)
   ##
-  comps <- names(x$components.fixed$TE)
+  comps <- x$comps
   comps.abbr <- treats(comps, nchar.trts)
   
   
   dat1.f <- prcombs(x$combinations.fixed,
-                    backtransf, x$sm, x$level,
-                    trts, trts.abbr,
+                    backtransf, x$sm, x$level, trts.abbr,
                     digits, digits.zval, digits.pval.Q,
                     scientific.pval, big.mark, x$seq)
   ##
   dat1.r <- prcombs(x$combinations.random,
-                    backtransf, x$sm, x$level,
-                    trts, trts.abbr,
+                    backtransf, x$sm, x$level, trts.abbr,
                     digits, digits.zval, digits.pval.Q,
                     scientific.pval, big.mark, x$seq)
   ##
@@ -86,14 +84,12 @@ print.summary.netcomb <- function(x,
   
   
   dat2.f <- prcombs(x$components.fixed,
-                    backtransf, x$sm, x$level,
-                    comps, comps.abbr,
+                    backtransf, x$sm, x$level, comps.abbr,
                     digits, digits.zval, digits.pval.Q,
                     scientific.pval, big.mark)
   ##
   dat2.r <- prcombs(x$components.random,
-                    backtransf, x$sm, x$level,
-                    comps, comps.abbr,
+                    backtransf, x$sm, x$level, comps.abbr,
                     digits, digits.zval, digits.pval.Q,
                     scientific.pval, big.mark)
   ##

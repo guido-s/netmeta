@@ -40,17 +40,17 @@ Treatments in network meta-analysis (NMA) can be complex
 interventions. Some treatments may be combinations of others or have
 common components. The standard analysis provided by
 \code{\link{netmeta}} is a NMA where all existing (single or combined)
-treatments are considered as different nodes in the
-network. Exploiting the fact that some treatments are combinations of
-common components, an additive NMA model can be used to evaluate the
-influence of individual components. This model assumes that the effect
-of a treatment combination is the sum of the effects of its components
-which implies that common components cancel out in comparisons.
+treatments are considered as different nodes in the network. Exploiting
+the fact that some treatments are combinations of common components, an
+additive component network meta-analysis (CNMA) model can be used to
+evaluate the influence of individual components. This model assumes that
+the effect of a treatment combination is the sum of the effects of its
+components which implies that common components cancel out in
+comparisons.
 
-The additive network meta-analysis model has been implemented using
-Bayesian methods (Mills et al., 2012; Welton et al., 2013). This
-function implements the additive model in a frequentist way (Rücker &
-Schwarzer, 2018).
+The additive CNMA model has been implemented using Bayesian methods
+(Mills et al., 2012; Welton et al., 2013). This function implements the
+additive model in a frequentist way (Rücker et al., 2018).
 
 The underlying multivariate model is given by
 
@@ -146,8 +146,8 @@ A list containing the following components:
   \emph{Journal of Clinical Epidemiology},
   \bold{65}(12), 1282--8, DOI:10.1016/j.jclinepi.2012.07.012
 
-  Rücker G, Schwarzer G (2018),
-  Network meta-analysis of combinations of treatments.
+  Rücker G, Petropoulou M, Schwarzer G (2018),
+  Network meta-analysis of multicomponent interventions,
   Manuscript, submitted.
 
   Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009),
@@ -185,8 +185,8 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, ref = "placebo",
-		seq = trts,
-                sm = "OR", comb.fixed = FALSE, comb.random = TRUE)
+                seq = trts,
+                sm = "OR", comb.fixed = FALSE)
 #
 summary(net1)
 

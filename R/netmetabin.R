@@ -7,13 +7,14 @@ netmetabin <- function(event1, n1, event2, n2,
                        incr = gs("incr"),
                        allincr = gs("allincr"), addincr = gs("addincr"),
                        allstudies = gs("allstudies"),
-                       level = 0.95, level.comb = 0.95,
+                       level = gs("level"),
+                       level.comb = gs("level.comb"),
                        comb.fixed = gs("comb.fixed"),
                        comb.random = method == "Inverse" &
                          (gs("comb.random") | !is.null(tau.preset)),
                        ##
                        prediction = FALSE,
-                       level.predict = 0.95,
+                       level.predict = gs("level.predict"),
                        ##
                        reference.group = "",
                        baseline.reference = TRUE,

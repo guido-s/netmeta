@@ -19,13 +19,12 @@ netmetabin(event1, n1, event2, n2,
            incr = gs("incr"),
            allincr = gs("allincr"), addincr = gs("addincr"),
            allstudies = gs("allstudies"),
-           level = 0.95, level.comb = 0.95,
+           level=gs("level"), level.comb=gs("level.comb"),
            comb.fixed = gs("comb.fixed"),
            comb.random = method == "Inverse" &
              (gs("comb.random") | !is.null(tau.preset)),
            ##
-           prediction = FALSE,
-           level.predict = 0.95,
+           prediction=FALSE, level.predict=gs("level.predict"),
            ##
            reference.group = "",
            baseline.reference = TRUE,
@@ -111,12 +110,12 @@ netmetabin(event1, n1, event2, n2,
     results or negative multi-arm variances should be printed.}
   \item{sep.trts}{A character used in comparison names as separator
     between treatment labels.}
+  \item{nchar.trts}{A numeric defining the minium number of characters
+    used to create unique treatment names (see Details).}
   \item{backtransf}{A logical indicating whether results should be
     back transformed in printouts and forest plots. If
     \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
     as odds ratios rather than log odds ratios, for example.}
-  \item{nchar.trts}{A numeric defining the minium number of characters
-    used to create unique treatment names (see Details).}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{keepdata}{A logical indicating whether original data (set)
     should be kept in netmeta object.}

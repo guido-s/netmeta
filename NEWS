@@ -14,6 +14,10 @@
 
   * Circular network graphs with minimal number of crossings
 
+  * Default setting for levels of confidence intervals can be
+    specified using R function settings.meta(); the default is still
+    0.95, i.e., 95% confidence intervals are computed
+
  ** User-visible changes **
 
   * netmeta():
@@ -63,6 +67,12 @@
 
   * netcomb() and discomb():
     - check if argument 'sep.components' is a single character
+    - similar list elements as for R objects created with netmeta();
+      especially matrices with all network estimates added to output,
+      see, for example, new list elements 'TE.fixed' and 'TE.random'
+
+  * Internal function nma.additive():
+    - calculate matrices with all network estimates
 
   * netleague() is a generic function
 

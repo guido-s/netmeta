@@ -25,6 +25,7 @@ discomb(TE, seTE,
         C.matrix,
         ##
         sm,
+        level = gs("level"),
         level.comb = gs("level.comb"),
         comb.fixed = gs("comb.fixed"),
         comb.random = gs("comb.random") | !is.null(tau.preset),
@@ -64,6 +65,8 @@ discomb(TE, seTE,
   \item{sm}{A character string indicating underlying summary measure,
     e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
     \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.}
+  \item{level}{The level used to calculate confidence intervals for
+    individual comparisons.}
   \item{level.comb}{The level used to calculate confidence intervals for
     pooled estimates.}
   \item{comb.fixed}{A logical indicating whether a fixed effect
@@ -99,21 +102,21 @@ Treatments in network meta-analysis (NMA) can be complex
 interventions. Some treatments may be combinations of others or have
 common components. The standard analysis provided by
 \code{\link{netmeta}} is a NMA where all existing (single or combined)
-treatments are considered as different nodes in the
-network. Exploiting the fact that some treatments are combinations of
-common components, an additive NMA model can be used to evaluate the
-influence of individual components. This model assumes that the effect
-of a treatment combination is the sum of the effects of its components
-which implies that common components cancel out in comparisons.
+treatments are considered as different nodes in the network. Exploiting
+the fact that some treatments are combinations of common components, an
+additive component network meta-analysis (CNMA) model can be used to
+evaluate the influence of individual components. This model assumes that
+the effect of a treatment combination is the sum of the effects of its
+components which implies that common components cancel out in
+comparisons.
 
 This R function can be used for disconnected networks. Use
 \code{\link{netmeta}} and \code{\link{netcomb}} for connected
 networks.
 
-The additive network meta-analysis model has been implemented using
-Bayesian methods (Mills et al., 2012; Welton et al., 2013). This
-function implements the additive model in a frequentist way (Rücker &
-Schwarzer, 2018).
+The additive CNMA model has been implemented using Bayesian methods
+(Mills et al., 2012; Welton et al., 2013). This function implements the
+additive model in a frequentist way (Rücker et al., 2018).
 
 The underlying multivariate model is given by
 
@@ -203,8 +206,8 @@ A list containing the following components:
   \emph{Journal of Clinical Epidemiology},
   \bold{65}(12), 1282--8, DOI:10.1016/j.jclinepi.2012.07.012
 
-  Rücker G, Schwarzer G (2018),
-  Network meta-analysis of combinations of treatments.
+  Rücker G, Petropoulou M, Schwarzer G (2018),
+  Network meta-analysis of multicomponent interventions,
   Manuscript, submitted.
 
   Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009),

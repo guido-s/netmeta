@@ -1,6 +1,5 @@
 prcombs <- function(x,
-                    backtransf, sm, level,
-                    trts, trts.abbr,
+                    backtransf, sm, level, abbr,
                     digits, digits.zval, digits.pval.Q,
                     scientific.pval, big.mark,
                     seq = NULL) {
@@ -18,8 +17,13 @@ prcombs <- function(x,
   ##  
   ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
   
-  
-  res <- as.data.frame(x, stringsAsFactors = FALSE)
+
+  ## First column contains row names
+  ##
+  rnam <- x[, 1]
+  res <- x[, -1]
+  rownames(res) <- rnam
+  ##
   if (!is.null(seq))
     res <- res[seq, ]
   ##
@@ -30,7 +34,7 @@ prcombs <- function(x,
   }
   ##
   rownames(res) <- as.character(factor(rownames(res),
-                                       levels = trts, labels = trts.abbr))
+                                       levels = rnam, labels = abbr))
   ##
   res$TE <- formatN(res$TE, digits, "NA", big.mark)
   res$lower <- meta:::formatCI(formatN(round(res$lower, digits),
@@ -44,9 +48,6 @@ prcombs <- function(x,
   ##
   res$seTE <- NULL
   res$upper <- NULL
-  res$level <- NULL
-  res$df <- NULL
-  res$null.effect <- NULL
   ##
   sel <- names(res) == "TE"
   names(res)[sel] <- sm.lab

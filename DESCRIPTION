@@ -8,7 +8,7 @@ Authors@R: c(person("Gerta","Rücker", role="aut"),
     person("Guido","Schwarzer", email="sc@imbi.uni-freiburg.de", role=c("aut","cre")),
     person("Ulrike","Krahn", role="aut"), person("Jochem","König", role="aut"),
     person("Orestis","Efthimiou", role="aut"))
-Date: 6666-06-06
+Date: 2018-11-23
 URL: https://github.com/guido-s/netmeta http://meta-analysis-with-r.org
 Description: A comprehensive set of functions providing frequentist methods for network meta-analysis and supporting Schwarzer et al. (2015) <DOI:10.1007/978-3-319-21416-0>, Chapter 8 "Network Meta-Analysis":
  - frequentist network meta-analysis following Rücker (2012) <DOI:10.1002/jrsm.1058>;

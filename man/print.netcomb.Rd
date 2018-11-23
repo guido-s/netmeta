@@ -25,7 +25,9 @@
       big.mark = gs("big.mark"),
       ...)
 
-\method{summary}{netcomb}(object, ...)
+\method{summary}{netcomb}(object,
+        comb.fixed = object$comb.fixed,
+        comb.random = object$comb.random, ...)
 
 \method{print}{summary.netcomb}(x,
       comb.fixed = x$comb.fixed,
