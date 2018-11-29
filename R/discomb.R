@@ -407,6 +407,9 @@ discomb <- function(TE, seTE,
                         n, sep.trts)
   
   
+  NAs <- rep(NA, length(res.f$comparisons$TE))
+  
+  
   res <- list(studlab = p0$studlab[o],
               treat1 = p0$treat1[o],
               treat2 = p0$treat2[o],
@@ -441,16 +444,12 @@ discomb <- function(TE, seTE,
               n.comps = NA,
               events.comps = NA,
               ##
-              TE.nma.fixed = NA,
-              seTE.nma.fixed = NA,
-              lower.nma.fixed = NA,
-              upper.nma.fixed = NA,
-              zval.nma.fixed = NA,
-              pval.nma.fixed = NA,
-              ##
-              leverage.fixed = NA,
-              w.fixed = NA,
-              Q.fixed = NA,
+              TE.nma.fixed = NAs,
+              seTE.nma.fixed = NAs,
+              lower.nma.fixed = NAs,
+              upper.nma.fixed = NAs,
+              zval.nma.fixed = NAs,
+              pval.nma.fixed = NAs,
               ##
               TE.cnma.fixed = res.f$comparisons$TE,
               seTE.cnma.fixed = res.f$comparisons$seTE,
@@ -466,14 +465,12 @@ discomb <- function(TE, seTE,
               zval.fixed = res.f$all.comparisons$z,
               pval.fixed = res.f$all.comparisons$p,
               ##
-              TE.nma.random = NA,
-              seTE.nma.random = NA,
-              lower.nma.random = NA,
-              upper.nma.random = NA,
-              zval.nma.random = NA,
-              pval.nma.random = NA,
-              ##
-              w.random = NA,
+              TE.nma.random = NAs,
+              seTE.nma.random = NAs,
+              lower.nma.random = NAs,
+              upper.nma.random = NAs,
+              zval.nma.random = NAs,
+              pval.nma.random = NAs,
               ##
               TE.cnma.random = res.r$comparisons$TE,
               seTE.cnma.random = res.r$comparisons$seTE,
@@ -533,7 +530,6 @@ discomb <- function(TE, seTE,
               ##
               B.matrix = B.matrix,
               C.matrix = C.matrix,
-              X = X, 
               ##
               n.matrix = NA,
               events.matrix = NA,

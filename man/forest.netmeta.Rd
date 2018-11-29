@@ -14,19 +14,20 @@
        pooled=ifelse(x$comb.random, "random", "fixed"),
        reference.group=x$reference.group,
        baseline.reference=x$baseline.reference,
-       leftcols="studlab", leftlabs="Treatment",
-       rightcols=c("effect", "ci"), rightlabs=NULL,
+       leftcols="studlab", leftlabs,
+       rightcols=c("effect", "ci"), rightlabs,
        digits=gs("digits.forest"), small.values="good", digits.Pscore=2,
        smlab=NULL,
        sortvar=x$seq, backtransf=x$backtransf,
        lab.NA=".", add.data,
        drop.reference.group = FALSE,
+       col.by = "black", print.byvar = FALSE,
        ...)
 }
 
 \arguments{
   \item{x}{An object of class \code{netmeta}.}
-  \item{reference.group}{Reference group.}
+  \item{reference.group}{Reference group(s).}
   \item{baseline.reference}{A logical indicating whether results
     should be expressed as comparisons of other treatments versus the
     reference treatment (default) or vice versa.}
@@ -68,6 +69,9 @@
     print in forest plot (see Details).}
   \item{drop.reference.group}{A logical indicating whether the
     reference group should be printed in the forest plot.}
+  \item{col.by}{The colour to print information on subgroups.}
+  \item{print.byvar}{A logical indicating whether the name of the
+    grouping variable should be printed in front of the group labels.}
   \item{\dots}{Additional arguments for \code{\link{forest.meta}}
     function.}
 }

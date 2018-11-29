@@ -24,6 +24,7 @@ forest.netcomb <- function(x,
   ##
   ##
   meta:::chkclass(x, "netcomb")
+  is.discomb <- inherits(x, "discomb")
   ##
   chklogical <- meta:::chklogical
   formatN <- meta:::formatN
@@ -93,20 +94,26 @@ forest.netcomb <- function(x,
   ## (3) Extract comparisons with reference group
   ##
   ##
-  if (baseline.reference)
+  if (baseline.reference) {
     dat <- data.frame(TE = TE[, colnames(TE) == reference.group],
                       seTE = seTE[, colnames(seTE) == reference.group],
                       trts = colnames(TE),
-                      k = x$A.matrix[, colnames(TE) == reference.group],
+                      k = NA,
                       row.names = colnames(TE),
                       as.is = TRUE)
-  else
+    if (!is.discomb)
+      dat$k <- x$A.matrix[, colnames(TE) == reference.group]
+  }
+  else {
     dat <- data.frame(TE = TE[rownames(TE) == reference.group, ],
                       seTE = seTE[rownames(seTE) == reference.group, ],
                       trts = rownames(TE),
-                      k = x$A.matrix[rownames(TE) == reference.group, ],
+                      k = NA,
                       row.names = colnames(TE),
                       as.is = TRUE)
+    if (!is.discomb)
+      dat$k <- x$A.matrix[rownames(TE) == reference.group, ]
+  }
   ##
   rm(TE)
   rm(seTE)
@@ -156,15 +163,17 @@ forest.netcomb <- function(x,
   if (any(sel8))
     sortvar <- -dat$seTE
   ##
-  idx9 <- charmatch(tolower(sortvar.c), "k", nomatch = NA)
-  sel9 <- !is.na(idx9) & idx9 == 1
-  if (any(sel9))
-    sortvar <- dat$k
-  ##
-  idx10 <- charmatch(tolower(sortvar.c), "-k", nomatch = NA)
-  sel10 <- !is.na(idx10) & idx10 == 1
-  if (any(sel10))
-    sortvar <- -dat$k
+  if (!is.discomb) {
+    idx9 <- charmatch(tolower(sortvar.c), "k", nomatch = NA)
+    sel9 <- !is.na(idx9) & idx9 == 1
+    if (any(sel9))
+      sortvar <- dat$k
+    ##
+    idx10 <- charmatch(tolower(sortvar.c), "-k", nomatch = NA)
+    sel10 <- !is.na(idx10) & idx10 == 1
+    if (any(sel10))
+      sortvar <- -dat$k
+  }
   ##  
   if (!is.null(sortvar)) {
     if (is.character(sortvar))

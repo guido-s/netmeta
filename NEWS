@@ -19,7 +19,9 @@
     meta-analysis objects and to generate a forest plot with results
     of several network meta-analyses
 
-  * Circular network graphs with minimal number of crossings
+  * All network comparisons can be included in a forest plot
+
+  * Circular network graphs with minimal number of crossings available
 
   * Default setting for levels of confidence intervals can be
     specified using R function settings.meta(); the default is still
@@ -42,6 +44,12 @@
       method based on arguments 'TE' and 'seTE'
     - argument 'n' can be used for meta-analysis with count outcomes
       (based on arguments 'event' and 'time')
+
+  * forest.netmeta():
+    - argument 'reference.group' can be a vector in order to include
+      several / all network comparisons in a forest plot
+    - (invisibly) returns a data frame with information used to
+      produce the forest plot
 
   * forest.netsplit() and print.netsplit():
     - argument 'showall' replaced with 'show' (see help pages)
