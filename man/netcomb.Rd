@@ -14,7 +14,7 @@
 }
 
 \usage{
-netcomb(x, inactive = NULL, sep.components = "+", C.matrix,
+netcomb(x, inactive = NULL, sep.comps = "+", C.matrix,
         comb.fixed = x$comb.fixed,
         comb.random = x$comb.random | !is.null(tau.preset),
         tau.preset = NULL)
@@ -24,7 +24,7 @@ netcomb(x, inactive = NULL, sep.components = "+", C.matrix,
   \item{x}{An object of class \code{netmeta}.}
   \item{inactive}{A character string defining the inactive treatment
     (see Details).}
-  \item{sep.components}{A single character to define separator between
+  \item{sep.comps}{A single character to define separator between
     treatment components.}
   \item{C.matrix}{C matrix (see Details).}
   \item{comb.fixed}{A logical indicating whether a fixed effect
@@ -77,16 +77,16 @@ that the treatment effect of the combination of this component with an
 additional treatment component is equal to the treatment effect of the
 additional component alone.
 
-Argument \code{sep.components} can be used to specify the separator
-between individual components. By default, the matrix \strong{C} is
-calculated internally from treatment names. However, it is possible to
-specify a different matrix using argument \code{C.matrix}.
-}                                                              
+Argument \code{sep.comps} can be used to specify the separator between
+individual components. By default, the matrix \strong{C} is calculated
+internally from treatment names. However, it is possible to specify a
+different matrix using argument \code{C.matrix}.
+}                                       
 
 \value{
 A list containing the following components:
 
-  \item{x, inactive, sep.components, C.matrix}{As defined above.}  
+  \item{x, inactive, sep.comps, C.matrix}{As defined above.}  
   \item{comb.fixed, comb.random, tau.preset}{As defined above.}  
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}

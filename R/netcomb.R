@@ -1,6 +1,6 @@
 netcomb <- function(x,
                     inactive = NULL,
-                    sep.components = "+",
+                    sep.comps = "+",
                     C.matrix,
                     comb.fixed = x$comb.fixed,
                     comb.random = x$comb.random | !is.null(tau.preset),
@@ -14,7 +14,7 @@ netcomb <- function(x,
   ##
   meta:::chkclass(x, "netmeta")
   ##
-  meta:::chkchar(sep.components, nchar = 1)
+  meta:::chkchar(sep.comps, nchar = 1)
   ##
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
@@ -51,7 +51,7 @@ netcomb <- function(x,
     ##
     ## Create C-matrix from netmeta object
     ##
-    C.matrix <- as.matrix(createC(x, sep.components, inactive))
+    C.matrix <- as.matrix(createC(x, sep.comps, inactive))
     C.matrix <- C.matrix[trts, , drop = FALSE]
   }
   else {
@@ -207,10 +207,6 @@ netcomb <- function(x,
               zval.nma.fixed = x$zval.nma.fixed,
               pval.nma.fixed = x$pval.nma.fixed,
               ##
-              leverage.fixed = x$leverage,
-              w.fixed = x$w.fixed,
-              Q.fixed = x$Q.fixed,
-              ##
               TE.cnma.fixed = res.f$comparisons$TE,
               seTE.cnma.fixed = res.f$comparisons$seTE,
               lower.cnma.fixed = res.f$comparisons$lower,
@@ -231,8 +227,6 @@ netcomb <- function(x,
               upper.nma.random = x$upper.nma.random,
               zval.nma.random = x$zval.nma.random,
               pval.nma.random = x$pval.nma.random,
-              ##
-              w.random = x$w.random,
               ##
               TE.cnma.random = res.r$comparisons$TE,
               seTE.cnma.random = res.r$comparisons$seTE,
@@ -290,9 +284,9 @@ netcomb <- function(x,
               df.Q.diff = df.Q.diff,
               pval.Q.diff = res.f$pval.Q.diff, 
               ##
+              A.matrix = x$A.matrix,
               B.matrix = B.matrix,
               C.matrix = C.matrix,
-              X = X,
               ##
               n.matrix = x$n.matrix,
               events.matrix = x$events.matrix,
@@ -304,6 +298,9 @@ netcomb <- function(x,
               comb.fixed = x$comb.fixed,
               comb.random = x$comb.random,
               ##
+              reference.group = x$reference.group,
+              baseline.reference = x$baseline.reference,
+              all.treatments = NULL,
               seq = x$seq,
               ##
               tau.preset = tau.preset,
@@ -313,6 +310,9 @@ netcomb <- function(x,
               ##
               sep.trts = x$sep.trts,
               nchar.trts = x$nchar.trts,
+              ##
+              inactive = inactive,
+              sep.comps = sep.comps,
               ##
               backtransf = x$backtransf,
               ##

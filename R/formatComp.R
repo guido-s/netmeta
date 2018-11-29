@@ -1,8 +1,8 @@
-prcomps <- function(x,
-                    backtransf, sm, level,
-                    trts, trts.abbr,
-                    digits, digits.zval, digits.pval.Q,
-                    scientific.pval, big.mark) {
+formatComp <- function(x,
+                       backtransf, sm, level,
+                       trts, trts.abbr,
+                       digits, digits.zval, digits.pval.Q,
+                       scientific.pval, big.mark) {
   
   
   formatN <- meta:::formatN

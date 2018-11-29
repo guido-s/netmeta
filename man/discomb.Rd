@@ -21,7 +21,7 @@ discomb(TE, seTE,
         studlab, data = NULL, subset = NULL,
         ##
         inactive = NULL,
-        sep.components = "+", 
+        sep.comps = "+", 
         C.matrix,
         ##
         sm,
@@ -30,6 +30,8 @@ discomb(TE, seTE,
         comb.fixed = gs("comb.fixed"),
         comb.random = gs("comb.random") | !is.null(tau.preset),
         ##
+        reference.group = "",
+        baseline.reference = TRUE,
         seq = NULL,
         ##
         tau.preset = NULL,
@@ -59,7 +61,7 @@ discomb(TE, seTE,
   \item{subset}{An optional vector specifying a subset of studies to be used.}
   \item{inactive}{A character string defining the inactive treatment
     (see Details).}
-  \item{sep.components}{A single character to define separator between
+  \item{sep.comps}{A single character to define separator between
     treatment components.}
   \item{C.matrix}{C matrix (see Details).}
   \item{sm}{A character string indicating underlying summary measure,
@@ -73,6 +75,11 @@ discomb(TE, seTE,
     meta-analysis should be conducted.}
   \item{comb.random}{A logical indicating whether a random effects
     meta-analysis should be conducted.}
+  \item{reference.group}{Reference group.}
+  \item{baseline.reference}{A logical indicating whether results
+    should be expressed as comparisons of other treatments versus the
+    reference treatment (default) or vice versa. This argument is only
+    considered if \code{reference.group} has been specified.}    
   \item{seq}{A character or numerical vector specifying the sequence
     of treatments in printouts.}
   \item{tau.preset}{An optional value for the square-root of the
@@ -143,16 +150,17 @@ that the treatment effect of the combination of this component with an
 additional treatment component is equal to the treatment effect of the
 additional component alone.
 
-Argument \code{sep.components} can be used to specify the separator
-between individual components. By default, the matrix \strong{C} is
-calculated internally from treatment names. However, it is possible to
-specify a different matrix using argument \code{C.matrix}.
+Argument \code{sep.comps} can be used to specify the separator between
+individual components. By default, the matrix \strong{C} is calculated
+internally from treatment names. However, it is possible to specify a
+different matrix using argument \code{C.matrix}.
 }                  
 
 \value{
 A list containing the following components:
-  \item{inactive, sep.components, C.matrix, sm}{As defined above.}  
-  \item{level.comb, comb.fixed, comb.random, seq}{As defined above.}  
+  \item{inactive, sep.comps, C.matrix, sm}{As defined above.}  
+  \item{level.comb, comb.fixed, comb.random}{As defined above.}  
+  \item{reference.group, baseline.reference, seq}{As defined above.}  
   \item{tau.preset, sep.trts, nchar.trts, backtransf}{As defined above.}  
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
@@ -273,7 +281,7 @@ dc2 <- discomb(mean, se.mean, t1, t2, study, seq = trts,
 # Compare C matrices
 #
 all.equal(dc1$C.matrix, dc2$C.matrix)
-}                                                                 
+}
 
 \keyword{Network meta-analysis}
 \keyword{Additive network meta-analysis}

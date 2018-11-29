@@ -42,7 +42,6 @@ summary.netcomb <- function(object,
                              upper = object$upper.nma.fixed,
                              z = object$zval.nma.fixed,
                              p = object$pval.nma.fixed,
-                             leverage = object$leverage.fixed,
                              stringsAsFactors = FALSE)
   ##
   ci.cnma.fixed <- data.frame(studlab = object$studlab,
@@ -92,41 +91,41 @@ summary.netcomb <- function(object,
                z = object$zval.random,
                p = object$pval.random)
   ##
-  ci.comp.f <- data.frame(comps = object$comps,
-                          TE = object$Comp.fixed,
+  ci.comp.f <- data.frame(TE = object$Comp.fixed,
                           seTE = object$seComp.fixed,
                           lower = object$lower.Comp.fixed,
                           upper = object$upper.Comp.fixed,
                           z = object$zval.Comp.fixed,
                           p = object$pval.Comp.fixed,
                           stringsAsFactors = FALSE)
+  rownames(ci.comp.f) <- object$comps
   ##
-  ci.comp.r <- data.frame(comps = object$comps,
-                          TE = object$Comp.random,
+  ci.comp.r <- data.frame(TE = object$Comp.random,
                           seTE = object$seComp.random,
                           lower = object$lower.Comp.random,
                           upper = object$upper.Comp.random,
                           z = object$zval.Comp.random,
                           p = object$pval.Comp.random,
                           stringsAsFactors = FALSE)
+  rownames(ci.comp.r) <- object$comps
   ##
-  ci.comb.f <- data.frame(trts = object$trts,
-                          TE = object$Comb.fixed,
+  ci.comb.f <- data.frame(TE = object$Comb.fixed,
                           seTE = object$seComb.fixed,
                           lower = object$lower.Comb.fixed,
                           upper = object$upper.Comb.fixed,
                           z = object$zval.Comb.fixed,
                           p = object$pval.Comb.fixed,
                           stringsAsFactors = FALSE)
+  rownames(ci.comb.f) <- object$trts
   ##
-  ci.comb.r <- data.frame(trts = object$trts,
-                          TE = object$Comb.random,
+  ci.comb.r <- data.frame(TE = object$Comb.random,
                           seTE = object$seComb.random,
                           lower = object$lower.Comb.random,
                           upper = object$upper.Comb.random,
                           z = object$zval.Comb.random,
                           p = object$pval.Comb.random,
                           stringsAsFactors = FALSE)
+  rownames(ci.comb.r) <- object$trts
   
   
   ##
@@ -192,15 +191,18 @@ summary.netcomb <- function(object,
               ##
               ci.lab = paste0(round(100 * object$level.comb, 1),"%-CI"),
               ##
-              reference.group = NA,
-              baseline.reference = NA,
-              all.treatments = NA,
+              reference.group = object$reference.group,
+              baseline.reference = object$baseline.reference,
+              all.treatments = object$all.treatments,
               seq = object$seq,
               ##
               tau.preset = object$tau.preset,
               ##
               sep.trts = object$sep.trts,
               nchar.trts = object$nchar.trts,
+              ##
+              inactive = object$inactive,
+              sep.comps = object$sep.comps,
               ##
               backtransf = object$backtransf,
               ##

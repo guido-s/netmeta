@@ -74,8 +74,8 @@ nma.additive <- function(TE, weights, studlab,
   for (i in 1:(n - 1)) {
     for (j in (i + 1):n) {
       k <- k + 1
-      delta.all[i, j] <- -delta.full[k]
-      delta.all[j, i] <-  delta.full[k]
+      delta.all[i, j] <-  delta.full[k]
+      delta.all[j, i] <- -delta.full[k]
       se.delta.all[i, j] <- se.delta.all[j, i] <- se.delta.full[k]
     }
   }

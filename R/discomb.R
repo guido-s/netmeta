@@ -3,7 +3,7 @@ discomb <- function(TE, seTE,
                     studlab, data = NULL, subset = NULL,
                     ##
                     inactive = NULL,
-                    sep.components = "+", 
+                    sep.comps = "+", 
                     C.matrix,
                     ##
                     sm,
@@ -12,6 +12,8 @@ discomb <- function(TE, seTE,
                     comb.fixed = gs("comb.fixed"),
                     comb.random = gs("comb.random") | !is.null(tau.preset),
                     ##
+                    reference.group = "",
+                    baseline.reference = TRUE,
                     seq = NULL,
                     ##
                     tau.preset = NULL,
@@ -33,28 +35,35 @@ discomb <- function(TE, seTE,
   ## (1) Check arguments
   ##
   ##
-  meta:::chkchar(sep.components, nchar = 1)
+  chkchar <- meta:::chkchar
+  chklevel <- meta:::chklevel
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
   ##
-  meta:::chklevel(level)
-  meta:::chklevel(level.comb)
+  chkchar(sep.comps, nchar = 1)
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
+  chklevel(level)
+  chklevel(level.comb)
+  ##
+  chklogical(comb.fixed)
+  chklogical(comb.random)
+  ##
+  chklogical(baseline.reference)
   ##
   if (!is.null(tau.preset))
-    meta:::chknumeric(tau.preset, min = 0, single = TRUE)
+    chknumeric(tau.preset, min = 0, single = TRUE)
   ##
-  meta:::chknumeric(tol.multiarm, min = 0, single = TRUE)
-  meta:::chklogical(details.chkmultiarm)
+  chknumeric(tol.multiarm, min = 0, single = TRUE)
+  chklogical(details.chkmultiarm)
   ##
   missing.sep.trts <- missing(sep.trts)
-  meta:::chkchar(sep.trts)
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  chkchar(sep.trts)
+  chknumeric(nchar.trts, min = 1, single = TRUE)
   ##
-  meta:::chklogical(backtransf)
+  chklogical(backtransf)
   ##
-  meta:::chkchar(title)
-  meta:::chklogical(warn)
+  chkchar(title)
+  chklogical(warn)
   
   
   ##
@@ -156,6 +165,9 @@ discomb <- function(TE, seTE,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
+  ##
+  if (reference.group != "")
+    reference.group <- setref(reference.group, labels)
   
   
   ##
@@ -275,7 +287,7 @@ discomb <- function(TE, seTE,
   netc <- netconnection(treat1, treat2, studlab)
   ##
   if (missing(C.matrix)) {
-    C.matrix <- createC(netc, sep.components, inactive)
+    C.matrix <- createC(netc, sep.comps, inactive)
     C.matrix <- C.matrix[labels, , drop = FALSE]
   }
   else {
@@ -533,12 +545,18 @@ discomb <- function(TE, seTE,
               comb.fixed = comb.fixed,
               comb.random = comb.random, 
               ##
+              reference.group = reference.group,
+              baseline.reference = baseline.reference,
+              all.treatments = NULL,
               seq = seq,
               ##
               tau.preset = tau.preset,
               ##
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,
+              ##
+              inactive = inactive,
+              sep.comps = sep.comps,
               ##
               backtransf = backtransf, 
               ##

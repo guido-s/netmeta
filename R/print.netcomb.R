@@ -44,11 +44,11 @@ print.netcomb <- function(x,
                        p = x$pval.cnma.fixed,
                        stringsAsFactors = FALSE)
   ##
-  dat.f <- prcomps(cnma.f,
-                   backtransf, x$sm, x$level.comb,
-                   trts, trts.abbr,
-                   digits, digits.zval, digits.pval.Q,
-                   scientific.pval, big.mark)
+  dat.f <- formatComp(cnma.f,
+                      backtransf, x$sm, x$level.comb,
+                      trts, trts.abbr,
+                      digits, digits.zval, digits.pval.Q,
+                      scientific.pval, big.mark)
   ##
   #dat.f <- dat.f[, !(colnames(dat.f) %in% c("z", "p"))]
   ##
@@ -62,11 +62,11 @@ print.netcomb <- function(x,
                        p = x$pval.cnma.random,
                        stringsAsFactors = FALSE)
   ##
-  dat.r <- prcomps(cnma.r,
-                   backtransf, x$sm, x$level.comb,
-                   trts, trts.abbr,
-                   digits, digits.zval, digits.pval.Q,
-                   scientific.pval, big.mark)
+  dat.r <- formatComp(cnma.r,
+                      backtransf, x$sm, x$level.comb,
+                      trts, trts.abbr,
+                      digits, digits.zval, digits.pval.Q,
+                      scientific.pval, big.mark)
   ##
   #dat.r <- dat.r[, !(colnames(dat.r) %in% c("z", "p"))]
   ##

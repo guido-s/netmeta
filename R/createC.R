@@ -1,5 +1,5 @@
 createC <- function(x,
-                    sep.components = "+",
+                    sep.comps = "+",
                     inactive = NULL) {
   
   
@@ -29,7 +29,7 @@ createC <- function(x,
   ##
   ## Create list with all treatment components
   ##
-  components.list <- compsplit(trts, sep.components)
+  components.list <- compsplit(trts, sep.comps)
   ##
   ## Remove blanks (at start and end)
   ##

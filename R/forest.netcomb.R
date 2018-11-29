@@ -1,4 +1,4 @@
-forest.netmeta <- function(x,
+forest.netcomb <- function(x,
                            pooled = ifelse(x$comb.random, "random", "fixed"),
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
@@ -23,10 +23,7 @@ forest.netmeta <- function(x,
   ## (1) Check and set arguments
   ##
   ##
-  meta:::chkclass(x, "netmeta")
-  x <- upgradenetmeta(x)
-  ##
-  is.bin <- inherits(x, "netmetabin")
+  meta:::chkclass(x, "netcomb")
   ##
   chklogical <- meta:::chklogical
   formatN <- meta:::formatN
@@ -60,39 +57,35 @@ forest.netmeta <- function(x,
   if (pooled == "fixed") {
     TE   <- x$TE.fixed
     seTE <- x$seTE.fixed
-    prop.direct <- x$P.fixed
     ##
-    Pscore <- netrank(x, small.values = small.values)$Pscore.fixed
+    text.fixed <- "(Fixed Effect Model)"
     ##
-    text.pooled <- "Fixed Effect Model"
-    ##
-    if (x$method == "MH")
-      text.pooled <- "Mantel-Haenszel Method"
-    else if (x$method == "NCH")
-      text.pooled <- "Non-Central Hypergeometric"
+    if (is.null(smlab))
+      if (baseline.reference)
+        smlab <- paste("Comparison: other vs '",
+                       reference.group, "'\n",
+                       text.fixed,
+                       sep = "")
+      else
+        smlab <- paste("Comparison: '",
+                       reference.group, "' vs other\n",
+                       text.fixed,
+                       sep = "")
   }
   ##
   if (pooled == "random") {
     TE   <- x$TE.random
     seTE <- x$seTE.random
-    prop.direct <- x$P.random
-    ##
-    Pscore <- netrank(x, small.values = small.values)$Pscore.random
-    ##
-    text.pooled <- "Random Effects Model"
+    if (is.null(smlab))
+      if (baseline.reference)
+        smlab <- paste("Comparison: other vs '",
+                       reference.group, "'\n(Random Effects Model)",
+                       sep = "")
+      else
+        smlab <- paste("Comparison: '",
+                       reference.group, "' vs other\n(Random Effects Model)",
+                       sep = "")
   }
-  ##
-  if (is.null(smlab))
-    if (baseline.reference)
-      smlab <- paste0("Comparison: other vs '",
-                      reference.group, "'\n(",
-                      text.pooled,
-                      ")")
-    else
-      smlab <- paste0("Comparison: '",
-                      reference.group, "' vs other\n(",
-                      text.pooled,
-                      ")")
   
   
   ##
@@ -105,7 +98,6 @@ forest.netmeta <- function(x,
                       seTE = seTE[, colnames(seTE) == reference.group],
                       trts = colnames(TE),
                       k = x$A.matrix[, colnames(TE) == reference.group],
-                      prop.direct = if (is.bin) prop.direct else prop.direct[, colnames(TE) == reference.group],
                       row.names = colnames(TE),
                       as.is = TRUE)
   else
@@ -113,28 +105,11 @@ forest.netmeta <- function(x,
                       seTE = seTE[rownames(seTE) == reference.group, ],
                       trts = rownames(TE),
                       k = x$A.matrix[rownames(TE) == reference.group, ],
-                      prop.direct = if (is.bin) prop.direct else prop.direct[rownames(TE) == reference.group, ],
                       row.names = colnames(TE),
                       as.is = TRUE)
   ##
   rm(TE)
   rm(seTE)
-  ##
-  idx1 <- charmatch(tolower(rightcols), "pscore", nomatch = NA)
-  sel1 <- !is.na(idx1) & idx1 == 1
-  if (any(sel1)) {
-    dat$Pscore <- formatN(Pscore, digits = digits.Pscore,
-                          text.NA = lab.NA)
-    rightcols[sel1] <- "Pscore"
-  }
-  ##
-  idx2 <- charmatch(tolower(leftcols), "pscore", nomatch = NA)
-  sel2 <- !is.na(idx2) & idx2 == 1
-  if (any(sel2)) {
-    dat$Pscore <- formatN(Pscore, digits = digits.Pscore,
-                          text.NA = lab.NA)
-    leftcols[sel2] <- "Pscore"
-  }
   ##
   if (!missing(add.data)) {
     if (!is.data.frame(add.data))
@@ -160,16 +135,6 @@ forest.netmeta <- function(x,
   ##
   sortvar.c <- deparse(substitute(sortvar))
   sortvar.c <- gsub("\"", "", sortvar.c)
-  ##
-  idx3 <- charmatch(tolower(sortvar.c), "pscore", nomatch = NA)
-  sel3 <- !is.na(idx3) & idx3 == 1
-  if (any(sel3))
-    sortvar <- Pscore
-  ##
-  idx4 <- charmatch(tolower(sortvar.c), "-pscore", nomatch = NA)
-  sel4 <- !is.na(idx4) & idx4 == 1
-  if (any(sel4))
-    sortvar <- -Pscore
   ##
   idx5 <- charmatch(tolower(sortvar.c), "te", nomatch = NA)
   sel5 <- !is.na(idx5) & idx5 == 1
@@ -200,16 +165,6 @@ forest.netmeta <- function(x,
   sel10 <- !is.na(idx10) & idx10 == 1
   if (any(sel10))
     sortvar <- -dat$k
-  ##
-  idx11 <- charmatch(tolower(sortvar.c), "prop.direct", nomatch = NA)
-  sel11 <- !is.na(idx11) & idx11 == 1
-  if (any(sel11))
-    sortvar <- dat$prop.direct
-  ##
-  idx12 <- charmatch(tolower(sortvar.c), "-prop.direct", nomatch = NA)
-  sel12 <- !is.na(idx12) & idx12 == 1
-  if (any(sel12))
-    sortvar <- -dat$prop.direct
   ##  
   if (!is.null(sortvar)) {
     if (is.character(sortvar))
@@ -228,9 +183,6 @@ forest.netmeta <- function(x,
   ##
   if (drop.reference.group)
     dat <- subset(dat, trts != reference.group)
-  ##
-  dat$prop.direct <- formatN(dat$prop.direct,
-                             digits = digits.Pscore, text.NA = lab.NA)
   ##
   trts <- dat$trts
   m1 <- metagen(TE, seTE, data = dat,

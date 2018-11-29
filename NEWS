@@ -12,6 +12,13 @@
   * New function funnel.netmeta() for 'comparison-adjusted' funnel
     plots
 
+  * New function forest.netcomb() for forest plots of component
+    network meta-analysis
+
+  * New functions netbind() and forest.netbind() to combine network
+    meta-analysis objects and to generate a forest plot with results
+    of several network meta-analyses
+
   * Circular network graphs with minimal number of crossings
 
   * Default setting for levels of confidence intervals can be
@@ -44,6 +51,12 @@
     - forest plot with layout 'subgroups by comparisons':
       omit treatment estimates in rows with prediction intervals if
       network estimates are also shown
+
+  * netcomb() and discomb():
+    - argument 'seq.components' replaced with 'seq.comps'
+
+  * discomb():
+    - arguments 'reference.group' and 'baseline.reference'
     
  ** Bug fixes **
 

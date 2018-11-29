@@ -34,12 +34,10 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
   \item split direct and indirect evidence (\code{\link{netsplit}}) to
     check for consistency (Dias et al., 2010);
   \item league table with network meta-analysis results
-  (\code{\link{netleague}});
-  
+    (\code{\link{netleague}});
   \item additive network meta-analysis for combinations of treatments
     (\code{\link{netcomb}}, \code{\link{discomb}} for disconnected
     networks) (Rücker et al., 2018);
-    
   \item network meta-analysis of binary data using the Mantel-Haenszel
     or non-central hypergeometric distribution method
     (\code{\link{netmetabin}});

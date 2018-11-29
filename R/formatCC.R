@@ -1,8 +1,8 @@
-prcombs <- function(x,
-                    backtransf, sm, level, abbr,
-                    digits, digits.zval, digits.pval.Q,
-                    scientific.pval, big.mark,
-                    seq = NULL) {
+formatCC <- function(x,
+                     backtransf, sm, level, abbr,
+                     digits, digits.zval, digits.pval.Q,
+                     scientific.pval, big.mark,
+                     seq = NULL) {
   
   
   formatN <- meta:::formatN
@@ -20,9 +20,8 @@ prcombs <- function(x,
 
   ## First column contains row names
   ##
-  rnam <- x[, 1]
-  res <- x[, -1]
-  rownames(res) <- rnam
+  res <- x
+  rnam <- rownames(res)
   ##
   if (!is.null(seq))
     res <- res[seq, ]

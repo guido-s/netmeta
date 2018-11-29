@@ -1,43 +1,57 @@
-export(netmeta, netmetabin,
-       as.data.frame.netmeta, print.netmeta,
-       summary.netmeta, print.summary.netmeta,
-       forest.netmeta, forest.netsplit, pairwise,
+export(netmeta, netmetabin, summary.netmeta,
+       print.netmeta, print.summary.netmeta,
+       forest.netmeta,
+       as.data.frame.netmeta,
+       ##
+       pairwise,
        decomp.design, print.decomp.design,
-       netheat, netgraph, netheat, netmeasures,
+       ##
+       netbind, forest.netbind,
+       ##
        netcomb, discomb, summary.netcomb,
        print.netcomb, print.summary.netcomb,
+       forest.netcomb,
+       ##
+       netgraph, netheat, netmeasures,
        netrank, print.netrank,
+       ##
        netconnection, print.netconnection, netdistance,
-       netsplit, print.netsplit,
+       ##
+       netsplit, print.netsplit, forest.netsplit,
+       ##
        netposet, print.netposet, plot.netposet, hasse,
-       netleague, print.netleague, treats,
-       netmatrix)
+       ##
+       netleague, print.netleague,
+       ##
+       treats, netmatrix)
 
 # not visible:
 # prepare, multiarm, matitle, nma.ruecker, nma.krahn,
 # tau.within, decomp.tau, stress,
 # shadowtext, chklist, chkmultiarm, lowertri, uppertri, createB,
 # upgradenetmeta, treats, createC, nma.additive,
-# prcombs, prcomps, compmatch, compsplit,
+# formatCC, formatComp, compmatch, compsplit,
 # optcircle
 
 S3method(as.data.frame, netmeta)
-S3method(print, netmeta)
-S3method(summary, netmeta)
-S3method(print, summary.netmeta)
+S3method(forest, netbind)
+S3method(forest, netcomb)
 S3method(forest, netmeta)
 S3method(forest, netsplit)
 S3method(funnel, netmeta)
-S3method(print, netcomb)
-S3method(summary, netcomb)
-S3method(print, summary.netcomb)
-S3method(print, decomp.design)
-S3method(print, netrank)
-S3method(print, netconnection)
-S3method(print, netsplit)
-S3method(print, netposet)
 S3method(plot, netposet)
+S3method(print, decomp.design)
+S3method(print, netcomb)
+S3method(print, netconnection)
 S3method(print, netleague)
+S3method(print, netmeta)
+S3method(print, netposet)
+S3method(print, netrank)
+S3method(print, netsplit)
+S3method(print, summary.netcomb)
+S3method(print, summary.netmeta)
+S3method(summary, netcomb)
+S3method(summary, netmeta)
 
 importFrom("meta", "forest", "forest.meta",
            "funnel", "funnel.meta", "metabias",
