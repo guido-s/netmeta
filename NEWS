@@ -80,6 +80,10 @@
   * netgraph():
     - arguments 'iterate' and 'allfigures' ignored if argument 'seq'
       is equal to "optimal"
+      
+  * netsplit():
+    - consider argument 'digits' for treatment estimates, i.e., do not
+      always round to two digits
 
  ** Internal changes **
 

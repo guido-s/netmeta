@@ -216,13 +216,15 @@ netleague <- function(x, y,
   ##
   if (ci) {
     nl.NA <- is.na(TE.fixed.x)
-    nl.f <- paste(formatN(TE.fixed.x, text.NA = text.NA, big.mark = big.mark),
+    nl.f <- paste(formatN(TE.fixed.x, digits = digits,
+                          text.NA = text.NA, big.mark = big.mark),
                   formatCI(lower.fixed.x, upper.fixed.x, lab.NA = text.NA,
                            big.mark = big.mark))
     nl.f[nl.NA] <- text.NA
   }
   else
-    nl.f <- formatN(TE.fixed.x, text.NA = text.NA, big.mark = big.mark)
+    nl.f <- formatN(TE.fixed.x, digits = digits,
+                    text.NA = text.NA, big.mark = big.mark)
   ##
   nl.f <- matrix(nl.f, nrow = nrow(TE.fixed.x), ncol = ncol(TE.fixed.x))
   diag(nl.f) <- rownames(TE.fixed.x)
@@ -233,13 +235,15 @@ netleague <- function(x, y,
   ##
   if (ci) {
     nl.NA <- is.na(TE.fixed.y)
-    nl.f.y <- paste(formatN(TE.fixed.y, text.NA = text.NA, big.mark = big.mark),
+    nl.f.y <- paste(formatN(TE.fixed.y,
+                            digits = digits, text.NA = text.NA, big.mark = big.mark),
                     formatCI(lower.fixed.y, upper.fixed.y, lab.NA = text.NA,
                              big.mark = big.mark))
     nl.f.y[nl.NA] <- text.NA
   }
   else
-    nl.f.y <- formatN(TE.fixed.y, text.NA = text.NA, big.mark = big.mark)
+    nl.f.y <- formatN(TE.fixed.y, digits = digits,
+                      text.NA = text.NA, big.mark = big.mark)
   ##
   nl.f.y <- matrix(nl.f.y, nrow = nrow(TE.fixed.y), ncol = ncol(TE.fixed.y))
   ##
@@ -260,14 +264,15 @@ netleague <- function(x, y,
     ##
     if (ci) {
       nl.NA <- is.na(TE.random.x)
-      nl.r <- paste(formatN(TE.random.x, text.NA = text.NA,
-                            big.mark = big.mark),
+      nl.r <- paste(formatN(TE.random.x, digits = digits,
+                            text.NA = text.NA, big.mark = big.mark),
                     formatCI(lower.random.x, upper.random.x, lab.NA = text.NA,
                              big.mark = big.mark))
       nl.r[nl.NA] <- text.NA
     }
     else
-      nl.r <- formatN(TE.random.x, text.NA = text.NA, big.mark = big.mark)
+      nl.r <- formatN(TE.random.x, digits = digits,
+                      text.NA = text.NA, big.mark = big.mark)
     ##
     nl.r <- matrix(nl.r, nrow = nrow(TE.random.x), ncol = ncol(TE.random.x))
     diag(nl.r) <- rownames(TE.random.x)
@@ -278,12 +283,14 @@ netleague <- function(x, y,
     ##
     if (ci) {
       nl.NA <- is.na(TE.random.y)
-      nl.r.y <- paste(formatN(TE.random.y, text.NA = text.NA),
+      nl.r.y <- paste(formatN(TE.random.y, digits = digits,
+                              text.NA = text.NA),
                       formatCI(lower.random.y, upper.random.y, lab.NA = text.NA))
       nl.r.y[nl.NA] <- text.NA
     }
     else
-      nl.r.y <- formatN(TE.random.y, text.NA = text.NA, big.mark = big.mark)
+      nl.r.y <- formatN(TE.random.y, digits = digits,
+                        text.NA = text.NA, big.mark = big.mark)
     ##
     nl.r.y <- matrix(nl.r.y, nrow = nrow(TE.random.y), ncol = ncol(TE.random.y))
     ##
