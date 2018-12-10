@@ -65,6 +65,9 @@
 
   * discomb():
     - arguments 'reference.group' and 'baseline.reference'
+
+  * netposet():
+    - allow for ties in rankings
     
  ** Bug fixes **
 
