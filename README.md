@@ -5,7 +5,6 @@ Official GitHub repository of R package **netmeta**
 [![CRAN Version](http://www.r-pkg.org/badges/version/netmeta)](https://cran.r-project.org/package=netmeta)
 [![Monthly Downloads](http://cranlogs.r-pkg.org/badges/netmeta)](http://cranlogs.r-pkg.org/badges/netmeta)
 [![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)
-[![Research software impact](http://depsy.org/api/package/cran/netmeta/badge.svg)](http://depsy.org/package/r/netmeta)
 
 
 ## Description
