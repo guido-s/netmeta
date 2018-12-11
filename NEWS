@@ -756,7 +756,7 @@
     - return NULL for network meta-analysis with a single design
 
 
-2016-04-26, version 0.9-0
+*** netmeta, version 0.9-0, 2016-04-26 ***
 
 New functions:
 - netdistance (calculate distance matrix; replacement for internal
@@ -830,7 +830,7 @@ New help pages:
 - Wooks2010 dataset
 
 
-2015-06-26, version 0.8-0
+*** netmeta, version 0.8-0, 2015-06-26 ***
 
 New functions netrank and print.netrank:
 - frequentist method to rank treatments in network
@@ -850,7 +850,7 @@ Help pages:
 - link to pairwise function added in help page of netmeta function
 
 
-2015-02-04, version 0.7-0
+*** netmeta, version 0.7-0, 2015-02-04 ***
 
 Version of R package meta must be larger or equal 4.0-0
 
@@ -937,7 +937,7 @@ New help pages for function pairwise and datasets dietaryfat,
 parkinson, and smokingcessation.
 
 
-2014-07-29, version 0.6-0
+*** netmeta, version 0.6-0, 2014-07-29 ***
 
 Function netgraph:
 - complete rewrite of this function (without changing previous default
@@ -980,7 +980,7 @@ New functions stress and nodedist (used internally)
 Help pages updated accordingly
 
 
-2014-06-24, version 0.5-0
+*** netmeta, version 0.5-0, 2014-06-24 ***
 
 Functions nma.krahn, netmeasures, netheat, decomp.design, and
 print.decomp.design:
@@ -1008,7 +1008,7 @@ New functions tau.within and decomp.tau (used internally)
 Help pages updated accordingly
 
 
-2014-05-27, version 0.4-4
+*** netmeta, version 0.4-4, 2014-05-27 ***
 
 Functions netmeta and nma.ruecker:
 - modified such that the estimated tau-squared in random effects model
@@ -1022,7 +1022,7 @@ Dataset Senn2013:
 - use of unpooled standard error for each treatment comparison
 
 
-2014-04-14, version 0.4-3
+*** netmeta, version 0.4-3, 2014-04-14 ***
 
 Function netmeta:
 - numeric values for arguments 'treat1' and 'treat2' not converted to
@@ -1042,14 +1042,14 @@ Function nma.ruecker (used internally):
   order of treatments)
 
 
-2014-03-31, version 0.4-2
+*** netmeta, version 0.4-2, 2014-03-31 ***
 
 Function netmeasures:
 - bug fix using correct formula to calculate direct evidence
   proportion (variance instead of standard error)
 
 
-2014-03-21, version 0.4-1
+*** netmeta, version 0.4-1, 2014-03-21 ***
 
 Function netmeta:
 - Argument 'seq' added (see also R function netgraph)
@@ -1062,7 +1062,7 @@ Help pages updated accordingly
 Some internal code cleaning to improve readability of R functions
 
 
-2014-03-07, version 0.4-0
+*** netmeta, version 0.4-0, 2014-03-07 ***
 
 New functions added:
 - netgraph (network graph)
@@ -1081,10 +1081,10 @@ Help pages added for new functions
 Help page of function netmeta updated
 
 
-2013-08-01, version 0.3-1
+*** netmeta, version 0.3-1, 2013-08-01 ***
 
 Functions netmeta and summary.netmeta:
-- new list component n (number of treatments)
+- new list component 'n' (number of treatments)
 
 Function print.summary.netmeta:
 - modified such that number of treatments is printed
@@ -1092,6 +1092,6 @@ Function print.summary.netmeta:
   random effects model
 
 
-2013-07-24, version 0.3-0
+*** 2013-07-24, version 0.3-0 ***
 
-First version released on CRAN
+ ** First version released on CRAN **
