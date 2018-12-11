@@ -581,8 +581,7 @@ netmetabin <- function(event1, n1, event2, n2,
       zero.data <- rep(0, nrow(data))
       ##
       for (i in seq_along(zerocells$design)) {
-        zero.long <- zero.long + (dat.long$design == zerocells$design[i] &
-                                  dat.long$treat == zerocells$treat[i])
+        zero.long <- zero.long + (dat.long$design == zerocells$design[i])
         ##
         zero.wide <- zero.wide + (dat.wide$design == zerocells$design[i] &
                                   (dat.wide$treat1 == zerocells$treat[i] |
@@ -976,9 +975,9 @@ netmetabin <- function(event1, n1, event2, n2,
       ##
       ## Per study ...
       ##
-      for (t1 in seq_len(n.d[i]))
-        for (t2 in seq_len(n.d[i]))
-          for (t3 in seq_len(n.d[i]))
+      for (t1 in seq_len(n.d[i])) {
+        for (t2 in seq_len(n.d[i])) {
+          for (t3 in seq_len(n.d[i])) {
             for (st in seq_len(k.d[i])) {
               sel1 <- with(dat.design[[i]], which(id.s == st & id.t == t1))
               sel2 <- with(dat.design[[i]], which(id.s == st & id.t == t2))
@@ -1009,12 +1008,15 @@ netmetabin <- function(event1, n1, event2, n2,
                      event[sel2] * event[sel3] *
                      (t1 != t2) * (t1 != t3) * (t2 != t3))
             }
-      ##
-      U.xyz[[i]][t1, t2, t3] <-
-        sum(ps1[[i]][]) / (3 * C.xy[[i]][t1, t2] * C.xy[[i]][t1, t3]) +
-        sum(ps2[[i]][]) / (3 * C.xy[[i]][t1, t2] * C.xy[[i]][t3, t1]) +
-        sum(ps3[[i]][]) / (3 * C.xy[[i]][t2, t1] * C.xy[[i]][t1, t3]) +
-        sum(ps4[[i]][]) / (3 * C.xy[[i]][t2, t1] * C.xy[[i]][t3, t1])
+            ##
+            U.xyz[[i]][t1, t2, t3] <-
+              sum(ps1[[i]][]) / (3 * C.xy[[i]][t1, t2] * C.xy[[i]][t1, t3]) +
+              sum(ps2[[i]][]) / (3 * C.xy[[i]][t1, t2] * C.xy[[i]][t3, t1]) +
+              sum(ps3[[i]][]) / (3 * C.xy[[i]][t2, t1] * C.xy[[i]][t1, t3]) +
+              sum(ps4[[i]][]) / (3 * C.xy[[i]][t2, t1] * C.xy[[i]][t3, t1])
+          }
+        }
+      }
       ##
       ## Calculate L.bar.xy
       ##
@@ -1032,7 +1034,7 @@ netmetabin <- function(event1, n1, event2, n2,
       U.plus.xx[[i]] <- rep(0, n.d[i])
       for (t1 in seq_len(n.d[i]))
         U.plus.xx[[i]][t1] <-
-          sum(U.xyy[[i]][t1, seq_len(n.d[i])]) + sum(U.xyz[[i]][t1,, ])
+          sum(U.xyy[[i]][t1, seq_len(n.d[i])]) + sum(U.xyz[[i]][t1, , ])
       ##
       ## Calculate U.plus.xy
       ##
@@ -1126,7 +1128,7 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     V <- V1 + V2
     ##
-    basic.contrasts <- c(2:n.treat)
+    basic.contrasts <- 2:n.treat
     ##
     for (i in 1:length.y)
       for (k in 1:(n.treat - 1)) {
