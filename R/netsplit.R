@@ -164,11 +164,11 @@ netsplit <- function(x, method,
     ## Perform network meta-analyses for indirect evidence
     ## (by dropping one direct comparison at a time)
     ##
-    TE.indirect.fixed <- TE.indirect.fixed <- x$TE.direct.fixed
+    TE.indirect.fixed <- x$TE.direct.fixed
     TE.indirect.fixed[!is.na(TE.indirect.fixed)] <- NA
     seTE.indirect.fixed <- TE.indirect.fixed
     ##
-    TE.indirect.random <- TE.indirect.random <- x$TE.direct.random
+    TE.indirect.random <- x$TE.direct.random
     TE.indirect.random[!is.na(TE.indirect.random)] <- NA
     seTE.indirect.random <- TE.indirect.random
     ##
