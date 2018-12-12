@@ -37,6 +37,8 @@
       - 'n.matrix' with number of observations in direct comparisons
       - 'events.matrix' with number of events in direct comparisons
       - 'designs' with treatment designs
+    - only print information on studies with missing treatment effect
+      or standard error if argument 'warn' is TRUE
 
   * pairwise():
     - keep original order of studies
@@ -44,6 +46,7 @@
       method based on arguments 'TE' and 'seTE'
     - argument 'n' can be used for meta-analysis with count outcomes
       (based on arguments 'event' and 'time')
+    - infinite treatment estimates and standard errors set to NA
 
   * forest.netmeta():
     - argument 'reference.group' can be a vector in order to include

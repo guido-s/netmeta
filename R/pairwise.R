@@ -500,8 +500,12 @@ pairwise <- function(treat,
                         incr = dat$incr, addincr = TRUE,
                         allstudies = allstudies,
                         ...)
+          ##
           dat$TE   <- m1$TE
           dat$seTE <- m1$seTE
+          ##
+          dat$TE[is.infinite(dat$TE)] <- NA
+          dat$seTE[is.infinite(dat$seTE)] <- NA
           ##
           dat.NAs <- dat[is.na(dat$TE) | is.na(dat$seTE) | dat$seTE <= 0, ]
           ##
@@ -608,8 +612,12 @@ pairwise <- function(treat,
           m1 <- metacont(dat$n1, dat$mean1, dat$sd1,
                          dat$n2, dat$mean2, dat$sd2,
                          ...)
+          ##
           dat$TE   <- m1$TE
           dat$seTE <- m1$seTE
+          ##
+          dat$TE[is.infinite(dat$TE)] <- NA
+          dat$seTE[is.infinite(dat$seTE)] <- NA
           ##
           dat.NAs <- dat[is.na(dat$TE) | is.na(dat$seTE) | dat$seTE <= 0, ]
           ##
@@ -704,8 +712,12 @@ pairwise <- function(treat,
         if (nrow(dat) > 0) {
           m1 <- metagen(dat$TE1 - dat$TE2,
                         sqrt(dat$seTE1^2 + dat$seTE2^2), ...)
+          ##
           dat$TE <- m1$TE
           dat$seTE <- m1$seTE
+          ##
+          dat$TE[is.infinite(dat$TE)] <- NA
+          dat$seTE[is.infinite(dat$seTE)] <- NA
           ##
           dat.NAs <- dat[is.na(dat$TE) | is.na(dat$seTE) | dat$seTE <= 0, ]
           ##
@@ -798,8 +810,12 @@ pairwise <- function(treat,
                         incr = dat$incr, addincr = TRUE,
                         allstudies = allstudies,
                         ...)
+          ##
           dat$TE <- m1$TE
           dat$seTE <- m1$seTE
+          ##
+          dat$TE[is.infinite(dat$TE)] <- NA
+          dat$seTE[is.infinite(dat$seTE)] <- NA
           ##
           dat.NAs <- dat[is.na(dat$TE) | is.na(dat$seTE) | dat$seTE <= 0, ]
           ##

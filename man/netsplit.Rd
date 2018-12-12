@@ -5,16 +5,17 @@
 \title{Split direct and indirect evidence in network meta-analysis}
 
 \description{
-  Back-calculation method to split contribution of direct and indirect
-  evidence in network meta-analysis.
+  Methods to split network estimates into the contribution of direct and
+  indirect evidence and to test for local inconsistency in network
+  meta-analysis.
 }
 
 \usage{
-netsplit(x, upper = TRUE,
+netsplit(x, method, upper = TRUE,
          reference.group = x$reference.group,
          baseline.reference = x$baseline.reference,
          sep.trts = x$sep.trts, quote.trts = "",
-         tol.direct = 0.0005)
+         tol.direct = 0.0005, warn = FALSE)
 
 \method{print}{netsplit}(x,
       comb.fixed = x$comb.fixed,
@@ -36,6 +37,10 @@ netsplit(x, upper = TRUE,
 
 \arguments{
   \item{x}{An object of class \code{netmeta} or \code{netsplit}.}
+  \item{method}{A character string indicating which method to split
+    direct and indirect evidence is to be used. Either
+    \code{"Back-calculation"} or \code{"SIDDE"}, can be abbreviated. See
+    Details.}
   \item{upper}{A logical indicating whether treatment comparisons
     should be selected from the lower or upper triangle of the
     treatment effect matrices (see list elements \code{TE.fixed} and
@@ -87,20 +92,27 @@ netsplit(x, upper = TRUE,
   \item{big.mark}{A character used as thousands separator.}
   \item{legend}{A logical indicating whether a legend show be
     printed.}
+  \item{warn}{A logical indicating whether warnings should be printed.}
   \item{...}{Additional arguments (ignored at the moment)}
 }
 
 \details{
-  Direct and indirect treatment estimates are calculated in
-  \code{\link{netmeta}}. This function combines and prints these
-  estimates in a user-friendly way.
-
   A comparison of direct and indirect treatment estimates can serve as
   check for consistency of network meta-analysis (Dias et al.,
-  2010). This function provides a back-calculation method to derive
-  indirect estimates from direct pairwise comparisons and network
-  estimates. The direct evidence proportion as described in König et
-  al. (2013) is used to calculate the indirect evidence.
+  2010).
+
+  This function provides two methods to derive indirect estimates:
+  \itemize{
+   \item Back-calculation method deriving indirect estimates from direct
+     pairwise comparisons and network estimates. The direct evidence
+     proportion as described in König et al. (2013) is used in the
+     calculation of the indirect evidence
+   \item Separate Indirect from Direct Design Evidence (SIDDE)
+  }
+
+  Note, for the back-calculation method, indirect treatment estimates
+  are already calculated in \code{\link{netmeta}} and this function
+  combines and prints these estimates in a user-friendly way.
 
   Argument \code{show} determines which comparisons are printed:
   \tabular{ll}{

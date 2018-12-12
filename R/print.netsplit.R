@@ -95,8 +95,19 @@ print.netsplit <- function(x,
 
   level.comb <- x$level.comb
   ci.lab <- paste(100 * level.comb, "%-CI", sep ="")
-
-
+  
+  
+  random.available <- !is.null(x$random)
+  ##
+  if (!random.available & comb.random) {
+    warning("No results for random effects model available. ",
+            "Argument 'comb.random' set to FALSE.",
+            call. = FALSE)
+    ##
+    comb.random <- FALSE
+  }
+  
+  
   if (show == "all")
     sel <- rep_len(TRUE, length(x$direct.fixed$TE))
   else if (show == "with.direct")
@@ -135,27 +146,29 @@ print.netsplit <- function(x,
   zval.compare.fixed <- x$compare.fixed$z[sel]
   pval.compare.fixed <- x$compare.fixed$p[sel]
   ##
-  prop.random <- x$prop.random[sel]
-  ##
-  TE.random <- x$random$TE[sel]
-  lower.random <- x$random$lower[sel]
-  upper.random <- x$random$upper[sel]
-  ##
-  TE.direct.random <- x$direct.random$TE[sel]
-  lower.direct.random <- x$direct.random$lower[sel]
-  upper.direct.random <- x$direct.random$upper[sel]
-  ##
-  TE.indirect.random <- x$indirect.random$TE[sel]
-  lower.indirect.random <- x$indirect.random$lower[sel]
-  upper.indirect.random <- x$indirect.random$upper[sel]
-  ##
-  TE.compare.random <- x$compare.random$TE[sel]
-  lower.compare.random <- x$compare.random$lower[sel]
-  upper.compare.random <- x$compare.random$upper[sel]
-  zval.compare.random <- x$compare.random$z[sel]
-  pval.compare.random <- x$compare.random$p[sel]
-
-
+  if (random.available) {
+    prop.random <- x$prop.random[sel]
+    ##
+    TE.random <- x$random$TE[sel]
+    lower.random <- x$random$lower[sel]
+    upper.random <- x$random$upper[sel]
+    ##
+    TE.direct.random <- x$direct.random$TE[sel]
+    lower.direct.random <- x$direct.random$lower[sel]
+    upper.direct.random <- x$direct.random$upper[sel]
+    ##
+    TE.indirect.random <- x$indirect.random$TE[sel]
+    lower.indirect.random <- x$indirect.random$lower[sel]
+    upper.indirect.random <- x$indirect.random$upper[sel]
+    ##
+    TE.compare.random <- x$compare.random$TE[sel]
+    lower.compare.random <- x$compare.random$lower[sel]
+    upper.compare.random <- x$compare.random$upper[sel]
+    zval.compare.random <- x$compare.random$z[sel]
+    pval.compare.random <- x$compare.random$p[sel]
+  }
+  
+  
   if (backtransf & relative) {
     TE.fixed <- exp(TE.fixed)
     lower.fixed <- exp(lower.fixed)
@@ -169,28 +182,30 @@ print.netsplit <- function(x,
     lower.indirect.fixed <- exp(lower.indirect.fixed)
     upper.indirect.fixed <- exp(upper.indirect.fixed)
     ##
-    TE.random <- exp(TE.random)
-    lower.random <- exp(lower.random)
-    upper.random <- exp(upper.random)
-    ##
-    TE.direct.random <- exp(TE.direct.random)
-    lower.direct.random <- exp(lower.direct.random)
-    upper.direct.random <- exp(upper.direct.random)
-    ##
-    TE.indirect.random <- exp(TE.indirect.random)
-    lower.indirect.random <- exp(lower.indirect.random)
-    upper.indirect.random <- exp(upper.indirect.random)
-    ##
     TE.compare.fixed <- exp(TE.compare.fixed)
     lower.compare.fixed <- exp(lower.compare.fixed)
     upper.compare.fixed <- exp(upper.compare.fixed)
     ##
-    TE.compare.random <- exp(TE.compare.random)
-    lower.compare.random <- exp(lower.compare.random)
-    upper.compare.random <- exp(upper.compare.random)
+    if (random.available) {
+      TE.random <- exp(TE.random)
+      lower.random <- exp(lower.random)
+      upper.random <- exp(upper.random)
+      ##
+      TE.direct.random <- exp(TE.direct.random)
+      lower.direct.random <- exp(lower.direct.random)
+      upper.direct.random <- exp(upper.direct.random)
+      ##
+      TE.indirect.random <- exp(TE.indirect.random)
+      lower.indirect.random <- exp(lower.indirect.random)
+      upper.indirect.random <- exp(upper.indirect.random)
+      ##
+      TE.compare.random <- exp(TE.compare.random)
+      lower.compare.random <- exp(lower.compare.random)
+      upper.compare.random <- exp(upper.compare.random)
+    }
   }
-
-
+  
+  
   fixed <- list(comp = comp,
                 k = k,
                 prop = formatPT(prop.fixed, digits = digits.prop))
@@ -250,70 +265,78 @@ print.netsplit <- function(x,
   }
   fixed <- as.data.frame(fixed)
   names(fixed) <- names.fixed
-
-
-  random <- list(comp = comp,
-                 k = k,
-                 prop = formatPT(prop.random, digits = digits.prop))
-  names.random <- c("comparison", "k", "prop")
   ##
-  if (overall) {
-    random$TE.random <- formatN(TE.random, digits, text.NA = text.NA,
-                                big.mark = big.mark)
-    names.random <- c(names.random, "nma")
-    if (ci) {
-      random$ci.random <- formatCI(round(lower.random, digits),
-                                   round(upper.random, digits))
-      random$ci.random[is.na(random$ci.random)] <- text.NA
-      names.random <- c(names.random, ci.lab)
+  if (is.null(prop.fixed))
+    fixed <- fixed[, !(names(fixed) %in% "prop")]
+  
+  
+  if (random.available) {
+    random <- list(comp = comp,
+                   k = k,
+                   prop = formatPT(prop.random, digits = digits.prop))
+    names.random <- c("comparison", "k", "prop")
+    ##
+    if (overall) {
+      random$TE.random <- formatN(TE.random, digits, text.NA = text.NA,
+                                  big.mark = big.mark)
+      names.random <- c(names.random, "nma")
+      if (ci) {
+        random$ci.random <- formatCI(round(lower.random, digits),
+                                     round(upper.random, digits))
+        random$ci.random[is.na(random$ci.random)] <- text.NA
+        names.random <- c(names.random, ci.lab)
+      }
     }
-  }
-  ##
-  random$TE.direct.random <- formatN(TE.direct.random, digits,
-                                     text.NA = text.NA,
-                                     big.mark = big.mark)
-  names.random <- c(names.random, "direct")
-  if (ci) {
-    random$ci.direct.random <- formatCI(round(lower.direct.random, digits),
-                                        round(upper.direct.random, digits))
-    random$ci.direct.random[is.na(random$ci.direct.random)] <- text.NA
-    names.random <- c(names.random, ci.lab)
-  }
-  ##
-  random$TE.indirect.random <- formatN(TE.indirect.random, digits,
+    ##
+    random$TE.direct.random <- formatN(TE.direct.random, digits,
                                        text.NA = text.NA,
                                        big.mark = big.mark)
-  names.random <- c(names.random, "indir.")
-  if (ci) {
-    random$ci.indirect.random <- formatCI(round(lower.indirect.random, digits),
-                                          round(upper.indirect.random, digits))
-    random$ci.indirect.random[is.na(random$ci.indirect.random)] <- text.NA
-    names.random <- c(names.random, ci.lab)
-  }
-  ##
-  if (test) {
-    random$diff <- formatN(TE.compare.random, digits, text.NA = text.NA,
-                           big.mark = big.mark)
-    names.random <- c(names.random, if (backtransf & relative) "RoR" else "Diff")
+    names.random <- c(names.random, "direct")
     if (ci) {
-      random$ci.diff <- formatCI(round(lower.compare.random, digits),
-                                 round(upper.compare.random, digits))
-      random$ci.diff[is.na(random$ci.diff)] <- text.NA
+      random$ci.direct.random <- formatCI(round(lower.direct.random, digits),
+                                          round(upper.direct.random, digits))
+      random$ci.direct.random[is.na(random$ci.direct.random)] <- text.NA
       names.random <- c(names.random, ci.lab)
     }
     ##
-    random$z <- formatN(zval.compare.random, digits.zval,
-                        big.mark = big.mark)
-    random$z[random$z == "--"] <- text.NA
-    random$p <- formatPT(pval.compare.random, digits = digits.pval,
-                         scientific = scientific.pval)
-    random$p[rmSpace(random$p) == "--"] <- text.NA
-    names.random <- c(names.random, c("z", "p-value"))
+    random$TE.indirect.random <- formatN(TE.indirect.random, digits,
+                                         text.NA = text.NA,
+                                         big.mark = big.mark)
+    names.random <- c(names.random, "indir.")
+    if (ci) {
+      random$ci.indirect.random <- formatCI(round(lower.indirect.random, digits),
+                                            round(upper.indirect.random, digits))
+      random$ci.indirect.random[is.na(random$ci.indirect.random)] <- text.NA
+      names.random <- c(names.random, ci.lab)
+    }
+    ##
+    if (test) {
+      random$diff <- formatN(TE.compare.random, digits, text.NA = text.NA,
+                             big.mark = big.mark)
+      names.random <- c(names.random, if (backtransf & relative) "RoR" else "Diff")
+      if (ci) {
+        random$ci.diff <- formatCI(round(lower.compare.random, digits),
+                                   round(upper.compare.random, digits))
+        random$ci.diff[is.na(random$ci.diff)] <- text.NA
+        names.random <- c(names.random, ci.lab)
+      }
+      ##
+      random$z <- formatN(zval.compare.random, digits.zval,
+                          big.mark = big.mark)
+      random$z[random$z == "--"] <- text.NA
+      random$p <- formatPT(pval.compare.random, digits = digits.pval,
+                           scientific = scientific.pval)
+      random$p[rmSpace(random$p) == "--"] <- text.NA
+      names.random <- c(names.random, c("z", "p-value"))
+    }
+    random <- as.data.frame(random)
+    names(random) <- names.random
   }
-  random <- as.data.frame(random)
-  names(random) <- names.random
-
-
+  
+  
+  cat(x$method, "method to split direct and indirect evidence\n\n")
+  
+  
   if (comb.fixed) {
     cat("Fixed effect model: \n\n")
     fixed[is.na(fixed)] <- text.NA
@@ -334,7 +357,8 @@ print.netsplit <- function(x,
     cat("\nLegend:\n")
     cat(" comparison - Treatment comparison\n")
     cat(" k          - Number of studies providing direct evidence\n")
-    cat(" prop       - Direct evidence proportion\n")
+    if (!is.null(prop.fixed))
+      cat(" prop       - Direct evidence proportion\n")
     if (overall)
       cat(paste(" nma        - Estimated treatment effect ", sm.lab,
                 "in network meta-analysis\n", sep = ""))

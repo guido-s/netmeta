@@ -380,16 +380,19 @@ netmeta <- function(TE, seTE,
                           seTE = format(round(seTE[excl], 4)),
                           stringsAsFactors = FALSE
                           )
-    warning("Comparison",
-            if (sum(excl) > 1) "s",
-            " with missing TE / seTE or zero seTE not considered in network meta-analysis.",
-            call. = FALSE)
-    cat(paste("Comparison",
+    if (warn)
+      warning("Comparison",
               if (sum(excl) > 1) "s",
-              " not considered in network meta-analysis:\n", sep = ""))
-    prmatrix(dat.NAs, quote = FALSE, right = TRUE,
-             rowlab = rep("", sum(excl)))
-    cat("\n")
+              " with missing TE / seTE or zero seTE not considered in network meta-analysis.",
+              call. = FALSE)
+    if (warn) {
+      cat(paste("Comparison",
+                if (sum(excl) > 1) "s",
+                " not considered in network meta-analysis:\n", sep = ""))
+      prmatrix(dat.NAs, quote = FALSE, right = TRUE,
+               rowlab = rep("", sum(excl)))
+      cat("\n")
+    }
     ##
     studlab <- studlab[!(excl)]
     treat1  <- treat1[!(excl)]

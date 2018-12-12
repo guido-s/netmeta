@@ -781,40 +781,57 @@ netmetabin <- function(event1, n1, event2, n2,
   ##     method
   ##
   ##
+  dat.iv <- dat.long[order(dat.long$.order), ]
+  ##
   if (method == "Inverse") {
-    dat.long <- dat.long[order(dat.long$.order), ]
-    ##
-    p.iv <- pairwise(studlab = dat.long$studlab,
-                     treat = dat.long$treat,
-                     event = dat.long$event,
-                     n = dat.long$n,
-                     data = dat.long,
-                     sm = sm,
-                     incr = incr,
-                     allincr = allincr, addincr = addincr,
-                     allstudies = allstudies)
-    ##
-    net.iv <- netmeta(p.iv,
-                      level = level, level.comb = level.comb,
-                      comb.fixed = comb.fixed, comb.random = comb.random,
-                      prediction = prediction, level.predict = level.predict,
-                      reference.group = reference.group,
-                      baseline.reference = baseline.reference,
-                      all.treatments = all.treatments,
-                      seq = seq,
-                      tau.preset = tau.preset,
-                      tol.multiarm = tol.multiarm,
-                      details.chkmultiarm = details.chkmultiarm,
-                      sep.trts = sep.trts,
-                      nchar.trts = nchar.trts,
-                      backtransf = backtransf,
-                      title = title,
-                      keepdata = keepdata,
-                      warn = warn)
-    return(net.iv)
+    if (missing(warn))
+      warn.iv <- gs("warn")
+    else
+      warn.iv <- warn
+    incr.iv <- incr
   }
-
-
+  else {
+    warn.iv <- FALSE
+    incr.iv <- incr * cc.pooled
+  }
+  ##
+  p.iv <- pairwise(studlab = dat.iv$studlab,
+                   treat = dat.iv$treat,
+                   event = dat.iv$event,
+                   n = dat.iv$n,
+                   data = dat.iv,
+                   sm = sm,
+                   incr = incr.iv,
+                   allincr = allincr, addincr = addincr,
+                   allstudies = allstudies,
+                   warn = warn.iv)
+  ##
+  net.iv <- netmeta(p.iv,
+                    level = level, level.comb = level.comb,
+                    comb.fixed = comb.fixed, comb.random = comb.random,
+                    prediction = prediction, level.predict = level.predict,
+                    reference.group = reference.group,
+                    baseline.reference = baseline.reference,
+                    all.treatments = all.treatments,
+                    seq = seq,
+                    tau.preset = tau.preset,
+                    tol.multiarm = tol.multiarm,
+                    details.chkmultiarm = details.chkmultiarm,
+                    sep.trts = sep.trts,
+                    nchar.trts = nchar.trts,
+                    backtransf = backtransf,
+                    title = title,
+                    keepdata = keepdata,
+                    warn = warn.iv)
+  ##
+  if (method == "Inverse")
+    return(net.iv)
+  else {
+    net.iv$Cov.fixed[!is.na(net.iv$Cov.fixed)] <- NA
+    net.iv$Cov.random[!is.na(net.iv$Cov.random)] <- NA
+  }
+  
+  
   ##
   ##
   ## (8) Stage 2: Direct meta-analyses per design (MH and NCH methods)
@@ -1438,8 +1455,8 @@ netmetabin <- function(event1, n1, event2, n2,
               P.fixed = NA,
               P.random = NA,
               ##
-              Cov.fixed = NA,
-              Cov.random = NA,
+              Cov.fixed = net.iv$Cov.fixed,
+              Cov.random = net.iv$Cov.random,
               ##
               sm = sm,
               method = method,
@@ -1476,8 +1493,6 @@ netmetabin <- function(event1, n1, event2, n2,
               title = title,
               ##
               data = data,
-              data.wide = dat.wide,
-              data.long = dat.long,
               data.design = dat.design,
               ##
               y = if (method == "MH") y else NULL,
@@ -1495,11 +1510,11 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ## Study overview
   ##
-  p0 <- prepare(rep(1, nrow(res$data.wide)),
-                rep(1, nrow(res$data.wide)),
-                res$data.wide$treat1,
-                res$data.wide$treat2,
-                res$data.wide$studlab)
+  p0 <- prepare(rep(1, nrow(dat.wide)),
+                rep(1, nrow(dat.wide)),
+                dat.wide$treat1,
+                dat.wide$treat2,
+                dat.wide$studlab)
   tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
                       stringsAsFactors = FALSE)
   tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
@@ -1515,14 +1530,6 @@ netmetabin <- function(event1, n1, event2, n2,
   res$data <- res$data[order(res$data$.order), ]
   res$data$.order <- NULL
   rownames(res$data) <- seq_len(nrow(res$data))
-  ##
-  res$data.wide <- res$data.wide[order(res$data.wide$.order), ]
-  res$data.wide$.order <- NULL
-  rownames(res$data.wide) <- seq_len(nrow(res$data.wide))
-  ##
-  res$data.long <- res$data.long[order(res$data.long$.order), ]
-  res$data.long$.order <- NULL
-  rownames(res$data.long) <- seq_len(nrow(res$data.long))
   
   
   res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
