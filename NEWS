@@ -19,6 +19,9 @@
     meta-analysis objects and to generate a forest plot with results
     of several network meta-analyses
 
+  * Separate Indirect from Direct Design Evidence (SIDDE) method
+    implemented in netsplit()
+
   * All network comparisons can be included in a forest plot
 
   * Circular network graphs with minimal number of crossings available
@@ -26,6 +29,8 @@
   * Default setting for levels of confidence intervals can be
     specified using R function settings.meta(); the default is still
     0.95, i.e., 95% confidence intervals are computed
+
+  * New datasets: Gurusamy2011 and Dong2013
 
  ** User-visible changes **
 
@@ -47,6 +52,11 @@
     - argument 'n' can be used for meta-analysis with count outcomes
       (based on arguments 'event' and 'time')
     - infinite treatment estimates and standard errors set to NA
+    - by default, do not print warnings
+    
+  * netsplit():
+    - new argument 'method' to choose approach to split direct and
+      indirect evidence
 
   * forest.netmeta():
     - argument 'reference.group' can be a vector in order to include
@@ -127,7 +137,7 @@
     - all variables from the original dataset are kept in the output
       dataset
 
-  * Netleague tables
+  * League tables
     - show the direct treatment estimates from pairwise comparisons in
       the upper triangle if the table is created for a single network
       meta-analysis

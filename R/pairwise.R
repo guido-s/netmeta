@@ -2,7 +2,7 @@ pairwise <- function(treat,
                      event, n, mean, sd, TE, seTE, time,
                      data = NULL, studlab,
                      incr = 0.5, allincr = FALSE, addincr = FALSE,
-                     allstudies = FALSE, warn = gs("warn"),
+                     allstudies = FALSE, warn = FALSE,
                      ...) {
 
 

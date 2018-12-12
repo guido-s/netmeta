@@ -57,10 +57,10 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   \item{baseline.reference}{A logical indicating whether results
     should be expressed as comparisons of other treatments versus the
     reference treatment (default) or vice versa. This argument is only
-    considered if \code{reference.group} has been specified.}    
+    considered if \code{reference.group} has been specified.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
-        \code{TRUE}, matrices with all treatment effects, and confidence
-        limits will be printed.}
+    \code{TRUE}, matrices with all treatment effects, and confidence
+    limits will be printed.}
   \item{seq}{A character or numerical vector specifying the sequence
     of treatments in printouts.}
   \item{tau.preset}{An optional value for the square-root of the
@@ -184,10 +184,7 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   R package \bold{netmeta} will adequately consider the values for
   \code{comb.fixed} and \code{comb.random}. E.g. function
   \code{\link{print.summary.netmeta}} will not print results for the
-  random effects model if \code{comb.random=FALSE}. By default
-  (\code{comb.fixed=TRUE}), a fixed effects network meta-analysis is
-  reported. Use argument \code{comb.random=TRUE} to report results
-  of a random effects model.
+  random effects model if \code{comb.random=FALSE}.
 
   By default, treatment names are not abbreviated in
   printouts. However, in order to get more concise printouts, argument

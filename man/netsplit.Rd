@@ -113,6 +113,9 @@ netsplit(x, method, upper = TRUE,
   Note, for the back-calculation method, indirect treatment estimates
   are already calculated in \code{\link{netmeta}} and this function
   combines and prints these estimates in a user-friendly way.
+  Furthermore, this method is not available for the Mantel-Haenszel and
+  non-central hypergeometric distribution approach implemented in
+  \code{\link{netmetabin}}.
 
   Argument \code{show} determines which comparisons are printed:
   \tabular{ll}{
@@ -175,7 +178,7 @@ netsplit(x, method, upper = TRUE,
   \bold{349}, g5630
 }
 
-\seealso{\code{\link{netmeta}}, \code{\link{netmeasures}}}
+\seealso{\code{\link{netmeta}}, \code{\link{netmetabin}}, \code{\link{netmeasures}}}
 
 \examples{
 data(Woods2010)

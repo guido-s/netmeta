@@ -5,8 +5,8 @@
 
 \description{
   Network meta-analysis of binary outcome data using the
-  Mantel-Haenszel method or the non-central hypergeometric
-  distribution distribution.
+  Mantel-Haenszel, the non-central hypergeometric
+  distribution, or the inverse variance method.
 }
 
 \usage{
@@ -94,10 +94,10 @@ netmetabin(event1, n1, event2, n2,
   \item{baseline.reference}{A logical indicating whether results
     should be expressed as comparisons of other treatments versus the
     reference treatment (default) or vice versa. This argument is only
-    considered if \code{reference.group} has been specified.}    
+    considered if \code{reference.group} has been specified.}
   \item{all.treatments}{A logical or value \code{"NULL"}. If
-        \code{TRUE}, matrices with all treatment effects, and confidence
-        limits will be printed.}
+    \code{TRUE}, matrices with all treatment effects, and confidence
+    limits will be printed.}
   \item{seq}{A character or numerical vector specifying the sequence
     of treatments in printouts.}
   \item{tau.preset}{An optional value for the square-root of the
@@ -125,68 +125,66 @@ netmetabin(event1, n1, event2, n2,
 }
 
 \details{
-  \bold{... more details ...}
+  This function implements the Mantel-Haenszel and the non-central
+  hypergeometric distribution method for network meta-analysis of binary
+  data as described in Efthimiou et al. (2018). Furthermore, the inverse
+  variance method is also available.
 
-  Comparisons belonging to multi-arm studies are identified by
-  identical study labels (argument \code{studlab}). It is therefore
-  important to use identical study labels for all comparisons
-  belonging to the same multi-arm study, e.g., study label
-  "Willms1999" for the three-arm study in Senn et al. (2013).
+  Comparisons belonging to multi-arm studies are identified by identical
+  study labels (argument \code{studlab}). It is therefore important to
+  use identical study labels for all comparisons belonging to the same
+  multi-arm study.
 
-  Data entry for this function is in \emph{contrast-based} format,
-  that is, each line corresponds to a single pairwise comparison
-  between two treatments (arguments \code{treat1}, \code{treat2},
-  \code{event1}, \code{n1}, \code{event2}, and \code{n2}). If data are
-  provided in \emph{arm-based} format, that is, number of events and
-  participants are given for each treatment arm separately, function
+  Data entry for this function is in \emph{contrast-based} format, that
+  is, each line corresponds to a single pairwise comparison between two
+  treatments (arguments \code{treat1}, \code{treat2}, \code{event1},
+  \code{n1}, \code{event2}, and \code{n2}). If data are provided in
+  \emph{arm-based} format, that is, number of events and participants
+  are given for each treatment arm separately, function
   \code{\link{pairwise}} can be used to transform the data to
   \emph{contrast-based} format (see help page of function
   \code{\link{pairwise}}).
   
   Note, all pairwise comparisons must be provided for a multi-arm
   study. Consider a multi-arm study of \emph{p} treatments with known
-  variances. For this study, treatment effects and standard errors
-  must be provided for each of \emph{p}(\emph{p} - 1)/2 possible
+  variances. For this study, treatment effects and standard errors must
+  be provided for each of \emph{p}(\emph{p} - 1)/2 possible
   comparisons. For instance, a three-arm study contributes three
   pairwise comparisons, a four-arm study even six pairwise
-  comparisons. Function \code{\link{pairwise}} automatically
-  calculates all pairwise comparisons for multi-arm studies.
+  comparisons. Function \code{\link{pairwise}} automatically calculates
+  all pairwise comparisons for multi-arm studies.
   
   For \code{method = "Inverse"}, both fixed effects and random effects
   models are calculated regardless of values choosen for arguments
   \code{comb.fixed} and \code{comb.random}. Accordingly, the network
-  estimates for the random effects model can be extracted from
-  component \code{TE.random} of an object of class \code{"netmeta"}
-  even if argument \code{comb.random=FALSE}. However, all functions in
-  R package \bold{netmeta} will adequately consider the values for
+  estimates for the random effects model can be extracted from component
+  \code{TE.random} of an object of class \code{"netmeta"} even if
+  argument \code{comb.random=FALSE}. However, all functions in R package
+  \bold{netmeta} will adequately consider the values for
   \code{comb.fixed} and \code{comb.random}. E.g. function
   \code{\link{print.summary.netmeta}} will not print results for the
-  random effects model if \code{comb.random=FALSE}. By default
-  (\code{comb.fixed=TRUE}), a fixed effects network meta-analysis is
-  reported. Use argument \code{comb.random=TRUE} to report results of
-  a random effects model.
+  random effects model if \code{comb.random=FALSE}.
 
   For \code{method = "MH"} and \code{method = "NCH"}, only a fixed
   effects model is available.
 
-  By default, treatment names are not abbreviated in
-  printouts. However, in order to get more concise printouts, argument
-  \code{nchar.trts} can be used to define the minimum number of
-  characters for abbreviated treatment names. R function
-  \code{\link{treats}} is utilised internally to create abbreviated
-  treatment names.
+  By default, treatment names are not abbreviated in printouts. However,
+  in order to get more concise printouts, argument \code{nchar.trts} can
+  be used to define the minimum number of characters for abbreviated
+  treatment names. R function \code{\link{treats}} is utilised
+  internally to create abbreviated treatment names.
 
-  Names of treatment comparisons are created by concatenating
-  treatment labels of pairwise comparisons using \code{sep.trts} as
-  separator (see \code{\link{paste}}). These comparison names are used
-  in the covariance matrices \code{Cov.fixed} and \code{Cov.random}
-  and in some R functions, e.g, \code{\link{decomp.design}}. By
-  default, a colon is used as the separator. If any treatment label
-  contains a colon the following characters are used as separator (in
-  consecutive order): \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"},
-  \code{"."}, \code{"|"}, and \code{"*"}.  If all of these characters
-  are used in treatment labels, a corresponding error message is
-  printed asking the user to specify a different separator.
+  Names of treatment comparisons are created by concatenating treatment
+  labels of pairwise comparisons using \code{sep.trts} as separator (see
+  \code{\link{paste}}). These comparison names are used in the
+  covariance matrices \code{Cov.fixed} and \code{Cov.random} and in some
+  R functions, e.g, \code{\link{decomp.design}}. By default, a colon is
+  used as the separator. If any treatment label contains a colon the
+  following characters are used as separator (in consecutive order):
+  \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"}, \code{"."},
+  \code{"|"}, and \code{"*"}.  If all of these characters are used in
+  treatment labels, a corresponding error message is printed asking the
+  user to specify a different separator.
 }
 
 \value{
@@ -240,22 +238,14 @@ netmetabin(event1, n1, event2, n2,
   \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
   \item{I2}{I-squared.}
   \item{tau}{Square-root of between-study variance.}
-  \item{y}{\bold{??? REMOVE or DESCRIBE ???}}
-  \item{V}{\bold{??? REMOVE or DESCRIBE ???}}
-  \item{H}{\bold{??? REMOVE or DESCRIBE ???}}
-  \item{X}{\bold{??? REMOVE or DESCRIBE ???}}
   \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
   \item{H.matrix}{Hat matrix (\emph{m}x\emph{m})}
   \item{n.matrix}{\emph{n}x\emph{n} matrix with number of observations
     in direct comparisons.}
   \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
     in direct comparisons.}
-  \item{data}{Data (contrast-based format).}
-  \item{data.wide}{Data in wide (contrast-based) format. \bold{KEEP OR DROP ???}}
-  \item{data.long}{Data in long (arm-based) format. \bold{KEEP OR DROP ???}}
-  \item{data.design}{List with data in arm-based format (each list
-    element corresponds to a single design). \bold{KEEP OR DROP ???}}
-  \item{sm, level, level.comb}{As defined above.}
+  \item{sm, method, level, level.comb}{As defined above.}
+  \item{incr, allincr, addincr, allstudies, cc.pooled}{As defined above.}
   \item{comb.fixed, comb.random}{As defined above.}
   \item{prediction, level.predict}{As defined above.}
   \item{reference.group, baseline.reference, all.treatments}{As
@@ -264,11 +254,19 @@ netmetabin(event1, n1, event2, n2,
     above.}
   \item{sep.trts, nchar.trts}{As defined above.}
   \item{backtransf, title, warn}{As defined above.}
+  \item{data}{Data set (in contrast-based format).}
+  \item{data.design}{List with data in arm-based format (each list
+    element corresponds to a single design).}
   \item{call}{Function call.}
   \item{version}{Version of R package netmeta used to create object.}
 }
 
 \references{
+  Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
+  (2018),
+  A Mantel-Haenszel model for network meta-analysis of rare events.
+  \emph{Manuscript submitted for publication}.  
+  
   Senn S, Gavini F, Magrez D, Scheen A (2013),
   Issues in performing a network meta-analysis.
   \emph{Statistical Methods in Medical Research},
@@ -280,5 +278,24 @@ netmetabin(event1, n1, event2, n2,
 \seealso{\code{\link{pairwise}}, \code{\link{netmeta}}}
 
 \examples{
-# To be added ...
+data(Gurusamy2011)
+
+# Transform data from long arm-based format to contrast-based format.
+# Argument 'sm' has to be used for odds ratio as summary measure; by
+# default the risk ratio is used in the metabin function called
+# internally.
+p1 <- pairwise(treatment, death, n, studlab = study,
+               data = Gurusamy2011, sm = "OR")
+
+# Conduct Mantel-Haenszel network meta-analysis
+netmetabin(p1, ref = "cont")
+
+
+data(Dong2013)
+
+p2 <- pairwise(treatment, death, randomized, studlab = id,
+               data = Dong2013, sm = "OR")
+
+# Conduct Mantel-Haenszel network meta-analysis
+netmetabin(p2, ref = "plac")
 }

@@ -1495,10 +1495,6 @@ netmetabin <- function(event1, n1, event2, n2,
               data = data,
               data.design = dat.design,
               ##
-              y = if (method == "MH") y else NULL,
-              V = if (method == "MH") V else NULL,
-              X = if (method == "MH") X else NULL,
-              ##
               warn = warn,
               call = match.call(),
               version = packageDescription("netmeta")$Version

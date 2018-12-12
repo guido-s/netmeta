@@ -14,6 +14,8 @@ summary.netmeta <- function(object,
   ##
   ##
   meta:::chkclass(object, "netmeta")
+  ##
+  is.bin <- inherits(object, "netmetabin")
   ##  
   object <- upgradenetmeta(object)
   ##  
@@ -53,28 +55,30 @@ summary.netmeta <- function(object,
                         ci(object$TE, object$seTE, object$level)[keepvars],
                         stringsAsFactors = FALSE)
   ##
-  ci.nma.fixed <- data.frame(studlab = object$studlab,
-                             treat1 = object$treat1,
-                             treat2 = object$treat2,
-                             TE = object$TE.nma.fixed,
-                             seTE = object$seTE.nma.fixed,
-                             lower = object$lower.nma.fixed,
-                             upper = object$upper.nma.fixed,
-                             z = object$zval.nma.fixed,
-                             p = object$pval.nma.fixed,
-                             leverage = object$leverage.fixed,
-                             stringsAsFactors = FALSE)
-  ##
-  ci.nma.random <- data.frame(studlab = object$studlab,
-                             treat1 = object$treat1,
-                             treat2 = object$treat2,
-                             TE = object$TE.nma.random,
-                             seTE = object$seTE.nma.random,
-                             lower = object$lower.nma.random,
-                             upper = object$upper.nma.random,
-                             z = object$zval.nma.random,
-                             p = object$pval.nma.random,
-                             stringsAsFactors = FALSE)
+  if (!is.bin) {
+    ci.nma.fixed <- data.frame(studlab = object$studlab,
+                               treat1 = object$treat1,
+                               treat2 = object$treat2,
+                               TE = object$TE.nma.fixed,
+                               seTE = object$seTE.nma.fixed,
+                               lower = object$lower.nma.fixed,
+                               upper = object$upper.nma.fixed,
+                               z = object$zval.nma.fixed,
+                               p = object$pval.nma.fixed,
+                               leverage = object$leverage.fixed,
+                               stringsAsFactors = FALSE)
+    ##
+    ci.nma.random <- data.frame(studlab = object$studlab,
+                                treat1 = object$treat1,
+                                treat2 = object$treat2,
+                                TE = object$TE.nma.random,
+                                seTE = object$seTE.nma.random,
+                                lower = object$lower.nma.random,
+                                upper = object$upper.nma.random,
+                                z = object$zval.nma.random,
+                                p = object$pval.nma.random,
+                                stringsAsFactors = FALSE)
+  }
   ##
   ci.f <- list(TE = object$TE.fixed,
                seTE = object$seTE.fixed,
@@ -83,16 +87,23 @@ summary.netmeta <- function(object,
                z = object$zval.fixed,
                p = object$pval.fixed)
   ##
-  ci.r <- list(TE = object$TE.random,
-               seTE = object$seTE.random,
-               lower = object$lower.random,
-               upper = object$upper.random,
-               z = object$zval.random,
-               p = object$pval.random)
-  ##
-  ci.p <- list(seTE = object$seTE.predict,
-               lower = object$lower.predict,
-               upper = object$upper.predict)
+  if (!is.bin) {
+    ci.r <- list(TE = object$TE.random,
+                 seTE = object$seTE.random,
+                 lower = object$lower.random,
+                 upper = object$upper.random,
+                 z = object$zval.random,
+                 p = object$pval.random)
+    ##
+    ci.p <- list(seTE = object$seTE.predict,
+                 lower = object$lower.predict,
+                 upper = object$upper.predict)
+  }
+  else {
+    ci.r <- list(TE = NA, seTE = NA, lower = NA, upper = NA,
+                 z = NA, p = NA)
+    ci.p <- list(seTE = NA, lower = NA, upper = NA)
+  }
   
   
   ##
@@ -101,9 +112,10 @@ summary.netmeta <- function(object,
   ##
   ##
   res <- list(comparison = ci.comp,
-              comparison.nma.fixed = ci.nma.fixed,
-              comparison.nma.random = ci.nma.random,
-              fixed = ci.f, random = ci.r,
+              comparison.nma.fixed = if (is.bin) NA else ci.nma.fixed,
+              comparison.nma.random = if (is.bin) NA else ci.nma.random,
+              fixed = ci.f,
+              random = ci.r,
               predict = ci.p,
               ##
               studies = object$studies,
