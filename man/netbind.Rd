@@ -41,11 +41,10 @@ netbind(..., name, comb.fixed, comb.random,
     considered if \code{reference.group} has been specified.}
 }
 
-\details{
+\details{  
   This function can be used to combine network meta-analysis objects.
-  and is, for
-example, useful to generate a forest plot with results of subgroup
-analyses.
+  and is especially useful to generate a forest plot with results of
+  several network meta-analyses.
 }
 
 \value{
