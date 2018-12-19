@@ -15,9 +15,9 @@
   * New function forest.netcomb() for forest plots of component
     network meta-analysis
 
-  * New functions netbind() and forest.netbind() to combine network
-    meta-analysis objects and to generate a forest plot with results
-    of several network meta-analyses
+  * New functions netbind(), forest.netbind(), and print.netbind() to
+    combine network meta-analysis objects and to generate a forest
+    plot with results of several network meta-analyses
 
   * Separate Indirect from Direct Design Evidence (SIDDE) method
     implemented in netsplit()
@@ -52,7 +52,8 @@
     - argument 'n' can be used for meta-analysis with count outcomes
       (based on arguments 'event' and 'time')
     - infinite treatment estimates and standard errors set to NA
-    - by default, do not print warnings
+    - by default, do not print warnings if comparisons will not be
+      included in network meta-analysis
     
   * netsplit():
     - new argument 'method' to choose approach to split direct and

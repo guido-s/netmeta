@@ -6,7 +6,7 @@ export(netmeta, netmetabin, summary.netmeta,
        pairwise,
        decomp.design, print.decomp.design,
        ##
-       netbind, forest.netbind,
+       netbind, forest.netbind, print.netbind,
        ##
        netcomb, discomb, summary.netcomb,
        print.netcomb, print.summary.netcomb,
@@ -41,6 +41,7 @@ S3method(forest, netsplit)
 S3method(funnel, netmeta)
 S3method(plot, netposet)
 S3method(print, decomp.design)
+S3method(print, netbind)
 S3method(print, netcomb)
 S3method(print, netconnection)
 S3method(print, netleague)

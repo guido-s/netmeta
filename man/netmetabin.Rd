@@ -290,7 +290,7 @@ p1 <- pairwise(treatment, death, randomized, studlab = id,
 # Conduct Mantel-Haenszel network meta-analysis
 netmetabin(p1, ref = "plac")
 
-
+\dontrun{
 data(Gurusamy2011)
 
 p2 <- pairwise(treatment, death, n, studlab = study,
@@ -298,4 +298,5 @@ p2 <- pairwise(treatment, death, n, studlab = study,
 
 # Conduct Mantel-Haenszel network meta-analysis
 netmetabin(p2, ref = "cont")
+}
 }

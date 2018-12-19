@@ -1,8 +1,6 @@
 forest.netbind <- function(x,
                            pooled = ifelse(x$comb.random, "random", "fixed"),
                            ##
-                           reference.group = x$reference.group,
-                           ##
                            equal.size = FALSE,
                            ##
                            leftcols = "studlab",
@@ -48,13 +46,13 @@ forest.netbind <- function(x,
   ## (2) Extract results for fixed effect and random effects model
   ##
   ##
-  sel <- x$fixed$treat != reference.group
+  sel <- x$fixed$treat != x$reference.group
   ##
   if (pooled == "fixed") {
     m <- metagen(x$fixed$TE, x$fixed$seTE, studlab = x$fixed$name,
                  sm = x$sm, comb.fixed = FALSE, comb.random = FALSE,
                  byvar = x$fixed$treat, print.byvar = FALSE,
-                 subset = x$fixed$treat != reference.group)
+                 subset = x$fixed$treat != x$reference.group)
     ##
     m$TE <- x$fixed$TE[sel]
     m$seTE <- x$fixed$seTE[sel]
@@ -74,7 +72,7 @@ forest.netbind <- function(x,
     m <- metagen(x$random$TE, x$random$seTE, studlab = x$random$name,
                  sm = x$sm, comb.fixed = FALSE, comb.random = FALSE,
                  byvar = x$random$treat, print.byvar = FALSE,
-                 subset = x$random$treat != reference.group)
+                 subset = x$random$treat != x$reference.group)
     ##
     m$TE <- x$random$TE[sel]
     m$seTE <- x$random$seTE[sel]

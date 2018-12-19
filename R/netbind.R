@@ -2,9 +2,9 @@ netbind <- function(..., name,
                     comb.fixed, comb.random,
                     ##
                     col.study = "black",
+                    col.inside = "white",
                     col.square = "gray",
                     col.square.lines = col.square,
-                    col.inside = "white",
                     ##
                     backtransf,
                     reference.group, baseline.reference
