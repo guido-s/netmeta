@@ -45,15 +45,13 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
     (\code{\link{funnel.netmeta}}) to assess funnel plot asymmetry in
     network meta-analysis (Chaimani & Salanti, 2012)}
   \item automated drawing of network graphs (\code{\link{netgraph}})
-    described in Rücker & Schwarzer (2016).
+    described in Rücker & Schwarzer (2016);
+  \item results of several network meta-analyses can be combined with
+    \code{\link{netbind}} to show these results in a forest plot.
   }
-
-  Results of several network meta-analyses can be combined with
-  \code{\link{netbind}} which is especially useful to show results of
-  several analyses in a forest plot.
   
-  Functions and datasets from \bold{netmeta} are utilised in Schwarzer
-  et al. (2015), Chapter 8 "Network Meta-Analysis",
+  Furthermore, functions and datasets from \bold{netmeta} are utilised
+  in Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
   \url{http://meta-analysis-with-r.org/}.
 
   Type \code{help(package = "netmeta")} for a listing of all R functions
