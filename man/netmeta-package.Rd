@@ -47,12 +47,16 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
   \item automated drawing of network graphs (\code{\link{netgraph}})
     described in Rücker & Schwarzer (2016).
   }
+
+  Results of several network meta-analyses can be combined with
+  \code{\link{netbind}} which is especially useful to show results of
+  several analyses in a forest plot.
   
-  Furthermore, functions and datasets from \bold{netmeta} are utilised
-  in Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
+  Functions and datasets from \bold{netmeta} are utilised in Schwarzer
+  et al. (2015), Chapter 8 "Network Meta-Analysis",
   \url{http://meta-analysis-with-r.org/}.
 
-  Type \code{help(package = "netmeta")} for a listing of R functions
+  Type \code{help(package = "netmeta")} for a listing of all R functions
   available in \bold{netmeta}.
   
   Type \code{citation("netmeta")} on how to cite \bold{netmeta} in
