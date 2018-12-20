@@ -741,7 +741,8 @@ netmeta <- function(TE, seTE,
   ##
   n <- res$n
   ##
-  res$prop.direct.fixed  <- netmeasures(res, random = FALSE)$proportion
+  res$prop.direct.fixed  <- netmeasures(res, random = FALSE,
+                                        warn = warn)$proportion
   ## Print warning(s) in call of netmeasures() once
   oldopts <- options(warn = -1)
   res$prop.direct.random <- netmeasures(res, random = TRUE,
@@ -835,9 +836,12 @@ netmeta <- function(TE, seTE,
   if (is.null(res$d))
     res$d <- 1
   ##
-  res$designs <- as.character(krahn$design$design)
-
-
+  if (is.null(krahn$design$design))
+    res$designs <- rownames(res$Cov.fixed)
+  else
+    res$designs <- as.character(krahn$design$design)  
+  
+  
   ##
   ## Calculate heterogeneity and inconsistency statistics
   ##
