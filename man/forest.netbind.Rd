@@ -2,12 +2,11 @@
 
 \alias{forest.netbind}
 
-\title{Forest plot for direct and indirect evidence}
+\title{Forest plot showing results of two or more network meta-analyses}
 
-\description{
-  Forest plot to show direct and indirect evidence in network
-  meta-analysis. Furthermore, estimates from network meta-analysis as
-  well as prediction intervals can be printed.
+\description{  
+  Forest plot to show network estimates of two or more network
+  meta-analyses.
 }
 
 \usage{
