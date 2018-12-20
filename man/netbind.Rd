@@ -41,9 +41,9 @@ netbind(..., name, comb.fixed, comb.random,
     considered if \code{reference.group} has been specified.}
 }
 
-\details{  
-  This function can be used to combine network meta-analysis objects.
-  and is especially useful to generate a forest plot with results of
+\details{
+  This function can be used to combine network meta-analysis objects
+  which is especially useful to generate a forest plot with results of
   several network meta-analyses.
 }
 
@@ -60,7 +60,7 @@ netbind(..., name, comb.fixed, comb.random,
 
 \author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\code{\link{netmeta}}, \code{\link{forest.netbind}}}
+\seealso{\code{\link{netmeta}}, \code{\link{netcomb}}, \code{\link{discomb}}, \code{\link{forest.netbind}}}
 
 \examples{
 data(Linde2016)

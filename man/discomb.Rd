@@ -157,7 +157,9 @@ different matrix using argument \code{C.matrix}.
 }                  
 
 \value{
-A list containing the following components:
+  An object of classes \code{discomb} and \code{netcomb} with
+  corresponding \code{print}, \code{summary}, and \code{forest}
+  functions. The object is a list containing the following components:
   \item{inactive, sep.comps, C.matrix, sm}{As defined above.}  
   \item{level.comb, comb.fixed, comb.random}{As defined above.}  
   \item{reference.group, baseline.reference, seq}{As defined above.}  
@@ -228,7 +230,7 @@ A list containing the following components:
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
 Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\link{netcomb}, \link{print.netcomb}, \link{netmeta}, \link{netconnection}}
+\seealso{\link{netcomb}, \link{forest.netcomb}, \link{summary.netcomb}, \link{netmeta}, \link{netconnection}}
 
 \examples{
 # Artificial dataset
@@ -258,8 +260,10 @@ netconnection(t1, t2, study)
 dc1 <- discomb(mean, se.mean, t1, t2, study, seq = trts)
 dc1
 
+forest(dc1, ref = "F")
 
-# Define C matrix
+
+# Define C matrix manually (which will produce the same results)
 #
 C <- rbind(c(1, 0, 0, 0, 0, 0),  # A
            c(1, 1, 0, 0, 0, 0),  # A + B

@@ -93,7 +93,7 @@
 
 \author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\code{\link{forest.meta}}}
+\seealso{\code{\link{netcomb}}, \code{\link{discomb}}, \code{\link{forest.meta}}}
 
 \examples{
 data(Linde2016)

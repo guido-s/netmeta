@@ -190,7 +190,7 @@ netmetabin(event1, n1, event2, n2,
 \value{
   An object of class \code{netmetabin} and \code{netmeta} with
   corresponding \code{print}, \code{summary}, \code{forest}, and
-  \code{netrank} function. The object is a list containing the
+  \code{netrank} functions. The object is a list containing the
   following components:
   \item{studlab, treat1, treat2}{As defined above.}
   \item{n1, n2, event1, event2}{As defined above.}

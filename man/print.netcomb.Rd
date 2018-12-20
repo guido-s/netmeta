@@ -87,7 +87,7 @@
 
 \author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\code{\link{netcomb}}}
+\seealso{\code{\link{netcomb}}, \code{\link{discomb}}}
 
 \examples{
 data(Linde2016)

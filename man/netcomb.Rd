@@ -84,8 +84,9 @@ different matrix using argument \code{C.matrix}.
 }                                       
 
 \value{
-A list containing the following components:
-
+  An object of class \code{netcomb} with corresponding \code{print},
+  \code{summary}, and \code{forest} functions. The object is a list
+  containing the following components:
   \item{x, inactive, sep.comps, C.matrix}{As defined above.}  
   \item{comb.fixed, comb.random, tau.preset}{As defined above.}  
   \item{k}{Total number of studies.}
@@ -160,7 +161,7 @@ A list containing the following components:
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
 Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\link{netmeta}, \link{print.netcomb}, \link{discomb}}
+\seealso{\link{netmeta}, \link{forest.netcomb}, \link{print.netcomb}, \link{discomb}}
 
 \examples{
 data(Linde2016)
@@ -189,6 +190,7 @@ net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 sm = "OR", comb.fixed = FALSE)
 #
 summary(net1)
+forest(net1, xlim = c(0.2, 50))
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
@@ -196,6 +198,7 @@ summary(net1)
 nc1 <- netcomb(net1, inactive = "placebo")
 #
 summary(nc1)
+forest(nc1, xlim = c(0.2, 50))
 }                                                                 
 
 \keyword{Network meta-analysis}

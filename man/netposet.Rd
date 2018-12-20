@@ -97,7 +97,7 @@ netposet(..., outcomes, treatments, small.values,
 
 \value{
   An object of class \code{netposet} with corresponding \code{print},
-  \code{plot}, and \code{hasse} function. The object is a list
+  \code{plot}, and \code{hasse} functions. The object is a list
   containing the following components:
   \item{P.fixed}{Ranking matrix with rows corresponding to treatments
     and columns corresponding to outcomes (fixed effect model).}

@@ -208,7 +208,7 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
 
 \value{
   An object of class \code{netmeta} with corresponding \code{print},
-  \code{summary}, \code{forest}, and \code{netrank} function. The
+  \code{summary}, \code{forest}, and \code{netrank} functions. The
   object is a list containing the following components:
   \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
   \item{seTE.adj}{Standard error of treatment estimate, adjusted for

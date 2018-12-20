@@ -128,8 +128,8 @@ netsplit(x, method, upper = TRUE,
 }
 
 \value{
-  An object of class \code{netsplit} with corresponding
-  \code{print} function. The object is a list containing the following
+  An object of class \code{netsplit} with corresponding \code{print} and
+  \code{forest} functions. The object is a list containing the following
   components:
   \item{comb.fixed, comb.random}{As defined above.}
   \item{comparison}{A vector with treatment comparisons.}
@@ -178,7 +178,7 @@ netsplit(x, method, upper = TRUE,
   \bold{349}, g5630
 }
 
-\seealso{\code{\link{netmeta}}, \code{\link{netmetabin}}, \code{\link{netmeasures}}}
+\seealso{\code{\link{forest.netsplit}}, \code{\link{netmeta}}, \code{\link{netmetabin}}, \code{\link{netmeasures}}}
 
 \examples{
 data(Woods2010)
