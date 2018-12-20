@@ -23,7 +23,7 @@ netheat(x, random=FALSE, tau.preset=NULL, showall=FALSE,
     which the net heat plot will be based.}
   \item{showall}{A logical indicating whether results should be shown
     for all designs or only a sensible subset, see Details.}
-  \item{nchar.trts}{A numeric defining the minium number of characters
+  \item{nchar.trts}{A numeric defining the minimum number of characters
     used to create unique treatment names.}
   \item{\dots}{Additional arguments.}
 }

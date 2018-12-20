@@ -45,26 +45,26 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     individual comparisons.}
   \item{level.comb}{The level used to calculate confidence intervals for
     pooled estimates.}
-  \item{comb.fixed}{A logical indicating whether a fixed effect
-    meta-analysis should be conducted.}
+  \item{comb.fixed}{A logical indicating whether a fixed effects (common
+    effects) network meta-analysis should be conducted.}
   \item{comb.random}{A logical indicating whether a random effects
-    meta-analysis should be conducted.}
+    network meta-analysis should be conducted.}
   \item{prediction}{A logical indicating whether prediction intervals
     should be printed.}
   \item{level.predict}{The level used to calculate prediction
     intervals for a new study.}
-  \item{reference.group}{Reference group.}
+  \item{reference.group}{Reference treatment.}
   \item{baseline.reference}{A logical indicating whether results
     should be expressed as comparisons of other treatments versus the
     reference treatment (default) or vice versa. This argument is only
     considered if \code{reference.group} has been specified.}
-  \item{all.treatments}{A logical or value \code{"NULL"}. If
-    \code{TRUE}, matrices with all treatment effects, and confidence
-    limits will be printed.}
+  \item{all.treatments}{A logical or \code{"NULL"}. If \code{TRUE},
+    matrices with all treatment effects, and confidence limits will be
+    printed.}
   \item{seq}{A character or numerical vector specifying the sequence
     of treatments in printouts.}
-  \item{tau.preset}{An optional value for the square-root of the
-    between-study variance \eqn{\tau^2}.}
+  \item{tau.preset}{An optional value for manually setting the
+    square-root of the between-study variance \eqn{\tau^2}.}
   \item{tol.multiarm}{A numeric for the tolerance for consistency of
     treatment estimates and corresponding variances in multi-arm studies
     which are consistent by design.}
@@ -77,7 +77,7 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     back transformed in printouts and forest plots. If
     \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
     as odds ratios rather than log odds ratios, for example.}
-  \item{nchar.trts}{A numeric defining the minium number of characters
+  \item{nchar.trts}{A numeric defining the minimum number of characters
     used to create unique treatment names (see Details).}
   \item{n1}{Number of observations in first treatment group.}
   \item{n2}{Number of observations in second treatment group.}
@@ -186,12 +186,12 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   \code{\link{print.summary.netmeta}} will not print results for the
   random effects model if \code{comb.random=FALSE}.
 
-  By default, treatment names are not abbreviated in
-  printouts. However, in order to get more concise printouts, argument
-  \code{nchar.trts} can be used to define the minimum number of
-  characters for abbreviated treatment names. R function
-  \code{\link{treats}} is utilised internally to create abbreviated
-  treatment names.
+  By default, treatment names are not abbreviated in printouts. However,
+  in order to get more concise printouts, argument \code{nchar.trts} can
+  be used to define the minimum number of characters for abbreviated
+  treatment names (see \code{\link{abbreviate}}, argument
+  \code{minlength}). R function \code{\link{treats}} is utilised
+  internally to create abbreviated treatment names.
 
   Names of treatment comparisons are created by concatenating
   treatment labels of pairwise comparisons using \code{sep.trts} as
@@ -217,7 +217,8 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
   \item{n}{Total number of treatments.}
-  \item{d}{Total number of designs.}
+  \item{d}{Total number of designs (corresponding to the unique set of
+    treatments compared within studies).}
   \item{trts}{Treatments included in network meta-analysis.}
   \item{k.trts}{Number of studies evaluating a treatment.}
   \item{n.trts}{Number of observations receiving a treatment (if
@@ -227,6 +228,8 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   \item{studies}{Study labels coerced into a factor with its levels
     sorted alphabetically.}
   \item{narms}{Number of arms for each study.}
+  \item{designs}{Unique list of designs present in the network. A design
+    corresponds to the set of treatments compared within a study.}
   \item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
     consistent treatment effects estimated by network meta-analysis
     (nma) (fixed effect / random effects model).}

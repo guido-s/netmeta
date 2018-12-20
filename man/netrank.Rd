@@ -20,9 +20,9 @@ netrank(x, small.values="good")
   \item{x}{An object of class \code{netmeta} (netrank function) or
     \code{netrank} (print function).}
   \item{comb.fixed}{A logical indicating whether to print P-scores for
-    fixed effect model.}
+    the fixed effects (common effects) model.}
   \item{comb.random}{A logical indicating whether to print P-scores
-    for random effects model.}
+    for the random effects model.}
   \item{small.values}{A character string specifying whether small
     treatment effects indicate a beneficial (\code{"good"}) or harmful
     (\code{"bad"}) effect, can be abbreviated.}

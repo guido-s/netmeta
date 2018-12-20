@@ -26,7 +26,7 @@
 
 \arguments{
   \item{x}{An object of class \code{netcomb}.}
-  \item{reference.group}{Reference group(s).}
+  \item{reference.group}{Reference treatment(s).}
   \item{baseline.reference}{A logical indicating whether results
     should be expressed as comparisons of other treatments versus the
     reference treatment (default) or vice versa.}

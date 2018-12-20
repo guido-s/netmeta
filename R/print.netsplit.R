@@ -111,16 +111,13 @@ print.netsplit <- function(x,
   if (show == "all")
     sel <- rep_len(TRUE, length(x$direct.fixed$TE))
   else if (show == "with.direct")
-    sel <- (!is.na(x$direct.fixed$TE) & !is.na(x$direct.random$TE))
+    sel <- !is.na(x$direct.fixed$TE)
   else if (show == "both")
-    sel <- (!is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
-            !is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+    sel <- !is.na(x$direct.fixed$TE) & !is.na(x$indirect.fixed$TE)
   else if (show == "direct.only")
-    sel <- (!is.na(x$direct.fixed$TE)  & is.na(x$indirect.fixed$TE) &
-            !is.na(x$direct.random$TE) & is.na(x$indirect.random$TE))
+    sel <- !is.na(x$direct.fixed$TE) & is.na(x$indirect.fixed$TE)
   else if (show == "indirect.only")
-    sel <- (is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
-            is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+    sel <- is.na(x$direct.fixed$TE) & !is.na(x$fixed$TE)
   ##
   comp <- x$comparison[sel]
   ##

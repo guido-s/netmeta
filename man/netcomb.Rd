@@ -27,10 +27,10 @@ netcomb(x, inactive = NULL, sep.comps = "+", C.matrix,
   \item{sep.comps}{A single character to define separator between
     treatment components.}
   \item{C.matrix}{C matrix (see Details).}
-  \item{comb.fixed}{A logical indicating whether a fixed effect
-    meta-analysis should be conducted.}
+  \item{comb.fixed}{A logical indicating whether a fixed effects (common
+    effects) network meta-analysis should be conducted.}
   \item{comb.random}{A logical indicating whether a random effects
-    meta-analysis should be conducted.}
+    network meta-analysis should be conducted.}
   \item{tau.preset}{An optional value for the square-root of the
     between-study variance \eqn{\tau^2}.}
 }
@@ -127,7 +127,7 @@ different matrix using argument \code{C.matrix}.
     random effects model).}
   \item{backtransf}{A logical indicating whether results should be
     back transformed in printouts and forest plots.}
-  \item{nchar.trts}{A numeric defining the minium number of characters
+  \item{nchar.trts}{A numeric defining the minimum number of characters
     used to create unique treatment and component names.}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{call}{Function call.}

@@ -45,7 +45,7 @@ netsplit(x, method, upper = TRUE,
     should be selected from the lower or upper triangle of the
     treatment effect matrices (see list elements \code{TE.fixed} and
     \code{TE.random} in the \code{netmeta} object).}
-  \item{reference.group}{Reference group.}
+  \item{reference.group}{Reference treatment.}
   \item{baseline.reference}{A logical indicating whether results
     should be expressed as comparisons of other treatments versus the
     reference treatment or vice versa. This argument is only
@@ -57,10 +57,10 @@ netsplit(x, method, upper = TRUE,
   \item{tol.direct}{A numeric defining the maximum deviation of the
     direct evidence proportion from 0 or 1 to classify a comparison as
     providing only indirect or direct evidence, respectively.}
-  \item{comb.fixed}{A logical indicating whether results for fixed
-    effect model should be printed.}
-  \item{comb.random}{A logical indicating whether results for random
-    effects model should be printed.}
+  \item{comb.fixed}{A logical indicating whether results for the fixed
+    effects (common effects) network meta-analysis should be printed.}
+  \item{comb.random}{A logical indicating whether results for the random
+    effects network meta-analysis should be printed.}
   \item{show}{A character string indicating which comparisons should
     be printed (see Details).}
   \item{overall}{A logical indicating whether estimates from network
@@ -106,8 +106,9 @@ netsplit(x, method, upper = TRUE,
    \item Back-calculation method deriving indirect estimates from direct
      pairwise comparisons and network estimates. The direct evidence
      proportion as described in König et al. (2013) is used in the
-     calculation of the indirect evidence
-   \item Separate Indirect from Direct Design Evidence (SIDDE)
+     calculation of the indirect evidence;
+   \item Separate Indirect from Direct Design Evidence (SIDDE) as
+     described in Efthimiou et al. (2018).
   }
 
   Note, for the back-calculation method, indirect treatment estimates
@@ -157,7 +158,8 @@ netsplit(x, method, upper = TRUE,
 }
 
 \author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}, Gerta Rücker
-\email{ruecker@imbi.uni-freiburg.de}}
+\email{ruecker@imbi.uni-freiburg.de}, Orestis Efthimiou
+\email{oremiou@gmail.com}}
 
 \references{
   Dias S, Welton NJ, Caldwell DM, Ades AE (2010),
@@ -165,6 +167,11 @@ netsplit(x, method, upper = TRUE,
   \emph{Statistics in Medicine},
   \bold{29}, 932--44
 
+  Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
+  (2018),
+  A Mantel-Haenszel model for network meta-analysis of rare events.
+  \emph{Manuscript submitted for publication}.
+  
   König J, Krahn U, Binder H (2013),
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
@@ -201,4 +208,12 @@ net2 <- netmeta(TE, seTE, treat1.long, treat2.long,
 print(netsplit(net2), digits=2)
 # Layout of Puhan et al. (2014), Table 1
 print(netsplit(net2), digits=2, ci=TRUE, test=FALSE)
+
+\dontrun{
+data(Dong2013)
+p3 <- pairwise(treatment, death, randomized, studlab = id,
+               data = Dong2013, sm = "OR")
+net3  <- netmetabin(p3)
+netsplit(net3)
+}
 }

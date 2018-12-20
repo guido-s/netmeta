@@ -49,15 +49,15 @@
 \arguments{
   \item{x}{An object of class \code{netcomb} or \code{summary.netcomb}.}
   \item{object}{An object of class \code{netcomb}.}
-  \item{comb.fixed}{A logical indicating whether a fixed effect
-    meta-analysis should be conducted.}
-  \item{comb.random}{A logical indicating whether a random effects
-    meta-analysis should be conducted.}
+  \item{comb.fixed}{A logical indicating whether results for the fixed
+    effects (common effects) model should be printed.}
+  \item{comb.random}{A logical indicating whether results for the random
+    effects model should be printed.}
   \item{backtransf}{A logical indicating whether results should be
     back transformed in printouts and forest plots. If
     \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
     as odds ratios rather than log odds ratios, for example.}
-  \item{nchar.trts}{A numeric defining the minium number of characters
+  \item{nchar.trts}{A numeric defining the minimum number of characters
     used to create unique treatment names (see Details).}
   \item{digits}{Minimal number of significant digits, see
     \code{print.default}.}

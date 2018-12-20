@@ -25,10 +25,10 @@ netposet(..., outcomes, treatments, small.values,
   \item{outcomes}{A character vector with outcome names.}
   \item{treatments}{A character vector with treatment names.}
   \item{small.values}{See details.}
-  \item{comb.fixed}{A logical indicating whether to show results for
-    fixed effect model.}
+  \item{comb.fixed}{A logical indicating whether to show results for the
+    fixed effects (common effects) model.}
   \item{comb.random}{A logical indicating whether to show results for
-    random effects model.}
+    the random effects model.}
   \item{x}{An object of class \code{netposet}.}
   \item{pooled}{A character string indicating whether Hasse diagram
     should be drawn for fixed effect (\code{"fixed"}) or random

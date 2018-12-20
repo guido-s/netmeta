@@ -21,7 +21,7 @@ netbind(..., name, comb.fixed, comb.random,
   \item{name}{An optional character vector providing descriptive names
     for the network meta-analysis objects.}
   \item{comb.fixed}{A logical indicating whether results for the fixed
-    effects model should be reported.}
+    effects (common effects) model should be reported.}
   \item{comb.random}{A logical indicating whether results for the random
     effects model should be reported.}
   \item{col.study}{The colour for network estimates and confidence
@@ -34,7 +34,7 @@ netbind(..., name, comb.fixed, comb.random,
     transformed. If \code{backtransf=TRUE} (default), results for
     \code{sm="OR"} are printed as odds ratios rather than log odds
     ratios, for example.}
-  \item{reference.group}{Reference group.}
+  \item{reference.group}{Reference treatment.}
   \item{baseline.reference}{A logical indicating whether results
     should be expressed as comparisons of other treatments versus the
     reference treatment (default) or vice versa. This argument is only

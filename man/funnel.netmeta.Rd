@@ -78,7 +78,7 @@
     between-study heterogeneity.}
   \item{sep.trts}{A character used in comparison names as separator
     between treatment labels.}
-  \item{nchar.trts}{A numeric defining the minium number of characters
+  \item{nchar.trts}{A numeric defining the minimum number of characters
     used to create unique treatment names (see
     \code{\link{netmeta}}).}
   \item{backtransf}{A logical indicating whether results for relative

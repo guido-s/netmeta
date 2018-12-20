@@ -17,10 +17,10 @@
 
 \arguments{
   \item{x}{An object of class \code{netbind} or \code{summary.netbind}.}
-  \item{comb.fixed}{A logical indicating whether a fixed effects
-    meta-analysis should be printed.}
-  \item{comb.random}{A logical indicating whether a random effects
-    meta-analysis should be printed.}
+  \item{comb.fixed}{A logical indicating whether results for the fixed
+    effects (common effects) model should be printed.}
+  \item{comb.random}{A logical indicating whether results for the random
+    effects model should be printed.}
   \item{\dots}{Additional arguments (ignored).}
 }
 

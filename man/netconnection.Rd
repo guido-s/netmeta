@@ -34,7 +34,7 @@ netconnection(treat1, treat2, studlab, data = NULL, subset = NULL,
   \item{data}{An optional data frame containing the study information.}
   \item{subset}{An optional vector specifying a subset of studies to be used.}
   \item{title}{Title of meta-analysis / systematic review.}
-  \item{nchar.trts}{A numeric defining the minium number of characters
+  \item{nchar.trts}{A numeric defining the minimum number of characters
     used to create unique treatment names.}
   \item{warn}{A logical indicating whether warnings should be printed.}
   \item{x}{An object of class \code{netconnection}.}

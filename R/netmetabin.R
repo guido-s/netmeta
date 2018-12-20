@@ -431,7 +431,7 @@ netmetabin <- function(event1, n1, event2, n2,
                                       treat = x$treat,
                                       event = x$event,
                                       n = x$n,
-                                      sm = "RD", warn = FALSE),
+                                      sm = "RD"),
                              warn = FALSE)
                      )$studies[, c("studlab", "design")]
     ##
@@ -440,7 +440,7 @@ netmetabin <- function(event1, n1, event2, n2,
                                treat = x$treat,
                                event = x$event,
                                n = x$n,
-                               sm = "RD", warn = FALSE),
+                               sm = "RD"),
                       warn = FALSE)
       ##
       res <- data.frame(studlab = net1$studlab, design = net1$designs)
@@ -789,10 +789,12 @@ netmetabin <- function(event1, n1, event2, n2,
     else
       warn.iv <- warn
     incr.iv <- incr
+    allstudies.iv <- allstudies
   }
   else {
     warn.iv <- FALSE
     incr.iv <- incr * cc.pooled
+    allstudies.iv <- cc.pooled
   }
   ##
   p.iv <- pairwise(studlab = dat.iv$studlab,
@@ -803,8 +805,7 @@ netmetabin <- function(event1, n1, event2, n2,
                    sm = sm,
                    incr = incr.iv,
                    allincr = allincr, addincr = addincr,
-                   allstudies = allstudies,
-                   warn = warn.iv)
+                   allstudies = allstudies.iv)
   ##
   net.iv <- netmeta(p.iv,
                     level = level, level.comb = level.comb,
