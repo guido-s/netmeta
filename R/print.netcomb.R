@@ -34,17 +34,41 @@ print.netcomb <- function(x,
   trts <- x$trts
   trts.abbr <- treats(trts, nchar.trts)
   ##
-  dat.f <- prcomps(x$comparisons.fixed,
-                   backtransf, x$sm, x$level.comb,
-                   trts, trts.abbr,
-                   digits, digits.zval, digits.pval.Q,
-                   scientific.pval, big.mark)
+  cnma.f <- data.frame(studlab = x$studlab,
+                       treat1 = x$treat1,
+                       treat2 = x$treat2,
+                       TE = x$TE.cnma.fixed,
+                       lower = x$lower.cnma.fixed,
+                       upper = x$upper.cnma.fixed,
+                       z = x$zval.cnma.fixed,
+                       p = x$pval.cnma.fixed,
+                       stringsAsFactors = FALSE)
   ##
-  dat.r <- prcomps(x$comparisons.random,
-                   backtransf, x$sm, x$level.comb,
-                   trts, trts.abbr,
-                   digits, digits.zval, digits.pval.Q,
-                   scientific.pval, big.mark)
+  dat.f <- formatComp(cnma.f,
+                      backtransf, x$sm, x$level.comb,
+                      trts, trts.abbr,
+                      digits, digits.zval, digits.pval.Q,
+                      scientific.pval, big.mark)
+  ##
+  #dat.f <- dat.f[, !(colnames(dat.f) %in% c("z", "p"))]
+  ##
+  cnma.r <- data.frame(studlab = x$studlab,
+                       treat1 = x$treat1,
+                       treat2 = x$treat2,
+                       TE = x$TE.cnma.random,
+                       lower = x$lower.cnma.random,
+                       upper = x$upper.cnma.random,
+                       z = x$zval.cnma.random,
+                       p = x$pval.cnma.random,
+                       stringsAsFactors = FALSE)
+  ##
+  dat.r <- formatComp(cnma.r,
+                      backtransf, x$sm, x$level.comb,
+                      trts, trts.abbr,
+                      digits, digits.zval, digits.pval.Q,
+                      scientific.pval, big.mark)
+  ##
+  #dat.r <- dat.r[, !(colnames(dat.r) %in% c("z", "p"))]
   ##
   if (comb.fixed) {
     cat("Additive model (fixed effects model):\n")

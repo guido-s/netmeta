@@ -72,12 +72,12 @@ col.rob <- netmatrix(net1, rob, ties.method = "last",
 netgraph(net1, col = col.rob,
          plastic = FALSE, thickness = "number.of.studies", multi = FALSE)
 
-n.treat <- net1$trts.n
-labs <- paste(net1$trts, " (n=", n.treat, ")", sep = "")
+n.trts <- net1$n.trts
+labs <- paste(net1$trts, " (n=", n.trts, ")", sep = "")
 #
 netgraph(net1, col = col.rob,
          plastic = FALSE, thickness = "number.of.studies", multi = FALSE,
          points = TRUE, col.points = "blue",
-         cex.points = 6 * sqrt(n.treat / max(n.treat)),
+         cex.points = 6 * sqrt(n.trts / max(n.trts)),
          labels = labs)
 }

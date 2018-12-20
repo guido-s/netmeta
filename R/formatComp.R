@@ -1,17 +1,15 @@
-prcombs <- function(x,
-                    backtransf, sm, level,
-                    trts, trts.abbr,
-                    digits, digits.zval, digits.pval.Q,
-                    scientific.pval, big.mark,
-                    seq = NULL) {
+formatComp <- function(x,
+                       backtransf, sm, level,
+                       trts, trts.abbr,
+                       digits, digits.zval, digits.pval.Q,
+                       scientific.pval, big.mark) {
   
   
   formatN <- meta:::formatN
+  relative <- meta:::is.relative.effect(sm)
   
   
   sm.lab <- sm
-  ##
-  relative <- meta:::is.relative.effect(sm)
   ##
   if (!backtransf & relative)
     sm.lab <- paste("log", sm, sep = "")
@@ -19,9 +17,10 @@ prcombs <- function(x,
   ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
   
   
-  res <- as.data.frame(x, stringsAsFactors = FALSE)
-  if (!is.null(seq))
-    res <- res[seq, ]
+  ## First column contains row names
+  ##
+  rnam <- x[, 1]
+  res <- x[, -1]
   ##
   if (backtransf & relative) {
     res$TE <- exp(res$TE)
@@ -29,8 +28,10 @@ prcombs <- function(x,
     res$upper <- exp(res$upper)
   }
   ##
-  rownames(res) <- as.character(factor(rownames(res),
-                                       levels = trts, labels = trts.abbr))
+  res$treat1 <- as.character(factor(res$treat1,
+                                    levels = trts, labels = trts.abbr))
+  res$treat2 <- as.character(factor(res$treat2,
+                                    levels = trts, labels = trts.abbr))
   ##
   res$TE <- formatN(res$TE, digits, "NA", big.mark)
   res$lower <- meta:::formatCI(formatN(round(res$lower, digits),
@@ -42,17 +43,19 @@ prcombs <- function(x,
                            digits = digits.pval.Q,
                            scientific = scientific.pval)
   ##
-  res$seTE <- NULL
   res$upper <- NULL
-  res$level <- NULL
-  res$df <- NULL
-  res$null.effect <- NULL
   ##
   sel <- names(res) == "TE"
   names(res)[sel] <- sm.lab
   ##
   sel <- names(res) == "lower"
   names(res)[sel] <- ci.lab
+  ##
+  colnames <- names(res)
+  ##
+  res <- as.matrix(res)
+  ##
+  dimnames(res) <- list(rnam, colnames)
   
   
   res

@@ -1,7 +1,9 @@
 nma.additive <- function(TE, weights, studlab,
-                         treat1, treat2, level,
+                         treat1, treat2,
+                         level.comb,
                          X, C.matrix, B.matrix,
-                         Q, df.Q.additive, df.Q.diff) {
+                         Q, df.Q.additive, df.Q.diff,
+                         n, sep.trts) {
   
   
   m <- length(TE)
@@ -36,20 +38,60 @@ nma.additive <- function(TE, weights, studlab,
   se.theta <- sqrt(diag(C.matrix %*% Lplus %*% t(C.matrix)))
   names(theta) <- names(se.theta)
   ##
-  ## delta = estimates for observed comparisons
+  ## delta = treatment estimates for observed comparisons
   ##
   delta <- as.vector(X %*% beta) # = B.matrix %*% theta = H %*% TE
+  se.delta <- unname(sqrt(diag(X %*% Lplus %*% t(X))))
   ##
-  se.delta <- sqrt(diag(X %*% Lplus %*% t(X)))
-  names(delta) <- names(se.delta)
+  ## delta.all = all direct and indirect treatment estimates
+  ##
+  B.full <- createB(ncol = n)
+  X.full <- B.full %*% C.matrix
+  colnames(X.full) <- colnames(C.matrix)
+  ##
+  labels <- colnames(B.matrix)
+  ##
+  k <- 0
+  lab <- vector(mode = "numeric", length = choose(n, 2))
+  ##
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      k <- k + 1
+      lab[k] <- paste(labels[i], labels[j], sep = sep.trts)
+    }
+  }
+  ##
+  rownames(X.full) <- lab
+  ##
+  delta.full <- as.vector(X.full %*% beta)
+  se.delta.full <- sqrt(diag(X.full %*% Lplus %*% t(X.full)))
+  names(delta.full) <- names(se.delta.full)
+  ##
+  delta.all <- se.delta.all <- matrix(0, ncol = n, nrow = n)
+  ##
+  k <- 0
+  ##
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      k <- k + 1
+      delta.all[i, j] <-  delta.full[k]
+      delta.all[j, i] <- -delta.full[k]
+      se.delta.all[i, j] <- se.delta.all[j, i] <- se.delta.full[k]
+    }
+  }
+  ##
+  colnames(delta.all) <- rownames(delta.all) <-
+    colnames(se.delta.all) <- rownames(se.delta.all) <- labels
   
   
   comparisons <- c(list(studlab = studlab, treat1 = treat1, treat2 = treat2),
-                   meta::ci(delta, se.delta, level = level))
+                   meta::ci(delta, se.delta, level = level.comb))
   ##
-  components <- meta::ci(beta, se.beta, level = level)
+  all.comparisons <- meta::ci(delta.all, se.delta.all, level = level.comb)
   ##
-  combinations <- meta::ci(theta, se.theta, level = level)
+  components <- meta::ci(beta, se.beta, level = level.comb)
+  ##
+  combinations <- meta::ci(theta, se.theta, level = level.comb)
   ##
   ## Test of total heterogeneity / inconsistency:
   ##
@@ -94,6 +136,7 @@ nma.additive <- function(TE, weights, studlab,
   
   
   res <- list(comparisons = comparisons,
+              all.comparisons = all.comparisons,
               components = components,
               combinations = combinations,
               ##

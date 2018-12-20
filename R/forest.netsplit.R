@@ -1,6 +1,6 @@
 forest.netsplit <- function(x,
                             pooled = ifelse(x$comb.random, "random", "fixed"),
-                            showall = FALSE,
+                            show = "both",
                             ##
                             subgroup = "comparison",
                             ##
@@ -40,8 +40,8 @@ forest.netsplit <- function(x,
                             lab.NA = "",
                             smlab,
                             ...) {
-  
-  
+
+
   ##
   ##
   ## (1) Check and set arguments
@@ -56,7 +56,6 @@ forest.netsplit <- function(x,
   setchar <- meta:::setchar
   ##
   pooled <- setchar(pooled, c("fixed", "random"))
-  chklogical(showall)
   ##
   subgroup <- setchar(subgroup, c("comparison", "estimate"))
   ##
@@ -134,8 +133,52 @@ forest.netsplit <- function(x,
         x$level.comb != x$level.predict)
       text.predict <- paste(text.predict, " (",
                             round(x$level.predict * 100), "%-PI)", sep = "")
-  
-  
+  ##
+  if (overall & n.subgroup > 1) {
+    if (text.overall == text.predict)
+      stop("Text must be different for arguments 'text.overall' and 'text.predict'.")
+    if (text.overall == text.direct)
+      stop("Text must be different for arguments 'text.overall' and 'text.direct'.")
+    if (text.overall == text.indirect)
+      stop("Text must be different for arguments 'text.overall' and 'text.indirect'.")
+  }
+  ##
+  if (prediction & n.subgroup > 1) {
+    if (text.predict == text.overall)
+      stop("Text must be different for arguments 'text.predict' and 'text.overall'.")
+    if (text.predict == text.direct)
+      stop("Text must be different for arguments 'text.predict' and 'text.direct'.")
+    if (text.predict == text.indirect)
+      stop("Text must be different for arguments 'text.predict' and 'text.indirect'.")
+  }
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  ## Check whether first argument is a list. In this case only use
+  ## this list as input.
+  if (length(args) > 0 && is.list(args[[1]]))
+    args <- args[[1]]
+  ##
+  additional.arguments <- names(args)
+  ##
+  if (length(additional.arguments) > 0) {
+    if (!is.na(charmatch("showa", additional.arguments)))
+      if (!missing(show))
+        warning("Deprecated argument 'showall' ignored as argument 'show' is also provided.")
+      else {
+        warning("Deprecated argument 'showall' has been replaced by argument 'show'.")
+        show <- args[[charmatch("showa", additional.arguments)]]
+        if (show)
+          show <- "all"
+        else
+          show <- "both"
+      }
+  }
+  ##
+  show <- setchar(show, c("all", "both", "with.direct", "direct.only", "indirect.only"))
+
+
   ##
   ##
   ## (2) Extract results for fixed effect and random effects model
@@ -179,8 +222,14 @@ forest.netsplit <- function(x,
                    sep = "")
   ##
   dat.predict <- x$predict
-  dat.predict$TE <- dat.predict$seTE <-
-    dat.predict$z <- dat.predict$p <- dat.predict$prop <- NA
+  ##
+  if ( (subgroup == "estimate") | (prediction & !overall) )
+    dat.predict$TE <- dat.overall$TE
+  else
+    dat.predict$TE <- NA
+  ##
+  dat.predict$seTE <- dat.predict$z <- dat.predict$p <- dat.predict$prop <- NA
+  ##
   dat.predict <- dat.predict[, c("comparison", "TE", "seTE",
                                  "lower", "upper", "z", "p", "prop")]
   ##
@@ -233,18 +282,38 @@ forest.netsplit <- function(x,
   ## col.inside = "white",
   ## col.diamond.lines = "black",
   ## col.predict.lines = "black",
-  ##
-  dat.predict$TE <- dat.overall$TE
-  dat.predict$seTE <- sqrt(dat.overall$seTE^2 + x$tau^2)
-  ##
-  if (!showall) {
-    dat.direct <- dat.direct[x$k > 0, ]
-    dat.indirect <- dat.indirect[x$k > 0, ]
-    dat.overall <- dat.overall[x$k > 0, ]
-    dat.predict <- dat.predict[x$k > 0, ]
-  }
   
   
+  ##
+  ##
+  ## (3) Select treatment comparisons to show in forest plot
+  ##
+  ##
+  if (show == "all")
+    sel <- rep_len(TRUE, length(x$direct.fixed$TE))
+  else if (show == "with.direct")
+    sel <- (!is.na(x$direct.fixed$TE) & !is.na(x$direct.random$TE))
+  else if (show == "both")
+    sel <- (!is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
+            !is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+  else if (show == "direct.only")
+    sel <- (!is.na(x$direct.fixed$TE)  & is.na(x$indirect.fixed$TE) &
+            !is.na(x$direct.random$TE) & is.na(x$indirect.random$TE))
+  else if (show == "indirect.only")
+    sel <- (is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
+            is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+  ##
+  dat.direct <- dat.direct[sel, ]
+  dat.indirect <- dat.indirect[sel, ]
+  dat.overall <- dat.overall[sel, ]
+  dat.predict <- dat.predict[sel, ]
+
+
+  ##
+  ##
+  ## (4) Forest plot
+  ##
+  ##
   if (subgroup == "comparison") {
     dat <- rbind(
       if (direct) dat.direct,
@@ -258,6 +327,19 @@ forest.netsplit <- function(x,
                    sm = x$sm, byvar = dat$comps, print.byvar = FALSE)
     else
       m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat, sm = x$sm)
+    ##
+    if (overall) {
+      m$w.fixed[m$studlab == text.overall] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.random[m$studlab == text.overall] <- max(m$w.random, na.rm = TRUE)
+    }
+    ##
+    if (prediction) {
+      m$lower[m$studlab == text.predict] <- dat.predict$lower
+      m$upper[m$studlab == text.predict] <- dat.predict$upper
+      ##
+      m$w.fixed[m$studlab == text.predict] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.random[m$studlab == text.predict] <- max(m$w.random, na.rm = TRUE)
+    }
     ##
     forest(m,
            digits = digits,
@@ -290,6 +372,19 @@ forest.netsplit <- function(x,
     else
       m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat, sm = x$sm)
     ##
+    if (overall) {
+      m$w.fixed[m$byvar == text.overall] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.random[m$byvar == text.overall] <- max(m$w.random, na.rm = TRUE)
+    }
+    ##
+    if (prediction) {
+      m$lower[m$byvar == text.predict] <- dat.predict$lower
+      m$upper[m$byvar == text.predict] <- dat.predict$upper
+      ##
+      m$w.fixed[m$byvar == text.predict] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.random[m$byvar == text.predict] <- max(m$w.random, na.rm = TRUE)
+    }
+    ##
     forest(m,
            digits = digits,
            comb.fixed = FALSE, comb.random = FALSE,
@@ -307,7 +402,7 @@ forest.netsplit <- function(x,
            weight.study = if (equal.size) "same" else "fixed",
            ...)
   }
-  
-  
+
+
   invisible(NULL)
 }

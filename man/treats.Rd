@@ -14,7 +14,7 @@ treats(x, nchar.trts = 8, row = TRUE)
 \arguments{
   \item{x}{A vector with treatment names or a matrix with treatment
     names as row and / or column names.}    
-  \item{nchar.trts}{A numeric defining the minium number of characters
+  \item{nchar.trts}{A numeric defining the minimum number of characters
     used to create unique treatment names.}
   \item{row}{A logical indicating whether row or column names should
     be used (only considered if argument \code{x} is a matrix).}

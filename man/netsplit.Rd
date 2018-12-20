@@ -5,42 +5,47 @@
 \title{Split direct and indirect evidence in network meta-analysis}
 
 \description{
-  Back-calculation method to split contribution of direct and indirect
-  evidence in network meta-analysis.
+  Methods to split network estimates into the contribution of direct and
+  indirect evidence and to test for local inconsistency in network
+  meta-analysis.
 }
 
 \usage{
-netsplit(x, upper=TRUE,
-         reference.group=x$reference.group,
-         baseline.reference=x$baseline.reference,
-         sep.trts=x$sep.trts, quote.trts="",
-         tol.direct=0.0005)
+netsplit(x, method, upper = TRUE,
+         reference.group = x$reference.group,
+         baseline.reference = x$baseline.reference,
+         sep.trts = x$sep.trts, quote.trts = "",
+         tol.direct = 0.0005, warn = FALSE)
 
 \method{print}{netsplit}(x,
-      comb.fixed=x$comb.fixed,
-      comb.random=x$comb.random,
-      showall=TRUE,
-      overall=TRUE,
-      ci=FALSE,
-      test=TRUE,
-      digits=gs("digits"),
-      digits.zval=gs("digits.zval"),
-      digits.pval=gs("digits.pval"),
-      digits.prop=max(gs("digits.pval")-2, 2),
-      text.NA=".", backtransf=x$backtransf,
-      scientific.pval=gs("scientific.pval"),
-      big.mark=gs("big.mark"),
-      legend=TRUE,
+      comb.fixed = x$comb.fixed,
+      comb.random = x$comb.random,
+      show = "all",
+      overall = TRUE,
+      ci = FALSE,
+      test = show \%in\% c("all", "with.direct", "both"),
+      digits = gs("digits"),
+      digits.zval = gs("digits.zval"),
+      digits.pval = gs("digits.pval"),
+      digits.prop = max(gs("digits.pval")-2, 2),
+      text.NA = ".", backtransf = x$backtransf,
+      scientific.pval = gs("scientific.pval"),
+      big.mark = gs("big.mark"),
+      legend = TRUE,
       ...)
 }
 
 \arguments{
   \item{x}{An object of class \code{netmeta} or \code{netsplit}.}
+  \item{method}{A character string indicating which method to split
+    direct and indirect evidence is to be used. Either
+    \code{"Back-calculation"} or \code{"SIDDE"}, can be abbreviated. See
+    Details.}
   \item{upper}{A logical indicating whether treatment comparisons
     should be selected from the lower or upper triangle of the
     treatment effect matrices (see list elements \code{TE.fixed} and
     \code{TE.random} in the \code{netmeta} object).}
-  \item{reference.group}{Reference group.}
+  \item{reference.group}{Reference treatment.}
   \item{baseline.reference}{A logical indicating whether results
     should be expressed as comparisons of other treatments versus the
     reference treatment or vice versa. This argument is only
@@ -52,13 +57,12 @@ netsplit(x, upper=TRUE,
   \item{tol.direct}{A numeric defining the maximum deviation of the
     direct evidence proportion from 0 or 1 to classify a comparison as
     providing only indirect or direct evidence, respectively.}
-  \item{comb.fixed}{A logical indicating whether results for fixed
-    effect model should be printed.}
-  \item{comb.random}{A logical indicating whether results for random
-    effects model should be printed.}
-  \item{showall}{A logical indicating whether all comparisons
-    (default) or only comparisons contributing both direct and
-    indirect evidence should be printed.} 
+  \item{comb.fixed}{A logical indicating whether results for the fixed
+    effects (common effects) network meta-analysis should be printed.}
+  \item{comb.random}{A logical indicating whether results for the random
+    effects network meta-analysis should be printed.}
+  \item{show}{A character string indicating which comparisons should
+    be printed (see Details).}
   \item{overall}{A logical indicating whether estimates from network
     meta-analyis should be printed in addition to direct and indirect
     estimates.}
@@ -88,25 +92,45 @@ netsplit(x, upper=TRUE,
   \item{big.mark}{A character used as thousands separator.}
   \item{legend}{A logical indicating whether a legend show be
     printed.}
+  \item{warn}{A logical indicating whether warnings should be printed.}
   \item{...}{Additional arguments (ignored at the moment)}
 }
 
 \details{
-  Direct and indirect treatment estimates are calculated in
-  \code{\link{netmeta}}. This function combines and prints these
-  estimates in a user-friendly way.
-
   A comparison of direct and indirect treatment estimates can serve as
   check for consistency of network meta-analysis (Dias et al.,
-  2010). This function provides a back-calculation method to derive
-  indirect estimates from direct pairwise comparisons and network
-  estimates. The direct evidence proportion as described in König et
-  al. (2013) is used to calculate the indirect evidence.
+  2010).
+
+  This function provides two methods to derive indirect estimates:
+  \itemize{
+   \item Back-calculation method deriving indirect estimates from direct
+     pairwise comparisons and network estimates. The direct evidence
+     proportion as described in König et al. (2013) is used in the
+     calculation of the indirect evidence;
+   \item Separate Indirect from Direct Design Evidence (SIDDE) as
+     described in Efthimiou et al. (2018).
+  }
+
+  Note, for the back-calculation method, indirect treatment estimates
+  are already calculated in \code{\link{netmeta}} and this function
+  combines and prints these estimates in a user-friendly way.
+  Furthermore, this method is not available for the Mantel-Haenszel and
+  non-central hypergeometric distribution approach implemented in
+  \code{\link{netmetabin}}.
+
+  Argument \code{show} determines which comparisons are printed:
+  \tabular{ll}{
+  \dQuote{all} \tab All comparisons \cr
+  \dQuote{both} \tab Only comparisons contributing both direct and indirect evidence \cr
+  \dQuote{with.direct} \tab Comparisons providing direct evidence \cr
+  \dQuote{direct.only} \tab Comparisons providing only direct evidence \cr
+  \dQuote{indirect.only} \tab Comparisons providing only indirect evidence \cr
+  }
 }
 
 \value{
-  An object of class \code{netsplit} with corresponding
-  \code{print} function. The object is a list containing the following
+  An object of class \code{netsplit} with corresponding \code{print} and
+  \code{forest} functions. The object is a list containing the following
   components:
   \item{comb.fixed, comb.random}{As defined above.}
   \item{comparison}{A vector with treatment comparisons.}
@@ -134,25 +158,34 @@ netsplit(x, upper=TRUE,
 }
 
 \author{Guido Schwarzer \email{sc@imbi.uni-freiburg.de}, Gerta Rücker
-\email{ruecker@imbi.uni-freiburg.de}}
+\email{ruecker@imbi.uni-freiburg.de}, Orestis Efthimiou
+\email{oremiou@gmail.com}}
 
 \references{
-  Dias S, Welton NJ, Caldwell DM, Ades AE (2010).
+  Dias S, Welton NJ, Caldwell DM, Ades AE (2010),
   Checking consistency in mixed treatment comparison meta-analysis.
-  \emph{Statistics in Medicine}, \bold{29}, 932--44.
+  \emph{Statistics in Medicine},
+  \bold{29}, 932--44
 
-  König J, Krahn U, Binder H (2013).
+  Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
+  (2018),
+  A Mantel-Haenszel model for network meta-analysis of rare events.
+  \emph{Manuscript submitted for publication}.
+  
+  König J, Krahn U, Binder H (2013),
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
-  \emph{Statistics in Medicine}, \bold{32}(30), 5414--29.
+  \emph{Statistics in Medicine},
+  \bold{32}(30), 5414--29
   
-  Puhan MA, Schünemann HJ, Murad MH, et al. (2014).  
+  Puhan MA, Schünemann HJ, Murad MH, et al. (2014),  
   A GRADE working group approach for rating the quality of treatment
   effect estimates from network meta-analysis.
-  \emph{British Medical Journal}, \bold{349}, g5630
+  \emph{British Medical Journal},
+  \bold{349}, g5630
 }
 
-\seealso{\code{\link{netmeta}}, \code{\link{netmeasures}}}
+\seealso{\code{\link{forest.netsplit}}, \code{\link{netmeta}}, \code{\link{netmetabin}}, \code{\link{netmeasures}}}
 
 \examples{
 data(Woods2010)
@@ -175,4 +208,12 @@ net2 <- netmeta(TE, seTE, treat1.long, treat2.long,
 print(netsplit(net2), digits=2)
 # Layout of Puhan et al. (2014), Table 1
 print(netsplit(net2), digits=2, ci=TRUE, test=FALSE)
+
+\dontrun{
+data(Dong2013)
+p3 <- pairwise(treatment, death, randomized, studlab = id,
+               data = Dong2013, sm = "OR")
+net3  <- netmetabin(p3)
+netsplit(net3)
+}
 }

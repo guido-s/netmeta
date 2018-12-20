@@ -78,7 +78,7 @@ print.summary.netmeta <- function(x,
   if (!backtransf & is.relative.effect(sm))
     sm.lab <- paste("log", sm, sep = "")
 
-  ci.lab <- paste(round(100 * x$fixed$level, 1), "%-CI", sep = "")
+  ci.lab <- paste(round(100 * x$level.comb, 1), "%-CI", sep = "")
 
   
   TE.fixed    <- x$fixed$TE
@@ -100,13 +100,15 @@ print.summary.netmeta <- function(x,
     lowTE.fixed <- lowTE.fixed[x$seq, x$seq]
     uppTE.fixed <- uppTE.fixed[x$seq, x$seq]
     ##
-    TE.random <- TE.random[x$seq, x$seq]
-    seTE.random <- seTE.random[x$seq, x$seq]
-    lowTE.random <- lowTE.random[x$seq, x$seq]
-    uppTE.random <- uppTE.random[x$seq, x$seq]
-    ##
-    lowTE.predict <- lowTE.predict[x$seq, x$seq]
-    uppTE.predict <- uppTE.predict[x$seq, x$seq]
+    if (!all(is.na(TE.random))) {
+      TE.random <- TE.random[x$seq, x$seq]
+      seTE.random <- seTE.random[x$seq, x$seq]
+      lowTE.random <- lowTE.random[x$seq, x$seq]
+      uppTE.random <- uppTE.random[x$seq, x$seq]
+      ##
+      lowTE.predict <- lowTE.predict[x$seq, x$seq]
+      uppTE.predict <- uppTE.predict[x$seq, x$seq]
+    }
   }
   
   
@@ -197,8 +199,17 @@ print.summary.netmeta <- function(x,
     
     
     if (comb.fixed) {
-      if (all.treatments | reference.group != "")
-        cat("\nFixed effect model\n")
+      if (all.treatments | reference.group != "") {
+        text.fixed <- "Fixed effect model"
+        ##
+        if (x$method == "MH")
+          text.fixed <- paste(text.fixed, "(Mantel-Haenszel method)")
+        else if (x$method == "NCH")
+          text.fixed <- paste(text.fixed, "(Non-central hypergeometric distribution)")
+        ##
+        cat(paste0("\n", text.fixed, "\n"))
+      }
+      ##
       if (all.treatments) {
         cat("\nTreatment estimate (sm = '", sm.lab, "'):\n", sep = "")
         ##
@@ -211,7 +222,7 @@ print.summary.netmeta <- function(x,
         ##
         prmatrix(TEf, quote = FALSE, right = TRUE)
         ##
-        cat("\nLower ", 100 * x$fixed$level, "%-confidence limit:\n", sep = "")
+        cat("\nLower ", 100 * x$level.comb, "%-confidence limit:\n", sep = "")
         ##
         lowTEf <- formatN(lowTE.fixed, digits = digits)
         rownames(lowTEf) <- treats(lowTEf, nchar.trts)
@@ -222,7 +233,7 @@ print.summary.netmeta <- function(x,
         ##
         prmatrix(lowTEf, quote = FALSE, right = TRUE)
         ##
-        cat("\nUpper ", 100 * x$fixed$level, "%-confidence limit:\n", sep = "")
+        cat("\nUpper ", 100 * x$level.comb, "%-confidence limit:\n", sep = "")
         ##
         uppTEf <- formatN(uppTE.fixed, digits = digits)
         rownames(uppTEf) <- treats(uppTEf, nchar.trts)
@@ -238,7 +249,7 @@ print.summary.netmeta <- function(x,
         if (!comb.random & prediction & x$df.Q >= 2) {
           cat("\nPrediction intervals\n")
           ##
-          cat("\nLower ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n", sep = "")
           ##
           lowTEp <- formatN(lowTE.predict, digits = digits)
           rownames(lowTEp) <- treats(lowTEp, nchar.trts)
@@ -249,7 +260,7 @@ print.summary.netmeta <- function(x,
           ##
           prmatrix(lowTEp, quote = FALSE, right = TRUE)
           ##
-          cat("\nUpper ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          cat("\nUpper ", 100 * x$level.predict, "%-prediction limit:\n", sep = "")
           ##
           uppTEp <- formatN(uppTE.predict, digits = digits)
           rownames(uppTEp) <- treats(uppTEp, nchar.trts)
@@ -290,7 +301,7 @@ print.summary.netmeta <- function(x,
             uppTE.predict.b <- uppTE.predict[rownames(uppTE.predict) == reference.group, ]
           }
           ##
-          pi.lab <- paste(round(100 * x$predict$level, 1), "%-PI", sep = "")
+          pi.lab <- paste(round(100 * x$level.predict, 1), "%-PI", sep = "")
           ##
           res <- cbind(formatN(TE.fixed.b, digits, text.NA = "NA",
                                big.mark = big.mark),
@@ -343,7 +354,7 @@ print.summary.netmeta <- function(x,
         ##
         prmatrix(TEr, quote = FALSE, right = TRUE)
         ##
-        cat("\nLower ", 100 * x$random$level, "%-confidence limit:\n", sep = "")
+        cat("\nLower ", 100 * x$level.comb, "%-confidence limit:\n", sep = "")
         ##
         lowTEr <- formatN(lowTE.random, digits = digits)
         rownames(lowTEr) <- treats(lowTEr, nchar.trts)
@@ -354,7 +365,7 @@ print.summary.netmeta <- function(x,
         ##
         prmatrix(lowTEr, quote = FALSE, right = TRUE)
         ##
-        cat("\nUpper ", 100 * x$random$level, "%-confidence limit:\n", sep = "")
+        cat("\nUpper ", 100 * x$level.comb, "%-confidence limit:\n", sep = "")
         ##
         uppTEr <- formatN(uppTE.random, digits = digits)
         rownames(uppTEr) <- treats(uppTEr, nchar.trts)
@@ -370,7 +381,7 @@ print.summary.netmeta <- function(x,
         if (prediction & x$df.Q >= 2) {
           cat("\nPrediction intervals\n")
           ##
-          cat("\nLower ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n", sep = "")
           ##
           lowTEp <- formatN(lowTE.predict, digits = digits)
           rownames(lowTEp) <- treats(lowTEp, nchar.trts)
@@ -381,7 +392,7 @@ print.summary.netmeta <- function(x,
           ##
           prmatrix(lowTEp, quote = FALSE, right = TRUE)
           ##
-          cat("\nUpper ", 100 * x$predict$level, "%-prediction limit:\n", sep = "")
+          cat("\nUpper ", 100 * x$level.predict, "%-prediction limit:\n", sep = "")
           ##
           uppTEp <- formatN(uppTE.predict, digits = digits)
           rownames(uppTEp) <- treats(uppTEp, nchar.trts)
@@ -422,7 +433,7 @@ print.summary.netmeta <- function(x,
             uppTE.predict.b <- uppTE.predict[rownames(uppTE.predict) == reference.group, ]
           }
           ##
-          pi.lab <- paste(round(100 * x$predict$level, 1), "%-PI", sep = "")
+          pi.lab <- paste(round(100 * x$level.predict, 1), "%-PI", sep = "")
           ##
           res <- cbind(formatN(TE.random.b, digits, text.NA = "NA",
                                big.mark = big.mark),

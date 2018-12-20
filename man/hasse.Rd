@@ -26,9 +26,9 @@ hasse(x,
 }
 
 \details{
-  Generate a Hasse diagram (Carlsen and Bruggemann, 2014) for a
-  partial order of treatment ranks in a network meta-analysis (Rücker
-  and Schwarzer, 2017).
+  Generate a Hasse diagram (Carlsen & Bruggemann, 2014) for a partial
+  order of treatment ranks in a network meta-analysis (Rücker &
+  Schwarzer, 2017).
   
   This R function is a wrapper function for R function
   \code{\link[hasseDiagram]{hasse}} in R package \bold{hasseDiagram}
@@ -41,13 +41,13 @@ hasse(x,
   Carlsen L, Bruggemann R (2014),
   Partial order methodology: a valuable tool in chemometrics.
   \emph{Journal of Chemometrics},
-  \bold{28} 226--34, DOI:10.1002/cem.2569
+  \bold{28}, 226--34, DOI:10.1002/cem.2569
 
-  Rücker G, Schwarzer G (2017),  
+  Rücker G, Schwarzer G (2017).
   Resolve conflicting rankings of outcomes in network meta-analysis:
   Partial ordering of treatments.
   \emph{Research Synthesis Methods},
-  1--11, DOI: 10.1002/jrsm.1270
+  \bold{8}, 526--36, DOI:10.1002/jrsm.1270
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}

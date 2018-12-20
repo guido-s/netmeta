@@ -1,3 +1,128 @@
+*** netmeta, version 1.0-0, 2018-12-20 ***
+
+ ** Major changes **
+
+  * Orestis Efthimiou <oremiou@gmail.com> is a new co-author of R
+    package netmeta
+
+  * New function netmetabin() for network meta-analysis of binary data
+    using the Mantel-Haenszel method or the non-central hypergeometric
+    distribution distribution
+
+  * New function funnel.netmeta() for 'comparison-adjusted' funnel
+    plots
+
+  * New function forest.netcomb() for forest plots of component
+    network meta-analysis
+
+  * New functions netbind(), forest.netbind(), and print.netbind() to
+    combine network meta-analysis objects and to generate a forest
+    plot with results of several network meta-analyses
+
+  * Separate Indirect from Direct Design Evidence (SIDDE) method
+    implemented in netsplit()
+
+  * All network comparisons can be included in a forest plot
+
+  * Circular network graphs with minimal number of crossings available
+
+  * Default setting for levels of confidence intervals can be
+    specified using R function settings.meta(); the default is still
+    0.95, i.e., 95% confidence intervals are computed
+
+  * New datasets: Gurusamy2011 and Dong2013
+
+ ** User-visible changes **
+
+  * netmeta():
+    - new list elements:
+      - 'k.trts' with number of studies evaluating a treatment
+      - 'n.trts' with number of observations receiving a treatment
+      - 'events.trts' with number of events observed for a treatment
+      - 'n.matrix' with number of observations in direct comparisons
+      - 'events.matrix' with number of events in direct comparisons
+      - 'designs' with treatment designs
+    - correct entry for list element 'designs' for single design
+    - only print information on studies with missing treatment effect
+      or standard error if argument 'warn' is TRUE
+
+  * pairwise():
+    - keep original order of studies
+    - arguments 'event' and 'n' can be used for generic meta-analysis
+      method based on arguments 'TE' and 'seTE'
+    - argument 'n' can be used for meta-analysis with count outcomes
+      (based on arguments 'event' and 'time')
+    - infinite treatment estimates and standard errors set to NA
+    - by default, do not print warnings if comparisons will not be
+      included in network meta-analysis
+    
+  * netsplit():
+    - new argument 'method' to choose approach to split direct and
+      indirect evidence
+
+  * forest.netmeta():
+    - argument 'reference.group' can be a vector in order to include
+      several / all network comparisons in a forest plot
+    - (invisibly) returns a data frame with information used to
+      produce the forest plot
+
+  * forest.netsplit() and print.netsplit():
+    - argument 'showall' replaced with 'show' (see help pages)
+
+  * forest.netsplit():
+    - show prediction intervals as colored bars
+    - forest plot with layout 'subgroups by comparisons':
+      omit treatment estimates in rows with prediction intervals if
+      network estimates are also shown
+
+  * netcomb() and discomb():
+    - argument 'seq.components' replaced with 'seq.comps'
+
+  * discomb():
+    - arguments 'reference.group' and 'baseline.reference'
+
+  * netposet():
+    - allow for ties in rankings
+    
+ ** Bug fixes **
+
+  * netsplit():
+    - do not reorder a treatment comparison if reference treatment
+      (argument 'reference.group') is part of a combined treatment,
+      e.g., for reference.group = "A" and treatment comparison "A + B"
+      vs "C", the comparison will not be reordered as "C" vs "A + B"
+
+  * forest.netsplit():
+    - show correct prediction intervals
+
+  * netgraph():
+    - arguments 'iterate' and 'allfigures' ignored if argument 'seq'
+      is equal to "optimal"
+      
+  * netsplit():
+    - consider argument 'digits' for treatment estimates, i.e., do not
+      always round to two digits
+
+ ** Internal changes **
+
+  * netmeta():
+    - keep original order of studies in list element 'data'
+
+  * netcomb() and discomb():
+    - check if argument 'sep.components' is a single character
+    - similar list elements as for R objects created with netmeta();
+      especially matrices with all network estimates added to output,
+      see, for example, new list elements 'TE.fixed' and 'TE.random'
+
+  * Internal function nma.additive():
+    - calculate matrices with all network estimates
+
+  * netleague() is a generic function
+
+  * Help pages:
+    - examples added for forest.netsplit()
+
+
 *** netmeta, version 0.9-8, 2018-03-23 ***
 
  ** Major changes **
@@ -14,7 +139,7 @@
     - all variables from the original dataset are kept in the output
       dataset
 
-  * Netleague tables
+  * League tables
     - show the direct treatment estimates from pairwise comparisons in
       the upper triangle if the table is created for a single network
       meta-analysis
@@ -646,7 +771,7 @@
     - return NULL for network meta-analysis with a single design
 
 
-2016-04-26, version 0.9-0
+*** netmeta, version 0.9-0, 2016-04-26 ***
 
 New functions:
 - netdistance (calculate distance matrix; replacement for internal
@@ -720,7 +845,7 @@ New help pages:
 - Wooks2010 dataset
 
 
-2015-06-26, version 0.8-0
+*** netmeta, version 0.8-0, 2015-06-26 ***
 
 New functions netrank and print.netrank:
 - frequentist method to rank treatments in network
@@ -740,7 +865,7 @@ Help pages:
 - link to pairwise function added in help page of netmeta function
 
 
-2015-02-04, version 0.7-0
+*** netmeta, version 0.7-0, 2015-02-04 ***
 
 Version of R package meta must be larger or equal 4.0-0
 
@@ -827,7 +952,7 @@ New help pages for function pairwise and datasets dietaryfat,
 parkinson, and smokingcessation.
 
 
-2014-07-29, version 0.6-0
+*** netmeta, version 0.6-0, 2014-07-29 ***
 
 Function netgraph:
 - complete rewrite of this function (without changing previous default
@@ -870,7 +995,7 @@ New functions stress and nodedist (used internally)
 Help pages updated accordingly
 
 
-2014-06-24, version 0.5-0
+*** netmeta, version 0.5-0, 2014-06-24 ***
 
 Functions nma.krahn, netmeasures, netheat, decomp.design, and
 print.decomp.design:
@@ -898,7 +1023,7 @@ New functions tau.within and decomp.tau (used internally)
 Help pages updated accordingly
 
 
-2014-05-27, version 0.4-4
+*** netmeta, version 0.4-4, 2014-05-27 ***
 
 Functions netmeta and nma.ruecker:
 - modified such that the estimated tau-squared in random effects model
@@ -912,7 +1037,7 @@ Dataset Senn2013:
 - use of unpooled standard error for each treatment comparison
 
 
-2014-04-14, version 0.4-3
+*** netmeta, version 0.4-3, 2014-04-14 ***
 
 Function netmeta:
 - numeric values for arguments 'treat1' and 'treat2' not converted to
@@ -932,14 +1057,14 @@ Function nma.ruecker (used internally):
   order of treatments)
 
 
-2014-03-31, version 0.4-2
+*** netmeta, version 0.4-2, 2014-03-31 ***
 
 Function netmeasures:
 - bug fix using correct formula to calculate direct evidence
   proportion (variance instead of standard error)
 
 
-2014-03-21, version 0.4-1
+*** netmeta, version 0.4-1, 2014-03-21 ***
 
 Function netmeta:
 - Argument 'seq' added (see also R function netgraph)
@@ -952,7 +1077,7 @@ Help pages updated accordingly
 Some internal code cleaning to improve readability of R functions
 
 
-2014-03-07, version 0.4-0
+*** netmeta, version 0.4-0, 2014-03-07 ***
 
 New functions added:
 - netgraph (network graph)
@@ -971,10 +1096,10 @@ Help pages added for new functions
 Help page of function netmeta updated
 
 
-2013-08-01, version 0.3-1
+*** netmeta, version 0.3-1, 2013-08-01 ***
 
 Functions netmeta and summary.netmeta:
-- new list component n (number of treatments)
+- new list component 'n' (number of treatments)
 
 Function print.summary.netmeta:
 - modified such that number of treatments is printed
@@ -982,6 +1107,6 @@ Function print.summary.netmeta:
   random effects model
 
 
-2013-07-24, version 0.3-0
+*** 2013-07-24, version 0.3-0 ***
 
-First version released on CRAN
+ ** First version released on CRAN **

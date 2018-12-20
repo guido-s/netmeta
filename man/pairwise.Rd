@@ -16,7 +16,7 @@ arm-based to contrast-based format.
 pairwise(treat, event, n, mean, sd, TE, seTE, time,
          data=NULL, studlab,
          incr=0.5, allincr=FALSE, addincr=FALSE, allstudies=FALSE,
-         ...)
+         warn = FALSE, ...)
 }
 
 \arguments{
@@ -51,6 +51,9 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
     events in two treatment arms are to be included in the
     meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
     or \code{"OR"}).}
+  \item{warn}{A logical indicating whether warnings should be printed
+    (e.g., if studies are excluded due to only providing a single
+    treatment arm).}
   \item{\dots}{Additional arguments passed-through to the functions to
     calculate effects.}
 }
@@ -221,15 +224,16 @@ netgraph(net1, points=TRUE, cex.points=3, cex = 1.5,
 # Example using generic outcomes (internal call of function metagen)
 #
 # Calculate standard error for means y1, y2, y3
-parkinson$se1 <- with(parkinson, sqrt(sd1^2/n1))
-parkinson$se2 <- with(parkinson, sqrt(sd2^2/n2))
-parkinson$se3 <- with(parkinson, sqrt(sd3^2/n3))
+parkinson$se1 <- with(parkinson, sqrt(sd1^2 / n1))
+parkinson$se2 <- with(parkinson, sqrt(sd2^2 / n2))
+parkinson$se3 <- with(parkinson, sqrt(sd3^2 / n3))
 # Transform data from arm-based format to contrast-based format using
 # means and standard errors (note, argument 'sm' has to be used to
 # specify that argument 'TE' is a mean difference)
 p2 <- pairwise(list(Treatment1, Treatment2, Treatment3),
                TE=list(y1, y2, y3),
                seTE=list(se1, se2, se3),
+               n=list(n1, n2, n3),
                data=parkinson, studlab=Study,
                sm="MD")
 p2
@@ -241,8 +245,10 @@ all.equal(p1[, c("TE", "seTE", "studlab", "treat1", "treat2")],
 
 # Same result as network meta-analysis based on continuous outcomes
 # (object net1)
-\dontrun{net2 <- netmeta(p2)
-net2}
+\dontrun{
+  net2 <- netmeta(p2)
+  net2
+}
 
 
 #

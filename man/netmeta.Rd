@@ -15,10 +15,10 @@
 
 \usage{
 netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
-        sm, level=0.95, level.comb=0.95,
+        sm, level=gs("level"), level.comb=gs("level.comb"),
         comb.fixed=gs("comb.fixed"),
         comb.random=gs("comb.random") | !is.null(tau.preset),
-        prediction=FALSE, level.predict=0.95,
+        prediction=FALSE, level.predict=gs("level.predict"),
         reference.group="", baseline.reference=TRUE,
         all.treatments=NULL, seq=NULL, tau.preset=NULL,
         tol.multiarm = 0.0005, details.chkmultiarm = FALSE,
@@ -45,26 +45,26 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     individual comparisons.}
   \item{level.comb}{The level used to calculate confidence intervals for
     pooled estimates.}
-  \item{comb.fixed}{A logical indicating whether a fixed effect
-    meta-analysis should be conducted.}
+  \item{comb.fixed}{A logical indicating whether a fixed effects (common
+    effects) network meta-analysis should be conducted.}
   \item{comb.random}{A logical indicating whether a random effects
-    meta-analysis should be conducted.}
+    network meta-analysis should be conducted.}
   \item{prediction}{A logical indicating whether prediction intervals
     should be printed.}
   \item{level.predict}{The level used to calculate prediction
     intervals for a new study.}
-  \item{reference.group}{Reference group.}
+  \item{reference.group}{Reference treatment.}
   \item{baseline.reference}{A logical indicating whether results
     should be expressed as comparisons of other treatments versus the
     reference treatment (default) or vice versa. This argument is only
-    considered if \code{reference.group} has been specified.}    
-  \item{all.treatments}{A logical or value \code{"NULL"}. If
-        \code{TRUE}, matrices with all treatment effects, and confidence
-        limits will be printed.}
+    considered if \code{reference.group} has been specified.}
+  \item{all.treatments}{A logical or \code{"NULL"}. If \code{TRUE},
+    matrices with all treatment effects, and confidence limits will be
+    printed.}
   \item{seq}{A character or numerical vector specifying the sequence
     of treatments in printouts.}
-  \item{tau.preset}{An optional value for the square-root of the
-    between-study variance \eqn{\tau^2}.}
+  \item{tau.preset}{An optional value for manually setting the
+    square-root of the between-study variance \eqn{\tau^2}.}
   \item{tol.multiarm}{A numeric for the tolerance for consistency of
     treatment estimates and corresponding variances in multi-arm studies
     which are consistent by design.}
@@ -77,7 +77,7 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     back transformed in printouts and forest plots. If
     \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
     as odds ratios rather than log odds ratios, for example.}
-  \item{nchar.trts}{A numeric defining the minium number of characters
+  \item{nchar.trts}{A numeric defining the minimum number of characters
     used to create unique treatment names (see Details).}
   \item{n1}{Number of observations in first treatment group.}
   \item{n2}{Number of observations in second treatment group.}
@@ -184,17 +184,14 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   R package \bold{netmeta} will adequately consider the values for
   \code{comb.fixed} and \code{comb.random}. E.g. function
   \code{\link{print.summary.netmeta}} will not print results for the
-  random effects model if \code{comb.random=FALSE}. By default
-  (\code{comb.fixed=TRUE}), a fixed effects network meta-analysis is
-  reported. Use argument \code{comb.random=TRUE} to report results
-  of a random effects model.
+  random effects model if \code{comb.random=FALSE}.
 
-  By default, treatment names are not abbreviated in
-  printouts. However, in order to get more concise printouts, argument
-  \code{nchar.trts} can be used to define the minimum number of
-  characters for abbreviated treatment names. R function
-  \code{\link{treats}} is utilised internally to create abbreviated
-  treatment names.
+  By default, treatment names are not abbreviated in printouts. However,
+  in order to get more concise printouts, argument \code{nchar.trts} can
+  be used to define the minimum number of characters for abbreviated
+  treatment names (see \code{\link{abbreviate}}, argument
+  \code{minlength}). R function \code{\link{treats}} is utilised
+  internally to create abbreviated treatment names.
 
   Names of treatment comparisons are created by concatenating
   treatment labels of pairwise comparisons using \code{sep.trts} as
@@ -211,30 +208,28 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
 
 \value{
   An object of class \code{netmeta} with corresponding \code{print},
-  \code{summary}, \code{forest}, and \code{netrank} function. The
+  \code{summary}, \code{forest}, and \code{netrank} functions. The
   object is a list containing the following components:
-  \item{TE, seTE, studlab, treat1, treat2, sm, level, level.comb}{As
-    defined above.}    
-  \item{comb.fixed, comb.random, prediction, level.predict}{As defined
-    above.}
-  \item{reference.group, baseline.reference, all.treatments}{As defined
-    above.}
-  \item{seq, tau.preset, tol.multiarm, details.chkmultiarm}{As defined
-    above.}
-  \item{reference.group, baseline.reference, all.treatments,
-    sep.trts}{As defined above.}
-  \item{backtransf, nchar.trts, title, warn}{As defined above.}
+  \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
   \item{seTE.adj}{Standard error of treatment estimate, adjusted for
     multi-arm studies.}
-  \item{reference.group}{The name of the reference group, if
-    specified, otherwise \code{c("")}.}
-  \item{all.treatments}{A logical or value \code{"NULL"}. If
-        \code{TRUE}, matrices with all treatment effects, and
-        confidence limits will be printed.}
+  \item{n1, n2, event1, event2}{As defined above.}
+  \item{k}{Total number of studies.}
+  \item{m}{Total number of pairwise comparisons.}
+  \item{n}{Total number of treatments.}
+  \item{d}{Total number of designs (corresponding to the unique set of
+    treatments compared within studies).}
   \item{trts}{Treatments included in network meta-analysis.}
+  \item{k.trts}{Number of studies evaluating a treatment.}
+  \item{n.trts}{Number of observations receiving a treatment (if
+    arguments \code{n1} and \code{n2} are provided).}
+  \item{events.trts}{Number of events observed for a treatment (if
+    arguments \code{event1} and \code{event2} are provided).}
   \item{studies}{Study labels coerced into a factor with its levels
     sorted alphabetically.}
   \item{narms}{Number of arms for each study.}
+  \item{designs}{Unique list of designs present in the network. A design
+    corresponds to the set of treatments compared within a study.}
   \item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
     consistent treatment effects estimated by network meta-analysis
     (nma) (fixed effect / random effects model).}
@@ -254,6 +249,8 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     information from the whole network.}
   \item{w.fixed, w.random}{A vector of length \emph{m} of weights of
     individual studies (fixed effect / random effects model).}
+  \item{Q.fixed}{A vector of length \emph{m} of contributions to total
+    heterogeneity / inconsistency statistic.}
   \item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with estimated overall
     treatment effects (fixed effect / random effects model).}
   \item{seTE.fixed, seTE.random}{\emph{n}x\emph{n} matrix with standard errors
@@ -264,6 +261,13 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   \item{zval.fixed, pval.fixed, zval.random, pval.random}{\emph{n}x\emph{n}
     matrices with z-value and p-value for test of overall treatment
     effect (fixed effect / random effects model).}
+  \item{seTE.predict}{\emph{n}x\emph{n} matrix with standard errors
+    for prediction intervals.}
+  \item{lower.predict, upper.predict}{\emph{n}x\emph{n} matrices with
+    lower and upper prediction interval limits.}
+  \item{prop.direct.fixed, prop.direct.random}{A named vector of the
+    direct evidence proportion of each network estimate. (fixed effect
+    / random effects model).}
   \item{TE.direct.fixed, TE.direct.random}{\emph{n}x\emph{n} matrix
     with estimated treatment effects from direct evidence (fixed
     effect / random effects model).}
@@ -292,15 +296,6 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value and
     p-value for test of overall treatment effect from indirect evidence
     (fixed effect / random effects model).}
-  \item{prop.direct.fixed, prop.direct.random}{A named vector of the
-    direct evidence proportion of each network estimate. (fixed effect
-    / random effects model).}
-  \item{Q.fixed}{A vector of length \emph{m} of contributions to total
-    heterogeneity / inconsistency statistic.}
-  \item{k}{Total number of studies.}
-  \item{m}{Total number of pairwise comparisons.}
-  \item{n}{Total number of treatments.}
-  \item{d}{Total number of designs.}
   \item{Q}{Overall heterogeneity / inconsistency statistic.}
   \item{df.Q}{Degrees of freedom for test of heterogeneity / inconsistency.}
   \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
@@ -314,6 +309,9 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
   \item{df.Q.inconsistency}{Degrees of freedom for test of overall
     inconsistency.}
   \item{pval.Q.inconsistency}{P-value for test of overall inconsistency.}
+  \item{Q.decomp}{Data frame with columns 'treat1', 'treat2', 'Q',
+    'df' and 'pval.Q', providing heterogeneity statistics for each
+    pairwise meta-analysis of direct comparisons.}
   \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
   \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
   \item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}
@@ -323,45 +321,57 @@ netmeta(TE, seTE, treat1, treat2, studlab, data=NULL, subset=NULL,
     meta-analyses, where direct comparisons exist (\emph{n}x\emph{n}).}
   \item{G.matrix}{Matrix with variances and covariances of comparisons
     (\emph{m}x\emph{m}). G is defined as \strong{BL+B^{t}}.}
-  \item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as \strong{H=GW=BL+B^{t}W}.}
-  \item{Cov.fixed}{Variance-covariance matrix (fixed effect model)}
-  \item{Cov.random}{Variance-covariance matrix (random effects model)}
-  \item{Q.decomp}{Data frame with columns 'treat1', 'treat2', 'Q',
-    'df' and 'pval.Q', providing heterogeneity statistics for each
-    pairwise meta-analysis of direct comparisons.}
+  \item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as
+    \strong{H=GW=BL+B^{t}W}.}
+  \item{n.matrix}{\emph{n}x\emph{n} matrix with number of observations
+    in direct comparisons (if arguments \code{n1} and \code{n2} are
+    provided).}
+  \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
+    in direct comparisons (if arguments \code{event1} and
+    \code{event2} are provided).}
   \item{P.fixed, P.random}{\emph{n}x\emph{n} matrix with direct
     evidence proportions (fixed effect / random effects model).}
+  \item{Cov.fixed}{Variance-covariance matrix (fixed effect model)}
+  \item{Cov.random}{Variance-covariance matrix (random effects model)}
+  \item{sm, level, level.comb}{As defined above.}
+  \item{comb.fixed, comb.random}{As defined above.}
+  \item{prediction, level.predict}{As defined above.}
+  \item{reference.group, baseline.reference, all.treatments}{As
+    defined above.}
+  \item{seq, tau.preset, tol.multiarm, details.chkmultiarm}{As defined
+    above.}
+  \item{sep.trts, nchar.trts}{As defined above.}
+  \item{backtransf, title, warn}{As defined above.}
   \item{call}{Function call.}
   \item{version}{Version of R package netmeta used to create object.}
 }
 
 \references{
-  Jackson D, White IR and Riley RD (2012),
+  Jackson D, White IR, Riley RD (2012),
   Quantifying the impact of between-study heterogeneity in multivariate
   meta-analyses.
   \emph{Statistics in Medicine},
-  \bold{31}(29), 3805--3820.
+  \bold{31}(29), 3805--20
 
   Rücker G (2012),
   Network meta-analysis, electrical networks and graph theory.
   \emph{Research Synthesis Methods},
-  \bold{3}, 312--24.
+  \bold{3}, 312--24
 
-  Rücker G and Schwarzer G (2014),
+  Rücker G, Schwarzer G (2014),
   Reduce dimension or reduce weights? Comparing two approaches to
   multi-arm studies in network meta-analysis.
   \emph{Statistics in Medicine},
-  \bold{33}, 4353--4369.
+  \bold{33}, 4353--69
 
-  Schwarzer G, Carpenter JR and Rücker G (2015),
+  Schwarzer G, Carpenter JR, Rücker G (2015),
   \emph{Meta-Analysis with R (Use-R!)}.
   Springer International Publishing, Switzerland
 
-  Senn S, Gavini F, Magrez D, and Scheen A (2013),
+  Senn S, Gavini F, Magrez D, Scheen A (2013),
   Issues in performing a network meta-analysis.
   \emph{Statistical Methods in Medical Research},
-  \bold{22}(2), 169--189.
-  First published online 2012 Jan 3.
+  \bold{22}(2), 169--89
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido

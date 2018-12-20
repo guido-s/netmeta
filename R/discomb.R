@@ -3,14 +3,17 @@ discomb <- function(TE, seTE,
                     studlab, data = NULL, subset = NULL,
                     ##
                     inactive = NULL,
-                    sep.components = "+", 
+                    sep.comps = "+", 
                     C.matrix,
                     ##
                     sm,
+                    level = gs("level"),
                     level.comb = gs("level.comb"),
                     comb.fixed = gs("comb.fixed"),
                     comb.random = gs("comb.random") | !is.null(tau.preset),
                     ##
+                    reference.group = "",
+                    baseline.reference = TRUE,
                     seq = NULL,
                     ##
                     tau.preset = NULL,
@@ -32,27 +35,35 @@ discomb <- function(TE, seTE,
   ## (1) Check arguments
   ##
   ##
-  meta:::chkchar(sep.components)
+  chkchar <- meta:::chkchar
+  chklevel <- meta:::chklevel
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
   ##
-  meta:::chklevel(level.comb)
+  chkchar(sep.comps, nchar = 1)
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
+  chklevel(level)
+  chklevel(level.comb)
+  ##
+  chklogical(comb.fixed)
+  chklogical(comb.random)
+  ##
+  chklogical(baseline.reference)
   ##
   if (!is.null(tau.preset))
-    meta:::chknumeric(tau.preset, min = 0, single = TRUE)
+    chknumeric(tau.preset, min = 0, single = TRUE)
   ##
-  meta:::chknumeric(tol.multiarm, min = 0, single = TRUE)
-  meta:::chklogical(details.chkmultiarm)
+  chknumeric(tol.multiarm, min = 0, single = TRUE)
+  chklogical(details.chkmultiarm)
   ##
   missing.sep.trts <- missing(sep.trts)
-  meta:::chkchar(sep.trts)
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  chkchar(sep.trts)
+  chknumeric(nchar.trts, min = 1, single = TRUE)
   ##
-  meta:::chklogical(backtransf)
+  chklogical(backtransf)
   ##
-  meta:::chkchar(title)
-  meta:::chklogical(warn)
+  chkchar(title)
+  chklogical(warn)
   
   
   ##
@@ -154,6 +165,9 @@ discomb <- function(TE, seTE,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
+  ##
+  if (reference.group != "")
+    reference.group <- setref(reference.group, labels)
   
   
   ##
@@ -273,7 +287,7 @@ discomb <- function(TE, seTE,
   netc <- netconnection(treat1, treat2, studlab)
   ##
   if (missing(C.matrix)) {
-    C.matrix <- createC(netc, sep.components, inactive)
+    C.matrix <- createC(netc, sep.comps, inactive)
     C.matrix <- C.matrix[labels, , drop = FALSE]
   }
   else {
@@ -364,7 +378,8 @@ discomb <- function(TE, seTE,
   res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], level.comb,
                         X, C.matrix, B.matrix,
-                        Q, df.Q.additive, df.Q.diff)
+                        Q, df.Q.additive, df.Q.diff,
+                        n, sep.trts)
   
   
   ##
@@ -388,30 +403,122 @@ discomb <- function(TE, seTE,
   res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], level.comb,
                         X, C.matrix, B.matrix,
-                        Q, df.Q.additive, df.Q.diff)
+                        Q, df.Q.additive, df.Q.diff,
+                        n, sep.trts)
   
   
-  res <- list(k = k, n = n, m = m, c = c,
+  NAs <- rep(NA, length(res.f$comparisons$TE))
+  
+  
+  res <- list(studlab = p0$studlab[o],
+              treat1 = p0$treat1[o],
+              treat2 = p0$treat2[o],
               ##
-              comparisons.fixed = res.f$comparisons, 
-              components.fixed = res.f$components,
-              combinations.fixed = res.f$combinations, 
+              TE = p0$TE[o],
+              seTE = seTE[o],
+              seTE.adj = sqrt(1 / p0$weights[o]),
               ##
-              comparisons.random = res.r$comparisons,
-              components.random = res.r$components, 
-              combinations.random = res.r$combinations, 
+              event1 = NA,
+              event2 = NA,
+              n1 = NA,
+              n2 = NA,
               ##
-              tau = tau,
-              I2 = I2,
+              k = k,
+              m = m,
+              n = n,
+              d = NA,
+              c = c,
               ##
-              sm = sm,
-              level.comb = level.comb,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random, 
+              trts = labels,
+              k.trts = NA,
+              n.trts = NA,
+              events.trts = NA,
+              ##
+              studies = NA,
+              narms = NA,
+              ##
+              designs = NA,
+              ##
+              comps = names(res.f$components$TE),
+              k.comps = NA,
+              n.comps = NA,
+              events.comps = NA,
+              ##
+              TE.nma.fixed = NAs,
+              seTE.nma.fixed = NAs,
+              lower.nma.fixed = NAs,
+              upper.nma.fixed = NAs,
+              zval.nma.fixed = NAs,
+              pval.nma.fixed = NAs,
+              ##
+              TE.cnma.fixed = res.f$comparisons$TE,
+              seTE.cnma.fixed = res.f$comparisons$seTE,
+              lower.cnma.fixed = res.f$comparisons$lower,
+              upper.cnma.fixed = res.f$comparisons$upper,
+              zval.cnma.fixed = res.f$comparisons$z,
+              pval.cnma.fixed = res.f$comparisons$p,
+              ##
+              TE.fixed = res.f$all.comparisons$TE,
+              seTE.fixed = res.f$all.comparisons$seTE,
+              lower.fixed = res.f$all.comparisons$lower,
+              upper.fixed = res.f$all.comparisons$upper,
+              zval.fixed = res.f$all.comparisons$z,
+              pval.fixed = res.f$all.comparisons$p,
+              ##
+              TE.nma.random = NAs,
+              seTE.nma.random = NAs,
+              lower.nma.random = NAs,
+              upper.nma.random = NAs,
+              zval.nma.random = NAs,
+              pval.nma.random = NAs,
+              ##
+              TE.cnma.random = res.r$comparisons$TE,
+              seTE.cnma.random = res.r$comparisons$seTE,
+              lower.cnma.random = res.r$comparisons$lower,
+              upper.cnma.random = res.r$comparisons$upper,
+              zval.cnma.random = res.r$comparisons$z,
+              pval.cnma.random = res.r$comparisons$p,
+              ##
+              TE.random = res.r$all.comparisons$TE,
+              seTE.random = res.r$all.comparisons$seTE,
+              lower.random = res.r$all.comparisons$lower,
+              upper.random = res.r$all.comparisons$upper,
+              zval.random = res.r$all.comparisons$z,
+              pval.random = res.r$all.comparisons$p,
+              ##
+              Comp.fixed = unname(res.f$components$TE),
+              seComp.fixed = unname(res.f$components$seTE),
+              lower.Comp.fixed = unname(res.f$components$lower),
+              upper.Comp.fixed = unname(res.f$components$upper),
+              zval.Comp.fixed = unname(res.f$components$z),
+              pval.Comp.fixed = unname(res.f$components$p),
+              ##
+              Comp.random = unname(res.r$components$TE),
+              seComp.random = unname(res.r$components$seTE),
+              lower.Comp.random = unname(res.r$components$lower),
+              upper.Comp.random = unname(res.r$components$upper),
+              zval.Comp.random = unname(res.r$components$z),
+              pval.Comp.random = unname(res.r$components$p),
+              ##
+              Comb.fixed = unname(res.f$combinations$TE),
+              seComb.fixed = unname(res.f$combinations$seTE),
+              lower.Comb.fixed = unname(res.f$combinations$lower),
+              upper.Comb.fixed = unname(res.f$combinations$upper),
+              zval.Comb.fixed = unname(res.f$combinations$z),
+              pval.Comb.fixed = unname(res.f$combinations$p),
+              ##
+              Comb.random = unname(res.r$combinations$TE),
+              seComb.random = unname(res.r$combinations$seTE),
+              lower.Comb.random = unname(res.r$combinations$lower),
+              upper.Comb.random = unname(res.r$combinations$upper),
+              zval.Comb.random = unname(res.r$combinations$z),
+              pval.Comb.random = unname(res.r$combinations$p),
               ##
               Q.additive = Q.additive, 
               df.Q.additive = df.Q.additive, 
               pval.Q.additive = res.f$pval.Q.additive,
+              tau = tau,
+              I2 = I2,
               ##
               Q.standard = Q,
               df.Q.standard = df.Q,
@@ -421,17 +528,33 @@ discomb <- function(TE, seTE,
               df.Q.diff = df.Q.diff,
               pval.Q.diff = res.f$pval.Q.diff, 
               ##
-              C.matrix = C.matrix, B.matrix = B.matrix, X = X, 
+              B.matrix = B.matrix,
+              C.matrix = C.matrix,
               ##
-              trts = labels,
+              n.matrix = NA,
+              events.matrix = NA,
+              ##
+              sm = sm,
+              method = "Inverse",
+              level = level,
+              level.comb = level.comb,
+              comb.fixed = comb.fixed,
+              comb.random = comb.random, 
+              ##
+              reference.group = reference.group,
+              baseline.reference = baseline.reference,
+              all.treatments = NULL,
               seq = seq,
               ##
               tau.preset = tau.preset,
               ##
               sep.trts = sep.trts,
+              nchar.trts = nchar.trts,
+              ##
+              inactive = inactive,
+              sep.comps = sep.comps,
               ##
               backtransf = backtransf, 
-              nchar.trts = nchar.trts,
               ##
               title = title,
               ##
@@ -439,7 +562,7 @@ discomb <- function(TE, seTE,
               version = packageDescription("netmeta")$Version
               )
   ##
-  class(res) <- "netcomb"
+  class(res) <- c("discomb", "netcomb")
   
   
   res

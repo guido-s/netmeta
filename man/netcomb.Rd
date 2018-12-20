@@ -14,7 +14,7 @@
 }
 
 \usage{
-netcomb(x, inactive = NULL, sep.components = "+", C.matrix,
+netcomb(x, inactive = NULL, sep.comps = "+", C.matrix,
         comb.fixed = x$comb.fixed,
         comb.random = x$comb.random | !is.null(tau.preset),
         tau.preset = NULL)
@@ -24,13 +24,13 @@ netcomb(x, inactive = NULL, sep.components = "+", C.matrix,
   \item{x}{An object of class \code{netmeta}.}
   \item{inactive}{A character string defining the inactive treatment
     (see Details).}
-  \item{sep.components}{A single character to define separator between
+  \item{sep.comps}{A single character to define separator between
     treatment components.}
   \item{C.matrix}{C matrix (see Details).}
-  \item{comb.fixed}{A logical indicating whether a fixed effect
-    meta-analysis should be conducted.}
+  \item{comb.fixed}{A logical indicating whether a fixed effects (common
+    effects) network meta-analysis should be conducted.}
   \item{comb.random}{A logical indicating whether a random effects
-    meta-analysis should be conducted.}
+    network meta-analysis should be conducted.}
   \item{tau.preset}{An optional value for the square-root of the
     between-study variance \eqn{\tau^2}.}
 }
@@ -40,17 +40,17 @@ Treatments in network meta-analysis (NMA) can be complex
 interventions. Some treatments may be combinations of others or have
 common components. The standard analysis provided by
 \code{\link{netmeta}} is a NMA where all existing (single or combined)
-treatments are considered as different nodes in the
-network. Exploiting the fact that some treatments are combinations of
-common components, an additive NMA model can be used to evaluate the
-influence of individual components. This model assumes that the effect
-of a treatment combination is the sum of the effects of its components
-which implies that common components cancel out in comparisons.
+treatments are considered as different nodes in the network. Exploiting
+the fact that some treatments are combinations of common components, an
+additive component network meta-analysis (CNMA) model can be used to
+evaluate the influence of individual components. This model assumes that
+the effect of a treatment combination is the sum of the effects of its
+components which implies that common components cancel out in
+comparisons.
 
-The additive network meta-analysis model has been implemented using
-Bayesian methods (Mills et al., 2012; Welton et al., 2013). This
-function implements the additive model in a frequentist way (Rücker &
-Schwarzer, 2017).
+The additive CNMA model has been implemented using Bayesian methods
+(Mills et al., 2012; Welton et al., 2013). This function implements the
+additive model in a frequentist way (Rücker et al., 2018).
 
 The underlying multivariate model is given by
 
@@ -77,16 +77,17 @@ that the treatment effect of the combination of this component with an
 additional treatment component is equal to the treatment effect of the
 additional component alone.
 
-Argument \code{sep.components} can be used to specify the separator
-between individual components. By default, the matrix \strong{C} is
-calculated internally from treatment names. However, it is possible to
-specify a different matrix using argument \code{C.matrix}.
-}                                                              
+Argument \code{sep.comps} can be used to specify the separator between
+individual components. By default, the matrix \strong{C} is calculated
+internally from treatment names. However, it is possible to specify a
+different matrix using argument \code{C.matrix}.
+}                                       
 
 \value{
-A list containing the following components:
-
-  \item{x, inactive, sep.components, C.matrix}{As defined above.}  
+  An object of class \code{netcomb} with corresponding \code{print},
+  \code{summary}, and \code{forest} functions. The object is a list
+  containing the following components:
+  \item{x, inactive, sep.comps, C.matrix}{As defined above.}  
   \item{comb.fixed, comb.random, tau.preset}{As defined above.}  
   \item{k}{Total number of studies.}
   \item{m}{Total number of pairwise comparisons.}
@@ -126,7 +127,7 @@ A list containing the following components:
     random effects model).}
   \item{backtransf}{A logical indicating whether results should be
     back transformed in printouts and forest plots.}
-  \item{nchar.trts}{A numeric defining the minium number of characters
+  \item{nchar.trts}{A numeric defining the minimum number of characters
     used to create unique treatment and component names.}
   \item{title}{Title of meta-analysis / systematic review.}
   \item{call}{Function call.}
@@ -134,32 +135,33 @@ A list containing the following components:
 }
 
 \references{
-  König J, Krahn U, Binder H (2013).
+  König J, Krahn U, Binder H (2013),
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
-  \emph{Statistics in Medicine}, \bold{32}(30), 5414--29.
+  \emph{Statistics in Medicine},
+  \bold{32}(30), 5414--29
 
-  Mills EJ, Thorlund K, Ioannidis JP (2012).
+  Mills EJ, Thorlund K, Ioannidis JP (2012),
   Calculating additive treatment effects from multiple randomized
   trials provides useful estimates of combination therapies.
-  \emph{Journal of Clinical Epidemiology}, \bold{65}(12), 1282--8.
-  Doi: 10.1016/j.jclinepi.2012.07.012.
+  \emph{Journal of Clinical Epidemiology},
+  \bold{65}(12), 1282--8, DOI:10.1016/j.jclinepi.2012.07.012
 
-  Rücker G, Schwarzer G (2017).
-  Network meta-analysis of combinations of treatments.
-  Manuscript.
+  Rücker G, Petropoulou M, Schwarzer G (2018),
+  Network meta-analysis of multicomponent interventions,
+  Manuscript, submitted.
 
-  Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009).
+  Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009),
   Mixed treatment comparison meta-analysis of complex interventions:
   psychological interventions in coronary heart disease.
-  \emph{American Journal of Epidemiology}, \bold{169}(9): 1158--65.
-  Doi: 10.1093/aje/kwp014.
+  \emph{American Journal of Epidemiology},
+  \bold{169}(9): 1158--65, DOI:10.1093/aje/kwp014.
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
 Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
-\seealso{\link{netmeta}, \link{print.netcomb}, \link{discomb}}
+\seealso{\link{netmeta}, \link{forest.netcomb}, \link{print.netcomb}, \link{discomb}}
 
 \examples{
 data(Linde2016)
@@ -184,10 +186,11 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, ref = "placebo",
-		seq = trts,
-                sm = "OR", comb.fixed = FALSE, comb.random = TRUE)
+                seq = trts,
+                sm = "OR", comb.fixed = FALSE)
 #
 summary(net1)
+forest(net1, xlim = c(0.2, 50))
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
@@ -195,6 +198,7 @@ summary(net1)
 nc1 <- netcomb(net1, inactive = "placebo")
 #
 summary(nc1)
+forest(nc1, xlim = c(0.2, 50))
 }                                                                 
 
 \keyword{Network meta-analysis}

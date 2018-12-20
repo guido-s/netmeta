@@ -26,26 +26,20 @@ netmatrix <- function(x, var, levels, labels = levels,
   if (length(var) == 1 & length(treat1) > 1)
     var <- rep(var, length(treat1))
   ##
-  if (!is.null(x$data$.subset))
-    subset <- x$data$.subset
-  if (!is.null(x$data$.excl))
-    excl <- x$data$.excl
+  subset <- data$.subset
+  excl <- data$.excl
+  drop <- data$.drop
   ##
-  if (!is.null(x$data$.subset) & !is.null(x$data$.excl)) {
-    treat1 <- treat1[subset & !excl]
-    treat2 <- treat2[subset & !excl]
-    var <- var[subset & !excl]
-  }
-  else if (!is.null(x$data$.subset)) {
-    treat1 <- treat1[subset]
-    treat2 <- treat2[subset]
-    var <- var[subset]
-  }
-  else if (!is.null(x$data$.excl)) {
-    treat1 <- treat1[!excl]
-    treat2 <- treat2[!excl]
-    var <- var[!excl]
-  }
+  if (is.null(subset))
+    subset <- rep(TRUE, nrow(data))
+  if (is.null(excl))
+    excl <- rep(FALSE, nrow(data))
+  if (is.null(drop))
+    drop <- rep(FALSE, nrow(data))
+  ##
+  treat1 <- treat1[subset & !excl & !drop]
+  treat2 <- treat2[subset & !excl & !drop]
+  var <- var[subset & !excl & !drop]
   
   
   dat <- bySummary(var, treat1, treat2,

@@ -44,11 +44,10 @@
 }
 
 \source{
-  Senn S, Gavini F, Magrez D, and Scheen A (2013).
+  Senn S, Gavini F, Magrez D, Scheen A (2013),
   Issues in performing a network meta-analysis.
   \emph{Statistical Methods in Medical Research},
-  \bold{22}(2), 169--189.
-  First published online 2012 Jan 3.
+  \bold{22}(2), 169--189
 }
 
 \seealso{\code{\link{netmeta}}}

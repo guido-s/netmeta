@@ -12,8 +12,8 @@
 netgraph(x, seq = x$seq,
          labels = x$trts,
          cex = 1, adj = NULL,
-	 offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
-	 scale = 1.10,
+         offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
+         scale = 1.10,
          col = "slateblue", plastic, thickness,
          lwd = 5, lwd.min = lwd/2.5, lwd.max = lwd*4,
          dim = "2d",
@@ -30,9 +30,9 @@ netgraph(x, seq = x$seq,
          eig1 = 2, eig2 = 3, eig3 = 4,
          iterate, tol = 0.0001, maxit = 500, allfigures = FALSE,
          A.matrix = x$A.matrix, N.matrix = sign(A.matrix),
-	 D.matrix = netdistance(N.matrix),
+         D.matrix = netdistance(N.matrix),
          xpos = NULL, ypos = NULL, zpos = NULL,
-         ...)
+         figure = TRUE, ...)
 }
 
 \arguments{
@@ -148,6 +148,8 @@ netgraph(x, seq = x$seq,
   \item{xpos}{Vector (\emph{n}) of x coordinates.}
   \item{ypos}{Vector (\emph{n}) of y coordinates.}
   \item{zpos}{Vector (\emph{n}) of z coordinates.}
+  \item{figure}{A logical indicating whether network graph should be
+    shown.}
   \item{\dots}{Additional graphical arguments.}
 }
 
@@ -169,6 +171,13 @@ netgraph(x, seq = x$seq,
   algorithm, Hall 1970), calculated in different ways, or
   random. Moreover, it can be chosen whether the iteration steps are
   shown (argument \code{allfigures = TRUE}).
+
+  An optimized circular presentation which typically has a reduced
+  (sometimes minimal) number of crossings can be achieved by using
+  argument \code{seq = "optimal"} in combination with argument
+  \code{start.layout}. Note, is is not possible of prespecify the best
+  value for argument \code{start.layout} for any situation as the
+  result depends on the network structure.
 
   Argument \code{thickness} providing the line width of the nodes
   (comparisons) can be a matrix of the same dimension as argument
@@ -208,7 +217,7 @@ netgraph(x, seq = x$seq,
 }
 
 \value{
-  An data frame containing the following columns
+  A data frame containing the following columns
 
   \item{labels}{Treatment labels.}
   \item{seq}{Sequence of treatment labels.}
@@ -223,34 +232,42 @@ netgraph(x, seq = x$seq,
 }
 
 \references{
-  Hall, K.M. (1970).
+  Hall KM (1970),
   An r-dimensional quadratic placement algorithm.
-  \emph{Management Science}, \bold{17}, 219--229.
+  \emph{Management Science},
+  \bold{17}, 219--29
 
-  Hu, Y. (2012).
-  \emph{Combinatorial Scientific Computing}, Chapter Algorithms for
-  Visualizing Large Networks, pages 525--549.
+  Hu Y (2012),
+  \emph{Combinatorial Scientific Computing},
+  Chapter Algorithms for Visualizing Large Networks, pages 525--549.
   Chapman and Hall/CRC Computational Science.
 
-  Kamada, T. and Kawai, S. (1989).
+  Kamada T, Kawai S (1989),
   An algorithm for drawing general undirected graphs.
-  \emph{Information Processing Letters}, \bold{31}(1), 7--15.
+  \emph{Information Processing Letters},
+  \bold{31}(1), 7--15
 
   Krahn U, Binder H, König J (2013),
   A graphical tool for locating inconsistency in network
   meta-analyses.
-  \emph{BMC Medical Research Methodology}, \bold{13}, 35.
+  \emph{BMC Medical Research Methodology},
+  \bold{13}, 35
   
-  Michailidis, G. and de Leeuw, J. (2001).
+  Michailidis G, de Leeuw J (2001),
   Data visualization through graph drawing.
-  \emph{Computational Statistics}, \bold{16}(3), 435--450.
+  \emph{Computational Statistics},
+  \bold{16}(3), 435--50
 
-  Rücker G & Schwarzer G (2016),
+  Rücker G, Schwarzer G (2016),
   Automated drawing of network plots in network meta-analysis.
-  \emph{Research Synthesis Methods}, \bold{7}, 94--107.
+  \emph{Research Synthesis Methods},
+  \bold{7}, 94--107
 }
 
-\author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Ulrike Krahn \email{ulrike.krahn@bayer.com}, Jochem König \email{koenigjo@uni-mainz.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
+\author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Ulrike Krahn
+\email{ulrike.krahn@bayer.com}, Jochem König
+\email{koenigjo@uni-mainz.de}, Guido Schwarzer
+\email{sc@imbi.uni-freiburg.de}}
 
 \seealso{\code{\link{netmeta}}}
 

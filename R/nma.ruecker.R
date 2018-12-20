@@ -3,7 +3,7 @@ nma.ruecker <- function(TE, seTE,
                         treat1.pos, treat2.pos,
                         narms, studlab,
                         sm = "",
-                        level = 0.95, level.comb = 0.95,
+                        level, level.comb,
                         seTE.orig, tau.direct = 0, sep.trts = ":") {
   
   
@@ -172,7 +172,8 @@ nma.ruecker <- function(TE, seTE,
                          treat2 = names.treat[t2],
                          Q = q,
                          df = dfs,
-                         pval.Q = pchisq(q, dfs, lower.tail = FALSE))
+                         pval.Q = pchisq(q, dfs, lower.tail = FALSE),
+                         stringsAsFactors = FALSE)
   ##
   Q.decomp$pval.Q[Q.decomp$df == 0] <- NA
   
@@ -285,10 +286,12 @@ nma.ruecker <- function(TE, seTE,
               treat1 = treat1, treat2 = treat2,
               TE = TE, seTE = seTE,
               seTE.orig = seTE.orig,
-              TE.nma = v,
-              seTE.nma = sqrt(V),
+              TE.nma = ci.v$TE,
+              seTE.nma = ci.v$seTE,
               lower.nma = ci.v$lower,
               upper.nma = ci.v$upper,
+              zval.nma = ci.v$z,
+              pval.nma = ci.v$p,
               leverage = diag(H),
               w.pooled = w.pooled,
               Q.pooled = Q.pooled,

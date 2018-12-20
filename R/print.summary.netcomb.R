@@ -16,14 +16,18 @@ print.summary.netcomb <- function(x,
                                   ...) {
   
   
+  ##
+  ##
+  ## (1) Check class and arguments
+  ##
+  ##
   meta:::chkclass(x, "summary.netcomb")
   ##  
   chklogical <- meta:::chklogical
   chknumeric <- meta:::chknumeric
   formatN <- meta:::formatN
   formatPT <- meta:::formatPT
-  
-  
+  ##  
   chklogical(comb.fixed)
   chklogical(comb.random)
   chklogical(backtransf)
@@ -56,21 +60,19 @@ print.summary.netcomb <- function(x,
   trts <- x$trts
   trts.abbr <- treats(trts, nchar.trts)
   ##
-  comps <- names(x$components.fixed$TE)
+  comps <- x$comps
   comps.abbr <- treats(comps, nchar.trts)
   
   
-  dat1.f <- prcombs(x$combinations.fixed,
-                    backtransf, x$sm, x$level,
-                    trts, trts.abbr,
-                    digits, digits.zval, digits.pval.Q,
-                    scientific.pval, big.mark, x$seq)
+  dat1.f <- formatCC(x$combinations.fixed,
+                     backtransf, x$sm, x$level, trts.abbr,
+                     digits, digits.zval, digits.pval.Q,
+                     scientific.pval, big.mark, x$seq)
   ##
-  dat1.r <- prcombs(x$combinations.random,
-                    backtransf, x$sm, x$level,
-                    trts, trts.abbr,
-                    digits, digits.zval, digits.pval.Q,
-                    scientific.pval, big.mark, x$seq)
+  dat1.r <- formatCC(x$combinations.random,
+                     backtransf, x$sm, x$level, trts.abbr,
+                     digits, digits.zval, digits.pval.Q,
+                     scientific.pval, big.mark, x$seq)
   ##
   if (comb.fixed) {
     cat("Results for combinations (additive model, fixed effects model):\n")
@@ -85,17 +87,15 @@ print.summary.netcomb <- function(x,
   }
   
   
-  dat2.f <- prcombs(x$components.fixed,
-                    backtransf, x$sm, x$level,
-                    comps, comps.abbr,
-                    digits, digits.zval, digits.pval.Q,
-                    scientific.pval, big.mark)
+  dat2.f <- formatCC(x$components.fixed,
+                     backtransf, x$sm, x$level, comps.abbr,
+                     digits, digits.zval, digits.pval.Q,
+                     scientific.pval, big.mark)
   ##
-  dat2.r <- prcombs(x$components.random,
-                    backtransf, x$sm, x$level,
-                    comps, comps.abbr,
-                    digits, digits.zval, digits.pval.Q,
-                    scientific.pval, big.mark)
+  dat2.r <- formatCC(x$components.random,
+                     backtransf, x$sm, x$level, comps.abbr,
+                     digits, digits.zval, digits.pval.Q,
+                     scientific.pval, big.mark)
   ##
   if (comb.fixed) {
     cat("Results for components (fixed effects model):\n")

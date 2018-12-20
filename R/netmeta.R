@@ -1,13 +1,14 @@
 netmeta <- function(TE, seTE,
-                    treat1, treat2,
-                    studlab, data = NULL, subset = NULL,
+                    treat1, treat2, studlab,
+                    data = NULL, subset = NULL,
                     sm,
-                    level = 0.95, level.comb = 0.95,
+                    level = gs("level"),
+                    level.comb = gs("level.comb"),
                     comb.fixed = gs("comb.fixed"),
                     comb.random = gs("comb.random") | !is.null(tau.preset),
                     ##
                     prediction = FALSE,
-                    level.predict = 0.95,
+                    level.predict = gs("level.predict"),
                     ##
                     reference.group = "",
                     baseline.reference = TRUE,
@@ -33,7 +34,8 @@ netmeta <- function(TE, seTE,
                     keepdata = gs("keepdata"),
                     warn = TRUE
                     ) {
-  
+
+
   ##
   ##
   ## (1) Check arguments
@@ -82,8 +84,8 @@ netmeta <- function(TE, seTE,
       all.treatments <- FALSE
   ##
   chklogical(baseline.reference)
-  
-  
+
+
   ##
   ##
   ## (2) Read data
@@ -102,6 +104,8 @@ netmeta <- function(TE, seTE,
              data, enclos = sys.frame(sys.parent()))
   ##
   if (inherits(TE, "pairwise")) {
+    is.pairwise <- TRUE
+    ##
     sm <- attr(TE, "sm")
     ##
     seTE <- TE$seTE
@@ -118,7 +122,6 @@ netmeta <- function(TE, seTE,
     if (!is.null(TE$event2))
       event2 <- TE$event2
     ##
-    is.pairwise <- TRUE
     pairdata <- TE
     data <- TE
     ##
@@ -179,8 +182,8 @@ netmeta <- function(TE, seTE,
     available.n <- TRUE
   else
     available.n <- FALSE
-  
-  
+
+
   ##
   ##
   ## (2b) Store complete dataset in list object data
@@ -189,23 +192,26 @@ netmeta <- function(TE, seTE,
   ##
   if (keepdata) {
     if (nulldata & !is.pairwise)
-      data <- data.frame(.TE = TE)
+      data <- data.frame(.studlab = studlab, stringsAsFactors = FALSE)
     else if (nulldata & is.pairwise) {
       data <- pairdata
-      data$.TE <- TE
+      data$.studlab <- studlab
     }
     else
-      data$.TE <- TE
+      data$.studlab <- studlab
     ##
-    data$.seTE <- seTE
+    data$.order <- seq_along(studlab)
+    ##
     data$.treat1 <- treat1
     data$.treat2 <- treat2
-    data$.studlab <- studlab
     ##
-    data$.n1 <- n1
-    data$.n2 <- n2
+    data$.TE <- TE
+    data$.seTE <- seTE
+    ##
     data$.event1 <- event1
+    data$.n1 <- n1
     data$.event2 <- event2
+    data$.n2 <- n2
     ##
     ## Check for correct treatment order within comparison
     ##
@@ -239,8 +245,8 @@ netmeta <- function(TE, seTE,
       }
     }
   }
-  
-  
+
+
   ##
   ##
   ## (3) Use subset for analysis
@@ -249,7 +255,8 @@ netmeta <- function(TE, seTE,
   if (!missing.subset) {
     if ((is.logical(subset) & (sum(subset) > k.Comp)) ||
         (length(subset) > k.Comp))
-      stop("Length of subset is larger than number of studies.")
+      stop("Length of subset is larger than number of studies.",
+           call. = FALSE)
     ##
     TE <- TE[subset]
     seTE <- seTE[subset]
@@ -305,15 +312,16 @@ netmeta <- function(TE, seTE,
   ##
   if (reference.group != "")
     reference.group <- setref(reference.group, labels)
-  
-  
+
+
   ##
   ##
   ## (4) Additional checks
   ##
   ##
   if (any(treat1 == treat2))
-    stop("Treatments must be different (arguments 'treat1' and 'treat2').")
+    stop("Treatments must be different (arguments 'treat1' and 'treat2').",
+         call. = FALSE)
   ##
   if (length(studlab) != 0)
     studlab <- as.character(studlab)
@@ -337,14 +345,16 @@ netmeta <- function(TE, seTE,
                "' has a wrong number of comparisons.",
                "\n  Please provide data for all treatment comparisons",
                " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   if (sum(sel.narms) > 1)
     stop(paste("The following studies have a wrong number of comparisons: ",
                paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
                      collapse = ", "),
                "\n  Please provide data for all treatment comparisons",
                " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   ##
   ## Check number of subgraphs
   ##
@@ -353,7 +363,8 @@ netmeta <- function(TE, seTE,
   if (n.subnets > 1)
     stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
                "Use R function 'netconnection' to identify sub-networks.",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   ##
   ## Check NAs and zero standard errors
   ##
@@ -366,18 +377,22 @@ netmeta <- function(TE, seTE,
                           treat1 = treat1[excl],
                           treat2 = treat2[excl],
                           TE = format(round(TE[excl], 4)),
-                          seTE = format(round(seTE[excl], 4))
+                          seTE = format(round(seTE[excl], 4)),
+                          stringsAsFactors = FALSE
                           )
-    warning("Comparison",
-            if (sum(excl) > 1) "s",
-            " with missing TE / seTE or zero seTE not considered in network meta-analysis.",
-            call. = FALSE)
-    cat(paste("Comparison",
+    if (warn)
+      warning("Comparison",
               if (sum(excl) > 1) "s",
-              " not considered in network meta-analysis:\n", sep = ""))
-    prmatrix(dat.NAs, quote = FALSE, right = TRUE,
-             rowlab = rep("", sum(excl)))
-    cat("\n")
+              " with missing TE / seTE or zero seTE not considered in network meta-analysis.",
+              call. = FALSE)
+    if (warn) {
+      cat(paste("Comparison",
+                if (sum(excl) > 1) "s",
+                " not considered in network meta-analysis:\n", sep = ""))
+      prmatrix(dat.NAs, quote = FALSE, right = TRUE,
+               rowlab = rep("", sum(excl)))
+      cat("\n")
+    }
     ##
     studlab <- studlab[!(excl)]
     treat1  <- treat1[!(excl)]
@@ -411,7 +426,8 @@ netmeta <- function(TE, seTE,
                "' has a wrong number of comparisons.",
                " Please check data and\n  consider to remove study",
                " from network meta-analysis.",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   if (sum(sel.narms) > 1)
     stop(paste("After removing comparisons with missing treatment effects",
                " or standard errors,\n  the following studies have",
@@ -420,7 +436,8 @@ netmeta <- function(TE, seTE,
                      collapse = ", "),
                "\n  Please check data and consider to remove studies",
                " from network meta-analysis.",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   ##
   ## Check number of subgraphs
   ##
@@ -432,7 +449,8 @@ netmeta <- function(TE, seTE,
                n.subnets, " separate sub-networks.\n  ",
                "Please check data and consider to remove studies",
                " from network meta-analysis.",
-               sep = ""))
+               sep = ""),
+         call. = FALSE)
   ##
   ## Check for correct treatment order within comparison
   ##
@@ -456,10 +474,10 @@ netmeta <- function(TE, seTE,
       tevent1 <- event1
       event1[wo] <- event2[wo]
       event2[wo] <- tevent1[wo]
-    }       
+    }
   }
-  
-  
+
+
   ##
   ##
   ## (5) Generate analysis dataset
@@ -478,12 +496,13 @@ netmeta <- function(TE, seTE,
   ##
   ## Study overview
   ##
-  tdata <- data.frame(studies = p0$studlab, narms = p0$narms)
+  tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
+                      stringsAsFactors = FALSE)
   tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
   studies <- tdata$studies
   narms <- tdata$narms
-  
-  
+
+
   ##
   ##
   ## (6) Conduct network meta-analysis
@@ -511,7 +530,7 @@ netmeta <- function(TE, seTE,
   res.r <- nma.ruecker(p1$TE, sqrt(1 / p1$weights),
                        p1$treat1, p1$treat2,
                        p1$treat1.pos, p1$treat2.pos,
-                       p1$narms, p1$studlab, 
+                       p1$narms, p1$studlab,
                        sm,
                        level, level.comb,
                        p1$seTE, tau, sep.trts = sep.trts)
@@ -539,12 +558,14 @@ netmeta <- function(TE, seTE,
     p.lower[!is.na(p.lower)] <- NA
     p.upper[!is.na(p.upper)] <- NA
   }
-  
-  
+
+
   ##
   ##
   ## (7) Generate R object
   ##
+  ##
+  trts <- rownames(res.f$A.matrix)
   ##
   o <- order(p0$order)
   ##
@@ -556,16 +577,36 @@ netmeta <- function(TE, seTE,
               seTE = res.f$seTE.orig[o],
               seTE.adj = res.f$seTE[o],
               ##
+              event1 = event1,
+              event2 = event2,
+              n1 = n1,
+              n2 = n2,
+              ##
+              k = res.f$k,
+              m = res.f$m,
+              n = res.f$n,
+              d = NA,
+              ##
+              trts = trts,
+              k.trts = rowSums(res.f$A.matrix),
+              n.trts = if (available.n) NA else NULL,
+              events.trts = if (available.events) NA else NULL,
+              ##
               studies = studies,
               narms = narms,
+              ##
+              designs = NA,
               ##
               TE.nma.fixed = res.f$TE.nma[o],
               seTE.nma.fixed = res.f$seTE.nma[o],
               lower.nma.fixed = res.f$lower.nma[o],
               upper.nma.fixed = res.f$upper.nma[o],
+              zval.nma.fixed = res.f$zval.nma[o],
+              pval.nma.fixed = res.f$pval.nma[o],
               ##
               leverage.fixed = res.f$leverage[o],
               w.fixed = res.f$w.pooled[o],
+              Q.fixed = res.f$Q.pooled[o],
               ##
               TE.fixed = res.f$TE.pooled,
               seTE.fixed = res.f$seTE.pooled,
@@ -574,12 +615,12 @@ netmeta <- function(TE, seTE,
               zval.fixed = res.f$zval.pooled,
               pval.fixed = res.f$pval.pooled,
               ##
-              Q.fixed = res.f$Q.pooled[o],
-              ##
               TE.nma.random = res.r$TE.nma[o],
               seTE.nma.random = res.r$seTE.nma[o],
               lower.nma.random = res.r$lower.nma[o],
               upper.nma.random = res.r$upper.nma[o],
+              zval.nma.random = res.r$zval.nma[o],
+              pval.nma.random = res.r$pval.nma[o],
               ##
               w.random = res.r$w.pooled[o],
               ##
@@ -590,11 +631,12 @@ netmeta <- function(TE, seTE,
               zval.random = res.r$zval.pooled,
               pval.random = res.r$pval.pooled,
               ##
-              prediction = prediction,
               seTE.predict = seTE.predict,
               lower.predict = p.lower,
               upper.predict = p.upper,
-              level.predict = level.predict,
+              ##
+              prop.direct.fixed = NA,
+              prop.direct.random = NA,
               ##
               TE.direct.fixed = res.f$TE.direct,
               seTE.direct.fixed = res.f$seTE.direct,
@@ -610,9 +652,6 @@ netmeta <- function(TE, seTE,
               zval.direct.random = res.r$zval.direct,
               pval.direct.random = res.r$pval.direct,
               ##
-              prop.direct.fixed = NA,
-              prop.direct.random = NA,
-              ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
               lower.indirect.fixed = NA,
@@ -627,39 +666,21 @@ netmeta <- function(TE, seTE,
               zval.indirect.random = NA,
               pval.indirect.random = NA,
               ##
-              n1 = n1,
-              n2 = n2,
-              event1 = event1,
-              event2 = event2,
-              ##
-              N.matrix = if (available.n) NA else NULL,
-              E.matrix = if (available.events) NA else NULL,
-              ##
-              treat1.pos = res.f$treat1.pos[o],
-              treat2.pos = res.f$treat2.pos[o],
-              ##
-              k = res.f$k,
-              m = res.f$m,
-              n = res.f$n,
-              d = NA,
               Q = res.f$Q,
               df.Q = df.Q,
               pval.Q = res.f$pval.Q,
               I2 = res.f$I2,
               tau = tau,
-              tau.preset = tau.preset,                                             
+              ##
               Q.heterogeneity = NA,
               df.Q.heterogeneity = NA,
               pval.Q.heterogeneity = NA,
+              ##
               Q.inconsistency = NA,
               df.Q.inconsistency = NA,
               pval.Q.inconsistency = NA,
               ##
-              sm = sm,
-              level = level,
-              level.comb = level.comb,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              Q.decomp = res.f$Q.decomp,
               ##
               A.matrix = res.f$A.matrix,
               B.matrix = res.f$B.matrix[o, ],
@@ -670,26 +691,41 @@ netmeta <- function(TE, seTE,
               G.matrix = res.f$G.matrix[o, o],
               H.matrix = res.f$H.matrix[o, o],
               ##
-              Cov.fixed = res.f$Cov,
-              Cov.random = res.r$Cov,
-              ##
-              Q.decomp = res.f$Q.decomp,
+              n.matrix = if (available.n) NA else NULL,
+              events.matrix = if (available.events) NA else NULL,
               ##
               P.fixed = NA,
               P.random = NA,
               ##
+              Cov.fixed = res.f$Cov,
+              Cov.random = res.r$Cov,
+              ##
+              treat1.pos = res.f$treat1.pos[o],
+              treat2.pos = res.f$treat2.pos[o],
+              ##
+              sm = sm,
+              method = "Inverse",
+              level = level,
+              level.comb = level.comb,
+              comb.fixed = comb.fixed,
+              comb.random = comb.random,
+              ##
+              prediction = prediction,
+              level.predict = level.predict,
+              ##
               reference.group = reference.group,
               baseline.reference = baseline.reference,
               all.treatments = all.treatments,
-              ##
-              trts = rownames(res.f$TE.pooled),
-              trts.n = if (available.n) NA else NULL,
-              trts.events = if (available.events) NA else NULL,
               seq = seq,
               ##
-              sep.trts = sep.trts,
+              tau.preset = tau.preset,
               ##
+              tol.multiarm = tol.multiarm,
+              details.chkmultiarm = details.chkmultiarm,
+              ##
+              sep.trts = sep.trts,
               nchar.trts = nchar.trts,
+              ##
               backtransf = backtransf,
               ##
               title = title,
@@ -698,14 +734,15 @@ netmeta <- function(TE, seTE,
               call = match.call(),
               version = packageDescription("netmeta")$Version
               )
-  ##  
+  ##
   class(res) <- "netmeta"
   ##
   ## Add results for indirect treatment estimates
   ##
   n <- res$n
   ##
-  res$prop.direct.fixed  <- netmeasures(res, random = FALSE)$proportion
+  res$prop.direct.fixed  <- netmeasures(res, random = FALSE,
+                                        warn = warn)$proportion
   ## Print warning(s) in call of netmeasures() once
   oldopts <- options(warn = -1)
   res$prop.direct.random <- netmeasures(res, random = TRUE,
@@ -719,7 +756,7 @@ netmeta <- function(TE, seTE,
   ##
   P.fixed <- P.random <- matrix(NA, n, n)
   colnames(P.fixed) <- rownames(P.fixed) <-
-    colnames(P.random) <- rownames(P.random) <- colnames(res$TE.direct.fixed)
+    colnames(P.random) <- rownames(P.random) <- trts
   ##
   if (n == 2) {
     ##
@@ -794,9 +831,15 @@ netmeta <- function(TE, seTE,
   ##
   ## Number of designs
   ##
-  res$d <- nma.krahn(res)$d
+  krahn <- nma.krahn(res)
+  res$d <- krahn$d
   if (is.null(res$d))
     res$d <- 1
+  ##
+  if (is.null(krahn$design$design))
+    res$designs <- rownames(res$Cov.fixed)
+  else
+    res$designs <- as.character(krahn$design$design)  
   
   
   ##
@@ -813,29 +856,52 @@ netmeta <- function(TE, seTE,
     res$pval.Q.heterogeneity <- dd$Q.decomp$pval[2]
     res$pval.Q.inconsistency <- dd$Q.decomp$pval[3]
   }
-  
-  
+
+
   if (keepdata) {
-    res$data <- data
-    res$subset <- res$subset
-  }
-  ##
-  if (available.events) {
-    res$E.matrix <- netmatrix(res, event1 + event2, func = "sum")
+    if (is.null(krahn))
+      ddat <- data.frame(.studlab = data$.studlab,
+                         .design = paste(data$.treat1, data$.treat2,
+                                         sep = sep.trts),
+                         stringsAsFactors = FALSE)
+    else {
+      ddat <- unique(krahn$studies[, c("studlab", "design")])
+      names(ddat) <- paste0(".", names(ddat))
+    }
+
+    data <- merge(data,
+                  data.frame(.studlab = res$studies,
+                             .narms = res$narms),
+                  by = ".studlab",
+                  stringsAsFactors = FALSE)
     ##
-    dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)
-    rownames(dat.e) <- dat.e$indices
-    res$trts.events <- dat.e[res$trts, "sum"]
+    res$data <- merge(data, ddat,
+                      by = ".studlab",
+                      suffixes = c(".orig", ""),
+                      stringsAsFactors = FALSE)
+    res$data$.design <- as.character(res$data$.design)
+    res$data <- res$data[order(res$data$.order), ]
+    res$data$.order <- NULL
   }
   ##
   if (available.n) {
-    res$N.matrix <- netmatrix(res, n1 + n2, func = "sum")
+    res$n.matrix <- netmatrix(res, n1 + n2, func = "sum")
     ##
     dat.n <- bySummary(c(n1, n2), c(treat1, treat2), long = FALSE)
     rownames(dat.n) <- dat.n$indices
-    res$trts.n <- dat.n[res$trts, "sum"]
+    res$n.trts <- dat.n[trts, "sum"]
+    names(res$n.trts) <- trts
   }
-  
-  
+  ##
+  if (available.events) {
+    res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
+    ##
+    dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)
+    rownames(dat.e) <- dat.e$indices
+    res$events.trts <- dat.e[trts, "sum"]
+    names(res$events.trts) <- trts
+  }
+
+
   res
 }

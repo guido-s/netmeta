@@ -29,10 +29,11 @@ netleague(x, y,
   \item{x}{An object of class \code{netmeta} or \code{netleague}
     (mandatory).}
   \item{y}{An object of class \code{netmeta} (optional).}
-  \item{comb.fixed}{A logical indicating whether a league table for
-    fixed effect meta-analyses should be printed.}
-  \item{comb.random}{A logical indicating whether a league table for
-    random effects meta-analyses should be printed.}
+  \item{comb.fixed}{A logical indicating whether a league table should
+    be printed for the fixed effects (common effects) network
+    meta-analysis.}
+  \item{comb.random}{A logical indicating whether a league table should
+    be printed for the random effects network meta-analysis.}
   \item{seq}{A character or numerical vector specifying the sequence
     of treatments in rows and columns of a league table.}
   \item{ci}{A logical indicating whether confidence intervals should
