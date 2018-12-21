@@ -21,7 +21,7 @@ care) for the primary care of depression.
 }
 
 \source{
-  Linde K, Rücker G, Schneider A et al. (2016),
+  Linde K, Rücker G, Schneider A et al. (2016):
   Questionable assumptions hampered interpretation of a network
   meta-analysis of primary care depression treatments.
   \emph{Journal of Clinical Epidemiology}
@@ -33,14 +33,30 @@ care) for the primary care of depression.
 \examples{
 data(Linde2016)
 
-# Standard Network meta-analysis
+# Only consider studies including Face-to-face PST (to reduce runtime
+# of example)
+#
+face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
+
+# Conduct random effects network meta-analysis
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = Linde2016, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE, comb.random = TRUE,
+                data = face, reference.group = "placebo",
+                sm = "OR", comb.fixed = FALSE,
                 nchar = 6)
 #
 summary(net1)
+
+\dontrun{
+# Conduct random effects network meta-analysis
+#
+net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+                data = Linde2016, reference.group = "placebo",
+                sm = "OR", comb.fixed = FALSE,
+                nchar = 6)
+#
+summary(net2)
+}
 }
 
 \keyword{datasets}

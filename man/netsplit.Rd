@@ -162,23 +162,23 @@ netsplit(x, method, upper = TRUE,
 \email{oremiou@gmail.com}}
 
 \references{
-  Dias S, Welton NJ, Caldwell DM, Ades AE (2010),
+  Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
   Checking consistency in mixed treatment comparison meta-analysis.
   \emph{Statistics in Medicine},
   \bold{29}, 932--44
 
   Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
-  (2018),
+  (2018):
   A Mantel-Haenszel model for network meta-analysis of rare events.
   \emph{Manuscript submitted for publication}.
   
-  König J, Krahn U, Binder H (2013),
+  König J, Krahn U, Binder H (2013):
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
   \emph{Statistics in Medicine},
-  \bold{32}(30), 5414--29
+  \bold{32}, 5414--29
   
-  Puhan MA, Schünemann HJ, Murad MH, et al. (2014),  
+  Puhan MA, Schünemann HJ, Murad MH, et al. (2014):  
   A GRADE working group approach for rating the quality of treatment
   effect estimates from network meta-analysis.
   \emph{British Medical Journal},
@@ -197,13 +197,12 @@ net1 <- netmeta(p1)
 #
 print(netsplit(net1), digits=2)
 print(netsplit(net1), digits=2,
-      backtransf=FALSE, comb.random=TRUE)
+      backtransf=FALSE, comb.fixed=FALSE)
 
 data(Senn2013)
 #
 net2 <- netmeta(TE, seTE, treat1.long, treat2.long,
-                studlab, data=Senn2013,
-                comb.random=TRUE)
+                studlab, data=Senn2013)
 #
 print(netsplit(net2), digits=2)
 # Layout of Puhan et al. (2014), Table 1
@@ -217,3 +216,5 @@ net3  <- netmetabin(p3)
 netsplit(net3)
 }
 }
+
+\keyword{Inconsistency}

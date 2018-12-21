@@ -35,11 +35,11 @@
 }
 
 \source{
-  Dias S, Sutton AJ, Ades AE and Welton NJ (2013).
+  Dias S, Sutton AJ, Ades AE and Welton NJ (2013):
   Evidence synthesis for decision making 2: A generalized linear
   modeling framework for pairwise and network meta-analysis of
   randomized controlled trials.
-  \emph{Medical Decision Making} \bold{33}, 607--617.
+  \emph{Medical Decision Making} \bold{33}, 607--17
 }
 
 \seealso{\code{\link{pairwise}}, \code{\link{metacont}},

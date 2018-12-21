@@ -113,7 +113,7 @@ data(Senn2013)
 
 \dontrun{
 #
-# Fixed effect model (default)
+# Conduct network meta-analysis
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD")
@@ -128,7 +128,7 @@ forest(net1, xlim=c(-1.5,1), ref="plac",
 # Random effects effect model
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data=Senn2013, sm="MD", comb.random=TRUE)
+                data=Senn2013, sm="MD", comb.fixed=FALSE)
 
 forest(net2, xlim=c(-1.5,1), ref="plac",
        xlab="HbA1c difference")
@@ -176,4 +176,5 @@ forest(net2, xlim=c(-1.5,1), ref="plac",
 }
 }
 
-\keyword{hplot}
+\keyword{plot}
+\keyword{Forest plot}

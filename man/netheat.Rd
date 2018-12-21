@@ -73,19 +73,19 @@ netheat(x, random=FALSE, tau.preset=NULL, showall=FALSE,
 }
 
 \references{
-  Krahn U, Binder H, König J (2013),
+  Krahn U, Binder H, König J (2013):
   A graphical tool for locating inconsistency in network
   meta-analyses.
   \emph{BMC Medical Research Methodology},
   \bold{13}, 35
   
-  Jackson D, White IR and Riley RD (2012),                                       
-  Quantifying the impact of between-study heterogeneity in multivariate         
-  meta-analyses.                                                                
+  Jackson D, White IR and Riley RD (2012):
+  Quantifying the impact of between-study heterogeneity in multivariate
+  meta-analyses.         
   \emph{Statistics in Medicine},
-  \bold{31}(29), 3805--20
+  \bold{31}, 3805--20
                                                                                 
-  Higgins JPT, Jackson D, Barrett JK, Lu G, Ades AE, White IR (2012),           
+  Higgins JPT, Jackson D, Barrett JK, Lu G, Ades AE, White IR (2012):           
   Consistency and inconsistency in network meta-analysis: concepts              
   and models for multi-arm studies.                                             
   \emph{Research Synthesis Methods},

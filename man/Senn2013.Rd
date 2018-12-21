@@ -44,10 +44,10 @@
 }
 
 \source{
-  Senn S, Gavini F, Magrez D, Scheen A (2013),
+  Senn S, Gavini F, Magrez D, Scheen A (2013):
   Issues in performing a network meta-analysis.
   \emph{Statistical Methods in Medical Research},
-  \bold{22}(2), 169--189
+  \bold{22}, 169--89
 }
 
 \seealso{\code{\link{netmeta}}}
@@ -56,10 +56,11 @@
 data(Senn2013)
 
 #
-# Fixed effect model (default)
+# Fixed effect model
 #
 net1 <- netmeta(TE, seTE, treat1, treat2,
-                studlab, data=Senn2013)
+                studlab, data=Senn2013,
+                comb.random = FALSE)
 net1
 net1$Q.decomp
 
@@ -80,7 +81,7 @@ netmeta(TE, seTE, treat1.long, treat2.long,
 # Random effects model
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab, data=Senn2013,
-                comb.random = TRUE)
+                comb.fixed = FALSE)
 net2
 forest(net2, ref="plac")
 }

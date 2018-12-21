@@ -107,12 +107,12 @@
 }
 
 \references{
-  Carlsen L, Bruggemann R (2014),
+  Carlsen L, Bruggemann R (2014):
   Partial order methodology: a valuable tool in chemometrics.
   \emph{Journal of Chemometrics},
-  \bold{28}, 226--34, DOI:10.1002/cem.2569
+  \bold{28}, 226--34
 
-  Gabriel KR (1971),
+  Gabriel KR (1971):
   The biplot graphic display of matrices with application to principal
   component analysis.
   \emph{Biometrika},
@@ -145,8 +145,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1,
-                comb.fixed = FALSE, comb.random = TRUE,
+net1 <- netmeta(p1, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # (2) Early remission
@@ -156,8 +155,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2,
-                comb.fixed = FALSE, comb.random = TRUE,
+net2 <- netmeta(p2, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # Partial order of treatment rankings
@@ -169,6 +167,8 @@ po2 <- netposet(netrank(net1, small.values = "bad"),
 # Scatter plot
 #
 plot(po2)
+
+\dontrun{
 #
 # Same scatter plot as only two outcomes considered in netposet()
 #
@@ -189,8 +189,7 @@ p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net3 <- netmeta(p3,
-                comb.fixed = FALSE, comb.random = TRUE,
+net3 <- netmeta(p3, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # Partial order of treatment rankings (with three outcomes) 
@@ -212,8 +211,9 @@ plot(po3)
 #
 plot(po3, "bi", xlim = c(-1, 1.7), ylim = c(2.5, -2.5))
 }
+}
 
 \keyword{Scatter plot of partially ordered rankings}
 \keyword{Biplot of partially ordered rankings}
-\keyword{poset}
-\keyword{hplot}
+\keyword{Partial order of rankings (poset)}
+\keyword{plot}

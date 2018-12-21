@@ -21,12 +21,12 @@ et al. (2010), Table 1).
 }
 
 \source{
-  Woods BS, Hawkins N, Scott DA (2010),
+  Woods BS, Hawkins N, Scott DA (2010):
   Network meta-analysis on the log-hazard scale, combining count and
   hazard ratio statistics accounting for multi-arm trials: A
   tutorial.  
   \emph{BMC Medical Research Methodology},
-  \bold{10}, 54.
+  \bold{10}, 54
 }
 
 \seealso{\code{\link{pairwise}}, \code{\link{metabin}}, \code{\link{netmeta}}}

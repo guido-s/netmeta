@@ -26,11 +26,10 @@
 }
 
 \source{
-  Dias S, Welton NJ, Sutton AJ, Caldwell DM, Lu G and Ades AE (2013).
+  Dias S, Welton NJ, Sutton AJ, Caldwell DM, Lu G and Ades AE (2013):
   Evidence Synthesis for Decision Making 4: Inconsistency in networks
   of evidence based on randomized controlled trials.
-  \emph{Medical Decision Making}
-  \bold{33}, 641--656.
+  \emph{Medical Decision Making}, \bold{33}, 641--56
 }
 
 \seealso{\code{\link{pairwise}}, \code{\link{metabin}},

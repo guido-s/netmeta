@@ -83,11 +83,11 @@ A list containing the following components:
 }
 
 \references{
-  König J, Krahn U, Binder H (2013),
+  König J, Krahn U, Binder H (2013):
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
   \emph{Statistics in Medicine},
-  \bold{32}(30), 5414--29
+  \bold{32}, 5414--29
 }
 
 \author{Ulrike Krahn \email{ulrike.krahn@bayer.com}, Jochem König \email{koenigjo@uni-mainz.de}}
@@ -98,12 +98,12 @@ A list containing the following components:
 data(Senn2013)
 
 #
-# Generation of an object of class 'netmeta' with
-# reference treatment 'plac', i.e. placebo based 
-# on a fixed effects model
+# Conduct fixed effects network meta-analysis with
+# reference treatment 'plac', i.e. placebo
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-        data=Senn2013, sm="MD", reference="plac")
+                data=Senn2013, sm="MD", reference="plac",
+                comb.random=FALSE)
 
 #
 # Calculate measures based on a fixed effects model
@@ -117,12 +117,12 @@ plot(nm1$meanpath, nm1$minpar, pch="",
      xlab="Mean path length", ylab="Minimal parallelism")
 text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex=0.8)
 
-# Generation of an object of class 'netmeta' with
-# reference treatment 'plac' based on a random
-# effects model
+# Conduct random effects network meta-analysis with
+# reference treatment 'plac', i.e. placebo
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data=Senn2013, sm="MD", reference="plac", comb.random=TRUE)
+                data=Senn2013, sm="MD", reference="plac",
+                comb.fixed=FALSE)
 
 #
 # Calculate measures based on a random effects model

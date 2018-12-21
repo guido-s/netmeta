@@ -75,17 +75,17 @@ netrank(x, small.values="good")
 }
 
 \references{
-  Rücker G, Schwarzer G (2015),
+  Rücker G, Schwarzer G (2015):
   Ranking treatments in frequentist network meta-analysis works
   without resampling methods.
   \emph{BMC Medical Research Methodology},
-  \bold{15}, 58, DOI:10.1186/s12874-015-0060-8
+  \bold{15}, 58
 
-  Salanti G, Ades AE, Ioannidis JP (2011), 
+  Salanti G, Ades AE, Ioannidis JP (2011): 
   Graphical methods and numerical summaries for presenting results
   from multiple-treatment meta-analysis: an overview and tutorial.
   \emph{Journal of Clinical Epidemiology},
-  \bold{64}(2), 163--71
+  \bold{64}, 163--71
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
@@ -93,17 +93,16 @@ netrank(x, small.values="good")
 \seealso{\code{\link{netmeta}}}
 
 \examples{
-
 data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data=Senn2013, sm="MD")
+                data=Senn2013, sm="MD",
+                comb.random=FALSE)
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data=Senn2013, sm="MD",
-		comb.fixed=FALSE, comb.random=TRUE)
+		comb.fixed=FALSE)
 net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data=Senn2013, sm="MD",
-		comb.random=TRUE)
+                data=Senn2013, sm="MD")
 
 nr1 <- netrank(net1)
 nr1
