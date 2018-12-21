@@ -16,13 +16,13 @@
 
   * New function netmetabin() for network meta-analysis of binary data
     using the Mantel-Haenszel method or the non-central hypergeometric
-    distribution distribution
+    distribution
 
   * New function funnel.netmeta() for 'comparison-adjusted' funnel
     plots
 
-  * New function forest.netcomb() for forest plots of component
-    network meta-analysis
+  * New function forest.netcomb() for forest plots of additive network
+    meta-analysis
 
   * New functions netbind(), forest.netbind(), and print.netbind() to
     combine network meta-analysis objects and to generate a forest
