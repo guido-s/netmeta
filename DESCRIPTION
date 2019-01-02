@@ -1,6 +1,6 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
-Version: 1.0-1
+Version: 6.6-6
 Depends: meta (>= 4.9-3)
 Suggests: colorspace, rgl, hasseDiagram (>= 0.1.3), grid
 Imports: magic, MASS
