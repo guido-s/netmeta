@@ -165,4 +165,6 @@ forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
 }
 
 
-\keyword{hplot}
+\keyword{plot}
+\keyword{Forest plot}
+\keyword{Inconsistency}

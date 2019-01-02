@@ -232,33 +232,33 @@ netgraph(x, seq = x$seq,
 }
 
 \references{
-  Hall KM (1970),
+  Hall KM (1970):
   An r-dimensional quadratic placement algorithm.
   \emph{Management Science},
   \bold{17}, 219--29
 
-  Hu Y (2012),
+  Hu Y (2012):
   \emph{Combinatorial Scientific Computing},
-  Chapter Algorithms for Visualizing Large Networks, pages 525--549.
+  Chapter Algorithms for Visualizing Large Networks, pages 525--49
   Chapman and Hall/CRC Computational Science.
 
-  Kamada T, Kawai S (1989),
+  Kamada T, Kawai S (1989):
   An algorithm for drawing general undirected graphs.
   \emph{Information Processing Letters},
-  \bold{31}(1), 7--15
+  \bold{31}, 7--15
 
-  Krahn U, Binder H, König J (2013),
+  Krahn U, Binder H, König J (2013):
   A graphical tool for locating inconsistency in network
   meta-analyses.
   \emph{BMC Medical Research Methodology},
   \bold{13}, 35
   
-  Michailidis G, de Leeuw J (2001),
+  Michailidis G, de Leeuw J (2001):
   Data visualization through graph drawing.
   \emph{Computational Statistics},
-  \bold{16}(3), 435--50
+  \bold{16}, 435--50
 
-  Rücker G, Schwarzer G (2016),
+  Rücker G, Schwarzer G (2016):
   Automated drawing of network plots in network meta-analysis.
   \emph{Research Synthesis Methods},
   \bold{7}, 94--107
@@ -348,4 +348,4 @@ netgraph(net1, dim = "3d")
 
 \keyword{Network meta-analysis}
 \keyword{Network graph}
-\keyword{hplot}
+\keyword{plot}

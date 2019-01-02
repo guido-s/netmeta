@@ -110,22 +110,23 @@ net0 <- netmeta(p0)
 
 oldopts <- options(width = 100)
 
-# League table for fixed effect model with
+# League table for fixed and random effects model with
 # - network estimates in lower triangle
 # - direct estimates in upper triangle
 #
 netleague(net0, digits = 2, bracket = "(", separator = " - ")
 
-# League table for fixed effect and random effects model
+# League table for fixed effects model
 #
-netleague(net0, comb.random = TRUE, digits = 2)
+netleague(net0, comb.random = FALSE, digits = 2)
 
 # Change order of treatments according to treatment ranking
+# (random effects model)
 #
-netleague(net0, comb.random = TRUE, digits = 2,
+netleague(net0, comb.fixed = FALSE, digits = 2,
           seq = netrank(net0))
 #
-print(netrank(net0), comb.random = TRUE)
+print(netrank(net0), comb.fixed = FALSE)
 
 \dontrun{
 # Create a CSV file with league table for random effects model
@@ -174,8 +175,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1,
-                comb.fixed = FALSE, comb.random = TRUE,
+net1 <- netmeta(p1, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # (2) Early remission
@@ -185,8 +185,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2,
-                comb.fixed = FALSE, comb.random = TRUE,
+net2 <- netmeta(p2, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 
 options(width = 200)
@@ -204,8 +203,8 @@ netleague(net1, net2, digits = 2, ci = FALSE)
 netleague(net1, net2, seq = netrank(net1, small = "bad"), ci = FALSE)
 netleague(net1, net2, seq = netrank(net2, small = "bad"), ci = FALSE)
 
-print(netrank(net1, small = "bad"), comb.random = TRUE)
-print(netrank(net2, small = "bad"), comb.random = TRUE)
+print(netrank(net1, small = "bad"))
+print(netrank(net2, small = "bad"))
 
 
 # Report results for network meta-analysis twice

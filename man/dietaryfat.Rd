@@ -8,7 +8,7 @@
 
   The data are rates, given as the number of deaths and person-years. 
   These data are used as an example in the supplemental material
-  of Dias S, Sutton AJ, Ades AE and Welton NJ (2013).
+  of Dias et al. (2013).
 }
 
 \usage{data(dietaryfat)}
@@ -29,11 +29,11 @@
 }
 
 \source{
-  Dias S, Sutton AJ, Ades AE and Welton NJ (2013).
+  Dias S, Sutton AJ, Ades AE and Welton NJ (2013):
   Evidence synthesis for decision making 2: A generalized linear
   modeling framework for pairwise and network meta-analysis of
   randomized controlled trials.
-  \emph{Medical Decision Making} \bold{33}, 607--617.
+  \emph{Medical Decision Making} \bold{33}, 607--17
 }
 
 \seealso{\code{\link{pairwise}}, \code{\link{metainc}},

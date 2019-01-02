@@ -204,27 +204,27 @@ different matrix using argument \code{C.matrix}.
 }
 
 \references{
-  König J, Krahn U, Binder H (2013),
+  König J, Krahn U, Binder H (2013):
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
   \emph{Statistics in Medicine},
-  \bold{32}(30), 5414--29
+  \bold{32}, 5414--29
 
-  Mills EJ, Thorlund K, Ioannidis JP (2012),
+  Mills EJ, Thorlund K, Ioannidis JP (2012):
   Calculating additive treatment effects from multiple randomized
   trials provides useful estimates of combination therapies.
   \emph{Journal of Clinical Epidemiology},
-  \bold{65}(12), 1282--8, DOI:10.1016/j.jclinepi.2012.07.012
+  \bold{65}, 1282--8
 
-  Rücker G, Petropoulou M, Schwarzer G (2018),
-  Network meta-analysis of multicomponent interventions,
-  Manuscript, submitted.
+  Rücker G, Petropoulou M, Schwarzer G (2018):
+  Network meta-analysis of multicomponent interventions.
+  \emph{Manuscript submitted for publication}.
 
-  Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009),
+  Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009):
   Mixed treatment comparison meta-analysis of complex interventions:
   psychological interventions in coronary heart disease.
   \emph{American Journal of Epidemiology},
-  \bold{169}(9): 1158--65, DOI:10.1093/aje/kwp014.
+  \bold{169}: 1158--65
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido

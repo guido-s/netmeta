@@ -297,20 +297,20 @@ netmetabin(event1, n1, event2, n2,
 
 \references{
   Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
-  (2018),
+  (2018):
   A Mantel-Haenszel model for network meta-analysis of rare events.
   \emph{Manuscript submitted for publication}.  
   
-  Senn S, Gavini F, Magrez D, Scheen A (2013),
+  Senn S, Gavini F, Magrez D, Scheen A (2013):
   Issues in performing a network meta-analysis.
   \emph{Statistical Methods in Medical Research},
-  \bold{22}(2), 169--89
+  \bold{22}, 169--89
   
-  Stijnen T, Hamza TH, Ozdemir P (2010),
+  Stijnen T, Hamza TH, Ozdemir P (2010):
   Random effects meta-analysis of event outcome in the framework of
   the generalized linear mixed model with applications in sparse
   data.
-  \emph{Statistics in Medicine}, \bold{29}, 3046--67.
+  \emph{Statistics in Medicine}, \bold{29}, 3046--67
 }
 
 \author{Orestis Efthimiou \email{oremiou@gmail.com}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
@@ -320,12 +320,16 @@ netmetabin(event1, n1, event2, n2,
 \examples{
 data(Dong2013)
 
+# Only consider first ten studies (to reduce runtime of example)
+#
+first10 <- subset(Dong2013, id <= 10)
+
 # Transform data from long arm-based format to contrast-based format.
 # Argument 'sm' has to be used for odds ratio as summary measure; by
 # default the risk ratio is used in the metabin function called
 # internally.
 p1 <- pairwise(treatment, death, randomized, studlab = id,
-               data = Dong2013, sm = "OR")
+               data = first10, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis
 # (without continuity correction)
@@ -335,24 +339,29 @@ nb1
 # Obtain the league table
 netleague(nb1)
 
-
 \dontrun{
+# Conduct Mantel-Haenszel network meta-analysis for the whole dataset
+#
+p2 <- pairwise(treatment, death, randomized, studlab = id,
+               data = Dong2013, sm = "OR")
+netmetabin(p2, ref = "plac")
+  
 # Conduct network meta-analysis using the non-central hypergeometric
 # model (without continuity correction)
-netmetabin(p1, ref = "plac", method = "NCH")
+netmetabin(p2, ref = "plac", method = "NCH")
 
 # Conduct Mantel-Haenszel network meta-analysis
 # (with continuity correction of 0.5; include all studies)
-netmetabin(p1, ref = "plac", cc.pooled = TRUE)
+netmetabin(p2, ref = "plac", cc.pooled = TRUE)
 
 
 data(Gurusamy2011)
 
-p2 <- pairwise(treatment, death, n, studlab = study,
+p3 <- pairwise(treatment, death, n, studlab = study,
                data = Gurusamy2011, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis
 # (without continuity correction)
-netmetabin(p2, ref = "cont")
+netmetabin(p3, ref = "cont")
 }
 }

@@ -44,7 +44,7 @@ placebo for the primary care setting; partly shown in Linde et al.
 }
 
 \source{
-  Linde K, Kriston L, Rücker G, et al. (2015),
+  Linde K, Kriston L, Rücker G, et al. (2015):
   Efficacy and acceptability of pharmacological treatments for
   depressive disorders in primary care: Systematic review and network
   meta-analysis.
@@ -69,8 +69,8 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI",
           "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
           "Placebo")
 
-# Conduct network meta-analysis
-net1 <- netmeta(p1, comb.fixed = FALSE, comb.random = TRUE,
+# Conduct random effects network meta-analysis
+net1 <- netmeta(p1, comb.fixed = FALSE,
                 reference = "Placebo",
 		seq = trts)
 print(summary(net1), digits = 2)

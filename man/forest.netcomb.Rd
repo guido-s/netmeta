@@ -97,7 +97,26 @@
 
 \examples{
 data(Linde2016)
+
+# Only consider studies including Face-to-face PST (to reduce runtime
+# of example)
 #
+face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
+
+# Conduct random effects network meta-analysis
+#
+net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+                data = face, ref = "placebo",
+                sm = "OR", comb.fixed = FALSE)
+
+# Additive model for treatment components (with placebo as inactive
+# treatment)
+#
+nc1 <- netcomb(net1, inactive = "placebo")
+#
+forest(nc1)
+
+\dontrun{
 # Specify, order of treatments
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
@@ -114,21 +133,24 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 # "Face-to-face interpsy + SSRI",
 # "Face-to-face PST + SSRI"
 
-# Standard Network meta-analysis
+# Conduct random effects network meta-analysis
 #
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, ref = "placebo",
                 seq = trts,
                 sm = "OR", comb.fixed = FALSE)
 #
-summary(net1)
+summary(net2)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
 #
-nc1 <- netcomb(net1, inactive = "placebo")
+nc2 <- netcomb(net2, inactive = "placebo")
 #
-forest(nc1)
+forest(nc2)
+}
 }
 
-\keyword{hplot}
+\keyword{plot}
+\keyword{Forest plot}
+\keyword{Additive network meta-analysis}

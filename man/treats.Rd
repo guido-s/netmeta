@@ -58,4 +58,3 @@ treats(net1$TE.fixed, nchar.trts = 2)
 #
 treats(net1$TE.fixed, nchar.trts = 1)
 }
-

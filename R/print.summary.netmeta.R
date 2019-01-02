@@ -200,7 +200,7 @@ print.summary.netmeta <- function(x,
     
     if (comb.fixed) {
       if (all.treatments | reference.group != "") {
-        text.fixed <- "Fixed effect model"
+        text.fixed <- "Fixed effects model"
         ##
         if (x$method == "MH")
           text.fixed <- paste(text.fixed, "(Mantel-Haenszel method)")
