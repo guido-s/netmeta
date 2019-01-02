@@ -73,72 +73,72 @@ network meta-analysis \url{http://meta-analysis-with-r.org/}.
 }
 
 \references{
-  Carlsen L, Bruggemann R (2014),
+  Carlsen L, Bruggemann R (2014):
   Partial order methodology: a valuable tool in chemometrics.
   \emph{Journal of Chemometrics},
-  \bold{28}, 226--34, DOI:10.1002/cem.2569
+  \bold{28}, 226--34
   
-  Chaimani A & Salanti G (2012),
+  Chaimani A & Salanti G (2012):
   Using network meta-analysis to evaluate the existence of small-study
   effects in a network of interventions.
   Research Synthesis Methods,
-  \bold{3}(2), 161--176
+  \bold{3}, 161--76
   
-  Dias S, Welton NJ, Caldwell DM, Ades AE (2010),
+  Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
   Checking consistency in mixed treatment comparison meta-analysis.
   \emph{Statistics in Medicine},
   \bold{29}, 932--44
   
   Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
-  (2018),
+  (2018):
   A Mantel-Haenszel model for network meta-analysis of rare events.
   \emph{Manuscript submitted for publication}.  
 
-  König J, Krahn U, Binder H (2013),
+  König J, Krahn U, Binder H (2013):
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
   \emph{Statistics in Medicine},
-  \bold{32}(30), 5414--29
+  \bold{32}, 5414--29
   
-  Krahn U, Binder H, König J (2013),
+  Krahn U, Binder H, König J (2013):
   A graphical tool for locating inconsistency in network
   meta-analyses.
   \emph{BMC Medical Research Methodology},
   \bold{13}, 35
   
-  Rücker G (2012),
+  Rücker G (2012):
   Network meta-analysis, electrical networks and graph theory.
   \emph{Research Synthesis Methods},
   \bold{3}, 312--24
   
-  Rücker G, Schwarzer G (2014),
+  Rücker G, Schwarzer G (2014):
   Reduce dimension or reduce weights? Comparing two approaches to
   multi-arm studies in network meta-analysis.
   \emph{Statistics in Medicine},
-  \bold{33}, 4353--4369
+  \bold{33}, 4353--69
 
-  Rücker G, Schwarzer G (2015),
+  Rücker G, Schwarzer G (2015):
   Ranking treatments in frequentist network meta-analysis works
   without resampling methods.
   \emph{BMC Medical Research Methodology},
-  \bold{15}, 58, DOI:10.1186/s12874-015-0060-8
+  \bold{15}, 58
   
-  Rücker G, Schwarzer G (2016),
+  Rücker G, Schwarzer G (2016):
   Automated drawing of network plots in network meta-analysis.
   \emph{Research Synthesis Methods},
   \bold{7}, 94--107
   
-  Rücker G, Schwarzer G (2017),
+  Rücker G, Schwarzer G (2017):
   Resolve conflicting rankings of outcomes in network meta-analysis:
   Partial ordering of treatments.
   \emph{Research Synthesis Methods},
-  \bold{8}, 526--36, DOI:10.1002/jrsm.1270
+  \bold{8}, 526--36
 
-  Rücker G, Petropoulou M, Schwarzer G (2018),
-  Network meta-analysis of multicomponent interventions,
-  Manuscript, submitted.
+  Rücker G, Petropoulou M, Schwarzer G (2018):
+  Network meta-analysis of multicomponent interventions.
+  \emph{Manuscript submitted for publication}.
 
-  Schwarzer G, Carpenter JR and Rücker G (2015),
+  Schwarzer G, Carpenter JR and Rücker G (2015):
   \emph{Meta-Analysis with R (Use-R!)}.
   Springer International Publishing, Switzerland.
   \url{http://www.springer.com/gp/book/9783319214153}

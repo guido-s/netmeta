@@ -135,27 +135,27 @@ different matrix using argument \code{C.matrix}.
 }
 
 \references{
-  König J, Krahn U, Binder H (2013),
+  König J, Krahn U, Binder H (2013):
   Visualizing the flow of evidence in network meta-analysis and
   characterizing mixed treatment comparisons.
   \emph{Statistics in Medicine},
-  \bold{32}(30), 5414--29
+  \bold{32}, 5414--29
 
-  Mills EJ, Thorlund K, Ioannidis JP (2012),
+  Mills EJ, Thorlund K, Ioannidis JP (2012):
   Calculating additive treatment effects from multiple randomized
   trials provides useful estimates of combination therapies.
   \emph{Journal of Clinical Epidemiology},
-  \bold{65}(12), 1282--8, DOI:10.1016/j.jclinepi.2012.07.012
+  \bold{65}, 1282--8
 
-  Rücker G, Petropoulou M, Schwarzer G (2018),
-  Network meta-analysis of multicomponent interventions,
-  Manuscript, submitted.
+  Rücker G, Petropoulou M, Schwarzer G (2018):
+  Network meta-analysis of multicomponent interventions.
+  \emph{Manuscript submitted for publication}.
 
-  Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009),
+  Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009):
   Mixed treatment comparison meta-analysis of complex interventions:
   psychological interventions in coronary heart disease.
   \emph{American Journal of Epidemiology},
-  \bold{169}(9): 1158--65, DOI:10.1093/aje/kwp014.
+  \bold{169}: 1158--65
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
@@ -165,7 +165,30 @@ Schwarzer \email{sc@imbi.uni-freiburg.de}}
 
 \examples{
 data(Linde2016)
+
+# Only consider studies including Face-to-face PST (to reduce runtime
+# of example)
 #
+face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
+
+# Conduct random effects network meta-analysis
+#
+net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+                data = face, ref = "placebo",
+                sm = "OR", comb.fixed = FALSE)
+#
+summary(net1)
+forest(net1, xlim = c(0.2, 50))
+
+# Additive model for treatment components (with placebo as inactive
+# treatment)
+#
+nc1 <- netcomb(net1, inactive = "placebo")
+#
+summary(nc1)
+forest(nc1, xlim = c(0.2, 50))
+
+\dontrun{
 # Specify, order of treatments
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
@@ -182,7 +205,7 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 # "Face-to-face interpsy + SSRI",
 # "Face-to-face PST + SSRI"
 
-# Standard Network meta-analysis
+# Conduct random effects network meta-analysis
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, ref = "placebo",
@@ -199,7 +222,8 @@ nc1 <- netcomb(net1, inactive = "placebo")
 #
 summary(nc1)
 forest(nc1, xlim = c(0.2, 50))
-}                                                                 
+}
+}                                                          
 
 \keyword{Network meta-analysis}
 \keyword{Additive network meta-analysis}

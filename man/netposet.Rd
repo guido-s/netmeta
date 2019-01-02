@@ -119,28 +119,28 @@ netposet(..., outcomes, treatments, small.values,
 }
 
 \references{
-  Carlsen L, Bruggemann R (2014),
+  Carlsen L, Bruggemann R (2014):
   Partial order methodology: a valuable tool in chemometrics.
   \emph{Journal of Chemometrics},
-  \bold{28}, 226--34, DOI:10.1002/cem.2569
+  \bold{28}, 226--34
 
-  Rücker G, Schwarzer G (2015),
+  Rücker G, Schwarzer G (2015):
   Ranking treatments in frequentist network meta-analysis works
   without resampling methods.
   \emph{BMC Medical Research Methodology},
-  \bold{15}, 58, DOI:10.1186/s12874-015-0060-8
+  \bold{15}, 58
 
-  Rücker G, Schwarzer G (2017),
+  Rücker G, Schwarzer G (2017):
   Resolve conflicting rankings of outcomes in network meta-analysis:
   Partial ordering of treatments.
   \emph{Research Synthesis Methods},
-  \bold{8}, 526--36, DOI:10.1002/jrsm.1270
+  \bold{8}, 526--36
 
-  Salanti G, Ades AE, Ioannidis JP (2011),
+  Salanti G, Ades AE, Ioannidis JP (2011):
   Graphical methods and numerical summaries for presenting results
   from multiple-treatment meta-analysis: an overview and tutorial.
   \emph{Journal of Clinical Epidemiology},
-  \bold{64}(2), 163--71
+  \bold{64}: 163--71
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
@@ -169,8 +169,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1,
-                comb.fixed = FALSE, comb.random = TRUE,
+net1 <- netmeta(p1, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # (2) Early remission
@@ -180,8 +179,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2,
-                comb.fixed = FALSE, comb.random = TRUE,
+net2 <- netmeta(p2, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # Partial order of treatment rankings (two outcomes)
@@ -210,8 +208,7 @@ p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net3 <- netmeta(p3,
-                comb.fixed = FALSE, comb.random = TRUE,
+net3 <- netmeta(p3, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # (4) Loss to follow-up due to adverse events
@@ -222,8 +219,7 @@ p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                studlab = id, data = subset(Linde2015, id != 55),
                sm = "OR")
 #
-net4 <- netmeta(p4,
-                comb.fixed = FALSE, comb.random = TRUE,
+net4 <- netmeta(p4, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # (5) Adverse events
@@ -233,8 +229,7 @@ p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net5 <- netmeta(p5,
-                comb.fixed = FALSE, comb.random = TRUE,
+net5 <- netmeta(p5, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # Partial order of treatment rankings (all five outcomes)
@@ -279,11 +274,10 @@ par(oldpar)
 
 # Example using ranking matrix with P-scores
 #
-# Ribassin-Majed L, Marguet S, Lee A.W., et al. (2017),
+# Ribassin-Majed L, Marguet S, Lee A.W., et al. (2017):
 # What is the best treatment of locally advanced nasopharyngeal
 # carcinoma? An individual patient data network meta-analysis.
-# Journal of Clinical Oncology.
-# 35, 498-505, DOI:10.1200/JCO.2016.67.4119
+# Journal of Clinical Oncology, 35, 498-505
 #
 outcomes <- c("OS", "PFS", "LC", "DC")
 treatments <- c("RT", "IC-RT", "IC-CRT", "CRT",
@@ -314,5 +308,4 @@ plot(po12)
 par(oldpar)
 }
 
-\keyword{Partial order of rankings}
-\keyword{poset}
+\keyword{Partial order of rankings (poset)}

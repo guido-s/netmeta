@@ -136,18 +136,18 @@
 }
 
 \references{
-  Chaimani A, Salanti G (2012),
+  Chaimani A, Salanti G (2012):
   Using network meta-analysis to evaluate the existence of small-study
   effects in a network of interventions.
   Research Synthesis Methods,
-  \bold{3}(2), 161--76
+  \bold{3}, 161--76
 
-  Chaimani A, Higgins JP, Mavridis D, Spyridonos P, Salanti G (2013),
+  Chaimani A, Higgins JP, Mavridis D, Spyridonos P, Salanti G (2013):
   Graphical tools for network meta-analysis in STATA.
   PLOS ONE,
   \bold{8}, e76654
 
-  Sterne JAC & Egger M (2001),
+  Sterne JAC & Egger M (2001):
   Funnel plots for detecting bias in meta-analysis: Guidelines on choice
   of axis.
   \emph{Journal of Clinical Epidemiology},
@@ -204,4 +204,5 @@ metabias(metagen(TE.adj, seTE, data = f1), method = "rank")
 metabias(metagen(TE.adj, seTE, data = f1), method = "mm")
 }
 
-\keyword{hplot}
+\keyword{plot}
+\keyword{Funnel plot}

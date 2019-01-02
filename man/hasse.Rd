@@ -38,16 +38,16 @@ hasse(x,
 }
 
 \references{
-  Carlsen L, Bruggemann R (2014),
+  Carlsen L, Bruggemann R (2014):
   Partial order methodology: a valuable tool in chemometrics.
   \emph{Journal of Chemometrics},
-  \bold{28}, 226--34, DOI:10.1002/cem.2569
+  \bold{28}, 226--34
 
-  Rücker G, Schwarzer G (2017).
+  Rücker G, Schwarzer G (2017):
   Resolve conflicting rankings of outcomes in network meta-analysis:
   Partial ordering of treatments.
   \emph{Research Synthesis Methods},
-  \bold{8}, 526--36, DOI:10.1002/jrsm.1270
+  \bold{8}, 526--36
 }
 
 \author{Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer \email{sc@imbi.uni-freiburg.de}}
@@ -76,8 +76,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1,
-                comb.fixed = FALSE, comb.random = TRUE,
+net1 <- netmeta(p1, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # (2) Early remission
@@ -87,8 +86,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2,
-                comb.fixed = FALSE, comb.random = TRUE,
+net2 <- netmeta(p2, comb.fixed = FALSE,
                 seq = trts, ref = "Placebo")
 #
 # Partial order of treatment rankings
@@ -103,4 +101,4 @@ hasse(po)
 }
 
 \keyword{Hasse diagram}
-\keyword{hplot}
+\keyword{plot}

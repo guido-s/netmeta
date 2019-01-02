@@ -193,7 +193,6 @@ pairwise(treat, event, n, mean, sd, TE, seTE, time,
 \code{\link{netgraph}}}
 
 \examples{
-#
 # Example using continuous outcomes (internal call of function metacont)
 #
 data(parkinson)

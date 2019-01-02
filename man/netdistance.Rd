@@ -18,7 +18,7 @@ netdistance(x)
 }
 
 \references{
-  Müller WR, Szymanski K, Knop JV, and Trinajstic N (1987),
+  Müller WR, Szymanski K, Knop JV, and Trinajstic N (1987):
   An algorithm for construction of the molecular distance matrix.
   \emph{Journal of Computational Chemistry},
   \bold{8}, 170--73
