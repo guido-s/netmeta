@@ -1,4 +1,11 @@
-*** netmeta, version 1.0-1, 2019-01-02 ***
+*** netmeta, version 6.6-6, 2019-mm-dd ***
+
+ ** Major changes **
+
+  * Use roxygen2 for development of R package netmeta
+
+
+**** netmeta, version 1.0-1, 2019-01-02 ***
 
  ** User-visible changes **
 

@@ -1,0 +1,75 @@
+#' Network meta-analysis of treatments for Parkinson's disease
+#' 
+#' @description
+#' Network meta-analysis comparing the effects of a number of
+#' treatments for Parkinson's disease.
+#' 
+#' The data are the mean lost work-time reduction in patients given
+#' dopamine agonists as adjunct therapy in Parkinson’s disease.  The
+#' data are given as sample size, mean and standard deviation in each
+#' trial arm. Treatments are placebo, coded 1, and four active drugs
+#' coded 2 to 5. These data are used as an example in the supplemental
+#' material of Dias et al. (2013).
+#' 
+#' @name parkinson
+#' 
+#' @docType data
+#' 
+#' @format A data frame with the following columns:
+#' \tabular{rl}{
+#' \bold{\emph{Study}}\tab study label \cr
+#' \bold{\emph{Treatment1}}\tab treatment 1 \cr
+#' \bold{\emph{y1}}\tab treatment effect arm 1 \cr
+#' \bold{\emph{sd1}}\tab Standard deviation arm 1 \cr
+#' \bold{\emph{n1}}\tab Sample size arm 1 \cr
+#' \bold{\emph{Treatment2}}\tab treatment 2 \cr
+#' \bold{\emph{y2}}\tab treatment effect arm 2 \cr
+#' \bold{\emph{sd2}}\tab Standard deviation arm 2 \cr
+#' \bold{\emph{n2}}\tab Sample size arm 2 \cr
+#' \bold{\emph{Treatment3}}\tab treatment 3 \cr
+#' \bold{\emph{y3}}\tab treatment effect arm 3 \cr
+#' \bold{\emph{sd3}}\tab Standard deviation arm 3 \cr
+#' \bold{\emph{n3}}\tab Sample size arm 3
+#' }
+#' 
+#' @seealso \code{\link{pairwise}}, \code{\link{metacont}},
+#'   \code{\link{netmeta}}, \code{\link{netgraph}}
+#' 
+#' @source
+#' Dias S, Sutton AJ, Ades AE and Welton NJ (2013):
+#' Evidence synthesis for decision making 2: A generalized linear
+#' modeling framework for pairwise and network meta-analysis of
+#' randomized controlled trials.
+#' \emph{Medical Decision Making},
+#' \bold{33}, 607--17
+#' 
+#' @keywords datasets
+#' 
+#' @examples
+#' data(parkinson)
+#' 
+#' # Transform data from arm-based format to contrast-based format
+#' #
+#' p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
+#'                n = list(n1, n2, n3),
+#'                mean = list(y1, y2, y3),
+#'                sd = list(sd1, sd2, sd3),
+#'                data = parkinson, studlab = Study)
+#' p1
+#' 
+#' # Conduct network meta-analysis
+#' net1 <- netmeta(p1)
+#' net1
+#' 
+#' # Draw network graphs
+#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
+#'          thickness = "se.fixed")
+#' netgraph(net1, points = TRUE, cex.points = 3, cex  =  1.5,
+#'          plastic = TRUE, thickness = "se.fixed",
+#'          iterate = TRUE)
+#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
+#'          plastic = TRUE, thickness = "se.fixed",
+#'          iterate = TRUE, start = "eigen")
+
+
+"parkinson"
