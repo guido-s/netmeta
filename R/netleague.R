@@ -1,3 +1,216 @@
+#' Create and print league table for network meta-analysis results
+#' 
+#' @description
+#' A league table is a square matrix showing all pairwise comparisons
+#' in a network meta-analysis. Typically, both treatment estimates and
+#' confidence intervals are shown.
+#' 
+#' @aliases netleague print.netleague
+#' 
+#' @param x An object of class \code{netmeta} or \code{netleague}
+#'   (mandatory).
+#' @param y An object of class \code{netmeta} (optional).
+#' @param comb.fixed A logical indicating whether a league table
+#'   should be printed for the fixed effects (common effects) network
+#'   meta-analysis.
+#' @param comb.random A logical indicating whether a league table
+#'   should be printed for the random effects network meta-analysis.
+#' @param seq A character or numerical vector specifying the sequence
+#'   of treatments in rows and columns of a league table.
+#' @param ci A logical indicating whether confidence intervals should
+#'   be shown.
+#' @param backtransf A logical indicating whether printed results
+#'   should be back transformed. If \code{backtransf = TRUE}, results
+#'   for \code{sm = "OR"} are printed as odds ratios rather than log
+#'   odds ratios, for example.
+#' @param direct A logical indicating whether league table with
+#'   network estimates (default) or estimates from direct comparisons
+#'   should be generated if argument \code{y} is not missing.
+#' @param digits Minimal number of significant digits, see
+#'   \code{print.default}.
+#' @param bracket A character with bracket symbol to print lower
+#'   confidence interval: "[", "(", "\{", "".
+#' @param separator A character string with information on separator
+#'   between lower and upper confidence interval.
+#' @param text.NA A character string to label missing values.
+#' @param big.mark A character used as thousands separator.
+#' @param \dots Additional arguments (ignored at the moment).
+#' 
+#' @details
+#' A league table is a square matrix showing all pairwise comparisons
+#' in a network meta-analysis. Typically, both treatment estimates and
+#' confidence intervals are shown.
+#' 
+#' If argument \code{y} is not provided, the league table contains the
+#' network estimates from network meta-analysis object \code{x} in the
+#' lower triangle and the direct treatment estimates from pairwise
+#' comparisons in the upper triangle.
+#' 
+#' If argument \code{y} is provided, the league table contains
+#' information on treatment comparisons from network meta-analysis
+#' object \code{x} in the lower triangle and from network
+#' meta-analysis object \code{y} in the upper triangle. This is, for
+#' example, useful to print information on efficacy and safety in the
+#' same league table.
+#' 
+#' This implementation reports pairwise comparisons of the treatment
+#' in the row versus the treatment in the column in the lower triangle
+#' and column versus row in the upper triangle. This is a common
+#' presentation for network meta-analyses which allows to easily
+#' compare direction and magnitude of treatment effects. For example,
+#' given treatments A, B, and C, the results reported in the first row
+#' and second column as well as second row and first column are from
+#' the pairwise comparison A versus B. Note, this presentation is
+#' different from the printout of a network meta-analysis object which
+#' reports opposite pairwise comparisons in the lower and upper
+#' triangle, e.g., A versus B in the first row and second column and B
+#' versus A in the second row and first column.
+#' 
+#' If the same network meta-analysis object is used for arguments
+#' \code{x} and \code{y}, reciprocal treatment estimates will be shown
+#' in the upper triangle (see examples), e.g., the comparison B versus
+#' A.
+#' 
+#' R function \code{\link{netrank}} can be used to change the order of
+#' rows and columns in the league table (see examples).
+#'
+#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Gerta
+#'   Rücker \email{ruecker@@imbi.uni-freiburg.de}
+#' 
+#' @seealso \code{\link{netmeta}}, \code{\link{netposet}},
+#'   \code{\link{netrank}}
+#' 
+#' @keywords print
+#' 
+#' @examples
+#' # Network meta-analysis of count mortality statistics
+#' #
+#' data(Woods2010)
+#' 
+#' p0 <- pairwise(treatment, event = r, n = N,
+#'                studlab = author, data = Woods2010, sm = "OR")
+#' net0 <- netmeta(p0)
+#' 
+#' oldopts <- options(width = 100)
+#' 
+#' # League table for fixed and random effects model with
+#' # - network estimates in lower triangle
+#' # - direct estimates in upper triangle
+#' #
+#' netleague(net0, digits = 2, bracket = "(", separator = " - ")
+#' 
+#' # League table for fixed effects model
+#' #
+#' netleague(net0, comb.random = FALSE, digits = 2)
+#' 
+#' # Change order of treatments according to treatment ranking (random
+#' # effects model)
+#' #
+#' netleague(net0, comb.fixed = FALSE, digits = 2,
+#'           seq = netrank(net0))
+#' #
+#' print(netrank(net0), comb.fixed = FALSE)
+#' 
+#' \dontrun{
+#' # Create a CSV file with league table for random effects model
+#' #
+#' league0 <- netleague(net0, digits = 2, bracket = "(", separator = " to ")
+#' #
+#' write.table(league0$random, file = "league0-random.csv",
+#'             row.names = FALSE, col.names = FALSE,
+#'             sep = ",")
+#' #
+#' # Create Excel files with league tables (using R package WriteXLS)
+#' #
+#' library(WriteXLS)
+#' #
+#' # League table from random effects model
+#' #
+#' WriteXLS(league0$random, ExcelFileName = "league0-random.xls",
+#'          SheetNames = "leaguetable (random)", col.names = FALSE)
+#' #
+#' # League tables from fixed and random effects models
+#' #
+#' WriteXLS(list(league0$fixed, league0$random),
+#'          ExcelFileName = "league0-both.xls",
+#'          SheetNames = c("leaguetable (fixed)", "leaguetable (random)"),
+#'          col.names = FALSE)
+#' }
+#' 
+#' # Use depression dataset
+#' #
+#' data(Linde2015)
+#' 
+#' # Define order of treatments
+#' #
+#' trts <- c("TCA", "SSRI", "SNRI", "NRI",
+#'           "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
+#'           "Placebo")
+#' 
+#' # Outcome labels
+#' #
+#' outcomes <- c("Early response", "Early remission")
+#' 
+#' # (1) Early response
+#' #
+#' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'                event = list(resp1, resp2, resp3),
+#'                n = list(n1, n2, n3),
+#'                studlab = id, data = Linde2015, sm = "OR")
+#' #
+#' net1 <- netmeta(p1, comb.fixed = FALSE,
+#'                 seq = trts, ref = "Placebo")
+#' 
+#' # (2) Early remission
+#' #
+#' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'                event = list(remi1, remi2, remi3),
+#'                n = list(n1, n2, n3),
+#'                studlab = id, data = Linde2015, sm = "OR")
+#' #
+#' net2 <- netmeta(p2, comb.fixed = FALSE,
+#'                 seq = trts, ref = "Placebo")
+#' 
+#' options(width = 200)
+#' netleague(net1, digits = 2)
+#' 
+#' netleague(net1, digits = 2, ci = FALSE)
+#' netleague(net2, digits = 2, ci = FALSE)
+#' 
+#' # League table for two outcomes with
+#' # - network estimates of first outcome in lower triangle
+#' # - network estimates of second outcome in upper triangle
+#' #
+#' netleague(net1, net2, digits = 2, ci = FALSE)
+#' 
+#' netleague(net1, net2, seq = netrank(net1, small = "bad"), ci = FALSE)
+#' netleague(net1, net2, seq = netrank(net2, small = "bad"), ci = FALSE)
+#' 
+#' print(netrank(net1, small = "bad"))
+#' print(netrank(net2, small = "bad"))
+#' 
+#' 
+#' # Report results for network meta-analysis twice
+#' #
+#' netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
+#'           backtransf = FALSE)
+#' netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
+#'           backtransf = FALSE, direct = TRUE)
+#' 
+#' options(oldopts)
+#' 
+#' \dontrun{
+#' # Generate a partial order of treatment rankings 
+#' #
+#' np <- netposet(net1, net2, outcomes = outcomes, small.values = rep("bad",2))
+#' hasse(np)
+#' plot(np)
+#' }
+#' 
+#' @rdname netleague
+#' @export netleague
+
+
 netleague <- function(x, y,
                       comb.fixed = x$comb.fixed, comb.random = x$comb.random,
                       seq = x$seq, ci = TRUE, backtransf = TRUE,
@@ -311,4 +524,64 @@ netleague <- function(x, y,
   
   
   res
+}
+
+
+
+
+
+#' @rdname netleague
+#' @method print netleague
+#' @export
+#' @export print.netleague
+
+
+print.netleague <- function(x,
+                            comb.fixed = x$comb.fixed,
+                            comb.random = x$comb.random,
+                            ...) {
+  
+  
+  ##
+  ##
+  ## (1) Check arguments
+  ##
+  ##
+  meta:::chkclass(x, "netleague")
+  ##
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  
+  
+  ##
+  ##
+  ## (2) Print league table for fixed effect model
+  ##
+  ##
+  if (comb.fixed) {
+    cat("League table (fixed effect model):\n")
+    ##
+    prmatrix(x$fixed, quote = FALSE, right = TRUE,
+             rowlab = rep("", nrow(x$fixed)),
+             collab = rep("", ncol(x$fixed)))
+    if (comb.random)
+      cat("\n")
+  }
+  
+  
+  ##
+  ##
+  ## (3) Print league table for random effects model
+  ##
+  ##
+  if (comb.random) {
+    cat("League table (random effects model):\n")
+    ##
+    prmatrix(x$rando, quote = FALSE, right = TRUE,
+             rowlab = rep("", nrow(x$random)),
+             collab = rep("", ncol(x$random)))
+  }
+  
+  
+  invisible(NULL)
 }

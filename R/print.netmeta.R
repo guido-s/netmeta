@@ -1,3 +1,82 @@
+#' Print results of network meta-analysis
+#' 
+#' @description
+#' Print method for objects of class \code{netmeta}.
+#' 
+#' @param x An object of class \code{netmeta}.
+#' @param sortvar An optional vector used to sort individual studies
+#'   (must be of same length as \code{x$TE}).
+#' @param comb.fixed A logical indicating whether results for the
+#'   fixed effects (common effects) model should be printed.
+#' @param comb.random A logical indicating whether results for the
+#'   random effects model should be printed.
+#' @param prediction A logical indicating whether prediction intervals
+#'   should be printed.
+#' @param reference.group Reference treatment.
+#' @param baseline.reference A logical indicating whether results
+#'   should be expressed as comparisons of other treatments versus the
+#'   reference treatment (default) or vice versa. This argument is
+#'   only considered if \code{reference.group} has been specified.
+#' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
+#'   matrices with all treatment effects, and confidence limits will
+#'   be printed.
+#' @param details A logical indicating whether further details for
+#'   individual studies should be printed.
+#' @param ma A logical indicating whether summary results of
+#'   meta-analysis should be printed.
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in printouts and forest plots. If
+#'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
+#'   presented as odds ratios rather than log odds ratios, for
+#'   example.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
+#' @param digits Minimal number of significant digits, see
+#'   \code{print.default}.
+#' @param digits.se Minimal number of significant digits for standard
+#'   deviations and standard errors, see \code{print.default}.
+#' @param digits.pval.Q Minimal number of significant digits for
+#'   p-value of heterogeneity tests, see \code{print.default}.
+#' @param digits.Q Minimal number of significant digits for
+#'   heterogeneity statistics, see \code{print.default}.
+#' @param digits.tau2 Minimal number of significant digits for
+#'   between-study variance, see \code{print.default}.
+#' @param digits.I2 Minimal number of significant digits for I-squared
+#'   statistic, see \code{print.default}.
+#' @param scientific.pval A logical specifying whether p-values should
+#'   be printed in scientific notation, e.g., 1.2345e-01 instead of
+#'   0.12345.
+#' @param big.mark A character used as thousands separator.
+#' @param \dots Additional arguments.
+#' 
+#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#'
+#' @seealso \code{\link{netmeta}}
+#' 
+#' @keywords print
+#' 
+#' @examples
+#' data(Senn2013)
+#' 
+#' # Conduct fixed effects network meta-analysis
+#' #
+#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#'                 data = Senn2013, sm = "MD",
+#'                 comb.random = FALSE)
+#' print(net1, ref = "plac", digits = 3)
+#' 
+#' # Conduct random effects network meta-analysis
+#' #
+#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#'                 data = Senn2013, sm = "MD",
+#'                 comb.fixed = FALSE)
+#' print(net2, ref = "plac", digits = 3)
+#' 
+#' @method print netmeta
+#' @export
+#' @export print.netmeta
+
+
 print.netmeta <- function(x,
                           sortvar,
                           comb.fixed = x$comb.fixed, comb.random = x$comb.random,

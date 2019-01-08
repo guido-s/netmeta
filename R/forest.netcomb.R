@@ -1,3 +1,140 @@
+#' Forest plot for additive network meta-analysis
+#' 
+#' @description
+#' Draws a forest plot in the active graphics window (using grid
+#' graphics system).
+#' 
+#' @param x An object of class \code{netcomb}.
+#' @param reference.group Reference treatment(s).
+#' @param baseline.reference A logical indicating whether results
+#'   should be expressed as comparisons of other treatments versus the
+#'   reference treatment (default) or vice versa.
+#' @param pooled A character string indicating whether results for the
+#'   fixed effect (\code{"fixed"}) or random effects model
+#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#' @param leftcols A character vector specifying (additional) columns
+#'   to be plotted on the left side of the forest plot or a logical
+#'   value (see \code{\link{forest.meta}} help page for details).
+#' @param leftlabs A character vector specifying labels for
+#'   (additional) columns on left side of the forest plot (see
+#'   \code{\link{forest.meta}} help page for details).
+#' @param rightcols A character vector specifying (additional) columns
+#'   to be plotted on the right side of the forest plot or a logical
+#'   value (see \code{\link{forest.meta}} help page for details).
+#' @param rightlabs A character vector specifying labels for
+#'   (additional) columns on right side of the forest plot (see
+#'   \code{\link{forest.meta}} help page for details).
+#' @param digits Minimal number of significant digits for treatment
+#'   effects and confidence intervals, see \code{print.default}.
+#' @param small.values A character string specifying whether small
+#'   treatment effects indicate a beneficial (\code{"good"}) or
+#'   harmful (\code{"bad"}) effect, can be abbreviated; see
+#'   \code{\link{netrank}}.
+#' @param smlab A label printed at top of figure. By default, text
+#'   indicating either fixed effect or random effects model is
+#'   printed.
+#' @param sortvar An optional vector used to sort the individual
+#'   studies (must be of same length as the total number of
+#'   treatments).
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in forest plots. If \code{backtransf = TRUE},
+#'   results for \code{sm = "OR"} are presented as odds ratios rather
+#'   than log odds ratios, for example.
+#' @param lab.NA A character string to label missing values.
+#' @param add.data An optional data frame with additional columns to
+#'   print in forest plot (see Details).
+#' @param drop.reference.group A logical indicating whether the
+#'   reference group should be printed in the forest plot.
+#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#'   function.
+#' 
+#' @details
+#' A forest plot, also called confidence interval plot, is drawn in
+#' the active graphics window.
+#' 
+#' Argument \code{sortvar} can be either a numeric or character vector
+#' with length of number of treatments. If \code{sortvar} is numeric
+#' the \code{\link[base]{order}} function is utilised internally to
+#' determine the order of values. If \code{sortvar} is character it
+#' must be a permutation of the treatment names. It is also possible
+#' to to sort by treatment comparisons (\code{sortvar = TE}, etc.),
+#' standard error (\code{sortvar = seTE}), and number of studies with
+#' direct treatment comparisons (\code{sortvar = k}).
+#' 
+#' Argument \code{add.data} can be used to add additional columns to
+#' the forest plot. This argument must be a data frame with the same
+#' row names as the treatment effects matrices in R object \code{x},
+#' i.e., \code{x$TE.fixed} or \code{x$TE.random}.
+#' 
+#' For more information see help page of \code{\link{forest.meta}}
+#' function.
+#'
+#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' 
+#' @seealso \code{\link{netcomb}}, \code{\link{discomb}},
+#'   \code{\link{forest.meta}}
+#' 
+#' @keywords hplot
+#' 
+#' @examples
+#' data(Linde2016)
+#' 
+#' # Only consider studies including Face-to-face PST (to reduce
+#' # runtime of example)
+#' #
+#' face <- subset(Linde2016, id %in% c(16, 24, 49, 118))
+#' 
+#' # Conduct random effects network meta-analysis
+#' #
+#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+#'                 data = face, ref = "placebo",
+#'                 sm = "OR", comb.fixed = FALSE)
+#' 
+#' # Additive model for treatment components (with placebo as inactive
+#' # treatment)
+#' #
+#' nc1 <- netcomb(net1, inactive = "placebo")
+#' #
+#' forest(nc1)
+#' 
+#' \dontrun{
+#' # Specify, order of treatments
+#' #
+#' trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
+#'           "rMAO-A", "Ind drug", "Hypericum", "Face-to-face CBT",
+#'           "Face-to-face PST", "Face-to-face interpsy", "Face-to-face psychodyn",
+#'           "Other face-to-face", "Remote CBT", "Self-help CBT", "No contact CBT",
+#'           "Face-to-face CBT + SSRI", "Face-to-face interpsy + SSRI",
+#'           "Face-to-face PST + SSRI", "UC", "Placebo")
+#' #
+#' # Note, three treatments are actually combinations of 'SSRI' with
+#' # other components:
+#' # "Face-to-face CBT + SSRI",
+#' # "Face-to-face interpsy + SSRI",
+#' # "Face-to-face PST + SSRI"
+#' 
+#' # Conduct random effects network meta-analysis
+#' #
+#' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+#'                 data = Linde2016, ref = "placebo",
+#'                 seq = trts,
+#'                 sm = "OR", comb.fixed = FALSE)
+#' #
+#' summary(net2)
+#' 
+#' # Additive model for treatment components (with placebo as inactive
+#' # treatment)
+#' #
+#' nc2 <- netcomb(net2, inactive = "placebo")
+#' #
+#' forest(nc2)
+#' }
+#' 
+#' @method forest netcomb
+#' @export
+#' @export forest.netcomb
+
+
 forest.netcomb <- function(x,
                            pooled = ifelse(x$comb.random, "random", "fixed"),
                            reference.group = x$reference.group,

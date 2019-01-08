@@ -1,3 +1,43 @@
+#' Print method for objects of class decomp.design
+#' 
+#' @description
+#' Print method for objects of class \code{decomp.design}.
+#' 
+#' @param x An object of class \code{decomp.design}.
+#' @param digits.Q Minimal number of significant digits for Q
+#'   statistics, see \code{print.default}.
+#' @param showall A logical indicating whether results should be shown
+#'   for all designs or only designs contributing to chi-squared
+#'   statistics (default).
+#' @param digits.pval.Q Minimal number of significant digits for
+#'   p-value of heterogeneity tests, see \code{print.default}.
+#' @param digits.tau2 Minimal number of significant digits for
+#'   between-study variance, see \code{print.default}.
+#' @param scientific.pval A logical specifying whether p-values should
+#'   be printed in scientific notation, e.g., 1.2345e-01 instead of
+#'   0.12345.
+#' @param big.mark A character used as thousands separator.
+#' @param \dots Additional arguments (ignored at the moment).
+#' 
+#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Ulrike
+#'   Krahn \email{ulrike.krahn@@bayer.com}
+#' 
+#' @seealso \code{\link{decomp.design}}
+#' 
+#' @keywords print
+#' 
+#' @examples
+#' data(Senn2013)
+#' 
+#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#'                 data = Senn2013, sm = "MD")
+#' print(decomp.design(net1))
+#' 
+#' @method print decomp.design
+#' @export
+#' @export print.decomp.design
+
+
 print.decomp.design <- function(x,
                                 digits.Q = gs("digits.Q"),
                                 showall = FALSE,
