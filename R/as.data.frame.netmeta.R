@@ -27,7 +27,8 @@
 #' 
 #' as.data.frame(net1)
 #' as.data.frame(net1, details = TRUE)
-#' 
+#'
+#' @method as.data.frame netmeta 
 #' @export
 #' @export as.data.frame.netmeta
 
