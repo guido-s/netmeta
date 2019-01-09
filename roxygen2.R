@@ -6,10 +6,9 @@ library(roxygen2)
 
 
 ##
-## (2) Create documentation file(s) in subdirectory testroxygen/man
+## (2) Create documentation file(s)
 ##
-# roxygenise("../testroxygen") # Only consider files in subdirectory testroxygen/R
-document("../netmeta") # Also considers datasets in subdirectory netmeta/data
+document("../netmeta")
 
 
 ##
@@ -29,3 +28,9 @@ install("../netmeta")
 ## (5) Check R package
 ##
 check("../netmeta")
+
+
+##
+## (6) Check R package (with dontrun examples)
+##
+check("../netmeta", run_dont_test = TRUE)

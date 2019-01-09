@@ -15,7 +15,7 @@
 \bold{\emph{event3}}\tab number of individuals with successful
   smoking cessation in arm 3 \cr
 \bold{\emph{n3}}\tab number of individuals in arm 3 \cr
-  \bold{\emph{treat1}}\tab treatment 1 \cr
+\bold{\emph{treat1}}\tab treatment 1 \cr
 \bold{\emph{treat2}}\tab treatment 2 \cr \bold{\emph{treat3}}\tab
   treatment 3
 }}
