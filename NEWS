@@ -4,6 +4,8 @@
 
   * Use roxygen2 for development of R package netmeta
 
+  * New function plot.netrank() to produce image plot of P-scores
+
 
 **** netmeta, version 1.0-1, 2019-01-02 ***
 
