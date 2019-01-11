@@ -217,7 +217,7 @@ netbind <- function(..., name,
       comb.fixed <- cfs
   }
   else
-    comb.fixed <- chklogical(comb.fixed)
+    chklogical(comb.fixed)
   
   
   ##
@@ -241,7 +241,7 @@ netbind <- function(..., name,
       comb.random <- crs
   }
   else
-    comb.random <- chklogical(comb.random)
+    chklogical(comb.random)
   
   
   ##
@@ -265,7 +265,7 @@ netbind <- function(..., name,
       backtransf <- backt
   }
   else
-    backtransf <- chklogical(backtransf)
+    chklogical(backtransf)
   
   
   ##
@@ -504,7 +504,7 @@ netbind <- function(..., name,
 
 
   ##
-  ##
+  ## Print warnings
   ##
   if (print.warning1)
     warning(warning1, call. = FALSE)

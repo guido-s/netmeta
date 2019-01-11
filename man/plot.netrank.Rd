@@ -2,29 +2,108 @@
 % Please edit documentation in R/plot.netrank.R
 \name{plot.netrank}
 \alias{plot.netrank}
-\title{Plot network ranking(s)}
+\title{Plot treatment ranking(s) of network meta-analyses}
 \usage{
 \method{plot}{netrank}(..., name, comb.fixed, comb.random, seq,
-  digits = gs("digits.prop"))
+  low = "red", mid = "yellow", high = "green", col = "black", main,
+  main.size = 14, main.col = col, main.face = "bold",
+  legend = TRUE, axis.size = 12, axis.col = col,
+  axis.face = "plain", na.value = "grey50", angle = 45,
+  hjust.x = 1, vjust.x = 1, hjust.y = 1, vjust.y = 0, nchar.trts,
+  digits = 3)
 }
 \arguments{
 \item{...}{A single netrank object or a list of netrank objects.}
 
-\item{name}{name}
+\item{name}{An optional character vector providing descriptive
+names for the network meta-analysis objects.}
 
-\item{comb.fixed}{comb.fixed}
+\item{comb.fixed}{A logical indicating whether results for the
+fixed effects (common effects) model should be plotted.}
 
-\item{comb.random}{comb.random}
+\item{comb.random}{A logical indicating whether results for the
+random effects model should be plotted.}
 
-\item{seq}{seq}
+\item{seq}{A character or numerical vector specifying the sequence
+of treatments on the x-axis.}
 
-\item{digits}{digits}
+\item{low}{A character string defining the colour for a P-score of
+0, see \code{\link[ggplot2]{scale_fill_gradient2}}.}
+
+\item{mid}{A character string defining the colour for a P-score of
+0.5, see \code{\link[ggplot2]{scale_fill_gradient2}}.}
+
+\item{high}{A character string defining the colour for a P-score of
+1, see \code{\link[ggplot2]{scale_fill_gradient2}}.}
+
+\item{col}{Colour of text.}
+
+\item{main}{Title.}
+
+\item{main.size}{Font size of title, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{main.col}{Colour of title, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{main.face}{Font face of title, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
+
+\item{axis.size}{Font size of axis text, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{axis.col}{Colour of axis text, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{axis.face}{Font face of axis text, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{na.value}{Colour for missing values, see
+\code{\link[ggplot2]{scale_fill_gradient2}}.}
+
+\item{angle}{Angle for text on x-axis, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{hjust.x}{A numeric between 0 and 1 with horizontal
+justification of text on x-axis, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{vjust.x}{A numeric between 0 and 1 with vertical
+justification of text on x-axis, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{hjust.y}{A numeric between 0 and 1 with horizontal
+justification of text on y-axis, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{vjust.y}{A numeric between 0 and 1 with vertical
+justification of text on y-axis, see
+\code{\link[ggplot2]{element_text}}.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
+
+\item{digits}{Minimal number of significant digits, see
+\code{print.default}.}
 }
 \value{
-A ggplot2 object:
+A ggplot2 object.
 }
 \description{
-Plot network ranking(s)
+Produce an image plot of treatment ranking(s) generated with R
+function \code{netrank}.
+}
+\details{
+This function produces an image plot of network rankings (Palpacuer
+et al., 2018, Figure 4). Note, a scatter plot of two network
+rankings can be generated with \code{\link{plot.netposet}}.
+
+By default, treatments are ordered by decreasing P-scores of the
+first network meta-analysis object. Argument \code{seq} can be used
+to specify a differenct treatment order.
 }
 \examples{
 # Use depression dataset
@@ -66,9 +145,7 @@ net2 <- netmeta(p2, comb.fixed = FALSE,
 plot(netrank(net1, small.values = "bad"),
      netrank(net2, small.values = "bad"),
      name = outcomes, digits = 2)
-
 \dontrun{
-#
 # Outcome labels
 #
 outcomes <- c("Early response", "Early remission",
@@ -117,10 +194,21 @@ plot(netrank(net1, small.values = "bad"),
 }
 
 }
+\references{
+Palpacuer C, Duprez R, Huneau A, Locher C, Boussageon R, Laviolle
+B, et al. (2018):
+Pharmacologically controlled drinking in the treatment of alcohol
+dependence or alcohol use disorders: a systematic review with
+direct and network meta-analyses on nalmefene, naltrexone,
+acamprosate, baclofen and topiramate.
+\emph{Addiction},
+\bold{113}, 220--37
+}
 \seealso{
 \code{\link{netrank}}, \code{\link{netmeta}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{sc@imbi.uni-freiburg.de}, Clément
+  Palpacuer \email{clementpalpacuer@gmail.com}
 }
 \keyword{hplot}
