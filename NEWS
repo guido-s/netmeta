@@ -8,8 +8,11 @@
     
  ** Bug fixes **
 
+  * netmeta():
+    - no error if argument 'studlab' is missing
+
   * netgraph():
-    - argument seq = "optimal" works for single design
+    - argument 'seq' equal to "optimal" works for a single design
 
 
 **** netmeta, version 1.0-1, 2019-01-02 ***

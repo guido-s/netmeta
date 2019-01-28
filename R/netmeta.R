@@ -588,8 +588,15 @@ netmeta <- function(TE, seTE,
     treat1 <- as.character(treat1)
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
-  if (is.factor(studlab))
-    studlab <- as.character(studlab)
+  ##
+  if (length(studlab) == 0) {
+    if (warn)
+      warning("No information given for argument 'studlab'. ",
+              "Assuming that comparisons are from independent studies.",
+              call. = FALSE)
+    studlab <- seq(along = TE)
+  }
+  studlab <- as.character(studlab)
   ##
   subset <- eval(mf[[match("subset", names(mf))]],
                  data, enclos = sys.frame(sys.parent()))
@@ -667,8 +674,8 @@ netmeta <- function(TE, seTE,
       }
     }
   }
-
-
+  
+  
   ##
   ##
   ## (3) Use subset for analysis
@@ -700,7 +707,11 @@ netmeta <- function(TE, seTE,
   ##
   if (compmatch(labels, sep.trts)) {
     if (!missing.sep.trts)
-      warning("Separator '", sep.trts, "' used in at least one treatment label. Try to use predefined separators: ':', '-', '_', '/', '+', '.', '|', '*'.")
+      warning("Separator '", sep.trts,
+              "' used in at least one treatment label. ",
+              "Try to use predefined separators: ",
+              "':', '-', '_', '/', '+', '.', '|', '*'.",
+              call. = FALSE)
     ##
     if (!compmatch(labels, ":"))
       sep.trts <- ":"
@@ -744,14 +755,6 @@ netmeta <- function(TE, seTE,
   if (any(treat1 == treat2))
     stop("Treatments must be different (arguments 'treat1' and 'treat2').",
          call. = FALSE)
-  ##
-  if (length(studlab) != 0)
-    studlab <- as.character(studlab)
-  else {
-    if (warn)
-      warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
-    studlab <- seq(along = TE)
-  }
   ##
   ## Check for correct number of comparisons
   ##
@@ -805,7 +808,8 @@ netmeta <- function(TE, seTE,
     if (warn)
       warning("Comparison",
               if (sum(excl) > 1) "s",
-              " with missing TE / seTE or zero seTE not considered in network meta-analysis.",
+              " with missing TE / seTE or zero seTE not considered ",
+              "in network meta-analysis.",
               call. = FALSE)
     if (warn) {
       cat(paste("Comparison",
@@ -880,7 +884,9 @@ netmeta <- function(TE, seTE,
   ##
   if (any(wo)) {
     if (warn)
-      warning("Note, treatments within a comparison have been re-sorted in increasing order.", call. = FALSE)
+      warning("Note, treatments within a comparison have been ",
+              "re-sorted in increasing order.",
+              call. = FALSE)
     TE[wo] <- -TE[wo]
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]
