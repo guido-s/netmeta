@@ -71,7 +71,8 @@
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Clément
 #'   Palpacuer \email{clementpalpacuer@@gmail.com}
 #' 
-#' @seealso \code{\link{netrank}}, \code{\link{netmeta}}
+#' @seealso \code{\link{netrank}}, \code{\link{netmeta},
+#'   \code{\link{netposet}, \code{\link{hasse}}
 #' 
 #' @references
 #' Palpacuer C, Duprez R, Huneau A, Locher C, Boussageon R, Laviolle

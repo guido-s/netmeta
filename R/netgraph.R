@@ -454,7 +454,7 @@ netgraph <- function(x, seq = x$seq,
   ##
   chklogical(figure)
   ##
-  if (is.null(seq))
+  if (is.null(seq) | (length(seq) == 1 & x$d == 1))
     seq1 <- 1:length(labels)
   else if (length(seq) == 1 & x$d > 1) {
     seq <- setchar(seq, "optimal", "should be equal to 'optimal' or a permutation of treatments")

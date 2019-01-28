@@ -1261,7 +1261,9 @@ netmeta <- function(TE, seTE,
   if (is.null(krahn$design$design))
     res$designs <- rownames(res$Cov.fixed)
   else
-    res$designs <- as.character(krahn$design$design)  
+    res$designs <- as.character(krahn$design$design)
+  ##
+  res$designs <- unique(res$designs)
   
   
   ##

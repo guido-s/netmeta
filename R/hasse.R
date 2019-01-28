@@ -26,7 +26,8 @@
 #' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
 #'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
-#' @seealso \code{\link{netmeta}}, \code{\link{netposet}}
+#' @seealso \code{\link{netmeta}}, \code{\link{netposet},
+#'   \code{\link{netrank}, \code{\link{plot.netrank}}
 #' 
 #' @references
 #' Carlsen L, Bruggemann R (2014):

@@ -110,7 +110,8 @@
 #'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netrank}},
-#'   \code{\link{hasse}}, \code{\link{plot.netposet}}
+#'   \code{\link{plot.netrank}, \code{\link{hasse}},
+#'   \code{\link{plot.netposet}}
 #' 
 #' @references
 #' Carlsen L, Bruggemann R (2014):

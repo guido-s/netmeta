@@ -120,7 +120,8 @@
 #'             row.names = FALSE, col.names = FALSE,
 #'             sep = ",")
 #' #
-#' # Create Excel files with league tables (using R package WriteXLS)
+#' # Create Excel files with league tables (using R package WriteXLS
+#' # which requires Perl https://www.perl.org/)
 #' #
 #' library(WriteXLS)
 #' #
