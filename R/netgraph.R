@@ -57,9 +57,9 @@
 #'   opaque).
 #' @param points A logical indicating whether points should be printed
 #'   at nodes (i.e. treatments) of the network graph.
-#' @param col.points,cex.points,pch.points Corresponding color, size,
-#'   type for points. Can be a vector with length equal to the number
-#'   of treatments.
+#' @param col.points,cex.points,pch.points,bg.color Corresponding
+#'   color, size, type, and background color for points. Can be a
+#'   vector with length equal to the number of treatments.
 #' @param number.of.studies A logical indicating whether number of
 #'   studies should be added to network graph.
 #' @param cex.number.of.studies The magnification to be used for
@@ -336,6 +336,7 @@ netgraph <- function(x, seq = x$seq,
                      ##
                      points = FALSE, col.points = "red",
                      cex.points = 1, pch.points = 20,
+                     bg.points = "gray",
                      ##
                      number.of.studies = FALSE,
                      cex.number.of.studies = cex,
@@ -451,6 +452,11 @@ netgraph <- function(x, seq = x$seq,
     pch.points <- rep(pch.points, n.trts)
   else if (length(pch.points) != n.trts)
     stop("Length of argument 'pch.points' must be equal to number of treatments.")
+  ##
+  if (length(bg.points) == 1)
+    bg.points <- rep(bg.points, n.trts)
+  else if (length(bg.points) != n.trts)
+    stop("Length of argument 'bg.points' must be equal to the number of treatments.")
   ##
   chklogical(figure)
   ##
@@ -589,6 +595,7 @@ netgraph <- function(x, seq = x$seq,
   col.points <- col.points[seq1]
   cex.points <- cex.points[seq1]
   pch.points <- pch.points[seq1]
+  bg.points  <- bg.points[seq1]
 
 
   A.sign <- sign(A.matrix)
@@ -634,6 +641,7 @@ netgraph <- function(x, seq = x$seq,
                          ##
                          points = points, col.points = col.points,
                          cex.points = cex.points, pch.points = pch.points,
+                         bg.points = bg.points,
                          ##
                          number.of.studies = number.of.studies,
                          cex.number.of.studies = cex.number.of.studies,
@@ -673,6 +681,7 @@ netgraph <- function(x, seq = x$seq,
                           cex = cex.points,
                           col = col.points,
                           pch = pch.points,
+                          bg = bg.points,
                           stringsAsFactors = FALSE)
   if (is_2d)
     dat.nodes$zpos <- NULL
@@ -1055,7 +1064,8 @@ netgraph <- function(x, seq = x$seq,
       ##
       if (points)
         points(xpos, ypos,
-               pch = pch.points, cex = cex.points, col = col.points)
+               pch = pch.points, cex = cex.points, col = col.points,
+               bg = bg.points)
       ##
       ## Print treatment labels
       ##
@@ -1091,6 +1101,7 @@ netgraph <- function(x, seq = x$seq,
     else {
       rgl::plot3d(xpos, ypos, zpos,
                   size = 10, col = col.points, cex = cex.points,
+                  bg = bg.points,
                   axes = FALSE, box = FALSE,
                   xlab = "", ylab = "", zlab = "")
       ##
@@ -1098,7 +1109,8 @@ netgraph <- function(x, seq = x$seq,
       ##
       if (points)
         rgl::points3d(xpos, ypos, zpos,
-                      pch = pch.points, cex = cex.points, col = col.points)
+                      pch = pch.points, cex = cex.points, col = col.points,
+                      bg = bg.points)
       ##
       ## Print treatment labels
       ##

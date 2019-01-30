@@ -1816,7 +1816,7 @@ netmetabin <- function(event1, n1, event2, n2,
   res$data$.order <- NULL
   rownames(res$data) <- seq_len(nrow(res$data))
   
-
+  
   res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
   ##
   dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)

@@ -23,6 +23,11 @@
   * netgraph():
     - argument 'seq' equal to "optimal" works for a single design
 
+ ** User-visible changes **
+
+  * netgraph():
+    - new argument 'bg.points'
+
 
 **** netmeta, version 1.0-1, 2019-01-02 ***
 
