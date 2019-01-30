@@ -799,20 +799,6 @@ netmetabin <- function(event1, n1, event2, n2,
     res
   }
   ##
-  set.designs <- function(x, tdat.design, all.designs) {
-    x$design <- NULL
-    x <- merge(x, tdat.design, by = "studlab", all = TRUE)
-    x$design <- as.character(x$design)
-    ##
-    if (any(is.na(x$design))) {
-      sel.studlab <- unique(x$studlab[is.na(x$design)])
-      for (i in sel.studlab)
-        x$design[x$studlab == i] <-
-          all.designs$design[all.designs$studlab == i]
-    }
-    x
-  }
-  ##
   data$.drop <- rep(FALSE, nrow(data))
   ##
   ## Add variable 'non.event'
@@ -928,7 +914,11 @@ netmetabin <- function(event1, n1, event2, n2,
       zero.data <- rep(0, nrow(data))
       ##
       for (i in seq_along(zerocells$design)) {
-        zero.long <- zero.long + (dat.long$design == zerocells$design[i])
+        if (!cc.pooled)
+          zero.long <- zero.long + (dat.long$design == zerocells$design[i] &
+                                    dat.long$treat == zerocells$treat[i])
+        else
+          zero.long <- zero.long + (dat.long$design == zerocells$design[i])
         ##
         zero.wide <- zero.wide + (dat.wide$design == zerocells$design[i] &
                                   (dat.wide$treat1 == zerocells$treat[i] |
@@ -963,8 +953,6 @@ netmetabin <- function(event1, n1, event2, n2,
         dat.long <- dat.long[!zero.long, , drop = FALSE]
         dat.wide <- dat.wide[!zero.wide, , drop = FALSE]
         data$.drop <- data$.drop | zero.data
-        ##
-        rm(zero, zerocells, zero.long, zero.wide, zero.data)
       }
       else {
         dat.long$incr[zero.long] <- incr
@@ -976,36 +964,12 @@ netmetabin <- function(event1, n1, event2, n2,
         dat.wide$incr[zero.wide] <- incr
         ##
         data$.incr[zero.data] <- incr
-        ##
-        rm(zero.long)
       }
+      ##
+      rm(zero, zerocells, zero.long, zero.wide, zero.data)
     }
     ##
     rm(d.events)
-    ##
-    ## (Re)Add variable 'design' with study design (as treatment arms
-    ## may have been dropped)
-    ##
-    dat.wide$design <- NULL
-    data$.design <- NULL
-    ##
-    tdat.design <- get.designs(dat.long)
-    dat.long <- set.designs(dat.long, tdat.design, all.designs)
-    all.designs <- get.designs(dat.long)
-    ##
-    dat.wide <- merge(dat.wide, tdat.design, by = "studlab")
-    ##
-    dat.long <- dat.long[order(dat.long$.order), ]
-    dat.wide <- dat.wide[order(dat.wide$.order), ]
-    ##
-    names(tdat.design) <- c("studlab", ".design")
-    ##
-    data <- merge(data, tdat.design, by = "studlab", all.x = TRUE)
-    data <- data[order(data$.order), ]
-    ##
-    rm(tdat.design)
-    ##
-    dat.long$design <- as.character(dat.long$design)
   }
   ##
   ## Step iv. Remove designs with single treatment arm from dataset
@@ -1039,29 +1003,6 @@ netmetabin <- function(event1, n1, event2, n2,
     }
     ##
     rm(d.single)
-    ##
-    ## (Re)Add variable 'design' with study design (as treatment arms
-    ## may have been dropped)
-    ##
-    dat.wide$design <- NULL
-    data$.design <- NULL
-    ##
-    tdat.design <- get.designs(dat.long)
-    dat.long <- set.designs(dat.long, tdat.design, all.designs)
-    ##
-    dat.wide <- merge(dat.wide, tdat.design, by = "studlab")
-    ##
-    names(tdat.design) <- c("studlab", ".design")
-    ##
-    data <- merge(data, tdat.design, by = "studlab", all.x = TRUE)
-    data <- data[order(data$.order), ]
-    ##
-    rm(tdat.design)
-    ##
-    dat.long <- dat.long[order(dat.long$design, dat.long$studlab,
-                               dat.long$treat), ]
-    dat.wide <- dat.wide[order(dat.wide$design, dat.wide$studlab,
-                               dat.wide$treat1, dat.wide$treat2), ]
   }
   ##
   dat.long <- dat.long[, c("studlab", "treat",
@@ -1875,7 +1816,7 @@ netmetabin <- function(event1, n1, event2, n2,
   res$data$.order <- NULL
   rownames(res$data) <- seq_len(nrow(res$data))
   
-  
+
   res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
   ##
   dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)

@@ -11,6 +11,15 @@
   * netmeta():
     - no error if argument 'studlab' is missing
 
+  * netmetabin():
+    - only drop single treatment arms without any events in multi-arm
+      studies instead of the complete design (which is the correct
+      behaviour only for two-arm studies)
+    - keep the original design for multi-arm studies if a single
+      treatment arm without any events has been dropped, e.g., the
+      design X:Y:Z is not changed to X:Z if no events were observed in
+      treatment arm Y in any multi-arm study
+
   * netgraph():
     - argument 'seq' equal to "optimal" works for a single design
 
