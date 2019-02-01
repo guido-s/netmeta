@@ -57,7 +57,7 @@
 #'   opaque).
 #' @param points A logical indicating whether points should be printed
 #'   at nodes (i.e. treatments) of the network graph.
-#' @param col.points,cex.points,pch.points,bg.color Corresponding
+#' @param col.points,cex.points,pch.points,bg.points Corresponding
 #'   color, size, type, and background color for points. Can be a
 #'   vector with length equal to the number of treatments.
 #' @param number.of.studies A logical indicating whether number of

@@ -92,7 +92,8 @@ Partial ordering of treatments.
 \bold{8}, 526--36
 }
 \seealso{
-\code{\link{netmeta}}, \code{\link{netposet}}
+\code{\link{netmeta}}, \code{\link{netposet}},
+  \code{\link{netrank}}, \code{\link{plot.netrank}}
 }
 \author{
 Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido

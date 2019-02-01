@@ -306,7 +306,8 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netrank}},
-  \code{\link{hasse}}, \code{\link{plot.netposet}}
+  \code{\link{plot.netrank}}, \code{\link{hasse}},
+  \code{\link{plot.netposet}}
 }
 \author{
 Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido

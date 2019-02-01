@@ -110,7 +110,7 @@
 #'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netrank}},
-#'   \code{\link{plot.netrank}, \code{\link{hasse}},
+#'   \code{\link{plot.netrank}}, \code{\link{hasse}},
 #'   \code{\link{plot.netposet}}
 #' 
 #' @references

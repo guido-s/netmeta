@@ -19,6 +19,10 @@
       treatment arm without any events has been dropped, e.g., the
       design X:Y:Z is not changed to X:Z if no events were observed in
       treatment arm Y in any multi-arm study
+    - no error if argument 'event1' is not an R object created with
+      pairwise() and argument 'data' is not used
+    - no error in printing of network meta-analysis object if argument
+      'event1' is not an R object created with pairwise()
 
   * netgraph():
     - argument 'seq' equal to "optimal" works for a single design

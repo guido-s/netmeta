@@ -796,7 +796,8 @@ netmeta <- function(TE, seTE,
   excl <- is.na(TE) | is.na(seTE) | seTE <= 0
   ##
   if (any(excl)) {
-    data$.excl <- excl
+    if (keepdata)
+      data$.excl <- excl
     ##
     dat.NAs <- data.frame(studlab = studlab[excl],
                           treat1 = treat1[excl],

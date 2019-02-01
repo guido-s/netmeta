@@ -563,37 +563,43 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ##
   ## (2b) Store complete dataset in list object data
-  ##      (if argument keepdata is TRUE)
   ##
   ##
-  if (keepdata) {
-    if (nulldata & !is.pairwise)
-      data <- data.frame(.event1 = event1)
-    else if (nulldata & is.pairwise) {
-      data <- pairdata
-      data$.order <- .order
-      data$.event1 <- event1
-    }
-    else
-      data$.event1 <- event1
-    ##
-    data$.n1 <- n1
-    data$.event2 <- event2
-    data$.n2 <- n2
-    data$.treat1 <- treat1
-    data$.treat2 <- treat2
-    data$.studlab <- studlab
+  if (nulldata & !is.pairwise)
+    data <- data.frame(.event1 = event1)
+  else if (nulldata & is.pairwise) {
+    data <- pairdata
     data$.order <- .order
-    ##
-    if (!missing.subset) {
-      if (length(subset) == dim(data)[1])
-        data$.subset <- subset
-      else {
-        data$.subset <- FALSE
-        data$.subset[subset] <- TRUE
-      }
+    data$.event1 <- event1
+  }
+  else
+    data$.event1 <- event1
+  ##
+  data$.n1 <- n1
+  data$.event2 <- event2
+  data$.n2 <- n2
+  data$.treat1 <- treat1
+  data$.treat2 <- treat2
+  data$.studlab <- studlab
+  data$.order <- .order
+  ##
+  if (!missing.subset) {
+    if (length(subset) == dim(data)[1])
+      data$.subset <- subset
+    else {
+      data$.subset <- FALSE
+      data$.subset[subset] <- TRUE
     }
   }
+  ##
+  m.data <- metabin(event1, n1, event2, n2,
+                    sm = sm, method = "Inverse",
+                    incr = incr, allincr = allincr,
+                    addincr = addincr, allstudies = allstudies,
+                    warn = FALSE)
+  ##
+  data$.TE <- m.data$TE
+  data$.seTE <- m.data$seTE
   
   
   ##
@@ -831,7 +837,9 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   names(tdat.design) <- c("studlab", ".design")
   ##
-  data <- merge(data, tdat.design, by = "studlab", all.x = TRUE)
+  data <- merge(data, tdat.design,
+                by.x = ".studlab", by.y = "studlab",
+                all.x = TRUE)
   data <- data[order(data$.order), ]
   ##
   rm(tdat.design)
@@ -1665,8 +1673,8 @@ netmetabin <- function(event1, n1, event2, n2,
               treat1 = treat1,
               treat2 = treat2,
               ##
-              TE = data$TE[!data$.drop],
-              seTE = data$seTE[!data$.drop],
+              TE = data$.TE[!data$.drop],
+              seTE = data$.seTE[!data$.drop],
               seTE.adj = rep(NA, sum(!data$.drop)),
               ##
               event1 = event1,
@@ -1781,7 +1789,7 @@ netmetabin <- function(event1, n1, event2, n2,
               ##
               title = title,
               ##
-              data = data,
+              data = if (keepdata) data else NULL,
               data.design = dat.design,
               ##
               warn = warn,

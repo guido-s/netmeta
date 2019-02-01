@@ -11,14 +11,15 @@ netgraph(x, seq = x$seq, labels = x$trts, cex = 1, adj = NULL,
   highlight = NULL, col.highlight = "red2", lwd.highlight = lwd,
   multiarm = any(x$narms > 2), col.multiarm = NULL,
   alpha.transparency = 0.5, points = FALSE, col.points = "red",
-  cex.points = 1, pch.points = 20, number.of.studies = FALSE,
-  cex.number.of.studies = cex, col.number.of.studies = "white",
-  bg.number.of.studies = "black", pos.number.of.studies = 0.5,
-  start.layout = ifelse(dim == "2d", "circle", "eigen"), eig1 = 2,
-  eig2 = 3, eig3 = 4, iterate, tol = 1e-04, maxit = 500,
-  allfigures = FALSE, A.matrix = x$A.matrix,
-  N.matrix = sign(A.matrix), D.matrix = netdistance(N.matrix),
-  xpos = NULL, ypos = NULL, zpos = NULL, figure = TRUE, ...)
+  cex.points = 1, pch.points = 20, bg.points = "gray",
+  number.of.studies = FALSE, cex.number.of.studies = cex,
+  col.number.of.studies = "white", bg.number.of.studies = "black",
+  pos.number.of.studies = 0.5, start.layout = ifelse(dim == "2d",
+  "circle", "eigen"), eig1 = 2, eig2 = 3, eig3 = 4, iterate,
+  tol = 1e-04, maxit = 500, allfigures = FALSE,
+  A.matrix = x$A.matrix, N.matrix = sign(A.matrix),
+  D.matrix = netdistance(N.matrix), xpos = NULL, ypos = NULL,
+  zpos = NULL, figure = TRUE, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} (mandatory).}
@@ -96,9 +97,9 @@ opaque).}
 \item{points}{A logical indicating whether points should be printed
 at nodes (i.e. treatments) of the network graph.}
 
-\item{col.points, cex.points, pch.points}{Corresponding color, size,
-type for points. Can be a vector with length equal to the number
-of treatments.}
+\item{col.points, cex.points, pch.points, bg.points}{Corresponding
+color, size, type, and background color for points. Can be a
+vector with length equal to the number of treatments.}
 
 \item{number.of.studies}{A logical indicating whether number of
 studies should be added to network graph.}

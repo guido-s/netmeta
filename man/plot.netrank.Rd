@@ -205,7 +205,8 @@ acamprosate, baclofen and topiramate.
 \bold{113}, 220--37
 }
 \seealso{
-\code{\link{netrank}}, \code{\link{netmeta}}
+\code{\link{netrank}}, \code{\link{netmeta}},
+  \code{\link{netposet}}, \code{\link{hasse}}
 }
 \author{
 Guido Schwarzer \email{sc@imbi.uni-freiburg.de}, Clément

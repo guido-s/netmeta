@@ -355,8 +355,8 @@ pairwise <- function(treat,
                data, enclos = sys.frame(sys.parent()))
   time <- eval(mf[[match("time", names(mf))]],
                data, enclos = sys.frame(sys.parent()))
-
-
+  
+  
   args <- list(...)
   nam.args <- names(args)
 
@@ -655,11 +655,11 @@ pairwise <- function(treat,
       seTE  <- seTE.list
     }
   }
-
-
-
-
-
+  
+  
+  
+  
+  
   ##
   ## Check and set study labels
   ##
@@ -739,11 +739,11 @@ pairwise <- function(treat,
                            names.newdata[!(names.newdata %in% names.basic)])]
     newdata <- newdata[!is.na(newdata$treat1) & !is.na(newdata$treat2), ]
   }
-
-
-
-
-
+  
+  
+  
+  
+  
   if (type == "binary") {
     ##
     if (length(event) != narms)
@@ -808,7 +808,7 @@ pairwise <- function(treat,
                           allstudies = allstudies,
                           stringsAsFactors = FALSE)
         ##
-        if (wide.armbased) {
+        if (wide.armbased & !null.data) {
           dat <- cbind(dat, data, stringsAsFactors = FALSE)
           dupl <- duplicated(names(dat))
           if (any(dupl))
