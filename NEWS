@@ -10,6 +10,8 @@
 
   * netmeta():
     - no error if argument 'studlab' is missing
+    - tackle numerical problems with zero treatment arm variances -
+      actually by changes in internal function multiarm()
 
   * netmetabin():
     - only drop single treatment arms without any events in multi-arm
@@ -27,10 +29,21 @@
   * netgraph():
     - argument 'seq' equal to "optimal" works for a single design
 
+  * pairwise():
+    - no error if function is used without argument 'data'
+
  ** User-visible changes **
 
   * netgraph():
     - new argument 'bg.points'
+
+ ** Internal changes **
+
+  * multiarm():
+    - use ginv() to calculate inverse of matrix Lt
+    - set very small negative values in matrix W equal to zero
+    - object k instead of n denotes number of treatment arms
+      (same notation as Rücker & Schwarzer, 2014)
 
 
 **** netmeta, version 1.0-1, 2019-01-02 ***

@@ -330,8 +330,8 @@ pairwise <- function(treat,
                      ...) {
 
 
-  null.data <- is.null(data)
-  if (null.data)
+  nulldata <- is.null(data)
+  if (nulldata)
     data <- sys.frame(sys.parent())
   ##
   ## Catch studlab, treat, event, n, mean, sd, time from data:
@@ -476,7 +476,7 @@ pairwise <- function(treat,
     seTE.list  <- vector("list", max.arms)
     time.list  <- vector("list", max.arms)
     ##
-    if (!null.data)
+    if (!nulldata)
       adddata <- vector("list", max.arms)
     ##
     if (type == "binary") {
@@ -487,7 +487,7 @@ pairwise <- function(treat,
                          .order = seq_along(studlab),
                          stringsAsFactors = FALSE)
       ##
-      if (!null.data) {
+      if (!nulldata) {
         tdat <- cbind(tdat, data)
         dupl <- duplicated(names(tdat))
         if (any(dupl))
@@ -509,7 +509,7 @@ pairwise <- function(treat,
         tdat.i$event <- NULL
         tdat.i$n     <- NULL
         ##
-        if (!null.data)
+        if (!nulldata)
           adddata[[i]] <- tdat.i
         ##
         tdat <- tdat[!sel.i, ]
@@ -528,7 +528,7 @@ pairwise <- function(treat,
                          .order = seq_along(studlab),
                          stringsAsFactors = FALSE)
       ##
-      if (!null.data) {
+      if (!nulldata) {
         tdat <- cbind(tdat, data)
         dupl <- duplicated(names(tdat))
         if (any(dupl))
@@ -552,7 +552,7 @@ pairwise <- function(treat,
         tdat.i$mean <- NULL
         tdat.i$sd   <- NULL
         ##
-        if (!null.data)
+        if (!nulldata)
           adddata[[i]] <- tdat.i
         ##
         tdat <- tdat[!sel.i, ]
@@ -575,7 +575,7 @@ pairwise <- function(treat,
       if (!is.null(n))
         tdat$n <- n
       ##
-      if (!null.data) {
+      if (!nulldata) {
         tdat <- cbind(tdat, data)
         dupl <- duplicated(names(tdat))
         if (any(dupl))
@@ -597,7 +597,7 @@ pairwise <- function(treat,
         tdat.i$event <- NULL
         tdat.i$time  <- NULL
         ##
-        if (!null.data)
+        if (!nulldata)
           adddata[[i]] <- tdat.i
         ##
         tdat <- tdat[!sel.i, ]
@@ -622,7 +622,7 @@ pairwise <- function(treat,
       if (!is.null(event))
         tdat$event <- event
       ##
-      if (!null.data) {
+      if (!nulldata) {
         tdat <- cbind(tdat, data)
         dupl <- duplicated(names(tdat))
         if (any(dupl))
@@ -644,7 +644,7 @@ pairwise <- function(treat,
         tdat.i$TE   <- NULL
         tdat.i$seTE <- NULL
         ##
-        if (!null.data)
+        if (!nulldata)
           adddata[[i]] <- tdat.i
         ##
         tdat <- tdat[!sel.i, ]
@@ -691,7 +691,7 @@ pairwise <- function(treat,
   ## Generate dataset with variables from original dataset
   ##
   ##
-  if (!null.data & !wide.armbased) {
+  if (!nulldata & !wide.armbased) {
     names.adddata <- names(adddata[[1]])
     ##
     notunique <- matrix(NA,
@@ -808,7 +808,7 @@ pairwise <- function(treat,
                           allstudies = allstudies,
                           stringsAsFactors = FALSE)
         ##
-        if (wide.armbased & !null.data) {
+        if (wide.armbased & !nulldata) {
           dat <- cbind(dat, data, stringsAsFactors = FALSE)
           dupl <- duplicated(names(dat))
           if (any(dupl))
@@ -1161,7 +1161,7 @@ pairwise <- function(treat,
     }
   }
   ##
-  if (!null.data & !wide.armbased)
+  if (!nulldata & !wide.armbased)
     res <- merge(res, newdata,
                  by = c("studlab", "treat1", "treat2"),
                  suffixes = c("",".orig"),
