@@ -850,37 +850,52 @@ netmetabin <- function(event1, n1, event2, n2,
   ## (6) Stage I: setting up the data (Efthimiou et al., 2018)
   ##
   ##
-  ## Step i. Remove all-zero studies (only MH and NCH methods)
+  ## Step i. Remove all-zero or all-event studies (only MH and NCH methods)
   ##
   if (method != "Inverse") {
-    n.events <- with(dat.long, tapply(event, studlab, sum))
+    events.study <- with(dat.long, tapply(event, studlab, sum))
+    nonevents.study <- with(dat.long, tapply(n - event, studlab, sum))
     ##
-    if (any(n.events == 0)) {
-      allzero <- n.events == 0
+    if (any(events.study == 0) | any(nonevents.study == 0)) {
+      zeroevents <- events.study == 0
+      allevents <- nonevents.study == 0
+      keep <- !(zeroevents | allevents)
       ##
-      if (warn)
-        if (sum(allzero) == 1)
-          warning("Study '", names(n.events)[allzero],
+      if (warn) {
+        if (sum(zeroevents) == 1)
+          warning("Study '", names(events.study)[zeroevents],
                   "' without any events excluded from network meta-analysis.",
                   call. = FALSE)
-        else
+        else if (sum(zeroevents) > 1)
           warning("Studies without any events excluded ",
                   "from network meta-analysis: ",
-                  paste(paste0("'", names(n.events)[allzero], "'"),
+                  paste(paste0("'", names(events.study)[zeroevents], "'"),
                         collapse = " - "),
                   call. = FALSE)
+        ##
+        if (sum(allevents) == 1)
+          warning("Study '", names(nonevents.study)[allevents],
+                  "' with all events excluded from network meta-analysis.",
+                  call. = FALSE)
+        else if (sum(allevents) > 1)
+          warning("Studies with all events excluded ",
+                  "from network meta-analysis: ",
+                  paste(paste0("'", names(nonevents.study)[allevents], "'"),
+                        collapse = " - "),
+                  call. = FALSE)
+      }
       ##
-      dat.long <- dat.long[dat.long$studlab %in% names(n.events)[!allzero], ,
+      dat.long <- dat.long[dat.long$studlab %in% names(events.study)[keep], ,
                            drop = FALSE]
-      dat.wide <- dat.wide[dat.wide$studlab %in% names(n.events)[!allzero], ,
+      dat.wide <- dat.wide[dat.wide$studlab %in% names(events.study)[keep], ,
                            drop = FALSE]
       ##
-      data$.drop <- data$.drop | data$studlab %in% names(n.events)[allzero]
+      data$.drop <- data$.drop | data$studlab %in% names(events.study)[!keep]
       ##
-      rm(allzero)
+      rm(zeroevents, allevents, keep)
     }
     ##
-    rm(n.events)
+    rm(events.study)
   }
   ##
   ## Add variable 'study' with study numbers
@@ -900,22 +915,27 @@ netmetabin <- function(event1, n1, event2, n2,
   dat.wide$incr <- 0
   data$.incr <- 0
   ##
-  ## Step iii. Drop treatment arms without events from individual
+  ## Step iii. Drop treatment arms without or all events from individual
   ##           designs (argument 'cc.pooled' is FALSE) or add
   ##           increment if argument 'cc.pooled' is TRUE and argument
   ##           'incr' is larger than zero
   ##
   if (method != "Inverse") {
     ##
-    d.events <- with(dat.long, tapply(event, list(design, treat), sum))
+    events.arm <- with(dat.long, tapply(event, list(design, treat), sum))
+    nonevents.arm <- with(dat.long, tapply(n - event, list(design, treat), sum))
     ##
-    if (any(d.events == 0, na.rm = TRUE)) {
-      zero <- d.events == 0
-      zerocells <- as.data.frame(which(zero, arr.ind = TRUE),
+    if (any(events.arm == 0, na.rm = TRUE) |
+        any(nonevents.arm == 0, na.rm = TRUE)) {
+      ##
+      ## Identify entries without events
+      ##
+      zeroevents <- events.arm == 0
+      zerocells <- as.data.frame(which(zeroevents, arr.ind = TRUE),
                                  stringsAsFactors = FALSE)
       ##
-      zerocells$design <- rownames(zero)[zerocells$row]
-      zerocells$treat <- colnames(zero)[zerocells$col]
+      zerocells$design <- rownames(zeroevents)[zerocells$row]
+      zerocells$treat <- colnames(zeroevents)[zerocells$col]
       ##
       zero.long <- rep(0, nrow(dat.long))
       zero.wide <- rep(0, nrow(dat.wide))
@@ -941,14 +961,54 @@ netmetabin <- function(event1, n1, event2, n2,
       zero.wide <- zero.wide > 0
       zero.data <- zero.data > 0
       ##
+      ## Identify entries with all events
+      ##
+      allevents <- nonevents.arm == 0
+      allcells <- as.data.frame(which(allevents, arr.ind = TRUE),
+                                 stringsAsFactors = FALSE)
+      ##
+      allcells$design <- rownames(allevents)[allcells$row]
+      allcells$treat <- colnames(allevents)[allcells$col]
+      ##
+      all.long <- rep(0, nrow(dat.long))
+      all.wide <- rep(0, nrow(dat.wide))
+      all.data <- rep(0, nrow(data))
+      ##
+      for (i in seq_along(allcells$design)) {
+        if (!cc.pooled)
+          all.long <- all.long + (dat.long$design == allcells$design[i] &
+                                  dat.long$treat == allcells$treat[i])
+        else
+          all.long <- all.long + (dat.long$design == allcells$design[i])
+        ##
+        all.wide <- all.wide + (dat.wide$design == allcells$design[i] &
+                                (dat.wide$treat1 == allcells$treat[i] |
+                                 dat.wide$treat2 == allcells$treat[i]))
+        ##
+        all.data <- all.data + (data$.design == allcells$design[i] &
+                                (data$.treat1 == allcells$treat[i] |
+                                 data$.treat2 == allcells$treat[i]))
+      }
+      ##
+      all.long <- all.long > 0
+      all.wide <- all.wide > 0
+      all.data <- all.data > 0
+      ##
+      ## Identify entries with sparse binary data (i.e., with zero or
+      ## all events)
+      ##
+      sparse.long <- zero.long | all.long
+      sparse.wide <- zero.wide | all.wide
+      sparse.data <- zero.data | all.data
+      ##
       if (!cc.pooled) {
-        if (warn)
-          if (sum(zero, na.rm = TRUE) == 1)
+        if (warn) {
+          if (sum(zeroevents, na.rm = TRUE) == 1)
             warning("Treatment arm '", zerocells$treat,
                     "' without events in design '",
                     zerocells$design, "' excluded from network meta-analysis.",
                     call. = FALSE)
-          else
+          else if (sum(zeroevents, na.rm = TRUE) > 1)
             warning("Treatment arms without events in a design excluded ",
                     "from network meta-analysis:\n    ",
                     paste0("'",
@@ -957,27 +1017,45 @@ netmetabin <- function(event1, n1, event2, n2,
                            "'",
                            collapse = " - "),
                     call. = FALSE)
+          ##
+          if (sum(allevents, na.rm = TRUE) == 1)
+            warning("Treatment arm '", allcells$treat,
+                    "' with all events in design '",
+                    allcells$design, "' excluded from network meta-analysis.",
+                    call. = FALSE)
+          else if (sum(allevents, na.rm = TRUE) > 1)
+            warning("Treatment arms with all events in a design excluded ",
+                    "from network meta-analysis:\n    ",
+                    paste0("'",
+                           paste0(paste0(allcells$treat, " in "),
+                                  allcells$design),
+                           "'",
+                           collapse = " - "),
+                    call. = FALSE)
+        }
         ##
-        dat.long <- dat.long[!zero.long, , drop = FALSE]
-        dat.wide <- dat.wide[!zero.wide, , drop = FALSE]
-        data$.drop <- data$.drop | zero.data
+        dat.long <- dat.long[!sparse.long, , drop = FALSE]
+        dat.wide <- dat.wide[!sparse.wide, , drop = FALSE]
+        data$.drop <- data$.drop | sparse.data
       }
       else {
-        dat.long$incr[zero.long] <- incr
+        dat.long$incr[sparse.long] <- incr
         ##
-        dat.long$event[zero.long] <- dat.long$event[zero.long] + incr
-        dat.long$non.event[zero.long] <- dat.long$non.event[zero.long] + incr
-        dat.long$n[zero.long] <- dat.long$n[zero.long] + 2 * incr
+        dat.long$event[sparse.long] <- dat.long$event[sparse.long] + incr
+        dat.long$non.event[sparse.long] <- dat.long$non.event[sparse.long] + incr
+        dat.long$n[sparse.long] <- dat.long$n[sparse.long] + 2 * incr
         ##
-        dat.wide$incr[zero.wide] <- incr
+        dat.wide$incr[sparse.wide] <- incr
         ##
-        data$.incr[zero.data] <- incr
+        data$.incr[sparse.data] <- incr
       }
       ##
-      rm(zero, zerocells, zero.long, zero.wide, zero.data)
+      rm(zeroevents, zerocells, zero.long, zero.wide, zero.data,
+         allevents, allcells, all.long, all.wide, all.data,
+         sparse.long, sparse.wide, sparse.data)
     }
     ##
-    rm(d.events)
+    rm(events.arm, nonevents.arm)
   }
   ##
   ## Step iv. Remove designs with single treatment arm from dataset
