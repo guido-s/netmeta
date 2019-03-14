@@ -38,7 +38,7 @@ providing the following meta-analysis methods:
 \item network meta-analysis of binary data
   (\code{\link{netmetabin}}) using the Mantel-Haenszel or
   non-central hypergeometric distribution method (Efthimiou et al.,
-  2018);
+  2019);
 \item\sQuote{comparison-adjusted} funnel plot
   (\code{\link{funnel.netmeta}}) to assess funnel plot asymmetry in
   network meta-analysis (Chaimani & Salanti, 2012)
@@ -87,9 +87,10 @@ Checking consistency in mixed treatment comparison meta-analysis.
 \bold{29}, 932--44
 
 Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
-(2018):
+(2019):
 A Mantel-Haenszel model for network meta-analysis of rare events.
-\emph{Manuscript submitted for publication}
+\emph{Statistics in Medicine},
+accepted for publication
 
 König J, Krahn U, Binder H (2013):
 Visualizing the flow of evidence in network meta-analysis and

@@ -99,7 +99,7 @@
 #' of binary data:
 #' \itemize{
 #' \item The Mantel-Haenszel network meta-analysis model, as described
-#'   in Efthimiou et al. (2018) (\code{method = "MH"});
+#'   in Efthimiou et al. (2019) (\code{method = "MH"});
 #' \item a network meta-analysis model using the non-central
 #'   hypergeometric distribution with the Breslow approximation, as
 #'   described in Stijnen et al. (2010) (\code{method = "NCH"});
@@ -272,9 +272,10 @@
 #' 
 #' @references
 #' Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
-#' (2018):
+#' (2019):
 #' A Mantel-Haenszel model for network meta-analysis of rare events.
-#' \emph{Manuscript submitted for publication}
+#' \emph{Statistics in Medicine},
+#' accepted for publication
 #' 
 #' Senn S, Gavini F, Magrez D, Scheen A (2013):
 #' Issues in performing a network meta-analysis.
@@ -847,7 +848,7 @@ netmetabin <- function(event1, n1, event2, n2,
   
   ##
   ##
-  ## (6) Stage I: setting up the data (Efthimiou et al., 2018)
+  ## (6) Stage I: setting up the data (Efthimiou et al., 2019)
   ##
   ##
   ## Step i. Remove all-zero or all-event studies (only MH and NCH methods)

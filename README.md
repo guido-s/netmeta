@@ -36,7 +36,8 @@ network meta-analysis:
   - additive network meta-analysis for combinations of treatments;
 
   - network meta-analysis of binary data using the Mantel-Haenszel
-    method or the non-central hypergeometric distribution;
+    method or the non-central hypergeometric distribution (Efthimiou
+    et al., 2019);
 
   - 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012);
 
@@ -53,6 +54,10 @@ http://meta-analysis-with-r.org/ .
 [Chaimani A, Salanti G (2012): Using network meta-analysis to evaluate the existence of small-study effects in a network of interventions. *Research Synthesis Methods*, **3**, 161-76](https://scholar.google.com/scholar?q=Chaimani+Salanti+Using+network+meta-analysis+to+evaluate+the+existence+of+small-study+effects+in+a+network+of+interventions)
 
 [Dias S, Welton NJ, Caldwell DM, Ades AE (2010): Checking consistency in mixed treatment comparison meta-analysis. *Statistics in Medicine*, **29**, 932-44](https://scholar.google.com/scholar?q=Checking+consistency+in+mixed+treatment+comparison+meta-analysis)
+
+Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
+(2019): A Mantel-Haenszel model for network meta-analysis of rare
+events. *Statistics in Medicine*, accepted for publication
 
 [König J, Krahn U, Binder H (2013): Visualizing the flow of evidence in network meta-analysis and characterizing mixed treatment comparisons. *Statistics in Medicine*, **32**, 5414-29](https://scholar.google.com/scholar?q=König+Krahn+Binder+2013+Visualizing+the+flow+of+evidence+in+network+meta-analysis+and+characterizing+mixed+treatment+comparisons)
 

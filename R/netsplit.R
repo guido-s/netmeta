@@ -80,7 +80,7 @@
 #'   evidence proportion as described in König et al. (2013) is used
 #'   in the calculation of the indirect evidence;
 #' \item Separate Indirect from Direct Design Evidence (SIDDE) as
-#'   described in Efthimiou et al. (2018).
+#'   described in Efthimiou et al. (2019).
 #' }
 #' 
 #' Note, for the back-calculation method, indirect treatment estimates
@@ -144,9 +144,10 @@
 #' \bold{29}, 932--44
 #' 
 #' Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
-#' (2018):
+#' (2019):
 #' A Mantel-Haenszel model for network meta-analysis of rare events.
-#' \emph{Manuscript submitted for publication}
+#' \emph{Statistics in Medicine},
+#' accepted for publication
 #' 
 #' König J, Krahn U, Binder H (2013):
 #' Visualizing the flow of evidence in network meta-analysis and
