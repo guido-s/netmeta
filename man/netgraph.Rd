@@ -8,7 +8,7 @@ netgraph(x, seq = x$seq, labels = x$trts, cex = 1, adj = NULL,
   offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
   scale = 1.1, col = "slateblue", plastic, thickness, lwd = 5,
   lwd.min = lwd/2.5, lwd.max = lwd * 4, dim = "2d",
-  highlight = NULL, col.highlight = "red2", lwd.highlight = lwd,
+  highlight = NULL, col.highlight = "red2", scale.highlight = 1,
   multiarm = any(x$narms > 2), col.multiarm = NULL,
   alpha.transparency = 0.5, points = FALSE, col.points = "red",
   cex.points = 1, pch.points = 20, bg.points = "gray",
@@ -77,11 +77,11 @@ will be set to this value.}
 should be marked in the network graph, e.g. \code{highlight =
 "treat1:treat2"}.}
 
-\item{col.highlight}{Color for highlighting the comparisons given
-by \code{highlight}.}
+\item{col.highlight}{Color(s) to highlight the comparisons given by
+\code{highlight}.}
 
-\item{lwd.highlight}{A numeric for the line width for highlighting
-the comparisons given by \code{highlight}.}
+\item{scale.highlight}{Scaling factor(s) for the line width(s) to
+highlight the comparisons given by \code{highlight}.}
 
 \item{multiarm}{A logical indicating whether multi-arm studies
 should be marked in plot.}

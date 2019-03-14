@@ -43,10 +43,10 @@
 #' @param highlight A character vector identifying comparisons that
 #'   should be marked in the network graph, e.g. \code{highlight =
 #'   "treat1:treat2"}.
-#' @param col.highlight Color for highlighting the comparisons given
-#'   by \code{highlight}.
-#' @param lwd.highlight A numeric for the line width for highlighting
-#'   the comparisons given by \code{highlight}.
+#' @param col.highlight Color(s) to highlight the comparisons given by
+#'   \code{highlight}.
+#' @param scale.highlight Scaling factor(s) for the line width(s) to
+#'   highlight the comparisons given by \code{highlight}.
 #' @param multiarm A logical indicating whether multi-arm studies
 #'   should be marked in plot.
 #' @param col.multiarm Either a function from R library colorspace or
@@ -328,7 +328,7 @@ netgraph <- function(x, seq = x$seq,
                      dim = "2d",
                      ##
                      highlight = NULL, col.highlight = "red2",
-                     lwd.highlight = lwd,
+                     scale.highlight = 1,
                      ##
                      multiarm = any(x$narms > 2),
                      col.multiarm = NULL,
@@ -370,7 +370,7 @@ netgraph <- function(x, seq = x$seq,
   chknumeric(lwd, min = 0, zero = TRUE, single = TRUE)
   chknumeric(lwd.min, min = 0, zero = TRUE, single = TRUE)
   chknumeric(lwd.max, min = 0, zero = TRUE, single = TRUE)
-  chknumeric(lwd.highlight, min = 0, zero = TRUE, single = TRUE)
+  chknumeric(scale.highlight, min = 0, zero = TRUE)
   ##
   if (lwd.min > lwd.max)
     stop("Argument 'lwd.min' must be smaller than 'lwd.max'.")
@@ -498,6 +498,7 @@ netgraph <- function(x, seq = x$seq,
 
 
   addargs <- names(list(...))
+  ##
   if ("highlight.split" %in% addargs)
     warning("Argument 'highlight.split' has been removed from R function netgraph.\n",
             "  This argument has been replaced by argument 'sep.trts' in R function netmeta.")
@@ -506,8 +507,23 @@ netgraph <- function(x, seq = x$seq,
   ##
   if (is.null(highlight.split))
     highlight.split <- ":"
-
-
+  ##
+  n.high <- 1
+  if (!is.null(highlight)) {
+    n.high <- length(highlight)
+    ##
+    if (!missing(col.highlight))
+      if (length(col.highlight) != 1 && length(col.highlight) != n.high)
+        stop("Argument 'col.highlight' must be a single value or ",
+             "of same length as argument 'highlight'.", call. = FALSE)
+    ##
+    if (!missing(scale.highlight))
+      if (length(scale.highlight) != 1 && length(scale.highlight) != n.high)
+        stop("Argument 'scale.highlight' must be a single value or ",
+             "of same length as argument 'highlight'.", call. = FALSE)
+  }
+  
+  
   if (missing(plastic))
     if (start.layout == "circle" & iterate == FALSE & is_2d)
       plastic <- TRUE
@@ -634,7 +650,7 @@ netgraph <- function(x, seq = x$seq,
                          ##
                          highlight = highlight,
                          col.highlight = col.highlight,
-                         lwd.highlight = lwd.highlight,
+                         scale.highlight = scale.highlight,
                          ## multiarm
                          col.multiarm = col.multiarm,
                          alpha.transparency = alpha.transparency,
@@ -996,23 +1012,30 @@ netgraph <- function(x, seq = x$seq,
       if (plastic) {
         n.plastic <- 30
         lwd.multiply <- rep(NA, n.plastic)
-        cols <- cols.highlight <- rep("", n.plastic)
+        cols <- rep("", n.plastic)
+        cols.highlight <- matrix("", nrow = n.high, ncol = n.plastic)
+        scales.highlight <- matrix(scale.highlight,
+                                   nrow = n.high, ncol = n.plastic)
+        ##
         j <- 0
         for (i in n.plastic:1) {
           j <- j + 1
           lwd.multiply[j] <- sin(pi * i / 2 / n.plastic)
           cols[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
-          cols.highlight[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
+          cols.highlight[, j] <- paste("gray", round(100 * (1 - i / n.plastic)),
+                                       sep = "")
         }
         if (substring(col.highlight, nchar(col.highlight)) %in% 1:4)
           col.highlight <- substring(col.highlight, 1, nchar(col.highlight) - 1)
-        cols.highlight[1:12] <- rep(paste(col.highlight, 4:1, sep = ""), rep(3, 4))
-        cols.highlight[13:15] <- rep(col.highlight, 3)
+        cols.highlight[, 1:12] <- rep(paste(col.highlight, 4:1, sep = ""),
+                                      rep(3, 4))
+        cols.highlight[, 13:15] <- rep(col.highlight, 3)
       }
       else {
         lwd.multiply <- 1
         cols <- col
-        cols.highlight <- col.highlight
+        cols.highlight <- matrix(col.highlight, nrow = n.high, ncol = 1)
+        scales.highlight <- matrix(scale.highlight, nrow = n.high, ncol = 1)
       }
       ##
       comp.i <- 1
@@ -1040,7 +1063,9 @@ netgraph <- function(x, seq = x$seq,
       ## Add highlighted comparisons
       ##
       if (!is.null(highlight)) {
+        high.i <- 0
         for (high in highlight) {
+          high.i <- high.i + 1
           highs <- unlist(compsplit(high, split = highlight.split))
           if (length(highs) != 2)
             stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
@@ -1056,8 +1081,9 @@ netgraph <- function(x, seq = x$seq,
             for (n.plines in 1:length(lwd.multiply))
               lines(dat.high$xpos, dat.high$ypos,
                     lwd = W.matrix[labels == highs[1], labels == highs[2]] *
-                      lwd.multiply[n.plines] * lwd.highlight,
-                    col = cols.highlight[n.plines])
+                      lwd.multiply[n.plines] *
+                      scales.highlight[high.i, n.plines],
+                    col = cols.highlight[high.i, n.plines])
         }
       }
       ##

@@ -28,7 +28,6 @@
 
   * netgraph():
     - argument 'seq' equal to "optimal" works for a single design
-    - argument 'lwd.highlight' no longer ignored
 
   * pairwise():
     - no error if function is used without argument 'data'
@@ -37,6 +36,10 @@
 
   * netgraph():
     - new argument 'bg.points'
+    - new argument 'scale.highlight' which replaces argument
+      'lwd.highlight' (which actually was ignored)
+    - arguments 'col.highlight' and 'scale.highlight' can be vectors
+      with same length as argument 'highlight'
 
  ** Internal changes **
 
