@@ -1055,7 +1055,8 @@ netgraph <- function(x, seq = x$seq,
           if (is_2d)
             for (n.plines in 1:length(lwd.multiply))
               lines(dat.high$xpos, dat.high$ypos,
-                    lwd = W.matrix[labels == highs[1], labels == highs[2]] * lwd.multiply[n.plines],
+                    lwd = W.matrix[labels == highs[1], labels == highs[2]] *
+                      lwd.multiply[n.plines] * lwd.highlight,
                     col = cols.highlight[n.plines])
         }
       }

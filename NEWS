@@ -28,6 +28,7 @@
 
   * netgraph():
     - argument 'seq' equal to "optimal" works for a single design
+    - argument 'lwd.highlight' no longer ignored
 
   * pairwise():
     - no error if function is used without argument 'data'
