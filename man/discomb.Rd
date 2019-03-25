@@ -175,7 +175,7 @@ networks.
 
 The additive CNMA model has been implemented using Bayesian methods
 (Mills et al., 2012; Welton et al., 2013). This function implements
-the additive model in a frequentist way (Rücker et al., 2018).
+the additive model in a frequentist way (Rücker et al., 2019).
 
 The underlying multivariate model is given by
 
@@ -274,9 +274,10 @@ trials provides useful estimates of combination therapies.
 \emph{Journal of Clinical Epidemiology},
 \bold{65}, 1282--8
 
-Rücker G, Petropoulou M, Schwarzer G (2018):
+Rücker G, Petropoulou M, Schwarzer G (2019):
 Network meta-analysis of multicomponent interventions.
-\emph{Manuscript submitted for publication}.
+\emph{Biometrical Journal},
+accepted for publication
 
 Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009):
 Mixed treatment comparison meta-analysis of complex interventions:
