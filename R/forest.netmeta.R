@@ -9,6 +9,7 @@
 #' @param baseline.reference A logical indicating whether results
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa.
+#' @param labels An optional vector with treatment labels.
 #' @param pooled A character string indicating whether results for the
 #'   fixed effect (\code{"fixed"}) or random effects model
 #'   (\code{"random"}) should be plotted. Can be abbreviated.
@@ -156,6 +157,7 @@ forest.netmeta <- function(x,
                            pooled = ifelse(x$comb.random, "random", "fixed"),
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
+                           labels = x$trts,
                            leftcols = "studlab",
                            leftlabs,
                            rightcols = c("effect", "ci"),
@@ -194,6 +196,25 @@ forest.netmeta <- function(x,
   meta:::chknumeric(digits, min = 0, single = TRUE)
   ##
   chklogical(baseline.reference)
+  ##
+  mf <- match.call()
+  ##
+  trts <- x$trts
+  ##
+  if (!missing(labels)) {
+    ##
+    labels <- eval(mf[[match("labels", names(mf))]],
+                   x, enclos = sys.frame(sys.parent()))
+    ##
+    if (is.null(labels))
+      stop("Argument 'labels' must be not NULL.")
+    ##
+    if (length(labels) != length(trts))
+      stop("Length of argument 'labels' must be equal to number of treatments.")
+    ##
+    names(labels) <- trts
+  }
+  ##
   chklogical(drop.reference.group)
   chklogical(print.byvar)
   ##
@@ -213,8 +234,6 @@ forest.netmeta <- function(x,
   ##     and calculate P-scores
   ##
   ##
-  labels <- colnames(x$TE.fixed)
-  ##
   one.rg <- length(reference.group) == 1
   ##
   if (one.rg) {
@@ -222,14 +241,16 @@ forest.netmeta <- function(x,
       warning("First treatment used as reference as argument ",
               "'reference.group' is unspecified.",
               call. = FALSE)
-      reference.group <- labels[1]
+      reference.group <- trts[1]
     }
-    else
-      reference.group <- setref(reference.group, labels)
+    else {
+      try.ref <- try(reference.group <- setref(reference.group, trts))
+      
+    }
   }
   else
     for (i in seq_along(reference.group))
-      reference.group[i] <- setref(reference.group[i], labels)
+      reference.group[i] <- setref(reference.group[i], trts)
   ##
   if (pooled == "fixed") {
     TE   <- x$TE.fixed
@@ -334,6 +355,7 @@ forest.netmeta <- function(x,
     if (baseline.reference)
       dat.i <- data.frame(comparison = rg.i,
                           treat = colnames(TE),
+                          labels = labels,
                           TE = TE[, colnames(TE) == rg.i],
                           seTE = seTE[, colnames(seTE) == rg.i],
                           Pscore = Pscore,
@@ -348,6 +370,7 @@ forest.netmeta <- function(x,
                           TE = TE[rownames(TE) == rg.i, ],
                           seTE = seTE[rownames(seTE) == rg.i, ],
                           treat = rownames(TE),
+                          labels = labels,
                           k = x$A.matrix[rownames(TE) == rg.i, ],
                           prop.direct =
                             if (is.bin) prop.direct
@@ -358,13 +381,13 @@ forest.netmeta <- function(x,
       if (!is.data.frame(add.data))
         stop("Argument 'add.data' must be a data frame.",
              call. = FALSE)
-      if (nrow(add.data) != length(labels))
+      if (nrow(add.data) != length(trts))
         stop("Dataset 'add.data' must have ", nrow(dat.i),
              " rows (corresponding to number of treatments)",
              call. = FALSE)
-      if (any(rownames(add.data) != labels))
+      if (any(rownames(add.data) != trts))
         stop("Dataset 'add.data' must have the following row names:\n",
-             paste(paste("'", labels, "'", sep = ""), collapse = " - "),
+             paste(paste("'", trts, "'", sep = ""), collapse = " - "),
              call. = FALSE)
       ##
       dat.i <- cbind(dat.i, add.data)
@@ -404,7 +427,7 @@ forest.netmeta <- function(x,
     ##
     if (!is.null(sortvar)) {
       if (is.character(sortvar))
-        sort <- setseq(sortvar, labels)
+        sort <- setseq(sortvar, trts)
       else
         sort <- order(sortvar)
       ##
@@ -446,13 +469,13 @@ forest.netmeta <- function(x,
   if (one.rg)
     m1 <- metagen(TE, seTE, data = dat,
                   sm = x$sm,
-                  studlab = treat, backtransf = backtransf,
+                  studlab = labels, backtransf = backtransf,
                   warn = FALSE)
   else
     m1 <- metagen(TE, seTE, data = dat,
                   byvar = dat$comparison,
                   sm = x$sm,
-                  studlab = treat, backtransf = backtransf,
+                  studlab = labels, backtransf = backtransf,
                   warn = FALSE)
   ##
   forest(m1,

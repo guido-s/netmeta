@@ -41,6 +41,10 @@
     - arguments 'col.highlight' and 'scale.highlight' can be vectors
       with same length as argument 'highlight'
 
+  * forest.netmeta():
+    - new argument 'labels' to provide treatment names - similar to
+      netgraph()
+
  ** Internal changes **
 
   * multiarm():

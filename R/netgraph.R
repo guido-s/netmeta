@@ -396,11 +396,19 @@ netgraph <- function(x, seq = x$seq,
   missing.start.layout <- missing(start.layout)
   start.layout <- setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
   ##
+  mf <- match.call()
+  ##
   if (!missing(seq) & is.null(seq))
     stop("Argument 'seq' must be not NULL.")
   ##
-  if (!missing(labels) & is.null(labels))
-    stop("Argument 'labels' must be not NULL.")
+  if (!missing(labels)) {
+    ##
+    labels <- eval(mf[[match("labels", names(mf))]],
+                   x, enclos = sys.frame(sys.parent()))
+    ##
+    if (is.null(labels))
+      stop("Argument 'labels' must be not NULL.")
+  }
   ##
   ## Colors of edges
   ##
@@ -437,6 +445,10 @@ netgraph <- function(x, seq = x$seq,
     stop("Length of argument 'pos.number.of.studies' (",
          n.pos, ") is different from the number of direct pairwise comparisons (",
          n.edges, ")")
+  ##
+  if (!missing(cex.points))
+    cex.points <- eval(mf[[match("cex.points", names(mf))]],
+                       x, enclos = sys.frame(sys.parent()))
   ##
   if (length(cex.points) == 1)
     cex.points <- rep(cex.points, n.trts)
@@ -782,7 +794,7 @@ netgraph <- function(x, seq = x$seq,
       if (length(offset) != length(labels))
         stop("Length of vector 'offset' must be equal to number of treatments.")
       ##
-      rownames(offset) <- x$trts
+      names(offset) <- x$trts
       offset.x <- offset[seq1]
       offset.y <- offset[seq1]
     }

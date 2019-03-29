@@ -6,9 +6,9 @@
 \usage{
 \method{forest}{netmeta}(x, pooled = ifelse(x$comb.random, "random",
   "fixed"), reference.group = x$reference.group,
-  baseline.reference = x$baseline.reference, leftcols = "studlab",
-  leftlabs, rightcols = c("effect", "ci"), rightlabs,
-  digits = gs("digits.forest"), small.values = "good",
+  baseline.reference = x$baseline.reference, labels = x$trts,
+  leftcols = "studlab", leftlabs, rightcols = c("effect", "ci"),
+  rightlabs, digits = gs("digits.forest"), small.values = "good",
   digits.Pscore = 2, smlab = NULL, sortvar = x$seq,
   backtransf = x$backtransf, lab.NA = ".", add.data,
   drop.reference.group = FALSE, col.by = "black",
@@ -26,6 +26,8 @@ fixed effect (\code{"fixed"}) or random effects model
 \item{baseline.reference}{A logical indicating whether results
 should be expressed as comparisons of other treatments versus the
 reference treatment (default) or vice versa.}
+
+\item{labels}{An optional vector with treatment labels.}
 
 \item{leftcols}{A character vector specifying (additional) columns
 to be plotted on the left side of the forest plot or a logical
