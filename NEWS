@@ -44,6 +44,8 @@
   * forest.netmeta():
     - new argument 'labels' to provide treatment names - similar to
       netgraph()
+    - labels set automatically for columns "pscore", "k" and
+      "prop.direct" in argument 'leftcols' and 'rightcols'
 
  ** Internal changes **
 
@@ -52,6 +54,8 @@
     - set very small negative values in matrix W equal to zero
     - object k instead of n denotes number of treatment arms
       (same notation as Rücker & Schwarzer, 2014)
+
+  * new auxiliary internal functions for forest plots
 
 
 **** netmeta, version 1.0-1, 2019-01-02 ***
