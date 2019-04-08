@@ -418,7 +418,7 @@ funnel.netmeta <- function(x,
     mb.mm <- metabias(m.adj, method = "mm")
   ##
   if (linreg | rank | mm)
-    legend("topleft",
+    legend(pos.tests,
            legend = paste(meta:::formatPT(c(if (linreg) mb.linreg$p.value,
                                             if (rank) mb.rank$p.value,
                                             if (mm) mb.mm$p.value),
