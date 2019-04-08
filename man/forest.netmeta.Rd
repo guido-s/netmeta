@@ -118,7 +118,7 @@ forest plot, respectively. The following columns are available:
 \code{"TE"} \tab Network estimates (either from fixed or random
   effects model) \cr
 \code{"seTE"} \tab Corresponding standard errors \cr
-\code{"pscore"} \tab P-scores (see \code{\link{netrank}}) \cr
+\code{"Pscore"} \tab P-scores (see \code{\link{netrank}}) \cr
 \code{"k"} \tab Number of studies in pairwise comparisons \cr
 \code{"prop.direct"} \tab Direct evidence proportions (see
   \code{\link{netmeasures}}) \cr

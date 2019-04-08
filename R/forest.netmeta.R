@@ -83,7 +83,7 @@
 #' \code{"TE"} \tab Network estimates (either from fixed or random
 #'   effects model) \cr
 #' \code{"seTE"} \tab Corresponding standard errors \cr
-#' \code{"pscore"} \tab P-scores (see \code{\link{netrank}}) \cr
+#' \code{"Pscore"} \tab P-scores (see \code{\link{netrank}}) \cr
 #' \code{"k"} \tab Number of studies in pairwise comparisons \cr
 #' \code{"prop.direct"} \tab Direct evidence proportions (see
 #'   \code{\link{netmeasures}}) \cr
@@ -424,17 +424,17 @@ forest.netmeta <- function(x,
     ##
     ## Sort dataset according to argument sortvar
     ##
-    if (any(matchVar(sortvar.c, "pscore")))
+    if (any(matchVar(sortvar.c, "Pscore")))
       sortvar <- Pscore
-    else if (any(matchVar(sortvar.c, "-pscore")))
+    else if (any(matchVar(sortvar.c, "-Pscore")))
       sortvar <- -Pscore
-    else if (any(matchVar(sortvar.c, "te")))
+    else if (any(matchVar(sortvar.c, "TE")))
       sortvar <- dat.i$TE
-    else if (any(matchVar(sortvar.c, "-te")))
+    else if (any(matchVar(sortvar.c, "-TE")))
       sortvar <- -dat.i$TE
-    else if (any(matchVar(sortvar.c, "sete")))
+    else if (any(matchVar(sortvar.c, "seTE")))
       sortvar <- dat.i$seTE
-    else if (any(matchVar(sortvar.c, "-sete")))
+    else if (any(matchVar(sortvar.c, "-seTE")))
       sortvar <- -dat.i$seTE
     else if (any(matchVar(sortvar.c, "k")))
       sortvar <- dat.i$k
