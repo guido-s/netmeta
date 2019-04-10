@@ -11,7 +11,9 @@
   * netmeta():
     - no error if argument 'studlab' is missing
     - tackle numerical problems with zero treatment arm variances -
-      actually by changes in internal function multiarm()
+      actually by changes in internal function multiarm()      
+    - calculate the correct number of patients and events for each
+      treatment arm in networks with multi-arm studies
 
   * netmetabin():
     - only drop single treatment arms without any events in multi-arm
@@ -25,6 +27,8 @@
       pairwise() and argument 'data' is not used
     - no error in printing of network meta-analysis object if argument
       'event1' is not an R object created with pairwise()
+    - calculate the correct number of patients and events for each
+      treatment arm in networks with multi-arm studies
 
   * netgraph():
     - argument 'seq' equal to "optimal" works for a single design

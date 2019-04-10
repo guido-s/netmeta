@@ -1904,19 +1904,25 @@ netmetabin <- function(event1, n1, event2, n2,
   rownames(res$data) <- seq_len(nrow(res$data))
   
   
-  res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
-  ##
-  dat.e <- bySummary(c(event1, event2), c(treat1, treat2), long = FALSE)
-  rownames(dat.e) <- dat.e$indices
-  res$events.trts <- dat.e[trts, "sum"]
-  names(res$events.trts) <- trts
-  ##
   res$n.matrix <- netmatrix(res, n1 + n2, func = "sum")
   ##
-  dat.n <- bySummary(c(n1, n2), c(treat1, treat2), long = FALSE)
-  rownames(dat.n) <- dat.n$indices
-  res$n.trts <- dat.n[trts, "sum"]
+  dat.n <- data.frame(studlab = c(studlab, studlab),
+                      treat = c(treat1, treat2),
+                      n = c(n1, n2))
+  dat.n <- dat.n[!duplicated(dat.n[, c("studlab", "treat")]), ]
+  dat.n <- by(dat.n$n, dat.n$treat, sum, na.rm = TRUE)
+  res$n.trts <- as.vector(dat.n[trts])
   names(res$n.trts) <- trts
+  ##
+  res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
+  ##
+  dat.e <- data.frame(studlab = c(studlab, studlab),
+                      treat = c(treat1, treat2),
+                      n = c(event1, event2))
+  dat.e <- dat.e[!duplicated(dat.e[, c("studlab", "treat")]), ]
+  dat.e <- by(dat.e$n, dat.e$treat, sum, na.rm = TRUE)
+  res$events.trts <- as.vector(dat.e[trts])
+  names(res$events.trts) <- trts
   
   
   res
