@@ -490,12 +490,10 @@ netgraph <- function(x, seq = x$seq,
     if (!missing(seq) & !is.null(seq) & (is.null(xpos) & is.null(ypos)))
       warning("Argument 'seq' only considered if start.layout=\"circle\" and iterate=FALSE.")
   }
-  else {
-    rn <- rownames(x$TE.fixed)
-    seq1 <- charmatch(setseq(seq, rn), rn)
-  }
-
-
+  else
+    seq1 <- charmatch(setseq(seq, x$trts), x$trts)
+  
+  
   if (missing(iterate))
     iterate <- ifelse(start.layout == "circle", FALSE, TRUE)
   else if (length(seq) == 1 && seq == "optimal") {
@@ -618,6 +616,7 @@ netgraph <- function(x, seq = x$seq,
   if (thick == "matrix")
     W.matrix <- W.matrix[seq1, seq1]
   ##
+  trts <- x$trts[seq1]
   labels <- labels[seq1]
   ##
   col.points <- col.points[seq1]
@@ -703,7 +702,7 @@ netgraph <- function(x, seq = x$seq,
   ##
   ## Dataset for nodes
   ##
-  dat.nodes <- data.frame(labels, seq,
+  dat.nodes <- data.frame(trts, labels, seq,
                           xpos, ypos, zpos = NA,
                           xpos.labels = NA, ypos.labels = NA,
                           cex = cex.points,
@@ -983,17 +982,17 @@ netgraph <- function(x, seq = x$seq,
       if (multiarm) {
         ##
         if (n.multi > 0) {
-          multiarm.labels <- vector("list", n.multi)
+          multiarm.treat <- vector("list", n.multi)
           if (length(col.polygon) == 1)
             col.polygon <- rep(col.polygon, n.multi)
           for (i in 1:n.multi) {
             treat1 <- x$treat1[x$studlab %in% multiarm.studies[i]]
             treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
-            multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
+            multiarm.treat[[i]] <- sort(unique(c(treat2, treat1)))
             ##
-            dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
+            dat.multi <- dat.nodes[dat.nodes$trts %in% multiarm.treat[[i]], ]
             if (nrow(dat.multi) == 0)
-              dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
+              dat.multi <- dat.nodes[dat.nodes$trts %in% multiarm.treat[[i]], ]
             ##
             ## Clockwise ordering of polygon coordinates
             ##
@@ -1082,17 +1081,17 @@ netgraph <- function(x, seq = x$seq,
           if (length(highs) != 2)
             stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
           ##
-          if (sum(dat.nodes$labels %in% highs) != 2)
+          if (sum(dat.nodes$trts %in% highs) != 2)
             stop(paste("Argument 'highlight' must contain two of the following values (separated by \":\"):\n  ",
-                       paste(paste("'", dat.nodes$labels, "'", sep = ""),
+                       paste(paste("'", dat.nodes$trts, "'", sep = ""),
                              collapse = " - "), sep = ""))
           ##
-          dat.high <- dat.nodes[dat.nodes$labels %in% highs, ]
+          dat.high <- dat.nodes[dat.nodes$trts %in% highs, ]
           ##
           if (is_2d)
             for (n.plines in 1:length(lwd.multiply))
               lines(dat.high$xpos, dat.high$ypos,
-                    lwd = W.matrix[labels == highs[1], labels == highs[2]] *
+                    lwd = W.matrix[trts == highs[1], trts == highs[2]] *
                       lwd.multiply[n.plines] *
                       scales.highlight[high.i, n.plines],
                     col = cols.highlight[high.i, n.plines])
@@ -1169,16 +1168,16 @@ netgraph <- function(x, seq = x$seq,
           if (length(highs) != 2)
             stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
           ##
-          if (sum(dat.nodes$labels %in% highs) != 2)
+          if (sum(dat.nodes$trts %in% highs) != 2)
             stop(paste("Argument 'highlight' must contain two of the following values (separated by \":\"):\n  ",
-                       paste(paste("'", dat.nodes$labels, "'", sep = ""),
+                       paste(paste("'", dat.nodes$trts, "'", sep = ""),
                              collapse = " - "), sep = ""))
           ##
-          dat.high <- dat.nodes[dat.nodes$labels %in% highs, ]
+          dat.high <- dat.nodes[dat.nodes$trts %in% highs, ]
           ##
           rgl::lines3d(dat.high$xpos * (1 + 1e-4), dat.high$ypos * (1 + 1e-4),
                        dat.high$zpos * (1 + 1e-4),
-                       lwd = W.matrix[labels == highs[1], labels == highs[2]],
+                       lwd = W.matrix[trts == highs[1], trts == highs[2]],
                        col = col.highlight)
         }
       }
@@ -1190,17 +1189,17 @@ netgraph <- function(x, seq = x$seq,
         morethan3 <- FALSE
         ##
         if (n.multi > 0) {
-          multiarm.labels <- vector("list", n.multi)
+          multiarm.treat <- vector("list", n.multi)
           if (length(col.polygon) == 1)
             col.polygon <- rep(col.polygon, n.multi)
           for (i in 1:n.multi) {
             treat1 <- x$treat1[x$studlab %in% multiarm.studies[i]]
             treat2 <- x$treat2[x$studlab %in% multiarm.studies[i]]
-            multiarm.labels[[i]] <- sort(unique(c(treat2, treat1)))
+            multiarm.treat[[i]] <- sort(unique(c(treat2, treat1)))
             ##
-            dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
+            dat.multi <- dat.nodes[dat.nodes$trts %in% multiarm.treat[[i]], ]
             if (nrow(dat.multi) == 0)
-              dat.multi <- dat.nodes[dat.nodes$labels %in% multiarm.labels[[i]], ]
+              dat.multi <- dat.nodes[dat.nodes$trts %in% multiarm.treat[[i]], ]
             if (nrow(dat.multi) == 3)
               rgl::triangles3d(dat.multi$xpos, dat.multi$ypos, dat.multi$zpos,
                                col = col.polygon[i])
@@ -1247,7 +1246,7 @@ netgraph <- function(x, seq = x$seq,
 
   dat.edges$xpos[is.zero(dat.edges$xpos)] <- 0
   dat.edges$ypos[is.zero(dat.edges$ypos)] <- 0
-
-
+  
+  
   invisible(list(nodes = dat.nodes, edges = dat.edges))
 }

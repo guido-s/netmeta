@@ -32,6 +32,9 @@
 
   * netgraph():
     - argument 'seq' equal to "optimal" works for a single design
+    - multi-arm studies are highlighted if argument 'labels' is used
+    - comparisons defined by argument 'highlight' are marked in the
+      network graph if argument 'labels' is used
 
   * pairwise():
     - no error if function is used without argument 'data'
