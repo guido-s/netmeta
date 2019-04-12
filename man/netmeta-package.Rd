@@ -42,8 +42,9 @@ providing the following meta-analysis methods:
 \item\sQuote{comparison-adjusted} funnel plot
   (\code{\link{funnel.netmeta}}) to assess funnel plot asymmetry in
   network meta-analysis (Chaimani & Salanti, 2012)
-\item automated drawing of network graphs (\code{\link{netgraph}})
-  described in Rücker & Schwarzer (2016);
+\item automated drawing of network graphs
+  (\code{\link{netgraph.netmeta}}) described in Rücker & Schwarzer
+  (2016);
 \item results of several network meta-analyses can be combined with
   \code{\link{netbind}} to show these results in a forest plot.
 }

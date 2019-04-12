@@ -5,7 +5,10 @@
   * Use roxygen2 for development of R package netmeta
 
   * New function plot.netrank() to produce image plot of P-scores
-    
+
+  * New functions netimpact(), netgraph.netimpact(), print.netimpact()
+    to measure the impact of individual studies to network estimates
+
  ** Bug fixes **
 
   * netmeta():
@@ -41,7 +44,10 @@
 
  ** User-visible changes **
 
-  * netgraph():
+  * netgraph() is a generic function and original function netgraph()
+    renamed to netgraph.netmeta()
+
+  * netgraph.netmeta():
     - new argument 'bg.points'
     - new argument 'scale.highlight' which replaces argument
       'lwd.highlight' (which actually was ignored)

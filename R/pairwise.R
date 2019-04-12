@@ -198,7 +198,7 @@
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{metacont}},
 #'   \code{\link{metagen}}, \code{\link{metabin}},
-#'   \code{\link{metainc}}, \code{\link{netgraph}}
+#'   \code{\link{metainc}}, \code{\link{netgraph.netmeta}}
 #' 
 #' @keywords datagen
 #' 

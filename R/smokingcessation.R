@@ -28,7 +28,7 @@
 #' }
 #' 
 #' @seealso \code{\link{pairwise}}, \code{\link{metabin}},
-#'   \code{\link{netmeta}}, \code{\link{netgraph}}
+#'   \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 #' 
 #' @source
 #' Dias S, Welton NJ, Sutton AJ, Caldwell DM, Lu G and Ades AE (2013):

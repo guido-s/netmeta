@@ -154,7 +154,7 @@ print.netmeta <- function(x,
       sm.lab <- paste("log", sm, sep = "")
     
     
-    trts <- rownames(x$TE.fixed)
+    trts <- x$trts
     trts.abbr <- treats(trts, nchar.trts)
     ##
     treat1 <- as.character(factor(x$treat1, levels = trts, labels = trts.abbr))

@@ -32,7 +32,7 @@
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
-#' @seealso \code{\link{netmeta}}, \code{\link{netgraph}}
+#' @seealso \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 #' 
 #' @examples
 #' data(smokingcessation)

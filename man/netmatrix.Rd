@@ -77,7 +77,7 @@ netgraph(net1, col = col.rob,
 
 }
 \seealso{
-\code{\link{netmeta}}, \code{\link{netgraph}}
+\code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 }
 \author{
 Guido Schwarzer \email{sc@imbi.uni-freiburg.de}

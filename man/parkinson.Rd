@@ -70,6 +70,6 @@ netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
 }
 \seealso{
 \code{\link{pairwise}}, \code{\link{metacont}},
-  \code{\link{netmeta}}, \code{\link{netgraph}}
+  \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 }
 \keyword{datasets}
