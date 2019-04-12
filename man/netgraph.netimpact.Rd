@@ -4,9 +4,9 @@
 \alias{netgraph.netimpact}
 \title{Network graph for objects of class netimpact}
 \usage{
-\method{netgraph}{netimpact}(x, col.ignore = "transparent",
+\method{netgraph}{netimpact}(x, col.ignore = "red", main, sub,
   multiarm = any(x$x$narms > 2), col.multiarm = NULL,
-  alpha.transparency = 0.5, col.ignore.multiarm = col.ignore, ...)
+  alpha.transparency = 0.5, col.ignore.multiarm = "transparent", ...)
 }
 \arguments{
 \item{x}{An object of class \code{netimpact}.}
@@ -14,6 +14,10 @@
 \item{col.ignore}{A character string indicating color for
 comparisons removed from network, either \code{"transparent"} or
 any color defined in \code{\link[grDevices]{colours}}.}
+
+\item{main}{Main title.}
+
+\item{sub}{Subtitle.}
 
 \item{multiarm}{A logical indicating whether multi-arm studies
 should be marked in plot.}
@@ -48,13 +52,14 @@ p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
 
 net1 <- netmeta(p1)
 ni <- netimpact(net1, verbose = TRUE)
-netgraph(ni)
+netgraph(ni, plastic = FALSE)
 
 }
 \seealso{
 \code{\link{netimpact}}, \code{\link{netgraph.netmeta}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{sc@imbi.uni-freiburg.de},
+  Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}
 }
 \keyword{hplot}

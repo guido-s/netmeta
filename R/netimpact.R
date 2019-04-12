@@ -37,10 +37,10 @@
 #'                data = parkinson, studlab = Study)
 #' 
 #' net1 <- netmeta(p1)
-#' ni <- netimpact(net1, verbose = TRUE)
-#' ni
+#' ni1 <- netimpact(net1, verbose = TRUE)
+#' ni1
 #'
-#' netgraph(ni)
+#' netgraph(ni1)
 #' 
 #' @export netimpact
 

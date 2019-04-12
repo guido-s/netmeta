@@ -230,22 +230,26 @@ the result depends on the network structure.
 Argument \code{thickness} providing the line width of the nodes
 (comparisons) can be a matrix of the same dimension as argument
 \code{A.matrix} or any of the following character variables:
-\itemize{ \item Same line width (argument \code{lwd}) for all
-comparisons (\code{thickness = "equal"}) \item Proportional to
-number of studies comparing two treatments (\code{thickness =
-"number.of.studies"}) \item Proportional to inverse standard error
-of fixed effect model comparing two treatments (\code{thickness =
-"se.fixed"}) \item Proportional to inverse standard error of random
-effects model comparing two treatments (\code{thickness =
-"se.random"}) \item Weight from fixed effect model comparing two
-treatments (\code{thickness = "w.fixed"}) \item Weight from random
-effects model comparing two treatments (\code{thickness =
-"w.random"}) } Only evidence from direct treatment comparisons is
-considered to determine the line width if argument \code{thickness}
-is equal to any but the first method. By default, \code{thickness =
-"se.fixed"} is used if \code{start.layout = "circle"},
-\code{iterate = FALSE}, and \code{plastic = TRUE}. Otherwise, the
-same line width is used.
+\itemize{
+\item Same line width (argument \code{lwd}) for all comparisons
+  (\code{thickness = "equal"})
+\item Proportional to number of studies comparing two treatments
+  (\code{thickness = "number.of.studies"})
+\item Proportional to inverse standard error of fixed effect model
+  comparing two treatments (\code{thickness = "se.fixed"})
+\item Proportional to inverse standard error of random effects
+  model comparing two treatments (\code{thickness = "se.random"})
+\item Weight from fixed effect model comparing two treatments
+  (\code{thickness = "w.fixed"})
+\item Weight from random effects model comparing two treatments
+  (\code{thickness = "w.random"})
+}
+
+Only evidence from direct treatment comparisons is considered to
+determine the line width if argument \code{thickness} is equal to
+any but the first method. By default, \code{thickness = "se.fixed"}
+is used if \code{start.layout = "circle"}, \code{iterate = FALSE},
+and \code{plastic = TRUE}. Otherwise, the same line width is used.
 
 Further, a couple of graphical parameters can be specified, such as
 color and appearance of the edges (treatments) and the nodes

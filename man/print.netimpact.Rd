@@ -4,12 +4,14 @@
 \alias{print.netimpact}
 \title{Print method for objects of class netimpact}
 \usage{
-\method{print}{netimpact}(x, ...)
+\method{print}{netimpact}(x, digits = gs("digits.prop"), ...)
 }
 \arguments{
 \item{x}{An object of class \code{netimpact}.}
 
-\item{\dots}{Additional arguments.}
+\item{digits}{Minimal number of significant digits.}
+
+\item{\dots}{Additional arguments (ignored).}
 }
 \description{
 Print method for objects of class \code{netimpact}.

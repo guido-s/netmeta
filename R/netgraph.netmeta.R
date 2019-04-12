@@ -987,11 +987,21 @@ netgraph.netmeta <- function(x, seq = x$seq,
           cols.highlight[, j] <- paste("gray", round(100 * (1 - i / n.plastic)),
                                        sep = "")
         }
-        if (substring(col.highlight, nchar(col.highlight)) %in% 1:4)
-          col.highlight <- substring(col.highlight, 1, nchar(col.highlight) - 1)
-        cols.highlight[, 1:12] <- rep(paste(col.highlight, 4:1, sep = ""),
-                                      rep(3, 4))
-        cols.highlight[, 13:15] <- rep(col.highlight, 3)
+        ##
+        for (h in seq_len(n.high)) {
+          col.high.h <- col.highlight[h]
+          if (col.high.h != "transparent") {
+            if (substring(col.high.h, nchar(col.high.h)) %in% 1:4)
+              col.high.h <- substring(col.high.h, 1, nchar(col.high.h) - 1)
+            ##
+            cols.highlight[h, 1:12] <- rep(paste(col.high.h, 4:1, sep = ""),
+                                           rep(3, 4))
+            cols.highlight[h, 13:15] <- rep(col.high.h, 3)
+          }
+          else {
+            cols.highlight[h, 1:15] <- col.high.h
+          }
+        }
       }
       else {
         lwd.multiply <- 1

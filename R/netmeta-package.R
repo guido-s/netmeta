@@ -153,7 +153,7 @@
 #' @importFrom grDevices colours col2rgb heat.colors rgb xy.coords
 #'
 #' @importFrom graphics axis box lines par points plot polygon rect
-#'   text strheight strwidth
+#'   text strheight strwidth title
 #'
 #' @importFrom stats dist hclust optim pchisq prcomp reshape rnorm sd
 #'

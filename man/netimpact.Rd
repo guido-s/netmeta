@@ -40,10 +40,10 @@ p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
                data = parkinson, studlab = Study)
 
 net1 <- netmeta(p1)
-ni <- netimpact(net1, verbose = TRUE)
-ni
+ni1 <- netimpact(net1, verbose = TRUE)
+ni1
 
-netgraph(ni)
+netgraph(ni1)
 
 }
 \seealso{
@@ -51,5 +51,6 @@ netgraph(ni)
   \code{\link{print.netimpact}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{sc@imbi.uni-freiburg.de},
+  Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}
 }

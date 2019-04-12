@@ -7,6 +7,8 @@
 #' @param col.ignore A character string indicating color for
 #'   comparisons removed from network, either \code{"transparent"} or
 #'   any color defined in \code{\link[grDevices]{colours}}.
+#' @param main Main title.
+#' @param sub Subtitle.
 #' @param multiarm A logical indicating whether multi-arm studies
 #'   should be marked in plot.
 #' @param col.multiarm Either a function from R library colorspace or
@@ -40,7 +42,7 @@
 #' 
 #' net1 <- netmeta(p1)
 #' ni <- netimpact(net1, verbose = TRUE)
-#' netgraph(ni)
+#' netgraph(ni, plastic = FALSE)
 #' 
 #' @method netgraph netimpact
 #' @export
