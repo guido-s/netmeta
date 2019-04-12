@@ -21,7 +21,8 @@
 #' \item{seTE.ignore, x}{As defined above.}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de},
+#'   Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netgraph.netimpact}},
 #'   \code{\link{print.netimpact}}
