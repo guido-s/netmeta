@@ -1035,8 +1035,6 @@ netgraph.netmeta <- function(x, seq = x$seq,
                       lwd.multiply[n.plines] *
                       scales.highlight[high.i, n.plines],
                     col = cols.highlight[high.i, n.plines])
-              print(high)
-              print(cols.highlight[high.i, n.plines])
             }
           ##
           A.sign[trts == highs[1], trts == highs[2]] <- 0
