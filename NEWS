@@ -53,6 +53,7 @@
       'lwd.highlight' (which actually was ignored)
     - arguments 'col.highlight' and 'scale.highlight' can be vectors
       with same length as argument 'highlight'
+    - print highlighted comparisons in the background of the graph
 
   * forest.netmeta():
     - new argument 'labels' to provide treatment names - similar to

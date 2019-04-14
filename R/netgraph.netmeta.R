@@ -999,7 +999,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
             cols.highlight[h, 13:15] <- rep(col.high.h, 3)
           }
           else {
-            cols.highlight[h, 1:15] <- col.high.h
+            cols.highlight[h, ] <- col.high.h
           }
         }
       }
@@ -1008,6 +1008,40 @@ netgraph.netmeta <- function(x, seq = x$seq,
         cols <- col
         cols.highlight <- matrix(col.highlight, nrow = n.high, ncol = 1)
         scales.highlight <- matrix(scale.highlight, nrow = n.high, ncol = 1)
+      }
+      ##
+      ## Add highlighted comparisons
+      ##
+      if (!is.null(highlight)) {
+        high.i <- 0
+        for (high in highlight) {
+          high.i <- high.i + 1
+          highs <- unlist(compsplit(high, split = highlight.split))
+          if (length(highs) != 2)
+            stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
+          ##
+          if (sum(dat.nodes$trts %in% highs) != 2)
+            stop(paste0("Argument 'highlight' must contain two of the following values ",
+                        "(separated by \":\"):\n  ",
+                        paste(paste("'", dat.nodes$trts, "'", sep = ""),
+                              collapse = " - "), sep = ""))
+          ##
+          dat.high <- dat.nodes[dat.nodes$trts %in% highs, ]
+          ##
+          if (is_2d)
+            for (n.plines in 1:length(lwd.multiply)) {
+              lines(dat.high$xpos, dat.high$ypos,
+                    lwd = W.matrix[trts == highs[1], trts == highs[2]] *
+                      lwd.multiply[n.plines] *
+                      scales.highlight[high.i, n.plines],
+                    col = cols.highlight[high.i, n.plines])
+              print(high)
+              print(cols.highlight[high.i, n.plines])
+            }
+          ##
+          A.sign[trts == highs[1], trts == highs[2]] <- 0
+          A.sign[trts == highs[2], trts == highs[1]] <- 0
+        }
       }
       ##
       ## Add lines
@@ -1031,33 +1065,6 @@ netgraph.netmeta <- function(x, seq = x$seq,
               comp.i <- comp.i + 1
             }
           }
-        }
-      }
-      ##
-      ## Add highlighted comparisons
-      ##
-      if (!is.null(highlight)) {
-        high.i <- 0
-        for (high in highlight) {
-          high.i <- high.i + 1
-          highs <- unlist(compsplit(high, split = highlight.split))
-          if (length(highs) != 2)
-            stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
-          ##
-          if (sum(dat.nodes$trts %in% highs) != 2)
-            stop(paste("Argument 'highlight' must contain two of the following values (separated by \":\"):\n  ",
-                       paste(paste("'", dat.nodes$trts, "'", sep = ""),
-                             collapse = " - "), sep = ""))
-          ##
-          dat.high <- dat.nodes[dat.nodes$trts %in% highs, ]
-          ##
-          if (is_2d)
-            for (n.plines in 1:length(lwd.multiply))
-              lines(dat.high$xpos, dat.high$ypos,
-                    lwd = W.matrix[trts == highs[1], trts == highs[2]] *
-                      lwd.multiply[n.plines] *
-                      scales.highlight[high.i, n.plines],
-                    col = cols.highlight[high.i, n.plines])
         }
       }
       ##

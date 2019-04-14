@@ -69,7 +69,7 @@ netimpact <- function(x, seTE.ignore = 1e6, verbose = FALSE) {
   ##
   ## Run network meta-analyses "excluding" one study at a time
   ##
-  ignored <- list()
+  ignored <- nets <- list()
   ##
   for (i in x$studies) {
     ##
@@ -89,8 +89,11 @@ netimpact <- function(x, seTE.ignore = 1e6, verbose = FALSE) {
     seTE.i <- seTE
     seTE.i[studlab == i] <- seTE.ignore
     ##
+    net.i <- netmeta(TE, seTE.i, treat1, treat2, studlab)
+    nets[[i]] <- net.i
+    ##
     seTE.nma <- x$seTE.fixed
-    seTE.i   <- netmeta(TE, seTE.i, treat1, treat2, studlab)$seTE.fixed
+    seTE.i   <- net.i$seTE.fixed
     ##
     zero <- abs(lowertri(seTE.i) - lowertri(seTE.nma)) < .Machine$double.eps^0.5
     ##
@@ -103,6 +106,7 @@ netimpact <- function(x, seTE.ignore = 1e6, verbose = FALSE) {
               ignored.comparisons = ignored,
               seTE.ignore = seTE.ignore,
               x = x,
+              nets = nets,
               version = packageDescription("netmeta")$Version)
   ##
   class(res) <- "netimpact"

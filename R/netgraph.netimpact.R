@@ -120,15 +120,14 @@ netgraph.netimpact <- function(x, col.ignore = "red",
     if (multiarm)
       col.polygon.i[multiarm.studies == i] <- col.ignore.multiarm
     ##
-    net.i <- netmeta(TE, seTE.i, treat1, treat2, studlab, seq = x$x$seq)
+    net.i <- x$nets[[i]]
     ##
     net.i$A.matrix[treat1.i, treat2.i] <- net.i$A.matrix[treat1.i, treat2.i] - 1
     net.i$A.matrix[treat2.i, treat1.i] <- net.i$A.matrix[treat2.i, treat1.i] - 1
     ##
-    for (j in seq_along(treat1.i)) {
+    for (j in seq_along(treat1.i))
       if (net.i$A.matrix[treat1.i[j], treat2.i[j]] == 0)
         col.ignore.i[j] <- "transparent"
-    }
     ##
     n.i <- netgraph(net.i,
                     highlight = comp.i, col.highlight = col.ignore.i,
