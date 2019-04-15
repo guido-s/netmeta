@@ -7,6 +7,8 @@
 #' @param col.ignore A character string indicating color for
 #'   comparisons removed from network, either \code{"transparent"} or
 #'   any color defined in \code{\link[grDevices]{colours}}.
+#' @param number.of.studies A logical indicating whether number of
+#'   studies should be added to network graph.
 #' @param main Main title.
 #' @param sub Subtitle.
 #' @param multiarm A logical indicating whether multi-arm studies
@@ -49,7 +51,9 @@
 #' @export netgraph.netimpact
 
 
-netgraph.netimpact <- function(x, col.ignore = "red",
+netgraph.netimpact <- function(x,
+                               col.ignore = "red",
+                               number.of.studies = TRUE,
                                main, sub,
                                multiarm = any(x$x$narms > 2),
                                col.multiarm = NULL,
@@ -100,17 +104,17 @@ netgraph.netimpact <- function(x, col.ignore = "red",
     multiarm.studies <- mc$multiarm.studies
   }
   ##
+  res <- list()
+  ##
   for (i in studies) {
     ##
     seTE.i <- seTE
     seTE.i[studlab == i] <- x$seTE.ignore
     ##
-    highlight <- comparison[studlab == i]
+    ignore.i <- x$ignored.comparisons[[i]]
+    col.ignore.i <- rep(col.ignore, length(ignore.i))
     ##
-    comp.i <- x$ignored[[i]]
-    col.ignore.i <- rep(col.ignore, length(comp.i))
-    ##
-    mat <- matrix(unlist(strsplit(comp.i, split = sep.trts)),
+    mat <- matrix(unlist(strsplit(ignore.i, split = sep.trts)),
                   ncol = 2, byrow = TRUE)
     treat1.i <- mat[, 1]
     treat2.i <- mat[, 2]
@@ -122,19 +126,25 @@ netgraph.netimpact <- function(x, col.ignore = "red",
     ##
     net.i <- x$nets[[i]]
     ##
-    net.i$A.matrix[treat1.i, treat2.i] <- net.i$A.matrix[treat1.i, treat2.i] - 1
-    net.i$A.matrix[treat2.i, treat1.i] <- net.i$A.matrix[treat2.i, treat1.i] - 1
-    ##
-    for (j in seq_along(treat1.i))
+    for (j in seq_along(treat1.i)) {
+      ##
+      net.i$A.matrix[treat1.i[j], treat2.i[j]] <-
+        net.i$A.matrix[treat1.i[j], treat2.i[j]] - 1
+      net.i$A.matrix[treat2.i[j], treat1.i[j]] <-
+        net.i$A.matrix[treat2.i[j], treat1.i[j]] - 1
+      ##
       if (net.i$A.matrix[treat1.i[j], treat2.i[j]] == 0)
         col.ignore.i[j] <- "transparent"
+    }
     ##
     n.i <- netgraph(net.i,
-                    highlight = comp.i, col.highlight = col.ignore.i,
+                    highlight = ignore.i, col.highlight = col.ignore.i,
                     multiarm = multiarm, col.multiarm = col.polygon.i,
                     alpha.transparency = alpha.transparency,
-                    number.of.studies = TRUE,
+                    number.of.studies = number.of.studies,
                     ...)
+    ##
+    res[[i]] <- list(nodes = n.i$nodes, edges = n.i$edges)
     ##
     if (!missing(main)) {
       if (!(is.logical(main) && length(main) == 1 && !main))
@@ -149,12 +159,12 @@ netgraph.netimpact <- function(x, col.ignore = "red",
     }
     else
       title(sub = paste0("Comparison",
-                         if (length(comp.i) > 1) "s",
+                         if (length(ignore.i) > 1) "s",
                          ": ",
-                         paste(paste("'", comp.i, "'", sep = ""),
+                         paste(paste("'", ignore.i, "'", sep = ""),
                                collapse = ", ")))
   }
   
   
-  invisible(NULL)
+  invisible(res)
 }

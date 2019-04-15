@@ -423,12 +423,15 @@ netgraph.netmeta <- function(x, seq = x$seq,
         (dim(col)[2] != dim(A.matrix)[2]))
       stop("Dimension of argument 'A.matrix' and 'col' are different.")
     if (is.null(dimnames(col)))
-      stop("Matrix 'col' must have row and column names identical to argument 'A.matrix'.")
+      stop("Matrix 'col' must have row and column names identical ",
+           "to argument 'A.matrix'.")
     else {
       if (any(rownames(col) != rownames(A.matrix)))
-        stop("Row names of matrix 'col' must be identical to argument 'A.matrix'.")
+        stop("Row names of matrix 'col' must be identical to ",
+             "argument 'A.matrix'.")
       if (any(colnames(col) != colnames(A.matrix)))
-        stop("Column names of matrix 'col' must be identical to argument 'A.matrix'.")
+        stop("Column names of matrix 'col' must be identical to ",
+             "argument 'A.matrix'.")
     }
     ##
     col <- col[lower.tri(col)]
@@ -576,12 +579,15 @@ netgraph.netmeta <- function(x, seq = x$seq,
           (dim(thickness)[2] != dim(A.matrix)[2]))
         stop("Dimension of argument 'A.matrix' and 'thickness' are different.")
       if (is.null(dimnames(thickness)))
-        stop("Matrix 'thickness' must have row and column names identical to argument 'A.matrix'.")
+        stop("Matrix 'thickness' must have row and column names identical to ",
+             "argument 'A.matrix'.")
       else {
         if (any(rownames(thickness) != rownames(A.matrix)))
-          stop("Row names of matrix 'thickness' must be identical to argument 'A.matrix'.")
+          stop("Row names of matrix 'thickness' must be identical to ",
+               "argument 'A.matrix'.")
         if (any(colnames(thickness) != colnames(A.matrix)))
-          stop("Column names of matrix 'thickness' must be identical to argument 'A.matrix'.")
+          stop("Column names of matrix 'thickness' must be identical to ",
+               "argument 'A.matrix'.")
       }
       ##
       W.matrix <- thickness
@@ -629,11 +635,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
   cex.points <- cex.points[seq1]
   pch.points <- pch.points[seq1]
   bg.points  <- bg.points[seq1]
-
-
+  
   A.sign <- sign(A.matrix)
-
-
+  
   if ((is_2d & (is.null(xpos) & is.null(ypos))) |
       (is_3d & (is.null(xpos) & is.null(ypos) & is.null(zpos)))) {
     stressdata <- stress(x,
@@ -851,8 +855,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
       }
     }
   }
-
-
+  
+  
   ##
   ## Define coloured regions for multi-arm studies
   ##
@@ -1012,16 +1016,20 @@ netgraph.netmeta <- function(x, seq = x$seq,
       ##
       ## Add highlighted comparisons
       ##
+      A.sign.add.lines <- A.sign
+      ##
       if (!is.null(highlight)) {
         high.i <- 0
         for (high in highlight) {
           high.i <- high.i + 1
           highs <- unlist(compsplit(high, split = highlight.split))
           if (length(highs) != 2)
-            stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
+            stop("Wrong format for argument 'highlight' ",
+                 "(see helpfile of plotgraph command).")
           ##
           if (sum(dat.nodes$trts %in% highs) != 2)
-            stop(paste0("Argument 'highlight' must contain two of the following values ",
+            stop(paste0("Argument 'highlight' must contain two of ",
+                        "the following values ",
                         "(separated by \":\"):\n  ",
                         paste(paste("'", dat.nodes$trts, "'", sep = ""),
                               collapse = " - "), sep = ""))
@@ -1037,8 +1045,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
                     col = cols.highlight[high.i, n.plines])
             }
           ##
-          A.sign[trts == highs[1], trts == highs[2]] <- 0
-          A.sign[trts == highs[2], trts == highs[1]] <- 0
+          A.sign.add.lines[trts == highs[1], trts == highs[2]] <- 0
+          A.sign.add.lines[trts == highs[2], trts == highs[1]] <- 0
         }
       }
       ##
@@ -1055,7 +1063,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
             else
               col.ij <- col.matrix[i, j]
             ##
-            if (A.sign[i, j] > 0) {
+            if (A.sign.add.lines[i, j] > 0) {
               lines(c(xpos[i], xpos[j]), c(ypos[i], ypos[j]),
                     lwd = W.matrix[i, j] * lwd.multiply[n.plines],
                     col = col.ij)
