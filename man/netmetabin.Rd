@@ -378,7 +378,7 @@ Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
 (2019):
 A Mantel-Haenszel model for network meta-analysis of rare events.
 \emph{Statistics in Medicine},
-accepted for publication
+1--21, https://doi.org/10.1002/sim.8158
 
 Senn S, Gavini F, Magrez D, Scheen A (2013):
 Issues in performing a network meta-analysis.

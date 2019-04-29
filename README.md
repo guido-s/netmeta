@@ -33,7 +33,8 @@ network meta-analysis:
 
   - league table with network meta-analysis results;
 
-  - additive network meta-analysis for combinations of treatments;
+  - additive network meta-analysis for combinations of treatments
+    (Rücker et al., 2019);
 
   - network meta-analysis of binary data using the Mantel-Haenszel
     method or the non-central hypergeometric distribution (Efthimiou
@@ -55,9 +56,9 @@ http://meta-analysis-with-r.org/ .
 
 [Dias S, Welton NJ, Caldwell DM, Ades AE (2010): Checking consistency in mixed treatment comparison meta-analysis. *Statistics in Medicine*, **29**, 932-44](https://scholar.google.com/scholar?q=Checking+consistency+in+mixed+treatment+comparison+meta-analysis)
 
-Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
+[Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
 (2019): A Mantel-Haenszel model for network meta-analysis of rare
-events. *Statistics in Medicine*, accepted for publication
+events. *Statistics in Medicine*, 1-21](https://scholar.google.com/scholar?q=Efthimiou+Rücker+Schwarzer+Higgins+Egger+Salanti+2019+Mantel-Haenszel+model)
 
 [König J, Krahn U, Binder H (2013): Visualizing the flow of evidence in network meta-analysis and characterizing mixed treatment comparisons. *Statistics in Medicine*, **32**, 5414-29](https://scholar.google.com/scholar?q=König+Krahn+Binder+2013+Visualizing+the+flow+of+evidence+in+network+meta-analysis+and+characterizing+mixed+treatment+comparisons)
 
@@ -72,6 +73,8 @@ events. *Statistics in Medicine*, accepted for publication
 [Rücker G, Schwarzer G (2016): Automated drawing of network plots in network meta-analysis. *Research Synthesis Methods*, **7**, 94-107](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2016+Automated+drawing+of+network+plots+in+network+meta-analysis)
 
 [Rücker G, Schwarzer G (2017): Resolve conflicting rankings of outcomes in network meta-analysis: Partial ordering of treatments. *Research Synthesis Methods*, **8**, 526-36](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2017+resolve+conflicting+rankings+of+outcomes+in+network+meta-analysis)
+
+[Rücker G, Petropoulou M, Schwarzer G (2019): Network meta-analysis of multicomponent interventions. *Biometrical Journal*, 1-14](https://scholar.google.com/scholar?q=Rücker+Schwarzer+Petropoulou+2019+Network+meta-analysis+of+multicomponent+interventions)
 
 [Schwarzer G, Carpenter JR and Rücker G (2015): *Meta-Analysis with R (Use-R!)*. Springer International Publishing, Switzerland](http://www.springer.com/gp/book/9783319214153)
 

@@ -29,12 +29,13 @@ providing the following meta-analysis methods:
   (\code{\link{hasse}}) according to Carlsen & Bruggemann (2014)
   and Rücker & Schwarzer (2017);
 \item split direct and indirect evidence (\code{\link{netsplit}})
-  to check for consistency (Dias et al., 2010);
+  to check for consistency (Dias et al., 2010; Efthimiou et al.,
+  2019);
 \item league table with network meta-analysis results
   (\code{\link{netleague}});
 \item additive network meta-analysis for combinations of treatments
   (\code{\link{netcomb}}, \code{\link{discomb}} for disconnected
-  networks) (Rücker et al., 2018);
+  networks) (Rücker et al., 2019);
 \item network meta-analysis of binary data
   (\code{\link{netmetabin}}) using the Mantel-Haenszel or
   non-central hypergeometric distribution method (Efthimiou et al.,
@@ -91,7 +92,7 @@ Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
 (2019):
 A Mantel-Haenszel model for network meta-analysis of rare events.
 \emph{Statistics in Medicine},
-accepted for publication
+1--21, https://doi.org/10.1002/sim.8158
 
 König J, Krahn U, Binder H (2013):
 Visualizing the flow of evidence in network meta-analysis and
@@ -132,9 +133,10 @@ Partial ordering of treatments.
 \emph{Research Synthesis Methods},
 \bold{8}, 526--36
 
-Rücker G, Petropoulou M, Schwarzer G (2018):
+Rücker G, Petropoulou M, Schwarzer G (2019):
 Network meta-analysis of multicomponent interventions.
-\emph{Manuscript submitted for publication}
+\emph{Biometrical Journal},
+1--14, https://doi.org/10.1002/bimj.201800167
 
 Schwarzer G, Carpenter JR and Rücker G (2015):
 \emph{Meta-Analysis with R (Use-R!)}.

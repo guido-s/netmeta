@@ -208,7 +208,7 @@ trials provides useful estimates of combination therapies.
 Rücker G, Petropoulou M, Schwarzer G (2019):
 Network meta-analysis of multicomponent interventions.
 \emph{Biometrical Journal},
-accepted for publication
+1--14, https://doi.org/10.1002/bimj.201800167
 
 Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009):
 Mixed treatment comparison meta-analysis of complex interventions:

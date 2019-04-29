@@ -10,8 +10,7 @@ nma.additive <- function(TE, weights, studlab,
   ##
   ## Adjusted weights
   ##
-  W <- diag(weights,
-            nrow = length(weights))
+  W <- diag(weights, nrow = length(weights))
   ##
   ## Laplacian matrix and pseudoinverse of L
   ##
