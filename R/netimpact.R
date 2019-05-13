@@ -45,7 +45,7 @@
 #' @export netimpact
 
 
-netimpact <- function(x, seTE.ignore = 1e6, verbose = FALSE) {
+netimpact <- function(x, seTE.ignore = 1e4, verbose = FALSE) {
   
   
   meta:::chkclass(x, "netmeta")
@@ -95,9 +95,10 @@ netimpact <- function(x, seTE.ignore = 1e6, verbose = FALSE) {
     seTE.nma <- x$seTE.fixed
     seTE.i   <- net.i$seTE.fixed
     ##
-    zero <- abs(lowertri(seTE.i) - lowertri(seTE.nma)) < .Machine$double.eps^0.5
+    impact.i <- 1 - (lowertri(seTE.nma) / lowertri(seTE.i))^2
+    zero <- abs(impact.i) < .Machine$double.eps^0.5
     ##
-    impact[, x$studies == i] <- 1 - (lowertri(seTE.nma) / lowertri(seTE.i))^2
+    impact[, x$studies == i] <- impact.i
     impact[zero, x$studies == i] <- 0
   }
   
