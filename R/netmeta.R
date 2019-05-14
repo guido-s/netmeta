@@ -926,12 +926,14 @@ netmeta <- function(TE, seTE,
   ## Study overview
   ##
   tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
+                      order = p0$order,
                       stringsAsFactors = FALSE)
-  tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
-  studies <- tdata$studies
-  narms <- tdata$narms
-
-
+  ##
+  tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), ]
+  studies <- tdata$studies[order(tdata$order)]
+  narms <- tdata$narms[order(tdata$order)]
+  
+  
   ##
   ##
   ## (6) Conduct network meta-analysis
