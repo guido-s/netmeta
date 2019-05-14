@@ -23,6 +23,10 @@
 #'   mark multi-arm studies removed from network, either
 #'   \code{"transparent"} or any color defined in
 #'   \code{\link[grDevices]{colours}}.
+#' @param col A single color (or vector of colors) for lines
+#'   connecting treatments (edges) if argument \code{plastic =
+#'   FALSE}. Length of the vector must be equal to the number of
+#'   edges.
 #' @param \dots Additional arguments passed on to
 #'   \code{\link{netgraph.netmeta}}.
 #' 
@@ -58,7 +62,9 @@ netgraph.netimpact <- function(x,
                                multiarm = any(x$x$narms > 2),
                                col.multiarm = NULL,
                                alpha.transparency = 0.5,
-                               col.ignore.multiarm =  "transparent", ...) {
+                               col.ignore.multiarm =  "transparent",
+                               col = "slateblue",
+                               ...) {
   
   
   meta:::chkclass(x, "netimpact")
@@ -103,6 +109,8 @@ netgraph.netimpact <- function(x,
     col.polygon <- mc$cols
     multiarm.studies <- mc$multiarm.studies
   }
+  else
+    col.polygon <- col.ignore.multiarm
   ##
   res <- list()
   ##
@@ -142,7 +150,7 @@ netgraph.netimpact <- function(x,
                     multiarm = multiarm, col.multiarm = col.polygon.i,
                     alpha.transparency = alpha.transparency,
                     number.of.studies = number.of.studies,
-                    ...)
+                    col = col, ...)
     ##
     res[[i]] <- list(nodes = n.i$nodes, edges = n.i$edges)
     ##

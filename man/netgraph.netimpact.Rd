@@ -7,7 +7,7 @@
 \method{netgraph}{netimpact}(x, col.ignore = "red",
   number.of.studies = TRUE, main, sub, multiarm = any(x$x$narms > 2),
   col.multiarm = NULL, alpha.transparency = 0.5,
-  col.ignore.multiarm = "transparent", ...)
+  col.ignore.multiarm = "transparent", col = "slateblue", ...)
 }
 \arguments{
 \item{x}{An object of class \code{netimpact}.}
@@ -38,6 +38,11 @@ opaque).}
 mark multi-arm studies removed from network, either
 \code{"transparent"} or any color defined in
 \code{\link[grDevices]{colours}}.}
+
+\item{col}{A single color (or vector of colors) for lines
+connecting treatments (edges) if argument \code{plastic =
+FALSE}. Length of the vector must be equal to the number of
+edges.}
 
 \item{\dots}{Additional arguments passed on to
 \code{\link{netgraph.netmeta}}.}
