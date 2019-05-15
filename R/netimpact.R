@@ -10,7 +10,8 @@
 #' @param seTE.ignore Assumed (large) standard error in order to
 #'   mimicking the removal of individual studies from the network
 #'   meta-analysis.
-#' @param verbose ARGUMENT / FUNKTIONALITAET NOTWENDIG ???
+#' @param verbose A logical indicating whether information on the
+#'   estimation progress should be printed.
 #' 
 #' @return
 #' An object of class \code{"netimpact"} with corresponding
