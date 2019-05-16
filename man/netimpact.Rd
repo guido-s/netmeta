@@ -14,7 +14,8 @@ netimpact(x, seTE.ignore = 10000, verbose = FALSE)
 mimicking the removal of individual studies from the network
 meta-analysis.}
 
-\item{verbose}{ARGUMENT / FUNKTIONALITAET NOTWENDIG ???}
+\item{verbose}{A logical indicating whether information on the
+estimation progress should be printed.}
 }
 \value{
 An object of class \code{"netimpact"} with corresponding
