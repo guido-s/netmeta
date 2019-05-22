@@ -4,6 +4,10 @@
 #' Print method for objects of class \code{netimpact}.
 #' 
 #' @param x An object of class \code{netimpact}.
+#' @param comb.fixed A logical indicating whether results for the
+#'   fixed effects (common effects) model should be printed.
+#' @param comb.random A logical indicating whether results for the
+#'   random effects model should be printed.
 #' @param digits Minimal number of significant digits.
 #' @param \dots Additional arguments (ignored).
 #' 
@@ -31,18 +35,25 @@
 #' @export print.netimpact
 
 
-print.netimpact <- function(x, digits = gs("digits.prop"), ...) {
+print.netimpact <- function(x,
+                            comb.fixed = x$x$comb.fixed,
+                            comb.random = x$x$comb.random,
+                            digits = gs("digits.prop"), ...) {
   
   meta:::chkclass(x, "netimpact")
   
   
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
   meta:::chknumeric(digits, min = 0, single = TRUE)
   
   
-  impact <- x$impact
+  ##
+  ## Generate (abbreviated) column names
+  ##
   sep.trts <- x$x$sep.trts
   ##
-  cn <- colnames(impact)
+  cn <- colnames(x$impact.fixed)
   mat <- matrix(unlist(strsplit(cn, split = sep.trts)),
                 ncol = 2, byrow = TRUE)
   treat1.long <- mat[, 1]
@@ -58,27 +69,45 @@ print.netimpact <- function(x, digits = gs("digits.prop"), ...) {
     abbr <- c(treat1, treat2)
   else
     abbr <- NULL
-  ##  
-  colnames(impact) <- paste(treat1, treat2, sep = sep.trts)
   
   
-  impact <- meta:::formatN(impact, digits = digits)
   ##
-  prmatrix(impact, quote = FALSE, right = TRUE)
-  
-  
-  if (!is.null(abbr)) {
-    abbr <- unique(abbr)
-    full <- unique(c(treat1.long, treat2.long))
+  ## Print results for fixed effects model
+  ##
+  if (comb.fixed) {
+    cat("Fixed effect model: \n\n")
+    impact.fixed <- meta:::formatN(x$impact.fixed, digits = digits)
+    colnames(impact.fixed) <- paste(treat1, treat2, sep = sep.trts)
     ##
-    tmat <- data.frame(abbr, full)
-    names(tmat) <- c("Abbreviation", "Treatment name")
-    tmat <- tmat[order(tmat$Abbreviation), ]
-    ##
-    cat("\nLegend:\n")
-    prmatrix(tmat, quote = FALSE, right = TRUE,
-             rowlab = rep("", length(abbr)))
+    prmatrix(impact.fixed, quote = FALSE, right = TRUE)
+    if (comb.random)
+      cat("\n")
   }
+  ##
+  ## Print results for random effects model
+  ##
+  if (comb.random) {
+    cat("Random effects model: \n\n")
+    impact.random <- meta:::formatN(x$impact.random, digits = digits)
+    colnames(impact.random) <- paste(treat1, treat2, sep = sep.trts)
+    ##
+    prmatrix(impact.random, quote = FALSE, right = TRUE)
+  }
+  
+  
+  if (comb.fixed || comb.random)
+    if (!is.null(abbr)) {
+      abbr <- unique(abbr)
+      full <- unique(c(treat1.long, treat2.long))
+      ##
+      tmat <- data.frame(abbr, full)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat("\nLegend:\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(abbr)))
+    }
   
   
   invisible(NULL)

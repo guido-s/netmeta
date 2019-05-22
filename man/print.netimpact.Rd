@@ -4,10 +4,17 @@
 \alias{print.netimpact}
 \title{Print method for objects of class netimpact}
 \usage{
-\method{print}{netimpact}(x, digits = gs("digits.prop"), ...)
+\method{print}{netimpact}(x, comb.fixed = x$x$comb.fixed,
+  comb.random = x$x$comb.random, digits = gs("digits.prop"), ...)
 }
 \arguments{
 \item{x}{An object of class \code{netimpact}.}
+
+\item{comb.fixed}{A logical indicating whether results for the
+fixed effects (common effects) model should be printed.}
+
+\item{comb.random}{A logical indicating whether results for the
+random effects model should be printed.}
 
 \item{digits}{Minimal number of significant digits.}
 

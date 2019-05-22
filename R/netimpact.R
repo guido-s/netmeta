@@ -62,11 +62,12 @@ netimpact <- function(x, seTE.ignore = 1e4, verbose = FALSE) {
   
   
   comparisons <- names(x$prop.direct.fixed)
-  ##  
-  impact <- matrix(NA, ncol = x$k, nrow = length(comparisons))
   ##
-  rownames(impact) <- comparisons
-  colnames(impact) <- x$studies
+  impact.fixed <- impact.random <-
+    matrix(NA, ncol = x$k, nrow = length(comparisons))
+  ##
+  rownames(impact.fixed) <- rownames(impact.random) <- comparisons
+  colnames(impact.fixed) <- colnames(impact.random) <- x$studies
   ##
   ## Run network meta-analyses "excluding" one study at a time
   ##
@@ -90,21 +91,31 @@ netimpact <- function(x, seTE.ignore = 1e4, verbose = FALSE) {
     seTE.i <- seTE
     seTE.i[studlab == i] <- seTE.ignore
     ##
-    net.i <- netmeta(TE, seTE.i, treat1, treat2, studlab)
+    net.i <- netmeta(TE, seTE.i, treat1, treat2, studlab, tau.preset = x$tau)
     nets[[i]] <- net.i
     ##
-    seTE.nma <- x$seTE.fixed
-    seTE.i   <- net.i$seTE.fixed
+    seTE.fixed <- x$seTE.fixed
+    seTE.fixed.i <- net.i$seTE.fixed
     ##
-    impact.i <- 1 - (lowertri(seTE.nma) / lowertri(seTE.i))^2
-    zero <- abs(impact.i) < .Machine$double.eps^0.5
+    seTE.random <- x$seTE.random
+    seTE.random.i <- net.i$seTE.random
     ##
-    impact[, x$studies == i] <- impact.i
-    impact[zero, x$studies == i] <- 0
+    impact.fixed.i <- 1 - (lowertri(seTE.fixed) / lowertri(seTE.fixed.i))^2
+    zero.fixed <- abs(impact.fixed.i) < .Machine$double.eps^0.5
+    ##
+    impact.fixed[, x$studies == i] <- impact.fixed.i
+    impact.fixed[zero.fixed, x$studies == i] <- 0
+    ##
+    impact.random.i <- 1 - (lowertri(seTE.random) / lowertri(seTE.random.i))^2
+    zero.random <- abs(impact.random.i) < .Machine$double.eps^0.5
+    ##
+    impact.random[, x$studies == i] <- impact.random.i
+    impact.random[zero.random, x$studies == i] <- 0
   }
   
   
-  res <- list(impact = t(impact),
+  res <- list(impact.fixed = t(impact.fixed),
+              impact.random = t(impact.random),
               ignored.comparisons = ignored,
               seTE.ignore = seTE.ignore,
               x = x,
