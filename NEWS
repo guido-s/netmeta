@@ -9,6 +9,8 @@
   * New functions netimpact(), netgraph.netimpact(), print.netimpact()
     to measure the impact of individual studies to network estimates
 
+  * Equivalence limits can be added to forest plots
+
  ** Bug fixes **
 
   * netmeta():

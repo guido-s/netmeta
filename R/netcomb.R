@@ -73,49 +73,158 @@
 #' An object of class \code{netcomb} with corresponding \code{print},
 #' \code{summary}, and \code{forest} functions. The object is a list
 #' containing the following components:
-#' \item{x, inactive, sep.comps, C.matrix}{As defined above.}
-#' \item{comb.fixed, comb.random, tau.preset}{As defined above.}
+#' \item{studlab}{Study labels.}
+#' \item{treat1}{Label/Number for first treatment.}
+#' \item{treat2}{Label/Number for second treatment.}
+#' \item{TE}{Estimate of treatment effect, i.e. difference between
+#'   first and second treatment.}
+#' \item{seTE}{Standard error of treatment estimate.}
+#' \item{seTE.adj}{Standard error of treatment estimate, adjusted for
+#'   multi-arm studies.}
+#' \item{event1}{Number of events in first treatment group.}
+#' \item{event2}{Number of events in second treatment group.}
+#' \item{n1}{Number of observations in first treatment group.}
+#' \item{n2}{Number of observations in second treatment group.}
 #' \item{k}{Total number of studies.}
 #' \item{m}{Total number of pairwise comparisons.}
 #' \item{n}{Total number of treatments.}
+#' \item{d}{Total number of designs (corresponding to the unique set
+#'   of treatments compared within studies).}
 #' \item{c}{Total number of components.}
-#' \item{comparisons.fixed, comparisons.random}{Lists with components
-#'   studlab, treat1, treat2, TE, seTE, lower, upper, z, p level, df
+#' \item{trts}{Treatments included in network meta-analysis.}
+#' \item{k.trts}{Number of studies evaluating a treatment.}
+#' \item{n.trts}{Number of observations receiving a treatment (if
+#'   arguments \code{n1} and \code{n2} are provided).}
+#' \item{events.trts}{Number of events observed for a treatment (if
+#'   arguments \code{event1} and \code{event2} are provided).}
+#' \item{studies}{Study labels coerced into a factor with its levels
+#'   sorted alphabetically.}
+#' \item{narms}{Number of arms for each study.}
+#' \item{designs}{Unique list of designs present in the network. A
+#'   design corresponds to the set of treatments compared within a
+#'   study.}
+#' \item{comps}{Unique list of components present in the network.}
+#' \item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
+#'   consistent treatment effects estimated by network meta-analysis
+#'   (nma) (fixed and random effects model).}
+#' \item{seTE.nma.fixed, seTE.nma.random}{A vector of length \emph{m}
+#'   of effective standard errors estimated by network meta-analysis
 #'   (fixed and random effects model).}
-#' \item{components.fixed, components.random}{Lists with components
-#'   TE, seTE, lower, upper, z, p level, df (fixed and random effects
+#' \item{lower.nma.fixed, lower.nma.random}{A vector of length
+#'   \emph{m} of lower confidence interval limits for consistent
+#'   treatment effects estimated by network meta-analysis (fixed
+#'   and random effects model).}
+#' \item{upper.nma.fixed, upper.nma.random}{A vector of length
+#'   \emph{m} of upper confidence interval limits for the consistent
+#'   treatment effects estimated by network meta-analysis (fixed
+#'   and random effects model).}
+#' \item{zval.nma.fixed, zval.nma.random}{A vector of length \emph{m}
+#'   of z-values for test of treatment effect for individual
+#'   comparisons (fixed and random effects model).}
+#' \item{pval.nma.fixed, pval.nma.random}{A vector of length \emph{m}
+#'   of p-values for test of treatment effect for individual
+#'   comparisons (fixed and random effects model).}
+#' \item{TE.cnma.fixed, TE.cnma.random}{A vector of length \emph{m} of
+#'   consistent treatment effects estimated by the additive (fixed and
+#'   random effects) model.}
+#' \item{seTE.cnma.fixed, seTE.cnma.random}{A vector of length
+#'   \emph{m} with standard errors estimated by the additive (fixed
+#'   and random effects) model.}
+#' \item{lower.cnma.fixed, lower.cnma.random}{A vector of length
+#'   \emph{m} of lower confidence interval limits for consistent
+#'   treatment effects estimated by the additive (fixed and random
+#'   effects) model.}
+#' \item{upper.cnma.fixed, upper.cnma.random}{A vector of length
+#'   \emph{m} of upper confidence interval limits for consistent
+#'   treatment effects estimated by the additive (fixed and random
+#'   effects) model.}
+#' \item{zval.cnma.fixed, zval.cnma.random}{A vector of length
+#'   \emph{m} of z-values for the test of an overall effect estimated
+#'   by the additive (fixed and random effects) model.}
+#' \item{pval.cnma.fixed, zval.cnma.random}{A vector of length
+#'   \emph{m} of p-values for the test of an overall effect estimated
+#'   by the additive (fixed and random effects) model.}
+#' \item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with overall
+#'   treatment effects estimated by the additive (fixed and random
+#'   effects) model.}
+#' \item{seTE.fixed, seTE.random}{\emph{n}x\emph{n} matrix with
+#'   standard errors estimated by the additive (fixed and random
+#'   effects) model.}
+#' \item{lower.fixed, upper.fixed, lower.random,
+#'   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
+#'   confidence interval limits estimated by the additive (fixed and
+#'   random effects) model.}
+#' \item{zval.fixed, pval.fixed, zval.random,
+#'   pval.random}{\emph{n}x\emph{n} matrices with z-values and
+#'   p-values for test of overall effect estimated by the additive
+#'   (fixed and random effects) model.}
+#' \item{Comp.fixed, Comp.random}{A vector of component effects (fixed
+#'   and random effects model).}
+#' \item{seComp.fixed, seComp.random}{A vector with corresponding
+#'   standard errors (fixed and random effects model).}
+#' \item{lower.Comp.fixed, lower.Comp.random}{A vector with lower
+#'   confidence limits for components (fixed and random effects
 #'   model).}
-#' \item{combinations.fixed, combinations.random}{Lists with
-#'   components TE, seTE, lower, upper, z, p level, df (fixed and
-#'   random effects model).}
-#' \item{sm}{Summary measure.}
-#' \item{level.comb}{Level for confidence intervals.}
+#' \item{upper.Comp.fixed, upper.Comp.random}{A vector with upper
+#'   confidence limits for components (fixed and random effects
+#'   model).}
+#' \item{zval.Comp.fixed, zval.Comp.random}{A vector with z-values for
+#'   the overall effect of components (fixed and random effects
+#'   model).}
+#' \item{pval.Comp.fixed, pval.Comp.random}{A vector with p-values for
+#'   the overall effect of components (fixed and random effects
+#'   model).}
+#' \item{Comb.fixed, Comb.random}{A vector of combination effects (fixed
+#'   and random effects model).}
+#' \item{seComb.fixed, seComb.random}{A vector with corresponding
+#'   standard errors (fixed and random effects model).}
+#' \item{lower.Comb.fixed, lower.Comb.random}{A vector with lower
+#'   confidence limits for combinations (fixed and random effects
+#'   model).}
+#' \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
+#'   confidence limits for combinations (fixed and random effects
+#'   model).}
+#' \item{zval.Comb.fixed, zval.Comb.random}{A vector with z-values for
+#'   the overall effect of combinations (fixed and random effects
+#'   model).}
+#' \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
+#'   the overall effect of combinations (fixed and random effects
+#'   model).}
 #' \item{Q.additive}{Overall heterogeneity / inconsistency statistic
 #'   (additive model).}
 #' \item{df.Q.additive}{Degrees of freedom for test of heterogeneity /
 #'   inconsistency (additive model).}
 #' \item{pval.Q.additive}{P-value for test of heterogeneity /
 #'   inconsistency (additive model).}
+#' \item{tau}{Square-root of between-study variance (additive model).}
+#' \item{I2}{I-squared (additive model).}
 #' \item{Q.standard}{Overall heterogeneity / inconsistency statistic
 #'   (standard model).}
 #' \item{df.Q.standard}{Degrees of freedom for test of heterogeneity /
 #'   inconsistency (standard model).}
 #' \item{pval.Q.standard}{P-value for test of heterogeneity /
 #'   inconsistency (standard model).}
-#' \item{Q.diff.fixed, Q.diff.random}{Test statistic for difference in
-#'   goodness of fit between standard and additive model (fixed and
-#'   random effects model).}
-#' \item{df.Q.diff.fixed, df.Q.diff.random}{Degrees of freedom for
-#'   difference in goodness of fit between standard and additive model
-#'   (fixed and random effects model).}
-#' \item{pval.Q.diff.fixed, pval.Q.diff.random}{P-value for difference
-#'   in goodness of fit between standard and additive model (fixed and
-#'   random effects model).}
-#' \item{backtransf}{A logical indicating whether results should be
-#'   back transformed in printouts and forest plots.}
+#' \item{Q.diff}{Test statistic for difference in goodness of fit
+#'   between standard and additive model.}
+#' \item{df.Q.diff}{Degrees of freedom for difference in goodness of
+#'   fit between standard and additive model.}
+#' \item{pval.Q.diff}{P-value for difference in goodness of fit
+#'   between standard and additive model.}
+#' \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
+#' \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
+#' \item{C.matrix}{As defined above.}
+#' \item{sm}{Summary measure.}
+#' \item{level.comb}{Level for confidence intervals.}
+#' \item{comb.fixed, comb.random, tau.preset}{As defined above.}
+#' \item{sep.trts}{A character used in comparison names as separator
+#'   between treatment labels.}
 #' \item{nchar.trts}{A numeric defining the minimum number of
 #'   characters used to create unique treatment and component names.}
+#' \item{inactive, sep.comps}{As defined above.}
+#' \item{backtransf}{A logical indicating whether results should be
+#'   back transformed in printouts and forest plots.}
 #' \item{title}{Title of meta-analysis / systematic review.}
+#' \item{x}{As defined above.}
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create
 #'   object.}

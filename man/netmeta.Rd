@@ -140,36 +140,42 @@ object is a list containing the following components:
   study.}
 \item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
   consistent treatment effects estimated by network meta-analysis
-  (nma) (fixed effect / random effects model).}
+  (nma) (fixed effects / random effects model).}
 \item{seTE.nma.fixed, seTE.nma.random}{A vector of length \emph{m}
   of effective standard errors estimated by network meta-analysis
-  (fixed effect / random effects model).}
+  (fixed effects / random effects model).}
 \item{lower.nma.fixed, lower.nma.random}{A vector of length
   \emph{m} of lower confidence interval limits for consistent
   treatment effects estimated by network meta-analysis (fixed
-  effect / random effects model).}
+  effects / random effects model).}
 \item{upper.nma.fixed, upper.nma.random}{A vector of length
   \emph{m} of upper confidence interval limits for the consistent
   treatment effects estimated by network meta-analysis (fixed
-  effect /random effects model).}
+  effects / random effects model).}
+\item{zval.nma.fixed, zval.nma.random}{A vector of length \emph{m}
+  of z-values for test of treatment effect for individual
+  comparisons (fixed effects / random effects model).}
+\item{pval.nma.fixed, pval.nma.random}{A vector of length \emph{m}
+  of p-values for test of treatment effect for individual
+  comparisons (fixed effects / random effects model).}
 \item{leverage.fixed}{A vector of length \emph{m} of leverages,
   interpretable as factors by which variances are reduced using
   information from the whole network.}
 \item{w.fixed, w.random}{A vector of length \emph{m} of weights of
-  individual studies (fixed effect / random effects model).}
+  individual studies (fixed effects / random effects model).}
 \item{Q.fixed}{A vector of length \emph{m} of contributions to
   total heterogeneity / inconsistency statistic.}
 \item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with estimated
-  overall treatment effects (fixed effect / random effects model).}
+  overall treatment effects (fixed effects / random effects model).}
 \item{seTE.fixed, seTE.random}{\emph{n}x\emph{n} matrix with
-  standard errors (fixed effect / random effects model).}
+  standard errors (fixed effects / random effects model).}
 \item{lower.fixed, upper.fixed, lower.random,
   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
-  confidence interval limits (fixed effect / random effects
+  confidence interval limits (fixed effects / random effects
   model).}
 \item{zval.fixed, pval.fixed, zval.random,
   pval.random}{\emph{n}x\emph{n} matrices with z-value and p-value
-  for test of overall treatment effect (fixed effect / random
+  for test of overall treatment effect (fixed effects / random
   effects model).}
 \item{seTE.predict}{\emph{n}x\emph{n} matrix with standard errors
   for prediction intervals.}
@@ -177,47 +183,47 @@ object is a list containing the following components:
   lower and upper prediction interval limits.}
 \item{prop.direct.fixed, prop.direct.random}{A named vector of the
   direct evidence proportion of each network estimate. (fixed
-  effect / random effects model).}
+  effects / random effects model).}
 \item{TE.direct.fixed, TE.direct.random}{\emph{n}x\emph{n} matrix
   with estimated treatment effects from direct evidence (fixed
-  effect / random effects model).}
+  effects / random effects model).}
 \item{seTE.direct.fixed, seTE.direct.random}{\emph{n}x\emph{n}
   matrix with estimated standard errors from direct evidence (fixed
-  effect / random effects model).}
+  effects / random effects model).}
 \item{lower.direct.fixed, upper.direct.fixed, lower.direct.random,
   }{\emph{n}x\emph{n} matrices with lower and upper confidence
-  interval limits from direct evidence (fixed effect / random
+  interval limits from direct evidence (fixed effects / random
   effects model).}
 \item{ upper.direct.random}{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from direct evidence (fixed
-  effect / random effects model).}
+  effects / random effects model).}
 \item{zval.direct.fixed, pval.direct.fixed, zval.direct.random,
   }{\emph{n}x\emph{n} matrices with z-value and p-value for test of
-  overall treatment effect from direct evidence (fixed effect /
+  overall treatment effect from direct evidence (fixed effects /
   random effects model).}
 \item{ pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
   and p-value for test of overall treatment effect from direct
-  evidence (fixed effect / random effects model).}
+  evidence (fixed effects / random effects model).}
 \item{TE.indirect.fixed, TE.indirect.random}{\emph{n}x\emph{n}
   matrix with estimated treatment effects from indirect evidence
-  (fixed effect / random effects model).}
+  (fixed effects / random effects model).}
 \item{seTE.indirect.fixed, seTE.indirect.random}{\emph{n}x\emph{n}
   matrix with estimated standard errors from indirect evidence
-  (fixed effect / random effects model).}
+  (fixed effects / random effects model).}
 \item{lower.indirect.fixed, upper.indirect.fixed,
   lower.indirect.random, }{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from indirect evidence
-  (fixed effect / random effects model).}
+  (fixed effects / random effects model).}
 \item{ upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from indirect evidence
-  (fixed effect / random effects model).}
+  (fixed effects / random effects model).}
 \item{zval.indirect.fixed, pval.indirect.fixed,
   zval.indirect.random, }{\emph{n}x\emph{n} matrices with z-value
   and p-value for test of overall treatment effect from indirect
-  evidence (fixed effect / random effects model).}
+  evidence (fixed effects / random effects model).}
 \item{pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value
   and p-value for test of overall treatment effect from indirect
-  evidence (fixed effect / random effects model).}
+  evidence (fixed effects / random effects model).}
 \item{Q}{Overall heterogeneity / inconsistency statistic.}
 \item{df.Q}{Degrees of freedom for test of heterogeneity /
   inconsistency.}
@@ -257,8 +263,8 @@ object is a list containing the following components:
   in direct comparisons (if arguments \code{event1} and
   \code{event2} are provided).}
 \item{P.fixed, P.random}{\emph{n}x\emph{n} matrix with direct
-  evidence proportions (fixed effect / random effects model).}
-\item{Cov.fixed}{Variance-covariance matrix (fixed effect model)}
+  evidence proportions (fixed effects / random effects model).}
+\item{Cov.fixed}{Variance-covariance matrix (fixed effects model)}
 \item{Cov.random}{Variance-covariance matrix (random effects
   model)}
 \item{sm, level, level.comb}{As defined above.}

@@ -19,11 +19,18 @@ estimation progress should be printed.}
 }
 \value{
 An object of class \code{"netimpact"} with corresponding
-\code{netgraph} function. The object is a list containing the
-following components:
-\item{impact}{A matrix with contributions of individual studies
-  (columns) to comparisons (rows).}
+\code{netgraph} and \code{print} function. The object is a list
+containing the following components:
+\item{impact.fixed}{A matrix with contributions of individual
+  studies (columns) to comparisons (rows) under the fixed effects
+  model.}
+\item{impact.random}{A matrix with contributions of individual
+  studies (columns) to comparisons (rows) under the random effects
+  model.}
+\item{ignored.comparisons}{List with comparisons of ignored study.}
 \item{seTE.ignore, x}{As defined above.}
+\item{nets}{List of all network meta-analyses (removing a single
+  study).}
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
