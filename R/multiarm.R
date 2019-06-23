@@ -5,10 +5,9 @@ multiarm <- function(r) {
   m <- length(r)                 # Number of edges
   k <- (1 + sqrt(8 * m + 1)) / 2 # Number of vertices
   ##
-  ## Construct adjacency matrix and edge.vertex incidence matrix of
+  ## Construct edge.vertex incidence matrix of
   ## complete graph of dimension k
   ##
-  A <- 1 - diag(rep(1, k))
   B <- createB(ncol = k)
   ##
   ## Distribute the edge variances on a symmetrical k x k matrix, R
@@ -34,7 +33,7 @@ multiarm <- function(r) {
   ##
   ## Compute original variance vector v from V
   ##
-  v <- rep(0, k)
+  v <- rep(0, m)
   edge <- 0
   for (i in 1:(k - 1)) {
     for (j in (i + 1):k) {
