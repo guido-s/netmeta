@@ -3,10 +3,6 @@ multiarm <- function(r) {
   ## Dimension of r and R
   ##
   m <- length(r) # Number of edges
-  if (m == 1) {
-    warning("No variance adjustment for two-arm study.", call. = FALSE)
-    return(list(k = 2, r = r, v = r))
-  }
   ##
   k <- (1 + sqrt(8 * m + 1)) / 2 # Number of vertices
   if (!(abs(k - round(k)) < .Machine$double.eps^0.5))
@@ -20,7 +16,8 @@ multiarm <- function(r) {
   ## Distribute the edge variances on a symmetrical matrix R of
   ## dimension k x k
   ##
-  R <- diag(diag(t(B) %*% diag(r) %*% B)) - t(B) %*% diag(r) %*% B
+  R <- diag(diag(t(B) %*% diag(r, nrow = m) %*% B)) -
+    t(B) %*% diag(r, nrow = m) %*% B
   ##
   ## Construct pseudoinverse Lt from given variance (resistance) matrix R
   ## using a theorem equivalent to Theorem 7 by Gutman & Xiao
