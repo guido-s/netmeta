@@ -3,12 +3,14 @@ multiarm <- function(r) {
   ## Dimension of r and R
   ##
   m <- length(r) # Number of edges
-  if (m < 2)
-    stop("Information for single-arm study provided.")
+  if (m == 1) {
+    warning("No variance adjustment for two-arm study.", call. = FALSE)
+    return(list(k = 2, r = r, v = r))
+  }
   ##
   k <- (1 + sqrt(8 * m + 1)) / 2 # Number of vertices
   if (!(abs(k - round(k)) < .Machine$double.eps^0.5))
-    stop("Wrong number of comparisons in multi-arm study.")
+    stop("Wrong number of comparisons in multi-arm study.", call. = FALSE)
   ##
   ## Construct edge-vertex incidence matrix of complete graph of
   ## dimension k
