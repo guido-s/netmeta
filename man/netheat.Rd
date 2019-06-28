@@ -14,7 +14,7 @@ netheat(x, random = FALSE, tau.preset = NULL, showall = FALSE,
 be based on a random effects model.}
 
 \item{tau.preset}{An optional value for the square-root of the
-between-study variance \eqn{tau^2} for a random effects model on
+between-study variance \eqn{\tau^2} for a random effects model on
 which the net heat plot will be based.}
 
 \item{showall}{A logical indicating whether results should be shown
@@ -68,7 +68,7 @@ not incorporated into the net heat plot.
 
 In the case of \code{random = TRUE}, the net heat plot is based on
 a random effects model generalised for multivariate meta-analysis
-in which the between-study variance \eqn{tau^2} is estimated by the
+in which the between-study variance \eqn{\tau^2} is estimated by the
 method of moments (see Jackson et al., 2012) and embedded in a full
 design-by-treatment interaction model (see Higgins et al., 2012).
 }

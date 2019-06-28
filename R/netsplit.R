@@ -85,10 +85,15 @@
 #' 
 #' Note, for the back-calculation method, indirect treatment estimates
 #' are already calculated in \code{\link{netmeta}} and this function
-#' combines and prints these estimates in a user-friendly way.
-#' Furthermore, this method is not available for the Mantel-Haenszel
-#' and non-central hypergeometric distribution approach implemented in
-#' \code{\link{netmetabin}}.
+#' combines and prints these estimates in a user-friendly
+#' way. Furthermore, this method is not available for the
+#' Mantel-Haenszel and non-central hypergeometric distribution
+#' approach implemented in \code{\link{netmetabin}}.
+#' 
+#' For the random-effects model, the direct treatment estimates are
+#' based on the common between-study variance \eqn{\tau^2} from the
+#' network meta-analysis, i.e. the square of list element
+#' \code{x$tau}.
 #' 
 #' Argument \code{show} determines which comparisons are printed:
 #' \tabular{ll}{

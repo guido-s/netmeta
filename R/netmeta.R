@@ -154,11 +154,16 @@
 #' A simple random effects model assuming that a constant
 #' heterogeneity variance is added to each comparison of the network
 #' can be defined via a generalised methods of moments estimate of the
-#' between-studies variance tau^2 (Jackson et al., 2012). This is
-#' added to the observed sampling variance seTE^2 of each comparison
-#' in the network (before appropriate adjustment for multi-arm
-#' studies). Then, as in standard pairwise meta-analysis, the
-#' procedure is repeated with the resulting enlarged standard errors.
+#' between-studies variance \eqn{\tau^2} (Jackson et al., 2012). This
+#' is added to the observed sampling variance \code{seTE^2} of each
+#' comparison in the network (before appropriate adjustment for
+#' multi-arm studies). Then, as in standard pairwise meta-analysis,
+#' the procedure is repeated with the resulting enlarged standard
+#' errors.
+#' 
+#' For the random-effects model, the direct treatment estimates are
+#' based on the common between-study variance \eqn{\tau^2} from the
+#' network meta-analysis.
 #' 
 #' Internally, both fixed effects and random effects models are
 #' calculated regardless of values choosen for arguments

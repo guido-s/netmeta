@@ -8,7 +8,7 @@
 #' @param random A logical indicating whether the net heat plot should
 #'   be based on a random effects model.
 #' @param tau.preset An optional value for the square-root of the
-#'   between-study variance \eqn{tau^2} for a random effects model on
+#'   between-study variance \eqn{\tau^2} for a random effects model on
 #'   which the net heat plot will be based.
 #' @param showall A logical indicating whether results should be shown
 #'   for all designs or only a sensible subset, see Details.
@@ -55,7 +55,7 @@
 #' 
 #' In the case of \code{random = TRUE}, the net heat plot is based on
 #' a random effects model generalised for multivariate meta-analysis
-#' in which the between-study variance \eqn{tau^2} is estimated by the
+#' in which the between-study variance \eqn{\tau^2} is estimated by the
 #' method of moments (see Jackson et al., 2012) and embedded in a full
 #' design-by-treatment interaction model (see Higgins et al., 2012).
 #'

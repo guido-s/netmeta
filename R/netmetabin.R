@@ -145,6 +145,10 @@
 #' \code{\link{print.summary.netmeta}} will not print results for the
 #' random effects model if \code{comb.random = FALSE}.
 #' 
+#' For the random-effects model, the direct treatment estimates are
+#' based on the common between-study variance \eqn{\tau^2} from the
+#' network meta-analysis.
+#'
 #' For \code{method = "MH"} and \code{method = "NCH"}, only a fixed
 #' effects model is available.
 #' 

@@ -70,7 +70,10 @@ confidence intervals are shown.
 If argument \code{y} is not provided, the league table contains the
 network estimates from network meta-analysis object \code{x} in the
 lower triangle and the direct treatment estimates from pairwise
-comparisons in the upper triangle.
+comparisons in the upper triangle. Note, for the random-effects
+model, the direct treatment estimates are based on the common
+between-study variance \eqn{\tau^2} from the network meta-analysis,
+i.e. the square of list element \code{x$tau}.
 
 If argument \code{y} is provided, the league table contains
 information on treatment comparisons from network meta-analysis

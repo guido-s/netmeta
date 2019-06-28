@@ -72,7 +72,7 @@ All measures are calculated based on the fixed effects
 meta-analysis by default. In the case that in function
 \code{netmeta} the argument \code{comb.random = TRUE}, all measures
 are calculated for a random effects model. The value of the
-square-root of the between-study variance \eqn{tau^2} can also be
+square-root of the between-study variance \eqn{\tau^2} can also be
 prespecified by argument \code{tau.preset} in function
 \code{netmeta}.
 }

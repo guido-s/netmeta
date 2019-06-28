@@ -2,16 +2,21 @@ multiarm <- function(r) {
   ##
   ## Dimension of r and R
   ##
-  m <- length(r)                 # Number of edges
+  m <- length(r) # Number of edges
+  if (m < 2)
+    stop("Information for single-arm study provided.")
+  ##
   k <- (1 + sqrt(8 * m + 1)) / 2 # Number of vertices
+  if (!(abs(k - round(k)) < .Machine$double.eps^0.5))
+    stop("Wrong number of comparisons in multi-arm study.")
   ##
-  ## Construct adjacency matrix and edge.vertex incidence matrix of
-  ## complete graph of dimension k
+  ## Construct edge-vertex incidence matrix of complete graph of
+  ## dimension k
   ##
-  A <- 1 - diag(rep(1, k))
   B <- createB(ncol = k)
   ##
-  ## Distribute the edge variances on a symmetrical k x k matrix, R
+  ## Distribute the edge variances on a symmetrical matrix R of
+  ## dimension k x k
   ##
   R <- diag(diag(t(B) %*% diag(r) %*% B)) - t(B) %*% diag(r) %*% B
   ##
@@ -34,7 +39,7 @@ multiarm <- function(r) {
   ##
   ## Compute original variance vector v from V
   ##
-  v <- rep(0, k)
+  v <- rep(0, m)
   edge <- 0
   for (i in 1:(k - 1)) {
     for (j in (i + 1):k) {

@@ -80,7 +80,7 @@ For assessing the inconsistency in a random effects model, the
 between-designs Q statistic can be calculated based on a full
 design-by-treatment interaction random effects model (see Higgins
 et al., 2012). This Q statistic will be automatically given in the
-output (\eqn{tau^2} estimated by the method of moments (see Jackson
+output (\eqn{\tau^2} estimated by the method of moments (see Jackson
 et al., 2012). Alternatively, the square-root of the between-study
 variance can be prespecified by argument \code{tau.preset} to
 obtain a between-designs Q statistic (in \code{Q.inc.random}), its

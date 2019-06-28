@@ -218,17 +218,17 @@ The underlying multivariate model is given by
 \deqn{\bold{\delta} = \bold{B} \bold{\theta}, \bold{\theta} =
 \bold{C} \bold{\beta}}
 
-with \itemize{
-\item[\eqn{\bold{\delta}}] vector of true treatment effects
-  (differences) from individual studies,
-\item[\eqn{\bold{B}}] is a design matrix describing the structure
-  of the network,
-\item[\eqn{\bold{\theta}}] parameter vector that represents the
-  existing combined treatments,
-\item[\eqn{\bold{C}}] matrix describing how the treatments are
-  composed,
-\item[\eqn{\bold{\beta}}] is a parameter vector representing the
-treatment components.
+with \describe{
+\item{\eqn{\bold{\delta}}}{vector of true treatment effects
+  (differences) from individual studies,}
+\item{\eqn{\bold{B}}}{design matrix describing the structure of the
+  network,}
+\item{\eqn{\bold{\theta}}}{parameter vector that represents the
+  existing combined treatments,}
+\item{\eqn{\bold{C}}}{matrix describing how the treatments are
+  composed,}
+\item{\eqn{\bold{\beta}}}{parameter vector representing the
+  treatment components.}
 }
 All parameters are estimated using weighted least squares
 regression.
