@@ -70,6 +70,10 @@
     - set very small negative values in matrix W equal to zero
     - object k instead of n denotes number of treatment arms
       (same notation as Rücker & Schwarzer, 2014)
+    - more liberal cutpoint to set negative variances to zero
+
+  * chkmultiarm():
+    - more liberal check for negative variances
 
   * new auxiliary internal functions for forest plots
 

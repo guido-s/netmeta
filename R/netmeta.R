@@ -950,7 +950,7 @@ netmeta <- function(TE, seTE,
   ## (6) Conduct network meta-analysis
   ##
   ##
-  ## fixed effects model
+  ## Fixed effects model
   ##
   res.f <- nma.ruecker(p0$TE, sqrt(1 / p0$weights),
                        p0$treat1, p0$treat2,
