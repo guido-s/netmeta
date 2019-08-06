@@ -1,3 +1,118 @@
+#' Get information on network connectivity (number of subnetworks,
+#' distance matrix)
+#' 
+#' @description
+#' To determine the network structure and to test whether a given
+#' network is fully connected. Network information is provided as a
+#' triple of vectors \code{treat1}, \code{treat2}, and \code{studlab}
+#' where each row corresponds to an existing pairwise treatment
+#' comparison (\code{treat1}, \code{treat2}) in a study
+#' (\code{studlab}). The function calculates the number of subnetworks
+#' (connectivity components; value of 1 corresponds to a fully
+#' connected network) and the distance matrix (in block-diagonal form
+#' in the case of subnetworks). If some treatments are combinations of
+#' other treatments or have common components, an analysis based on
+#' the additive network meta-analysis model might be possible, see
+#' \link{discomb} function.
+#' 
+#' @aliases netconnection print.netconnection
+#' 
+#' @param treat1 Label / number for first treatment.
+#' @param treat2 Label / number for second treatment.
+#' @param studlab An optional - but important! - vector with study
+#'   labels (see Details).
+#' @param data An optional data frame containing the study
+#'   information.
+#' @param subset An optional vector specifying a subset of studies to
+#'   be used.
+#' @param title Title of meta-analysis / systematic review.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
+#' @param warn A logical indicating whether warnings should be
+#'   printed.
+#' @param x An object of class \code{netconnection}.
+#' @param digits Minimal number of significant digits, see
+#'   \code{\link{print.default}}.
+#' @param ... Additional arguments (ignored at the moment)
+#' 
+#' @return
+#' An object of class \code{netconnection} with corresponding
+#' \code{print} function. The object is a list containing the
+#' following components:
+#' \item{treat1, treat2, studlab, title, warn, nchar.trts}{As defined
+#'   above.}
+#' \item{k}{Total number of studies.}
+#' \item{m}{Total number of pairwise comparisons.}
+#' \item{n}{Total number of treatments.}
+#' \item{n.subnets}{Number of subnetworks; equal to 1 for a fully
+#'   connected network.}
+#' \item{D.matrix}{Distance matrix.}
+#' \item{A.matrix}{Adjacency matrix.}
+#' \item{L.matrix}{Laplace matrix.}
+#' \item{call}{Function call.}
+#' \item{version}{Version of R package netmeta used to create object.}
+#' 
+#' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
+#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' 
+#' @seealso \code{\link{netmeta}}, \code{\link{netdistance}},
+#'   \code{\link{discomb}}
+#' 
+#' @examples
+#' data(Senn2013)
+#' 
+#' nc1 <- netconnection(treat1, treat2, studlab, data = Senn2013)
+#' nc1
+#' 
+#' # Extract number of (sub)networks
+#' #
+#' nc1$n.subnets
+#' 
+#' # Extract distance matrix
+#' #
+#' nc1$D.matrix
+#' 
+#' # Conduct network meta-analysis (results not shown)
+#' #
+#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data = Senn2013)
+#' 
+#' # Artificial example with two subnetworks
+#' #
+#' t1 <- c("G", "B", "B", "D", "A", "F")
+#' t2 <- c("B", "C", "E", "E", "H", "A")
+#' #
+#' nc2 <- netconnection(t1, t2)
+#' nc2
+#' 
+#' # Number of subnetworks
+#' #
+#' nc2$n.subnets
+#' 
+#' # Extract distance matrix
+#' #
+#' nc2$D.matrix
+#' 
+#' # Conduct network meta-analysis (results in an error message due to
+#' # unconnected network)
+#' try(net2 <- netmeta(1:6, 1:6, t1, t2, 1:6))
+#' 
+#' # Conduct network meta-analysis on first subnetwork
+#' #
+#' net2.1 <- netmeta(1:6, 1:6, t1, t2, 1:6,
+#'                   subset = (t1 %in% c("A", "F", "H") & t2 %in% c("A", "F", "H")))
+#' 
+#' # Conduct network meta-analysis on second subnetwork
+#' #
+#' net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6,
+#'                   subset = !(t1 %in% c("A", "F", "H") & t2 %in% c("A", "F", "H")))
+#' 
+#' summary(net2.1)
+#' summary(net2.2)
+#' 
+#' @rdname netconnection
+#' @export netconnection
+
+
 netconnection <- function(treat1, treat2, studlab,
                           data = NULL, subset = NULL,
                           nchar.trts = 666,
@@ -185,4 +300,67 @@ netconnection <- function(treat1, treat2, studlab,
   class(res) <- "netconnection"
 
   res
+}
+
+
+
+
+
+#' @rdname netconnection
+#' @method print netconnection
+#' @export
+#' @export print.netconnection
+
+
+print.netconnection <- function(x,
+                                digits = max(4, .Options$digits - 3),
+                                nchar.trts = x$nchar.trts, ...) {
+  
+  meta:::chkclass(x, "netconnection")
+  ##
+  if (is.null(nchar.trts))
+    nchar.trts <- 666
+  
+  
+  meta:::chknumeric(digits, single = TRUE)
+  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  
+  
+  matitle(x)
+  ##
+  cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
+  cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
+  cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
+  ##
+  cat("Number of networks: ", x$n.subnets, "\n\n", sep = "")
+  
+  cat("Distance matrix:\n")
+  
+  D <- round(x$D.matrix, digits = digits)
+  D[is.infinite(D)] <- "."
+  ##
+  if (x$n.subnets == 1)
+    diag(D) <- "."
+  ##
+  rownames(D) <- treats(rownames(D), nchar.trts)
+  colnames(D) <- treats(colnames(D), nchar.trts)
+  ##
+  prmatrix(D, quote = FALSE, right = TRUE)
+  
+  
+  if (any(rownames(x$D.matrix) != rownames(D))) {
+    abbr <- rownames(D)
+    full <- rownames(x$D.matrix)
+    ##
+    tmat <- data.frame(abbr, full)
+    names(tmat) <- c("Abbreviation", "Treatment name")
+    tmat <- tmat[order(tmat$Abbreviation), ]
+    ##
+    cat("\nLegend:\n")
+    prmatrix(tmat, quote = FALSE, right = TRUE,
+             rowlab = rep("", length(abbr)))
+  }
+  
+  
+  invisible(NULL)
 }

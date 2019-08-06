@@ -1,3 +1,66 @@
+#' Print objects of class netcomb
+#' 
+#' @description
+#' Print method for objects of class \code{netcomb}.
+#' 
+#' @param x An object of class \code{netcomb}
+#' @param comb.fixed A logical indicating whether results for the
+#'   fixed effects (common effects) model should be printed.
+#' @param comb.random A logical indicating whether results for the
+#'   random effects model should be printed.
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in printouts and forest plots. If
+#'   \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
+#'   as odds ratios rather than log odds ratios, for example.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names (see Details).
+#' @param digits Minimal number of significant digits, see
+#'   \code{print.default}.
+#' @param digits.zval Minimal number of significant digits for z- or
+#'   t-value, see \code{print.default}.
+#' @param digits.pval Minimal number of significant digits for p-value
+#'   of overall treatment effect, see \code{print.default}.
+#' @param digits.pval.Q Minimal number of significant digits for
+#'   p-value of heterogeneity tests, see \code{print.default}.
+#' @param digits.Q Minimal number of significant digits for
+#'   heterogeneity statistics, see \code{print.default}.
+#' @param scientific.pval A logical specifying whether p-values should
+#'   be printed in scientific notation, e.g., 1.2345e-01 instead of
+#'   0.12345.
+#' @param big.mark A character used as thousands separator.
+#' @param \dots Additional arguments.
+#' 
+#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' 
+#' @seealso \code{\link{netcomb}}, \code{\link{discomb}},
+#'   \code{\link{summary.netcomb}}
+#' 
+#' @keywords print
+#' 
+#' @examples
+#' data(Linde2016)
+#' 
+#' # Only consider studies including Face-to-face PST (to reduce
+#' # runtime of example)
+#' #
+#' face <- subset(Linde2016, id %in% c(16, 24, 49, 118))
+#' 
+#' # Conduct random effects network meta-analysis
+#' #
+#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+#'                 data = face, reference.group = "placebo",
+#'                 sm = "OR", comb.fixed = FALSE)
+#' 
+#' # Additive model for treatment components
+#' #
+#' nc1 <- netcomb(net1)
+#' print(nc1, digits = 2)
+#' 
+#' @method print netcomb
+#' @export
+#' @export print.netcomb
+
+
 print.netcomb <- function(x,
                           comb.fixed = x$comb.fixed,
                           comb.random = x$comb.random,

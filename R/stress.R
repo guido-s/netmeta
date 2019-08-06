@@ -30,7 +30,7 @@ stress <- function(x,
   n <- dim(As.matrix)[1]                            # Dimension
   e <- rep(1, n)                                    # Vector of ones
   L <- diag(as.vector(As.matrix %*% e)) - As.matrix # Laplacian
-  Lt <- solve(L - e %*% t(e) / n) + e %*% t(e) / n  # Its pseudoinverse
+  Lt <- ginv(L)                                     # Its pseudoinverse
   
   
   ##
@@ -50,9 +50,9 @@ stress <- function(x,
   ## Weight matrix and its pseudoinverse from complete graph of n
   ## vertices
   ##
-  K <- 1 - diag(rep(1, n))                         # K = Complete graph of n vertices
-  W <- diag(rep(n - 1, n)) - K                     # Weight matrix = Laplacian of K
-  Wt <- solve(W - e %*% t(e) / n) + e %*% t(e) / n # Its pseudoinverse
+  K <- 1 - diag(rep(1, n))     # K = Complete graph of n vertices
+  W <- diag(rep(n - 1, n)) - K # Weight matrix = Laplacian of K
+  Wt <- ginv(W)                # Its pseudoinverse
   
   
   ##

@@ -1,0 +1,88 @@
+#' Network meta-analysis in diabetes
+#' 
+#' @description
+#' Network meta-analysis in diabetes comparing effects of a number of
+#' drugs on the HbA1c value.
+#' 
+#' These data are used as an example in Senn et al. (2013) and have been
+#' preprocessed for use in R package netmeta.
+#' 
+#' @name Senn2013
+#' 
+#' @docType data
+#' 
+#' @details
+#' Treatment labels provided by columns \code{treat1} and
+#' \code{treat2} have been abbreviated:
+#' \itemize{
+#' \item acar = Acarbose
+#' \item benf = Benfluorex
+#' \item metf = Metformin
+#' \item migl = Miglitol
+#' \item piog = Pioglitazone
+#' \item plac = Placebo
+#' \item rosi = Rosiglitazone
+#' \item sita = Sitagliptin
+#' \item sulf = Sulfonylurea
+#' \item vild = Vildagliptin
+#' }
+#'
+#' Full treatment names are available in columns \code{treat1.long}
+#' and \code{treat2.long}.
+#' 
+#' @format
+#' A data frame with the following columns:
+#' \tabular{rl}{
+#' \bold{\emph{TE}}\tab treatment effect \cr
+#' \bold{\emph{seTE}}\tab standard error of treatment effect \cr
+#' \bold{\emph{treat1}}\tab treatment 1 \cr
+#' \bold{\emph{treat2}}\tab treatment 2 \cr
+#' \bold{\emph{treat1.long}}\tab treatment 1 (full treatment names)
+#'   \cr
+#' \bold{\emph{treat2.long}}\tab treatment 2 (full treatment names)
+#'   \cr
+#' \bold{\emph{studlab}}\tab Study label
+#' }
+#' 
+#' @seealso \code{\link{netmeta}}
+#' 
+#' @source
+#' Senn S, Gavini F, Magrez D, Scheen A (2013):
+#' Issues in performing a network meta-analysis.
+#' \emph{Statistical Methods in Medical Research},
+#' \bold{22}, 169--89
+#' 
+#' @keywords datasets
+#' 
+#' @examples
+#' data(Senn2013)
+#' 
+#' # Fixed effect model
+#' #
+#' net1 <- netmeta(TE, seTE, treat1, treat2,
+#'                 studlab, data = Senn2013,
+#'                 comb.random = FALSE)
+#' net1
+#' net1$Q.decomp
+#' 
+#' # Forest plot
+#' #
+#' forest(net1, ref = "plac")
+#' 
+#' \dontrun{
+#' # Comparison with reference group
+#' #
+#' netmeta(TE, seTE, treat1.long, treat2.long,
+#'         studlab, data = Senn2013, 
+#'         reference = "plac")
+#' 
+#' # Random effects model
+#' #
+#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab, data = Senn2013,
+#'                 comb.fixed = FALSE)
+#' net2
+#' forest(net2, ref = "plac")
+#' }
+
+
+NULL

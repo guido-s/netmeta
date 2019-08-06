@@ -177,7 +177,7 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       ##
       inconsistent.varTE[s.idx] <- any(abs(varTE.diff) > tol)
       ##
-      is.zero <- abs(sigma2) < .Machine$double.eps^0.75
+      is.zero <- abs(sigma2) < .Machine$double.eps^0.5
       zero.sigma2[s.idx] <- any(is.zero)
       negative.sigma2[s.idx] <- any(sigma2[!is.zero] < 0)
       ##
