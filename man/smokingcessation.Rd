@@ -26,9 +26,6 @@ of evidence based on randomized controlled trials.
 \emph{Medical Decision Making},
 \bold{33}, 641--56
 }
-\usage{
-smokingcessation
-}
 \description{
 Network meta-analysis comparing the effects of a number of
 interventions for smoking cessation.

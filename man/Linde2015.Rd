@@ -54,9 +54,6 @@ meta-analysis.
 \emph{Annals of Family Medicine},
 \bold{13}, 69--79
 }
-\usage{
-Linde2015
-}
 \description{
 Network meta-analysis of nine classes of antidepressants including
 placebo for the primary care setting; partly shown in Linde et

@@ -28,9 +28,6 @@ randomized controlled trials.
 \emph{Medical Decision Making},
 \bold{33}, 607--17
 }
-\usage{
-parkinson
-}
 \description{
 Network meta-analysis comparing the effects of a number of
 treatments for Parkinson's disease.

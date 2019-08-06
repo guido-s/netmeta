@@ -20,9 +20,6 @@ liver transplantation.
 \emph{Cochrane Database of Systematic Reviews},
 CD009052
 }
-\usage{
-Gurusamy2011
-}
 \description{
 Network meta-analysis comparing the effects of a number of
 interventions for decreasing blood loss and blood transfusion

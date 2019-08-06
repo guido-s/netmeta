@@ -78,4 +78,4 @@
 #' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25, labels = tname)
 
 
-"dietaryfat"
+NULL

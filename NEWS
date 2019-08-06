@@ -2,14 +2,14 @@
 
  ** Major changes **
 
-  * Use roxygen2 for development of R package netmeta
-
-  * New function plot.netrank() to produce image plot of P-scores
-
   * New functions netimpact(), netgraph.netimpact(), print.netimpact()
     to measure the impact of individual studies to network estimates
 
+  * New function plot.netrank() to produce image plot of P-scores
+
   * Equivalence limits can be added to forest plots
+
+  * Use roxygen2 for development of R package netmeta
 
  ** Bug fixes **
 

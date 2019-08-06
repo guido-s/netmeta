@@ -88,4 +88,4 @@
 #' print(summary(net1), digits = 2)
 
 
-"Linde2015"
+NULL

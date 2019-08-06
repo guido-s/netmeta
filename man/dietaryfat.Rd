@@ -25,9 +25,6 @@ randomized controlled trials.
 \emph{Medical Decision Making},
 \bold{33}, 607--17
 }
-\usage{
-dietaryfat
-}
 \description{
 Network meta-analysis comparing the effects of two diets to control
 on mortality.

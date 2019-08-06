@@ -22,9 +22,6 @@ Issues in performing a network meta-analysis.
 \emph{Statistical Methods in Medical Research},
 \bold{22}, 169--89
 }
-\usage{
-Senn2013
-}
 \description{
 Network meta-analysis in diabetes comparing effects of a number of
 drugs on the HbA1c value.

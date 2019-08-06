@@ -19,9 +19,6 @@ treatment comparison meta-analysis of randomised controlled trials.
 \emph{Thorax},
 \bold{68}, 48--56
 }
-\usage{
-Dong2013
-}
 \description{
 Network meta-analysis comparing inhaled medications in patients
 with chronic obstructive pulmonary disease.

@@ -19,9 +19,6 @@ tutorial.
 \emph{BMC Medical Research Methodology},
 \bold{10}, 54
 }
-\usage{
-Woods2010
-}
 \description{
 Count mortality statistics in randomised controlled trials of
 treatments for chronic obstructive pulmonary disease (Woods et

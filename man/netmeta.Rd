@@ -425,6 +425,7 @@ net1$Q.decomp
 #
 print(net1, reference = "plac")
 
+\dontrun{
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
@@ -441,6 +442,7 @@ net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
                 data = Senn2013, sm = "MD", comb.fixed = FALSE,
                 seq = trts, reference = "Placebo")
 print(summary(net3), digits = 2)
+}
 
 }
 \references{

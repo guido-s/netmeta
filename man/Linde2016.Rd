@@ -19,9 +19,6 @@ meta-analysis of primary care depression treatments.
 \emph{Journal of Clinical Epidemiology},
 \bold{71}, 86--96
 }
-\usage{
-Linde2016
-}
 \description{
 Network meta-analysis of 22 treatments (including placebo and usual
 care) for the primary care of depression.
