@@ -1,3 +1,145 @@
+#' Forest plot for direct and indirect evidence
+#' 
+#' @description
+#' Forest plot to show direct and indirect evidence in network
+#' meta-analysis.  Furthermore, estimates from network meta-analysis
+#' as well as prediction intervals can be printed.
+#' 
+#' @param x An object of class \code{netsplit}.
+#' @param pooled A character string indicating whether results for the
+#'   fixed effect (\code{"fixed"}) or random effects model
+#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#' @param show A character string indicating which comparisons should
+#'   be printed (see Details).
+#' @param overall A logical indicating whether network meta-analysis
+#'   estimates should be printed.
+#' @param direct A logical indicating whether direct estimates should
+#'   be printed.
+#' @param indirect A logical indicating whether indirect estimates
+#'   should be printed.
+#' @param prediction A logical indicating whether prediction intervals
+#'   should be printed.
+#' @param subgroup A character string indicating which layout should
+#'   be used in forest plot: subgroups by comparisons
+#'   (\code{"comparison"}) or subgroups by estimates
+#'   (\code{"estimate"}). Can be abbreviated.
+#' @param text.overall A character string used in the plot to label
+#'   the network estimates.
+#' @param text.direct A character string used in the plot to label the
+#'   direct estimates.
+#' @param text.indirect A character string used in the plot to label
+#'   the indirect estimates.
+#' @param text.predict A character string used in the plot to label
+#'   the prediction interval.
+#' @param type.overall A character string specifying how to plot
+#'   treatment effects and confidence intervals for the overall
+#'   network evidence.
+#' @param type.direct A character string specifying how to plot
+#'   treatment effects and confidence intervals for the direct
+#'   evidence.
+#' @param type.indirect A character string specifying how to plot
+#'   treatment effects and confidence intervals for the indirect
+#'   evidence.
+#' @param col.square The colour for squares.
+#' @param col.square.lines The colour for the outer lines of squares.
+#' @param col.inside The colour for results and confidence limits if
+#'   confidence limits are completely within squares squares.
+#' @param col.diamond The colour of diamonds.
+#' @param col.diamond.lines The colour of the outer lines of diamonds.
+#' @param col.predict Background colour of prediction intervals.
+#' @param col.predict.lines Colour of outer lines of prediction
+#'   intervals.
+#' @param equal.size A logical indicating whether all squares should
+#'   be of equal size. Otherwise, the square size is proportional to
+#'   the precision of estimates.
+#' @param leftcols A character vector specifying columns to be plotted
+#'   on the left side of the forest plot (see Details).
+#' @param leftlabs A character vector specifying labels for columns on
+#'   left side of the forest plot.
+#' @param rightcols A character vector specifying columns to be
+#'   plotted on the right side of the forest plot (see Details).
+#' @param rightlabs A character vector specifying labels for columns
+#'   on right side of the forest plot.
+#' @param digits Minimal number of significant digits for treatment
+#'   effects and confidence intervals, see \code{print.default}.
+#' @param digits.prop Minimal number of significant digits for the
+#'   direct evidence proportion.
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in forest plots. If \code{backtransf = TRUE},
+#'   results for \code{sm = "OR"} are presented as odds ratios rather
+#'   than log odds ratios, for example.
+#' @param lab.NA A character string to label missing values.
+#' @param smlab A label printed at top of figure. By default, text
+#'   indicating either fixed effect or random effects model is
+#'   printed.
+#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#'   function.
+#' 
+#' @details
+#' A forest plot, also called confidence interval plot, is drawn in
+#' the active graphics window.
+#' 
+#' The arguments \code{leftcols} and \code{rightcols} can be used to
+#' specify columns which are plotted on the left and right side of the
+#' forest plot, respectively. If argument \code{rightcols} is
+#' \code{FALSE}, no columns will be plotted on the right side.
+#' 
+#' If direct estimates are included in the forest plot (\code{direct =
+#' TRUE}, default), the following columns will be printed on the left
+#' side of the forest plot: the comparisons (column \code{"studlab"}
+#' in \code{\link{forest.meta}}), number of pairwise comparisons
+#' (\code{"k"}), and direct evidence proportion (\code{"k"}).
+#' 
+#' If direct estimates are not included in the forest plot
+#' (\code{direct = FALSE}), only the comparisons (\code{"studlab"})
+#' are printed on the left side of the forest plot.
+#' 
+#' For more information see help page of \code{\link{forest.meta}}
+#' function.
+#' 
+#' Argument \code{show} determines which comparisons are printed:
+#' \tabular{ll}{
+#' \dQuote{all} \tab All comparisons \cr
+#' \dQuote{both} \tab Only comparisons contributing both direct and
+#'   indirect evidence \cr
+#' \dQuote{with.direct} \tab Comparisons providing direct evidence \cr
+#' \dQuote{direct.only} \tab Comparisons providing only direct
+#'   evidence \cr
+#' \dQuote{indirect.only} \tab Comparisons providing only indirect
+#'   evidence
+#' }
+#'
+#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' 
+#' @seealso \code{\link{forest.meta}}
+#' 
+#' @keywords hplot
+#' 
+#' @examples
+#' data(Senn2013)
+#' #
+#' net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
+#'                 studlab, data = Senn2013,
+#'                 comb.fixed = FALSE)
+#' #
+#' ns1 <- netsplit(net1)
+#' 
+#' # Forest plot showing comparisons contributing both direct and
+#' # indirect evidence
+#' #
+#' forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
+#' 
+#' 
+#' # Forest plot showing comparisons contributing direct evidence
+#' #
+#' forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
+#'        show = "with.direct")
+#' 
+#' @method forest netsplit
+#' @export
+#' @export forest.netsplit
+
+
 forest.netsplit <- function(x,
                             pooled = ifelse(x$comb.random, "random", "fixed"),
                             show = "both",

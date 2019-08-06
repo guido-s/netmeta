@@ -1,3 +1,95 @@
+#' Forest plot showing results of two or more network meta-analyses
+#' 
+#' @description
+#' Forest plot to show network estimates of two or more network
+#' meta-analyses.
+#' 
+#' @param x An object of class \code{netbind}.
+#' @param pooled A character string indicating whether results for the
+#'   fixed effects (\code{"fixed"}) or random effects model
+#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#' @param equal.size A logical indicating whether all squares should
+#'   be of equal size. Otherwise, the square size is proportional to
+#'   the precision of estimates.
+#' @param leftcols A character vector specifying columns to be plotted
+#'   on the left side of the forest plot (see Details).
+#' @param leftlabs A character vector specifying labels for columns on
+#'   left side of the forest plot.
+#' @param rightcols A character vector specifying columns to be
+#'   plotted on the right side of the forest plot (see Details).
+#' @param rightlabs A character vector specifying labels for columns
+#'   on right side of the forest plot.
+#' @param digits Minimal number of significant digits for treatment
+#'   effects and confidence intervals, see \code{print.default}.
+#' @param digits.prop Minimal number of significant digits for the
+#'   direct evidence proportion.
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in forest plots. If \code{backtransf = TRUE},
+#'   results for \code{sm = "OR"} are presented as odds ratios rather
+#'   than log odds ratios, for example.
+#' @param lab.NA A character string to label missing values.
+#' @param smlab A label printed at top of figure. By default, text
+#'   indicating either fixed effect or random effects model is
+#'   printed.
+#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#'   function.
+#' 
+#' @details
+#' A forest plot, also called confidence interval plot, is drawn in
+#' the active graphics window.
+#' 
+#' The arguments \code{leftcols} and \code{rightcols} can be used to
+#' specify columns which are plotted on the left and right side of the
+#' forest plot, respectively. If argument \code{rightcols} is
+#' \code{FALSE}, no columns will be plotted on the right side.
+#' 
+#' For more information see help page of \code{\link{forest.meta}}
+#' function.
+#' 
+#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' 
+#' @seealso \code{\link{netbind}}, \code{\link{netcomb}},
+#'   \code{\link{forest.meta}}
+#' 
+#' @keywords hplot
+#' 
+#' @examples
+#' data(Linde2016)
+#' 
+#' # Only consider studies including Face-to-face PST (to reduce
+#' # runtime of example)
+#' #
+#' face <- subset(Linde2016, id %in% c(16, 24, 49, 118))
+#' 
+#' # Standard random effects NMA model (with placebo as reference
+#' # treatment)
+#' #
+#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+#'                 data = face, reference.group = "placebo",
+#'                 sm = "OR", comb.fixed = FALSE)
+#' 
+#' # Additive CNMA model with placebo as inactive component and
+#' # reference
+#' #
+#' nc1 <- netcomb(net1, inactive = "placebo")
+#' 
+#' # Combine results of standard NMA and CNMA
+#' #
+#' nb1 <- netbind(nc1, net1,
+#'                name = c("Additive CNMA", "Standard NMA"),
+#'                col.study = c("red", "black"),
+#'                col.square = c("red", "black"))
+#' forest(nb1,
+#'        col.by = "black", addrow.subgroups = FALSE,
+#'        fontsize = 10, spacing = 0.7, squaresize = 0.9,
+#'        label.left = "Favours Placebo",
+#'        label.right = "Favours other")
+#' 
+#' @method forest netbind
+#' @export
+#' @export forest.netbind
+
+
 forest.netbind <- function(x,
                            pooled = ifelse(x$comb.random, "random", "fixed"),
                            ##

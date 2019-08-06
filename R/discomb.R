@@ -1,3 +1,339 @@
+#' Additive network meta-analysis for combinations of treatments
+#' (disconnected networks)
+#' 
+#' @description
+#' Some treatments in a network meta-analysis may be combinations of
+#' other treatments or have common components. The influence of
+#' individual components can be evaluated in an additive network
+#' meta-analysis model assuming that the effect of treatment
+#' combinations is the sum of the effects of its components. This
+#' function implements this additive model in a frequentist way and is
+#' particularly intended for disconnected networks.
+#' 
+#' @param TE Estimate of treatment effect, i.e. difference between
+#'   first and second treatment (e.g. log odds ratio, mean difference,
+#'   or log hazard ratio).
+#' @param seTE Standard error of treatment estimate.
+#' @param treat1 Label/Number for first treatment.
+#' @param treat2 Label/Number for second treatment.
+#' @param studlab An optional - but important! - vector with study
+#'   labels (see \code{\link{netmeta}}).
+#' @param data An optional data frame containing the study
+#'   information.
+#' @param subset An optional vector specifying a subset of studies to
+#'   be used.
+#' @param inactive A character string defining the inactive treatment
+#'   (see Details).
+#' @param sep.comps A single character to define separator between
+#'   treatment components.
+#' @param C.matrix C matrix (see Details).
+#' @param sm A character string indicating underlying summary measure,
+#'   e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
+#'   \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.
+#' @param level The level used to calculate confidence intervals for
+#'   individual comparisons.
+#' @param level.comb The level used to calculate confidence intervals
+#'   for pooled estimates.
+#' @param comb.fixed A logical indicating whether a fixed effects
+#'   (common effects) network meta-analysis should be conducted.
+#' @param comb.random A logical indicating whether a random effects
+#'   network meta-analysis should be conducted.
+#' @param reference.group Reference treatment.
+#' @param baseline.reference A logical indicating whether results
+#'   should be expressed as comparisons of other treatments versus the
+#'   reference treatment (default) or vice versa. This argument is
+#'   only considered if \code{reference.group} has been specified.
+#' @param seq A character or numerical vector specifying the sequence
+#'   of treatments in printouts.
+#' @param tau.preset An optional value for the square-root of the
+#'   between-study variance \eqn{\tau^2}.
+#' @param tol.multiarm A numeric for the tolerance for consistency of
+#'   treatment estimates and corresponding variances in multi-arm
+#'   studies which are consistent by design.
+#' @param details.chkmultiarm A logical indicating whether treatment
+#'   estimates and / or variances of multi-arm studies with
+#'   inconsistent results or negative multi-arm variances should be
+#'   printed.
+#' @param sep.trts A character used in comparison names as separator
+#'   between treatment labels.
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in printouts and forest plots. If
+#'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
+#'   presented as odds ratios rather than log odds ratios, for
+#'   example.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names (see Details).
+#' @param title Title of meta-analysis / systematic review.
+#' @param warn A logical indicating whether warnings should be printed
+#'   (e.g., if studies are excluded from meta-analysis due to zero
+#'   standard errors).
+#' 
+#' @details
+#' Treatments in network meta-analysis (NMA) can be complex
+#' interventions. Some treatments may be combinations of others or
+#' have common components. The standard analysis provided by
+#' \code{\link{netmeta}} is a NMA where all existing (single or
+#' combined) treatments are considered as different nodes in the
+#' network. Exploiting the fact that some treatments are combinations
+#' of common components, an additive component network meta-analysis
+#' (CNMA) model can be used to evaluate the influence of individual
+#' components. This model assumes that the effect of a treatment
+#' combination is the sum of the effects of its components which
+#' implies that common components cancel out in comparisons.
+#' 
+#' This R function can be used for disconnected networks. Use
+#' \code{\link{netmeta}} and \code{\link{netcomb}} for connected
+#' networks.
+#' 
+#' The additive CNMA model has been implemented using Bayesian methods
+#' (Mills et al., 2012; Welton et al., 2013). This function implements
+#' the additive model in a frequentist way (Rücker et al., 2019).
+#' 
+#' The underlying multivariate model is given by
+#' 
+#' \deqn{\bold{\delta} = \bold{B} \bold{\theta}, \bold{\theta} =
+#' \bold{C} \bold{\beta}}
+#' 
+#' with
+#' \describe{
+#' \item{\eqn{\bold{\delta}}}{vector of true treatment effects
+#'   (differences) from individual studies,}
+#' \item{\eqn{\bold{B}}}{design matrix describing the structure of the
+#'   network,}
+#' \item{\eqn{\bold{\theta}}}{parameter vector that represents the
+#'   existing combined treatments,}
+#' \item{\eqn{\bold{C}}}{matrix describing how the treatments are
+#'   composed,}
+#' \item{\eqn{\bold{\beta}}}{parameter vector representing the
+#'   treatment components.}
+#' }
+#' All parameters are estimated using weighted least squares
+#' regression.
+#' 
+#' Argument \code{inactive} can be used to specify a single component
+#' that does not have any therapeutic value. Accordingly, it is
+#' assumed that the treatment effect of the combination of this
+#' component with an additional treatment component is equal to the
+#' treatment effect of the additional component alone.
+#' 
+#' Argument \code{sep.comps} can be used to specify the separator
+#' between individual components. By default, the matrix \strong{C} is
+#' calculated internally from treatment names. However, it is possible
+#' to specify a different matrix using argument \code{C.matrix}.
+#' 
+#' @return
+#' An object of classes \code{discomb} and \code{netcomb} with
+#' corresponding \code{print}, \code{summary}, and \code{forest}
+#' functions. The object is a list containing the following
+#' components:
+#' \item{studlab}{Study labels.}
+#' \item{treat1}{Label/Number for first treatment.}
+#' \item{treat2}{Label/Number for second treatment.}
+#' \item{TE}{Estimate of treatment effect, i.e. difference between
+#'   first and second treatment.}
+#' \item{seTE}{Standard error of treatment estimate.}
+#' \item{seTE.adj}{Standard error of treatment estimate, adjusted for
+#'   multi-arm studies.}
+#' \item{event1}{Number of events in first treatment group.}
+#' \item{event2}{Number of events in second treatment group.}
+#' \item{n1}{Number of observations in first treatment group.}
+#' \item{n2}{Number of observations in second treatment group.}
+#' \item{k}{Total number of studies.}
+#' \item{m}{Total number of pairwise comparisons.}
+#' \item{n}{Total number of treatments.}
+#' \item{d}{Total number of designs (corresponding to the unique set
+#'   of treatments compared within studies).}
+#' \item{c}{Total number of components.}
+#' \item{trts}{Treatments included in network meta-analysis.}
+#' \item{comps}{Unique list of components present in the network.}
+#' \item{TE.cnma.fixed, TE.cnma.random}{A vector of length \emph{m} of
+#'   consistent treatment effects estimated by the additive (fixed and
+#'   random effects) model.}
+#' \item{seTE.cnma.fixed, seTE.cnma.random}{A vector of length
+#'   \emph{m} with standard errors estimated by the additive (fixed
+#'   and random effects) model.}
+#' \item{lower.cnma.fixed, lower.cnma.random}{A vector of length
+#'   \emph{m} of lower confidence interval limits for consistent
+#'   treatment effects estimated by the additive (fixed and random
+#'   effects) model.}
+#' \item{upper.cnma.fixed, upper.cnma.random}{A vector of length
+#'   \emph{m} of upper confidence interval limits for consistent
+#'   treatment effects estimated by the additive (fixed and random
+#'   effects) model.}
+#' \item{zval.cnma.fixed, zval.cnma.random}{A vector of length
+#'   \emph{m} of z-values for the test of an overall effect estimated
+#'   by the additive (fixed and random effects) model.}
+#' \item{pval.cnma.fixed, zval.cnma.random}{A vector of length
+#'   \emph{m} of p-values for the test of an overall effect estimated
+#'   by the additive (fixed and random effects) model.}
+#' \item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with overall
+#'   treatment effects estimated by the additive (fixed and random
+#'   effects) model.}
+#' \item{seTE.fixed, seTE.random}{\emph{n}x\emph{n} matrix with
+#'   standard errors estimated by the additive (fixed and random
+#'   effects) model.}
+#' \item{lower.fixed, upper.fixed, lower.random,
+#'   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
+#'   confidence interval limits estimated by the additive (fixed and
+#'   random effects) model.}
+#' \item{zval.fixed, pval.fixed, zval.random,
+#'   pval.random}{\emph{n}x\emph{n} matrices with z-values and
+#'   p-values for test of overall effect estimated by the additive
+#'   (fixed and random effects) model.}
+#' \item{Comp.fixed, Comp.random}{A vector of component effects (fixed
+#'   and random effects model).}
+#' \item{seComp.fixed, seComp.random}{A vector with corresponding
+#'   standard errors (fixed and random effects model).}
+#' \item{lower.Comp.fixed, lower.Comp.random}{A vector with lower
+#'   confidence limits for components (fixed and random effects
+#'   model).}
+#' \item{upper.Comp.fixed, upper.Comp.random}{A vector with upper
+#'   confidence limits for components (fixed and random effects
+#'   model).}
+#' \item{zval.Comp.fixed, zval.Comp.random}{A vector with z-values for
+#'   the overall effect of components (fixed and random effects
+#'   model).}
+#' \item{pval.Comp.fixed, pval.Comp.random}{A vector with p-values for
+#'   the overall effect of components (fixed and random effects
+#'   model).}
+#' \item{Comb.fixed, Comb.random}{A vector of combination effects (fixed
+#'   and random effects model).}
+#' \item{seComb.fixed, seComb.random}{A vector with corresponding
+#'   standard errors (fixed and random effects model).}
+#' \item{lower.Comb.fixed, lower.Comb.random}{A vector with lower
+#'   confidence limits for combinations (fixed and random effects
+#'   model).}
+#' \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
+#'   confidence limits for combinations (fixed and random effects
+#'   model).}
+#' \item{zval.Comb.fixed, zval.Comb.random}{A vector with z-values for
+#'   the overall effect of combinations (fixed and random effects
+#'   model).}
+#' \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
+#'   the overall effect of combinations (fixed and random effects
+#'   model).}
+#' \item{Q.additive}{Overall heterogeneity / inconsistency statistic
+#'   (additive model).}
+#' \item{df.Q.additive}{Degrees of freedom for test of heterogeneity /
+#'   inconsistency (additive model).}
+#' \item{pval.Q.additive}{P-value for test of heterogeneity /
+#'   inconsistency (additive model).}
+#' \item{tau}{Square-root of between-study variance (additive model).}
+#' \item{I2}{I-squared (additive model).}
+#' \item{Q.standard}{Overall heterogeneity / inconsistency statistic
+#'   (standard model).}
+#' \item{df.Q.standard}{Degrees of freedom for test of heterogeneity /
+#'   inconsistency (standard model).}
+#' \item{pval.Q.standard}{P-value for test of heterogeneity /
+#'   inconsistency (standard model).}
+#' \item{Q.diff}{Test statistic for difference in goodness of fit
+#'   between standard and additive model.}
+#' \item{df.Q.diff}{Degrees of freedom for difference in goodness of
+#'   fit between standard and additive model.}
+#' \item{pval.Q.diff}{P-value for difference in goodness of fit
+#'   between standard and additive model.}
+#' \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
+#' \item{C.matrix}{As defined above.}
+#' \item{sm}{Summary measure.}
+#' \item{level.comb}{Level for confidence intervals.}
+#' \item{comb.fixed, comb.random, tau.preset}{As defined above.}
+#' \item{sep.trts}{A character used in comparison names as separator
+#'   between treatment labels.}
+#' \item{nchar.trts}{A numeric defining the minimum number of
+#'   characters used to create unique treatment and component names.}
+#' \item{inactive, sep.comps}{As defined above.}
+#' \item{backtransf}{A logical indicating whether results should be
+#'   back transformed in printouts and forest plots.}
+#' \item{title}{Title of meta-analysis / systematic review.}
+#' \item{x}{As defined above.}
+#' \item{call}{Function call.}
+#' \item{version}{Version of R package netmeta used to create
+#'   object.}
+#' 
+#' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
+#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' 
+#' @seealso \link{netcomb}, \link{forest.netcomb},
+#'   \link{summary.netcomb}, \link{netmeta}, \link{netconnection}
+#' 
+#' @references
+#' König J, Krahn U, Binder H (2013):
+#' Visualizing the flow of evidence in network meta-analysis and
+#' characterizing mixed treatment comparisons.
+#' \emph{Statistics in Medicine},
+#' \bold{32}, 5414--29
+#' 
+#' Mills EJ, Thorlund K, Ioannidis JP (2012):
+#' Calculating additive treatment effects from multiple randomized
+#' trials provides useful estimates of combination therapies.
+#' \emph{Journal of Clinical Epidemiology},
+#' \bold{65}, 1282--8
+#' 
+#' Rücker G, Petropoulou M, Schwarzer G (2019):
+#' Network meta-analysis of multicomponent interventions.
+#' \emph{Biometrical Journal},
+#' 1--14, https://doi.org/10.1002/bimj.201800167
+#' 
+#' Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009):
+#' Mixed treatment comparison meta-analysis of complex interventions:
+#' psychological interventions in coronary heart disease.
+#' \emph{American Journal of Epidemiology},
+#' \bold{169}: 1158--65
+#' 
+#' @examples
+#' # Artificial dataset
+#' #
+#' t1 <- c("A + B", "A + C", "A"    , "A"    , "D", "D", "E")
+#' t2 <- c("C"    , "B"    , "B + C", "A + D", "E", "F", "F")
+#' #
+#' mean    <- c(4.1, 2.05, 0, 0, 0.1, 0.1, 0.05)
+#' se.mean <- rep(0.1, 7)
+#' #
+#' study <- paste("study", c(1:4, 5, 5, 5))
+#' #
+#' dat <- data.frame(mean, se.mean, t1, t2, study,
+#'                   stringsAsFactors = FALSE)
+#' #
+#' trts <- c("A", "A + B", "A + C", "A + D",
+#'           "B", "B + C", "C", "D", "E", "F")
+#' #
+#' comps <- LETTERS[1:6]
+#' 
+#' # Use netconnection() to display network information
+#' #
+#' netconnection(t1, t2, study)
+#' 
+#' dc1 <- discomb(mean, se.mean, t1, t2, study, seq = trts)
+#' dc1
+#' 
+#' forest(dc1, ref = "F")
+#' 
+#' # Define C matrix manually (which will produce the same results)
+#' #
+#' C <- rbind(c(1, 0, 0, 0, 0, 0),  # A
+#'            c(1, 1, 0, 0, 0, 0),  # A + B
+#'            c(1, 0, 1, 0, 0, 0),  # A + C
+#'            c(1, 0, 0, 1, 0, 0),  # A + D
+#'            c(0, 1, 0, 0, 0, 0),  # B
+#'            c(0, 1, 1, 0, 0, 0),  # B + C
+#'            c(0, 0, 1, 0, 0, 0),  # C
+#'            c(0, 0, 0, 1, 0, 0),  # D
+#'            c(0, 0, 0, 0, 1, 0),  # E
+#'            c(0, 0, 0, 0, 0, 1))  # F
+#' #                  
+#' colnames(C) <- comps
+#' rownames(C) <- trts
+#' #
+#' dc2 <- discomb(mean, se.mean, t1, t2, study, seq = trts,
+#'                C.matrix = C)
+#' #
+#' # Compare C matrices
+#' #
+#' all.equal(dc1$C.matrix, dc2$C.matrix)
+#' 
+#' @export discomb
+
+
 discomb <- function(TE, seTE,
                     treat1, treat2,
                     studlab, data = NULL, subset = NULL,

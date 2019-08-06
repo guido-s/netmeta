@@ -1,4 +1,84 @@
-*** netmeta, version 1.0-1, 2019-01-02 ***
+*** netmeta, version 1.1-0, 2019-08-06 ***
+
+ ** Major changes **
+
+  * New functions netimpact(), netgraph.netimpact(), print.netimpact()
+    to measure the impact of individual studies to network estimates
+
+  * New function plot.netrank() to produce image plot of P-scores
+
+  * Equivalence limits can be added to forest plots
+
+  * Use roxygen2 for development of R package netmeta
+
+ ** Bug fixes **
+
+  * netmeta():
+    - no error if argument 'studlab' is missing
+    - tackle numerical problems with zero treatment arm variances -
+      actually by changes in internal function multiarm()      
+    - calculate the correct number of patients and events for each
+      treatment arm in networks with multi-arm studies
+
+  * netmetabin():
+    - only drop single treatment arms without any events in multi-arm
+      studies instead of the complete design (which is the correct
+      behaviour only for two-arm studies)
+    - keep the original design for multi-arm studies if a single
+      treatment arm without any events has been dropped, e.g., the
+      design X:Y:Z is not changed to X:Z if no events were observed in
+      treatment arm Y in any multi-arm study
+    - no error if argument 'event1' is not an R object created with
+      pairwise() and argument 'data' is not used
+    - no error in printing of network meta-analysis object if argument
+      'event1' is not an R object created with pairwise()
+    - calculate the correct number of patients and events for each
+      treatment arm in networks with multi-arm studies
+
+  * netgraph():
+    - argument 'seq' equal to "optimal" works for a single design
+    - multi-arm studies are highlighted if argument 'labels' is used
+    - comparisons defined by argument 'highlight' are marked in the
+      network graph if argument 'labels' is used
+
+  * pairwise():
+    - no error if function is used without argument 'data'
+
+ ** User-visible changes **
+
+  * netgraph() is a generic function and original function netgraph()
+    renamed to netgraph.netmeta()
+
+  * netgraph.netmeta():
+    - new argument 'bg.points'
+    - new argument 'scale.highlight' which replaces argument
+      'lwd.highlight' (which actually was ignored)
+    - arguments 'col.highlight' and 'scale.highlight' can be vectors
+      with same length as argument 'highlight'
+    - print highlighted comparisons in the background of the graph
+
+  * forest.netmeta():
+    - new argument 'labels' to provide treatment names - similar to
+      netgraph()
+    - labels set automatically for columns "pscore", "k" and
+      "prop.direct" in argument 'leftcols' and 'rightcols'
+
+ ** Internal changes **
+
+  * multiarm():
+    - use ginv() to calculate inverse of matrix Lt
+    - set very small negative values in matrix W equal to zero
+    - object k instead of n denotes number of treatment arms
+      (same notation as Rücker & Schwarzer, 2014)
+    - more liberal cutpoint to set negative variances to zero
+
+  * chkmultiarm():
+    - more liberal check for negative variances
+
+  * new auxiliary internal functions for forest plots
+
+
+**** netmeta, version 1.0-1, 2019-01-02 ***
 
  ** User-visible changes **
 
