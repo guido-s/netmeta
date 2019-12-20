@@ -5,22 +5,41 @@
 \alias{print.summary.netmeta}
 \title{Print and summary method for objects of class netmeta}
 \usage{
-\method{summary}{netmeta}(object, comb.fixed = object$comb.fixed,
-  comb.random = object$comb.random, prediction = object$prediction,
+\method{summary}{netmeta}(
+  object,
+  comb.fixed = object$comb.fixed,
+  comb.random = object$comb.random,
+  prediction = object$prediction,
   reference.group = object$reference.group,
   baseline.reference = object$baseline.reference,
-  all.treatments = object$all.treatments, ...)
+  all.treatments = object$all.treatments,
+  ...
+)
 
-\method{print}{summary.netmeta}(x, comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random, prediction = x$prediction,
+\method{print}{summary.netmeta}(
+  x,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
+  prediction = x$prediction,
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
-  all.treatments = x$all.treatments, backtransf = x$backtransf,
-  nchar.trts = x$nchar.trts, header = TRUE, digits = gs("digits"),
+  all.treatments = x$all.treatments,
+  backtransf = x$backtransf,
+  nchar.trts = x$nchar.trts,
+  header = TRUE,
+  digits = gs("digits"),
   digits.pval.Q = max(gs("digits.pval.Q"), 2),
-  digits.Q = gs("digits.Q"), digits.tau2 = gs("digits.tau2"),
-  digits.I2 = gs("digits.I2"), scientific.pval = gs("scientific.pval"),
-  big.mark = gs("big.mark"), ...)
+  digits.Q = gs("digits.Q"),
+  digits.tau2 = gs("digits.tau2"),
+  digits.tau = gs("digits.tau"),
+  digits.I2 = gs("digits.I2"),
+  scientific.pval = gs("scientific.pval"),
+  big.mark = gs("big.mark"),
+  text.tau2 = gs("text.tau2"),
+  text.tau = gs("text.tau"),
+  text.I2 = gs("text.I2"),
+  ...
+)
 }
 \arguments{
 \item{object}{An object of class \code{netmeta}.}
@@ -74,6 +93,9 @@ heterogeneity statistics, see \code{print.default}.}
 \item{digits.tau2}{Minimal number of significant digits for
 between-study variance, see \code{print.default}.}
 
+\item{digits.tau}{Minimal number of significant digits for square
+root of between-study variance, see \code{print.default}.}
+
 \item{digits.I2}{Minimal number of significant digits for I-squared
 statistic, see \code{print.default}.}
 
@@ -82,6 +104,15 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 0.12345.}
 
 \item{big.mark}{A character used as thousands separator.}
+
+\item{text.tau2}{Text printed to identify between-study variance
+\eqn{\tau^2}.}
+
+\item{text.tau}{Text printed to identify \eqn{\tau}, the square root
+of the between-study variance \eqn{\tau^2}.}
+
+\item{text.I2}{Text printed to identify heterogeneity statistic
+I\eqn{^2}.}
 }
 \value{
 A list is returned with the following elements:
@@ -111,7 +142,8 @@ A list is returned with the following elements:
 \item{df.Q}{Degrees of freedom for test of heterogeneity /
   inconsistency.}
 \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
-\item{I2}{I-squared.}
+\item{I2, lower.I2, upper.I2}{I-squared, lower and upper confidence
+  limits.}
 \item{tau}{Square-root of between-study variance.}
 \item{Q.heterogeneity}{Overall heterogeneity statistic.}
 \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
@@ -161,6 +193,7 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 print(net1, ref = "plac", digits = 3)
 summary(net1)
 
+\dontrun{
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
@@ -168,6 +201,7 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 comb.fixed = FALSE)
 print(net2, ref = "plac", digits = 3)
 summary(net2)
+}
 
 }
 \seealso{

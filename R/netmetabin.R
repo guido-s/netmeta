@@ -71,9 +71,11 @@
 #'   square-root of the between-study variance \eqn{\tau^2} (only
 #'   considered if \code{method = "Inverse"}).
 #' @param tol.multiarm A numeric for the tolerance for consistency of
-#'   treatment estimates and corresponding variances in multi-arm
-#'   studies which are consistent by design (only considered if
-#'   \code{method = "Inverse"}).
+#'   treatment estimates in multi-arm studies which are consistent by
+#'   design (only considered if \code{method = "Inverse"}).
+#' @param tol.multiarm.se A numeric for the tolerance for consistency
+#'   of standard errors in multi-arm studies which are consistent by
+#'   design (only considered if \code{method = "Inverse"}).
 #' @param details.chkmultiarm A logical indicating whether treatment
 #'   estimates and / or variances of multi-arm studies with
 #'   inconsistent results or negative multi-arm variances should be
@@ -243,7 +245,8 @@
 #' \item{df.Q}{Degrees of freedom for test of heterogeneity /
 #'   inconsistency.}
 #' \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
-#' \item{I2}{I-squared (only available if \code{method = "Inverse"}).}
+#' \item{I2, lower.I2, upper.I2}{I-squared, lower and upper confidence
+#'   limits (only available if \code{method = "Inverse"}).}
 #' \item{tau}{Square-root of between-study variance (only available if
 #'   \code{method = "Inverse"}).}
 #' \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
@@ -259,9 +262,9 @@
 #' \item{prediction, level.predict}{As defined above.}
 #' \item{reference.group, baseline.reference, all.treatments}{As
 #'   defined above.}
-#' \item{seq, tau.preset, tol.multiarm, details.chkmultiarm}{As
-#'   defined above.}
-#' \item{sep.trts, nchar.trts}{As defined above.}
+#' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
+#'   above.}
+#' \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
 #' \item{backtransf, title, warn}{As defined above.}
 #' \item{data}{Data set (in contrast-based format).}
 #' \item{data.design}{List with data in arm-based format (each list
@@ -375,7 +378,8 @@ netmetabin <- function(event1, n1, event2, n2,
                        ##
                        tau.preset = NULL,
                        ##
-                       tol.multiarm = 0.0005,
+                       tol.multiarm = 0.001,
+                       tol.multiarm.se = tol.multiarm,
                        details.chkmultiarm = FALSE,
                        ##
                        sep.trts = ":",
@@ -449,6 +453,7 @@ netmetabin <- function(event1, n1, event2, n2,
     chknumeric(tau.preset, min = 0, single = TRUE)
   ##
   chknumeric(tol.multiarm, min = 0, single = TRUE)
+  chknumeric(tol.multiarm.se, min = 0, single = TRUE)
   chklogical(details.chkmultiarm)
   ##
   missing.sep.trts <- missing(sep.trts)
@@ -546,6 +551,11 @@ netmetabin <- function(event1, n1, event2, n2,
     studlab <- eval(mf[[match("studlab", names(mf))]],
                     data, enclos = sys.frame(sys.parent()))
   }
+  ##
+  chknumeric(event1)
+  chknumeric(n1)
+  chknumeric(event2)
+  chknumeric(n2)
   ##
   k.Comp <- length(event1)
   ##
@@ -1196,6 +1206,7 @@ netmetabin <- function(event1, n1, event2, n2,
                     seq = seq,
                     tau.preset = tau.preset,
                     tol.multiarm = tol.multiarm,
+                    tol.multiarm.se = tol.multiarm.se,
                     details.chkmultiarm = details.chkmultiarm,
                     sep.trts = sep.trts,
                     nchar.trts = nchar.trts,
@@ -1814,7 +1825,7 @@ netmetabin <- function(event1, n1, event2, n2,
               Q = Q,
               df.Q = df.Q,
               pval.Q = pval.Q,
-              I2 = NA,
+              I2 = NA, lower.I2 = NA, upper.I2 = NA,
               tau = NA,
               ##
               Q.heterogeneity = NA,
@@ -1863,6 +1874,7 @@ netmetabin <- function(event1, n1, event2, n2,
               tau.preset = tau.preset,
               ##
               tol.multiarm = tol.multiarm,
+              tol.multiarm.se = tol.multiarm.se,
               details.chkmultiarm = details.chkmultiarm,
               ##
               sep.trts = sep.trts,

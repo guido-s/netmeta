@@ -88,6 +88,7 @@
 #' @keywords hplot
 #' 
 #' @examples
+#' \dontrun{
 #' # Use depression dataset
 #' #
 #' data(Linde2015)
@@ -127,7 +128,8 @@
 #' plot(netrank(net1, small.values = "bad"),
 #'      netrank(net2, small.values = "bad"),
 #'      name = outcomes, digits = 2)
-#' \dontrun{
+#'
+#' 
 #' # Outcome labels
 #' #
 #' outcomes <- c("Early response", "Early remission",

@@ -4,8 +4,7 @@
 \alias{print.netbind}
 \title{Print method for objects of class netbind}
 \usage{
-\method{print}{netbind}(x, comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random, ...)
+\method{print}{netbind}(x, comb.fixed = x$comb.fixed, comb.random = x$comb.random, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netbind} or

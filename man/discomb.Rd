@@ -5,15 +5,35 @@
 \title{Additive network meta-analysis for combinations of treatments
 (disconnected networks)}
 \usage{
-discomb(TE, seTE, treat1, treat2, studlab, data = NULL, subset = NULL,
-  inactive = NULL, sep.comps = "+", C.matrix, sm,
-  level = gs("level"), level.comb = gs("level.comb"),
-  comb.fixed = gs("comb.fixed"), comb.random = gs("comb.random") |
-  !is.null(tau.preset), reference.group = "",
-  baseline.reference = TRUE, seq = NULL, tau.preset = NULL,
-  tol.multiarm = 5e-04, details.chkmultiarm = FALSE, sep.trts = ":",
-  nchar.trts = 666, backtransf = gs("backtransf"), title = "",
-  warn = TRUE)
+discomb(
+  TE,
+  seTE,
+  treat1,
+  treat2,
+  studlab,
+  data = NULL,
+  subset = NULL,
+  inactive = NULL,
+  sep.comps = "+",
+  C.matrix,
+  sm,
+  level = gs("level"),
+  level.comb = gs("level.comb"),
+  comb.fixed = gs("comb.fixed"),
+  comb.random = gs("comb.random") | !is.null(tau.preset),
+  reference.group = "",
+  baseline.reference = TRUE,
+  seq = NULL,
+  tau.preset = NULL,
+  tol.multiarm = 0.001,
+  tol.multiarm.se = tol.multiarm,
+  details.chkmultiarm = FALSE,
+  sep.trts = ":",
+  nchar.trts = 666,
+  backtransf = gs("backtransf"),
+  title = "",
+  warn = TRUE
+)
 }
 \arguments{
 \item{TE}{Estimate of treatment effect, i.e. difference between
@@ -73,8 +93,12 @@ of treatments in printouts.}
 between-study variance \eqn{\tau^2}.}
 
 \item{tol.multiarm}{A numeric for the tolerance for consistency of
-treatment estimates and corresponding variances in multi-arm
-studies which are consistent by design.}
+treatment estimates in multi-arm studies which are consistent by
+design.}
+
+\item{tol.multiarm.se}{A numeric for the tolerance for consistency
+of standard errors in multi-arm studies which are consistent by
+design.}
 
 \item{details.chkmultiarm}{A logical indicating whether treatment
 estimates and / or variances of multi-arm studies with

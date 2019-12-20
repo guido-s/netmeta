@@ -4,19 +4,41 @@
 \alias{forest.netsplit}
 \title{Forest plot for direct and indirect evidence}
 \usage{
-\method{forest}{netsplit}(x, pooled = ifelse(x$comb.random, "random",
-  "fixed"), show = "both", subgroup = "comparison", overall = TRUE,
-  direct = TRUE, indirect = TRUE, prediction = x$prediction,
-  text.overall = "Network estimate", text.direct = "Direct estimate",
+\method{forest}{netsplit}(
+  x,
+  pooled = ifelse(x$comb.random, "random", "fixed"),
+  show = "both",
+  subgroup = "comparison",
+  overall = TRUE,
+  direct = TRUE,
+  indirect = TRUE,
+  prediction = x$prediction,
+  text.overall = "Network estimate",
+  text.direct = "Direct estimate",
   text.indirect = "Indirect estimate",
-  text.predict = "Prediction interval", type.overall, type.direct,
-  type.indirect, col.square = "gray", col.square.lines = col.square,
-  col.inside = "white", col.diamond = "gray",
-  col.diamond.lines = "black", col.predict = "red",
-  col.predict.lines = "black", equal.size = FALSE, leftcols, leftlabs,
-  rightcols = c("effect", "ci"), rightlabs = NULL,
-  digits = gs("digits.forest"), digits.prop = max(gs("digits.pval") -
-  2, 2), backtransf = x$backtransf, lab.NA = "", smlab, ...)
+  text.predict = "Prediction interval",
+  type.overall,
+  type.direct,
+  type.indirect,
+  col.square = "gray",
+  col.square.lines = col.square,
+  col.inside = "white",
+  col.diamond = "gray",
+  col.diamond.lines = "black",
+  col.predict = "red",
+  col.predict.lines = "black",
+  equal.size = FALSE,
+  leftcols,
+  leftlabs,
+  rightcols = c("effect", "ci"),
+  rightlabs = NULL,
+  digits = gs("digits.forest"),
+  digits.prop = max(gs("digits.pval") - 2, 2),
+  backtransf = x$backtransf,
+  lab.NA = "",
+  smlab,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netsplit}.}
@@ -174,11 +196,12 @@ ns1 <- netsplit(net1)
 #
 forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
 
-
+\dontrun{
 # Forest plot showing comparisons contributing direct evidence
 #
 forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
        show = "with.direct")
+}
 
 }
 \seealso{

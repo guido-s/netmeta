@@ -1,3 +1,57 @@
+*** netmeta, version 1.2-0, 2019-12-20 ***
+
+ ** Major changes **
+
+  * In multi-arm studies, negative weights (resulting from slightly
+    inconsistent standard errors) contributing less than 0.1% to the
+    weight of a study are set to 0
+
+  * Separate consistency tolerances can be specified for treatment
+    estimates and standard errors (which are consistent by design in
+    multi-arm studies, however, can be inconsistent due to rounding of
+    treatment estimates and standard errors)
+
+  * New default for consistency tolerance: 0.001 instead of 0.0005
+
+  * Print tau in addition to tau2 in outputs
+
+  * Print confidence interval for I2 in outputs
+
+ ** User-visible changes **
+
+  * netmeta(), discomb():
+    - check for numeric values in arguments 'TE' and 'seTE'
+    - new argument 'tol.multiarm.se' to check standard errors in
+      multi-arm studies
+
+  * netmetabin():
+    - check for numeric values in arguments 'event1', 'n1', 'event2',
+      and 'n2'
+    - new argument 'tol.multiarm.se' to check standard errors in
+      multi-arm studies
+
+  * print.summary.netmeta(), print.summary.netcomb():
+    - new argument 'digits.tau' to specify number of digits for tau
+    - new arguments 'text.tau2', 'text.tau', and 'text.I2' to change
+      text printed to identify respective heterogeneity measure
+      
+  * Revision of help page examples to reduce runtime below 5 seconds
+    (CRAN requirement)
+
+ ** Internal changes **
+
+  * multiarm():
+    - negative weights contributing less than 0.1% to the weight of a
+      study are set to 0
+
+  * chkmultiarm():
+    - use same order of arguments as in netmeta()
+    - new argument 'tol.multiarm.se' to check standard errors
+
+  * nma.ruecker(), nma.additive():
+    - return lower and upper confidence limits for I2
+
+
 *** netmeta, version 1.1-0, 2019-08-06 ***
 
  ** Major changes **

@@ -4,8 +4,7 @@
 \alias{hasse}
 \title{Hasse diagram}
 \usage{
-hasse(x, pooled = ifelse(x$comb.random, "random", "fixed"),
-  newpage = TRUE)
+hasse(x, pooled = ifelse(x$comb.random, "random", "fixed"), newpage = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{netposet} (mandatory).}
@@ -34,6 +33,7 @@ i.e., function \code{hasse} can only be used if R package
 \bold{hasseDiagram} is installed.
 }
 \examples{
+\dontrun{
 # Use depression dataset
 #
 data(Linde2015)
@@ -77,6 +77,7 @@ po <- netposet(netrank(net1, small.values = "bad"),
 # Hasse diagram
 #
 hasse(po)
+}
 
 }
 \references{

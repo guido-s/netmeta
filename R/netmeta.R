@@ -3,11 +3,11 @@
 #' @description
 #' Network meta-analysis is a generalisation of pairwise meta-analysis
 #' that compares all pairs of treatments within a number of treatments
-#' for the same condition. The graph-theoretical method for analysis
-#' of network meta-analyses uses graph-theoretical methods that were
-#' originally developed in electrical network theory. It has been
-#' found to be equivalent to the frequentist approach to network
-#' meta-analysis (Rücker, 2012).
+#' for the same condition. The graph-theoretical approach for network
+#' meta-analysis uses methods that were originally developed in
+#' electrical network theory. It has been found to be equivalent to
+#' the frequentist approach to network meta-analysis which is based on
+#' weighted least squares regression (Rücker, 2012).
 #' 
 #' @param TE Estimate of treatment effect, i.e. difference between
 #'   first and second treatment (e.g. log odds ratio, mean difference,
@@ -49,8 +49,11 @@
 #' @param tau.preset An optional value for manually setting the
 #'   square-root of the between-study variance \eqn{\tau^2}.
 #' @param tol.multiarm A numeric for the tolerance for consistency of
-#'   treatment estimates and corresponding variances in multi-arm
-#'   studies which are consistent by design.
+#'   treatment estimates in multi-arm studies which are consistent by
+#'   design.
+#' @param tol.multiarm.se A numeric for the tolerance for consistency
+#'   of standard errors in multi-arm studies which are consistent by
+#'   design.
 #' @param details.chkmultiarm A logical indicating whether treatment
 #'   estimates and / or variances of multi-arm studies with
 #'   inconsistent results or negative multi-arm variances should be
@@ -92,7 +95,7 @@
 #' formed; for more precise information, see Rücker (2012). Moreover,
 #' the \emph{n}x\emph{n} Laplacian matrix L and its Moore-Penrose
 #' pseudoinverse L+ are calculated (both matrices play an important
-#' role in graph theory and electrical network theory).  Using these
+#' role in graph theory and electrical network theory). Using these
 #' matrices, the variances based on both direct and indirect
 #' comparisons can be estimated. Moreover, the hat matrix H can be
 #' estimated by \strong{H = BL+B^tW = B(B^t W B)^+B^tW} and finally
@@ -125,7 +128,7 @@
 #' that is, data are given as contrasts (differences) between two
 #' treatments (argument \code{TE}) with standard error (argument
 #' \code{seTE}). In principle, meta-analysis functions from R package
-#' \bold{meta}, e.g.  \code{\link{metabin}} for binary outcomes or
+#' \bold{meta}, e.g. \code{\link{metabin}} for binary outcomes or
 #' \code{\link{metacont}} for continuous outcomes, can be used to
 #' calculate treatment effects separately for each treatment
 #' comparison which is a rather tedious enterprise. If data are
@@ -143,11 +146,11 @@
 #' help page of function \code{\link{pairwise}}).
 #' 
 #' Note, all pairwise comparisons must be provided for a multi-arm
-#' study.  Consider a multi-arm study of \emph{p} treatments with
-#' known variances.  For this study, treatment effects and standard
-#' errors must be provided for each of \emph{p}(\emph{p} - 1) / 2
-#' possible comparisons. For instance, a three-arm study contributes
-#' three pairwise comparisons, a four-arm study even six pairwise
+#' study. Consider a multi-arm study of \emph{p} treatments with known
+#' variances. For this study, treatment effects and standard errors
+#' must be provided for each of \emph{p}(\emph{p} - 1) / 2 possible
+#' comparisons. For instance, a three-arm study contributes three
+#' pairwise comparisons, a four-arm study even six pairwise
 #' comparisons. Function \code{\link{pairwise}} automatically
 #' calculates all pairwise comparisons for multi-arm studies.
 #' 
@@ -170,9 +173,9 @@
 #' \code{comb.fixed} and \code{comb.random}. Accordingly, the network
 #' estimates for the random effects model can be extracted from
 #' component \code{TE.random} of an object of class \code{"netmeta"}
-#' even if argument \code{comb.random = FALSE}.  However, all
-#' functions in R package \bold{netmeta} will adequately consider the
-#' values for \code{comb.fixed} and \code{comb.random}. E.g. function
+#' even if argument \code{comb.random = FALSE}. However, all functions
+#' in R package \bold{netmeta} will adequately consider the values for
+#' \code{comb.fixed} and \code{comb.random}. E.g. function
 #' \code{\link{print.summary.netmeta}} will not print results for the
 #' random effects model if \code{comb.random = FALSE}.
 #' 
@@ -193,7 +196,7 @@
 #' separator. If any treatment label contains a colon the following
 #' characters are used as separator (in consecutive order):
 #' \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"}, \code{"."},
-#' \code{"|"}, and \code{"*"}.  If all of these characters are used in
+#' \code{"|"}, and \code{"*"}. If all of these characters are used in
 #' treatment labels, a corresponding error message is printed asking
 #' the user to specify a different separator.
 #'
@@ -312,7 +315,8 @@
 #' \item{df.Q}{Degrees of freedom for test of heterogeneity /
 #'   inconsistency.}
 #' \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
-#' \item{I2}{I-squared.}
+#' \item{I2, lower.I2, upper.I2}{I-squared, lower and upper confidence
+#'   limits.}
 #' \item{tau}{Square-root of between-study variance.}
 #' \item{Q.heterogeneity}{Overall heterogeneity statistic.}
 #' \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
@@ -356,9 +360,9 @@
 #' \item{prediction, level.predict}{As defined above.}
 #' \item{reference.group, baseline.reference, all.treatments}{As
 #'   defined above.}
-#' \item{seq, tau.preset, tol.multiarm, details.chkmultiarm}{As
-#'   defined above.}
-#' \item{sep.trts, nchar.trts}{As defined above.}
+#' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
+#'   above.}
+#' \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
 #' \item{backtransf, title, warn}{As defined above.}
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create object.}
@@ -452,7 +456,8 @@ netmeta <- function(TE, seTE,
                     ##
                     tau.preset = NULL,
                     ##
-                    tol.multiarm = 0.0005,
+                    tol.multiarm = 0.001,
+                    tol.multiarm.se = tol.multiarm,
                     details.chkmultiarm = FALSE,
                     ##
                     sep.trts = ":",
@@ -498,6 +503,7 @@ netmeta <- function(TE, seTE,
     chknumeric(tau.preset, min = 0, single = TRUE)
   ##
   chknumeric(tol.multiarm, min = 0, single = TRUE)
+  chknumeric(tol.multiarm.se, min = 0, single = TRUE)
   chklogical(details.chkmultiarm)
   ##
   missing.sep.trts <- missing(sep.trts)
@@ -594,6 +600,9 @@ netmeta <- function(TE, seTE,
     event2 <- eval(mf[[match("event2", names(mf))]],
                    data, enclos = sys.frame(sys.parent()))
   }
+  ##
+  chknumeric(TE)
+  chknumeric(seTE)
   ##
   k.Comp <- length(TE)
   ##
@@ -933,8 +942,9 @@ netmeta <- function(TE, seTE,
   ## Check consistency of treatment effects and standard errors in
   ## multi-arm studies
   ##
-  chkmultiarm(p0$treat1, p0$treat2, p0$TE, p0$seTE, p0$studlab,
-              tol = tol.multiarm, details = details.chkmultiarm)
+  chkmultiarm(p0$TE, p0$seTE, p0$treat1, p0$treat2, p0$studlab,
+              tol.multiarm = tol.multiarm, tol.multiarm.se = tol.multiarm.se,
+              details = details.chkmultiarm)
   ##
   ## Study overview
   ##
@@ -1114,6 +1124,8 @@ netmeta <- function(TE, seTE,
               df.Q = df.Q,
               pval.Q = res.f$pval.Q,
               I2 = res.f$I2,
+              lower.I2 = res.f$lower.I2,
+              upper.I2 = res.f$upper.I2,
               tau = tau,
               ##
               Q.heterogeneity = NA,
@@ -1165,6 +1177,7 @@ netmeta <- function(TE, seTE,
               tau.preset = tau.preset,
               ##
               tol.multiarm = tol.multiarm,
+              tol.multiarm.se = tol.multiarm.se,
               details.chkmultiarm = details.chkmultiarm,
               ##
               sep.trts = sep.trts,

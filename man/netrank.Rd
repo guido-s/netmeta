@@ -7,9 +7,14 @@
 \usage{
 netrank(x, small.values = "good")
 
-\method{print}{netrank}(x, comb.fixed = x$x$comb.fixed,
-  comb.random = x$x$comb.random, sort = TRUE, digits = max(4,
-  .Options$digits - 3), ...)
+\method{print}{netrank}(
+  x,
+  comb.fixed = x$x$comb.fixed,
+  comb.random = x$x$comb.random,
+  sort = TRUE,
+  digits = max(4, .Options$digits - 3),
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} (netrank function) or
@@ -83,17 +88,19 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD",
                 comb.random = FALSE)
 
-net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD")
-
 nr1 <- netrank(net1)
 nr1
 print(nr1, sort = FALSE)
+
+\dontrun{
+net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data = Senn2013, sm = "MD")
 
 nr2 <- netrank(net2)
 nr2
 print(nr2, sort = "fixed")
 print(nr2, sort = FALSE)
+}
 
 }
 \references{

@@ -44,6 +44,7 @@
 #' @keywords plot
 #' 
 #' @examples
+#' \dontrun{
 #' # Use depression dataset
 #' #
 #' data(Linde2015)
@@ -87,6 +88,7 @@
 #' # Hasse diagram
 #' #
 #' hasse(po)
+#' }
 #' 
 #' @export hasse
 

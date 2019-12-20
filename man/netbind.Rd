@@ -4,10 +4,19 @@
 \alias{netbind}
 \title{Combine network meta-analysis objects}
 \usage{
-netbind(..., name, comb.fixed, comb.random, col.study = "black",
-  col.inside = "white", col.square = "gray",
-  col.square.lines = col.square, backtransf, reference.group,
-  baseline.reference)
+netbind(
+  ...,
+  name,
+  comb.fixed,
+  comb.random,
+  col.study = "black",
+  col.inside = "white",
+  col.square = "gray",
+  col.square.lines = col.square,
+  backtransf,
+  reference.group,
+  baseline.reference
+)
 }
 \arguments{
 \item{...}{Any number of meta-analysis objects (see Details).}

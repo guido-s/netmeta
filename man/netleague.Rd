@@ -5,14 +5,23 @@
 \alias{print.netleague}
 \title{Create and print league table for network meta-analysis results}
 \usage{
-netleague(x, y, comb.fixed = x$comb.fixed, comb.random = x$comb.random,
-  seq = x$seq, ci = TRUE, backtransf = TRUE, direct = FALSE,
-  digits = gs("digits"), bracket = gs("CIbracket"),
-  separator = gs("CIseparator"), text.NA = ".",
-  big.mark = gs("big.mark"))
+netleague(
+  x,
+  y,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
+  seq = x$seq,
+  ci = TRUE,
+  backtransf = TRUE,
+  direct = FALSE,
+  digits = gs("digits"),
+  bracket = gs("CIbracket"),
+  separator = gs("CIseparator"),
+  text.NA = ".",
+  big.mark = gs("big.mark")
+)
 
-\method{print}{netleague}(x, comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random, ...)
+\method{print}{netleague}(x, comb.fixed = x$comb.fixed, comb.random = x$comb.random, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} or \code{netleague}
@@ -157,7 +166,6 @@ WriteXLS(list(league0$fixed, league0$random),
          ExcelFileName = "league0-both.xls",
          SheetNames = c("leaguetable (fixed)", "leaguetable (random)"),
          col.names = FALSE)
-}
 
 # Use depression dataset
 #
@@ -218,6 +226,7 @@ netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
           backtransf = FALSE)
 netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
           backtransf = FALSE, direct = TRUE)
+}
 
 options(oldopts)
 

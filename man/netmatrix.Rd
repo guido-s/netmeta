@@ -5,8 +5,14 @@
 \title{Create a matrix with additional information for pairwise
 comparisons}
 \usage{
-netmatrix(x, var, levels, labels = levels, func = "mode",
-  ties.method = "random")
+netmatrix(
+  x,
+  var,
+  levels,
+  labels = levels,
+  func = "mode",
+  ties.method = "random"
+)
 }
 \arguments{
 \item{x}{A \code{\link{netmeta}} object.}

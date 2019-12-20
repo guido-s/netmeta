@@ -29,12 +29,20 @@
 #'   heterogeneity statistics, see \code{print.default}.
 #' @param digits.tau2 Minimal number of significant digits for
 #'   between-study variance, see \code{print.default}.
+#' @param digits.tau Minimal number of significant digits for square
+#'   root of between-study variance, see \code{print.default}.
 #' @param digits.I2 Minimal number of significant digits for I-squared
 #'   statistic, see \code{print.default}.
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
 #' @param big.mark A character used as thousands separator.
+#' @param text.tau2 Text printed to identify between-study variance
+#'   \eqn{\tau^2}.
+#' @param text.tau Text printed to identify \eqn{\tau}, the square root
+#'   of the between-study variance \eqn{\tau^2}.
+#' @param text.I2 Text printed to identify heterogeneity statistic
+#'   I\eqn{^2}.
 #' @param \dots Additional arguments.
 #'
 #' @return
@@ -262,6 +270,7 @@ summary.netcomb <- function(object,
               pval.Q.additive = object$pval.Q.additive,
               tau = object$tau,
               I2 = object$I2,
+              lower.I2 = object$lower.I2, upper.I2 = object$upper.I2,
               ##
               Q.standard = object$Q.standard,
               df.Q.standard = object$df.Q.standard,
@@ -328,9 +337,15 @@ print.summary.netcomb <- function(x,
                                   digits.pval.Q = max(gs("digits.pval.Q"), 2),
                                   digits.Q = gs("digits.Q"),
                                   digits.tau2 = gs("digits.tau2"),
+                                  digits.tau = gs("digits.tau"),
                                   digits.I2 = gs("digits.I2"),
                                   scientific.pval = gs("scientific.pval"),
                                   big.mark = gs("big.mark"),
+                                  ##
+                                  text.tau2 = gs("text.tau2"),
+                                  text.tau = gs("text.tau"),
+                                  text.I2 = gs("text.I2"),
+                                  ##
                                   ...) {
   
   
@@ -343,8 +358,10 @@ print.summary.netcomb <- function(x,
   ##  
   chklogical <- meta:::chklogical
   chknumeric <- meta:::chknumeric
+  chkchar <- meta:::chkchar
   formatN <- meta:::formatN
   formatPT <- meta:::formatPT
+  pasteCI <- meta:::pasteCI
   ##  
   chklogical(comb.fixed)
   chklogical(comb.random)
@@ -357,12 +374,19 @@ print.summary.netcomb <- function(x,
   chknumeric(digits.pval.Q, min = 1, single = TRUE)
   chknumeric(digits.Q, min = 0, single = TRUE)
   chknumeric(digits.tau2, min = 0, single = TRUE)
+  chknumeric(digits.tau, min = 0, single = TRUE)
   chknumeric(digits.I2, min = 0, single = TRUE)
   ##
   chklogical(scientific.pval)
+  ##
+  chkchar(text.tau2)
+  chkchar(text.tau)
+  chkchar(text.I2)
   
   
   I2 <- round(100 * x$I2, digits.I2)
+  lower.I2 <- round(100 * x$lower.I2, digits.I2)
+  upper.I2 <- round(100 * x$upper.I2, digits.I2)
   
   
   if (comb.fixed | comb.random) {
@@ -427,14 +451,22 @@ print.summary.netcomb <- function(x,
   }
   
   
-  cat(paste("\nQuantifying heterogeneity / inconsistency:\n",
-            formatPT(x$tau^2,
-                     lab = TRUE, labval = "tau^2",
-                     digits = digits.tau2,
-                     lab.NA = "NA", big.mark = big.mark),
-            if (!is.na(I2))
-              paste("; I^2 = ", round(I2, digits.I2), "%", "", sep = ""),
-            "\n", sep = ""))
+  cat(paste0("\nQuantifying heterogeneity / inconsistency:\n",
+             formatPT(x$tau^2,
+                      lab = TRUE, labval = text.tau2,
+                      digits = digits.tau2,
+                      lab.NA = "NA", big.mark = big.mark),
+             "; ",
+             formatPT(x$tau,
+                      lab = TRUE, labval = text.tau,
+                      digits = digits.tau,
+                      lab.NA = "NA", big.mark = big.mark),
+             if (!is.na(I2))
+               paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
+             if (!(is.na(lower.I2) | is.na(upper.I2)))
+               pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
+             "\n")
+      )
   
   
   cat("\nHeterogeneity statistics:\n")

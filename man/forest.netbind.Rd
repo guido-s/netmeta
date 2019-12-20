@@ -4,12 +4,21 @@
 \alias{forest.netbind}
 \title{Forest plot showing results of two or more network meta-analyses}
 \usage{
-\method{forest}{netbind}(x, pooled = ifelse(x$comb.random, "random",
-  "fixed"), equal.size = FALSE, leftcols = "studlab",
-  leftlabs = "Treatment", rightcols = c("effect", "ci"),
-  rightlabs = NULL, digits = gs("digits.forest"),
+\method{forest}{netbind}(
+  x,
+  pooled = ifelse(x$comb.random, "random", "fixed"),
+  equal.size = FALSE,
+  leftcols = "studlab",
+  leftlabs = "Treatment",
+  rightcols = c("effect", "ci"),
+  rightlabs = NULL,
+  digits = gs("digits.forest"),
   digits.prop = max(gs("digits.pval") - 2, 2),
-  backtransf = x$backtransf, lab.NA = "", smlab, ...)
+  backtransf = x$backtransf,
+  lab.NA = "",
+  smlab,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netbind}.}

@@ -4,10 +4,19 @@
 \alias{netgraph.netimpact}
 \title{Network graph for objects of class netimpact}
 \usage{
-\method{netgraph}{netimpact}(x, col.ignore = "red",
-  number.of.studies = TRUE, main, sub, multiarm = any(x$x$narms > 2),
-  col.multiarm = NULL, alpha.transparency = 0.5,
-  col.ignore.multiarm = "transparent", col = "slateblue", ...)
+\method{netgraph}{netimpact}(
+  x,
+  col.ignore = "red",
+  number.of.studies = TRUE,
+  main,
+  sub,
+  multiarm = any(x$x$narms > 2),
+  col.multiarm = NULL,
+  alpha.transparency = 0.5,
+  col.ignore.multiarm = "transparent",
+  col = "slateblue",
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netimpact}.}

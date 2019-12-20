@@ -65,12 +65,14 @@
 #'                 comb.random = FALSE)
 #' print(net1, ref = "plac", digits = 3)
 #' 
+#' \dontrun{
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'                 data = Senn2013, sm = "MD",
 #'                 comb.fixed = FALSE)
 #' print(net2, ref = "plac", digits = 3)
+#' }
 #' 
 #' @method print netmeta
 #' @export

@@ -48,8 +48,11 @@
 #' @param tau.preset An optional value for the square-root of the
 #'   between-study variance \eqn{\tau^2}.
 #' @param tol.multiarm A numeric for the tolerance for consistency of
-#'   treatment estimates and corresponding variances in multi-arm
-#'   studies which are consistent by design.
+#'   treatment estimates in multi-arm studies which are consistent by
+#'   design.
+#' @param tol.multiarm.se A numeric for the tolerance for consistency
+#'   of standard errors in multi-arm studies which are consistent by
+#'   design.
 #' @param details.chkmultiarm A logical indicating whether treatment
 #'   estimates and / or variances of multi-arm studies with
 #'   inconsistent results or negative multi-arm variances should be
@@ -354,7 +357,8 @@ discomb <- function(TE, seTE,
                     ##
                     tau.preset = NULL,
                     ##
-                    tol.multiarm = 0.0005,
+                    tol.multiarm = 0.001,
+                    tol.multiarm.se = tol.multiarm,
                     details.chkmultiarm = FALSE,
                     ##
                     sep.trts = ":",
@@ -390,6 +394,7 @@ discomb <- function(TE, seTE,
     chknumeric(tau.preset, min = 0, single = TRUE)
   ##
   chknumeric(tol.multiarm, min = 0, single = TRUE)
+  chknumeric(tol.multiarm.se, min = 0, single = TRUE)
   chklogical(details.chkmultiarm)
   ##
   missing.sep.trts <- missing(sep.trts)
@@ -435,6 +440,9 @@ discomb <- function(TE, seTE,
   ##
   studlab <- eval(mf[[match("studlab", names(mf))]],
                   data, enclos = sys.frame(sys.parent()))
+  ##
+  chknumeric(TE)
+  chknumeric(seTE)
   ##
   k.Comp <- length(TE)
   ##
@@ -697,7 +705,10 @@ discomb <- function(TE, seTE,
   df.Q.additive <- n.a - k - qr(X)$rank
   ##
   if (netc$n.subnets == 1) {
-    net <- netmeta(TE, seTE, treat1, treat2, studlab)
+    net <- netmeta(TE, seTE, treat1, treat2, studlab,
+                   tol.multiarm = tol.multiarm,
+                   tol.multiarm.se = tol.multiarm.se,
+                   details.chkmultiarm = details.chkmultiarm)
     ##
     Q <- net$Q
     df.Q <- net$df.Q
@@ -729,6 +740,8 @@ discomb <- function(TE, seTE,
     tau <- res.f$tau
   ##
   I2 <- res.f$I2
+  lower.I2 <- res.f$lower.I2
+  upper.I2 <- res.f$upper.I2
   
   
   ##
@@ -854,7 +867,7 @@ discomb <- function(TE, seTE,
               df.Q.additive = df.Q.additive, 
               pval.Q.additive = res.f$pval.Q.additive,
               tau = tau,
-              I2 = I2,
+              I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2,
               ##
               Q.standard = Q,
               df.Q.standard = df.Q,

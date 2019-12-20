@@ -129,11 +129,12 @@
 #' #
 #' forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
 #' 
-#' 
+#' \dontrun{
 #' # Forest plot showing comparisons contributing direct evidence
 #' #
 #' forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
 #'        show = "with.direct")
+#' }
 #' 
 #' @method forest netsplit
 #' @export

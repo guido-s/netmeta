@@ -4,15 +4,29 @@
 \alias{forest.netmeta}
 \title{Forest plot for network meta-analysis}
 \usage{
-\method{forest}{netmeta}(x, pooled = ifelse(x$comb.random, "random",
-  "fixed"), reference.group = x$reference.group,
-  baseline.reference = x$baseline.reference, labels = x$trts,
-  leftcols = "studlab", leftlabs, rightcols = c("effect", "ci"),
-  rightlabs, digits = gs("digits.forest"), small.values = "good",
-  digits.Pscore = 2, smlab = NULL, sortvar = x$seq,
-  backtransf = x$backtransf, lab.NA = ".", add.data,
-  drop.reference.group = FALSE, col.by = "black",
-  print.byvar = FALSE, ...)
+\method{forest}{netmeta}(
+  x,
+  pooled = ifelse(x$comb.random, "random", "fixed"),
+  reference.group = x$reference.group,
+  baseline.reference = x$baseline.reference,
+  labels = x$trts,
+  leftcols = "studlab",
+  leftlabs,
+  rightcols = c("effect", "ci"),
+  rightlabs,
+  digits = gs("digits.forest"),
+  small.values = "good",
+  digits.Pscore = 2,
+  smlab = NULL,
+  sortvar = x$seq,
+  backtransf = x$backtransf,
+  lab.NA = ".",
+  add.data,
+  drop.reference.group = FALSE,
+  col.by = "black",
+  print.byvar = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}
@@ -192,7 +206,7 @@ forest(net2, xlim = c(-1.5, 1), ref = "plac",
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
        xlab = "HbA1c difference",
        leftcols = c("studlab", "k"),
-       leftlabs = c("Contrast\\nto Placebo", "Direct\\nComparisons"),
+       leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
        sortvar = -k,
        drop = TRUE,
        smlab = "Random Effects Model")

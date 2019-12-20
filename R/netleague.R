@@ -139,7 +139,6 @@
 #'          ExcelFileName = "league0-both.xls",
 #'          SheetNames = c("leaguetable (fixed)", "leaguetable (random)"),
 #'          col.names = FALSE)
-#' }
 #' 
 #' # Use depression dataset
 #' #
@@ -200,6 +199,7 @@
 #'           backtransf = FALSE)
 #' netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
 #'           backtransf = FALSE, direct = TRUE)
+#' }
 #' 
 #' options(oldopts)
 #' 

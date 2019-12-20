@@ -4,14 +4,29 @@
 \alias{funnel.netmeta}
 \title{\sQuote{Comparison-adjusted} funnel plot}
 \usage{
-\method{funnel}{netmeta}(x, order, pooled = ifelse(x$comb.random,
-  "random", "fixed"), xlab, level = x$level, pch, col = "black",
-  legend = TRUE, linreg = FALSE, rank = FALSE, mm = FALSE,
-  pos.legend = "topright", pos.tests = "topleft",
-  text.linreg = "(Egger)", text.rank = "(Begg-Mazumdar)",
-  text.mm = "(Thompson-Sharp)", sep.trts = x$sep.trts,
-  nchar.trts = x$nchar.trts, backtransf = x$backtransf,
-  digits.pval = gs("digits.pval"), ...)
+\method{funnel}{netmeta}(
+  x,
+  order,
+  pooled = ifelse(x$comb.random, "random", "fixed"),
+  xlab,
+  level = x$level,
+  pch,
+  col = "black",
+  legend = TRUE,
+  linreg = FALSE,
+  rank = FALSE,
+  mm = FALSE,
+  pos.legend = "topright",
+  pos.tests = "topleft",
+  text.linreg = "(Egger)",
+  text.rank = "(Begg-Mazumdar)",
+  text.mm = "(Thompson-Sharp)",
+  sep.trts = x$sep.trts,
+  nchar.trts = x$nchar.trts,
+  backtransf = x$backtransf,
+  digits.pval = gs("digits.pval"),
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}

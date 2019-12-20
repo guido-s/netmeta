@@ -4,17 +4,29 @@
 \alias{print.netmeta}
 \title{Print results of network meta-analysis}
 \usage{
-\method{print}{netmeta}(x, sortvar, comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random, prediction = x$prediction,
+\method{print}{netmeta}(
+  x,
+  sortvar,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
+  prediction = x$prediction,
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
-  all.treatments = x$all.treatments, details = TRUE, ma = TRUE,
-  backtransf = x$backtransf, nchar.trts = x$nchar.trts,
-  digits = gs("digits"), digits.se = gs("digits.se"),
+  all.treatments = x$all.treatments,
+  details = TRUE,
+  ma = TRUE,
+  backtransf = x$backtransf,
+  nchar.trts = x$nchar.trts,
+  digits = gs("digits"),
+  digits.se = gs("digits.se"),
   digits.pval.Q = max(gs("digits.pval.Q"), 2),
-  digits.Q = gs("digits.Q"), digits.tau2 = gs("digits.tau2"),
-  digits.I2 = gs("digits.I2"), scientific.pval = gs("scientific.pval"),
-  big.mark = gs("big.mark"), ...)
+  digits.Q = gs("digits.Q"),
+  digits.tau2 = gs("digits.tau2"),
+  digits.I2 = gs("digits.I2"),
+  scientific.pval = gs("scientific.pval"),
+  big.mark = gs("big.mark"),
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}
@@ -96,12 +108,14 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 comb.random = FALSE)
 print(net1, ref = "plac", digits = 3)
 
+\dontrun{
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD",
                 comb.fixed = FALSE)
 print(net2, ref = "plac", digits = 3)
+}
 
 }
 \seealso{
