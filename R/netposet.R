@@ -138,6 +138,7 @@
 #' \bold{64}, 163--71
 #' 
 #' @examples
+#' \dontrun{
 #' # Use depression dataset
 #' #
 #' data(Linde2015)
@@ -181,7 +182,8 @@
 #' # Hasse diagram
 #' #
 #' hasse(po)
-#' \dontrun{
+#'
+#' 
 #' #
 #' # Outcome labels
 #' #

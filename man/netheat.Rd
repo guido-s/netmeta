@@ -4,8 +4,14 @@
 \alias{netheat}
 \title{Net heat plot}
 \usage{
-netheat(x, random = FALSE, tau.preset = NULL, showall = FALSE,
-  nchar.trts = x$nchar.trts, ...)
+netheat(
+  x,
+  random = FALSE,
+  tau.preset = NULL,
+  showall = FALSE,
+  nchar.trts = x$nchar.trts,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}
@@ -85,9 +91,11 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #
 netheat(net1) 
 
+\dontrun{
 # Generate a net heat plot based on a random effects model
 #
 netheat(net1, random = TRUE)
+}
  
 }
 \references{

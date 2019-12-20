@@ -5,9 +5,24 @@
 \title{Transform meta-analysis data from two arm-based formats into
 contrast-based format}
 \usage{
-pairwise(treat, event, n, mean, sd, TE, seTE, time, data = NULL, studlab,
-  incr = 0.5, allincr = FALSE, addincr = FALSE, allstudies = FALSE,
-  warn = FALSE, ...)
+pairwise(
+  treat,
+  event,
+  n,
+  mean,
+  sd,
+  TE,
+  seTE,
+  time,
+  data = NULL,
+  studlab,
+  incr = 0.5,
+  allincr = FALSE,
+  addincr = FALSE,
+  allstudies = FALSE,
+  warn = FALSE,
+  ...
+)
 }
 \arguments{
 \item{treat}{A list or vector with treatment information for

@@ -1,12 +1,14 @@
-chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
-                        tol = .Machine$double.eps^0.5,
+chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
+                        tol.multiarm = 0.001,
+                        tol.multiarm.se = tol.multiarm,
                         details = FALSE) {
   tabnarms <- table(studlab)
   sel.multi <- tabnarms > 1
   ##
   if (any(sel.multi)) {
     ##
-    msgdetails <- c("  - For more details, re-run netmeta() with argument details.chkmultiarm=TRUE.\n")
+    msgdetails <- paste0("  - For more details, re-run netmeta() with argument ",
+                         "details.chkmultiarm = TRUE.\n")
     ##
     studlab.multi <- names(tabnarms)[sel.multi]
     ##
@@ -119,7 +121,8 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
                          stringsAsFactors = FALSE)
     ##
     dat.varTE <- data.frame(studlab = "", treat1 = "", treat2 = "",
-                            varTE = NA, resid = NA,
+                            varTE = NA, resid.var = NA,
+                            seTE = NA, resid.se = NA,
                             stringsAsFactors = FALSE)
     ##
     dat.zero <- data.frame(studlab = "", treat = "", var.treat = NA,
@@ -157,9 +160,9 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       ##
       TE.diff <- TE.s - B %*% as.vector(ginv(B) %*% TE.s)
       ##
-      inconsistent.TE[s.idx] <- any(abs(TE.diff) > tol)
+      inconsistent.TE[s.idx] <- any(abs(TE.diff) > tol.multiarm)
       ##
-      if (any(abs(TE.diff) > tol))
+      if (any(abs(TE.diff) > tol.multiarm))
         dat.TE <- rbind(dat.TE,
                         data.frame(studlab = studlab.s,
                                    treat1 = treat1.s,
@@ -175,9 +178,9 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       ##
       varTE.diff <- varTE.s - A %*% sigma2
       ##
-      inconsistent.varTE[s.idx] <- any(abs(varTE.diff) > tol)
+      inconsistent.varTE[s.idx] <- any(abs(varTE.diff) > tol.multiarm.se^2)
       ##
-      is.zero <- abs(sigma2) < .Machine$double.eps^0.5
+      is.zero <- abs(sigma2) < tol.multiarm.se^2
       zero.sigma2[s.idx] <- any(is.zero)
       negative.sigma2[s.idx] <- any(sigma2[!is.zero] < 0)
       ##
@@ -187,7 +190,10 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
                                       treat1 = treat1.s,
                                       treat2 = treat2.s,
                                       varTE = round(varTE.s, 8),
-                                      resid = round(varTE.diff, 8),
+                                      resid.var = round(varTE.diff, 8),
+                                      seTE = round(sqrt(varTE.s), 8),
+                                      resid.se = sign(varTE.diff) *
+                                        round(sqrt(abs(varTE.diff)), 8),
                                       stringsAsFactors = FALSE))
       ##
       if (zero.sigma2[s.idx])
@@ -248,8 +254,11 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       if (length(dat.varTE$studlab) > 1 & ivarTE > 0) {
         dat.varTE <- dat.varTE[-1, ]
         dat.varTE$varTE <- format(dat.varTE$varTE)
-        dat.varTE$resid <- format(dat.varTE$resid)
-        cat("\nMulti-arm studies with inconsistent variances:\n\n")
+        dat.varTE$resid.var <- format(dat.varTE$resid.var)
+        dat.varTE$seTE <- format(dat.varTE$seTE)
+        dat.varTE$resid.se <- format(dat.varTE$resid.se)
+        cat(paste0("\nMulti-arm studies with inconsistent ",
+                   "variances / standard errors:\n\n"))
         prmatrix(dat.varTE, quote = FALSE, right = TRUE,
                  rowlab = rep("", dim(dat.varTE)[1]))
         cat("\n")
@@ -287,9 +296,12 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       if (inconsistent)
         cat(" resid - residual deviation (observed minus expected)\n")
       if (iTE > 0)
-        cat(" TE    - treatment estimate\n")
-      if (ivarTE > 0)
+        cat(paste0(" TE", if (ivarTE > 0) "   ",
+                   " - treatment estimate\n"))
+      if (ivarTE > 0) {
         cat(" varTE - variance of treatment estimate\n")
+        cat(" seTE  - standard error of treatment estimate\n")
+      }
       if (negative | zero)
         cat(" var.treat - treatment arm variance\n")
       cat("\n")
@@ -334,17 +346,23 @@ chkmultiarm <- function(treat1, treat2, TE, seTE, studlab,
       else
         msgsigma2 <- ""
       ##
-      errmsg <- paste("Problem",
-                      if ((iTE + ivarTE + inegative.sigma2 + izero.sigma2) > 1) "s",
-                      " in multi-arm studies!\n",
-                      msgTE, msgvarTE, msgsigma2,
-                      "  - Please check original data used as input to netmeta().\n",
-                      if (!details) msgdetails,
-                      if (inconsistent)
-                        "  - Argument tol.multiarm in netmeta() can be used to relax consistency\n",
-                      if (inconsistent)
-                        "    assumption for multi-arm studies (if appropriate).",
-                      sep ="")
+      errmsg <- paste0("Problem",
+                       if ((iTE + ivarTE + inegative.sigma2 + izero.sigma2) > 1) "s",
+                       " in multi-arm studies!\n",
+                       msgTE, msgvarTE, msgsigma2,
+                       "  - Please check original data used as input to netmeta().\n",
+                       if (!details) msgdetails,
+                       if (inconsistent)
+                         paste0("  - Argument",
+                                if (iTE & ivarTE) "s",
+                                if (iTE) " 'tol.multiarm'",
+                                if (iTE & ivarTE) " and",
+                                if (ivarTE) " 'tol.multiarm.se'",
+                                " in netmeta() can be used to",
+                                if (iTE & ivarTE) "\n   ",
+                                " relax consistency",
+                                if (!(iTE & ivarTE)) "\n   ",
+                                " assumption for multi-arm studies (if appropriate)."))
       ##
       stop(errmsg, call. = FALSE)
     }

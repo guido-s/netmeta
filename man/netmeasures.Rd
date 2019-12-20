@@ -4,8 +4,12 @@
 \alias{netmeasures}
 \title{Measures for characterizing a network meta-analysis}
 \usage{
-netmeasures(x, random = x$comb.random | !missing(tau.preset),
-  tau.preset = x$tau.preset, warn = TRUE)
+netmeasures(
+  x,
+  random = x$comb.random | !missing(tau.preset),
+  tau.preset = x$tau.preset,
+  warn = TRUE
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}
@@ -96,6 +100,7 @@ plot(nm1$meanpath, nm1$minpar, pch = "",
      xlab = "Mean path length", ylab = "Minimal parallelism")
 text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex = 0.8)
 
+\dontrun{
 # Conduct random effects network meta-analysis with reference
 # treatment 'plac', i.e. placebo
 #
@@ -106,6 +111,7 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 # Calculate measures based on a random effects model
 #                          
 nm2 <- netmeasures(net2)
+}
 
 }
 \references{

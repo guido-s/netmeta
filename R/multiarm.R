@@ -32,7 +32,11 @@ multiarm <- function(r) {
   ## Compute weight matrix W and variance matrix V from Laplacian L
   ## 
   W <- diag(diag(L)) - L
-  W[W < 0 & abs(W) < .Machine$double.eps^0.25] <- 0
+  ##
+  ## Replace small negative weights with zeros
+  ## (i.e., if an absolute negative weight contributes less than 0.1%)
+  ##
+  W[W < 0 & (abs(W) / sum(abs(W)[lower.tri(W)])) < 0.001] <- 0
   ##
   V <- 1 / W
   ##

@@ -197,7 +197,8 @@
 #' \item{pval.Q.additive}{P-value for test of heterogeneity /
 #'   inconsistency (additive model).}
 #' \item{tau}{Square-root of between-study variance (additive model).}
-#' \item{I2}{I-squared (additive model).}
+#' \item{I2, lower.I2, upper.I2}{I-squared, lower and upper confidence
+#'   limits.}
 #' \item{Q.standard}{Overall heterogeneity / inconsistency statistic
 #'   (standard model).}
 #' \item{df.Q.standard}{Degrees of freedom for test of heterogeneity /
@@ -444,7 +445,13 @@ netcomb <- function(x,
   ##
   df.Q.additive <- x$df.Q + x$n - 1 - qr(X)$rank
   ##
-  net <- netmeta(TE, seTE, treat1, treat2, studlab)
+  if (is.null(x$tol.multiarm.se))
+    x$tol.multiarm.se <- x$tol.multiarm
+  ##
+  net <- netmeta(TE, seTE, treat1, treat2, studlab,
+                 tol.multiarm = x$tol.multiarm,
+                 tol.multiarm.se = x$tol.multiarm.se,
+                 details.chkmultiarm = x$details.chkmultiarm)
   ##
   Q <- net$Q
   df.Q <- net$df.Q
@@ -471,6 +478,8 @@ netcomb <- function(x,
     tau <- res.f$tau
   ##
   I2 <- res.f$I2
+  lower.I2 <- res.f$lower.I2
+  upper.I2 <- res.f$upper.I2
   ##
   tau2.calc <- if (is.na(tau)) 0 else tau^2
   
@@ -594,7 +603,7 @@ netcomb <- function(x,
               df.Q.additive = df.Q.additive,
               pval.Q.additive = res.f$pval.Q.additive,
               tau = tau,
-              I2 = I2,
+              I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2,
               ##
               Q.standard = x$Q,
               df.Q.standard = x$df.Q,

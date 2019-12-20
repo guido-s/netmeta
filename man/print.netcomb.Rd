@@ -4,13 +4,21 @@
 \alias{print.netcomb}
 \title{Print objects of class netcomb}
 \usage{
-\method{print}{netcomb}(x, comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random, backtransf = x$backtransf,
-  nchar.trts = x$nchar.trts, digits = gs("digits"),
-  digits.zval = gs("digits.zval"), digits.pval = gs("digits.pval"),
+\method{print}{netcomb}(
+  x,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
+  backtransf = x$backtransf,
+  nchar.trts = x$nchar.trts,
+  digits = gs("digits"),
+  digits.zval = gs("digits.zval"),
+  digits.pval = gs("digits.pval"),
   digits.pval.Q = max(gs("digits.pval.Q"), 2),
-  digits.Q = gs("digits.Q"), scientific.pval = gs("scientific.pval"),
-  big.mark = gs("big.mark"), ...)
+  digits.Q = gs("digits.Q"),
+  scientific.pval = gs("scientific.pval"),
+  big.mark = gs("big.mark"),
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netcomb}}

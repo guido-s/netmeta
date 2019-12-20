@@ -6,11 +6,18 @@
 \title{Get information on network connectivity (number of subnetworks,
 distance matrix)}
 \usage{
-netconnection(treat1, treat2, studlab, data = NULL, subset = NULL,
-  nchar.trts = 666, title = "", warn = FALSE)
+netconnection(
+  treat1,
+  treat2,
+  studlab,
+  data = NULL,
+  subset = NULL,
+  nchar.trts = 666,
+  title = "",
+  warn = FALSE
+)
 
-\method{print}{netconnection}(x, digits = max(4, .Options$digits - 3),
-  nchar.trts = x$nchar.trts, ...)
+\method{print}{netconnection}(x, digits = max(4, .Options$digits - 3), nchar.trts = x$nchar.trts, ...)
 }
 \arguments{
 \item{treat1}{Label / number for first treatment.}

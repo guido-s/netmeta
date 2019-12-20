@@ -4,14 +4,25 @@
 \alias{forest.netcomb}
 \title{Forest plot for additive network meta-analysis}
 \usage{
-\method{forest}{netcomb}(x, pooled = ifelse(x$comb.random, "random",
-  "fixed"), reference.group = x$reference.group,
-  baseline.reference = x$baseline.reference, leftcols = "studlab",
-  leftlabs = "Treatment", rightcols = c("effect", "ci"),
-  rightlabs = NULL, digits = gs("digits.forest"),
-  small.values = "good", smlab = NULL, sortvar = x$seq,
-  backtransf = x$backtransf, lab.NA = ".", add.data,
-  drop.reference.group = FALSE, ...)
+\method{forest}{netcomb}(
+  x,
+  pooled = ifelse(x$comb.random, "random", "fixed"),
+  reference.group = x$reference.group,
+  baseline.reference = x$baseline.reference,
+  leftcols = "studlab",
+  leftlabs = "Treatment",
+  rightcols = c("effect", "ci"),
+  rightlabs = NULL,
+  digits = gs("digits.forest"),
+  small.values = "good",
+  smlab = NULL,
+  sortvar = x$seq,
+  backtransf = x$backtransf,
+  lab.NA = ".",
+  add.data,
+  drop.reference.group = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netcomb}.}

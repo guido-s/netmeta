@@ -121,12 +121,15 @@ nma.ruecker <- function(TE, seTE,
   if (df == 0) {
     tau2 <- NA
     tau <- NA
-    I2 <- NA
+    I2 <- lower.I2 <- upper.I2 <- NA
   }
   else {
     tau2 <- max(0, (Q - df) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
     tau <- sqrt(tau2)
-    I2 <- meta:::isquared(Q, df, 0.95)$TE
+    ci.I2 <- meta:::isquared(Q, df, level.comb)
+    I2 <- ci.I2$TE
+    lower.I2 <- ci.I2$lower
+    upper.I2 <- ci.I2$upper
   }
   ##
   ## Decomposition of total Q into parts from pairwise meta-analyses
@@ -312,6 +315,8 @@ nma.ruecker <- function(TE, seTE,
               df = df,
               pval.Q = pval.Q,
               I2 = I2,
+              lower.I2 = lower.I2,
+              upper.I2 = upper.I2,
               tau = tau,
               Q.heterogeneity = Q.heterogeneity,
               Q.inconsistency = Q.inconsistency,

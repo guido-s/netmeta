@@ -124,13 +124,18 @@ nma.additive <- function(TE, weights, studlab,
     tau2 <- NA
     tau <- NA
     I2 <- NA
+    lower.I2 <- NA
+    upper.I2 <- NA
   }
   else {
     tau2 <- max(0, (Q.additive - df.Q.additive) /
                    sum(diag((I - H) %*%
                             (B.matrix %*% t(B.matrix) * E / 2) %*% W)))
     tau <- sqrt(tau2)
-    I2 <- meta:::isquared(Q.additive, df.Q.additive, 0.95)$TE
+    ci.I2 <- meta:::isquared(Q.additive, df.Q.additive, level.comb)
+    I2 <- ci.I2$TE
+    lower.I2 <- ci.I2$lower
+    upper.I2 <- ci.I2$upper
   }
   
   
@@ -148,7 +153,7 @@ nma.additive <- function(TE, weights, studlab,
               pval.Q.diff = pval.Q.diff,
               ##
               tau = tau,
-              I2 = I2)
+              I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2)
   
   
   res

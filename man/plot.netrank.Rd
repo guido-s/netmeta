@@ -4,13 +4,33 @@
 \alias{plot.netrank}
 \title{Plot treatment ranking(s) of network meta-analyses}
 \usage{
-\method{plot}{netrank}(..., name, comb.fixed, comb.random, seq,
-  low = "red", mid = "yellow", high = "green", col = "black", main,
-  main.size = 14, main.col = col, main.face = "bold",
-  legend = TRUE, axis.size = 12, axis.col = col,
-  axis.face = "plain", na.value = "grey50", angle = 45,
-  hjust.x = 1, vjust.x = 1, hjust.y = 1, vjust.y = 0, nchar.trts,
-  digits = 3)
+\method{plot}{netrank}(
+  ...,
+  name,
+  comb.fixed,
+  comb.random,
+  seq,
+  low = "red",
+  mid = "yellow",
+  high = "green",
+  col = "black",
+  main,
+  main.size = 14,
+  main.col = col,
+  main.face = "bold",
+  legend = TRUE,
+  axis.size = 12,
+  axis.col = col,
+  axis.face = "plain",
+  na.value = "grey50",
+  angle = 45,
+  hjust.x = 1,
+  vjust.x = 1,
+  hjust.y = 1,
+  vjust.y = 0,
+  nchar.trts,
+  digits = 3
+)
 }
 \arguments{
 \item{...}{A single netrank object or a list of netrank objects.}
@@ -106,6 +126,7 @@ first network meta-analysis object. Argument \code{seq} can be used
 to specify a differenct treatment order.
 }
 \examples{
+\dontrun{
 # Use depression dataset
 #
 data(Linde2015)
@@ -145,7 +166,8 @@ net2 <- netmeta(p2, comb.fixed = FALSE,
 plot(netrank(net1, small.values = "bad"),
      netrank(net2, small.values = "bad"),
      name = outcomes, digits = 2)
-\dontrun{
+
+
 # Outcome labels
 #
 outcomes <- c("Early response", "Early remission",

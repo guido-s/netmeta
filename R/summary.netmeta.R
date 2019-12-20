@@ -37,12 +37,20 @@
 #'   heterogeneity statistics, see \code{print.default}.
 #' @param digits.tau2 Minimal number of significant digits for
 #'   between-study variance, see \code{print.default}.
+#' @param digits.tau Minimal number of significant digits for square
+#'   root of between-study variance, see \code{print.default}.
 #' @param digits.I2 Minimal number of significant digits for I-squared
 #'   statistic, see \code{print.default}.
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
 #' @param big.mark A character used as thousands separator.
+#' @param text.tau2 Text printed to identify between-study variance
+#'   \eqn{\tau^2}.
+#' @param text.tau Text printed to identify \eqn{\tau}, the square root
+#'   of the between-study variance \eqn{\tau^2}.
+#' @param text.I2 Text printed to identify heterogeneity statistic
+#'   I\eqn{^2}.
 #' @param \dots Additional arguments.
 #' 
 #' @return
@@ -74,7 +82,8 @@
 #' \item{df.Q}{Degrees of freedom for test of heterogeneity /
 #'   inconsistency.}
 #' \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
-#' \item{I2}{I-squared.}
+#' \item{I2, lower.I2, upper.I2}{I-squared, lower and upper confidence
+#'   limits.}
 #' \item{tau}{Square-root of between-study variance.}
 #' \item{Q.heterogeneity}{Overall heterogeneity statistic.}
 #' \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
@@ -126,7 +135,8 @@
 #'                 comb.random = FALSE)
 #' print(net1, ref = "plac", digits = 3)
 #' summary(net1)
-#' 
+#'
+#' \dontrun{
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
@@ -134,6 +144,7 @@
 #'                 comb.fixed = FALSE)
 #' print(net2, ref = "plac", digits = 3)
 #' summary(net2)
+#' }
 #' 
 #' @rdname summary.netmeta
 #' @method summary netmeta
@@ -266,6 +277,7 @@ summary.netmeta <- function(object,
               df.Q = object$df.Q,
               pval.Q = object$pval.Q,
               I2 = object$I2,
+              lower.I2 = object$lower.I2, upper.I2 = object$upper.I2,
               tau = object$tau,
               ##
               Q.heterogeneity = object$Q.heterogeneity,
@@ -353,9 +365,15 @@ print.summary.netmeta <- function(x,
                                   digits.pval.Q = max(gs("digits.pval.Q"), 2),
                                   digits.Q = gs("digits.Q"),
                                   digits.tau2 = gs("digits.tau2"),
+                                  digits.tau = gs("digits.tau"),
                                   digits.I2 = gs("digits.I2"),
                                   scientific.pval = gs("scientific.pval"),
                                   big.mark = gs("big.mark"),
+                                  ##
+                                  text.tau2 = gs("text.tau2"),
+                                  text.tau = gs("text.tau"),
+                                  text.I2 = gs("text.I2"),
+                                  ##
                                   ...) {
   
   
@@ -363,10 +381,12 @@ print.summary.netmeta <- function(x,
   ##
   chklogical <- meta:::chklogical
   chknumeric <- meta:::chknumeric
+  chkchar <- meta:::chkchar
   formatCI <- meta:::formatCI
   formatN <- meta:::formatN
   formatPT <- meta:::formatPT
   is.relative.effect <- meta:::is.relative.effect
+  pasteCI <- meta:::pasteCI
   
   
   if (is.null(x$df.Q))
@@ -394,10 +414,15 @@ print.summary.netmeta <- function(x,
   ##
   chknumeric(digits, min = 0, single = TRUE)
   chknumeric(digits.tau2, min = 0, single = TRUE)
+  chknumeric(digits.tau, min = 0, single = TRUE)
   chknumeric(digits.pval.Q, min = 1, single = TRUE)
   chknumeric(digits.Q, min = 0, single = TRUE)
   chknumeric(digits.I2, min = 0, single = TRUE)
   chklogical(scientific.pval)
+  ##
+  chkchar(text.tau2)
+  chkchar(text.tau)
+  chkchar(text.I2)
   
   
   ##
@@ -486,6 +511,8 @@ print.summary.netmeta <- function(x,
   }
   ##
   I2 <- round(100 * x$I2, digits.I2)
+  lower.I2 <- round(100 * x$lower.I2, digits.I2)
+  upper.I2 <- round(100 * x$upper.I2, digits.I2)
   
   
   if (header)
@@ -819,13 +846,22 @@ print.summary.netmeta <- function(x,
     else
       tau <- x$tau
     ##
-    cat(paste("\nQuantifying heterogeneity / inconsistency:\n",
-              formatPT(tau^2,
-                       lab = TRUE, labval = "tau^2",
-                       digits = digits.tau2,
-                       lab.NA = "NA", big.mark = big.mark),
-              if (!is.na(I2)) paste("; I^2 = ", round(I2, digits.I2), "%", "", sep = ""),
-              "\n", sep = ""))
+    cat(paste0("\nQuantifying heterogeneity / inconsistency:\n",
+               formatPT(tau^2,
+                        lab = TRUE, labval = text.tau2,
+                        digits = digits.tau2,
+                        lab.NA = "NA", big.mark = big.mark),
+               "; ",
+               formatPT(tau,
+                        lab = TRUE, labval = text.tau,
+                        digits = digits.tau,
+                        lab.NA = "NA", big.mark = big.mark),
+               if (!is.na(I2))
+                 paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
+               if (!(is.na(lower.I2) | is.na(upper.I2)))
+                 pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
+               "\n")
+        )
     
     
     if (m > 1) {
@@ -876,7 +912,7 @@ print.summary.netmeta <- function(x,
       cat("\nDetails:")
       ##
       tau2 <- x$tau.preset^2
-      tau2 <- formatPT(tau2, lab = TRUE, labval = "tau^2",
+      tau2 <- formatPT(tau2, lab = TRUE, labval = text.tau2,
                        digits = digits.tau2,
                        lab.NA = "NA", big.mark = big.mark)
       ##

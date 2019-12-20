@@ -4,9 +4,15 @@
 \alias{netcomb}
 \title{Additive network meta-analysis for combinations of treatments}
 \usage{
-netcomb(x, inactive = NULL, sep.comps = "+", C.matrix,
-  comb.fixed = x$comb.fixed, comb.random = x$comb.random |
-  !is.null(tau.preset), tau.preset = NULL)
+netcomb(
+  x,
+  inactive = NULL,
+  sep.comps = "+",
+  C.matrix,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random | !is.null(tau.preset),
+  tau.preset = NULL
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}
@@ -156,7 +162,8 @@ containing the following components:
 \item{pval.Q.additive}{P-value for test of heterogeneity /
   inconsistency (additive model).}
 \item{tau}{Square-root of between-study variance (additive model).}
-\item{I2}{I-squared (additive model).}
+\item{I2, lower.I2, upper.I2}{I-squared, lower and upper confidence
+  limits.}
 \item{Q.standard}{Overall heterogeneity / inconsistency statistic
   (standard model).}
 \item{df.Q.standard}{Degrees of freedom for test of heterogeneity /

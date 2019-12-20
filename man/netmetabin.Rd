@@ -4,19 +4,44 @@
 \alias{netmetabin}
 \title{Network meta-analysis of binary outcome data}
 \usage{
-netmetabin(event1, n1, event2, n2, treat1, treat2, studlab, data = NULL,
-  subset = NULL, sm, method = "MH", cc.pooled = FALSE,
-  incr = gs("incr"), allincr = gs("allincr"),
-  addincr = gs("addincr"), allstudies = gs("allstudies"),
-  level = gs("level"), level.comb = gs("level.comb"),
-  comb.fixed = gs("comb.fixed"), comb.random = method == "Inverse" &
-  (gs("comb.random") | !is.null(tau.preset)), prediction = FALSE,
-  level.predict = gs("level.predict"), reference.group = "",
-  baseline.reference = TRUE, all.treatments = NULL, seq = NULL,
-  tau.preset = NULL, tol.multiarm = 5e-04,
-  details.chkmultiarm = FALSE, sep.trts = ":", nchar.trts = 666,
-  backtransf = gs("backtransf"), title = "",
-  keepdata = gs("keepdata"), warn = TRUE)
+netmetabin(
+  event1,
+  n1,
+  event2,
+  n2,
+  treat1,
+  treat2,
+  studlab,
+  data = NULL,
+  subset = NULL,
+  sm,
+  method = "MH",
+  cc.pooled = FALSE,
+  incr = gs("incr"),
+  allincr = gs("allincr"),
+  addincr = gs("addincr"),
+  allstudies = gs("allstudies"),
+  level = gs("level"),
+  level.comb = gs("level.comb"),
+  comb.fixed = gs("comb.fixed"),
+  comb.random = method == "Inverse" & (gs("comb.random") | !is.null(tau.preset)),
+  prediction = FALSE,
+  level.predict = gs("level.predict"),
+  reference.group = "",
+  baseline.reference = TRUE,
+  all.treatments = NULL,
+  seq = NULL,
+  tau.preset = NULL,
+  tol.multiarm = 0.001,
+  tol.multiarm.se = tol.multiarm,
+  details.chkmultiarm = FALSE,
+  sep.trts = ":",
+  nchar.trts = 666,
+  backtransf = gs("backtransf"),
+  title = "",
+  keepdata = gs("keepdata"),
+  warn = TRUE
+)
 }
 \arguments{
 \item{event1}{Number of events (first treatment).}
@@ -112,9 +137,12 @@ square-root of the between-study variance \eqn{\tau^2} (only
 considered if \code{method = "Inverse"}).}
 
 \item{tol.multiarm}{A numeric for the tolerance for consistency of
-treatment estimates and corresponding variances in multi-arm
-studies which are consistent by design (only considered if
-\code{method = "Inverse"}).}
+treatment estimates in multi-arm studies which are consistent by
+design (only considered if \code{method = "Inverse"}).}
+
+\item{tol.multiarm.se}{A numeric for the tolerance for consistency
+of standard errors in multi-arm studies which are consistent by
+design (only considered if \code{method = "Inverse"}).}
 
 \item{details.chkmultiarm}{A logical indicating whether treatment
 estimates and / or variances of multi-arm studies with
@@ -212,7 +240,8 @@ following components:
 \item{df.Q}{Degrees of freedom for test of heterogeneity /
   inconsistency.}
 \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
-\item{I2}{I-squared (only available if \code{method = "Inverse"}).}
+\item{I2, lower.I2, upper.I2}{I-squared, lower and upper confidence
+  limits (only available if \code{method = "Inverse"}).}
 \item{tau}{Square-root of between-study variance (only available if
   \code{method = "Inverse"}).}
 \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
@@ -228,9 +257,9 @@ following components:
 \item{prediction, level.predict}{As defined above.}
 \item{reference.group, baseline.reference, all.treatments}{As
   defined above.}
-\item{seq, tau.preset, tol.multiarm, details.chkmultiarm}{As
-  defined above.}
-\item{sep.trts, nchar.trts}{As defined above.}
+\item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
+  above.}
+\item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
 \item{backtransf, title, warn}{As defined above.}
 \item{data}{Data set (in contrast-based format).}
 \item{data.design}{List with data in arm-based format (each list

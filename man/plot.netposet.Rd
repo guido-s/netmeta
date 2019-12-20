@@ -4,14 +4,36 @@
 \alias{plot.netposet}
 \title{Scatter plot or biplot showing partially order of treatment ranks}
 \usage{
-\method{plot}{netposet}(x, plottype = "scatter",
-  pooled = ifelse(x$comb.random, "random", "fixed"), dim = "2d",
-  sel.x = 1, sel.y = 2, sel.z = 3, cex = 1, col = "black",
-  cex.text = cex, col.text = col, adj.x = 0, adj.y = 1,
-  offset.x = 0.005, offset.y = -0.005, pch = NULL,
-  cex.points = cex, col.points = col, col.lines = "black",
-  lty.lines = 1, lwd.lines = 1, arrows = FALSE, length = 0.05,
-  grid = TRUE, col.grid = "gray", lty.grid = 2, lwd.grid = 1, ...)
+\method{plot}{netposet}(
+  x,
+  plottype = "scatter",
+  pooled = ifelse(x$comb.random, "random", "fixed"),
+  dim = "2d",
+  sel.x = 1,
+  sel.y = 2,
+  sel.z = 3,
+  cex = 1,
+  col = "black",
+  cex.text = cex,
+  col.text = col,
+  adj.x = 0,
+  adj.y = 1,
+  offset.x = 0.005,
+  offset.y = -0.005,
+  pch = NULL,
+  cex.points = cex,
+  col.points = col,
+  col.lines = "black",
+  lty.lines = 1,
+  lwd.lines = 1,
+  arrows = FALSE,
+  length = 0.05,
+  grid = TRUE,
+  col.grid = "gray",
+  lty.grid = 2,
+  lwd.grid = 1,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} (mandatory).}
@@ -128,6 +150,7 @@ Window System must be available (see
 \url{https://www.xquartz.org}).
 }
 \examples{
+\dontrun{
 data(Linde2015)
 
 # Define order of treatments
@@ -170,10 +193,10 @@ po2 <- netposet(netrank(net1, small.values = "bad"),
 #
 plot(po2)
 
-\dontrun{
 # Same scatter plot as only two outcomes considered in netposet()
 #
 plot(po2, "biplot")
+
 
 # Consider three outcomes
 #

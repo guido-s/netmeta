@@ -4,8 +4,13 @@
 \alias{print.netimpact}
 \title{Print method for objects of class netimpact}
 \usage{
-\method{print}{netimpact}(x, comb.fixed = x$x$comb.fixed,
-  comb.random = x$x$comb.random, digits = gs("digits.prop"), ...)
+\method{print}{netimpact}(
+  x,
+  comb.fixed = x$x$comb.fixed,
+  comb.random = x$x$comb.random,
+  digits = gs("digits.prop"),
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netimpact}.}

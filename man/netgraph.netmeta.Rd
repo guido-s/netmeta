@@ -4,22 +4,54 @@
 \alias{netgraph.netmeta}
 \title{Network graph}
 \usage{
-\method{netgraph}{netmeta}(x, seq = x$seq, labels = x$trts, cex = 1,
-  adj = NULL, offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0
-  else 0.0175, scale = 1.1, col = "slateblue", plastic, thickness,
-  lwd = 5, lwd.min = lwd/2.5, lwd.max = lwd * 4, dim = "2d",
-  highlight = NULL, col.highlight = "red2", scale.highlight = 1,
-  multiarm = any(x$narms > 2), col.multiarm = NULL,
-  alpha.transparency = 0.5, points = FALSE, col.points = "red",
-  cex.points = 1, pch.points = 20, bg.points = "gray",
-  number.of.studies = FALSE, cex.number.of.studies = cex,
-  col.number.of.studies = "white", bg.number.of.studies = "black",
-  pos.number.of.studies = 0.5, start.layout = ifelse(dim == "2d",
-  "circle", "eigen"), eig1 = 2, eig2 = 3, eig3 = 4, iterate,
-  tol = 1e-04, maxit = 500, allfigures = FALSE,
-  A.matrix = x$A.matrix, N.matrix = sign(A.matrix),
-  D.matrix = netdistance(N.matrix), xpos = NULL, ypos = NULL,
-  zpos = NULL, figure = TRUE, ...)
+\method{netgraph}{netmeta}(
+  x,
+  seq = x$seq,
+  labels = x$trts,
+  cex = 1,
+  adj = NULL,
+  offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
+  scale = 1.1,
+  col = "slateblue",
+  plastic,
+  thickness,
+  lwd = 5,
+  lwd.min = lwd/2.5,
+  lwd.max = lwd * 4,
+  dim = "2d",
+  highlight = NULL,
+  col.highlight = "red2",
+  scale.highlight = 1,
+  multiarm = any(x$narms > 2),
+  col.multiarm = NULL,
+  alpha.transparency = 0.5,
+  points = FALSE,
+  col.points = "red",
+  cex.points = 1,
+  pch.points = 20,
+  bg.points = "gray",
+  number.of.studies = FALSE,
+  cex.number.of.studies = cex,
+  col.number.of.studies = "white",
+  bg.number.of.studies = "black",
+  pos.number.of.studies = 0.5,
+  start.layout = ifelse(dim == "2d", "circle", "eigen"),
+  eig1 = 2,
+  eig2 = 3,
+  eig3 = 4,
+  iterate,
+  tol = 1e-04,
+  maxit = 500,
+  allfigures = FALSE,
+  A.matrix = x$A.matrix,
+  N.matrix = sign(A.matrix),
+  D.matrix = netdistance(N.matrix),
+  xpos = NULL,
+  ypos = NULL,
+  zpos = NULL,
+  figure = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} (mandatory).}
@@ -278,6 +310,7 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #
 netgraph(net1)
 
+\dontrun{
 # Network graph with specified order of the treatments and one
 # highlighted comparison
 #
@@ -297,13 +330,11 @@ netgraph(net2, highlight = "rosi:plac")
 #
 netgraph(net1, start = "circle", iterate = TRUE, col.multiarm = "purple")
 
-\dontrun{
 # Network graph optimized, starting from a circle, with multi-arm
 # study colored and all intermediate iteration steps visible
 #
 netgraph(net1, start = "circle", iterate = TRUE, col.multiarm = "purple",
          allfigures = TRUE)
-}
 
 # Network graph optimized, starting from Laplacian eigenvectors,
 # with multi-arm study colored
@@ -335,7 +366,6 @@ netgraph(net1, plastic = FALSE, thickness = FALSE)
 netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
          labels = LETTERS[1:10])
 
-\dontrun{
 # Network graph in 3-D (opens a new device, where you may rotate and
 # zoom the plot using the mouse / the mouse wheel).
 # The rgl package must be installed for 3-D plots.

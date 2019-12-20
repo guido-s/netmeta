@@ -4,17 +4,40 @@
 \alias{netmeta}
 \title{Network meta-analysis using graph-theoretical method}
 \usage{
-netmeta(TE, seTE, treat1, treat2, studlab, data = NULL, subset = NULL,
-  sm, level = gs("level"), level.comb = gs("level.comb"),
-  comb.fixed = gs("comb.fixed"), comb.random = gs("comb.random") |
-  !is.null(tau.preset), prediction = FALSE,
-  level.predict = gs("level.predict"), reference.group = "",
-  baseline.reference = TRUE, all.treatments = NULL, seq = NULL,
-  tau.preset = NULL, tol.multiarm = 5e-04,
-  details.chkmultiarm = FALSE, sep.trts = ":", nchar.trts = 666,
-  n1 = NULL, n2 = NULL, event1 = NULL, event2 = NULL,
-  backtransf = gs("backtransf"), title = "",
-  keepdata = gs("keepdata"), warn = TRUE)
+netmeta(
+  TE,
+  seTE,
+  treat1,
+  treat2,
+  studlab,
+  data = NULL,
+  subset = NULL,
+  sm,
+  level = gs("level"),
+  level.comb = gs("level.comb"),
+  comb.fixed = gs("comb.fixed"),
+  comb.random = gs("comb.random") | !is.null(tau.preset),
+  prediction = FALSE,
+  level.predict = gs("level.predict"),
+  reference.group = "",
+  baseline.reference = TRUE,
+  all.treatments = NULL,
+  seq = NULL,
+  tau.preset = NULL,
+  tol.multiarm = 0.001,
+  tol.multiarm.se = tol.multiarm,
+  details.chkmultiarm = FALSE,
+  sep.trts = ":",
+  nchar.trts = 666,
+  n1 = NULL,
+  n2 = NULL,
+  event1 = NULL,
+  event2 = NULL,
+  backtransf = gs("backtransf"),
+  title = "",
+  keepdata = gs("keepdata"),
+  warn = TRUE
+)
 }
 \arguments{
 \item{TE}{Estimate of treatment effect, i.e. difference between
@@ -76,8 +99,12 @@ of treatments in printouts.}
 square-root of the between-study variance \eqn{\tau^2}.}
 
 \item{tol.multiarm}{A numeric for the tolerance for consistency of
-treatment estimates and corresponding variances in multi-arm
-studies which are consistent by design.}
+treatment estimates in multi-arm studies which are consistent by
+design.}
+
+\item{tol.multiarm.se}{A numeric for the tolerance for consistency
+of standard errors in multi-arm studies which are consistent by
+design.}
 
 \item{details.chkmultiarm}{A logical indicating whether treatment
 estimates and / or variances of multi-arm studies with
@@ -228,7 +255,8 @@ object is a list containing the following components:
 \item{df.Q}{Degrees of freedom for test of heterogeneity /
   inconsistency.}
 \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
-\item{I2}{I-squared.}
+\item{I2, lower.I2, upper.I2}{I-squared, lower and upper confidence
+  limits.}
 \item{tau}{Square-root of between-study variance.}
 \item{Q.heterogeneity}{Overall heterogeneity statistic.}
 \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
@@ -272,9 +300,9 @@ object is a list containing the following components:
 \item{prediction, level.predict}{As defined above.}
 \item{reference.group, baseline.reference, all.treatments}{As
   defined above.}
-\item{seq, tau.preset, tol.multiarm, details.chkmultiarm}{As
-  defined above.}
-\item{sep.trts, nchar.trts}{As defined above.}
+\item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
+  above.}
+\item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
 \item{backtransf, title, warn}{As defined above.}
 \item{call}{Function call.}
 \item{version}{Version of R package netmeta used to create object.}
@@ -282,11 +310,11 @@ object is a list containing the following components:
 \description{
 Network meta-analysis is a generalisation of pairwise meta-analysis
 that compares all pairs of treatments within a number of treatments
-for the same condition. The graph-theoretical method for analysis
-of network meta-analyses uses graph-theoretical methods that were
-originally developed in electrical network theory. It has been
-found to be equivalent to the frequentist approach to network
-meta-analysis (Rücker, 2012).
+for the same condition. The graph-theoretical approach for network
+meta-analysis uses methods that were originally developed in
+electrical network theory. It has been found to be equivalent to
+the frequentist approach to network meta-analysis which is based on
+weighted least squares regression (Rücker, 2012).
 }
 \details{
 Network meta-analysis using R package \bold{netmeta} is described
@@ -305,7 +333,7 @@ The given comparisons define the network structure. Therefrom an
 formed; for more precise information, see Rücker (2012). Moreover,
 the \emph{n}x\emph{n} Laplacian matrix L and its Moore-Penrose
 pseudoinverse L+ are calculated (both matrices play an important
-role in graph theory and electrical network theory).  Using these
+role in graph theory and electrical network theory). Using these
 matrices, the variances based on both direct and indirect
 comparisons can be estimated. Moreover, the hat matrix H can be
 estimated by \strong{H = BL+B^tW = B(B^t W B)^+B^tW} and finally
@@ -338,7 +366,7 @@ Data entry for this function is in \emph{contrast-based} format,
 that is, data are given as contrasts (differences) between two
 treatments (argument \code{TE}) with standard error (argument
 \code{seTE}). In principle, meta-analysis functions from R package
-\bold{meta}, e.g.  \code{\link{metabin}} for binary outcomes or
+\bold{meta}, e.g. \code{\link{metabin}} for binary outcomes or
 \code{\link{metacont}} for continuous outcomes, can be used to
 calculate treatment effects separately for each treatment
 comparison which is a rather tedious enterprise. If data are
@@ -356,11 +384,11 @@ Hedges' \emph{g} or Cohen's \emph{d} for continuous outcomes (see
 help page of function \code{\link{pairwise}}).
 
 Note, all pairwise comparisons must be provided for a multi-arm
-study.  Consider a multi-arm study of \emph{p} treatments with
-known variances.  For this study, treatment effects and standard
-errors must be provided for each of \emph{p}(\emph{p} - 1) / 2
-possible comparisons. For instance, a three-arm study contributes
-three pairwise comparisons, a four-arm study even six pairwise
+study. Consider a multi-arm study of \emph{p} treatments with known
+variances. For this study, treatment effects and standard errors
+must be provided for each of \emph{p}(\emph{p} - 1) / 2 possible
+comparisons. For instance, a three-arm study contributes three
+pairwise comparisons, a four-arm study even six pairwise
 comparisons. Function \code{\link{pairwise}} automatically
 calculates all pairwise comparisons for multi-arm studies.
 
@@ -383,9 +411,9 @@ calculated regardless of values choosen for arguments
 \code{comb.fixed} and \code{comb.random}. Accordingly, the network
 estimates for the random effects model can be extracted from
 component \code{TE.random} of an object of class \code{"netmeta"}
-even if argument \code{comb.random = FALSE}.  However, all
-functions in R package \bold{netmeta} will adequately consider the
-values for \code{comb.fixed} and \code{comb.random}. E.g. function
+even if argument \code{comb.random = FALSE}. However, all functions
+in R package \bold{netmeta} will adequately consider the values for
+\code{comb.fixed} and \code{comb.random}. E.g. function
 \code{\link{print.summary.netmeta}} will not print results for the
 random effects model if \code{comb.random = FALSE}.
 
@@ -406,7 +434,7 @@ used in the covariance matrices \code{Cov.fixed} and
 separator. If any treatment label contains a colon the following
 characters are used as separator (in consecutive order):
 \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"}, \code{"."},
-\code{"|"}, and \code{"*"}.  If all of these characters are used in
+\code{"|"}, and \code{"*"}. If all of these characters are used in
 treatment labels, a corresponding error message is printed asking
 the user to specify a different separator.
 }

@@ -254,6 +254,7 @@
 #' #
 #' netgraph(net1)
 #' 
+#' \dontrun{
 #' # Network graph with specified order of the treatments and one
 #' # highlighted comparison
 #' #
@@ -273,13 +274,11 @@
 #' #
 #' netgraph(net1, start = "circle", iterate = TRUE, col.multiarm = "purple")
 #'
-#' \dontrun{
 #' # Network graph optimized, starting from a circle, with multi-arm
 #' # study colored and all intermediate iteration steps visible
 #' #
 #' netgraph(net1, start = "circle", iterate = TRUE, col.multiarm = "purple",
 #'          allfigures = TRUE)
-#' }
 #' 
 #' # Network graph optimized, starting from Laplacian eigenvectors,
 #' # with multi-arm study colored
@@ -311,7 +310,6 @@
 #' netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
 #'          labels = LETTERS[1:10])
 #' 
-#' \dontrun{
 #' # Network graph in 3-D (opens a new device, where you may rotate and
 #' # zoom the plot using the mouse / the mouse wheel).
 #' # The rgl package must be installed for 3-D plots.

@@ -5,17 +5,34 @@
 \alias{print.summary.netcomb}
 \title{Summary method for objects of class netcomb}
 \usage{
-\method{summary}{netcomb}(object, comb.fixed = object$comb.fixed,
-  comb.random = object$comb.random, ...)
+\method{summary}{netcomb}(
+  object,
+  comb.fixed = object$comb.fixed,
+  comb.random = object$comb.random,
+  ...
+)
 
-\method{print}{summary.netcomb}(x, comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random, backtransf = x$backtransf,
-  nchar.trts = x$nchar.trts, digits = gs("digits"),
-  digits.zval = gs("digits.zval"), digits.pval = gs("digits.pval"),
+\method{print}{summary.netcomb}(
+  x,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
+  backtransf = x$backtransf,
+  nchar.trts = x$nchar.trts,
+  digits = gs("digits"),
+  digits.zval = gs("digits.zval"),
+  digits.pval = gs("digits.pval"),
   digits.pval.Q = max(gs("digits.pval.Q"), 2),
-  digits.Q = gs("digits.Q"), digits.tau2 = gs("digits.tau2"),
-  digits.I2 = gs("digits.I2"), scientific.pval = gs("scientific.pval"),
-  big.mark = gs("big.mark"), ...)
+  digits.Q = gs("digits.Q"),
+  digits.tau2 = gs("digits.tau2"),
+  digits.tau = gs("digits.tau"),
+  digits.I2 = gs("digits.I2"),
+  scientific.pval = gs("scientific.pval"),
+  big.mark = gs("big.mark"),
+  text.tau2 = gs("text.tau2"),
+  text.tau = gs("text.tau"),
+  text.I2 = gs("text.I2"),
+  ...
+)
 }
 \arguments{
 \item{object}{An object of class \code{netcomb}.}
@@ -58,6 +75,9 @@ heterogeneity statistics, see \code{print.default}.}
 \item{digits.tau2}{Minimal number of significant digits for
 between-study variance, see \code{print.default}.}
 
+\item{digits.tau}{Minimal number of significant digits for square
+root of between-study variance, see \code{print.default}.}
+
 \item{digits.I2}{Minimal number of significant digits for I-squared
 statistic, see \code{print.default}.}
 
@@ -66,6 +86,15 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 0.12345.}
 
 \item{big.mark}{A character used as thousands separator.}
+
+\item{text.tau2}{Text printed to identify between-study variance
+\eqn{\tau^2}.}
+
+\item{text.tau}{Text printed to identify \eqn{\tau}, the square root
+of the between-study variance \eqn{\tau^2}.}
+
+\item{text.I2}{Text printed to identify heterogeneity statistic
+I\eqn{^2}.}
 }
 \value{
 A list is returned with the same elements as a

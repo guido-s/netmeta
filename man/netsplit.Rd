@@ -5,18 +5,37 @@
 \alias{print.netsplit}
 \title{Split direct and indirect evidence in network meta-analysis}
 \usage{
-netsplit(x, method, upper = TRUE, reference.group = x$reference.group,
-  baseline.reference = x$baseline.reference, sep.trts = x$sep.trts,
-  quote.trts = "", tol.direct = 5e-04, warn = FALSE)
+netsplit(
+  x,
+  method,
+  upper = TRUE,
+  reference.group = x$reference.group,
+  baseline.reference = x$baseline.reference,
+  sep.trts = x$sep.trts,
+  quote.trts = "",
+  tol.direct = 5e-04,
+  warn = FALSE
+)
 
-\method{print}{netsplit}(x, comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random, show = "all", overall = TRUE,
-  ci = FALSE, test = show \%in\% c("all", "with.direct", "both"),
-  digits = gs("digits"), digits.zval = gs("digits.zval"),
-  digits.pval = gs("digits.pval"), digits.prop = max(gs("digits.pval")
-  - 2, 2), text.NA = ".", backtransf = x$backtransf,
-  scientific.pval = gs("scientific.pval"), big.mark = gs("big.mark"),
-  legend = TRUE, ...)
+\method{print}{netsplit}(
+  x,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
+  show = "all",
+  overall = TRUE,
+  ci = FALSE,
+  test = show \%in\% c("all", "with.direct", "both"),
+  digits = gs("digits"),
+  digits.zval = gs("digits.zval"),
+  digits.pval = gs("digits.pval"),
+  digits.prop = max(gs("digits.pval") - 2, 2),
+  text.NA = ".",
+  backtransf = x$backtransf,
+  scientific.pval = gs("scientific.pval"),
+  big.mark = gs("big.mark"),
+  legend = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} or \code{netsplit}.}

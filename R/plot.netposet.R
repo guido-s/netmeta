@@ -107,6 +107,7 @@
 #' @keywords hplot
 #' 
 #' @examples
+#' \dontrun{
 #' data(Linde2015)
 #' 
 #' # Define order of treatments
@@ -149,10 +150,10 @@
 #' #
 #' plot(po2)
 #' 
-#' \dontrun{
 #' # Same scatter plot as only two outcomes considered in netposet()
 #' #
 #' plot(po2, "biplot")
+#'
 #' 
 #' # Consider three outcomes
 #' #

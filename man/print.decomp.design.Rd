@@ -4,11 +4,16 @@
 \alias{print.decomp.design}
 \title{Print method for objects of class decomp.design}
 \usage{
-\method{print}{decomp.design}(x, digits.Q = gs("digits.Q"),
-  showall = FALSE, digits.pval.Q = gs("digits.pval.Q"),
+\method{print}{decomp.design}(
+  x,
+  digits.Q = gs("digits.Q"),
+  showall = FALSE,
+  digits.pval.Q = gs("digits.pval.Q"),
   digits.tau2 = gs("digits.tau2"),
-  scientific.pval = gs("scientific.pval"), big.mark = gs("big.mark"),
-  ...)
+  scientific.pval = gs("scientific.pval"),
+  big.mark = gs("big.mark"),
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{decomp.design}.}

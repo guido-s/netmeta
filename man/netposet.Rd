@@ -7,8 +7,7 @@
 \usage{
 netposet(..., outcomes, treatments, small.values, comb.fixed, comb.random)
 
-\method{print}{netposet}(x, pooled = ifelse(x$comb.random, "random",
-  "fixed"), ...)
+\method{print}{netposet}(x, pooled = ifelse(x$comb.random, "random", "fixed"), ...)
 }
 \arguments{
 \item{\dots}{See details.}
@@ -123,6 +122,7 @@ In function \code{print.netposet}, argument \code{\dots{}} is
 passed on to the printing function.
 }
 \examples{
+\dontrun{
 # Use depression dataset
 #
 data(Linde2015)
@@ -166,7 +166,8 @@ po <- netposet(netrank(net1, small.values = "bad"),
 # Hasse diagram
 #
 hasse(po)
-\dontrun{
+
+
 #
 # Outcome labels
 #

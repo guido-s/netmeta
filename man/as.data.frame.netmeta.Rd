@@ -4,8 +4,7 @@
 \alias{as.data.frame.netmeta}
 \title{Additional functions for objects of class netmeta}
 \usage{
-\method{as.data.frame}{netmeta}(x, row.names = NULL, optional = FALSE,
-  details = FALSE, ...)
+\method{as.data.frame}{netmeta}(x, row.names = NULL, optional = FALSE, details = FALSE, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}

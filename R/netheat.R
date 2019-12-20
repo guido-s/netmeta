@@ -96,9 +96,11 @@
 #' #
 #' netheat(net1) 
 #' 
+#' \dontrun{
 #' # Generate a net heat plot based on a random effects model
 #' #
 #' netheat(net1, random = TRUE)
+#' }
 #'  
 #' @export netheat
 
