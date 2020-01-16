@@ -5,6 +5,8 @@
   * netmetabin():
     - bug fix for studies with 0 events and 0 participants
 
+  * summary.netmeta() exported
+
 
 *** netmeta, version 1.2-0, 2019-12-20 ***
 

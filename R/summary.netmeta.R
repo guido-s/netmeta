@@ -149,7 +149,7 @@
 #' @rdname summary.netmeta
 #' @method summary netmeta
 #' @export
-#' @export print.netmeta
+#' @export summary.netmeta
 
 
 summary.netmeta <- function(object,
