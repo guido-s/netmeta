@@ -844,8 +844,10 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   tdat.design <- get.designs(dat.long)
   ##
-  dat.long <- merge(dat.long, tdat.design, by = "studlab")
-  dat.wide <- merge(dat.wide, tdat.design, by = "studlab")
+  dat.long <- merge(dat.long, tdat.design, by = "studlab",
+                    all.x = TRUE)
+  dat.wide <- merge(dat.wide, tdat.design, by = "studlab",
+                    all.x = TRUE)
   ##
   dat.long <- dat.long[order(dat.long$.order), ]
   dat.wide <- dat.wide[order(dat.wide$.order), ]
@@ -873,7 +875,7 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     if (any(events.study == 0) | any(nonevents.study == 0)) {
       zeroevents <- events.study == 0
-      allevents <- nonevents.study == 0
+      allevents <- nonevents.study == 0 & events.study != 0
       keep <- !(zeroevents | allevents)
       ##
       if (warn) {
@@ -1313,7 +1315,7 @@ netmetabin <- function(event1, n1, event2, n2,
           if (dat.design[[i]]$treat[j] == treat.per.design[[i]][k])
             dat.design[[i]]$id.t[j] <- k
       ##
-      ## Calculate total patients per studies
+      ## Calculate total number of patients per studies
       ##
       for (j in seq_along(dat.design[[i]]$studlab))
         dat.design[[i]]$n.study[j] <-

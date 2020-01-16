@@ -1,3 +1,11 @@
+*** netmeta, version 6.6-6, 20yy-mm-dd ***
+
+ ** Bug fixes **
+
+  * netmetabin():
+    - bug fix for studies with 0 events and 0 participants
+
+
 *** netmeta, version 1.2-0, 2019-12-20 ***
 
  ** Major changes **
