@@ -756,8 +756,13 @@ discomb <- function(TE, seTE,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
   
-  
+
   NAs <- rep(NA, length(res.f$comparisons$TE))
+  
+  
+  n.comps <- table(p0$studlab)
+  studies <- names(n.comps)
+  narms <- (1 + sqrt(8 * as.vector(n.comps)  + 1)) / 2
   
   
   res <- list(studlab = p0$studlab[o],
@@ -784,8 +789,11 @@ discomb <- function(TE, seTE,
               n.trts = NA,
               events.trts = NA,
               ##
-              studies = NA,
-              narms = NA,
+              n.arms = NA,
+              multiarm = NA,
+              ##
+              studies = studies,
+              narms = narms,
               ##
               designs = NA,
               ##
@@ -914,6 +922,27 @@ discomb <- function(TE, seTE,
               )
   ##
   class(res) <- c("discomb", "netcomb")
+  
+  
+  ##
+  ## Add information on multi-arm studies
+  ##
+  if (any(res$narms > 2)) {
+    tdata1 <- data.frame(studlab = res$studlab,
+                         .order = seq(along = res$studlab))
+    tdata2 <- data.frame(studlab = res$studies, narms = res$narms)
+    ##
+    tdata12 <- merge(tdata1, tdata2,
+                     by = "studlab", all.x = TRUE, all.y = FALSE,
+                     sort = FALSE)
+    tdata12 <- tdata12[order(tdata12$.order), ]
+    res$n.arms <- tdata12$narms
+    res$multiarm <- tdata12$narms > 2
+  }
+  else {
+    res$n.arms <- rep(2, length(res$studlab))
+    res$multiarm <- rep(FALSE, length(res$studlab))
+  }
   
   
   res
