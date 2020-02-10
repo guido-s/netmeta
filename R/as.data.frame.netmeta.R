@@ -50,9 +50,14 @@ as.data.frame.netmeta <- function(x, row.names = NULL,
   ##
   x$call <- NULL
   
-  sel <- as.vector(lapply(x, length) == length(x$studlab))
+  sel1 <- as.vector(lapply(x, length) == length(x$studlab))
+  sel2 <- as.vector(unlist(lapply(x, is.vector)))
+  sel <- sel1 & sel2
   
   res <- as.data.frame(x[names(x)[sel]], ...)
+  ##
+  res$studies <- NULL
+  res$narms <- NULL
   
   if (!details)
     res <- res[, !(names(res) %in% c("treat1.pos", "treat2.pos",

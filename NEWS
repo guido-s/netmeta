@@ -5,7 +5,35 @@
   * netmetabin():
     - bug fix for studies with 0 events and 0 participants
 
+  * netbind():
+    - function can be used with network meta-analysis objects created
+      with netmetabin()
+      
+  * discomb():
+    - return standard errors of individual studies in correct order
+      (list element 'seTE')
+      
+  * as.data.frame.netmeta():
+    - correct printout if number of studies is equal to the number of
+      treatments to the power of 2
+
   * summary.netmeta() exported
+
+ ** User-visible changes **
+
+  * netmeta():
+    - do not print a warning / note that treatments within comparisons
+      have been re-sorted in increasing order  
+    - export the design matrix (new list element 'X.matrix')
+
+  * netcomb(), discomb():
+    - export the design matrix (new list element 'X.matrix')
+    
+ ** Internal changes **
+
+  * prepare():
+    - call metagen() with argument 'method.tau.ci = ""' to suppress
+      calculation of confidence interval for tau2
 
 
 *** netmeta, version 1.2-0, 2019-12-20 ***

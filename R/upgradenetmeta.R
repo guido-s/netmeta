@@ -64,6 +64,27 @@ upgradenetmeta <- function(x) {
   
   if (upgrade.097)
     x$backtransf <- TRUE
+
+
+  if (is.null(x$multiarm)) {
+    if (any(x$narms > 2)) {
+      tdata1 <- data.frame(studlab = x$studlab,
+                           .order = seq(along = x$studlab))
+      tdata2 <- data.frame(studlab = as.character(x$studies),
+                           narms = x$narms)
+      ##
+      tdata12 <- merge(tdata1, tdata2,
+                       by = "studlab", all.x = TRUE, all.y = FALSE,
+                       sort = FALSE)
+      tdata12 <- tdata12[order(tdata12$.order), ]
+      x$n.arms <- tdata12$narms
+      x$multiarm <- tdata12$narms > 2
+    }
+    else {
+      x$n.arms <- rep(2, length(x$studlab))
+      x$multiarm <- rep(FALSE, length(x$studlab))
+    }
+  }
   
   
   x

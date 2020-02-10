@@ -163,10 +163,10 @@ as check for consistency of network meta-analysis (Dias et al.,
 
 This function provides two methods to derive indirect estimates:
 \itemize{
-\item Back-calculation method deriving indirect estimates from
-  direct pairwise comparisons and network estimates. The direct
-  evidence proportion as described in König et al. (2013) is used
-  in the calculation of the indirect evidence;
+\item Separate Indirect from Direct Evidence (SIDE) using a
+  back-calculation method. The \emph{direct evidence proportion} as
+  described in König et al. (2013) is used in the calculation of
+  the indirect evidence;
 \item Separate Indirect from Direct Design Evidence (SIDDE) as
   described in Efthimiou et al. (2019).
 }

@@ -235,6 +235,7 @@
 #'   fit between standard and additive model.}
 #' \item{pval.Q.diff}{P-value for difference in goodness of fit
 #'   between standard and additive model.}
+#' \item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 #' \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 #' \item{C.matrix}{As defined above.}
 #' \item{sm}{Summary measure.}
@@ -679,10 +680,10 @@ discomb <- function(TE, seTE,
   ##
   ## Design matrix based on treatment components
   ##
-  X <- B.matrix %*% C.matrix
+  X.matrix <- B.matrix %*% C.matrix
   ##
-  colnames(X) <- colnames(C.matrix)
-  rownames(X) <- studlab
+  colnames(X.matrix) <- colnames(C.matrix)
+  rownames(X.matrix) <- studlab
   
   
   tdata <- data.frame(studies = p0$studlab[o], narms = p0$narms[o])
@@ -702,7 +703,7 @@ discomb <- function(TE, seTE,
   ##
   ## Fixed effects models
   ##
-  df.Q.additive <- n.a - k - qr(X)$rank
+  df.Q.additive <- n.a - k - qr(X.matrix)$rank
   ##
   if (netc$n.subnets == 1) {
     net <- netmeta(TE, seTE, treat1, treat2, studlab,
@@ -714,7 +715,7 @@ discomb <- function(TE, seTE,
     df.Q <- net$df.Q
     pval.Q <- net$pval.Q
     ##
-    df.Q.diff <- n - 1 - qr(X)$rank
+    df.Q.diff <- n - 1 - qr(X.matrix)$rank
   }
   else {
     Q <- df.Q <- pval.Q <- NA
@@ -724,7 +725,7 @@ discomb <- function(TE, seTE,
   
   res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], level.comb,
-                        X, C.matrix, B.matrix,
+                        X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
   
@@ -751,7 +752,7 @@ discomb <- function(TE, seTE,
   ##
   res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], level.comb,
-                        X, C.matrix, B.matrix,
+                        X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
   
@@ -764,7 +765,7 @@ discomb <- function(TE, seTE,
               treat2 = p0$treat2[o],
               ##
               TE = p0$TE[o],
-              seTE = seTE[o],
+              seTE = p0$seTE[o],
               seTE.adj = sqrt(1 / p0$weights[o]),
               ##
               event1 = NA,
@@ -877,6 +878,7 @@ discomb <- function(TE, seTE,
               df.Q.diff = df.Q.diff,
               pval.Q.diff = res.f$pval.Q.diff, 
               ##
+              X.matrix = X.matrix,
               B.matrix = B.matrix,
               C.matrix = C.matrix,
               ##

@@ -75,10 +75,10 @@
 #' 
 #' This function provides two methods to derive indirect estimates:
 #' \itemize{
-#' \item Back-calculation method deriving indirect estimates from
-#'   direct pairwise comparisons and network estimates. The direct
-#'   evidence proportion as described in König et al. (2013) is used
-#'   in the calculation of the indirect evidence;
+#' \item Separate Indirect from Direct Evidence (SIDE) using a
+#'   back-calculation method. The \emph{direct evidence proportion} as
+#'   described in König et al. (2013) is used in the calculation of
+#'   the indirect evidence;
 #' \item Separate Indirect from Direct Design Evidence (SIDDE) as
 #'   described in Efthimiou et al. (2019).
 #' }
@@ -1095,7 +1095,11 @@ print.netsplit <- function(x,
   }
   
   
-  cat(x$method, "method to split direct and indirect evidence\n\n")
+  if (x$method == "SIDDE")
+    cat("Separate indirect from direct design evidence (SIDDE)\n\n")
+  else
+    cat(paste("Separate indirect from direct evidence (SIDE)",
+              "using back-calculation method\n\n"))
   
   
   if (comb.fixed) {

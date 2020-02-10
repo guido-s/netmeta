@@ -645,11 +645,6 @@ netmetabin <- function(event1, n1, event2, n2,
   wo <- treat1 > treat2
   ##
   if (any(wo)) {
-    if (warn)
-      warning("Note, treatments within a comparison have been ",
-              "re-sorted in increasing order.",
-              call. = FALSE)
-    ##
     tevent1 <- event1
     event1[wo] <- event2[wo]
     event2[wo] <- tevent1[wo]
@@ -791,7 +786,7 @@ netmetabin <- function(event1, n1, event2, n2,
                          .order,
                          stringsAsFactors = FALSE)
   dat.wide <- dat.wide[order(dat.wide$studlab,
-                             dat.wide$treat1, dat.wide$treat2), ]
+                              dat.wide$treat1, dat.wide$treat2), ]
   ##
   get.designs <- function(x) {
     ##
@@ -926,7 +921,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   dat.long <- dat.long[order(dat.long$studlab, dat.long$treat), ]
   dat.wide <- dat.wide[order(dat.wide$studlab,
-                             dat.wide$treat1, dat.wide$treat2), ]
+                              dat.wide$treat1, dat.wide$treat2), ]
   ##
   dat.long$incr <- 0
   dat.wide$incr <- 0
@@ -1765,6 +1760,10 @@ netmetabin <- function(event1, n1, event2, n2,
   }
   
   
+  NAmatrix <- TE.fixed
+  NAmatrix[!is.na(NAmatrix)] <- NA
+  
+  
   res <- list(studlab = studlab,
               treat1 = treat1,
               treat2 = treat2,
@@ -1800,12 +1799,16 @@ netmetabin <- function(event1, n1, event2, n2,
               zval.fixed = ci.f$z,
               pval.fixed = ci.f$p,
               ##
-              TE.random = NA,
-              seTE.random = NA,
-              lower.random = NA,
-              upper.random = NA,
-              zval.random = NA,
-              pval.random = NA,
+              TE.random = NAmatrix,
+              seTE.random = NAmatrix,
+              lower.random = NAmatrix,
+              upper.random = NAmatrix,
+              zval.random = NAmatrix,
+              pval.random = NAmatrix,
+              ##
+              seTE.predict = NAmatrix,
+              lower.predict = NAmatrix,
+              upper.predict = NAmatrix,
               ##
               prop.direct.fixed = NA,
               prop.direct.random = NA,
