@@ -114,20 +114,20 @@
 #' \item{comb.fixed, comb.random}{As defined above.}
 #' \item{comparison}{A vector with treatment comparisons.}
 #' \item{prop.fixed, prop.random}{A vector with direct evidence
-#'   proportions (fixed effect / random effects model).}
-#' \item{fixed, random}{Results of network meta-analysis (fixed effect
-#'   / random effects model), i.e., data frame with columns
-#'   comparison, TE, seTE, lower, upper, z, and p.}
+#'   proportions (fixed / random effects model).}
+#' \item{fixed, random}{Results of network meta-analysis (fixed /
+#'   random effects model), i.e., data frame with columns comparison,
+#'   TE, seTE, lower, upper, z, and p.}
 #' \item{direct.fixed, direct.random}{Network meta-analysis results
-#'   based on direct evidence (fixed effect / random effects model),
-#'   i.e., data frame with columns comparison, TE, seTE, lower, upper,
-#'   z, and p.}
+#'   based on direct evidence (fixed / random effects model), i.e.,
+#'   data frame with columns comparison, TE, seTE, lower, upper, z,
+#'   and p.}
 #' \item{indirect.fixed, indirect.random}{Network meta-analysis
-#'   results based on indirect evidence (fixed effect / random effects
+#'   results based on indirect evidence (fixed / random effects
 #'   model), i.e., data frame with columns comparison, TE, seTE,
 #'   lower, upper, z, and p.}
 #' \item{compare.fixed, compare.random}{Comparison of direct and
-#'   indirect evidence in network meta-analysis (fixed effect / random
+#'   indirect evidence in network meta-analysis (fixed / random
 #'   effects model), i.e., data frame with columns comparison, TE,
 #'   seTE, lower, upper, z, and p.}
 #' \item{sm}{A character string indicating underlying summary measure}
@@ -503,7 +503,7 @@ netsplit <- function(x, method,
   
   
   ##
-  ## Fixed effect model
+  ## Fixed effects model
   ##
   fixed.low <- data.frame(comparison,
                           TE = lowertri(x$TE.fixed),
@@ -1103,7 +1103,7 @@ print.netsplit <- function(x,
   
   
   if (comb.fixed) {
-    cat("Fixed effect model: \n\n")
+    cat("Fixed effects model: \n\n")
     fixed[is.na(fixed)] <- text.NA
     prmatrix(fixed, quote = FALSE, right = TRUE,
              rowlab = rep("", dim(fixed)[1]))

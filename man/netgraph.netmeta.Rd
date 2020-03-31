@@ -267,11 +267,11 @@ Argument \code{thickness} providing the line width of the nodes
   (\code{thickness = "equal"})
 \item Proportional to number of studies comparing two treatments
   (\code{thickness = "number.of.studies"})
-\item Proportional to inverse standard error of fixed effect model
+\item Proportional to inverse standard error of fixed effects model
   comparing two treatments (\code{thickness = "se.fixed"})
 \item Proportional to inverse standard error of random effects
   model comparing two treatments (\code{thickness = "se.random"})
-\item Weight from fixed effect model comparing two treatments
+\item Weight from fixed effects model comparing two treatments
   (\code{thickness = "w.fixed"})
 \item Weight from random effects model comparing two treatments
   (\code{thickness = "w.random"})

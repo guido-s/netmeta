@@ -24,8 +24,8 @@
 \item{x}{An object of class \code{netbind}.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effects (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+fixed (\code{"fixed"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{equal.size}{A logical indicating whether all squares should
 be of equal size. Otherwise, the square size is proportional to
@@ -57,8 +57,7 @@ than log odds ratios, for example.}
 \item{lab.NA}{A character string to label missing values.}
 
 \item{smlab}{A label printed at top of figure. By default, text
-indicating either fixed effect or random effects model is
-printed.}
+indicating either fixed or random effects model is printed.}
 
 \item{\dots}{Additional arguments for \code{\link{forest.meta}}
 function.}

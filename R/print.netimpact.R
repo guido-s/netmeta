@@ -78,7 +78,7 @@ print.netimpact <- function(x,
   ## Print results for fixed effects model
   ##
   if (comb.fixed) {
-    cat("Fixed effect model: \n\n")
+    cat("Fixed effects model: \n\n")
     impact.fixed <- meta:::formatN(x$impact.fixed, digits = digits)
     colnames(impact.fixed) <- paste(treat1, treat2, sep = sep.trts)
     ##

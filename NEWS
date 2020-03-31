@@ -4,14 +4,14 @@
 
   * netmetabin():
     - bug fix for studies with 0 events and 0 participants
-
-  * netbind():
-    - function can be used with network meta-analysis objects created
-      with netmetabin()
       
   * discomb():
     - return standard errors of individual studies in correct order
       (list element 'seTE')
+
+  * netbind():
+    - function can be used with network meta-analysis objects created
+      with netmetabin()
       
   * as.data.frame.netmeta():
     - correct printout if number of studies is equal to the number of
@@ -21,14 +21,23 @@
 
  ** User-visible changes **
 
-  * netmeta():
+  * netmeta(), discomb():
     - do not print a warning / note that treatments within comparisons
       have been re-sorted in increasing order  
+    - check whether all studies provide missing estimates and standard
+      errors (and stop execution with an informative error message)
+
+  * netmeta(), netcomb(), discomb():
     - export the design matrix (new list element 'X.matrix')
 
-  * netcomb(), discomb():
-    - export the design matrix (new list element 'X.matrix')
-    
+  * discomb():
+    - export the number of subnetworks
+
+  * forest.netsplit():
+    - print an informative warning (instead of an obscure error
+      message) if no comparison in the network provides the requested
+      combination of direct and indirect evidence
+
  ** Internal changes **
 
   * prepare():

@@ -445,6 +445,11 @@ discomb <- function(TE, seTE,
   chknumeric(TE)
   chknumeric(seTE)
   ##
+  if (!any(!is.na(TE) & !is.na(seTE)))
+    stop("Missing data for estimates (argument 'TE') and ",
+         "standard errors (argument 'seTE') in all studies.\n  ",
+         "No network meta-analysis possible.")
+  ##
   k.Comp <- length(TE)
   ##
   if (is.factor(treat1))
@@ -520,6 +525,10 @@ discomb <- function(TE, seTE,
   ## (4) Additional checks
   ##
   ##
+  if (!(any(grep(sep.comps, treat1, fixed = TRUE) |
+            grep(sep.comps, treat2, fixed = TRUE))))
+    warning("No treatment contains the component separator '", sep.comps, "'.")
+  ##
   if (any(treat1 == treat2))
     stop("Treatments must be different (arguments 'treat1' and 'treat2').")
   ##
@@ -527,7 +536,8 @@ discomb <- function(TE, seTE,
     studlab <- as.character(studlab)
   else {
     if (warn)
-      warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
+      warning("No information given for argument 'studlab'. ",
+              "Assuming that comparisons are from independent studies.")
     studlab <- seq(along = TE)
   }
   ##
@@ -615,8 +625,6 @@ discomb <- function(TE, seTE,
   wo <- treat1 > treat2
   ##
   if (any(wo)) {
-    if (warn)
-      warning("Note, treatments within a comparison have been re-sorted in increasing order.", call. = FALSE)
     TE[wo] <- -TE[wo]
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]
@@ -783,6 +791,7 @@ discomb <- function(TE, seTE,
               n = n,
               d = NA,
               c = c,
+              s = netc$n.subnets,
               ##
               trts = labels,
               k.trts = NA,

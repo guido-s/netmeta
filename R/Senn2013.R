@@ -57,7 +57,7 @@
 #' @examples
 #' data(Senn2013)
 #' 
-#' # Fixed effect model
+#' # Fixed effects model
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2,
 #'                 studlab, data = Senn2013,

@@ -465,6 +465,12 @@ forest.netsplit <- function(x,
       if (prediction) dat.predict
     )
     ##
+    if (nrow(dat) == 0) {
+      warning("No comparison(s) selected. Consider using argument ",
+              "'show = \"all\"'.")
+      return(invisible(NULL))
+    }
+    ##
     if (n.subgroup > 1)
       m <- metagen(dat$TE, dat$seTE, studlab = dat$evidence, data = dat,
                    sm = x$sm, byvar = dat$comps, print.byvar = FALSE)
@@ -508,6 +514,12 @@ forest.netsplit <- function(x,
       if (overall) dat.overall,
       if (prediction) dat.predict
     )
+    ##
+    if (nrow(dat) == 0) {
+      warning("No comparison(s) selected. Consider using argument ",
+              "'show = \"all\"'.")
+      return(invisible(NULL))
+    }
     ##
     if (n.subgroup > 1)
       m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat,

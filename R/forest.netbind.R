@@ -6,8 +6,8 @@
 #' 
 #' @param x An object of class \code{netbind}.
 #' @param pooled A character string indicating whether results for the
-#'   fixed effects (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#'   fixed (\code{"fixed"}) or random effects model (\code{"random"})
+#'   should be plotted. Can be abbreviated.
 #' @param equal.size A logical indicating whether all squares should
 #'   be of equal size. Otherwise, the square size is proportional to
 #'   the precision of estimates.
@@ -29,8 +29,7 @@
 #'   than log odds ratios, for example.
 #' @param lab.NA A character string to label missing values.
 #' @param smlab A label printed at top of figure. By default, text
-#'   indicating either fixed effect or random effects model is
-#'   printed.
+#'   indicating either fixed or random effects model is printed.
 #' @param \dots Additional arguments for \code{\link{forest.meta}}
 #'   function.
 #' 
@@ -135,7 +134,7 @@ forest.netbind <- function(x,
   
   ##
   ##
-  ## (2) Extract results for fixed effect and random effects model
+  ## (2) Extract results for fixed and random effects model
   ##
   ##
   sel <- x$fixed$treat != x$reference.group

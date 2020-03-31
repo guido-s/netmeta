@@ -424,7 +424,7 @@ netleague <- function(x, y,
   
   ##
   ##
-  ## (3) Print league table for fixed effect model
+  ## (3) Print league table for fixed effects model
   ##
   ##
   TE.fixed.x    <- round(   TE.fixed.x[seq.f, seq.f], digits)
@@ -453,7 +453,8 @@ netleague <- function(x, y,
   if (ci) {
     nl.NA <- is.na(TE.fixed.y)
     nl.f.y <- paste(formatN(TE.fixed.y,
-                            digits = digits, text.NA = text.NA, big.mark = big.mark),
+                            digits = digits, text.NA = text.NA,
+                            big.mark = big.mark),
                     formatCI(lower.fixed.y, upper.fixed.y, lab.NA = text.NA,
                              big.mark = big.mark))
     nl.f.y[nl.NA] <- text.NA
@@ -559,11 +560,11 @@ print.netleague <- function(x,
   
   ##
   ##
-  ## (2) Print league table for fixed effect model
+  ## (2) Print league table for fixed effects model
   ##
   ##
   if (comb.fixed) {
-    cat("League table (fixed effect model):\n")
+    cat("League table (fixed effects model):\n")
     ##
     prmatrix(x$fixed, quote = FALSE, right = TRUE,
              rowlab = rep("", nrow(x$fixed)),

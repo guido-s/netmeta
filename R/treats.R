@@ -32,7 +32,7 @@
 #' net1 <- netmeta(TE, seTE, treat1, treat2,
 #'                 studlab, data = Senn2013)
 #' 
-#' # Use matrix with fixed effect treatment estimates to create unique
+#' # Use matrix with fixed effects estimates to create unique
 #' # treatment names (with four characters)
 #' #
 #' treats(net1$TE.fixed, nchar.trts = 4)

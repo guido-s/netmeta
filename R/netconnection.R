@@ -332,7 +332,7 @@ print.netconnection <- function(x,
   cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
   cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
   ##
-  cat("Number of networks: ", x$n.subnets, "\n\n", sep = "")
+  cat("Number of subnetworks: ", x$n.subnets, "\n\n", sep = "")
   
   cat("Distance matrix:\n")
   

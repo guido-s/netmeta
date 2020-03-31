@@ -197,7 +197,7 @@ print.netmeta <- function(x,
       res <- as.matrix(res)
       dimnames(res)[[1]] <- x$studlab
       
-      prmatrix(res[order(sortvar), ],
+      prmatrix(res[order(sortvar), , drop = FALSE],
                quote = FALSE, right = TRUE)
       cat("\n")
       
@@ -260,7 +260,7 @@ print.netmeta <- function(x,
     
     
     if (comb.fixed) {
-      cat("Results (fixed effect model):\n\n")
+      cat("Results (fixed effects model):\n\n")
       
       prmatrix(res.f[order(sortvar), , drop = FALSE],
                quote = FALSE, right = TRUE)

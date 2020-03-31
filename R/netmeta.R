@@ -608,6 +608,11 @@ netmeta <- function(TE, seTE,
   chknumeric(TE)
   chknumeric(seTE)
   ##
+  if (!any(!is.na(TE) & !is.na(seTE)))
+    stop("Missing data for estimates (argument 'TE') and ",
+         "standard errors (argument 'seTE') in all studies.\n  ",
+         "No network meta-analysis possible.")
+  ##
   k.Comp <- length(TE)
   ##
   if (is.factor(treat1))
@@ -678,13 +683,13 @@ netmeta <- function(TE, seTE,
       data$.treat1[wo] <- data$.treat2[wo]
       data$.treat2[wo] <- ttreat1[wo]
       ##
-      if (!is.null(data$.n1) & !is.null(data$.n2)) {
+      if (meta:::isCol(data, ".n1") & meta:::isCol(data, ".n2")) {
         tn1 <- data$.n1
         data$.n1[wo] <- data$.n2[wo]
         data$.n2[wo] <- tn1[wo]
       }
       ##
-      if (!is.null(data$.event1) & !is.null(data$.event2)) {
+      if (meta:::isCol(data, ".event1") & meta:::isCol(data, ".event2")) {
         tevent1 <- data$.event1
         data$.event1[wo] <- data$.event2[wo]
         data$.event2[wo] <- tevent1[wo]
