@@ -4,7 +4,8 @@
 \name{Linde2015}
 \alias{Linde2015}
 \title{Network meta-analysis of treatments for depression}
-\format{A data frame with the following columns:
+\format{
+A data frame with the following columns:
 \tabular{rl}{
 \bold{\emph{id}}\tab Study ID \cr
 \bold{\emph{author}}\tab First author \cr
@@ -45,7 +46,8 @@
   to adverse events (treatment 3) \cr
 \bold{\emph{ae3}}\tab Number of patients with adverse events
   (treatment 3) 
-}}
+}
+}
 \source{
 Linde K, Kriston L, Rücker G, et al. (2015):
 Efficacy and acceptability of pharmacological treatments for

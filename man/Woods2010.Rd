@@ -4,13 +4,15 @@
 \name{Woods2010}
 \alias{Woods2010}
 \title{Count statistics of survival data}
-\format{A data frame with the following columns:
+\format{
+A data frame with the following columns:
 \tabular{rl}{
 \bold{\emph{author}}\tab first author / study name \cr
 \bold{\emph{treatment}}\tab treatment \cr
 \bold{\emph{r}}\tab number of deaths in treatment arm \cr
 \bold{\emph{N}}\tab number of patients in treatment arm
-}}
+}
+}
 \source{
 Woods BS, Hawkins N, Scott DA (2010):
 Network meta-analysis on the log-hazard scale, combining count and

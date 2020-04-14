@@ -611,7 +611,8 @@ netmeta <- function(TE, seTE,
   if (!any(!is.na(TE) & !is.na(seTE)))
     stop("Missing data for estimates (argument 'TE') and ",
          "standard errors (argument 'seTE') in all studies.\n  ",
-         "No network meta-analysis possible.")
+         "No network meta-analysis possible.",
+         call. = FALSE)
   ##
   k.Comp <- length(TE)
   ##
@@ -957,7 +958,7 @@ netmeta <- function(TE, seTE,
                       order = p0$order,
                       stringsAsFactors = FALSE)
   ##
-  tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), ]
+  tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), , drop = FALSE]
   studies <- tdata$studies[order(tdata$order)]
   narms <- tdata$narms[order(tdata$order)]
   

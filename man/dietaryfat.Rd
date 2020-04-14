@@ -4,7 +4,8 @@
 \name{dietaryfat}
 \alias{dietaryfat}
 \title{Network meta-analysis of dietary fat}
-\format{A data frame with the following columns:
+\format{
+A data frame with the following columns:
 \tabular{rl}{
 \bold{\emph{treat1}}\tab treatment 1 \cr
 \bold{\emph{treat2}}\tab treatment 2 \cr
@@ -16,7 +17,8 @@
 \bold{\emph{d2}}\tab events (deaths) arm 2 \cr
 \bold{\emph{d3}}\tab events (deaths) arm 3 \cr
 \bold{\emph{ID}}\tab study ID
-}}
+}
+}
 \source{
 Dias S, Sutton AJ, Ades AE and Welton NJ (2013):
 Evidence synthesis for decision making 2: A generalized linear

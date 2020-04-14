@@ -448,7 +448,8 @@ discomb <- function(TE, seTE,
   if (!any(!is.na(TE) & !is.na(seTE)))
     stop("Missing data for estimates (argument 'TE') and ",
          "standard errors (argument 'seTE') in all studies.\n  ",
-         "No network meta-analysis possible.")
+         "No network meta-analysis possible.",
+         call. = FALSE)
   ##
   k.Comp <- length(TE)
   ##

@@ -5,14 +5,18 @@
 \title{Determine the importance of individual studies in network
 meta-analysis}
 \usage{
-netimpact(x, seTE.ignore = 10000, verbose = FALSE)
+netimpact(x, seTE.ignore = 10000, event.ignore = 0.01, verbose = FALSE)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}
 
 \item{seTE.ignore}{Assumed (large) standard error in order to
 mimicking the removal of individual studies from the network
-meta-analysis.}
+meta-analysis (ignored for \code{\link{netmetabin}} objects).}
+
+\item{event.ignore}{Assumed event number mimicking the removal of
+individual studies from the network meta-analysis (considered for
+\code{\link{netmetabin}} objects).}
 
 \item{verbose}{A logical indicating whether information on the
 estimation progress should be printed.}
@@ -28,7 +32,7 @@ containing the following components:
   studies (columns) to comparisons (rows) under the random effects
   model.}
 \item{ignored.comparisons}{List with comparisons of ignored study.}
-\item{seTE.ignore, x}{As defined above.}
+\item{seTE.ignore, event.ignore, x}{As defined above.}
 \item{nets}{List of all network meta-analyses (removing a single
   study).}
 \item{version}{Version of R package netmeta used to create object.}
@@ -58,8 +62,8 @@ netgraph(ni1)
 
 }
 \seealso{
-\code{\link{netmeta}}, \code{\link{netgraph.netimpact}},
-  \code{\link{print.netimpact}}
+\code{\link{netmeta}}, \code{\link{netmetabin}},
+  \code{\link{netgraph.netimpact}}, \code{\link{print.netimpact}}
 }
 \author{
 Guido Schwarzer \email{sc@imbi.uni-freiburg.de},

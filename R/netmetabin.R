@@ -786,7 +786,7 @@ netmetabin <- function(event1, n1, event2, n2,
                          .order,
                          stringsAsFactors = FALSE)
   dat.wide <- dat.wide[order(dat.wide$studlab,
-                              dat.wide$treat1, dat.wide$treat2), ]
+                             dat.wide$treat1, dat.wide$treat2), ]
   ##
   get.designs <- function(x) {
     ##
@@ -1908,11 +1908,19 @@ netmetabin <- function(event1, n1, event2, n2,
                 dat.wide$treat1,
                 dat.wide$treat2,
                 dat.wide$studlab)
+  ##
   tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
                       stringsAsFactors = FALSE)
-  tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
+  ##
+  tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), , drop = FALSE]
   res$studies <- tdata$studies
   res$narms <- tdata$narms
+  ##
+  if (all(!is.na(as.numeric(res$studies)))) {
+    o <- order(as.numeric(res$studies))
+    res$studies <- res$studies[o]
+    res$narms <- res$narms[o]
+  }
   ##
   res$data <- merge(res$data,
                     data.frame(.studlab = res$studies,
