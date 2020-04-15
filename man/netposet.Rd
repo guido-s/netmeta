@@ -27,20 +27,20 @@ the random effects model.}
 \item{x}{An object of class \code{netposet}.}
 
 \item{pooled}{A character string indicating whether Hasse diagram
-should be drawn for fixed effect (\code{"fixed"}) or random
-effects model (\code{"random"}). Can be abbreviated.}
+should be drawn for fixed (\code{"fixed"}) or random effects
+model (\code{"random"}). Can be abbreviated.}
 }
 \value{
 An object of class \code{netposet} with corresponding \code{print},
 \code{plot}, and \code{hasse} functions. The object is a list
 containing the following components:
 \item{P.fixed}{Ranking matrix with rows corresponding to treatments
-  and columns corresponding to outcomes (fixed effect model).}
+  and columns corresponding to outcomes (fixed effects model).}
 \item{M0.fixed}{Hasse matrix skipping unnecessary paths (fixed
-  effect model).}
-\item{M.fixed}{"Full" Hasse matrix (fixed effect model).}
+  effects model).}
+\item{M.fixed}{"Full" Hasse matrix (fixed effects model).}
 \item{O.fixed}{Matrix with information about partial ordering
-  (fixed effect model).}
+  (fixed effects model).}
 \item{P.random}{Ranking matrix with rows corresponding to
   treatments and columns corresponding to outcomes (random effects
   model).}
@@ -110,13 +110,12 @@ outcome whether small values are good or bad; see
 matrix and \code{netrank} objects.
 
 Arguments \code{comb.fixed} and \code{comb.random} can be used to
-define whether results should be printed and plotted for fixed
-effect and / or random effects model. If netmeta and netrank
-objects are provided in argument \code{\dots{}}, values for
-\code{comb.fixed} and \code{comb.random} within these objects are
-considered; if these values are not unique, argument
-\code{comb.fixed} and / or \code{comb.random} are set to
-\code{TRUE}.
+define whether results should be printed and plotted for fixed and
+/ or random effects model. If netmeta and netrank objects are
+provided in argument \code{\dots{}}, values for \code{comb.fixed}
+and \code{comb.random} within these objects are considered; if
+these values are not unique, argument \code{comb.fixed} and / or
+\code{comb.random} are set to \code{TRUE}.
 
 In function \code{print.netposet}, argument \code{\dots{}} is
 passed on to the printing function.

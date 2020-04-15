@@ -59,12 +59,12 @@
 #' \item{comparison}{Results for pairwise comparisons (data frame with
 #'   columns studlab, treat1, treat2, TE, seTE, lower, upper, z, p).}
 #' \item{comparison.nma.fixed}{Results for pairwise comparisons based
-#'   on fixed effect model (data frame with columns studlab, treat1,
+#'   on fixed effects model (data frame with columns studlab, treat1,
 #'   treat2, TE, seTE, lower, upper, z, p, leverage).}
 #' \item{comparison.nma.random}{Results for pairwise comparisons based
 #'   on random effects model (data frame with columns studlab, treat1,
 #'   treat2, TE, seTE, lower, upper, z, p).}
-#' \item{fixed}{Results for fixed effect model (a list with elements
+#' \item{fixed}{Results for fixed effects model (a list with elements
 #'   TE, seTE, lower, upper, z, p).}
 #' \item{random}{Results for random effects model (a list with
 #'   elements TE, seTE, lower, upper, z, p).}
@@ -149,7 +149,7 @@
 #' @rdname summary.netmeta
 #' @method summary netmeta
 #' @export
-#' @export print.netmeta
+#' @export summary.netmeta
 
 
 summary.netmeta <- function(object,
@@ -205,30 +205,28 @@ summary.netmeta <- function(object,
                         ci(object$TE, object$seTE, object$level)[keepvars],
                         stringsAsFactors = FALSE)
   ##
-  if (!is.bin) {
-    ci.nma.fixed <- data.frame(studlab = object$studlab,
-                               treat1 = object$treat1,
-                               treat2 = object$treat2,
-                               TE = object$TE.nma.fixed,
-                               seTE = object$seTE.nma.fixed,
-                               lower = object$lower.nma.fixed,
-                               upper = object$upper.nma.fixed,
-                               z = object$zval.nma.fixed,
-                               p = object$pval.nma.fixed,
-                               leverage = object$leverage.fixed,
-                               stringsAsFactors = FALSE)
-    ##
-    ci.nma.random <- data.frame(studlab = object$studlab,
-                                treat1 = object$treat1,
-                                treat2 = object$treat2,
-                                TE = object$TE.nma.random,
-                                seTE = object$seTE.nma.random,
-                                lower = object$lower.nma.random,
-                                upper = object$upper.nma.random,
-                                z = object$zval.nma.random,
-                                p = object$pval.nma.random,
-                                stringsAsFactors = FALSE)
-  }
+  ci.nma.fixed <- data.frame(studlab = object$studlab,
+                             treat1 = object$treat1,
+                             treat2 = object$treat2,
+                             TE = if (!is.bin) object$TE.nma.fixed else NA,
+                             seTE = if (!is.bin) object$seTE.nma.fixed else NA,
+                             lower = if (!is.bin) object$lower.nma.fixed else NA,
+                             upper = if (!is.bin) object$upper.nma.fixed else NA,
+                             z = if (!is.bin) object$zval.nma.fixed else NA,
+                             p = if (!is.bin) object$pval.nma.fixed else NA,
+                             leverage = if (!is.bin) object$leverage.fixed else NA,
+                             stringsAsFactors = FALSE)
+  ##
+  ci.nma.random <- data.frame(studlab = object$studlab,
+                              treat1 = object$treat1,
+                              treat2 = object$treat2,
+                              TE = if (!is.bin) object$TE.nma.random else NA,
+                              seTE = if (!is.bin) object$seTE.nma.random else NA,
+                              lower = if (!is.bin) object$lower.nma.random else NA,
+                              upper = if (!is.bin) object$upper.nma.random else NA,
+                              z = if (!is.bin) object$zval.nma.random else NA,
+                              p = if (!is.bin) object$pval.nma.random else NA,
+                              stringsAsFactors = FALSE)
   ##
   ci.f <- list(TE = object$TE.fixed,
                seTE = object$seTE.fixed,
@@ -237,23 +235,16 @@ summary.netmeta <- function(object,
                z = object$zval.fixed,
                p = object$pval.fixed)
   ##
-  if (!is.bin) {
-    ci.r <- list(TE = object$TE.random,
-                 seTE = object$seTE.random,
-                 lower = object$lower.random,
-                 upper = object$upper.random,
-                 z = object$zval.random,
-                 p = object$pval.random)
-    ##
-    ci.p <- list(seTE = object$seTE.predict,
-                 lower = object$lower.predict,
-                 upper = object$upper.predict)
-  }
-  else {
-    ci.r <- list(TE = NA, seTE = NA, lower = NA, upper = NA,
-                 z = NA, p = NA)
-    ci.p <- list(seTE = NA, lower = NA, upper = NA)
-  }
+  ci.r <- list(TE = object$TE.random,
+               seTE = object$seTE.random,
+               lower = object$lower.random,
+               upper = object$upper.random,
+               z = object$zval.random,
+               p = object$pval.random)
+  ##
+  ci.p <- list(seTE = object$seTE.predict,
+               lower = object$lower.predict,
+               upper = object$upper.predict)
   
   
   ##
@@ -262,8 +253,8 @@ summary.netmeta <- function(object,
   ##
   ##
   res <- list(comparison = ci.comp,
-              comparison.nma.fixed = if (is.bin) NA else ci.nma.fixed,
-              comparison.nma.random = if (is.bin) NA else ci.nma.random,
+              comparison.nma.fixed = ci.nma.fixed,
+              comparison.nma.random = ci.nma.random,
               fixed = ci.f,
               random = ci.r,
               predict = ci.p,
@@ -826,7 +817,8 @@ print.summary.netmeta <- function(x,
           dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab))
         }
         ##
-        if (TE.random.b[rownames(res) == reference.group] == noeffect)
+        if (!is.na(TE.random.b[rownames(res) == reference.group]) &&
+            TE.random.b[rownames(res) == reference.group] == noeffect)
           res[rownames(res) == reference.group, ] <- "."
         ##
         rownames(res) <- treats(rownames(res), nchar.trts)

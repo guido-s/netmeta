@@ -4,14 +4,16 @@
 \name{Gurusamy2011}
 \alias{Gurusamy2011}
 \title{Network meta-analysis on blood loss during liver transplantation}
-\format{A data frame with the following columns:
+\format{
+A data frame with the following columns:
 \tabular{rl}{
 \bold{\emph{study}}\tab study information (first author, year) \cr
 \bold{\emph{treatment}}\tab treatment \cr
 \bold{\emph{death}}\tab mortality at 60 days post-transplantation
   \cr
 \bold{\emph{n}}\tab number of individuals in treatment arm
-}}
+}
+}
 \source{
 Gurusamy KS, Pissanou T, Pikhart H, Vaughan J, Burroughs AK,
 Davidson BR (2011):

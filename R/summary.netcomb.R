@@ -235,6 +235,7 @@ summary.netcomb <- function(object,
               n = object$n,
               d = object$d,
               c = object$c,
+              s = object$s,
               ##
               trts = object$trts,
               k.trts = object$k.trts,
@@ -310,7 +311,8 @@ summary.netcomb <- function(object,
               version = packageDescription("netmeta")$Version
               )
   ##
-  class(res) <- "summary.netcomb"
+  class(res) <- c(if (inherits(object, "discomb")) "summary.discomb",
+                  "summary.netcomb")
   
   res
 }
@@ -394,6 +396,8 @@ print.summary.netcomb <- function(x,
     cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
     cat(paste("Number of active components: c = ", x$c, "\n", sep = ""))
     cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
+    if (inherits(x, "summary.discomb"))
+      cat(paste("Number of subnetworks: s = ", x$s, "\n", sep = ""))
     ##
     cat("\n")
   }

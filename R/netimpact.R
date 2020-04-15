@@ -9,7 +9,10 @@
 #' @param x An object of class \code{netmeta}.
 #' @param seTE.ignore Assumed (large) standard error in order to
 #'   mimicking the removal of individual studies from the network
-#'   meta-analysis.
+#'   meta-analysis (ignored for \code{\link{netmetabin}} objects).
+#' @param event.ignore Assumed event number mimicking the removal of
+#'   individual studies from the network meta-analysis (considered for
+#'   \code{\link{netmetabin}} objects).
 #' @param verbose A logical indicating whether information on the
 #'   estimation progress should be printed.
 #' 
@@ -24,7 +27,7 @@
 #'   studies (columns) to comparisons (rows) under the random effects
 #'   model.}
 #' \item{ignored.comparisons}{List with comparisons of ignored study.}
-#' \item{seTE.ignore, x}{As defined above.}
+#' \item{seTE.ignore, event.ignore, x}{As defined above.}
 #' \item{nets}{List of all network meta-analyses (removing a single
 #'   study).}
 #' \item{version}{Version of R package netmeta used to create object.}
@@ -32,8 +35,8 @@
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de},
 #'   Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}
 #' 
-#' @seealso \code{\link{netmeta}}, \code{\link{netgraph.netimpact}},
-#'   \code{\link{print.netimpact}}
+#' @seealso \code{\link{netmeta}}, \code{\link{netmetabin}},
+#'   \code{\link{netgraph.netimpact}}, \code{\link{print.netimpact}}
 #' 
 #' @examples
 #' data(parkinson)
@@ -56,10 +59,13 @@
 #' @export netimpact
 
 
-netimpact <- function(x, seTE.ignore = 1e4, verbose = FALSE) {
+netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01, verbose = FALSE) {
   
   
   meta:::chkclass(x, "netmeta")
+  ##
+  meta:::chknumeric(seTE.ignore, min = 0, zero = TRUE, single = TRUE)
+  meta:::chknumeric(event.ignore, min = 0, zero = TRUE, single = TRUE)
   
   
   studlab <- x$studlab
@@ -68,13 +74,18 @@ netimpact <- function(x, seTE.ignore = 1e4, verbose = FALSE) {
   TE      <- x$TE
   seTE    <- x$seTE
   ##
+  event1 <- x$event1
+  event2 <- x$event2
+  n1 <- x$n1
+  n2 <- x$n2
+  ##
   comparison <- paste(treat1, sep = x$sep.trts, treat2)
   
   
-  comparisons <- names(x$prop.direct.fixed)
+  comparisons <- rownames(x$Cov.fixed)
   ##
   impact.fixed <- impact.random <-
-    matrix(NA, ncol = x$k, nrow = length(comparisons))
+    matrix(NA, ncol = length(x$studies), nrow = length(comparisons))
   ##
   rownames(impact.fixed) <- rownames(impact.random) <- comparisons
   colnames(impact.fixed) <- colnames(impact.random) <- x$studies
@@ -98,10 +109,25 @@ netimpact <- function(x, seTE.ignore = 1e4, verbose = FALSE) {
                  "\n\n"))
     }
     ##
-    seTE.i <- seTE
-    seTE.i[studlab == i] <- seTE.ignore
-    ##
-    net.i <- netmeta(TE, seTE.i, treat1, treat2, studlab, tau.preset = x$tau)
+    if (!inherits(x, "netmetabin")) {
+      seTE.i <- seTE
+      seTE.i[studlab == i] <- seTE.ignore
+      ##
+      net.i <- netmeta(TE, seTE.i, treat1, treat2, studlab, tau.preset = x$tau)
+    }
+    else {
+      event1.i <- event1
+      event2.i <- event2
+      n1.i <- n1
+      n2.i <- n2
+      event1.i[studlab == i] <- event.ignore
+      event2.i[studlab == i] <- event.ignore
+      n1.i[studlab == i] <- 1
+      n2.i[studlab == i] <- 1
+      ##
+      net.i <- netmetabin(event1.i, n1.i, event2.i, n2.i, treat1, treat2, studlab,
+                          method = x$method, sm = x$sm)
+    }
     nets[[i]] <- net.i
     ##
     seTE.fixed <- x$seTE.fixed

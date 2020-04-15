@@ -50,9 +50,9 @@
 #' An object of class \code{netrank} with corresponding \code{print}
 #' function. The object is a list containing the following components:
 #' \item{Pscore.fixed}{A named numeric vector with P-scores for fixed
-#'   effect model.}
+#'   effects model.}
 #' \item{Pmatrix.fixed}{Numeric matrix based on pairwise one-sided
-#'   p-values for fixed effect model.}
+#'   p-values for fixed effects model.}
 #' \item{Pscore.random}{A named numeric vector with P-scores for
 #'   random effects model.}
 #' \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided
@@ -206,7 +206,7 @@ print.netrank <- function(x,
   ##
   if (!both & is.character(sort)) {
     if (comb.fixed & sort == "random") {
-      warning("Argument 'sort=\"random\"' ignored for P-scores of fixed effect model.",
+      warning("Argument 'sort=\"random\"' ignored for P-scores of fixed effects model.",
               call. = FALSE)
       sort <- TRUE
     }

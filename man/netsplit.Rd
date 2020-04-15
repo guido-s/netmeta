@@ -130,20 +130,20 @@ following components:
 \item{comb.fixed, comb.random}{As defined above.}
 \item{comparison}{A vector with treatment comparisons.}
 \item{prop.fixed, prop.random}{A vector with direct evidence
-  proportions (fixed effect / random effects model).}
-\item{fixed, random}{Results of network meta-analysis (fixed effect
-  / random effects model), i.e., data frame with columns
-  comparison, TE, seTE, lower, upper, z, and p.}
+  proportions (fixed / random effects model).}
+\item{fixed, random}{Results of network meta-analysis (fixed /
+  random effects model), i.e., data frame with columns comparison,
+  TE, seTE, lower, upper, z, and p.}
 \item{direct.fixed, direct.random}{Network meta-analysis results
-  based on direct evidence (fixed effect / random effects model),
-  i.e., data frame with columns comparison, TE, seTE, lower, upper,
-  z, and p.}
+  based on direct evidence (fixed / random effects model), i.e.,
+  data frame with columns comparison, TE, seTE, lower, upper, z,
+  and p.}
 \item{indirect.fixed, indirect.random}{Network meta-analysis
-  results based on indirect evidence (fixed effect / random effects
+  results based on indirect evidence (fixed / random effects
   model), i.e., data frame with columns comparison, TE, seTE,
   lower, upper, z, and p.}
 \item{compare.fixed, compare.random}{Comparison of direct and
-  indirect evidence in network meta-analysis (fixed effect / random
+  indirect evidence in network meta-analysis (fixed / random
   effects model), i.e., data frame with columns comparison, TE,
   seTE, lower, upper, z, and p.}
 \item{sm}{A character string indicating underlying summary measure}
@@ -163,10 +163,10 @@ as check for consistency of network meta-analysis (Dias et al.,
 
 This function provides two methods to derive indirect estimates:
 \itemize{
-\item Back-calculation method deriving indirect estimates from
-  direct pairwise comparisons and network estimates. The direct
-  evidence proportion as described in König et al. (2013) is used
-  in the calculation of the indirect evidence;
+\item Separate Indirect from Direct Evidence (SIDE) using a
+  back-calculation method. The \emph{direct evidence proportion} as
+  described in König et al. (2013) is used in the calculation of
+  the indirect evidence;
 \item Separate Indirect from Direct Design Evidence (SIDDE) as
   described in Efthimiou et al. (2019).
 }

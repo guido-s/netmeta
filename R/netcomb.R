@@ -434,16 +434,16 @@ netcomb <- function(x,
   ##
   ## Design matrix based on treatment components
   ##
-  X <- B.matrix %*% C.matrix
+  X.matrix <- B.matrix %*% C.matrix
   ##
-  colnames(X) <- colnames(C.matrix)
-  rownames(X) <- studlab
+  colnames(X.matrix) <- colnames(C.matrix)
+  rownames(X.matrix) <- studlab
   
   
   ##
   ## Fixed effects models
   ##
-  df.Q.additive <- x$df.Q + x$n - 1 - qr(X)$rank
+  df.Q.additive <- x$df.Q + x$n - 1 - qr(X.matrix)$rank
   ##
   if (is.null(x$tol.multiarm.se))
     x$tol.multiarm.se <- x$tol.multiarm
@@ -457,12 +457,12 @@ netcomb <- function(x,
   df.Q <- net$df.Q
   pval.Q <- net$pval.Q
   ##
-  df.Q.diff <- x$n - 1 - qr(X)$rank
+  df.Q.diff <- x$n - 1 - qr(X.matrix)$rank
   
   
   res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], x$level.comb,
-                        X, C.matrix, B.matrix,
+                        X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         x$n, x$sep.trts)
   
@@ -490,7 +490,7 @@ netcomb <- function(x,
   p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
   res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], x$level.comb,
-                        X, C.matrix, B.matrix,
+                        X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         x$n, x$sep.trts)
   
@@ -518,6 +518,9 @@ netcomb <- function(x,
               k.trts = x$k.trts,
               n.trts = x$n.trts,
               events.trts = x$events.trts,
+              ##
+              n.arms = x$n.arms,
+              multiarm = x$multiarm,
               ##
               studies = x$studies,
               narms = x$narms,
@@ -614,6 +617,7 @@ netcomb <- function(x,
               pval.Q.diff = res.f$pval.Q.diff, 
               ##
               A.matrix = x$A.matrix,
+              X.matrix = X.matrix,
               B.matrix = B.matrix,
               C.matrix = C.matrix,
               ##

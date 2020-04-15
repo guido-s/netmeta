@@ -14,7 +14,6 @@ prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0) {
   ## Ordering data set
   ##
   o <- order(data$studlab, data$treat1, data$treat2)
-  ##
   data <- data[o, ]
   ##
   ## Adapt numbers to treatment IDs

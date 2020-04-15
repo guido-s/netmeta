@@ -4,14 +4,16 @@
 \name{Linde2016}
 \alias{Linde2016}
 \title{Network meta-analysis of primary care depression treatments}
-\format{A data frame with the following columns:
+\format{
+A data frame with the following columns:
 \tabular{rl}{
 \bold{\emph{id}}\tab Study ID \cr
 \bold{\emph{lnOR}}\tab Response after treatment (log odds ratio) \cr
 \bold{\emph{selnOR}}\tab Standard error of log odds ratio \cr
 \bold{\emph{treat1}}\tab First treatment \cr
 \bold{\emph{treat2}}\tab Second treatment
-}}
+}
+}
 \source{
 Linde K, Rücker G, Schneider A et al. (2016):
 Questionable assumptions hampered interpretation of a network

@@ -234,6 +234,7 @@ components:
   fit between standard and additive model.}
 \item{pval.Q.diff}{P-value for difference in goodness of fit
   between standard and additive model.}
+\item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 \item{C.matrix}{As defined above.}
 \item{sm}{Summary measure.}

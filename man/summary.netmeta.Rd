@@ -119,12 +119,12 @@ A list is returned with the following elements:
 \item{comparison}{Results for pairwise comparisons (data frame with
   columns studlab, treat1, treat2, TE, seTE, lower, upper, z, p).}
 \item{comparison.nma.fixed}{Results for pairwise comparisons based
-  on fixed effect model (data frame with columns studlab, treat1,
+  on fixed effects model (data frame with columns studlab, treat1,
   treat2, TE, seTE, lower, upper, z, p, leverage).}
 \item{comparison.nma.random}{Results for pairwise comparisons based
   on random effects model (data frame with columns studlab, treat1,
   treat2, TE, seTE, lower, upper, z, p).}
-\item{fixed}{Results for fixed effect model (a list with elements
+\item{fixed}{Results for fixed effects model (a list with elements
   TE, seTE, lower, upper, z, p).}
 \item{random}{Results for random effects model (a list with
   elements TE, seTE, lower, upper, z, p).}

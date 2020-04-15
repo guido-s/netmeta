@@ -22,6 +22,20 @@ network graphs:
 \item \code{\link{netgraph.netimpact}}
 }
 }
+\examples{
+data(Senn2013)
+
+# Generation of an object of class 'netmeta' with reference
+# treatment 'plac'
+#
+net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data = Senn2013, sm = "MD", reference = "plac")
+
+# Network graph with default settings
+#
+netgraph(net1)
+
+}
 \seealso{
 \code{\link{netgraph.netmeta}},
   \code{\link{netgraph.netimpact}}
@@ -30,3 +44,4 @@ network graphs:
 Guido Schwarzer \email{sc@imbi.uni-freiburg.de
 }
 }
+\keyword{hplot}

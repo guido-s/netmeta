@@ -148,7 +148,7 @@
 #' @keywords package
 #' 
 #' @importFrom meta forest forest.meta funnel funnel.meta metabias
-#'   metabin metacont metagen metainc metaprop gs ci cilayout
+#'   metabin metacont metagen metainc gs ci cilayout
 #'
 #' @importFrom magic adiag
 #'
@@ -162,6 +162,10 @@
 #' @importFrom utils installed.packages packageDescription
 #'
 #' @importFrom MASS ginv
+#'
+#' @importFrom ggplot2 ggplot aes theme_classic geom_tile xlab ylab
+#'   theme element_blank element_text scale_fill_gradient2 geom_text
+#'   ggtitle
 
 
 NULL

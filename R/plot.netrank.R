@@ -180,10 +180,6 @@
 #' @method plot netrank
 #' @export
 #' @export plot.netrank
-#'
-#' @importFrom ggplot2 ggplot aes theme_classic geom_tile xlab ylab
-#'   theme element_blank element_text scale_fill_gradient2 geom_text
-#'   ggtitle
 
 
 plot.netrank <- function(..., name,
