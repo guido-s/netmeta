@@ -159,10 +159,13 @@ object is a list containing the following components:
   arguments \code{n1} and \code{n2} are provided).}
 \item{events.trts}{Number of events observed for a treatment (if
   arguments \code{event1} and \code{event2} are provided).}
-\item{studies}{Study labels coerced into a factor with its levels
-  sorted alphabetically.}
+\item{multiarm}{Logical vector to identify pairwise comparisons
+  from multi-arm studies.}
+\item{n.arms}{Number of treatment arms in study providing pairwise
+  comparison.}
+\item{studies}{Vector with unique study labels.}
 \item{narms}{Number of arms for each study.}
-\item{designs}{Unique list of designs present in the network. A
+\item{designs}{Vector with unique designs present in the network. A
   design corresponds to the set of treatments compared within a
   study.}
 \item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
@@ -272,6 +275,7 @@ object is a list containing the following components:
   'df' and 'pval.Q', providing heterogeneity statistics for each
   pairwise meta-analysis of direct comparisons.}
 \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
+\item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 \item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}
 \item{Lplus.matrix}{Moore-Penrose pseudoinverse of the Laplacian
@@ -329,14 +333,14 @@ be the \emph{m}x\emph{m} diagonal matrix that contains the inverse
 variance 1 / seTE^2.
 
 The given comparisons define the network structure. Therefrom an
-\emph{m}x\emph{n} design matrix B (edge-vertex incidence matrix) is
+\emph{m}x\emph{n} design matrix X (edge-vertex incidence matrix) is
 formed; for more precise information, see Rücker (2012). Moreover,
 the \emph{n}x\emph{n} Laplacian matrix L and its Moore-Penrose
 pseudoinverse L+ are calculated (both matrices play an important
 role in graph theory and electrical network theory). Using these
 matrices, the variances based on both direct and indirect
 comparisons can be estimated. Moreover, the hat matrix H can be
-estimated by \strong{H = BL+B^tW = B(B^t W B)^+B^tW} and finally
+estimated by \strong{H = XL+X^tW = X(X^t W X)^+X^tW} and finally
 consistent treatment effects can be estimated by applying the hat
 matrix to the observed (potentially inconsistent) effects. H is a
 projection matrix which maps the observed effects onto the

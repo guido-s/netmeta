@@ -645,11 +645,6 @@ netmetabin <- function(event1, n1, event2, n2,
   wo <- treat1 > treat2
   ##
   if (any(wo)) {
-    if (warn)
-      warning("Note, treatments within a comparison have been ",
-              "re-sorted in increasing order.",
-              call. = FALSE)
-    ##
     tevent1 <- event1
     event1[wo] <- event2[wo]
     event2[wo] <- tevent1[wo]
@@ -844,8 +839,10 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   tdat.design <- get.designs(dat.long)
   ##
-  dat.long <- merge(dat.long, tdat.design, by = "studlab")
-  dat.wide <- merge(dat.wide, tdat.design, by = "studlab")
+  dat.long <- merge(dat.long, tdat.design, by = "studlab",
+                    all.x = TRUE)
+  dat.wide <- merge(dat.wide, tdat.design, by = "studlab",
+                    all.x = TRUE)
   ##
   dat.long <- dat.long[order(dat.long$.order), ]
   dat.wide <- dat.wide[order(dat.wide$.order), ]
@@ -873,7 +870,7 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     if (any(events.study == 0) | any(nonevents.study == 0)) {
       zeroevents <- events.study == 0
-      allevents <- nonevents.study == 0
+      allevents <- nonevents.study == 0 & events.study != 0
       keep <- !(zeroevents | allevents)
       ##
       if (warn) {
@@ -924,7 +921,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   dat.long <- dat.long[order(dat.long$studlab, dat.long$treat), ]
   dat.wide <- dat.wide[order(dat.wide$studlab,
-                             dat.wide$treat1, dat.wide$treat2), ]
+                              dat.wide$treat1, dat.wide$treat2), ]
   ##
   dat.long$incr <- 0
   dat.wide$incr <- 0
@@ -1313,7 +1310,7 @@ netmetabin <- function(event1, n1, event2, n2,
           if (dat.design[[i]]$treat[j] == treat.per.design[[i]][k])
             dat.design[[i]]$id.t[j] <- k
       ##
-      ## Calculate total patients per studies
+      ## Calculate total number of patients per studies
       ##
       for (j in seq_along(dat.design[[i]]$studlab))
         dat.design[[i]]$n.study[j] <-
@@ -1763,6 +1760,10 @@ netmetabin <- function(event1, n1, event2, n2,
   }
   
   
+  NAmatrix <- TE.fixed
+  NAmatrix[!is.na(NAmatrix)] <- NA
+  
+  
   res <- list(studlab = studlab,
               treat1 = treat1,
               treat2 = treat2,
@@ -1798,12 +1799,16 @@ netmetabin <- function(event1, n1, event2, n2,
               zval.fixed = ci.f$z,
               pval.fixed = ci.f$p,
               ##
-              TE.random = NA,
-              seTE.random = NA,
-              lower.random = NA,
-              upper.random = NA,
-              zval.random = NA,
-              pval.random = NA,
+              TE.random = NAmatrix,
+              seTE.random = NAmatrix,
+              lower.random = NAmatrix,
+              upper.random = NAmatrix,
+              zval.random = NAmatrix,
+              pval.random = NAmatrix,
+              ##
+              seTE.predict = NAmatrix,
+              lower.predict = NAmatrix,
+              upper.predict = NAmatrix,
               ##
               prop.direct.fixed = NA,
               prop.direct.random = NA,
@@ -1903,11 +1908,19 @@ netmetabin <- function(event1, n1, event2, n2,
                 dat.wide$treat1,
                 dat.wide$treat2,
                 dat.wide$studlab)
+  ##
   tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
                       stringsAsFactors = FALSE)
-  tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
+  ##
+  tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), , drop = FALSE]
   res$studies <- tdata$studies
   res$narms <- tdata$narms
+  ##
+  if (all(suppressWarnings(!is.na(as.numeric(res$studies))))) {
+    o <- order(as.numeric(res$studies))
+    res$studies <- res$studies[o]
+    res$narms <- res$narms[o]
+  }
   ##
   res$data <- merge(res$data,
                     data.frame(.studlab = res$studies,

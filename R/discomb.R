@@ -235,6 +235,7 @@
 #'   fit between standard and additive model.}
 #' \item{pval.Q.diff}{P-value for difference in goodness of fit
 #'   between standard and additive model.}
+#' \item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 #' \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 #' \item{C.matrix}{As defined above.}
 #' \item{sm}{Summary measure.}
@@ -444,6 +445,12 @@ discomb <- function(TE, seTE,
   chknumeric(TE)
   chknumeric(seTE)
   ##
+  if (!any(!is.na(TE) & !is.na(seTE)))
+    stop("Missing data for estimates (argument 'TE') and ",
+         "standard errors (argument 'seTE') in all studies.\n  ",
+         "No network meta-analysis possible.",
+         call. = FALSE)
+  ##
   k.Comp <- length(TE)
   ##
   if (is.factor(treat1))
@@ -519,6 +526,10 @@ discomb <- function(TE, seTE,
   ## (4) Additional checks
   ##
   ##
+  if (!(any(grep(sep.comps, treat1, fixed = TRUE) |
+            grep(sep.comps, treat2, fixed = TRUE))))
+    warning("No treatment contains the component separator '", sep.comps, "'.")
+  ##
   if (any(treat1 == treat2))
     stop("Treatments must be different (arguments 'treat1' and 'treat2').")
   ##
@@ -526,7 +537,8 @@ discomb <- function(TE, seTE,
     studlab <- as.character(studlab)
   else {
     if (warn)
-      warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
+      warning("No information given for argument 'studlab'. ",
+              "Assuming that comparisons are from independent studies.")
     studlab <- seq(along = TE)
   }
   ##
@@ -614,8 +626,6 @@ discomb <- function(TE, seTE,
   wo <- treat1 > treat2
   ##
   if (any(wo)) {
-    if (warn)
-      warning("Note, treatments within a comparison have been re-sorted in increasing order.", call. = FALSE)
     TE[wo] <- -TE[wo]
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]
@@ -679,10 +689,10 @@ discomb <- function(TE, seTE,
   ##
   ## Design matrix based on treatment components
   ##
-  X <- B.matrix %*% C.matrix
+  X.matrix <- B.matrix %*% C.matrix
   ##
-  colnames(X) <- colnames(C.matrix)
-  rownames(X) <- studlab
+  colnames(X.matrix) <- colnames(C.matrix)
+  rownames(X.matrix) <- studlab
   
   
   tdata <- data.frame(studies = p0$studlab[o], narms = p0$narms[o])
@@ -702,7 +712,7 @@ discomb <- function(TE, seTE,
   ##
   ## Fixed effects models
   ##
-  df.Q.additive <- n.a - k - qr(X)$rank
+  df.Q.additive <- n.a - k - qr(X.matrix)$rank
   ##
   if (netc$n.subnets == 1) {
     net <- netmeta(TE, seTE, treat1, treat2, studlab,
@@ -714,7 +724,7 @@ discomb <- function(TE, seTE,
     df.Q <- net$df.Q
     pval.Q <- net$pval.Q
     ##
-    df.Q.diff <- n - 1 - qr(X)$rank
+    df.Q.diff <- n - 1 - qr(X.matrix)$rank
   }
   else {
     Q <- df.Q <- pval.Q <- NA
@@ -724,7 +734,7 @@ discomb <- function(TE, seTE,
   
   res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], level.comb,
-                        X, C.matrix, B.matrix,
+                        X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
   
@@ -751,12 +761,17 @@ discomb <- function(TE, seTE,
   ##
   res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], level.comb,
-                        X, C.matrix, B.matrix,
+                        X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
   
-  
+
   NAs <- rep(NA, length(res.f$comparisons$TE))
+  
+  
+  n.comps <- table(p0$studlab)
+  studies <- names(n.comps)
+  narms <- (1 + sqrt(8 * as.vector(n.comps)  + 1)) / 2
   
   
   res <- list(studlab = p0$studlab[o],
@@ -764,7 +779,7 @@ discomb <- function(TE, seTE,
               treat2 = p0$treat2[o],
               ##
               TE = p0$TE[o],
-              seTE = seTE[o],
+              seTE = p0$seTE[o],
               seTE.adj = sqrt(1 / p0$weights[o]),
               ##
               event1 = NA,
@@ -777,14 +792,18 @@ discomb <- function(TE, seTE,
               n = n,
               d = NA,
               c = c,
+              s = netc$n.subnets,
               ##
               trts = labels,
               k.trts = NA,
               n.trts = NA,
               events.trts = NA,
               ##
-              studies = NA,
-              narms = NA,
+              n.arms = NA,
+              multiarm = NA,
+              ##
+              studies = studies,
+              narms = narms,
               ##
               designs = NA,
               ##
@@ -877,6 +896,7 @@ discomb <- function(TE, seTE,
               df.Q.diff = df.Q.diff,
               pval.Q.diff = res.f$pval.Q.diff, 
               ##
+              X.matrix = X.matrix,
               B.matrix = B.matrix,
               C.matrix = C.matrix,
               ##
@@ -912,6 +932,27 @@ discomb <- function(TE, seTE,
               )
   ##
   class(res) <- c("discomb", "netcomb")
+  
+  
+  ##
+  ## Add information on multi-arm studies
+  ##
+  if (any(res$narms > 2)) {
+    tdata1 <- data.frame(studlab = res$studlab,
+                         .order = seq(along = res$studlab))
+    tdata2 <- data.frame(studlab = res$studies, narms = res$narms)
+    ##
+    tdata12 <- merge(tdata1, tdata2,
+                     by = "studlab", all.x = TRUE, all.y = FALSE,
+                     sort = FALSE)
+    tdata12 <- tdata12[order(tdata12$.order), ]
+    res$n.arms <- tdata12$narms
+    res$multiarm <- tdata12$narms > 2
+  }
+  else {
+    res$n.arms <- rep(2, length(res$studlab))
+    res$multiarm <- rep(FALSE, length(res$studlab))
+  }
   
   
   res

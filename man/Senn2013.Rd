@@ -4,7 +4,8 @@
 \name{Senn2013}
 \alias{Senn2013}
 \title{Network meta-analysis in diabetes}
-\format{A data frame with the following columns:
+\format{
+A data frame with the following columns:
 \tabular{rl}{
 \bold{\emph{TE}}\tab treatment effect \cr
 \bold{\emph{seTE}}\tab standard error of treatment effect \cr
@@ -15,7 +16,8 @@
 \bold{\emph{treat2.long}}\tab treatment 2 (full treatment names)
   \cr
 \bold{\emph{studlab}}\tab Study label
-}}
+}
+}
 \source{
 Senn S, Gavini F, Magrez D, Scheen A (2013):
 Issues in performing a network meta-analysis.
@@ -51,7 +53,7 @@ and \code{treat2.long}.
 \examples{
 data(Senn2013)
 
-# Fixed effect model
+# Fixed effects model
 #
 net1 <- netmeta(TE, seTE, treat1, treat2,
                 studlab, data = Senn2013,

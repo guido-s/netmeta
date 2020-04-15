@@ -4,7 +4,8 @@
 \name{parkinson}
 \alias{parkinson}
 \title{Network meta-analysis of treatments for Parkinson's disease}
-\format{A data frame with the following columns:
+\format{
+A data frame with the following columns:
 \tabular{rl}{
 \bold{\emph{Study}}\tab study label \cr
 \bold{\emph{Treatment1}}\tab treatment 1 \cr
@@ -19,7 +20,8 @@
 \bold{\emph{y3}}\tab treatment effect arm 3 \cr
 \bold{\emph{sd3}}\tab Standard deviation arm 3 \cr
 \bold{\emph{n3}}\tab Sample size arm 3
-}}
+}
+}
 \source{
 Dias S, Sutton AJ, Ades AE and Welton NJ (2013):
 Evidence synthesis for decision making 2: A generalized linear

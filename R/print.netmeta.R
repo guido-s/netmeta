@@ -173,8 +173,10 @@ print.netmeta <- function(x,
     
     if (details) {
 
+      multiarm <- any(x$narms > 2)
+
       cat(paste("Original data",
-                ifelse(any(x$narms > 2),
+                ifelse(multiarm,
                        " (with adjusted standard errors for multi-arm studies)",
                        ""),
                 ":\n\n", sep = ""))
@@ -186,30 +188,16 @@ print.netmeta <- function(x,
                         seTE = formatN(x$seTE, digits.se, text.NA = "NA",
                                        big.mark = big.mark))
       ##
-      if (any(x$narms > 2))
+      if (multiarm) {
         res$seTE.adj <- format(round(x$seTE.adj, digits.se))
-      ##
-      res$studlab <- x$studlab
-      ##
-      if (any(x$narms > 2)) {
-        tdata1 <- data.frame(studlab = as.character(x$studies),
-                             narms = x$narms)
-        res$OrDeR <- 1:dim(res)[[1]]
-        res <- merge(res, tdata1,
-                     by = "studlab", all.x = TRUE, all.y = FALSE,
-                     sort = FALSE)
-        res <- res[order(res$OrDeR), ]
-        res$multiarm <- ifelse(res$narms > 2, "*", "")
-        res$OrDeR <- NULL
-        res$studlab <- NULL
-        res <- as.matrix(res)
+        res$narms <- x$n.arms
+        res$multiarm <- ifelse(x$multiarm, "*", "")
       }
-      else
-        res$studlab <- NULL
       ##
+      res <- as.matrix(res)
       dimnames(res)[[1]] <- x$studlab
       
-      prmatrix(res[order(sortvar), ],
+      prmatrix(res[order(sortvar), , drop = FALSE],
                quote = FALSE, right = TRUE)
       cat("\n")
       
@@ -272,7 +260,7 @@ print.netmeta <- function(x,
     
     
     if (comb.fixed) {
-      cat("Results (fixed effect model):\n\n")
+      cat("Results (fixed effects model):\n\n")
       
       prmatrix(res.f[order(sortvar), , drop = FALSE],
                quote = FALSE, right = TRUE)

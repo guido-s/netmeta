@@ -9,8 +9,8 @@
 #'   plot or biplot should be produced, either \code{"scatter"} or
 #'   \code{"biplot"}. Can be abbreviated.
 #' @param pooled A character string indicating whether scatter plot
-#'   should be drawn for fixed effect (\code{"fixed"}) or random
-#'   effects model (\code{"random"}). Can be abbreviated.
+#'   should be drawn for fixed (\code{"fixed"}) or random effects
+#'   model (\code{"random"}). Can be abbreviated.
 #' @param dim A character string indicating whether a 2- or
 #'   3-dimensional plot should be produced, either \code{"2d"} or
 #'   \code{"3d"}. Can be abbreviated.
@@ -239,7 +239,8 @@ plot.netposet <- function(x,
   is_3d <- !is_2d
   ##
   if (is_3d & n.outcomes == 2) {
-    warning("Scatter plot in 2-D generated as only two outcomes considered in netposet().")
+    warning("Scatter plot in 2-D generated as only two outcomes considered ",
+            "in netposet().")
     is_2d <- TRUE
     is_3d <- FALSE
   }
@@ -250,11 +251,13 @@ plot.netposet <- function(x,
   if (is_biplot) {
     if (is_2d & n.outcomes == 2) {
       is_biplot <- FALSE
-      warning("Scatter plot instead of biplot generated as only two outcomes considered in netposet().")
+      warning("Scatter plot instead of biplot generated as only ",
+              "two outcomes considered in netposet().")
     }
     if (is_3d & n.outcomes == 3) {
       is_biplot <- FALSE
-      warning("Scatter plot instead of biplot generated as only three outcomes considered in netposet().")
+      warning("Scatter plot instead of biplot generated as only ",
+              "three outcomes considered in netposet().")
     }
   }
   ##

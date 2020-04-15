@@ -91,14 +91,14 @@
 #' variance 1 / seTE^2.
 #' 
 #' The given comparisons define the network structure. Therefrom an
-#' \emph{m}x\emph{n} design matrix B (edge-vertex incidence matrix) is
+#' \emph{m}x\emph{n} design matrix X (edge-vertex incidence matrix) is
 #' formed; for more precise information, see Rücker (2012). Moreover,
 #' the \emph{n}x\emph{n} Laplacian matrix L and its Moore-Penrose
 #' pseudoinverse L+ are calculated (both matrices play an important
 #' role in graph theory and electrical network theory). Using these
 #' matrices, the variances based on both direct and indirect
 #' comparisons can be estimated. Moreover, the hat matrix H can be
-#' estimated by \strong{H = BL+B^tW = B(B^t W B)^+B^tW} and finally
+#' estimated by \strong{H = XL+X^tW = X(X^t W X)^+X^tW} and finally
 #' consistent treatment effects can be estimated by applying the hat
 #' matrix to the observed (potentially inconsistent) effects. H is a
 #' projection matrix which maps the observed effects onto the
@@ -219,10 +219,13 @@
 #'   arguments \code{n1} and \code{n2} are provided).}
 #' \item{events.trts}{Number of events observed for a treatment (if
 #'   arguments \code{event1} and \code{event2} are provided).}
-#' \item{studies}{Study labels coerced into a factor with its levels
-#'   sorted alphabetically.}
+#' \item{multiarm}{Logical vector to identify pairwise comparisons
+#'   from multi-arm studies.}
+#' \item{n.arms}{Number of treatment arms in study providing pairwise
+#'   comparison.}
+#' \item{studies}{Vector with unique study labels.}
 #' \item{narms}{Number of arms for each study.}
-#' \item{designs}{Unique list of designs present in the network. A
+#' \item{designs}{Vector with unique designs present in the network. A
 #'   design corresponds to the set of treatments compared within a
 #'   study.}
 #' \item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
@@ -332,6 +335,7 @@
 #'   'df' and 'pval.Q', providing heterogeneity statistics for each
 #'   pairwise meta-analysis of direct comparisons.}
 #' \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
+#' \item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 #' \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 #' \item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}
 #' \item{Lplus.matrix}{Moore-Penrose pseudoinverse of the Laplacian
@@ -604,6 +608,12 @@ netmeta <- function(TE, seTE,
   chknumeric(TE)
   chknumeric(seTE)
   ##
+  if (!any(!is.na(TE) & !is.na(seTE)))
+    stop("Missing data for estimates (argument 'TE') and ",
+         "standard errors (argument 'seTE') in all studies.\n  ",
+         "No network meta-analysis possible.",
+         call. = FALSE)
+  ##
   k.Comp <- length(TE)
   ##
   if (is.factor(treat1))
@@ -674,13 +684,13 @@ netmeta <- function(TE, seTE,
       data$.treat1[wo] <- data$.treat2[wo]
       data$.treat2[wo] <- ttreat1[wo]
       ##
-      if (!is.null(data$.n1) & !is.null(data$.n2)) {
+      if (meta:::isCol(data, ".n1") & meta:::isCol(data, ".n2")) {
         tn1 <- data$.n1
         data$.n1[wo] <- data$.n2[wo]
         data$.n2[wo] <- tn1[wo]
       }
       ##
-      if (!is.null(data$.event1) & !is.null(data$.event2)) {
+      if (meta:::isCol(data, ".event1") & meta:::isCol(data, ".event2")) {
         tevent1 <- data$.event1
         data$.event1[wo] <- data$.event2[wo]
         data$.event2[wo] <- tevent1[wo]
@@ -906,10 +916,6 @@ netmeta <- function(TE, seTE,
   wo <- treat1 > treat2
   ##
   if (any(wo)) {
-    if (warn)
-      warning("Note, treatments within a comparison have been ",
-              "re-sorted in increasing order.",
-              call. = FALSE)
     TE[wo] <- -TE[wo]
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]
@@ -952,7 +958,7 @@ netmeta <- function(TE, seTE,
                       order = p0$order,
                       stringsAsFactors = FALSE)
   ##
-  tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), ]
+  tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), , drop = FALSE]
   studies <- tdata$studies[order(tdata$order)]
   narms <- tdata$narms[order(tdata$order)]
   
@@ -1045,6 +1051,9 @@ netmeta <- function(TE, seTE,
               k.trts = rowSums(res.f$A.matrix),
               n.trts = if (available.n) NA else NULL,
               events.trts = if (available.events) NA else NULL,
+              ##
+              n.arms = NA,
+              multiarm = NA,
               ##
               studies = studies,
               narms = narms,
@@ -1139,6 +1148,7 @@ netmeta <- function(TE, seTE,
               Q.decomp = res.f$Q.decomp,
               ##
               A.matrix = res.f$A.matrix,
+              X.matrix = res.f$B.matrix[o, ],
               B.matrix = res.f$B.matrix[o, ],
               L.matrix = res.f$L.matrix,
               Lplus.matrix = res.f$Lplus.matrix,
@@ -1201,11 +1211,10 @@ netmeta <- function(TE, seTE,
   res$prop.direct.fixed  <- netmeasures(res, random = FALSE,
                                         warn = warn)$proportion
   ## Print warning(s) in call of netmeasures() once
-  oldopts <- options(warn = -1)
-  res$prop.direct.random <- netmeasures(res, random = TRUE,
-                                        tau.preset = res$tau,
-                                        warn = FALSE)$proportion
-  options(oldopts)
+  res$prop.direct.random <-
+    suppressWarnings(netmeasures(res, random = TRUE,
+                                 tau.preset = res$tau,
+                                 warn = FALSE)$proportion)
   if (is.logical(res$prop.direct.fixed))
     res$prop.direct.fixed <- as.numeric(res$prop.direct.fixed)
   if (is.logical(res$prop.direct.random))
@@ -1256,7 +1265,7 @@ netmeta <- function(TE, seTE,
   P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
   P.random[abs(P.random - 1) < .Machine$double.eps^0.5] <- NA
   ##
-  ## fixed effects model
+  ## Fixed effects model
   ##
   ci.if <- ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
               sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
@@ -1299,6 +1308,26 @@ netmeta <- function(TE, seTE,
     res$designs <- as.character(krahn$design$design)
   ##
   res$designs <- unique(res$designs)
+  ##
+  ##
+  ##
+  if (any(res$narms > 2)) {
+    tdata1 <- data.frame(studlab = res$studlab,
+                         .order = seq(along = res$studlab))
+    tdata2 <- data.frame(studlab = as.character(res$studies),
+                         narms = res$narms)
+    ##
+    tdata12 <- merge(tdata1, tdata2,
+                     by = "studlab", all.x = TRUE, all.y = FALSE,
+                     sort = FALSE)
+    tdata12 <- tdata12[order(tdata12$.order), ]
+    res$n.arms <- tdata12$narms
+    res$multiarm <- tdata12$narms > 2
+  }
+  else {
+    res$n.arms <- rep(2, length(res$studlab))
+    res$multiarm <- rep(FALSE, length(res$studlab))
+  }
   
   
   ##

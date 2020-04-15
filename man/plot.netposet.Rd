@@ -43,8 +43,8 @@ plot or biplot should be produced, either \code{"scatter"} or
 \code{"biplot"}. Can be abbreviated.}
 
 \item{pooled}{A character string indicating whether scatter plot
-should be drawn for fixed effect (\code{"fixed"}) or random
-effects model (\code{"random"}). Can be abbreviated.}
+should be drawn for fixed (\code{"fixed"}) or random effects
+model (\code{"random"}). Can be abbreviated.}
 
 \item{dim}{A character string indicating whether a 2- or
 3-dimensional plot should be produced, either \code{"2d"} or

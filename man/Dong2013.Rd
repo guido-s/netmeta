@@ -4,13 +4,15 @@
 \name{Dong2013}
 \alias{Dong2013}
 \title{Network meta-analysis for chronic obstructive pulmonary disease}
-\format{A data frame with the following columns:
+\format{
+A data frame with the following columns:
 \tabular{rl}{
 \bold{\emph{id}}\tab study ID \cr
 \bold{\emph{treatment}}\tab treatment \cr
 \bold{\emph{death}}\tab mortality \cr
 \bold{\emph{randomized}}\tab number of individuals in treatment arm
-}}
+}
+}
 \source{
 Dong Y-H, Lin H-H, Shau W-Y, Wu Y-C, Chang C-H, Lai M-S (2013):
 Comparative safety of inhaled medications in patients with chronic

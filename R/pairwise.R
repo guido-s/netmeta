@@ -823,7 +823,7 @@ pairwise <- function(treat,
                         dat$event2, dat$n2,
                         incr = dat$incr, addincr = TRUE,
                         allstudies = allstudies,
-                        warn = warn, ...)
+                        warn = warn, method.tau.ci = "", ...)
           ##
           dat$TE   <- m1$TE
           dat$seTE <- m1$seTE
@@ -935,7 +935,7 @@ pairwise <- function(treat,
         if (nrow(dat) > 0) {
           m1 <- metacont(dat$n1, dat$mean1, dat$sd1,
                          dat$n2, dat$mean2, dat$sd2,
-                         warn = warn, ...)
+                         warn = warn, method.tau.ci = "", ...)
           ##
           dat$TE   <- m1$TE
           dat$seTE <- m1$seTE
@@ -1036,7 +1036,7 @@ pairwise <- function(treat,
         if (nrow(dat) > 0) {
           m1 <- metagen(dat$TE1 - dat$TE2,
                         sqrt(dat$seTE1^2 + dat$seTE2^2),
-                        warn = warn, ...)
+                        warn = warn, method.tau.ci = "", ...)
           ##
           dat$TE <- m1$TE
           dat$seTE <- m1$seTE
@@ -1134,7 +1134,7 @@ pairwise <- function(treat,
                         dat$event2, dat$time2,
                         incr = dat$incr, addincr = TRUE,
                         allstudies = allstudies,
-                        warn = warn, ...)
+                        warn = warn, method.tau.ci = "", ...)
           ##
           dat$TE <- m1$TE
           dat$seTE <- m1$seTE

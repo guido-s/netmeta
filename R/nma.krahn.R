@@ -73,7 +73,9 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
     ##
     TE.i <- studies$TE[studies$comparison == i]
     seTE.i <- studies$seTE[studies$comparison == i]
-    m1 <- metagen(TE.i, seTE.i, sm = x$sm)
+    m1 <-
+      suppressWarnings(metagen(TE.i, seTE.i, sm = x$sm,
+                               warn = FALSE, method.tau.ci = ""))
     ##
     direct$comparison[j] <- i
     direct$TE[j] <- m1$TE.fixed
@@ -82,7 +84,9 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
     if (sum(studies$comparison == i & !selmulti) > 0) {
       TE.i   <- studies$TE[studies$comparison == i & studies$narms == 2]
       seTE.i <- studies$seTE[studies$comparison == i & studies$narms == 2]
-      m2 <- metagen(TE.i, seTE.i, sm = x$sm)
+      m2 <-
+        suppressWarnings(metagen(TE.i, seTE.i, sm = x$sm,
+                                 warn = FALSE, method.tau.ci = ""))
       ##
       direct$TE.2arm[j] <- m2$TE.fixed
       direct$seTE.2arm[j] <- m2$seTE.fixed
