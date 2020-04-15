@@ -148,10 +148,9 @@ nma.ruecker <- function(TE, seTE,
         sub <- data[(data$treat1.pos == i & data$treat2.pos == j) |
                     (data$treat1.pos == j & data$treat2.pos == i), ]
         l <- nrow(sub)
-        oldwarn <- options(warn = -1)
-        Q.matrix[i, j] <- metagen(TE = sub$TE, seTE = 1 / sqrt(sub$w.pooled),
-                                  warn = FALSE, method.tau.ci = "")$Q
-        options(oldwarn)
+        Q.matrix[i, j] <-
+          suppressWarnings(metagen(TE = sub$TE, seTE = 1 / sqrt(sub$w.pooled),
+                                   warn = FALSE, method.tau.ci = "")$Q)
       }
     }
   }
@@ -256,10 +255,9 @@ nma.ruecker <- function(TE, seTE,
     ##
     selstud <- treat1 == sel.treat1 & treat2 == sel.treat2
     ##
-    oldwarn <- options(warn = -1)
-    m.i <- metagen(TE, seTE.orig, subset = selstud,
-                   tau.preset = tau.direct, method.tau.ci = "")
-    options(oldwarn)
+    m.i <-
+      suppressWarnings(metagen(TE, seTE.orig, subset = selstud,
+                               tau.preset = tau.direct, method.tau.ci = ""))
     ##
     if (is.na(tau.direct) | tau.direct == 0) {
       TE.i   <- m.i$TE.fixed

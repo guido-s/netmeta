@@ -1211,11 +1211,10 @@ netmeta <- function(TE, seTE,
   res$prop.direct.fixed  <- netmeasures(res, random = FALSE,
                                         warn = warn)$proportion
   ## Print warning(s) in call of netmeasures() once
-  oldopts <- options(warn = -1)
-  res$prop.direct.random <- netmeasures(res, random = TRUE,
-                                        tau.preset = res$tau,
-                                        warn = FALSE)$proportion
-  options(oldopts)
+  res$prop.direct.random <-
+    suppressWarnings(netmeasures(res, random = TRUE,
+                                 tau.preset = res$tau,
+                                 warn = FALSE)$proportion)
   if (is.logical(res$prop.direct.fixed))
     res$prop.direct.fixed <- as.numeric(res$prop.direct.fixed)
   if (is.logical(res$prop.direct.random))

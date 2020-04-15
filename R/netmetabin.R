@@ -1916,7 +1916,7 @@ netmetabin <- function(event1, n1, event2, n2,
   res$studies <- tdata$studies
   res$narms <- tdata$narms
   ##
-  if (all(!is.na(as.numeric(res$studies)))) {
+  if (all(suppressWarnings(!is.na(as.numeric(res$studies))))) {
     o <- order(as.numeric(res$studies))
     res$studies <- res$studies[o]
     res$narms <- res$narms[o]
