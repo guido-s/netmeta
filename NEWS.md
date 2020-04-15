@@ -1,4 +1,4 @@
-# netmeta, version 6.6-6 (20yy-mm-dd)
+# netmeta, version 1.2-1 (2020-04-15)
 
 ## Major changes
 
