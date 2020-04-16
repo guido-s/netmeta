@@ -102,20 +102,23 @@ hasse <- function(x,
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
   
   
-  if (!meta:::is.installed.package("hasseDiagram", stop = FALSE))
-    stop(paste("Library 'hasseDiagram' missing.",
-               "\n  ",
-               "Please use the following R commands for installation:",
-               "\n  ",
-               "install.packages(\"BiocManager\")",
-               "\n  ",
-               "BiocManager::install()",
-               "\n  ",
-               "BiocManager::install(\"Rgraphviz\")",
-               "\n  ",
-               "install.packages(\"hasseDiagram\")",
-               sep = ""),
-         call. = FALSE)
+  if (!meta:::is.installed.package("hasseDiagram", stop = FALSE)) {
+    warning(paste("Package 'hasseDiagram' missing.",
+                  "\n  ",
+                  "Please use the following R commands for installation:",
+                  "\n  ",
+                  "install.packages(\"BiocManager\")",
+                  "\n  ",
+                  "BiocManager::install()",
+                  "\n  ",
+                  "BiocManager::install(\"Rgraphviz\")",
+                  "\n  ",
+                  "install.packages(\"hasseDiagram\")",
+                  sep = ""),
+            call. = FALSE)
+    return(invisible(NULL))
+  }
+
   
   if (pooled == "fixed")
     M <- x$M.fixed
