@@ -49,7 +49,7 @@
 #'   highlight the comparisons given by \code{highlight}.
 #' @param multiarm A logical indicating whether multi-arm studies
 #'   should be marked in plot.
-#' @param col.multiarm Either a function from R library colorspace or
+#' @param col.multiarm Either a function from R package colorspace or
 #'   grDevice to define colors for multi-arm studies or a character
 #'   vector with colors to highlight multi-arm studies.
 #' @param alpha.transparency The alpha transparency of colors used to
@@ -384,21 +384,23 @@ netgraph.netmeta <- function(x, seq = x$seq,
   is_3d <- !is_2d
   ##
   if (is_3d & !meta:::is.installed.package("rgl", stop = FALSE)) {
-    warning(paste("2-D plot generated as package 'rgl' is missing.",
-                  "\n  ",
-                  "Please install library 'rgl' in order to produce 3-D plots",
-                  "\n  ",
+    warning(paste0("2-D plot generated as package 'rgl' is missing.",
+                   "\n  ",
+                   "Please install package 'rgl' in order to ",
+                   "produce 3-D plots\n  ",
                   "(R command: 'install.packages(\"rgl\")').",
                   if (length(grep("darwin", R.Version()$os)) == 1)
-                    "\n  Note, macOS users have to install XQuartz, see https://www.xquartz.org/.",
-                  sep = ""))
+                    paste0("\n  Note, macOS users have to install ",
+                           "XQuartz, see https://www.xquartz.org/.")
+                  ))
     dim <- "2d"
     is_2d <- TRUE
     is_3d <- FALSE
   }
   ##
   missing.start.layout <- missing(start.layout)
-  start.layout <- setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
+  start.layout <-
+    setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
   ##
   mf <- match.call()
   ##

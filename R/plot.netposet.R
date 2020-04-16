@@ -282,14 +282,15 @@ plot.netposet <- function(x,
   }
   ##
   if (is_3d & !meta:::is.installed.package("rgl", stop = FALSE)) {
-    warning(paste("2-D plot generated as package 'rgl' is missing.",
-                  "\n  ",
-                  "Please install library 'rgl' in order to produce 3-D plots",
-                  "\n  ",
-                  "(R command: 'install.packages(\"rgl\")').",
-                  if (length(grep("darwin", R.Version()$os)) == 1)
-                    "\n  Note, macOS users have to install XQuartz, see https://www.xquartz.org/.",
-                  sep = ""))
+    warning(paste0("2-D plot generated as package 'rgl' is missing.",
+                   "\n  ",
+                   "Please install package 'rgl' in order to ",
+                   "produce 3-D plots\n  ",
+                   "(R command: 'install.packages(\"rgl\")').",
+                   if (length(grep("darwin", R.Version()$os)) == 1)
+                     paste0("\n  Note, macOS users have to install ",
+                            "XQuartz, see https://www.xquartz.org/.")
+                   ))
     dim <- "2d"
     is_2d <- TRUE
     is_3d <- FALSE

@@ -35,7 +35,7 @@ studies should be added to network graph.}
 \item{multiarm}{A logical indicating whether multi-arm studies
 should be marked in plot.}
 
-\item{col.multiarm}{Either a function from R library colorspace or
+\item{col.multiarm}{Either a function from R package colorspace or
 grDevice to define colors for multi-arm studies or a character
 vector with colors to highlight multi-arm studies.}
 
