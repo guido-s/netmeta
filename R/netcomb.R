@@ -624,6 +624,9 @@ netcomb <- function(x,
               n.matrix = x$n.matrix,
               events.matrix = x$events.matrix,
               ##
+              Cov.fixed = x$Cov.fixed,
+              Cov.random = x$Cov.random,
+              ##
               sm = x$sm,
               method = "Inverse",
               level = x$level,

@@ -560,6 +560,9 @@ plot.netrank <- function(..., name,
   ##
   dat$treat <- factor(dat$treat, levels = seq,
                       labels = treats(seq, nchar.trts))
+  ## Get rid of warnings 'Undefined global functions or variables'
+  treat <- dat$treat
+  pscore <- dat$pscore
   
   
   ##
@@ -568,7 +571,7 @@ plot.netrank <- function(..., name,
   ##
   ##
   plt <- ggplot(dat,
-                aes(x = dat$treat, y = dat$name, fill = as.numeric(dat$pscore)))
+                aes(x = treat, y = name, fill = as.numeric(pscore)))
   ##
   ## OPTIONS
   ##
@@ -593,7 +596,7 @@ plot.netrank <- function(..., name,
                          space = "Lab", name = "P-scores",
                          na.value = na.value)
   
-  plt <- plt + geom_text(aes(x = dat$treat, y = dat$name, label = dat$pscore),
+  plt <- plt + geom_text(aes(x = treat, y = name, label = pscore),
                          colour = col)
 
   if (!legend)

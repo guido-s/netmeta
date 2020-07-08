@@ -20,6 +20,8 @@
 #' @param offset Distance between edges (i.e. treatments) in graph and
 #'   treatment labels for 2-D plots (value of 0.0175 corresponds to a
 #'   difference of 1.75\% of the range on x- and y-axis).
+#' @param srt.labels A single numeric (between -180 and 180) or
+#'   numerical vector specifying the angle to rotate treatment labels.
 #' @param scale Additional space added outside of edges
 #'   (i.e. treatments).  Increase this value for larger treatment
 #'   labels (value of 1.10 corresponds to an additional space of 10\%
@@ -324,7 +326,7 @@
 
 netgraph.netmeta <- function(x, seq = x$seq,
                              labels = x$trts,
-                             cex = 1, adj = NULL,
+                             cex = 1, adj = NULL, srt.labels = 0,
                              offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
                              scale = 1.10,
                              col = "slateblue", plastic, thickness,
@@ -371,6 +373,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
   chknumeric <- meta:::chknumeric
   chklogical <- meta:::chklogical
   ##
+  chknumeric(srt.labels, min = -180, max = 180)
   chknumeric(lwd, min = 0, zero = TRUE, single = TRUE)
   chknumeric(lwd.min, min = 0, zero = TRUE, single = TRUE)
   chknumeric(lwd.max, min = 0, zero = TRUE, single = TRUE)
@@ -660,6 +663,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
                          cex = cex,
                          col = col,
                          adj = adj,
+                         srt.labels = srt.labels,
                          offset = offset,
                          scale = scale,
                          ##
@@ -712,7 +716,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
   ##
   ## Dataset for nodes
   ##
-  dat.nodes <- data.frame(trts, labels, seq,
+  dat.nodes <- data.frame(trts, labels, seq, srt = NA,
                           xpos, ypos, zpos = NA,
                           xpos.labels = NA, ypos.labels = NA,
                           cex = cex.points,
@@ -825,6 +829,17 @@ netgraph.netmeta <- function(x, seq = x$seq,
     dat.nodes$xpos.labels <- dat.nodes$xpos
     dat.nodes$ypos.labels <- dat.nodes$ypos
     dat.nodes$zpos.labels <- dat.nodes$zpos
+  }
+  ##
+  if (length(srt.labels) == 1)
+    dat.nodes$srt <- srt.labels
+  else {
+    if (length(srt.labels) != length(labels))
+      stop("Length of vector 'srt.labels' must be equal to",
+           "number of treatments.",
+           eval. = FALSE)
+    names(srt.labels) <- x$trts
+    dat.nodes$srt <- srt.labels[seq1]
   }
   ##
   ## Dataset for edges
@@ -1088,7 +1103,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
           text(dat.nodes$xpos.labels[i], dat.nodes$ypos.labels[i],
                labels = dat.nodes$labels[i],
                cex = cex,
-               adj = c(dat.nodes$adj.x[i], dat.nodes$adj.y[i]))
+               adj = c(dat.nodes$adj.x[i], dat.nodes$adj.y[i]),
+               srt = dat.nodes$srt[i])
       ##
       ## Print number of treatments
       ##

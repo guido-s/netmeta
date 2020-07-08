@@ -10,6 +10,7 @@
   labels = x$trts,
   cex = 1,
   adj = NULL,
+  srt.labels = 0,
   offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
   scale = 1.1,
   col = "slateblue",
@@ -68,6 +69,9 @@ of treatments arrangement (anticlockwise if \code{start.layout =
 matrix with length / number of rows equal to the number of
 treatments) specifying the x (and optionally y and z) adjustment
 for treatment labels.}
+
+\item{srt.labels}{A single numeric (between -180 and 180) or
+numerical vector specifying the angle to rotate treatment labels.}
 
 \item{offset}{Distance between edges (i.e. treatments) in graph and
 treatment labels for 2-D plots (value of 0.0175 corresponds to a
