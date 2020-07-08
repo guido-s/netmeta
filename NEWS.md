@@ -1,3 +1,23 @@
+## netmeta, version 6.6-0 (2020-mm-dd)
+
+### User-visible changes
+
+* netrank():
+  - can be used with network meta-analysis object created with
+    netcomb()
+
+* netgraph.netmeta():
+  - new argument 'srt' to rotate treatment labels
+  
+* plot.netrank():
+  - get rid of warnings 'Undefined global functions or variables'
+
+### Internal changes
+
+* netcomb():
+  - export covariance matrices 'Cov.fixed' and 'Cov.random'
+
+
 ## netmeta, version 1.2-1 (2020-04-15)
 
 ### Major changes

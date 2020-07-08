@@ -107,7 +107,7 @@ netrank <- function(x, small.values = "good") {
   
   ## Check for netmeta object
   ##
-  meta:::chkclass(x, "netmeta")
+  meta:::chkclass(x, c("netmeta", "netcomb"))
   small.values <- meta:::setchar(small.values, c("good", "bad"))
   
   
