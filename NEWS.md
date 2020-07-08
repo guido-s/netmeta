@@ -7,7 +7,7 @@
     netcomb()
 
 * netgraph.netmeta():
-  - new argument 'srt' to rotate treatment labels
+  - new argument 'srt.labels' to rotate treatment labels
   
 * plot.netrank():
   - get rid of warnings 'Undefined global functions or variables'

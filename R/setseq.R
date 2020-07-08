@@ -1,5 +1,7 @@
-setseq <- function(seq, levs) {
+setseq <- function(seq, levs, text) {
   name <- deparse(substitute(seq))
+  if (missing(text))
+      text <- paste0("Argument '", name, "'")
   ##
   if (length(levs) != length(seq))
     stop("Length of argument '", name,
@@ -25,8 +27,8 @@ setseq <- function(seq, levs) {
     else
       idx <- charmatch(seq, levs, nomatch = NA)
     if (anyNA(idx) || any(idx == 0))
-      stop(paste("Argument '", name,
-                 "' must be a permutation of the following values:\n  ",
+      stop(paste(text,
+                 " must be a permutation of the following values:\n  ",
                  paste(paste("'", levs, "'", sep = ""),
                        collapse = " - "), sep = ""), call. = FALSE)
     res <- levs[idx]

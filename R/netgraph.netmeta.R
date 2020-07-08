@@ -21,7 +21,8 @@
 #'   treatment labels for 2-D plots (value of 0.0175 corresponds to a
 #'   difference of 1.75\% of the range on x- and y-axis).
 #' @param srt.labels A single numeric (between -180 and 180) or
-#'   numerical vector specifying the angle to rotate treatment labels.
+#'   numerical vector specifying the angle to rotate treatment labels
+#'   (see Details).
 #' @param scale Additional space added outside of edges
 #'   (i.e. treatments).  Increase this value for larger treatment
 #'   labels (value of 1.10 corresponds to an additional space of 10\%
@@ -171,6 +172,16 @@
 #' any but the first method. By default, \code{thickness = "se.fixed"}
 #' is used if \code{start.layout = "circle"}, \code{iterate = FALSE},
 #' and \code{plastic = TRUE}. Otherwise, the same line width is used.
+#'
+#' Argument \code{srt.labels} can be used to specific the rotation (in
+#' degrees) of the treatment labels. If \code{srt.labels} is a single
+#' numeric, all labels are rotated by this degree. If
+#' \code{srt.labels} is a numeric vector, it must be of the same
+#' length as the number of treatments and labels are rotated
+#' counter-clockwise starting on the right side. If \code{srt.labels}
+#' is a named numeric vector, it must be of the same length as the
+#' number of treatments and the names must be equal to the treatment
+#' names.
 #' 
 #' Further, a couple of graphical parameters can be specified, such as
 #' color and appearance of the edges (treatments) and the nodes
@@ -311,6 +322,10 @@
 #' #
 #' netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
 #'          labels = LETTERS[1:10])
+#' 
+#' # Rotate treatment labels
+#' #
+#' netgraph(net1, srt.labels = 15 * 1:10)
 #' 
 #' # Network graph in 3-D (opens a new device, where you may rotate and
 #' # zoom the plot using the mouse / the mouse wheel).
@@ -838,8 +853,16 @@ netgraph.netmeta <- function(x, seq = x$seq,
       stop("Length of vector 'srt.labels' must be equal to",
            "number of treatments.",
            eval. = FALSE)
-    names(srt.labels) <- x$trts
-    dat.nodes$srt <- srt.labels[seq1]
+    if (is.null(names(srt.labels)))
+      dat.nodes$srt <- srt.labels
+    else {
+      ## Check names of named vector 'srt.labels'
+      names.srt.labels <- names(srt.labels)
+      names.srt.labels <- setseq(names.srt.labels, dat.nodes$trts,
+                                 paste0("Names of vector provided in ",
+                                        "argument 'srt.labels'"))
+      dat.nodes$srt <- srt.labels[dat.nodes$trts]
+    }
   }
   ##
   ## Dataset for edges
