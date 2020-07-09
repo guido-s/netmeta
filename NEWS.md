@@ -1,5 +1,9 @@
 ## netmeta, version 6.6-0 (2020-mm-dd)
 
+### Major changes
+
+* Treatment labels can be rotated in network graphs
+
 ### User-visible changes
 
 * netrank():

@@ -70,9 +70,10 @@ matrix with length / number of rows equal to the number of
 treatments) specifying the x (and optionally y and z) adjustment
 for treatment labels.}
 
-\item{srt.labels}{A single numeric (between -180 and 180) or
-numerical vector specifying the angle to rotate treatment labels
-(see Details).}
+\item{srt.labels}{The character string \code{"orthogonal"} (can be
+abbreviated), a single numeric or numerical vector with value(s)
+between -180 and 180 specifying the angle to rotate treatment
+labels (see Details).}
 
 \item{offset}{Distance between edges (i.e. treatments) in graph and
 treatment labels for 2-D plots (value of 0.0175 corresponds to a
@@ -289,14 +290,16 @@ is used if \code{start.layout = "circle"}, \code{iterate = FALSE},
 and \code{plastic = TRUE}. Otherwise, the same line width is used.
 
 Argument \code{srt.labels} can be used to specific the rotation (in
-degrees) of the treatment labels. If \code{srt.labels} is a single
-numeric, all labels are rotated by this degree. If
-\code{srt.labels} is a numeric vector, it must be of the same
-length as the number of treatments and labels are rotated
-counter-clockwise starting on the right side. If \code{srt.labels}
-is a named numeric vector, it must be of the same length as the
-number of treatments and the names must be equal to the treatment
-names.
+degrees) of the treatment labels. If \code{srt.labels} is equal to
+\code{"orthogonal"}, treatment labels are orthogonal to the
+circle. If \code{srt.labels} is a single numeric, all labels are
+rotated by this degree. If \code{srt.labels} is a numeric vector,
+it must be of the same length as the number of treatments and
+labels are rotated counter-clockwise starting on the right
+side. Finally, if \code{srt.labels} is a named numeric vector, it
+must be of the same length as the number of treatments and the
+names must be equal to the treatment names (and treatment labels
+are rotated according to the specified values).
 
 Further, a couple of graphical parameters can be specified, such as
 color and appearance of the edges (treatments) and the nodes
@@ -381,9 +384,9 @@ netgraph(net1, plastic = FALSE, thickness = FALSE)
 netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
          labels = LETTERS[1:10])
 
-# Rotate treatment labels
+# Rotate treatment labels (orthogonal to circle)
 #
-netgraph(net1, srt.labels = 15 * 1:10)
+netgraph(net1, srt.labels = "o")
 
 # Network graph in 3-D (opens a new device, where you may rotate and
 # zoom the plot using the mouse / the mouse wheel).

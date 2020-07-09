@@ -20,9 +20,10 @@
 #' @param offset Distance between edges (i.e. treatments) in graph and
 #'   treatment labels for 2-D plots (value of 0.0175 corresponds to a
 #'   difference of 1.75\% of the range on x- and y-axis).
-#' @param srt.labels A single numeric (between -180 and 180) or
-#'   numerical vector specifying the angle to rotate treatment labels
-#'   (see Details).
+#' @param srt.labels The character string \code{"orthogonal"} (can be
+#'   abbreviated), a single numeric or numerical vector with value(s)
+#'   between -180 and 180 specifying the angle to rotate treatment
+#'   labels (see Details).
 #' @param scale Additional space added outside of edges
 #'   (i.e. treatments).  Increase this value for larger treatment
 #'   labels (value of 1.10 corresponds to an additional space of 10\%
@@ -174,14 +175,16 @@
 #' and \code{plastic = TRUE}. Otherwise, the same line width is used.
 #'
 #' Argument \code{srt.labels} can be used to specific the rotation (in
-#' degrees) of the treatment labels. If \code{srt.labels} is a single
-#' numeric, all labels are rotated by this degree. If
-#' \code{srt.labels} is a numeric vector, it must be of the same
-#' length as the number of treatments and labels are rotated
-#' counter-clockwise starting on the right side. If \code{srt.labels}
-#' is a named numeric vector, it must be of the same length as the
-#' number of treatments and the names must be equal to the treatment
-#' names.
+#' degrees) of the treatment labels. If \code{srt.labels} is equal to
+#' \code{"orthogonal"}, treatment labels are orthogonal to the
+#' circle. If \code{srt.labels} is a single numeric, all labels are
+#' rotated by this degree. If \code{srt.labels} is a numeric vector,
+#' it must be of the same length as the number of treatments and
+#' labels are rotated counter-clockwise starting on the right
+#' side. Finally, if \code{srt.labels} is a named numeric vector, it
+#' must be of the same length as the number of treatments and the
+#' names must be equal to the treatment names (and treatment labels
+#' are rotated according to the specified values).
 #' 
 #' Further, a couple of graphical parameters can be specified, such as
 #' color and appearance of the edges (treatments) and the nodes
@@ -323,9 +326,9 @@
 #' netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
 #'          labels = LETTERS[1:10])
 #' 
-#' # Rotate treatment labels
+#' # Rotate treatment labels (orthogonal to circle)
 #' #
-#' netgraph(net1, srt.labels = 15 * 1:10)
+#' netgraph(net1, srt.labels = "o")
 #' 
 #' # Network graph in 3-D (opens a new device, where you may rotate and
 #' # zoom the plot using the mouse / the mouse wheel).
@@ -388,6 +391,26 @@ netgraph.netmeta <- function(x, seq = x$seq,
   chknumeric <- meta:::chknumeric
   chklogical <- meta:::chklogical
   ##
+  if (length(srt.labels) == 1 && is.character(srt.labels)) {
+    srt.labels <- setchar(srt.labels, "orthogonal",
+                          "should be equal to 'orthogonal' or numeric (vector)")
+    if (!missing(iterate) && iterate == TRUE) {
+      warning("Orthogonal labels not supported if argument 'iterate = TRUE'")
+      srt.labels <- 0
+    }
+    ##
+    srtfunc <- function(ntrt) {
+      s <- 180 * (2 * (1:ntrt) / ntrt - 1)
+      for (i in 1:ntrt) {
+        if (i < ntrt / 4)
+          s[i] <- 360 * i / ntrt
+        if (i > 3 * ntrt / 4)
+          s[i] <- 360 * (i / ntrt - 1)
+      }
+      s
+    }
+    srt.labels <- srtfunc(x$n)
+  }
   chknumeric(srt.labels, min = -180, max = 180)
   chknumeric(lwd, min = 0, zero = TRUE, single = TRUE)
   chknumeric(lwd.min, min = 0, zero = TRUE, single = TRUE)
