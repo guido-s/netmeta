@@ -327,7 +327,10 @@ summary.netmeta <- function(object,
   res$baseline.reference <- baseline.reference
   res$all.treatments <- all.treatments
   ##
-  class(res) <- "summary.netmeta"
+  if (is.bin)
+    class(res) <- c("summary.netmeta", "summary.netmetabin")
+  else
+    class(res) <- "summary.netmeta"
   
   res
 }
@@ -369,6 +372,8 @@ print.summary.netmeta <- function(x,
   
   
   meta:::chkclass(x, "summary.netmeta")
+  ##
+  is.bin <- inherits(x, "summary.netmetabin")
   ##
   chklogical <- meta:::chklogical
   chknumeric <- meta:::chknumeric
@@ -838,64 +843,86 @@ print.summary.netmeta <- function(x,
     else
       tau <- x$tau
     ##
-    cat(paste0("\nQuantifying heterogeneity / inconsistency:\n",
-               formatPT(tau^2,
-                        lab = TRUE, labval = text.tau2,
-                        digits = digits.tau2,
-                        lab.NA = "NA", big.mark = big.mark),
-               "; ",
-               formatPT(tau,
-                        lab = TRUE, labval = text.tau,
-                        digits = digits.tau,
-                        lab.NA = "NA", big.mark = big.mark),
-               if (!is.na(I2))
-                 paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
-               if (!(is.na(lower.I2) | is.na(upper.I2)))
-                 pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
-               "\n")
-        )
+    if (is.bin)
+      hi.txt <- "inconsistency (between designs)"
+    else if (x$d == 1)
+      hi.txt <- paste0("heterogeneity")
+    else
+      hi.txt <- "heterogeneity / inconsistency"
+    ##
+    if (!is.bin)
+      cat(paste0("\nQuantifying ", hi.txt, ":\n",
+                 formatPT(tau^2,
+                          lab = TRUE, labval = text.tau2,
+                          digits = digits.tau2,
+                          lab.NA = "NA", big.mark = big.mark),
+                 "; ",
+                 formatPT(tau,
+                          lab = TRUE, labval = text.tau,
+                          digits = digits.tau,
+                          lab.NA = "NA", big.mark = big.mark),
+                 if (!is.na(I2))
+                   paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
+                 if (!(is.na(lower.I2) | is.na(upper.I2)))
+                   pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
+                 "\n")
+          )
     
     
     if (m > 1) {
+
+      if (is.bin) {
+        Q.overall <- x$Q.inconsistency
+        df.Q.overall <- x$df.Q.inconsistency
+        pval.Q.overall <- formatPT(x$pval.Q.inconsistency,
+                                   digits = digits.pval.Q,
+                                   scientific = scientific.pval)
+      }
+      else {
+        Q.overall <- x$Q
+        if (oldversion) {
+          df.Q.overall <- x$df
+          pval.Q.overall <- ifelse(df.Q.overall == 0, "--",
+                                   formatPT(x$pval.Q,
+                                            digits = digits.pval.Q,
+                                            scientific = scientific.pval))
+        }
+        else {
+          df.Q.overall <- x$df.Q
+          pval.Q.overall <- formatPT(x$pval.Q,
+                                     digits = digits.pval.Q,
+                                     scientific = scientific.pval)
+        }
+      }
       
-      if (oldversion) {
-        Qdata <- cbind(round(x$Q, digits.Q), x$df,
-                       ifelse(x$df == 0, "--",
-                              formatPT(x$pval.Q, digits = digits.pval.Q,
-                                       scientific = scientific.pval)))
+      if (is.bin & x$d == 1)
+        cat("")
+      else if (x$d == 1 | is.bin |
+               is.na(x$Q.heterogeneity) | is.na(x$Q.inconsistency)) {
+        Qdata <- cbind(round(Q.overall, digits.Q), df.Q.overall,
+                       pval.Q.overall)
         
         dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
         ##
-        cat("\nTest of heterogeneity / inconsistency:\n")
+        cat(paste0("\nTest of ", hi.txt, ":\n"))
         prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
       }
       else {
-        if (x$d == 1 | is.na(x$Q.heterogeneity) | is.na(x$Q.inconsistency)) {
-          Qdata <- cbind(round(x$Q, digits.Q), x$df.Q,
-                         formatPT(x$pval.Q, digits = digits.pval.Q,
-                                  scientific = scientific.pval))
-          
-          dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
-          ##
-          cat("\nTest of heterogeneity / inconsistency:\n")
-          prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
-        }
-        else {
-          Qs <- c(x$Q, x$Q.heterogeneity, x$Q.inconsistency)
-          df.Qs <- c(x$df.Q, x$df.Q.heterogeneity, x$df.Q.inconsistency)
-          pval.Qs <- c(x$pval.Q, x$pval.Q.heterogeneity, x$pval.Q.inconsistency)
-          pval.Qs <- formatPT(pval.Qs, digits = digits.pval.Q,
-                              scientific = scientific.pval)
-          cat("\nTests of heterogeneity (within designs) and inconsistency (between designs):\n")
-          Qdata <- data.frame(Q = round(Qs, digits.Q),
-                              df = df.Qs,
-                              pval = pval.Qs)
-          names(Qdata) <- c("Q", "d.f.", "p-value")
-          rownames(Qdata) <- c("Total",
-                               "Within designs",
-                               "Between designs")
-          print(Qdata)
-        }
+        Qs <- c(x$Q, x$Q.heterogeneity, x$Q.inconsistency)
+        df.Qs <- c(x$df.Q, x$df.Q.heterogeneity, x$df.Q.inconsistency)
+        pval.Qs <- c(x$pval.Q, x$pval.Q.heterogeneity, x$pval.Q.inconsistency)
+        pval.Qs <- formatPT(pval.Qs, digits = digits.pval.Q,
+                            scientific = scientific.pval)
+        cat(paste0("\nTests of heterogeneity (within designs) and ",
+                   "inconsistency (between designs):\n"))
+        Qdata <- data.frame(Q = round(Qs, digits.Q),
+                            df = df.Qs,
+                            pval = pval.Qs)
+        names(Qdata) <- c("Q", "d.f.", "p-value")
+        rownames(Qdata) <- c("Total",
+                             "Within designs",
+                             "Between designs")
+        print(Qdata)
       }
     }
     

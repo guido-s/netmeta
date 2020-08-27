@@ -236,7 +236,8 @@ following components:
   matrices with z-value and p-value for test of overall treatment
   effect from direct evidence under random effects model (only
   available if \code{method = "Inverse"}).}
-\item{Q}{Overall heterogeneity / inconsistency statistic.}
+\item{Q}{Overall heterogeneity / inconsistency statistic. (only
+  available if \code{method = "Inverse"})}
 \item{df.Q}{Degrees of freedom for test of heterogeneity /
   inconsistency.}
 \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
@@ -244,6 +245,17 @@ following components:
   limits (only available if \code{method = "Inverse"}).}
 \item{tau}{Square-root of between-study variance (only available if
   \code{method = "Inverse"}).}
+\item{Q.heterogeneity}{Overall heterogeneity statistic. (only
+  available if \code{method = "Inverse"})}
+\item{df.Q.heterogeneity}{Degrees of freedom for test of overall
+  heterogeneity.}
+\item{pval.Q.heterogeneity}{P-value for test of overall
+  heterogeneity.}
+\item{Q.inconsistency}{Overall inconsistency statistic.}
+\item{df.Q.inconsistency}{Degrees of freedom for test of overall
+  inconsistency.}
+\item{pval.Q.inconsistency}{P-value for test of overall
+  inconsistency.}
 \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
 \item{H.matrix}{Hat matrix (\emph{m}x\emph{m})}
 \item{n.matrix}{\emph{n}x\emph{n} matrix with number of

@@ -241,7 +241,8 @@
 #'   matrices with z-value and p-value for test of overall treatment
 #'   effect from direct evidence under random effects model (only
 #'   available if \code{method = "Inverse"}).}
-#' \item{Q}{Overall heterogeneity / inconsistency statistic.}
+#' \item{Q}{Overall heterogeneity / inconsistency statistic. (only
+#'   available if \code{method = "Inverse"})}
 #' \item{df.Q}{Degrees of freedom for test of heterogeneity /
 #'   inconsistency.}
 #' \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
@@ -249,6 +250,17 @@
 #'   limits (only available if \code{method = "Inverse"}).}
 #' \item{tau}{Square-root of between-study variance (only available if
 #'   \code{method = "Inverse"}).}
+#' \item{Q.heterogeneity}{Overall heterogeneity statistic. (only
+#'   available if \code{method = "Inverse"})}
+#' \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
+#'   heterogeneity.}
+#' \item{pval.Q.heterogeneity}{P-value for test of overall
+#'   heterogeneity.}
+#' \item{Q.inconsistency}{Overall inconsistency statistic.}
+#' \item{df.Q.inconsistency}{Degrees of freedom for test of overall
+#'   inconsistency.}
+#' \item{pval.Q.inconsistency}{P-value for test of overall
+#'   inconsistency.}
 #' \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
 #' \item{H.matrix}{Hat matrix (\emph{m}x\emph{m})}
 #' \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
@@ -1827,18 +1839,18 @@ netmetabin <- function(event1, n1, event2, n2,
               zval.indirect.fixed = NA,
               pval.indirect.fixed = NA,
               ##
-              Q = Q,
-              df.Q = df.Q,
-              pval.Q = pval.Q,
+              Q = NA,
+              df.Q = NA,
+              pval.Q = NA,
               I2 = NA, lower.I2 = NA, upper.I2 = NA,
               tau = NA,
               ##
               Q.heterogeneity = NA,
               df.Q.heterogeneity = NA,
               pval.Q.heterogeneity = NA,
-              Q.inconsistency = NA,
-              df.Q.inconsistency = NA,
-              pval.Q.inconsistency = NA,
+              Q.inconsistency = Q,
+              df.Q.inconsistency = df.Q,
+              pval.Q.inconsistency = pval.Q,
               ##
               Q.decomp = NA,
               ##

@@ -4,8 +4,19 @@
 
 * Treatment labels can be rotated in network graphs
 
+### Bug fixes
+
+* netmetabin():
+  - not overall heterogeneity / inconsistency statistic calculated for
+    Mantel-Haenszel method, but, the overall inconsistency statistic
+    (treatment effects are aggregated within designs)
+    
 ### User-visible changes
 
+* print.summary.netmeta():
+  - output states "test of heterogeneity" for a single design and
+    "test of inconsistency" for Mantel-Haenszel method
+  
 * netrank():
   - can be used with network meta-analysis object created with
     netcomb()
