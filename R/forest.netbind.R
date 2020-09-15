@@ -125,8 +125,8 @@ forest.netbind <- function(x,
   ##
   chklogical(equal.size)
   ##
-  chknumeric(digits, min = 0, single = TRUE)
-  chknumeric(digits.prop, min = 0, single = TRUE)
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.prop, min = 0, length = 1)
   chklogical(backtransf)
   ##
   chkchar(lab.NA)

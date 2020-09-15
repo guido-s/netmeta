@@ -409,7 +409,7 @@ pairwise <- function(treat,
     else
       meta:::chknumeric(time)
   ##
-  meta:::chknumeric(incr, min = 0, single = TRUE)
+  meta:::chknumeric(incr, min = 0, length = 1)
   meta:::chklogical(allincr)
   meta:::chklogical(addincr)
   meta:::chklogical(allstudies)

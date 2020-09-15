@@ -199,7 +199,7 @@ print.netrank <- function(x,
   else
     meta:::chklogical(sort)
   ##
-  meta:::chknumeric(digits, single = TRUE)
+  meta:::chknumeric(digits, length = 1)
   
   
   both <- (comb.fixed + comb.random) == 2

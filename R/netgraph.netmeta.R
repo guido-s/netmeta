@@ -412,9 +412,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
     srt.labels <- srtfunc(x$n)
   }
   chknumeric(srt.labels, min = -180, max = 180)
-  chknumeric(lwd, min = 0, zero = TRUE, single = TRUE)
-  chknumeric(lwd.min, min = 0, zero = TRUE, single = TRUE)
-  chknumeric(lwd.max, min = 0, zero = TRUE, single = TRUE)
+  chknumeric(lwd, min = 0, zero = TRUE, length = 1)
+  chknumeric(lwd.min, min = 0, zero = TRUE, length = 1)
+  chknumeric(lwd.max, min = 0, zero = TRUE, length = 1)
   chknumeric(scale.highlight, min = 0, zero = TRUE)
   ##
   if (lwd.min > lwd.max)

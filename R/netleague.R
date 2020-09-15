@@ -275,7 +275,7 @@ netleague <- function(x, y,
   chklogical(ci)
   chklogical(backtransf)
   chklogical(direct)
-  chknumeric(digits, min = 0, single = TRUE)
+  chknumeric(digits, min = 0, length = 1)
   ##
   bracket.old <- gs("CIbracket")
   separator.old <- gs("CIseparator")

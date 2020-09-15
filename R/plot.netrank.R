@@ -348,16 +348,16 @@ plot.netrank <- function(..., name,
   chkchar(high)
   ##
   chklogical(legend)
-  chknumeric(main.size, min = 0, single = TRUE)
+  chknumeric(main.size, min = 0, length = 1)
   chkchar(main.face)
-  chknumeric(axis.size, min = 0, single = TRUE)
+  chknumeric(axis.size, min = 0, length = 1)
   chkchar(axis.face)
-  chknumeric(angle, min = -360, max = 360, single = TRUE)
-  chknumeric(hjust.x, min = 0, max = 1, single = TRUE)
-  chknumeric(vjust.x, min = 0, max = 1, single = TRUE)
-  chknumeric(hjust.y, min = 0, max = 1, single = TRUE)
-  chknumeric(vjust.y, min = 0, max = 1, single = TRUE)
-  chknumeric(digits, min = 0, single = TRUE)
+  chknumeric(angle, min = -360, max = 360, length = 1)
+  chknumeric(hjust.x, min = 0, max = 1, length = 1)
+  chknumeric(vjust.x, min = 0, max = 1, length = 1)
+  chknumeric(hjust.y, min = 0, max = 1, length = 1)
+  chknumeric(vjust.y, min = 0, max = 1, length = 1)
+  chknumeric(digits, min = 0, length = 1)
   ##
   print.warning1 <- FALSE
   print.warning2 <- FALSE
@@ -487,7 +487,7 @@ plot.netrank <- function(..., name,
       nchar.trts <- cns
   }
   else
-    chknumeric(nchar.trts, min = 1, single = TRUE)
+    chknumeric(nchar.trts, min = 1, length = 1)
   
   
   ##

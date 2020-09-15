@@ -5,7 +5,8 @@
 #' which is especially useful to generate a forest plot with results
 #' of several network meta-analyses.
 #' 
-#' @param ... Any number of meta-analysis objects (see Details).
+#' @param ... Any number of meta-analysis objects or a single list
+#'   with network meta-analyses.
 #' @param name An optional character vector providing descriptive
 #'   names for the network meta-analysis objects.
 #' @param comb.fixed A logical indicating whether results for the
@@ -99,18 +100,39 @@ netbind <- function(..., name,
   ## (1) Extract list elements and basic checks
   ##
   ##
+  is.nma <- function(x)
+    inherits(x, "netmeta") |
+      inherits(x, "netcomb") |
+      inherits(x, "discomb")
+  ##
   chklogical <- meta:::chklogical
   ##
   args <- list(...)
   ##
   n.netmeta <- length(args)
   n.i <- seq_len(n.netmeta)
+  ##
+  if (length(args) == 1) {
+    if (!is.list(args[[1]]))
+      stop("All elements of argument '...' must be of classes ",
+           "'netmeta', 'netcomb', or 'discomb'.",
+           call. = FALSE)
+    ##
+    if (!is.nma(args[[1]])) {
+      n.netmeta <- length(args[[1]])
+      n.i <- seq_len(n.netmeta)
+      ##
+      args2 <- list()
+      for (i in n.i)
+        args2[[i]] <- args[[1]][[i]]
+    }
+    args <- args2
+  }
   ##  
   for (i in n.i) {
-    if (!(inherits(args[[i]], "netmeta") |
-          inherits(args[[i]], "netcomb") |
-          inherits(args[[i]], "discomb")))
-      stop("All elements of argument '...' must be of classes 'netmeta', 'netcomb', or 'discomb'.",
+    if (!is.nma(args[[i]]))
+      stop("All elements of argument '...' must be of classes ",
+           "'netmeta', 'netcomb', or 'discomb'.",
            call. = FALSE)
   }
   ##

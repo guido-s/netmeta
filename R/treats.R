@@ -50,7 +50,7 @@
 
 treats <- function(x, nchar.trts = 8, row = TRUE) {
   
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
   meta:::chklogical(row)
   
   if (is.matrix(x)) {

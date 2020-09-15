@@ -27,11 +27,16 @@
 * plot.netrank():
   - get rid of warnings 'Undefined global functions or variables'
 
+* netbind():
+  - argument '...' can be a single list of network meta-analysis objects
+
 ### Internal changes
 
 * netcomb():
   - export covariance matrices 'Cov.fixed' and 'Cov.random'
 
+* Argument 'single' renamed to 'length' in calls of chkchar(),
+  chkcolor(), chklevel() and chknumeric()
 
 ## netmeta, version 1.2-1 (2020-04-15)
 

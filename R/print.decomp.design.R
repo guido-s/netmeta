@@ -53,9 +53,9 @@ print.decomp.design <- function(x,
   formatN <- meta:::formatN
   chknumeric <- meta:::chknumeric
   ##
-  chknumeric(digits.Q, min = 0, single = TRUE)
-  chknumeric(digits.pval.Q, min = 0, single = TRUE)
-  chknumeric(digits.tau2, min = 0, single = TRUE)
+  chknumeric(digits.Q, min = 0, length = 1)
+  chknumeric(digits.pval.Q, min = 0, length = 1)
+  chknumeric(digits.tau2, min = 0, length = 1)
   ##
   meta:::chklogical(showall)
   

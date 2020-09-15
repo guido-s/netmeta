@@ -341,7 +341,7 @@ netcomb <- function(x,
   meta:::chklogical(comb.random)
   ##
   if (!is.null(tau.preset))
-    meta:::chknumeric(tau.preset, min = 0, single = TRUE)
+    meta:::chknumeric(tau.preset, min = 0, length = 1)
   
   
   ##

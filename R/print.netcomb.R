@@ -83,13 +83,13 @@ print.netcomb <- function(x,
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(backtransf)
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
   ##
-  meta:::chknumeric(digits, min = 0, single = TRUE)
-  meta:::chknumeric(digits.zval, min = 0, single = TRUE)
-  meta:::chknumeric(digits.pval, min = 1, single = TRUE)
-  meta:::chknumeric(digits.pval.Q, min = 1, single = TRUE)
-  meta:::chknumeric(digits.Q, min = 0, single = TRUE)
+  meta:::chknumeric(digits, min = 0, length = 1)
+  meta:::chknumeric(digits.zval, min = 0, length = 1)
+  meta:::chknumeric(digits.pval, min = 1, length = 1)
+  meta:::chknumeric(digits.pval.Q, min = 1, length = 1)
+  meta:::chknumeric(digits.Q, min = 0, length = 1)
   ##
   meta:::chklogical(scientific.pval)
   

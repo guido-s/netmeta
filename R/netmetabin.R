@@ -462,15 +462,15 @@ netmetabin <- function(event1, n1, event2, n2,
     chklogical(all.treatments)
   ##
   if (!is.null(tau.preset))
-    chknumeric(tau.preset, min = 0, single = TRUE)
+    chknumeric(tau.preset, min = 0, length = 1)
   ##
-  chknumeric(tol.multiarm, min = 0, single = TRUE)
-  chknumeric(tol.multiarm.se, min = 0, single = TRUE)
+  chknumeric(tol.multiarm, min = 0, length = 1)
+  chknumeric(tol.multiarm.se, min = 0, length = 1)
   chklogical(details.chkmultiarm)
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
-  chknumeric(nchar.trts, min = 1, single = TRUE)
+  chknumeric(nchar.trts, min = 1, length = 1)
   ##
   chklogical(backtransf)
   ##

@@ -225,7 +225,7 @@ netsplit <- function(x, method,
   meta:::chklogical(baseline.reference)
   meta:::chkchar(sep.trts)
   meta:::chkchar(quote.trts)
-  meta:::chknumeric(tol.direct, min = 0, single = TRUE)
+  meta:::chknumeric(tol.direct, min = 0, length = 1)
   meta:::chklogical(warn)
   
   
@@ -805,10 +805,10 @@ print.netsplit <- function(x,
   chklogical(ci)
   chklogical(test)
   ##
-  chknumeric(digits, min = 0, single = TRUE)
-  chknumeric(digits.zval, min = 0, single = TRUE)
-  chknumeric(digits.pval, min = 1, single = TRUE)
-  chknumeric(digits.prop, min = 0, single = TRUE)
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.zval, min = 0, length = 1)
+  chknumeric(digits.pval, min = 1, length = 1)
+  chknumeric(digits.prop, min = 0, length = 1)
   ##
   if (is.null(backtransf))
     backtransf <- TRUE

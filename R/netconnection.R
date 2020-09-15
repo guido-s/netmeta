@@ -128,7 +128,7 @@ netconnection <- function(treat1, treat2, studlab,
   if (missing(treat2))
     stop("Argument 'treat2' is mandatory.")
   ##
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
   ##
   meta:::chklogical(warn)
   
@@ -322,8 +322,8 @@ print.netconnection <- function(x,
     nchar.trts <- 666
   
   
-  meta:::chknumeric(digits, single = TRUE)
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  meta:::chknumeric(digits, length = 1)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
   
   
   matitle(x)

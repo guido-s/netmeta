@@ -48,7 +48,7 @@ print.netimpact <- function(x,
   
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
-  meta:::chknumeric(digits, min = 0, single = TRUE)
+  meta:::chknumeric(digits, min = 0, length = 1)
   
   
   ##

@@ -135,7 +135,7 @@ netmeasures <- function(x,
   }
   ##
   if (!is.null(tau.preset)) {
-    meta:::chknumeric(tau.preset, min = 0, single = TRUE)
+    meta:::chknumeric(tau.preset, min = 0, length = 1)
     if (!random & warn) {
       warning("Measures calculated for random effects model (argument random=TRUE) as argument 'tau.preset' is provided.")
     }

@@ -112,8 +112,10 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   
   meta:::chkclass(x, "netmeta")
+  ##
+  meta:::chklogical(random)
   meta:::chklogical(showall)
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
   
   
   if (is.null(x$nchar.trts))
