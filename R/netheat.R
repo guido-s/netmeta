@@ -212,7 +212,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
             call. = FALSE)
     return(invisible(NULL))
   }
-  else if (df.Q.between.designs > 1 & !all(is.na(residuals))) {
+  else if (df.Q.between.designs > 1 & !any(!is.na(residuals))) {
     warning("Net heat plot not available because detaching ",
             "single designs leads to a insufficiently connected network.",
             call. = FALSE)
