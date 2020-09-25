@@ -200,15 +200,16 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   df.Q.between.designs <- decomp$Q.decomp["Between designs", "df"]
   ##
-  if (df.Q.between.designs == 1) {
-    warning("Net heat plot not available because detaching single designs ",
-            "leads to a network without loops.",
+  if (df.Q.between.designs == 0) {
+    warning("Net heat plot not available because the network ",
+            "does not contain any loop",
+            if (any(x$narms > 2)) " of independent studies." else ".",
             call. = FALSE)
     return(invisible(NULL))
   }
-  else if (df.Q.between.designs == 0) {
-    warning("Net heat plot not available because the network does not ",
-            "contain any loop.",
+  else if (df.Q.between.designs == 1) {
+    warning("Net heat plot not available because detaching single designs ",
+            "leads to a network without loops.",
             call. = FALSE)
     return(invisible(NULL))
   }
