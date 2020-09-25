@@ -141,7 +141,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   if (random == FALSE & length(tau.preset) == 0) {
     nmak <- nma.krahn(x)
     if (is.null(nmak)) {
-      warning("Only a single design in network meta-analysis.", call. = FALSE)
+      warning("Only a single design in network meta-analysis.",
+              call. = FALSE)
       return(invisible(NULL))
     }
     decomp <- decomp.design(x)
@@ -152,7 +153,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   if (length(tau.preset) == 1) {
     nmak <- nma.krahn(x, tau.preset = tau.preset)
     if (is.null(nmak)) {
-      warning("Only a single design in network meta-analysis.", call. = FALSE)
+      warning("Only a single design in network meta-analysis.",
+              call. = FALSE)
       return(invisible(NULL))
     }
     decomp <- decomp.design(x, tau.preset = tau.preset)
@@ -164,7 +166,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
     tau.within <- tau.within(x)
     nmak <- nma.krahn(x, tau.preset = tau.within)
     if (is.null(nmak)) {
-      warning("Only a single design in network meta-analysis.", call. = FALSE)
+      warning("Only a single design in network meta-analysis.",
+              call. = FALSE)
       return(invisible(NULL))
     }
     decomp <- decomp.design(x, tau.preset = tau.within)
@@ -174,13 +177,16 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   
   if (nmak$d <= 2) {
-    warning("Net heat plot not available due to small number of designs: ", nmak$d)
+    warning("Net heat plot not available due to small number of designs: ",
+            nmak$d,
+            call. = FALSE)
     return(invisible(NULL))
   }
   
   
   if (!showall)
-    drop.designs <- names(Q.inc.design)[abs(Q.inc.design) <= .Machine$double.eps^0.5]
+    drop.designs <-
+      names(Q.inc.design)[abs(Q.inc.design) <= .Machine$double.eps^0.5]
   
   
   H <- nmak$H
@@ -192,8 +198,24 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
     design <- nmak$design
   
   
-  if (!any(!is.na(residuals) & residuals > .Machine$double.eps^0.5)) {
-    warning("Net heat plot not available due to insufficient information about between-design heterogeneity.")
+  df.Q.between.designs <- decomp$Q.decomp["Between designs", "df"]
+  ##
+  if (df.Q.between.designs == 1) {
+    warning("Net heat plot not available because detaching single designs ",
+            "leads to a network without loops.",
+            call. = FALSE)
+    return(invisible(NULL))
+  }
+  else if (df.Q.between.designs == 0) {
+    warning("Net heat plot not available because the network does not ",
+            "contain any loop.",
+            call. = FALSE)
+    return(invisible(NULL))
+  }
+  else if (df.Q.between.designs > 1 & !all(is.na(residuals))) {
+    warning("Net heat plot not available because detaching ",
+            "single designs leads to a insufficiently connected network.",
+            call. = FALSE)
     return(invisible(NULL))
   }
   ##
@@ -210,12 +232,16 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
                  !(colnames(diff) %in% drop.designs), drop = FALSE]
   ##
   if (all(is.na(diff))) {
-    warning("Net heat plot not available as no between-design heterogeneity exists.")
+    warning("Net heat plot not available as ",
+            "no between-design heterogeneity exists.",
+            call. = FALSE)
     return(invisible(NULL))
   }
   ##
   if (length(diff) == 1) {
-    warning("Net heat plot not available due to small number of informative designs.")
+    warning("Net heat plot not available due to small number of ",
+            "informative designs.",
+            call. = FALSE)
     return(invisible(NULL))
   }
   
@@ -246,12 +272,14 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   ncolo <- 40
   sat <- min(max(abs(tn)) / 8, 1)
   nblue <- ifelse((max(max(tn), 0) - min(min(tn), 0)) != 0,
-                  round(max(max(tn), 0) / (max(max(tn), 0) - min(min(tn), 0)) * ncolo),
+                  round(max(max(tn), 0) /
+                        (max(max(tn), 0) - min(min(tn), 0)) * ncolo),
                   0)
   bf <- min(max(max(tn), 0) / abs(min(min(tn), 0)), 1) * sat
   clev <- seq(from = 1, to = 1 - bf, len = nblue)
   heat.vec <- heat.colors(round((ncolo - nblue - 1) / max(sat, 0.00001)))
-  mycol <- c(heat.vec[(length(heat.vec) - (ncolo - nblue - 1) + 1):length(heat.vec)],
+  mycol <- c(heat.vec[(length(heat.vec) -
+                       (ncolo - nblue - 1) + 1):length(heat.vec)],
              rgb(1, 1, 1), rgb(clev, clev, 1))
   
   
@@ -291,7 +319,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
     for (i in 1:(length(as.character(design2$comparison)))) {
       if ((((design2$narms)[h1$order])[i]) > 2)
         design.comb[i] <- paste(as.character(design2$comparison)[h1$order][i],
-                                as.character(design2$design)[h1$order][i], sep = "_")
+                                as.character(design2$design)[h1$order][i],
+                                sep = "_")
       else
         design.comb[i] <-as.character(design2$comparison)[h1$order][i]
     }
@@ -330,18 +359,21 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
     
     
     for (i in 1:ncol(x)) {
-      actual.size <- (sqrt((size[, i] - min.sv) / (max.sv - min.sv)) + min.size) /
+      actual.size <-
+        (sqrt((size[, i] - min.sv) / (max.sv - min.sv)) + min.size) /
         (1 + 4 * min.size) * runit / 2
       ##
       rect(center.x - runit / 2, center.y[i] - runit / 2,
            center.x + runit / 2, center.y[i] + runit / 2,
-           col = bg.col[unlist(lapply(x[, i], function(arg) sum(arg >= val.grid)))],
+           col = bg.col[unlist(lapply(x[, i],
+                                      function(arg) sum(arg >= val.grid)))],
            border = NA)
       ##
       if (box.bg)
         rect(center.x - actual.size, center.y[i] - actual.size,
              center.x + actual.size, center.y[i] + actual.size,
-             col = fg.col[unlist(lapply(x[, i], function(arg) sum(arg >= val.grid)))],
+             col = fg.col[unlist(lapply(x[, i],
+                                        function(arg) sum(arg >= val.grid)))],
              border = NA)
       if (!is.null(labels))
         text(center.x, center.y[i], labels[, i], cex = cex)

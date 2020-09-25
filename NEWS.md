@@ -4,6 +4,8 @@
 
 * Treatment labels can be rotated in network graphs
 
+* Additional checks whether net heat plot is feasible
+
 ### Bug fixes
 
 * netmetabin():
@@ -37,6 +39,7 @@
 
 * Argument 'single' renamed to 'length' in calls of chkchar(),
   chkcolor(), chklevel() and chknumeric()
+
 
 ## netmeta, version 1.2-1 (2020-04-15)
 
