@@ -47,6 +47,11 @@
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
 #' @param big.mark A character used as thousands separator.
+#' @param truncate An optional vector used to truncate the printout of
+#'   results for individual studies (must be a logical vector of same
+#'   length as \code{x$TE} or contain numerical values).
+#' @param text.truncate A character string printed if study results
+#'   were truncated from the printout.
 #' @param \dots Additional arguments.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
@@ -64,6 +69,25 @@
 #'                 data = Senn2013, sm = "MD",
 #'                 comb.random = FALSE)
 #' print(net1, ref = "plac", digits = 3)
+#' 
+#' # Only show individual study results for multi-arm studies
+#' #
+#' print(net1, ref = "plac", digits = 3, truncate = multiarm)
+#' 
+#' # Only show first three individual study results
+#' #
+#' print(net1, ref = "plac", digits = 3, truncate = 1:3)
+#' 
+#' # Only show individual study results for Kim2007 and Willms1999
+#' #
+#' print(net1, ref = "plac", digits = 3,
+#'       truncate = c("Kim2007", "Willms1999"))
+#' 
+#' # Only show individual study results for studies starting with the
+#' # letter "W"
+#' #
+#' print(net1, ref = "plac", digits = 3,
+#'       truncate = substring(studlab, 1, 1) == "W")
 #' 
 #' \dontrun{
 #' # Conduct random effects network meta-analysis
@@ -97,6 +121,7 @@ print.netmeta <- function(x,
                           digits.I2 = gs("digits.I2"),
                           scientific.pval = gs("scientific.pval"),
                           big.mark = gs("big.mark"),
+                          truncate, text.truncate = "*** Output truncated ***",
                           ...
                           ) {
   
@@ -104,6 +129,7 @@ print.netmeta <- function(x,
   meta:::chkclass(x, "netmeta")
   ##  
   x <- upgradenetmeta(x)
+  k.all <- length(x$TE)
   ##
   formatN <- meta:::formatN
   formatCI <- meta:::formatCI
@@ -138,8 +164,50 @@ print.netmeta <- function(x,
   meta:::warnarg("logscale", addargs, fun, otherarg = "backtransf")
   
   
+  mf <- match.call()
+  ##
+  ## Catch 'truncate' from network meta-analysis object:
+  ##
+  missing.truncate <- missing(truncate)
+  if (!missing.truncate) {
+    truncate <- eval(mf[[match("truncate", names(mf))]],
+                     x, enclos = sys.frame(sys.parent()))
+    ##
+    if (is.null(truncate))
+      truncate <- eval(mf[[match("truncate", names(mf))]],
+                       x$data, enclos = sys.frame(sys.parent()))
+    ##
+    if (length(truncate) > k.all)
+      stop("Length of argument 'truncate' is too long.",
+           call. = FALSE)
+    else if (length(truncate) < k.all) {
+      if (is.numeric(truncate)) {
+        if (any(is.na(truncate)) | max(truncate) > k.all | min(truncate) < 0)
+          stop("Numeric values in argument 'truncate' must be between 1 and ",
+               k.all, ".",
+               call. = FALSE)
+        truncate2 <- rep(FALSE, k.all)
+        truncate2[truncate] <- TRUE
+        truncate <- truncate2
+      }
+      else if (is.character(truncate)) {
+        if (any(!(truncate %in% x$studlab)))
+          stop("At least one value of argument 'truncate' does not ",
+               "match a study label.",
+               call. = FALSE)
+        truncate2 <- rep(FALSE, k.all)
+        truncate2[x$studlab %in% truncate] <- TRUE
+        truncate <- truncate2
+      }
+      else
+        stop("Argument 'truncate' must contain integers or study labels if ",
+             "length differs from number of treatment effects.",
+             call. = FALSE)
+    }
+  }
+  
+  
   if (!inherits(x, "netmetabin")) {
-    k.all <- length(x$TE)
     ##
     if (missing(sortvar)) sortvar <- 1:k.all
     ##
@@ -196,14 +264,26 @@ print.netmeta <- function(x,
       ##
       res <- as.matrix(res)
       dimnames(res)[[1]] <- x$studlab
+      ##
+      if (!missing.truncate) {
+        sortvar <- sortvar[truncate]
+        res <- res[truncate, , drop = FALSE]
+      }
       
       prmatrix(res[order(sortvar), , drop = FALSE],
                quote = FALSE, right = TRUE)
+      if (!missing.truncate)
+        cat(text.truncate, "\n")
       cat("\n")
-      
+
+      studyarms <- data.frame(narms = x$narms, row.names = x$studies)
+      if (!missing.truncate)
+        studyarms <-
+          studyarms[rownames(studyarms) %in% rownames(res), , drop = FALSE]
       cat("Number of treatment arms (by study):\n")
-      prmatrix(data.frame(narms = x$narms, row.names = x$studies),
-               quote = FALSE, right = TRUE)
+      prmatrix(studyarms, quote = FALSE, right = TRUE)
+      if (!missing.truncate)
+        cat(text.truncate, "\n")
       cat("\n")
     }
     
@@ -262,18 +342,26 @@ print.netmeta <- function(x,
     if (comb.fixed) {
       cat("Results (fixed effects model):\n\n")
       
+      if (!missing.truncate)
+        res.f <- res.f[truncate, , drop = FALSE]
+      ##
       prmatrix(res.f[order(sortvar), , drop = FALSE],
                quote = FALSE, right = TRUE)
-      
+      if (!missing.truncate)
+        cat(text.truncate, "\n")      
       cat("\n")
     }
     
     if (comb.random) {
       cat("Results (random effects model):\n\n")
       
+      if (!missing.truncate)
+        res.r <- res.r[truncate, , drop = FALSE]
+      ##
       prmatrix(res.r[order(sortvar), , drop = FALSE],
                quote = FALSE, right = TRUE)
-      
+      if (!missing.truncate)
+        cat(text.truncate, "\n")      
       cat("\n")
     }
   }

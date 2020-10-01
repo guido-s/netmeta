@@ -1,4 +1,4 @@
-## netmeta, version 6.6-0 (2020-mm-dd)
+## netmeta, version 6.6-6 (2020-mm-dd)
 
 ### Major changes
 
@@ -12,6 +12,12 @@
   - not overall heterogeneity / inconsistency statistic calculated for
     Mantel-Haenszel method, but, the overall inconsistency statistic
     (treatment effects are aggregated within designs)
+
+* decomp.design(), netheat():
+  - do not conduct decomposition of designs for objects created with
+    netmetabin(); reported decomposition and net heat plot referred to
+    reanalysis using netmeta()
+
     
 ### User-visible changes
 
@@ -31,6 +37,16 @@
 
 * netbind():
   - argument '...' can be a single list of network meta-analysis objects
+  
+* print.netmeta():
+  - new arguments 'truncate' and 'text.truncate' to only show
+    selection of individual study results (useful for very long
+    printouts or to only show individual results of multi-arm
+    studies))
+  
+* print.netconnection():
+  - new argument 'distance' in order to print the distance matrix
+  - by default, do not print the distance matrix
 
 ### Internal changes
 

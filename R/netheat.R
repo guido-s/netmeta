@@ -146,6 +146,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
       return(invisible(NULL))
     }
     decomp <- decomp.design(x)
+    if (!is.null(attributes(decomp)$netmetabin))
+      return(invisible(NULL))
     residuals <- decomp$residuals.inc.detach
     Q.inc.design <- decomp$Q.inc.design
   }
@@ -158,6 +160,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
       return(invisible(NULL))
     }
     decomp <- decomp.design(x, tau.preset = tau.preset)
+    if (!is.null(attributes(decomp)$netmetabin))
+      return(invisible(NULL))
     residuals <- decomp$residuals.inc.detach.random.preset
     Q.inc.design <- decomp$Q.inc.design.random.preset
   }
@@ -171,6 +175,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
       return(invisible(NULL))
     }
     decomp <- decomp.design(x, tau.preset = tau.within)
+    if (!is.null(attributes(decomp)$netmetabin))
+      return(invisible(NULL))
     residuals <- decomp$residuals.inc.detach.random.preset
     Q.inc.design <- decomp$Q.inc.design.random.preset
   }
@@ -203,7 +209,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   if (df.Q.between.designs == 0) {
     warning("Net heat plot not available because the network ",
             "does not contain any loop",
-            if (any(x$narms > 2)) " of independent studies." else ".",
+            if (any(x$narms > 2)) " along more than one design." else ".",
             call. = FALSE)
     return(invisible(NULL))
   }

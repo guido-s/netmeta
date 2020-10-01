@@ -60,6 +60,23 @@ print.decomp.design <- function(x,
   meta:::chklogical(showall)
   
   
+  if (!is.null(attributes(x)$netmetabin)) {
+    Qdata <- x$Q.decomp
+    ##
+    Qdata$Q <- round(Qdata$Q, digits.Q)
+    Qdata$pval <- meta:::formatPT(Qdata$pval,
+                                  digits = digits.pval.Q,
+                                  scientific = scientific.pval)
+    ##
+    dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
+    ##
+    cat(paste0("\nTest of inconsistency (between designs):\n"))
+    prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
+    ##
+    return(invisible(NULL))
+  }
+  
+  
   Q.decomp <- x$Q.decomp
   Q.design <- x$Q.het.design
   Q.detach <- x$Q.inc.detach

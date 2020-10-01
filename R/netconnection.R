@@ -33,6 +33,8 @@
 #' @param x An object of class \code{netconnection}.
 #' @param digits Minimal number of significant digits, see
 #'   \code{\link{print.default}}.
+#' @param details A logical indicating whether to print the distance
+#'   matrix.
 #' @param ... Additional arguments (ignored at the moment)
 #' 
 #' @return
@@ -82,7 +84,7 @@
 #' t2 <- c("B", "C", "E", "E", "H", "A")
 #' #
 #' nc2 <- netconnection(t1, t2)
-#' nc2
+#' print(nc2, details = TRUE)
 #' 
 #' # Number of subnetworks
 #' #
@@ -314,7 +316,9 @@ netconnection <- function(treat1, treat2, studlab,
 
 print.netconnection <- function(x,
                                 digits = max(4, .Options$digits - 3),
-                                nchar.trts = x$nchar.trts, ...) {
+                                nchar.trts = x$nchar.trts,
+                                details = FALSE,
+                                ...) {
   
   meta:::chkclass(x, "netconnection")
   ##
@@ -324,6 +328,7 @@ print.netconnection <- function(x,
   
   meta:::chknumeric(digits, length = 1)
   meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  meta:::chklogical(details)
   
   
   matitle(x)
@@ -332,33 +337,35 @@ print.netconnection <- function(x,
   cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
   cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
   ##
-  cat("Number of subnetworks: ", x$n.subnets, "\n\n", sep = "")
-  
-  cat("Distance matrix:\n")
-  
-  D <- round(x$D.matrix, digits = digits)
-  D[is.infinite(D)] <- "."
-  ##
-  if (x$n.subnets == 1)
-    diag(D) <- "."
-  ##
-  rownames(D) <- treats(rownames(D), nchar.trts)
-  colnames(D) <- treats(colnames(D), nchar.trts)
-  ##
-  prmatrix(D, quote = FALSE, right = TRUE)
-  
-  
-  if (any(rownames(x$D.matrix) != rownames(D))) {
-    abbr <- rownames(D)
-    full <- rownames(x$D.matrix)
+  cat("Number of subnetworks: ", x$n.subnets, "\n", sep = "")
+
+  if (details) {
+    cat("\nDistance matrix:\n")
+    
+    D <- round(x$D.matrix, digits = digits)
+    D[is.infinite(D)] <- "."
     ##
-    tmat <- data.frame(abbr, full)
-    names(tmat) <- c("Abbreviation", "Treatment name")
-    tmat <- tmat[order(tmat$Abbreviation), ]
+    if (x$n.subnets == 1)
+      diag(D) <- "."
     ##
-    cat("\nLegend:\n")
-    prmatrix(tmat, quote = FALSE, right = TRUE,
-             rowlab = rep("", length(abbr)))
+    rownames(D) <- treats(rownames(D), nchar.trts)
+    colnames(D) <- treats(colnames(D), nchar.trts)
+    ##
+    prmatrix(D, quote = FALSE, right = TRUE)
+    
+    
+    if (any(rownames(x$D.matrix) != rownames(D))) {
+      abbr <- rownames(D)
+      full <- rownames(x$D.matrix)
+      ##
+      tmat <- data.frame(abbr, full)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat("\nLegend:\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(abbr)))
+    }
   }
   
   
