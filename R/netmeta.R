@@ -1208,8 +1208,8 @@ netmeta <- function(TE, seTE,
   ##
   n <- res$n
   ##
-  res$prop.direct.fixed  <- netmeasures(res, random = FALSE,
-                                        warn = warn)$proportion
+  res$prop.direct.fixed <-
+    netmeasures(res, random = FALSE, warn = warn)$proportion
   ## Print warning(s) in call of netmeasures() once
   res$prop.direct.random <-
     suppressWarnings(netmeasures(res, random = TRUE,

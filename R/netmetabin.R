@@ -1164,15 +1164,13 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ## Empty matrices for results
   ##
-  Z <- matrix(NA, nrow = n.treat, ncol = n.treat)
-  rownames(Z) <- colnames(Z) <- trts
+  NAmatrix <- matrix(NA, nrow = n.treat, ncol = n.treat)
+  rownames(NAmatrix) <- colnames(NAmatrix) <- trts
   ##
-  TE.fixed <- seTE.fixed <- Z
-  TE.direct.fixed <- seTE.direct.fixed <- Z
-  ##
-  rm(Z)
-
-
+  TE.fixed <- seTE.fixed <- NAmatrix
+  TE.direct.fixed <- seTE.direct.fixed <- NAmatrix
+  
+  
   ##
   ##
   ## (7) Conduct classic network meta-analysis using inverse variance
@@ -1772,10 +1770,6 @@ netmetabin <- function(event1, n1, event2, n2,
   }
   
   
-  NAmatrix <- TE.fixed
-  NAmatrix[!is.na(NAmatrix)] <- NA
-  
-  
   res <- list(studlab = studlab,
               treat1 = treat1,
               treat2 = treat2,
@@ -1832,12 +1826,26 @@ netmetabin <- function(event1, n1, event2, n2,
               zval.direct.fixed = ci.d$z,
               pval.direct.fixed = ci.d$p,
               ##
+              TE.direct.random = NAmatrix,
+              seTE.direct.random = NAmatrix,
+              lower.direct.random = NAmatrix,
+              upper.direct.random = NAmatrix,
+              zval.direct.random = NAmatrix,
+              pval.direct.random = NAmatrix,
+              ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
               lower.indirect.fixed = NA,
               upper.indirect.fixed = NA,
               zval.indirect.fixed = NA,
               pval.indirect.fixed = NA,
+              ##
+              TE.indirect.random = NA,
+              seTE.indirect.random = NA,
+              lower.indirect.random = NA,
+              upper.indirect.random = NA,
+              zval.indirect.random = NA,
+              pval.indirect.random = NA,
               ##
               Q = NA,
               df.Q = NA,
@@ -1910,6 +1918,78 @@ netmetabin <- function(event1, n1, event2, n2,
               )
   ##
   class(res) <- c("netmetabin", "netmeta")
+  ##
+  ## Add results for indirect treatment estimates
+  ##
+  n <- res$n
+  ##
+  res$prop.direct.fixed <-
+    netmeasures(res, random = FALSE, warn = warn)$proportion
+  if (is.logical(res$prop.direct.fixed))
+    res$prop.direct.fixed <- as.numeric(res$prop.direct.fixed)
+  ##
+  P.fixed <- P.random <- matrix(NA, n, n)
+  colnames(P.fixed) <- rownames(P.fixed) <-
+    colnames(P.random) <- rownames(P.random) <- trts
+  ##
+  if (n == 2) {
+    ##
+    ## For two treatments only direct evidence is available
+    ##
+    res$prop.direct.fixed <- 1
+    names(res$prop.direct.fixed) <- paste(labels, collapse = sep.trts)
+    ##
+    sel <- row(P.fixed) != col(P.fixed)
+    P.fixed[sel] <- 1
+  }
+  else {
+    k <- 0
+    for (i in 1:(n - 1)) {
+      for (j in (i + 1):n) {
+        k <- k + 1
+        P.fixed[i, j] <- P.fixed[j, i] <- res$prop.direct.fixed[k]
+      }
+    }
+  }
+  ##
+  ## Set direct evidence estimates to 0 if only indirect evidence is available
+  ## (otherwise indirect estimates would be NA as direct estimates are NA)
+  ##
+  TE.direct.fixed <- res$TE.direct.fixed
+  ##
+  TE.direct.fixed[abs(P.fixed) < .Machine$double.eps^0.5] <- 0
+  ##
+  ## Indirect estimate is NA if only direct evidence is available
+  ##
+  res$P.fixed <- P.fixed
+  ##
+  P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
+  ##
+  ## Fixed effects model
+  ##
+  ci.if <- ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
+              sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
+              level = level)
+  ##
+  res$TE.indirect.fixed   <- ci.if$TE
+  res$seTE.indirect.fixed <- ci.if$seTE
+  ##
+  res$lower.indirect.fixed <- ci.if$lower
+  res$upper.indirect.fixed <- ci.if$upper
+  ##
+  res$zval.indirect.fixed <- ci.if$z
+  res$pval.indirect.fixed <- ci.if$p
+  ##
+  ## No results for random effects model
+  ##
+  res$prop.direct.random <- res$prop.direct.fixed
+  res$prop.direct.random[!is.na(res$prop.direct.random)] <- NA
+  res$P.random <- P.random
+  ##
+  res$TE.indirect.random <- res$seTE.indirect.random <-
+    res$lower.indirect.random <- res$upper.indirect.random <-
+      res$zval.indirect.random <- res$pval.indirect.random <-
+        NAmatrix
   
   
   ##

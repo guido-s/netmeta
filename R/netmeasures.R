@@ -118,13 +118,28 @@ netmeasures <- function(x,
                         tau.preset = x$tau.preset, warn = TRUE) {
   
   
+  ##
+  ##
+  ## (1) Checks
+  ##
+  ##
   meta:::chkclass(x, "netmeta")
-  
-  
-  x$reference.group <- ""
-  
-  
+  ##
+  is.bin <- inherits(x, "netmetabin")
+  ##
   meta:::chklogical(random)
+  if (is.bin & random) {
+    txt <-
+      paste0("Argument 'random' set to FALSE for ",
+             if (x$method == "MH")
+               "Mantel-Haenszel method"
+             else
+               "non-central hypergeometric distribution",
+             ".")
+    if (warn)
+      warning(txt, call. = FALSE)
+    random <- FALSE
+  }
   ##
   if (!missing(random) & !random) {
     if (!is.null(tau.preset)) {
@@ -137,102 +152,124 @@ netmeasures <- function(x,
   if (!is.null(tau.preset)) {
     meta:::chknumeric(tau.preset, min = 0, length = 1)
     if (!random & warn) {
-      warning("Measures calculated for random effects model (argument random=TRUE) as argument 'tau.preset' is provided.")
+      warning("Measures calculated for random effects model ",
+              "(argument random=TRUE) as argument 'tau.preset' is provided.")
     }
   }
   
   
-  if (random == FALSE & length(tau.preset) == 0) {
-    nmak <- nma.krahn(x)
-    if (is.null(nmak)) {
-      if (warn)
-        warning("Only a single design in network meta-analysis.", call. = FALSE)
-      return(invisible(NULL))
-    }
+  ##
+  ##
+  ## (2) Calculate measures
+  ##
+  ##
+  if (is.bin) {
+    ##
+    ## Direct evidence proportion
+    ## (Rücker et al. 2020, BMC Med Res Meth, equation 7)
+    ##
+    se.direct  <- uppertri(x$seTE.direct.fixed)
+    se.network <- uppertri(x$seTE.fixed)
+    proportion <- se.network^2 / se.direct^2
+    proportion[is.na(proportion)] <- 0
+    names(proportion) <- rownames(x$Cov.fixed)
+    ##
+    meanpath <- NA
+    minpar <- NA
+    minpar.study <- NA
+    H.tilde <- NA
   }
-  ##                                                             
-  if (length(tau.preset) == 1) {
-    nmak <- nma.krahn(x, tau.preset = tau.preset)
-    if (is.null(nmak)) {
-      if (warn)
-        warning("Only a single design in network meta-analysis.", call. = FALSE)
-      return(invisible(NULL))
+  else {
+    x$reference.group <- ""
+    ##
+    if (random == FALSE & length(tau.preset) == 0) {
+      nmak <- nma.krahn(x)
+      if (is.null(nmak)) {
+        if (warn)
+          warning("Only a single design in network meta-analysis.",
+                  call. = FALSE)
+        return(invisible(NULL))
+      }
     }
-  }    
-  ##                                                                            
-  if (random == TRUE & length(tau.preset) == 0) {
-    nmak <- nma.krahn(x, tau.preset = x$tau)
-    if (is.null(nmak)) {
-      if (warn)
-        warning("Only a single design in network meta-analysis.", call. = FALSE)
-      return(invisible(NULL))
+    ##                                                             
+    if (length(tau.preset) == 1) {
+      nmak <- nma.krahn(x, tau.preset = tau.preset)
+      if (is.null(nmak)) {
+        if (warn)
+          warning("Only a single design in network meta-analysis.",
+                  call. = FALSE)
+        return(invisible(NULL))
+      }
+    }    
+    ##                                                                            
+    if (random == TRUE & length(tau.preset) == 0) {
+      nmak <- nma.krahn(x, tau.preset = x$tau)
+      if (is.null(nmak)) {
+        if (warn)
+          warning("Only a single design in network meta-analysis.",
+                  call. = FALSE)
+        return(invisible(NULL))
+      }
     }
-  }
-  
-  
-  comparisons <- nmak$direct[, "comparison"]
-  direct  <- nmak$direct
-  network <- nmak$network
-  ##
-  H <- nmak$H
-  H.studies <- nmak$H.studies
-  
-  
-  ##
-  ## Direct evidence proportion (Koenig 2013, subsection 3.4.1 and 3.4.2)
-  ##
-  proportion <- rep(0, nrow(H))
-  names(proportion) <- rownames(H)
-  proportion[comparisons] <- network[comparisons,"seTE"]^2 / direct$seTE^2
-  
-  
-  ##
-  ## Minimal parallelism (Koenig 2013, subsection 3.4.3)
-  ## Mean path length (Koenig 2013, subsection 3.4.4)
-  ##
-  l <- lapply(split(H,
-                    matrix(colnames(H), nrow = nrow(H),
-                           ncol = length(colnames(H)), byrow = TRUE)),
-              function(x) matrix(x, nrow = nrow(H))
-              )
-  ##
-  H.tilde <- sapply(l,
-                    function(x)
-                      apply(x, 1,
-                            function(x)
-                              0.5 * (abs(sum(x)) + sum(abs(x)))
-                            )
-                    )
-  ##
-  rownames(H.tilde) <- rownames(H)
-  ##  
-  minpar  <- apply(H.tilde, 1, function(x) 1 / max(abs(x)))
-  meanpath <- apply(H.tilde, 1, sum)
-  
-  
-  ##
-  ## Minimal parallelism (study-level)
-  ##
-  l.studies <- lapply(split(H.studies,
-                            matrix(colnames(H.studies), nrow = nrow(H.studies),
-                                   ncol = length(colnames(H.studies)), byrow = TRUE)),
-                      function(x) matrix(x, nrow = nrow(H.studies))
+    ##
+    comparisons <- nmak$direct[, "comparison"]
+    direct  <- nmak$direct
+    network <- nmak$network
+    ##
+    H <- nmak$H
+    H.studies <- nmak$H.studies
+    ##
+    ## Direct evidence proportion (Koenig 2013, subsection 3.4.1 and 3.4.2)
+    ##
+    proportion <- rep(0, nrow(H))
+    names(proportion) <- rownames(H)
+    proportion[comparisons] <- network[comparisons,"seTE"]^2 / direct$seTE^2
+    ##
+    ## Minimal parallelism (Koenig 2013, subsection 3.4.3)
+    ## Mean path length (Koenig 2013, subsection 3.4.4)
+    ##
+    l <- lapply(split(H,
+                      matrix(colnames(H), nrow = nrow(H),
+                             ncol = length(colnames(H)), byrow = TRUE)),
+                function(x) matrix(x, nrow = nrow(H))
+                )
+    ##
+    H.tilde <- sapply(l,
+                      function(x)
+                        apply(x, 1,
+                              function(x)
+                                0.5 * (abs(sum(x)) + sum(abs(x)))
+                              )
                       )
-  ##
-  H.tilde.studies <- sapply(l.studies,
-                            function(x)
-                              apply(x, 1,
-                                    function(x)
-                                      0.5 * (abs(sum(x)) + sum(abs(x)))
-                                    )
-                            )
-  ##
-  rownames(H.tilde.studies) <- rownames(H)
-  ##  
-  minpar.study <- apply(H.tilde.studies, 1,
-                        function(x)
-                          1 / max(abs(x))
+    ##
+    rownames(H.tilde) <- rownames(H)
+    ##  
+    minpar  <- apply(H.tilde, 1, function(x) 1 / max(abs(x)))
+    meanpath <- apply(H.tilde, 1, sum)
+    ##
+    ## Minimal parallelism (study-level)
+    ##
+    l.studies <- lapply(split(H.studies,
+                              matrix(colnames(H.studies), nrow = nrow(H.studies),
+                                     ncol = length(colnames(H.studies)), byrow = TRUE)),
+                        function(x) matrix(x, nrow = nrow(H.studies))
                         )
+    ##
+    H.tilde.studies <- sapply(l.studies,
+                              function(x)
+                                apply(x, 1,
+                                      function(x)
+                                        0.5 * (abs(sum(x)) + sum(abs(x)))
+                                      )
+                              )
+    ##
+    rownames(H.tilde.studies) <- rownames(H)
+    ##  
+    minpar.study <- apply(H.tilde.studies, 1,
+                          function(x)
+                            1 / max(abs(x))
+                          )
+  }
   
   
   res <- list(proportion = proportion,

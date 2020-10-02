@@ -6,6 +6,9 @@
 
 * Additional checks whether net heat plot is feasible
 
+* Calculate direct evidence proportion and indirect treatment
+  estimates for network meta-analyses created with netmetabin()
+
 ### Bug fixes
 
 * netmetabin():
@@ -17,6 +20,10 @@
   - do not conduct decomposition of designs for objects created with
     netmetabin(); reported decomposition and net heat plot referred to
     reanalysis using netmeta()
+
+* netmeasures():
+  - works for network meta-analyses created with netmetabin();
+    reported results referred to reanalysis using netmeta()
 
     
 ### User-visible changes
