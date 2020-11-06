@@ -716,7 +716,9 @@ netsplit <- function(x, method,
       random <- fixed.low
     else
       random <- fixed.upp
+    ##
     random[!is.na(random)] <- NA
+    random$comparison <- comparison
     direct.random <- indirect.random <- predict <- compare.random <- random
   }
   
