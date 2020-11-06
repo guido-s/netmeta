@@ -21,6 +21,7 @@ netmeta(
   level.predict = gs("level.predict"),
   reference.group = "",
   baseline.reference = TRUE,
+  small.values = "good",
   all.treatments = NULL,
   seq = NULL,
   tau.preset = NULL,
@@ -87,6 +88,11 @@ intervals for a new study.}
 should be expressed as comparisons of other treatments versus the
 reference treatment (default) or vice versa. This argument is
 only considered if \code{reference.group} has been specified.}
+
+\item{small.values}{A character string specifying whether small
+treatment effects indicate a beneficial (\code{"good"}) or
+harmful (\code{"bad"}) effect (passed on to
+link\code{\link{netrank}}, can be abbreviated.}
 
 \item{all.treatments}{A logical or \code{"NULL"}. If \code{TRUE},
 matrices with all treatment effects, and confidence limits will
@@ -302,8 +308,8 @@ object is a list containing the following components:
 \item{sm, level, level.comb}{As defined above.}
 \item{comb.fixed, comb.random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
-\item{reference.group, baseline.reference, all.treatments}{As
-  defined above.}
+\item{reference.group, baseline.reference, small.values,
+  all.treatments}{As defined above.}
 \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
   above.}
 \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}

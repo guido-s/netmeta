@@ -205,6 +205,9 @@ netsplit <- function(x, method,
                      baseline.reference = x$baseline.reference,
                      sep.trts = x$sep.trts, quote.trts = "",
                      tol.direct = 0.0005,
+                     comb.fixed = x$comb.fixed,
+                     comb.random = x$comb.random,
+                     backtransf = x$backtransf,
                      warn = FALSE) {
   
   
@@ -226,6 +229,10 @@ netsplit <- function(x, method,
   meta:::chkchar(sep.trts)
   meta:::chkchar(quote.trts)
   meta:::chknumeric(tol.direct, min = 0, length = 1)
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  if (!is.null(backtransf))
+    meta:::chklogical(backtransf)
   meta:::chklogical(warn)
   
   
@@ -396,24 +403,23 @@ netsplit <- function(x, method,
       ##
       if (con$n.subnets == 1) {
         ##
-        if (is.bin) {
+        if (is.bin)
           net.i <- netmetabin(dat.i$.event1, dat.i$.n1,
                               dat.i$.event2, dat.i$.n2,
                               dat.i$.treat1, dat.i$.treat2,
                               dat.i$.studlab,
                               data = dat.i,
                               sm = x$sm, method = x$method,
-                              comb.fixed = x$comb.fixed,
-                              comb.random = x$comb.random,
+                              comb.fixed = comb.fixed,
+                              comb.random = comb.random,
                               warn = warn)
-        }
         else
           net.i <- netmeta(dat.i$.TE, dat.i$.seTE,
                            dat.i$.treat1, dat.i$.treat2,
                            dat.i$.studlab,
                            data = dat.i,
-                           comb.fixed = x$comb.fixed,
-                           comb.random = x$comb.random,
+                           comb.fixed = comb.fixed,
+                           comb.random = comb.random,
                            warn = warn)
         ##
         if (trts[idx1.i] %in% rownames(net.i$TE.fixed) &
@@ -451,12 +457,14 @@ netsplit <- function(x, method,
     zval.indirect.fixed <- ci.if$z
     pval.indirect.fixed <- ci.if$p
     ##
-    ci.ir <- ci(TE.indirect.random, seTE.indirect.random, x$level.comb)
-    ##
-    lower.indirect.random <- ci.ir$lower
-    upper.indirect.random <- ci.ir$upper
-    zval.indirect.random <- ci.ir$z
-    pval.indirect.random <- ci.ir$p
+    if (!is.bin) {
+      ci.ir <- ci(TE.indirect.random, seTE.indirect.random, x$level.comb)
+      ##
+      lower.indirect.random <- ci.ir$lower
+      upper.indirect.random <- ci.ir$upper
+      zval.indirect.random <- ci.ir$z
+      pval.indirect.random <- ci.ir$p
+    }
   }
   
   
@@ -595,125 +603,137 @@ netsplit <- function(x, method,
                               stringsAsFactors = FALSE)
   
   
-  ##
-  ## Random effects model
-  ##
-  random.low <- data.frame(comparison,
-                           TE = lowertri(x$TE.random),
-                           seTE = lowertri(x$seTE.random),
-                           lower = lowertri(x$lower.random),
-                           upper = lowertri(x$upper.random),
-                           z = lowertri(x$zval.random),
-                           p = lowertri(x$pval.random),
-                           stringsAsFactors = FALSE)
-  ##
-  direct.random.low <- data.frame(comparison,
-                                  TE = lowertri(TE.direct.random),
-                                  seTE = lowertri(seTE.direct.random),
-                                  lower = lowertri(lower.direct.random),
-                                  upper = lowertri(upper.direct.random),
-                                  z = lowertri(zval.direct.random),
-                                  p = lowertri(pval.direct.random),
-                                  stringsAsFactors = FALSE)
-  ##
-  indirect.random.low <- data.frame(comparison,
-                                    TE = lowertri(TE.indirect.random),
-                                    seTE = lowertri(seTE.indirect.random),
-                                    lower = lowertri(lower.indirect.random),
-                                    upper = lowertri(upper.indirect.random),
-                                    z = lowertri(zval.indirect.random),
-                                    p = lowertri(pval.indirect.random),
-                                    stringsAsFactors = FALSE)
-  ##
-  predict.low <- data.frame(comparison,
-                            lower = lowertri(x$lower.predict),
-                            upper = lowertri(x$upper.predict),
-                            stringsAsFactors = FALSE)
-  ##
-  random.upp <- data.frame(comparison,
-                           TE = uppertri(x$TE.random),
-                           seTE = uppertri(x$seTE.random),
-                           lower = uppertri(x$lower.random),
-                           upper = uppertri(x$upper.random),
-                           z = uppertri(x$zval.random),
-                           p = uppertri(x$pval.random),
-                           stringsAsFactors = FALSE)
-  ##
-  direct.random.upp <- data.frame(comparison,
-                                  TE = uppertri(TE.direct.random),
-                                  seTE = uppertri(seTE.direct.random),
-                                  lower = uppertri(lower.direct.random),
-                                  upper = uppertri(upper.direct.random),
-                                  z = uppertri(zval.direct.random),
-                                  p = uppertri(pval.direct.random),
-                                  stringsAsFactors = FALSE)
-  ##
-  indirect.random.upp <- data.frame(comparison,
-                                    TE = uppertri(TE.indirect.random),
-                                    seTE = uppertri(seTE.indirect.random),
-                                    lower = uppertri(lower.indirect.random),
-                                    upper = uppertri(upper.indirect.random),
-                                    z = uppertri(zval.indirect.random),
-                                    p = uppertri(pval.indirect.random),
-                                    stringsAsFactors = FALSE)
-  ##
-  predict.upp <- data.frame(comparison,
-                            lower = uppertri(x$lower.predict),
-                            upper = uppertri(x$upper.predict),
-                            stringsAsFactors = FALSE)
-  ##
-  if (!upper) {
-    random <- random.low
-    direct.random <- direct.random.low
-    indirect.random <- indirect.random.low
-    predict <- predict.low
+  if (!is.bin) {
     ##
-    if (any(wo)) {
-      random[wo, ] <- random.upp[wo, ]
-      direct.random[wo, ] <- direct.random.upp[wo, ]
-      indirect.random[wo, ] <- indirect.random.upp[wo, ]
-      predict[wo, ] <- predict.upp[wo, ]
+    ## Random effects model
+    ##
+    random.low <- data.frame(comparison,
+                             TE = lowertri(x$TE.random),
+                             seTE = lowertri(x$seTE.random),
+                             lower = lowertri(x$lower.random),
+                             upper = lowertri(x$upper.random),
+                             z = lowertri(x$zval.random),
+                             p = lowertri(x$pval.random),
+                             stringsAsFactors = FALSE)
+    ##
+    direct.random.low <- data.frame(comparison,
+                                    TE = lowertri(TE.direct.random),
+                                    seTE = lowertri(seTE.direct.random),
+                                    lower = lowertri(lower.direct.random),
+                                    upper = lowertri(upper.direct.random),
+                                    z = lowertri(zval.direct.random),
+                                    p = lowertri(pval.direct.random),
+                                    stringsAsFactors = FALSE)
+    ##
+    indirect.random.low <- data.frame(comparison,
+                                      TE = lowertri(TE.indirect.random),
+                                      seTE = lowertri(seTE.indirect.random),
+                                      lower = lowertri(lower.indirect.random),
+                                      upper = lowertri(upper.indirect.random),
+                                      z = lowertri(zval.indirect.random),
+                                      p = lowertri(pval.indirect.random),
+                                      stringsAsFactors = FALSE)
+    ##
+    predict.low <- data.frame(comparison,
+                              lower = lowertri(x$lower.predict),
+                              upper = lowertri(x$upper.predict),
+                              stringsAsFactors = FALSE)
+    ##
+    random.upp <- data.frame(comparison,
+                             TE = uppertri(x$TE.random),
+                             seTE = uppertri(x$seTE.random),
+                             lower = uppertri(x$lower.random),
+                             upper = uppertri(x$upper.random),
+                             z = uppertri(x$zval.random),
+                             p = uppertri(x$pval.random),
+                             stringsAsFactors = FALSE)
+    ##
+    direct.random.upp <- data.frame(comparison,
+                                    TE = uppertri(TE.direct.random),
+                                    seTE = uppertri(seTE.direct.random),
+                                    lower = uppertri(lower.direct.random),
+                                    upper = uppertri(upper.direct.random),
+                                    z = uppertri(zval.direct.random),
+                                    p = uppertri(pval.direct.random),
+                                    stringsAsFactors = FALSE)
+    ##
+    indirect.random.upp <- data.frame(comparison,
+                                      TE = uppertri(TE.indirect.random),
+                                      seTE = uppertri(seTE.indirect.random),
+                                      lower = uppertri(lower.indirect.random),
+                                      upper = uppertri(upper.indirect.random),
+                                      z = uppertri(zval.indirect.random),
+                                      p = uppertri(pval.indirect.random),
+                                      stringsAsFactors = FALSE)
+    ##
+    predict.upp <- data.frame(comparison,
+                              lower = uppertri(x$lower.predict),
+                              upper = uppertri(x$upper.predict),
+                              stringsAsFactors = FALSE)
+    ##
+    if (!upper) {
+      random <- random.low
+      direct.random <- direct.random.low
+      indirect.random <- indirect.random.low
+      predict <- predict.low
+      ##
+      if (any(wo)) {
+        random[wo, ] <- random.upp[wo, ]
+        direct.random[wo, ] <- direct.random.upp[wo, ]
+        indirect.random[wo, ] <- indirect.random.upp[wo, ]
+        predict[wo, ] <- predict.upp[wo, ]
+      }
     }
+    else {
+      random <- random.upp
+      direct.random <- direct.random.upp
+      indirect.random <- indirect.random.upp
+      predict <- predict.upp
+      ##
+      if (any(wo)) {
+        random[wo, ] <- random.low[wo, ]
+        direct.random[wo, ] <- direct.random.low[wo, ]
+        indirect.random[wo, ] <- indirect.random.low[wo, ]
+        predict[wo, ] <- predict.low[wo, ]
+      }
+    }
+    ##
+    m.random <- metagen(direct.random$TE - indirect.random$TE,
+                        sqrt(direct.random$seTE^2 + indirect.random$seTE^2),
+                        level = x$level.comb)
+    ##
+    compare.random <- data.frame(comparison,
+                                 TE = m.random$TE,
+                                 seTE = m.random$seTE,
+                                 lower = m.random$lower,
+                                 upper = m.random$upper,
+                                 z = m.random$zval,
+                                 p = m.random$pval,
+                                 stringsAsFactors = FALSE)
   }
   else {
-    random <- random.upp
-    direct.random <- direct.random.upp
-    indirect.random <- indirect.random.upp
-    predict <- predict.upp
-    ##
-    if (any(wo)) {
-      random[wo, ] <- random.low[wo, ]
-      direct.random[wo, ] <- direct.random.low[wo, ]
-      indirect.random[wo, ] <- indirect.random.low[wo, ]
-      predict[wo, ] <- predict.low[wo, ]
-    }
+    if (!upper)
+      random <- fixed.low
+    else
+      random <- fixed.upp
+    random[!is.na(random)] <- NA
+    direct.random <- indirect.random <- predict <- compare.random <- random
   }
-  ##
-  m.random <- metagen(direct.random$TE - indirect.random$TE,
-                      sqrt(direct.random$seTE^2 + indirect.random$seTE^2),
-                      level = x$level.comb)
-  ##
-  compare.random <- data.frame(comparison,
-                               TE = m.random$TE,
-                                 seTE = m.random$seTE,
-                               lower = m.random$lower,
-                               upper = m.random$upper,
-                               z = m.random$zval,
-                               p = m.random$pval,
-                               stringsAsFactors = FALSE)
   
   
   res <- list(comparison = comparison,
               ##
               k = k,
               ##
-              prop.fixed = x$prop.direct.fixed[seq.comps],
+              prop.fixed =
+                if (is.bin) NULL else x$prop.direct.fixed[seq.comps],
               fixed = fixed,
               direct.fixed = direct.fixed,
               indirect.fixed = indirect.fixed,
               compare.fixed = compare.fixed,
               ##
-              prop.random = x$prop.direct.random[seq.comps],
+              prop.random =
+                if (is.bin) NULL else x$prop.direct.random[seq.comps],
               random = random,
               direct.random = direct.random,
               indirect.random = indirect.random,
@@ -724,8 +744,8 @@ netsplit <- function(x, method,
               ##
               sm = x$sm,
               level.comb = x$level.comb,
-              comb.fixed = x$comb.fixed,
-              comb.random = x$comb.random,
+              comb.fixed = comb.fixed,
+              comb.random = comb.random,
               ##
               prediction = x$prediction,
               level.predict = x$level.predict,
@@ -737,12 +757,13 @@ netsplit <- function(x, method,
               quote.trts = quote.trts,
               ##
               tol.direct = tol.direct,
-              backtransf = x$backtransf,
+              backtransf = backtransf,
               ##
               version = packageDescription("netmeta")$Version
               )
   ##
-  class(res) <- "netsplit"
+  class(res) <- c("netsplit",
+                  if (is.bin & method == "SIDDE") "netsplit.netmetabin")
   
   res
 }
@@ -786,8 +807,11 @@ print.netsplit <- function(x,
   is.relative.effect <- meta:::is.relative.effect
   rmSpace <- meta:::rmSpace
   setchar <- meta:::setchar
-
-
+  
+  
+  is.bin <- inherits(x, "netsplit.netmetabin")
+  
+  
   ## All individual results in a single row - be on the save side:
   ##
   oldopts <- options(width = 200)
@@ -923,6 +947,18 @@ print.netsplit <- function(x,
     zval.compare.random <- x$compare.random$z[sel]
     pval.compare.random <- x$compare.random$p[sel]
   }
+  ##
+  if (x$method == "SIDDE") {
+    sel.k0 <- k == 0
+    ##
+    TE.indirect.fixed[sel.k0] <- TE.fixed[sel.k0]
+    lower.indirect.fixed[sel.k0] <- lower.fixed[sel.k0]
+    upper.indirect.fixed[sel.k0] <- upper.fixed[sel.k0]
+    ##
+    TE.indirect.random[sel.k0] <- TE.random[sel.k0]
+    lower.indirect.random[sel.k0] <- lower.random[sel.k0]
+    upper.indirect.random[sel.k0] <- upper.random[sel.k0]
+  }
   
   
   if (backtransf & relative) {
@@ -1021,9 +1057,6 @@ print.netsplit <- function(x,
   }
   fixed <- as.data.frame(fixed)
   names(fixed) <- names.fixed
-  ##
-  if (is.null(prop.fixed))
-    fixed <- fixed[, !(names(fixed) %in% "prop")]
   
   
   if (random.available) {
@@ -1090,6 +1123,16 @@ print.netsplit <- function(x,
   }
   
   
+  ## Do not print direct evidence proportion for SIDDE
+  ##
+  noprop <- is.bin | x$method == "SIDDE" | all(fixed$prop == "")
+  if (noprop) {
+    fixed <- fixed[, !(names(fixed) %in% "prop")]
+    if (random.available)
+      random <- random[, !(names(random) %in% "prop")]
+  }
+  
+  
   if (x$method == "SIDDE")
     cat("Separate indirect from direct design evidence (SIDDE)\n\n")
   else
@@ -1117,7 +1160,7 @@ print.netsplit <- function(x,
     cat("\nLegend:\n")
     cat(" comparison - Treatment comparison\n")
     cat(" k          - Number of studies providing direct evidence\n")
-    if (!is.null(prop.fixed))
+    if (!noprop)
       cat(" prop       - Direct evidence proportion\n")
     if (overall)
       cat(paste(" nma        - Estimated treatment effect ", sm.lab,

@@ -41,6 +41,10 @@
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa. This argument is
 #'   only considered if \code{reference.group} has been specified.
+#' @param small.values A character string specifying whether small
+#'   treatment effects indicate a beneficial (\code{"good"}) or
+#'   harmful (\code{"bad"}) effect (passed on to
+#'   link\code{\link{netrank}}, can be abbreviated.
 #' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
 #'   matrices with all treatment effects, and confidence limits will
 #'   be printed.
@@ -362,8 +366,8 @@
 #' \item{sm, level, level.comb}{As defined above.}
 #' \item{comb.fixed, comb.random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
-#' \item{reference.group, baseline.reference, all.treatments}{As
-#'   defined above.}
+#' \item{reference.group, baseline.reference, small.values,
+#'   all.treatments}{As defined above.}
 #' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
 #'   above.}
 #' \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
@@ -455,6 +459,7 @@ netmeta <- function(TE, seTE,
                     ##
                     reference.group = "",
                     baseline.reference = TRUE,
+                    small.values = "good",
                     all.treatments = NULL,
                     seq = NULL,
                     ##
@@ -499,6 +504,8 @@ netmeta <- function(TE, seTE,
   chklogical(prediction)
   ##
   chklogical(baseline.reference)
+  ##
+  small.values <- meta:::setchar(small.values, c("good", "bad"))
   ##
   if (!is.null(all.treatments))
     chklogical(all.treatments)
@@ -1277,7 +1284,7 @@ netmeta <- function(TE, seTE,
   res$lower.indirect.fixed <- ci.if$lower
   res$upper.indirect.fixed <- ci.if$upper
   ##
-  res$zval.indirect.fixed <- ci.if$z
+  res$zval.indirect.fixed <- ci.if$statistic
   res$pval.indirect.fixed <- ci.if$p
   ##
   ## Random effects model
@@ -1292,8 +1299,10 @@ netmeta <- function(TE, seTE,
   res$lower.indirect.random <- ci.ir$lower
   res$upper.indirect.random <- ci.ir$upper
   ##
-  res$zval.indirect.random <- ci.ir$z
+  res$zval.indirect.random <- ci.ir$statistic
   res$pval.indirect.random <- ci.ir$p
+  ##
+  res$small.values <- res$small.values
   ##
   ## Number of designs
   ##

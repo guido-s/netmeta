@@ -84,9 +84,9 @@ nma.additive <- function(TE, weights, studlab,
   
   
   comparisons <- c(list(studlab = studlab, treat1 = treat1, treat2 = treat2),
-                   meta::ci(delta, se.delta, level = level.comb))
+                   ci(delta, se.delta, level = level.comb))
   ##
-  all.comparisons <- meta::ci(delta.all, se.delta.all, level = level.comb)
+  all.comparisons <- ci(delta.all, se.delta.all, level = level.comb)
   ##
   components <- meta::ci(beta, se.beta, level = level.comb)
   ##

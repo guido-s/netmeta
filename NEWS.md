@@ -36,6 +36,9 @@
   - can be used with network meta-analysis object created with
     netcomb()
 
+* netmeta():
+  - new argument small.values' passed on to netrank()
+
 * netgraph.netmeta():
   - new argument 'srt.labels' to rotate treatment labels
   
@@ -54,6 +57,9 @@
 * print.netconnection():
   - new argument 'distance' in order to print the distance matrix
   - by default, do not print the distance matrix
+  
+* netsplit():
+  - new arguments 'comb.fixed', 'comb.random' and 'backtransf'
 
 ### Internal changes
 

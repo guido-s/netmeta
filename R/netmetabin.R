@@ -1756,7 +1756,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   rm(sel.treat1, sel.treat2, selstud, m.i, TE.i, seTE.i)
   ##
-  ci.d <- meta::ci(TE.direct.fixed, seTE.direct.fixed, level = level.comb)
+  ci.d <- ci(TE.direct.fixed, seTE.direct.fixed, level = level.comb)
   
   
   labels <- sort(unique(c(treat1, treat2)))
@@ -1802,7 +1802,7 @@ netmetabin <- function(event1, n1, event2, n2,
               seTE.fixed = seTE.fixed,
               lower.fixed = ci.f$lower,
               upper.fixed = ci.f$upper,
-              zval.fixed = ci.f$z,
+              zval.fixed = ci.f$statistic,
               pval.fixed = ci.f$p,
               ##
               TE.random = NAmatrix,
@@ -1823,7 +1823,7 @@ netmetabin <- function(event1, n1, event2, n2,
               seTE.direct.fixed = seTE.direct.fixed,
               lower.direct.fixed = ci.d$lower,
               upper.direct.fixed = ci.d$upper,
-              zval.direct.fixed = ci.d$z,
+              zval.direct.fixed = ci.d$statistic,
               pval.direct.fixed = ci.d$p,
               ##
               TE.direct.random = NAmatrix,
@@ -1977,7 +1977,7 @@ netmetabin <- function(event1, n1, event2, n2,
   res$lower.indirect.fixed <- ci.if$lower
   res$upper.indirect.fixed <- ci.if$upper
   ##
-  res$zval.indirect.fixed <- ci.if$z
+  res$zval.indirect.fixed <- ci.if$statistic
   res$pval.indirect.fixed <- ci.if$p
   ##
   ## No results for random effects model

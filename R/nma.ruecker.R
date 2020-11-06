@@ -190,7 +190,7 @@ nma.ruecker <- function(TE, seTE,
   ##
   lower.pooled <- ci.pooled$lower
   upper.pooled <- ci.pooled$upper
-  zval.pooled <- ci.pooled$z
+  zval.pooled <- ci.pooled$statistic
   pval.pooled <- ci.pooled$p
   ##
   rownames(TE.pooled) <- colnames(TE.pooled) <- names.treat
@@ -279,7 +279,7 @@ nma.ruecker <- function(TE, seTE,
   ##
   lower.direct <- ci.direct$lower
   upper.direct <- ci.direct$upper
-  zval.direct <- ci.direct$z
+  zval.direct <- ci.direct$statistic
   pval.direct <- ci.direct$p
   
   
@@ -297,7 +297,7 @@ nma.ruecker <- function(TE, seTE,
               seTE.nma = ci.v$seTE,
               lower.nma = ci.v$lower,
               upper.nma = ci.v$upper,
-              zval.nma = ci.v$z,
+              zval.nma = ci.v$statistic,
               pval.nma = ci.v$p,
               leverage = diag(H),
               w.pooled = w.pooled,

@@ -14,6 +14,9 @@ netsplit(
   sep.trts = x$sep.trts,
   quote.trts = "",
   tol.direct = 5e-04,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
+  backtransf = x$backtransf,
   warn = FALSE
 )
 
@@ -67,15 +70,20 @@ labels.}
 direct evidence proportion from 0 or 1 to classify a comparison
 as providing only indirect or direct evidence, respectively.}
 
-\item{warn}{A logical indicating whether warnings should be
-printed.}
-
 \item{comb.fixed}{A logical indicating whether results for the
 fixed effects (common effects) network meta-analysis should be
 printed.}
 
 \item{comb.random}{A logical indicating whether results for the
 random effects network meta-analysis should be printed.}
+
+\item{backtransf}{A logical indicating whether printed results
+should be back transformed. For example, if \code{backtransf =
+TRUE}, results for \code{sm = "OR"} are printed as odds ratios
+rather than log odds ratios.}
+
+\item{warn}{A logical indicating whether warnings should be
+printed.}
 
 \item{show}{A character string indicating which comparisons should
 be printed (see Details).}
@@ -106,11 +114,6 @@ evidence proportions, see \code{print.default}.}
 
 \item{text.NA}{A character string specifying text printed for
 missing values.}
-
-\item{backtransf}{A logical indicating whether printed results
-should be back transformed. For example, if \code{backtransf =
-TRUE}, results for \code{sm = "OR"} are printed as odds ratios
-rather than log odds ratios.}
 
 \item{scientific.pval}{A logical specifying whether p-values should
 be printed in scientific notation, e.g., 1.2345e-01 instead of

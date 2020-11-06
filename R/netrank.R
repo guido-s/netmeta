@@ -103,11 +103,14 @@
 #' @export netrank
 
 
-netrank <- function(x, small.values = "good") {
+netrank <- function(x, small.values = x$small.values) {
   
   ## Check for netmeta object
   ##
   meta:::chkclass(x, c("netmeta", "netcomb"))
+  ##
+  if (is.null(small.values))
+    small.values <- "good"
   small.values <- meta:::setchar(small.values, c("good", "bad"))
   
   
