@@ -601,6 +601,11 @@ netsplit <- function(x, method,
                               z = m.fixed$zval,
                               p = m.fixed$pval,
                               stringsAsFactors = FALSE)
+  ##
+  sel.k0 <- k == 0
+  vars <- c("TE", "seTE", "lower", "upper", "z", "p")
+  ##
+  indirect.fixed[sel.k0, vars] <- fixed[sel.k0, vars]
   
   
   if (!is.bin) {
@@ -710,6 +715,8 @@ netsplit <- function(x, method,
                                  z = m.random$zval,
                                  p = m.random$pval,
                                  stringsAsFactors = FALSE)
+    ##
+    indirect.random[sel.k0, vars] <- random[sel.k0, vars]
   }
   else {
     if (!upper)
@@ -719,7 +726,8 @@ netsplit <- function(x, method,
     ##
     random[!is.na(random)] <- NA
     random$comparison <- comparison
-    direct.random <- indirect.random <- predict <- compare.random <- random
+    direct.random <- indirect.random <- compare.random <- random
+    predict <- random[, c("comparison", "lower", "upper")]
   }
   
   
@@ -948,18 +956,6 @@ print.netsplit <- function(x,
     upper.compare.random <- x$compare.random$upper[sel]
     zval.compare.random <- x$compare.random$z[sel]
     pval.compare.random <- x$compare.random$p[sel]
-  }
-  ##
-  if (x$method == "SIDDE") {
-    sel.k0 <- k == 0
-    ##
-    TE.indirect.fixed[sel.k0] <- TE.fixed[sel.k0]
-    lower.indirect.fixed[sel.k0] <- lower.fixed[sel.k0]
-    upper.indirect.fixed[sel.k0] <- upper.fixed[sel.k0]
-    ##
-    TE.indirect.random[sel.k0] <- TE.random[sel.k0]
-    lower.indirect.random[sel.k0] <- lower.random[sel.k0]
-    upper.indirect.random[sel.k0] <- upper.random[sel.k0]
   }
   
   
