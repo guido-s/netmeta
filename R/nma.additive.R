@@ -18,6 +18,7 @@ nma.additive <- function(TE, weights, studlab,
   Lplus <- ginv(L) # = Cov matrix of beta (components)
   colnames(Lplus) <- colnames(L)
   rownames(Lplus) <- rownames(L)
+  Lplus[is.zero(Lplus)] <- 0
   ##
   ## H matrix
   ##

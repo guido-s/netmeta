@@ -1262,9 +1262,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
       }
     }
   }
-
-  is.zero <- function(x) abs(x) < .Machine$double.eps^0.75
-  ##
+  
+  
   dat.nodes$xpos[is.zero(dat.nodes$xpos)] <- 0
   dat.nodes$ypos[is.zero(dat.nodes$ypos)] <- 0
   ##

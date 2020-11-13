@@ -69,6 +69,15 @@
 * Argument 'single' renamed to 'length' in calls of chkchar(),
   chkcolor(), chklevel() and chknumeric()
 
+* New internal function is.zero() to determine whether a small number
+  is essentially zero (i.e., whether *abs(x) < 10 *
+  .Machine$double.eps*
+
+* nma.ruecker(), nma.additive():
+  - use ginv() to calculate inverse of matrix L
+  - set small numbers which are essentially zero to zero in matrix
+    Lstar
+
 
 ## netmeta, version 1.2-1 (2020-04-15)
 

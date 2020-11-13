@@ -526,8 +526,8 @@ discomb <- function(TE, seTE,
   ## (4) Additional checks
   ##
   ##
-  if (!(any(grep(sep.comps, treat1, fixed = TRUE) |
-            grep(sep.comps, treat2, fixed = TRUE))))
+  if (!(any(grepl(sep.comps, treat1, fixed = TRUE)) |
+        any(grepl(sep.comps, treat2, fixed = TRUE))))
     warning("No treatment contains the component separator '", sep.comps, "'.")
   ##
   if (any(treat1 == treat2))
