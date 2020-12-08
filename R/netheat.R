@@ -284,7 +284,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   if (H.only)
     h1$order <- seq_along(h1$order)
   ##
-  print(h1$order)
+  ##print(h1$order)
   t1 <- t1[h1$order, h1$order]
   
   
