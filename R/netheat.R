@@ -108,14 +108,17 @@
 netheat <- function(x, random = FALSE, tau.preset = NULL,
                     showall = FALSE,
                     nchar.trts = x$nchar.trts,
+                    H.only = FALSE,
                     ...) {
   
   
   meta:::chkclass(x, "netmeta")
   ##
   meta:::chklogical(random)
+  missing.showall <- missing(showall)
   meta:::chklogical(showall)
   meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  meta:::chklogical(H.only)
   
   
   if (is.null(x$nchar.trts))
@@ -182,7 +185,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   }
   
   
-  if (nmak$d <= 2) {
+  if (nmak$d <= 2 & !H.only) {
     warning("Net heat plot not available due to small number of designs: ",
             nmak$d,
             call. = FALSE)
@@ -190,9 +193,20 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   }
   
   
-  if (!showall)
-    drop.designs <-
-      names(Q.inc.design)[abs(Q.inc.design) <= .Machine$double.eps^0.5]
+  if (H.only & !showall) {
+    if (!missing.showall)
+      warning("Argument 'showall = TRUE' as argument 'H.only = TRUE'.",
+              call. = FALSE)
+    showall <- TRUE
+  }
+  ##
+  if (!showall) {
+    l.Q.inc.design <- split(Q.inc.design, names(Q.inc.design))
+    l2.Q.inc.design <- unlist(lapply(l.Q.inc.design,
+                                     function(x){sum(abs(x)) <=
+                                                   .Machine$double.eps^0.5}))
+    drop.designs <- names(l2.Q.inc.design)[l2.Q.inc.design == TRUE]
+  }
   
   
   H <- nmak$H
@@ -206,24 +220,26 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   df.Q.between.designs <- decomp$Q.decomp["Between designs", "df"]
   ##
-  if (df.Q.between.designs == 0) {
-    warning("Net heat plot not available because the network ",
-            "does not contain any loop",
-            if (any(x$narms > 2)) " along more than one design." else ".",
-            call. = FALSE)
-    return(invisible(NULL))
-  }
-  else if (df.Q.between.designs == 1) {
-    warning("Net heat plot not available because detaching single designs ",
-            "leads to a network without loops.",
-            call. = FALSE)
-    return(invisible(NULL))
-  }
-  else if (df.Q.between.designs > 1 & !any(!is.na(residuals))) {
-    warning("Net heat plot not available because detaching ",
-            "single designs leads to a insufficiently connected network.",
-            call. = FALSE)
-    return(invisible(NULL))
+  if (!H.only) {
+    if (df.Q.between.designs == 0) {
+      warning("Net heat plot not available because the network ",
+              "does not contain any loop",
+              if (any(x$narms > 2)) " along more than one design." else ".",
+              call. = FALSE)
+      return(invisible(NULL))
+    }
+    else if (df.Q.between.designs == 1) {
+      warning("Net heat plot not available because detaching single designs ",
+              "leads to a network without loops.",
+              call. = FALSE)
+      return(invisible(NULL))
+    }
+    else if (df.Q.between.designs > 1 & !any(!is.na(residuals))) {
+      warning("Net heat plot not available because detaching ",
+              "single designs leads to a insufficiently connected network.",
+              call. = FALSE)
+      return(invisible(NULL))
+    }
   }
   ##
   Q.inc.design.typ <- apply(residuals, 2, function(x) t(x) %*% solve(V) * x)
@@ -251,6 +267,9 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
             call. = FALSE)
     return(invisible(NULL))
   }
+  ##
+  if (H.only)
+    diff <- rep(.Machine$double.eps^0.5, length(diff))
   
   
   t1 <- -diff
@@ -262,6 +281,10 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   d1 <- dist(dmat, method = "manhattan")
   d1 <- d1 + dist(t(dmat), method = "manhattan")
   h1 <- hclust(d1)
+  if (H.only)
+    h1$order <- seq_along(h1$order)
+  ##
+  print(h1$order)
   t1 <- t1[h1$order, h1$order]
   
   

@@ -157,7 +157,7 @@
 #' @importFrom graphics axis box lines par points plot polygon rect
 #'   text strheight strwidth title
 #'
-#' @importFrom stats dist hclust optim pchisq prcomp reshape rnorm sd
+#' @importFrom stats dist hclust optim optimize pchisq prcomp reshape rnorm sd
 #'
 #' @importFrom utils installed.packages packageDescription
 #'

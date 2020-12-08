@@ -922,7 +922,7 @@ print.summary.netmeta <- function(x,
         rownames(Qdata) <- c("Total",
                              "Within designs",
                              "Between designs")
-        print(Qdata)
+        prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
       }
     }
     

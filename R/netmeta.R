@@ -50,6 +50,10 @@
 #'   be printed.
 #' @param seq A character or numerical vector specifying the sequence
 #'   of treatments in printouts.
+#' @param method.tau A character string indicating which method is
+#'   used to estimate the between-study variance \eqn{\tau^2} and its
+#'   square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
+#'   \code{"ML"}, can be abbreviated.
 #' @param tau.preset An optional value for manually setting the
 #'   square-root of the between-study variance \eqn{\tau^2}.
 #' @param tol.multiarm A numeric for the tolerance for consistency of
@@ -463,6 +467,7 @@ netmeta <- function(TE, seTE,
                     all.treatments = NULL,
                     seq = NULL,
                     ##
+                    method.tau = "DL",
                     tau.preset = NULL,
                     ##
                     tol.multiarm = 0.001,
@@ -509,6 +514,8 @@ netmeta <- function(TE, seTE,
   ##
   if (!is.null(all.treatments))
     chklogical(all.treatments)
+  ##
+  method.tau <- meta:::setchar(method.tau, c("DL", "ML", "REML"))
   ##
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
@@ -987,8 +994,22 @@ netmeta <- function(TE, seTE,
   ##
   ## Random effects model
   ##
-  if (is.null(tau.preset))
+  if (is.null(tau.preset)) {
     tau <- res.f$tau
+    ##
+    if (method.tau %in% c("ML", "REML")) {
+      opt <- optimize(loglik_reml,
+                      TE = res.f$TE, seTE = res.f$seTE,
+                      treat1.pos = res.f$treat1.pos,
+                      treat2.pos = res.f$treat2.pos,
+                      X.matrix = res.f$B.matrix,
+                      n = res.f$n,
+                      method = method.tau,
+                      interval = c(-10, 3))
+      ##
+      tau <- sqrt(exp(opt$minimum))
+    }
+  }
   else
     tau <- tau.preset
   ##
