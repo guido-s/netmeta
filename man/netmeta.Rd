@@ -38,7 +38,8 @@ netmeta(
   backtransf = gs("backtransf"),
   title = "",
   keepdata = gs("keepdata"),
-  warn = TRUE
+  warn = TRUE,
+  control = NULL
 )
 }
 \arguments{
@@ -151,6 +152,10 @@ should be kept in netmeta object.}
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded from meta-analysis due to zero
 standard errors).}
+
+\item{control}{An optional list to control the iterative process to
+estimate the between-study variance \eqn{\tau^2}. This argument
+is passed on to \code{\link[metafor]{rma.mv}}.}
 }
 \value{
 An object of class \code{netmeta} with corresponding \code{print},

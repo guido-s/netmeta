@@ -157,7 +157,8 @@
 #' @importFrom graphics axis box lines par points plot polygon rect
 #'   text strheight strwidth title
 #'
-#' @importFrom stats dist hclust optim optimize pchisq prcomp reshape rnorm sd
+#' @importFrom stats as.formula dist hclust optim optimize pchisq
+#'   prcomp reshape rnorm sd
 #'
 #' @importFrom utils installed.packages packageDescription
 #'
@@ -166,6 +167,8 @@
 #' @importFrom ggplot2 ggplot aes theme_classic geom_tile xlab ylab
 #'   theme element_blank element_text scale_fill_gradient2 geom_text
 #'   ggtitle
+#'
+#' @importFrom metafor rma.mv
 
 
 NULL

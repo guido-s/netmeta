@@ -2,6 +2,10 @@
 
 ### Major changes
 
+* Restricted maximum likelihood and maximum likelihood estimator for
+  between-study heterogeneity implemented by calling rma.mv() from R
+  package **metafor** internally
+
 * Treatment labels can be rotated in network graphs
 
 * Additional checks whether net heat plot is feasible

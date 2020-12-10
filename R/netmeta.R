@@ -85,6 +85,9 @@
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
 #'   standard errors).
+#' @param control An optional list to control the iterative process to
+#'   estimate the between-study variance \eqn{\tau^2}. This argument
+#'   is passed on to \code{\link[metafor]{rma.mv}}.
 #' 
 #' @details
 #' Network meta-analysis using R package \bold{netmeta} is described
@@ -486,7 +489,9 @@ netmeta <- function(TE, seTE,
                     ##
                     title = "",
                     keepdata = gs("keepdata"),
-                    warn = TRUE
+                    warn = TRUE,
+                    ##
+                    control = NULL
                     ) {
 
 
@@ -992,23 +997,37 @@ netmeta <- function(TE, seTE,
                        level, level.comb,
                        p0$seTE, sep.trts = sep.trts)
   ##
+  trts <- rownames(res.f$A.matrix)
+  ##
+  ##
   ## Random effects model
   ##
   if (is.null(tau.preset)) {
-    tau <- res.f$tau
-    ##
     if (method.tau %in% c("ML", "REML")) {
-      opt <- optimize(loglik_reml,
-                      TE = res.f$TE, seTE = res.f$seTE,
-                      treat1.pos = res.f$treat1.pos,
-                      treat2.pos = res.f$treat2.pos,
-                      X.matrix = res.f$B.matrix,
-                      n = res.f$n,
-                      method = method.tau,
-                      interval = c(-10, 3))
       ##
-      tau <- sqrt(exp(opt$minimum))
+      dat.tau <- as.data.frame(res.f$B.matrix)
+      dat.tau$TE <- res.f$TE
+      dat.tau$seTE <- res.f$seTE
+      dat.tau$studlab <- res.f$studlab
+      dat.tau$id <- seq_along(dat.tau$TE)
+      ##
+      if (reference.group == "")
+        trts.tau <- trts[-length(trts)]
+      else
+        trts.tau <- trts[trts != reference.group]
+      ##
+      formula.trts <-
+        as.formula(paste("~ ", paste(trts.tau, collapse = " + "), " - 1"))
+      ##
+      tau2.reml <- rma.mv(TE, seTE^2, data = dat.tau,
+                          mods = formula.trts,
+                          random = ~ factor(id) | studlab, rho = 0.5,
+                          method = method.tau, control = control)$tau2
+      ##
+      tau <- sqrt(tau2.reml)
     }
+    else
+      tau <- res.f$tau
   }
   else
     tau <- tau.preset
@@ -1052,8 +1071,6 @@ netmeta <- function(TE, seTE,
   ##
   ## (7) Generate R object
   ##
-  ##
-  trts <- rownames(res.f$A.matrix)
   ##
   o <- order(p0$order)
   ##
@@ -1164,6 +1181,7 @@ netmeta <- function(TE, seTE,
               lower.I2 = res.f$lower.I2,
               upper.I2 = res.f$upper.I2,
               tau = tau,
+              tau2 = tau^2,
               ##
               Q.heterogeneity = NA,
               df.Q.heterogeneity = NA,
