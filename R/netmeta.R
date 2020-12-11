@@ -1006,15 +1006,22 @@ netmeta <- function(TE, seTE,
     if (method.tau %in% c("ML", "REML")) {
       ##
       dat.tau <- as.data.frame(res.f$B.matrix)
+      ##
+      oldnames <- colnames(dat.tau)
+      ##
+      if (reference.group == "")
+        trts.ref <- oldnames[length(oldnames)]
+      else
+        trts.ref <- reference.group
+      ##
+      newnames <- paste0("V", seq(along = colnames(dat.tau)))
+      colnames(dat.tau) <- newnames
+      trts.tau <- newnames[oldnames != trts.ref]
+      ##
       dat.tau$TE <- res.f$TE
       dat.tau$seTE <- res.f$seTE
       dat.tau$studlab <- res.f$studlab
       dat.tau$id <- seq_along(dat.tau$TE)
-      ##
-      if (reference.group == "")
-        trts.tau <- trts[-length(trts)]
-      else
-        trts.tau <- trts[trts != reference.group]
       ##
       formula.trts <-
         as.formula(paste("~ ", paste(trts.tau, collapse = " + "), " - 1"))
