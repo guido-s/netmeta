@@ -29,6 +29,9 @@
   - works for network meta-analyses created with netmetabin();
     reported results referred to reanalysis using netmeta()
 
+* netsplit():
+  - SIDDE method works for network meta-analysis created without
+    argument 'data' or empty networks after dropping a design
     
 ### User-visible changes
 

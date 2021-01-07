@@ -108,7 +108,6 @@
 netheat <- function(x, random = FALSE, tau.preset = NULL,
                     showall = FALSE,
                     nchar.trts = x$nchar.trts,
-                    H.only = FALSE,
                     ...) {
   
   
@@ -118,6 +117,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   missing.showall <- missing(showall)
   meta:::chklogical(showall)
   meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  ##
+  H.only <- FALSE
   meta:::chklogical(H.only)
   
   
@@ -284,7 +285,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   if (H.only)
     h1$order <- seq_along(h1$order)
   ##
-  ##print(h1$order)
+  ## print(h1$order)
+  ##
   t1 <- t1[h1$order, h1$order]
   
   

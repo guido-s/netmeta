@@ -10,7 +10,6 @@ netheat(
   tau.preset = NULL,
   showall = FALSE,
   nchar.trts = x$nchar.trts,
-  H.only = FALSE,
   ...
 )
 }

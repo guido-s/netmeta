@@ -392,14 +392,17 @@ netsplit <- function(x, method,
       ## Studies (potentially with multi-arm studies) to drop from
       ## calculation of indirect estimate
       ##
-      drop.studies <- unique(dat$studlab[drop.i])
+      drop.studies <- unique(dat$.studlab[drop.i])
       ##
       ## Drop studies
       ##
-      dat.i <- dat[!(dat$studlab %in% drop.studies), , drop = FALSE]
+      dat.i <- dat[!(dat$.studlab %in% drop.studies), , drop = FALSE]
       dat.i$.design <- NULL
       ##
-      con <- netconnection(dat.i$treat1, dat.i$treat2, dat.i$studlab)
+      if (nrow(dat.i) > 0)
+        con <- netconnection(dat.i$.treat1, dat.i$.treat2, dat.i$.studlab)
+      else
+        con <- list(n.subnets = 0)
       ##
       if (con$n.subnets == 1) {
         ##
