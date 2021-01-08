@@ -115,6 +115,8 @@ forest.netbind <- function(x,
   ##
   meta:::chkclass(x, "netbind")
   ##
+  x <- upgradenetmeta(x)
+  ##
   chkchar <- meta:::chkchar
   chklogical <- meta:::chklogical
   chknumeric <- meta:::chknumeric
@@ -149,8 +151,9 @@ forest.netbind <- function(x,
     m$seTE <- x$fixed$seTE[sel]
     m$lower <- x$fixed$lower[sel]
     m$upper <- x$fixed$upper[sel]
-    m$zval <- x$fixed$zval[sel]
+    m$statistic <- x$fixed$statistic[sel]
     m$pval <- x$fixed$pval[sel]
+    m$zval <- x$fixed$statistic[sel]
     ##
     m$col.study <- x$fixed$col.study[sel]
     m$col.square <- x$fixed$col.square[sel]
@@ -169,8 +172,9 @@ forest.netbind <- function(x,
     m$seTE <- x$random$seTE[sel]
     m$lower <- x$random$lower[sel]
     m$upper <- x$random$upper[sel]
-    m$zval <- x$random$zval[sel]
+    m$statistic <- x$random$statistic[sel]
     m$pval <- x$random$pval[sel]
+    m$zval <- x$random$statistic[sel]
     ##
     m$col.study <- x$random$col.study[sel]
     m$col.square <- x$random$col.square[sel]

@@ -199,8 +199,8 @@ object is a list containing the following components:
   \emph{m} of upper confidence interval limits for the consistent
   treatment effects estimated by network meta-analysis (fixed
   effects / random effects model).}
-\item{zval.nma.fixed, zval.nma.random}{A vector of length \emph{m}
-  of z-values for test of treatment effect for individual
+\item{statistic.nma.fixed, statistic.nma.random}{A vector of length
+  \emph{m} of z-values for test of treatment effect for individual
   comparisons (fixed effects / random effects model).}
 \item{pval.nma.fixed, pval.nma.random}{A vector of length \emph{m}
   of p-values for test of treatment effect for individual
@@ -220,7 +220,7 @@ object is a list containing the following components:
   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
   confidence interval limits (fixed effects / random effects
   model).}
-\item{zval.fixed, pval.fixed, zval.random,
+\item{statistic.fixed, pval.fixed, statistic.random,
   pval.random}{\emph{n}x\emph{n} matrices with z-value and p-value
   for test of overall treatment effect (fixed effects / random
   effects model).}
@@ -241,14 +241,14 @@ object is a list containing the following components:
   }{\emph{n}x\emph{n} matrices with lower and upper confidence
   interval limits from direct evidence (fixed effects / random
   effects model).}
-\item{ upper.direct.random}{\emph{n}x\emph{n} matrices with lower
+\item{upper.direct.random}{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from direct evidence (fixed
   effects / random effects model).}
-\item{zval.direct.fixed, pval.direct.fixed, zval.direct.random,
-  }{\emph{n}x\emph{n} matrices with z-value and p-value for test of
-  overall treatment effect from direct evidence (fixed effects /
-  random effects model).}
-\item{ pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
+\item{statistic.direct.fixed, pval.direct.fixed,
+  statistic.direct.random, }{\emph{n}x\emph{n} matrices with
+  z-value and p-value for test of overall treatment effect from
+  direct evidence (fixed effects / random effects model).}
+\item{pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
   and p-value for test of overall treatment effect from direct
   evidence (fixed effects / random effects model).}
 \item{TE.indirect.fixed, TE.indirect.random}{\emph{n}x\emph{n}
@@ -261,13 +261,13 @@ object is a list containing the following components:
   lower.indirect.random, }{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from indirect evidence
   (fixed effects / random effects model).}
-\item{ upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
+\item{upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from indirect evidence
   (fixed effects / random effects model).}
-\item{zval.indirect.fixed, pval.indirect.fixed,
-  zval.indirect.random, }{\emph{n}x\emph{n} matrices with z-value
-  and p-value for test of overall treatment effect from indirect
-  evidence (fixed effects / random effects model).}
+\item{statistic.indirect.fixed, pval.indirect.fixed,
+  statistic.indirect.random, }{\emph{n}x\emph{n} matrices with
+  z-value and p-value for test of overall treatment effect from
+  indirect evidence (fixed effects / random effects model).}
 \item{pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value
   and p-value for test of overall treatment effect from indirect
   evidence (fixed effects / random effects model).}

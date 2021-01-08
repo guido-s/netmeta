@@ -193,14 +193,14 @@ nma.ruecker <- function(TE, seTE,
   ##
   lower.pooled <- ci.pooled$lower
   upper.pooled <- ci.pooled$upper
-  zval.pooled <- ci.pooled$statistic
+  statistic.pooled <- ci.pooled$statistic
   pval.pooled <- ci.pooled$p
   ##
   rownames(TE.pooled) <- colnames(TE.pooled) <- names.treat
   rownames(seTE.pooled) <- colnames(seTE.pooled) <- names.treat
   rownames(lower.pooled) <- colnames(lower.pooled) <- names.treat
   rownames(upper.pooled) <- colnames(upper.pooled) <- names.treat
-  rownames(zval.pooled) <- colnames(zval.pooled) <- names.treat
+  rownames(statistic.pooled) <- colnames(statistic.pooled) <- names.treat
   rownames(pval.pooled) <- colnames(pval.pooled) <- names.treat
   
   
@@ -282,7 +282,7 @@ nma.ruecker <- function(TE, seTE,
   ##
   lower.direct <- ci.direct$lower
   upper.direct <- ci.direct$upper
-  zval.direct <- ci.direct$statistic
+  statistic.direct <- ci.direct$statistic
   pval.direct <- ci.direct$p
   
   
@@ -300,7 +300,7 @@ nma.ruecker <- function(TE, seTE,
               seTE.nma = ci.v$seTE,
               lower.nma = ci.v$lower,
               upper.nma = ci.v$upper,
-              zval.nma = ci.v$statistic,
+              statistic.nma = ci.v$statistic,
               pval.nma = ci.v$p,
               leverage = diag(H),
               w.pooled = w.pooled,
@@ -312,7 +312,7 @@ nma.ruecker <- function(TE, seTE,
               seTE.pooled = seTE.pooled,
               lower.pooled = lower.pooled,
               upper.pooled = upper.pooled,
-              zval.pooled = zval.pooled,
+              statistic.pooled = statistic.pooled,
               pval.pooled = pval.pooled,
               ##
               k = length(unique(studlab)),
@@ -346,7 +346,7 @@ nma.ruecker <- function(TE, seTE,
               seTE.direct = seTE.direct,
               lower.direct = lower.direct,
               upper.direct = upper.direct,
-              zval.direct = zval.direct,
+              statistic.direct = statistic.direct,
               pval.direct = pval.direct,
               ##
               Q.decomp = Q.decomp

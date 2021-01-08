@@ -205,6 +205,7 @@ forest.netmeta <- function(x,
   ##
   ##
   meta:::chkclass(x, "netmeta")
+  ##
   x <- upgradenetmeta(x)
   ##
   is.bin <- inherits(x, "netmetabin")

@@ -1,4 +1,4 @@
-## netmeta, version 6.6-6 (2020-mm-dd)
+## netmeta, version 6.6-6 (2021-mm-dd)
 
 ### Major changes
 
@@ -60,6 +60,8 @@
     selection of individual study results (useful for very long
     printouts or to only show individual results of multi-arm
     studies))
+  - print z- and p-values for tests of overall effect against a
+    reference group (argument 'reference.group')
   
 * print.netconnection():
   - new argument 'distance' in order to print the distance matrix
@@ -70,6 +72,8 @@
 
 ### Internal changes
 
+* Rename list elements starting with 'zval.' to 'statistic.'
+
 * netcomb():
   - export covariance matrices 'Cov.fixed' and 'Cov.random'
 
@@ -79,6 +83,9 @@
 * New internal function is.zero() to determine whether a small number
   is essentially zero (i.e., whether *abs(x) < 10 *
   .Machine$double.eps*
+
+* New internal function updateversion() to update older netmeta
+  objects
 
 * nma.ruecker(), nma.additive():
   - use ginv() to calculate inverse of matrix L

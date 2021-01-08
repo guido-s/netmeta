@@ -129,6 +129,7 @@ print.netmeta <- function(x,
   meta:::chkclass(x, "netmeta")
   ##  
   x <- upgradenetmeta(x)
+  ##
   k.all <- length(x$TE)
   ##
   formatN <- meta:::formatN

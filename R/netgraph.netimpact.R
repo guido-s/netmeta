@@ -71,6 +71,8 @@ netgraph.netimpact <- function(x,
   
   
   meta:::chkclass(x, "netimpact")
+  ##
+  x <- upgradenetmeta(x)
   
   
   col.ignore <- meta:::setchar(col.ignore,

@@ -163,10 +163,10 @@
 #'   \emph{m} of upper confidence interval limits for consistent
 #'   treatment effects estimated by the additive (fixed and random
 #'   effects) model.}
-#' \item{zval.cnma.fixed, zval.cnma.random}{A vector of length
-#'   \emph{m} of z-values for the test of an overall effect estimated
-#'   by the additive (fixed and random effects) model.}
-#' \item{pval.cnma.fixed, zval.cnma.random}{A vector of length
+#' \item{statistic.cnma.fixed, statistic.cnma.random}{A vector of
+#'   length \emph{m} of z-values for the test of an overall effect
+#'   estimated by the additive (fixed and random effects) model.}
+#' \item{pval.cnma.fixed, pval.cnma.random}{A vector of length
 #'   \emph{m} of p-values for the test of an overall effect estimated
 #'   by the additive (fixed and random effects) model.}
 #' \item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with overall
@@ -179,7 +179,7 @@
 #'   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
 #'   confidence interval limits estimated by the additive (fixed and
 #'   random effects) model.}
-#' \item{zval.fixed, pval.fixed, zval.random,
+#' \item{statistic.fixed, pval.fixed, statistic.random,
 #'   pval.random}{\emph{n}x\emph{n} matrices with z-values and
 #'   p-values for test of overall effect estimated by the additive
 #'   (fixed and random effects) model.}
@@ -193,9 +193,9 @@
 #' \item{upper.Comp.fixed, upper.Comp.random}{A vector with upper
 #'   confidence limits for components (fixed and random effects
 #'   model).}
-#' \item{zval.Comp.fixed, zval.Comp.random}{A vector with z-values for
-#'   the overall effect of components (fixed and random effects
-#'   model).}
+#' \item{statistic.Comp.fixed, statistic.Comp.random}{A vector with
+#'   z-values for the overall effect of components (fixed and random
+#'   effects model).}
 #' \item{pval.Comp.fixed, pval.Comp.random}{A vector with p-values for
 #'   the overall effect of components (fixed and random effects
 #'   model).}
@@ -209,9 +209,9 @@
 #' \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
 #'   confidence limits for combinations (fixed and random effects
 #'   model).}
-#' \item{zval.Comb.fixed, zval.Comb.random}{A vector with z-values for
-#'   the overall effect of combinations (fixed and random effects
-#'   model).}
+#' \item{statistic.Comb.fixed, statistic.Comb.random}{A vector with
+#'   z-values for the overall effect of combinations (fixed and random
+#'   effects model).}
 #' \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
 #'   the overall effect of combinations (fixed and random effects
 #'   model).}
@@ -816,70 +816,70 @@ discomb <- function(TE, seTE,
               seTE.nma.fixed = NAs,
               lower.nma.fixed = NAs,
               upper.nma.fixed = NAs,
-              zval.nma.fixed = NAs,
+              statistic.nma.fixed = NAs,
               pval.nma.fixed = NAs,
               ##
               TE.cnma.fixed = res.f$comparisons$TE,
               seTE.cnma.fixed = res.f$comparisons$seTE,
               lower.cnma.fixed = res.f$comparisons$lower,
               upper.cnma.fixed = res.f$comparisons$upper,
-              zval.cnma.fixed = res.f$comparisons$z,
+              statistic.cnma.fixed = res.f$comparisons$statistic,
               pval.cnma.fixed = res.f$comparisons$p,
               ##
               TE.fixed = res.f$all.comparisons$TE,
               seTE.fixed = res.f$all.comparisons$seTE,
               lower.fixed = res.f$all.comparisons$lower,
               upper.fixed = res.f$all.comparisons$upper,
-              zval.fixed = res.f$all.comparisons$z,
+              statistic.fixed = res.f$all.comparisons$statistic,
               pval.fixed = res.f$all.comparisons$p,
               ##
               TE.nma.random = NAs,
               seTE.nma.random = NAs,
               lower.nma.random = NAs,
               upper.nma.random = NAs,
-              zval.nma.random = NAs,
+              statistic.nma.random = NAs,
               pval.nma.random = NAs,
               ##
               TE.cnma.random = res.r$comparisons$TE,
               seTE.cnma.random = res.r$comparisons$seTE,
               lower.cnma.random = res.r$comparisons$lower,
               upper.cnma.random = res.r$comparisons$upper,
-              zval.cnma.random = res.r$comparisons$z,
+              statistic.cnma.random = res.r$comparisons$statistic,
               pval.cnma.random = res.r$comparisons$p,
               ##
               TE.random = res.r$all.comparisons$TE,
               seTE.random = res.r$all.comparisons$seTE,
               lower.random = res.r$all.comparisons$lower,
               upper.random = res.r$all.comparisons$upper,
-              zval.random = res.r$all.comparisons$z,
+              statistic.random = res.r$all.comparisons$statistic,
               pval.random = res.r$all.comparisons$p,
               ##
               Comp.fixed = unname(res.f$components$TE),
               seComp.fixed = unname(res.f$components$seTE),
               lower.Comp.fixed = unname(res.f$components$lower),
               upper.Comp.fixed = unname(res.f$components$upper),
-              zval.Comp.fixed = unname(res.f$components$z),
+              statistic.Comp.fixed = unname(res.f$components$statistic),
               pval.Comp.fixed = unname(res.f$components$p),
               ##
               Comp.random = unname(res.r$components$TE),
               seComp.random = unname(res.r$components$seTE),
               lower.Comp.random = unname(res.r$components$lower),
               upper.Comp.random = unname(res.r$components$upper),
-              zval.Comp.random = unname(res.r$components$z),
+              statistic.Comp.random = unname(res.r$components$statistic),
               pval.Comp.random = unname(res.r$components$p),
               ##
               Comb.fixed = unname(res.f$combinations$TE),
               seComb.fixed = unname(res.f$combinations$seTE),
               lower.Comb.fixed = unname(res.f$combinations$lower),
               upper.Comb.fixed = unname(res.f$combinations$upper),
-              zval.Comb.fixed = unname(res.f$combinations$z),
+              statistic.Comb.fixed = unname(res.f$combinations$statistic),
               pval.Comb.fixed = unname(res.f$combinations$p),
               ##
               Comb.random = unname(res.r$combinations$TE),
               seComb.random = unname(res.r$combinations$seTE),
               lower.Comb.random = unname(res.r$combinations$lower),
               upper.Comb.random = unname(res.r$combinations$upper),
-              zval.Comb.random = unname(res.r$combinations$z),
+              statistic.Comb.random = unname(res.r$combinations$statistic),
               pval.Comb.random = unname(res.r$combinations$p),
               ##
               Q.additive = Q.additive, 

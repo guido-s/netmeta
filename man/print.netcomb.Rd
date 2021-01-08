@@ -11,7 +11,7 @@
   backtransf = x$backtransf,
   nchar.trts = x$nchar.trts,
   digits = gs("digits"),
-  digits.zval = gs("digits.zval"),
+  digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
   digits.pval.Q = max(gs("digits.pval.Q"), 2),
   digits.Q = gs("digits.Q"),
@@ -40,7 +40,7 @@ characters used to create unique treatment names (see Details).}
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
 
-\item{digits.zval}{Minimal number of significant digits for z- or
+\item{digits.stat}{Minimal number of significant digits for z- or
 t-value, see \code{print.default}.}
 
 \item{digits.pval}{Minimal number of significant digits for p-value

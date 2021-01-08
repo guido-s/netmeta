@@ -160,6 +160,9 @@ forest.netcomb <- function(x,
   ##
   ##
   meta:::chkclass(x, "netcomb")
+  ##
+  x <- upgradenetmeta(x)
+  ##
   is.discomb <- inherits(x, "discomb")
   ##
   chklogical <- meta:::chklogical

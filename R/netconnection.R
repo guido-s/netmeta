@@ -179,9 +179,11 @@ netconnection <- function(treat1, treat2, studlab,
   fun <- "netconnection"
   ##
   meta:::chklength(treat2, k.All, fun,
-                   text = "Arguments 'treat1' and 'treat2' must have the same length.")
+                   text = paste0("Arguments 'treat1' and 'treat2' ",
+                                 "must have the same length."))
   meta:::chklength(studlab, k.All, fun,
-                   text = "Arguments 'treat1' and 'studlab' must have the same length.")
+                   text = paste0("Arguments 'treat1' and 'studlab' ",
+                                 "must have the same length."))
   ##
   if (is.factor(treat1))
     treat1 <- as.character(treat1)

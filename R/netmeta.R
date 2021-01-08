@@ -253,8 +253,8 @@
 #'   \emph{m} of upper confidence interval limits for the consistent
 #'   treatment effects estimated by network meta-analysis (fixed
 #'   effects / random effects model).}
-#' \item{zval.nma.fixed, zval.nma.random}{A vector of length \emph{m}
-#'   of z-values for test of treatment effect for individual
+#' \item{statistic.nma.fixed, statistic.nma.random}{A vector of length
+#'   \emph{m} of z-values for test of treatment effect for individual
 #'   comparisons (fixed effects / random effects model).}
 #' \item{pval.nma.fixed, pval.nma.random}{A vector of length \emph{m}
 #'   of p-values for test of treatment effect for individual
@@ -274,7 +274,7 @@
 #'   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
 #'   confidence interval limits (fixed effects / random effects
 #'   model).}
-#' \item{zval.fixed, pval.fixed, zval.random,
+#' \item{statistic.fixed, pval.fixed, statistic.random,
 #'   pval.random}{\emph{n}x\emph{n} matrices with z-value and p-value
 #'   for test of overall treatment effect (fixed effects / random
 #'   effects model).}
@@ -295,14 +295,14 @@
 #'   }{\emph{n}x\emph{n} matrices with lower and upper confidence
 #'   interval limits from direct evidence (fixed effects / random
 #'   effects model).}
-#' \item{ upper.direct.random}{\emph{n}x\emph{n} matrices with lower
+#' \item{upper.direct.random}{\emph{n}x\emph{n} matrices with lower
 #'   and upper confidence interval limits from direct evidence (fixed
 #'   effects / random effects model).}
-#' \item{zval.direct.fixed, pval.direct.fixed, zval.direct.random,
-#'   }{\emph{n}x\emph{n} matrices with z-value and p-value for test of
-#'   overall treatment effect from direct evidence (fixed effects /
-#'   random effects model).}
-#' \item{ pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
+#' \item{statistic.direct.fixed, pval.direct.fixed,
+#'   statistic.direct.random, }{\emph{n}x\emph{n} matrices with
+#'   z-value and p-value for test of overall treatment effect from
+#'   direct evidence (fixed effects / random effects model).}
+#' \item{pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
 #'   and p-value for test of overall treatment effect from direct
 #'   evidence (fixed effects / random effects model).}
 #' \item{TE.indirect.fixed, TE.indirect.random}{\emph{n}x\emph{n}
@@ -315,13 +315,13 @@
 #'   lower.indirect.random, }{\emph{n}x\emph{n} matrices with lower
 #'   and upper confidence interval limits from indirect evidence
 #'   (fixed effects / random effects model).}
-#' \item{ upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
+#' \item{upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
 #'   and upper confidence interval limits from indirect evidence
 #'   (fixed effects / random effects model).}
-#' \item{zval.indirect.fixed, pval.indirect.fixed,
-#'   zval.indirect.random, }{\emph{n}x\emph{n} matrices with z-value
-#'   and p-value for test of overall treatment effect from indirect
-#'   evidence (fixed effects / random effects model).}
+#' \item{statistic.indirect.fixed, pval.indirect.fixed,
+#'   statistic.indirect.random, }{\emph{n}x\emph{n} matrices with
+#'   z-value and p-value for test of overall treatment effect from
+#'   indirect evidence (fixed effects / random effects model).}
 #' \item{pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value
 #'   and p-value for test of overall treatment effect from indirect
 #'   evidence (fixed effects / random effects model).}
@@ -1116,7 +1116,7 @@ netmeta <- function(TE, seTE,
               seTE.nma.fixed = res.f$seTE.nma[o],
               lower.nma.fixed = res.f$lower.nma[o],
               upper.nma.fixed = res.f$upper.nma[o],
-              zval.nma.fixed = res.f$zval.nma[o],
+              statistic.nma.fixed = res.f$statistic.nma[o],
               pval.nma.fixed = res.f$pval.nma[o],
               ##
               leverage.fixed = res.f$leverage[o],
@@ -1127,14 +1127,14 @@ netmeta <- function(TE, seTE,
               seTE.fixed = res.f$seTE.pooled,
               lower.fixed = res.f$lower.pooled,
               upper.fixed = res.f$upper.pooled,
-              zval.fixed = res.f$zval.pooled,
+              statistic.fixed = res.f$statistic.pooled,
               pval.fixed = res.f$pval.pooled,
               ##
               TE.nma.random = res.r$TE.nma[o],
               seTE.nma.random = res.r$seTE.nma[o],
               lower.nma.random = res.r$lower.nma[o],
               upper.nma.random = res.r$upper.nma[o],
-              zval.nma.random = res.r$zval.nma[o],
+              statistic.nma.random = res.r$statistic.nma[o],
               pval.nma.random = res.r$pval.nma[o],
               ##
               w.random = res.r$w.pooled[o],
@@ -1143,7 +1143,7 @@ netmeta <- function(TE, seTE,
               seTE.random = seTE.random,
               lower.random = res.r$lower.pooled,
               upper.random = res.r$upper.pooled,
-              zval.random = res.r$zval.pooled,
+              statistic.random = res.r$statistic.pooled,
               pval.random = res.r$pval.pooled,
               ##
               seTE.predict = seTE.predict,
@@ -1157,28 +1157,28 @@ netmeta <- function(TE, seTE,
               seTE.direct.fixed = res.f$seTE.direct,
               lower.direct.fixed = res.f$lower.direct,
               upper.direct.fixed = res.f$upper.direct,
-              zval.direct.fixed = res.f$zval.direct,
+              statistic.direct.fixed = res.f$statistic.direct,
               pval.direct.fixed = res.f$pval.direct,
               ##
               TE.direct.random = res.r$TE.direct,
               seTE.direct.random = res.r$seTE.direct,
               lower.direct.random = res.r$lower.direct,
               upper.direct.random = res.r$upper.direct,
-              zval.direct.random = res.r$zval.direct,
+              statistic.direct.random = res.r$statistic.direct,
               pval.direct.random = res.r$pval.direct,
               ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
               lower.indirect.fixed = NA,
               upper.indirect.fixed = NA,
-              zval.indirect.fixed = NA,
+              statistic.indirect.fixed = NA,
               pval.indirect.fixed = NA,
               ##
               TE.indirect.random = NA,
               seTE.indirect.random = NA,
               lower.indirect.random = NA,
               upper.indirect.random = NA,
-              zval.indirect.random = NA,
+              statistic.indirect.random = NA,
               pval.indirect.random = NA,
               ##
               Q = res.f$Q,
@@ -1316,7 +1316,9 @@ netmeta <- function(TE, seTE,
   res$P.random <- P.random
   ##
   P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
+  P.fixed[P.fixed > 1] <- NA
   P.random[abs(P.random - 1) < .Machine$double.eps^0.5] <- NA
+  P.random[P.random > 1] <- NA
   ##
   ## Fixed effects model
   ##
@@ -1330,7 +1332,7 @@ netmeta <- function(TE, seTE,
   res$lower.indirect.fixed <- ci.if$lower
   res$upper.indirect.fixed <- ci.if$upper
   ##
-  res$zval.indirect.fixed <- ci.if$statistic
+  res$statistic.indirect.fixed <- ci.if$statistic
   res$pval.indirect.fixed <- ci.if$p
   ##
   ## Random effects model
@@ -1345,7 +1347,7 @@ netmeta <- function(TE, seTE,
   res$lower.indirect.random <- ci.ir$lower
   res$upper.indirect.random <- ci.ir$upper
   ##
-  res$zval.indirect.random <- ci.ir$statistic
+  res$statistic.indirect.random <- ci.ir$statistic
   res$pval.indirect.random <- ci.ir$p
   ##
   res$small.values <- res$small.values

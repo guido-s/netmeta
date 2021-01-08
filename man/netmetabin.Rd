@@ -201,7 +201,7 @@ following components:
 \item{lower.fixed, upper.fixed}{\emph{n}x\emph{n} matrices with
   lower and upper confidence interval limits for fixed effects
   model.}
-\item{zval.fixed, pval.fixed}{\emph{n}x\emph{n} matrices with
+\item{statistic.fixed, pval.fixed}{\emph{n}x\emph{n} matrices with
   z-value and p-value for test of overall treatment effect under
   fixed effects model.}
 \item{TE.random, seTE.random}{\emph{n}x\emph{n} matrix with
@@ -211,9 +211,9 @@ following components:
 \item{lower.random, upper.random}{\emph{n}x\emph{n} matrices with
   lower and upper confidence interval limits for random effects
   model (only available if \code{method = "Inverse"}).}
-\item{zval.random, pval.random}{\emph{n}x\emph{n} matrices with
-  z-value and p-value for test of overall treatment effect under
-  random effects model (only available if \code{method =
+\item{statistic.random, pval.random}{\emph{n}x\emph{n} matrices
+  with z-value and p-value for test of overall treatment effect
+  under random effects model (only available if \code{method =
   "Inverse"}).}
 \item{TE.direct.fixed, seTE.direct.fixed}{\emph{n}x\emph{n} matrix
   with estimated treatment effects and standard errors from direct
@@ -221,7 +221,7 @@ following components:
 \item{lower.direct.fixed, upper.direct.fixed}{\emph{n}x\emph{n}
   matrices with lower and upper confidence interval limits from
   direct evidence under fixed effects model.}
-\item{zval.direct.fixed, pval.direct.fixed}{\emph{n}x\emph{n}
+\item{statistic.direct.fixed, pval.direct.fixed}{\emph{n}x\emph{n}
   matrices with z-value and p-value for test of overall treatment
   effect from direct evidence under fixed effects model.}
 \item{TE.direct.random, seTE.direct.random}{\emph{n}x\emph{n}
@@ -232,10 +232,11 @@ following components:
   matrices with lower and upper confidence interval limits from
   direct evidence under random effects model (only available if
   \code{method = "Inverse"}).}
-\item{zval.direct.random, pval.direct.random}{\emph{n}x\emph{n}
-  matrices with z-value and p-value for test of overall treatment
-  effect from direct evidence under random effects model (only
-  available if \code{method = "Inverse"}).}
+\item{statistic.direct.random,
+  pval.direct.random}{\emph{n}x\emph{n} matrices with z-value and
+  p-value for test of overall treatment effect from direct evidence
+  under random effects model (only available if \code{method =
+  "Inverse"}).}
 \item{Q}{Overall heterogeneity / inconsistency statistic. (only
   available if \code{method = "Inverse"})}
 \item{df.Q}{Degrees of freedom for test of heterogeneity /

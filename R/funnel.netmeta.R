@@ -216,6 +216,7 @@ funnel.netmeta <- function(x,
   chknumeric <- meta:::chknumeric
   ##
   meta:::chkclass(x, "netmeta")
+  ##
   x <- upgradenetmeta(x)
   ##
   pooled <- meta:::setchar(pooled, c("fixed", "random"))

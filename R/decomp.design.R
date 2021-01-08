@@ -137,6 +137,8 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE) {
   
   meta:::chkclass(x, "netmeta")
   ##
+  x <- upgradenetmeta(x)
+  ##
   if (inherits(x, "netmetabin")) {
     warning("Decomposition of designs not implemented for ",
             "objects created with netmetabin().",

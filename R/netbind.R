@@ -134,6 +134,8 @@ netbind <- function(..., name,
       stop("All elements of argument '...' must be of classes ",
            "'netmeta', 'netcomb', or 'discomb'.",
            call. = FALSE)
+    ##
+    args[[i]] <- upgradenetmeta(args[[i]])
   }
   ##
   levs <- numeric(0)
@@ -208,9 +210,10 @@ netbind <- function(..., name,
            call. = FALSE)
     ##
     if (length(unique(name)) != length(name)) {
-      warning1 <- paste0("Network meta-analyses are labelled 'netmeta1' to 'netmeta",
-                         n.netmeta,
-                         "' as values of argument 'name' are not all disparate.")
+      warning1 <-
+        paste0("Network meta-analyses are labelled 'netmeta1' to 'netmeta",
+               n.netmeta,
+               "' as values of argument 'name' are not all disparate.")
       print.warning1 <- TRUE
       ##
       name <- paste0("netmeta", n.i)
@@ -365,7 +368,7 @@ netbind <- function(..., name,
                       treat = character(0),
                       TE = numeric(0), seTE = numeric(0),
                       lower = numeric(0), upper = numeric(0),
-                      zval = numeric(0), pval = numeric(0),
+                      statistic = numeric(0), pval = numeric(0),
                       ##
                       col.study = character(0),
                       col.square = character(0),
@@ -379,12 +382,12 @@ netbind <- function(..., name,
     rn <- rownames(args[[i]]$TE.fixed)
     seq1 <- charmatch(setseq(args[[i]]$seq, rn), rn)
     ##
-    TE.i    <- args[[i]]$TE.fixed[seq1, seq1]
-    seTE.i  <- args[[i]]$seTE.fixed[seq1, seq1]
+    TE.i <- args[[i]]$TE.fixed[seq1, seq1]
+    seTE.i <- args[[i]]$seTE.fixed[seq1, seq1]
     lower.i <- args[[i]]$lower.fixed[seq1, seq1]
     upper.i <- args[[i]]$upper.fixed[seq1, seq1]
-    zval.i  <- args[[i]]$zval.fixed[seq1, seq1]
-    pval.i  <- args[[i]]$pval.fixed[seq1, seq1]
+    statistic.i <- args[[i]]$statistic.fixed[seq1, seq1]
+    pval.i <- args[[i]]$pval.fixed[seq1, seq1]
     ##
     cnam <- colnames(TE.i)
     rnam <- rownames(TE.i)
@@ -400,7 +403,7 @@ netbind <- function(..., name,
                                 seTE = seTE.i[, selc],
                                 lower = lower.i[, selc],
                                 upper = upper.i[, selc],
-                                zval = zval.i[, selc],
+                                statistic = statistic.i[, selc],
                                 pval = pval.i[, selc],
                                 ##
                                 col.study = col.study[i],
@@ -420,7 +423,7 @@ netbind <- function(..., name,
                                 seTE = seTE.i[selr, ],
                                 lower = lower.i[selr, ],
                                 upper = upper.i[selr, ],
-                                zval = zval.i[selr, ],
+                                statistic = statistic.i[selr, ],
                                 pval = pval.i[selr, ],
                                 ##
                                 col.study = col.study[i],
@@ -441,7 +444,7 @@ netbind <- function(..., name,
                        ##
                        TE = numeric(0), seTE = numeric(0),
                        lower = numeric(0), upper = numeric(0),
-                       zval = numeric(0), pval = numeric(0),
+                       statistic = numeric(0), pval = numeric(0),
                        ##
                        col.study = character(0),
                        col.square = character(0),
@@ -455,11 +458,11 @@ netbind <- function(..., name,
     rn <- rownames(args[[i]]$TE.random)
     seq1 <- charmatch(setseq(args[[i]]$seq, rn), rn)
     ##
-    TE.i    <- args[[i]]$TE.random[seq1, seq1]
-    seTE.i  <- args[[i]]$seTE.random[seq1, seq1]
+    TE.i <- args[[i]]$TE.random[seq1, seq1]
+    seTE.i <- args[[i]]$seTE.random[seq1, seq1]
     lower.i <- args[[i]]$lower.random[seq1, seq1]
     upper.i <- args[[i]]$upper.random[seq1, seq1]
-    zval.i  <- args[[i]]$zval.random[seq1, seq1]
+    statistic.i <- args[[i]]$statistic.random[seq1, seq1]
     pval.i  <- args[[i]]$pval.random[seq1, seq1]
     ##
     cnam <- colnames(TE.i)
@@ -476,7 +479,7 @@ netbind <- function(..., name,
                                  seTE = seTE.i[, selc],
                                  lower = lower.i[, selc],
                                  upper = upper.i[, selc],
-                                 zval = zval.i[, selc],
+                                 statistic = statistic.i[, selc],
                                  pval = pval.i[, selc],
                                  ##
                                  col.study = col.study[i],
@@ -496,7 +499,7 @@ netbind <- function(..., name,
                                  seTE = seTE.i[selr, ],
                                  lower = lower.i[selr, ],
                                  upper = upper.i[selr, ],
-                                 zval = zval.i[selr, ],
+                                 statistic = statistic.i[selr, ],
                                  pval = pval.i[selr, ],
                                  ##
                                  col.study = col.study[i],

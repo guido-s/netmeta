@@ -29,7 +29,7 @@ netsplit(
   ci = FALSE,
   test = show \%in\% c("all", "with.direct", "both"),
   digits = gs("digits"),
-  digits.zval = gs("digits.zval"),
+  digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
   digits.prop = max(gs("digits.pval") - 2, 2),
   text.NA = ".",
@@ -101,7 +101,7 @@ comparing direct and indirect estimates should be printed.}
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
 
-\item{digits.zval}{Minimal number of significant digits for z-value
+\item{digits.stat}{Minimal number of significant digits for z-value
 of test of agreement between direct and indirect evidence, see
 \code{print.default}.}
 

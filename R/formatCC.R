@@ -1,8 +1,7 @@
 formatCC <- function(x,
                      backtransf, sm, level, abbr,
-                     digits, digits.zval, digits.pval.Q,
-                     scientific.pval, big.mark,
-                     seq = NULL) {
+                     digits, digits.stat, digits.pval.Q,
+                     scientific.pval, big.mark, seq = NULL) {
   
   
   formatN <- meta:::formatN
@@ -40,19 +39,25 @@ formatCC <- function(x,
                                        digits, "NA", big.mark),
                                formatN(round(res$upper, digits),
                                        digits, "NA", big.mark))
-  res$z <- formatN(res$z, digits.zval, big.mark = big.mark)
+  res$statistic <- formatN(round(res$statistic, digits.stat),
+                           digits.stat, big.mark = big.mark)
   res$p <- meta:::formatPT(res$p,
                            digits = digits.pval.Q,
                            scientific = scientific.pval)
   ##
-  res$seTE <- NULL
-  res$upper <- NULL
+  res$seTE <- res$upper <- res$z <- NULL
   ##
   sel <- names(res) == "TE"
   names(res)[sel] <- sm.lab
   ##
   sel <- names(res) == "lower"
   names(res)[sel] <- ci.lab
+  ##
+  sel <- names(res) == "statistic"
+  names(res)[sel] <- "z"
+  ##
+  sel <- names(res) == "p"
+  names(res)[sel] <- "p-value"
   
   
   res

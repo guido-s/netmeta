@@ -206,7 +206,7 @@
 #' \item{lower.fixed, upper.fixed}{\emph{n}x\emph{n} matrices with
 #'   lower and upper confidence interval limits for fixed effects
 #'   model.}
-#' \item{zval.fixed, pval.fixed}{\emph{n}x\emph{n} matrices with
+#' \item{statistic.fixed, pval.fixed}{\emph{n}x\emph{n} matrices with
 #'   z-value and p-value for test of overall treatment effect under
 #'   fixed effects model.}
 #' \item{TE.random, seTE.random}{\emph{n}x\emph{n} matrix with
@@ -216,9 +216,9 @@
 #' \item{lower.random, upper.random}{\emph{n}x\emph{n} matrices with
 #'   lower and upper confidence interval limits for random effects
 #'   model (only available if \code{method = "Inverse"}).}
-#' \item{zval.random, pval.random}{\emph{n}x\emph{n} matrices with
-#'   z-value and p-value for test of overall treatment effect under
-#'   random effects model (only available if \code{method =
+#' \item{statistic.random, pval.random}{\emph{n}x\emph{n} matrices
+#'   with z-value and p-value for test of overall treatment effect
+#'   under random effects model (only available if \code{method =
 #'   "Inverse"}).}
 #' \item{TE.direct.fixed, seTE.direct.fixed}{\emph{n}x\emph{n} matrix
 #'   with estimated treatment effects and standard errors from direct
@@ -226,7 +226,7 @@
 #' \item{lower.direct.fixed, upper.direct.fixed}{\emph{n}x\emph{n}
 #'   matrices with lower and upper confidence interval limits from
 #'   direct evidence under fixed effects model.}
-#' \item{zval.direct.fixed, pval.direct.fixed}{\emph{n}x\emph{n}
+#' \item{statistic.direct.fixed, pval.direct.fixed}{\emph{n}x\emph{n}
 #'   matrices with z-value and p-value for test of overall treatment
 #'   effect from direct evidence under fixed effects model.}
 #' \item{TE.direct.random, seTE.direct.random}{\emph{n}x\emph{n}
@@ -237,10 +237,11 @@
 #'   matrices with lower and upper confidence interval limits from
 #'   direct evidence under random effects model (only available if
 #'   \code{method = "Inverse"}).}
-#' \item{zval.direct.random, pval.direct.random}{\emph{n}x\emph{n}
-#'   matrices with z-value and p-value for test of overall treatment
-#'   effect from direct evidence under random effects model (only
-#'   available if \code{method = "Inverse"}).}
+#' \item{statistic.direct.random,
+#'   pval.direct.random}{\emph{n}x\emph{n} matrices with z-value and
+#'   p-value for test of overall treatment effect from direct evidence
+#'   under random effects model (only available if \code{method =
+#'   "Inverse"}).}
 #' \item{Q}{Overall heterogeneity / inconsistency statistic. (only
 #'   available if \code{method = "Inverse"})}
 #' \item{df.Q}{Degrees of freedom for test of heterogeneity /
@@ -1802,14 +1803,14 @@ netmetabin <- function(event1, n1, event2, n2,
               seTE.fixed = seTE.fixed,
               lower.fixed = ci.f$lower,
               upper.fixed = ci.f$upper,
-              zval.fixed = ci.f$statistic,
+              statistic.fixed = ci.f$statistic,
               pval.fixed = ci.f$p,
               ##
               TE.random = NAmatrix,
               seTE.random = NAmatrix,
               lower.random = NAmatrix,
               upper.random = NAmatrix,
-              zval.random = NAmatrix,
+              statistic.random = NAmatrix,
               pval.random = NAmatrix,
               ##
               seTE.predict = NAmatrix,
@@ -1823,28 +1824,28 @@ netmetabin <- function(event1, n1, event2, n2,
               seTE.direct.fixed = seTE.direct.fixed,
               lower.direct.fixed = ci.d$lower,
               upper.direct.fixed = ci.d$upper,
-              zval.direct.fixed = ci.d$statistic,
+              statistic.direct.fixed = ci.d$statistic,
               pval.direct.fixed = ci.d$p,
               ##
               TE.direct.random = NAmatrix,
               seTE.direct.random = NAmatrix,
               lower.direct.random = NAmatrix,
               upper.direct.random = NAmatrix,
-              zval.direct.random = NAmatrix,
+              statistic.direct.random = NAmatrix,
               pval.direct.random = NAmatrix,
               ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
               lower.indirect.fixed = NA,
               upper.indirect.fixed = NA,
-              zval.indirect.fixed = NA,
+              statistic.indirect.fixed = NA,
               pval.indirect.fixed = NA,
               ##
               TE.indirect.random = NA,
               seTE.indirect.random = NA,
               lower.indirect.random = NA,
               upper.indirect.random = NA,
-              zval.indirect.random = NA,
+              statistic.indirect.random = NA,
               pval.indirect.random = NA,
               ##
               Q = NA,
@@ -1964,6 +1965,7 @@ netmetabin <- function(event1, n1, event2, n2,
   res$P.fixed <- P.fixed
   ##
   P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
+  P.fixed[P.fixed > 1] <- NA
   ##
   ## Fixed effects model
   ##
@@ -1977,7 +1979,7 @@ netmetabin <- function(event1, n1, event2, n2,
   res$lower.indirect.fixed <- ci.if$lower
   res$upper.indirect.fixed <- ci.if$upper
   ##
-  res$zval.indirect.fixed <- ci.if$statistic
+  res$statistic.indirect.fixed <- ci.if$statistic
   res$pval.indirect.fixed <- ci.if$p
   ##
   ## No results for random effects model
@@ -1988,7 +1990,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   res$TE.indirect.random <- res$seTE.indirect.random <-
     res$lower.indirect.random <- res$upper.indirect.random <-
-      res$zval.indirect.random <- res$pval.indirect.random <-
+      res$statistic.indirect.random <- res$pval.indirect.random <-
         NAmatrix
   
   

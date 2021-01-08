@@ -383,6 +383,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   
   meta:::chkclass(x, "netmeta")
   ##
+  x <- upgradenetmeta(x)
+  ##
   n.edges <- sum(x$A.matrix[upper.tri(x$A.matrix)] > 0)
   n.trts <- length(x$trts)
 

@@ -64,6 +64,8 @@ netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01, verbose = FALSE
   
   meta:::chkclass(x, "netmeta")
   ##
+  x <- upgradenetmeta(x)
+  ##
   meta:::chknumeric(seTE.ignore, min = 0, zero = TRUE, length = 1)
   meta:::chknumeric(event.ignore, min = 0, zero = TRUE, length = 1)
   

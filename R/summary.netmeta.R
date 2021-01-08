@@ -31,6 +31,10 @@
 #'   beginning of the printout.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
+#' @param digits.stat Minimal number of significant digits for tests
+#'   of overall effect, see \code{print.default}.
+#' @param digits.pval Minimal number of significant digits for p-value
+#'   of overall effects, see \code{print.default}.
 #' @param digits.pval.Q Minimal number of significant digits for
 #'   p-value of heterogeneity tests, see \code{print.default}.
 #' @param digits.Q Minimal number of significant digits for
@@ -47,8 +51,8 @@
 #' @param big.mark A character used as thousands separator.
 #' @param text.tau2 Text printed to identify between-study variance
 #'   \eqn{\tau^2}.
-#' @param text.tau Text printed to identify \eqn{\tau}, the square root
-#'   of the between-study variance \eqn{\tau^2}.
+#' @param text.tau Text printed to identify \eqn{\tau}, the square
+#'   root of the between-study variance \eqn{\tau^2}.
 #' @param text.I2 Text printed to identify heterogeneity statistic
 #'   I\eqn{^2}.
 #' @param \dots Additional arguments.
@@ -198,48 +202,50 @@ summary.netmeta <- function(object,
   ##     meta-analyses
   ##
   ##
-  keepvars <- c("TE", "seTE", "lower", "upper", "z", "p")
+  keepvars <- c("TE", "seTE", "lower", "upper", "statistic", "p")
   ##
   ci.comp <- data.frame(studlab = object$studlab,
                         treat1 = object$treat1, treat2 = object$treat2,
                         ci(object$TE, object$seTE, object$level)[keepvars],
                         stringsAsFactors = FALSE)
   ##
-  ci.nma.fixed <- data.frame(studlab = object$studlab,
-                             treat1 = object$treat1,
-                             treat2 = object$treat2,
-                             TE = if (!is.bin) object$TE.nma.fixed else NA,
-                             seTE = if (!is.bin) object$seTE.nma.fixed else NA,
-                             lower = if (!is.bin) object$lower.nma.fixed else NA,
-                             upper = if (!is.bin) object$upper.nma.fixed else NA,
-                             z = if (!is.bin) object$zval.nma.fixed else NA,
-                             p = if (!is.bin) object$pval.nma.fixed else NA,
-                             leverage = if (!is.bin) object$leverage.fixed else NA,
-                             stringsAsFactors = FALSE)
+  ci.nma.fixed <-
+    data.frame(studlab = object$studlab,
+               treat1 = object$treat1,
+               treat2 = object$treat2,
+               TE = if (!is.bin) object$TE.nma.fixed else NA,
+               seTE = if (!is.bin) object$seTE.nma.fixed else NA,
+               lower = if (!is.bin) object$lower.nma.fixed else NA,
+               upper = if (!is.bin) object$upper.nma.fixed else NA,
+               statistic = if (!is.bin) object$statistic.nma.fixed else NA,
+               p = if (!is.bin) object$pval.nma.fixed else NA,
+               leverage = if (!is.bin) object$leverage.fixed else NA,
+               stringsAsFactors = FALSE)
   ##
-  ci.nma.random <- data.frame(studlab = object$studlab,
-                              treat1 = object$treat1,
-                              treat2 = object$treat2,
-                              TE = if (!is.bin) object$TE.nma.random else NA,
-                              seTE = if (!is.bin) object$seTE.nma.random else NA,
-                              lower = if (!is.bin) object$lower.nma.random else NA,
-                              upper = if (!is.bin) object$upper.nma.random else NA,
-                              z = if (!is.bin) object$zval.nma.random else NA,
-                              p = if (!is.bin) object$pval.nma.random else NA,
-                              stringsAsFactors = FALSE)
+  ci.nma.random <-
+    data.frame(studlab = object$studlab,
+               treat1 = object$treat1,
+               treat2 = object$treat2,
+               TE = if (!is.bin) object$TE.nma.random else NA,
+               seTE = if (!is.bin) object$seTE.nma.random else NA,
+               lower = if (!is.bin) object$lower.nma.random else NA,
+               upper = if (!is.bin) object$upper.nma.random else NA,
+               statistic = if (!is.bin) object$statistic.nma.random else NA,
+               p = if (!is.bin) object$pval.nma.random else NA,
+               stringsAsFactors = FALSE)
   ##
   ci.f <- list(TE = object$TE.fixed,
                seTE = object$seTE.fixed,
                lower = object$lower.fixed,
                upper = object$upper.fixed,
-               z = object$zval.fixed,
+               statistic = object$statistic.fixed,
                p = object$pval.fixed)
   ##
   ci.r <- list(TE = object$TE.random,
                seTE = object$seTE.random,
                lower = object$lower.random,
                upper = object$upper.random,
-               z = object$zval.random,
+               statistic = object$statistic.random,
                p = object$pval.random)
   ##
   ci.p <- list(seTE = object$seTE.predict,
@@ -356,6 +362,8 @@ print.summary.netmeta <- function(x,
                                   nchar.trts = x$nchar.trts,
                                   header = TRUE,
                                   digits = gs("digits"),
+                                  digits.stat = gs("digits.stat"),
+                                  digits.pval = max(gs("digits.pval"), 2),
                                   digits.pval.Q = max(gs("digits.pval.Q"), 2),
                                   digits.Q = gs("digits.Q"),
                                   digits.tau2 = gs("digits.tau2"),
@@ -409,10 +417,12 @@ print.summary.netmeta <- function(x,
   chknumeric(nchar.trts, min = 1, length = 1)
   ##
   chknumeric(digits, min = 0, length = 1)
-  chknumeric(digits.tau2, min = 0, length = 1)
-  chknumeric(digits.tau, min = 0, length = 1)
+  chknumeric(digits.stat, min = 0, length = 1)
+  chknumeric(digits.pval, min = 1, length = 1)
   chknumeric(digits.pval.Q, min = 1, length = 1)
   chknumeric(digits.Q, min = 0, length = 1)
+  chknumeric(digits.tau2, min = 0, length = 1)
+  chknumeric(digits.tau, min = 0, length = 1)
   chknumeric(digits.I2, min = 0, length = 1)
   chklogical(scientific.pval)
   ##
@@ -443,15 +453,19 @@ print.summary.netmeta <- function(x,
   ci.lab <- paste(round(100 * x$level.comb, 1), "%-CI", sep = "")
 
   
-  TE.fixed    <- x$fixed$TE
-  seTE.fixed  <- x$fixed$seTE
+  TE.fixed <- x$fixed$TE
+  seTE.fixed <- x$fixed$seTE
   lowTE.fixed <- x$fixed$lower
   uppTE.fixed <- x$fixed$upper
+  statistic.fixed <- meta:::replaceNULL(x$fixed$statistic, x$fixed$z)
+  pval.fixed <- x$fixed$p
   ##
   TE.random    <- x$random$TE
   seTE.random  <- x$random$seTE
   lowTE.random <- x$random$lower
   uppTE.random <- x$random$upper
+  statistic.random <- meta:::replaceNULL(x$random$statistic, x$random$z)
+  pval.random <- x$random$p
   ##
   lowTE.predict <- x$predict$lower
   uppTE.predict <- x$predict$upper
@@ -461,12 +475,16 @@ print.summary.netmeta <- function(x,
     seTE.fixed <- seTE.fixed[x$seq, x$seq]
     lowTE.fixed <- lowTE.fixed[x$seq, x$seq]
     uppTE.fixed <- uppTE.fixed[x$seq, x$seq]
+    statistic.fixed <- statistic.fixed[x$seq, x$seq]
+    pval.fixed <- pval.fixed[x$seq, x$seq]
     ##
     if (!all(is.na(TE.random))) {
       TE.random <- TE.random[x$seq, x$seq]
       seTE.random <- seTE.random[x$seq, x$seq]
       lowTE.random <- lowTE.random[x$seq, x$seq]
       uppTE.random <- uppTE.random[x$seq, x$seq]
+      statistic.random <- statistic.random[x$seq, x$seq]
+      pval.random <- pval.random[x$seq, x$seq]
       ##
       lowTE.predict <- lowTE.predict[x$seq, x$seq]
       uppTE.predict <- uppTE.predict[x$seq, x$seq]
@@ -493,13 +511,15 @@ print.summary.netmeta <- function(x,
     }
   }
   ##
-  TE.fixed    <- round(TE.fixed, digits)
+  TE.fixed <- round(TE.fixed, digits)
   lowTE.fixed <- round(lowTE.fixed, digits)
   uppTE.fixed <- round(uppTE.fixed, digits)
+  statistic.fixed <- round(statistic.fixed, digits.stat)
   ##
   TE.random    <- round(TE.random, digits)
   lowTE.random <- round(lowTE.random, digits)
   uppTE.random <- round(uppTE.random, digits)
+  statistic.random <- round(statistic.random, digits.stat)
   ##
   if (prediction) {
     lowTE.predict <- round(lowTE.predict, digits)
@@ -567,9 +587,11 @@ print.summary.netmeta <- function(x,
         text.fixed <- "Fixed effects model"
         ##
         if (x$method == "MH")
-          text.fixed <- paste(text.fixed, "(Mantel-Haenszel method)")
+          text.fixed <-
+            paste(text.fixed, "(Mantel-Haenszel method)")
         else if (x$method == "NCH")
-          text.fixed <- paste(text.fixed, "(Non-central hypergeometric distribution)")
+          text.fixed <-
+            paste(text.fixed, "(Non-central hypergeometric distribution)")
         ##
         cat(paste0("\n", text.fixed, "\n"))
       }
@@ -613,7 +635,8 @@ print.summary.netmeta <- function(x,
         if (!comb.random & prediction & x$df.Q >= 2) {
           cat("\nPrediction intervals\n")
           ##
-          cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n", sep = "")
+          cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n",
+              sep = "")
           ##
           lowTEp <- formatN(lowTE.predict, digits = digits)
           rownames(lowTEp) <- treats(lowTEp, nchar.trts)
@@ -624,7 +647,8 @@ print.summary.netmeta <- function(x,
           ##
           prmatrix(lowTEp, quote = FALSE, right = TRUE)
           ##
-          cat("\nUpper ", 100 * x$level.predict, "%-prediction limit:\n", sep = "")
+          cat("\nUpper ", 100 * x$level.predict, "%-prediction limit:\n",
+              sep = "")
           ##
           uppTEp <- formatN(uppTE.predict, digits = digits)
           rownames(uppTEp) <- treats(uppTEp, nchar.trts)
@@ -638,56 +662,73 @@ print.summary.netmeta <- function(x,
       }
       if (reference.group != "") {
         if (all(colnames(TE.fixed) != reference.group))
-          stop(paste("Argument 'reference.group' must match any of the following values: ",
-                     paste(paste("'", colnames(TE.fixed), "'", sep = ""),
-                           collapse = " - "), sep = ""))
+          stop("Argument 'reference.group' must match any of ",
+               "the following values: ",
+               paste(paste0("'", colnames(TE.fixed), "'"),
+                           collapse = " - "))
         ##
         if (baseline.reference) {
           TE.fixed.b <- TE.fixed[, colnames(TE.fixed) == reference.group]
-          lowTE.fixed.b <- lowTE.fixed[, colnames(lowTE.fixed) == reference.group]
-          uppTE.fixed.b <- uppTE.fixed[, colnames(uppTE.fixed) == reference.group]
+          lowTE.fixed.b <-
+            lowTE.fixed[, colnames(lowTE.fixed) == reference.group]
+          uppTE.fixed.b <-
+            uppTE.fixed[, colnames(uppTE.fixed) == reference.group]
+          statistic.fixed.b <-
+            statistic.fixed[, colnames(statistic.fixed) == reference.group]
+          pval.fixed.b <-
+            pval.fixed[, colnames(pval.fixed) == reference.group]
         }
         else {
           TE.fixed.b <- TE.fixed[rownames(TE.fixed) == reference.group, ]
-          lowTE.fixed.b <- lowTE.fixed[rownames(lowTE.fixed) == reference.group, ]
-          uppTE.fixed.b <- uppTE.fixed[rownames(uppTE.fixed) == reference.group, ]
+          lowTE.fixed.b <-
+            lowTE.fixed[rownames(lowTE.fixed) == reference.group, ]
+          uppTE.fixed.b <-
+            uppTE.fixed[rownames(uppTE.fixed) == reference.group, ]
+          statistic.fixed.b <-
+            statistic.fixed[rownames(statistic.fixed) == reference.group, ]
+          pval.fixed.b <-
+            pval.fixed[rownames(pval.fixed) == reference.group, ]
         }
+        ##
+        res <- cbind(formatN(TE.fixed.b, digits, text.NA = "NA",
+                             big.mark = big.mark),
+                     formatCI(formatN(round(lowTE.fixed.b, digits),
+                                      digits, "NA", big.mark = big.mark),
+                              formatN(round(uppTE.fixed.b, digits),
+                                      digits, "NA", big.mark = big.mark)),
+                     formatN(statistic.fixed.b, digits.stat, text.NA = "NA",
+                             big.mark = big.mark),
+                     formatPT(pval.fixed.b,
+                              digits = digits.pval,
+                              scientific = scientific.pval)
+                     )
+        dimnames(res) <-
+          list(colnames(TE.fixed), c(sm.lab, ci.lab, "z", "p-value"))
         ##
         ## Add prediction interval (or not)
         ##
         if (!comb.random & prediction & x$df.Q >= 2) {
           if (baseline.reference) {
-            lowTE.predict.b <- lowTE.predict[, colnames(lowTE.predict) == reference.group]
-            uppTE.predict.b <- uppTE.predict[, colnames(uppTE.predict) == reference.group]
+            lowTE.predict.b <-
+              lowTE.predict[, colnames(lowTE.predict) == reference.group]
+            uppTE.predict.b <-
+              uppTE.predict[, colnames(uppTE.predict) == reference.group]
           }
           else {
-            lowTE.predict.b <- lowTE.predict[rownames(lowTE.predict) == reference.group, ]
-            uppTE.predict.b <- uppTE.predict[rownames(uppTE.predict) == reference.group, ]
+            lowTE.predict.b <-
+              lowTE.predict[rownames(lowTE.predict) == reference.group, ]
+            uppTE.predict.b <-
+              uppTE.predict[rownames(uppTE.predict) == reference.group, ]
           }
           ##
           pi.lab <- paste(round(100 * x$level.predict, 1), "%-PI", sep = "")
           ##
-          res <- cbind(formatN(TE.fixed.b, digits, text.NA = "NA",
-                               big.mark = big.mark),
-                       formatCI(formatN(round(lowTE.fixed.b, digits),
-                                        digits, "NA", big.mark = big.mark),
-                                formatN(round(uppTE.fixed.b, digits),
-                                        digits, "NA", big.mark = big.mark)),
+          res <- cbind(res,
                        formatCI(formatN(round(lowTE.predict.b, digits),
                                         digits, "NA", big.mark = big.mark),
                                 formatN(round(uppTE.predict.b, digits),
                                         digits, "NA", big.mark = big.mark)))
-          dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab, pi.lab))
-        }
-        else {
-          res <- cbind(formatN(TE.fixed.b, digits, text.NA = "NA",
-                               big.mark = big.mark),
-                       formatCI(formatN(round(lowTE.fixed.b, digits),
-                                        digits, "NA", big.mark = big.mark),
-                                formatN(round(uppTE.fixed.b, digits),
-                                        digits, "NA", big.mark = big.mark))
-                       )
-          dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab))
+          colnames(res)[ncol(res)] <- pi.lab
         }
         ##
         if (TE.fixed.b[rownames(res) == reference.group] == noeffect)
@@ -745,7 +786,8 @@ print.summary.netmeta <- function(x,
         if (prediction & x$df.Q >= 2) {
           cat("\nPrediction intervals\n")
           ##
-          cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n", sep = "")
+          cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n",
+              sep = "")
           ##
           lowTEp <- formatN(lowTE.predict, digits = digits)
           rownames(lowTEp) <- treats(lowTEp, nchar.trts)
@@ -756,7 +798,8 @@ print.summary.netmeta <- function(x,
           ##
           prmatrix(lowTEp, quote = FALSE, right = TRUE)
           ##
-          cat("\nUpper ", 100 * x$level.predict, "%-prediction limit:\n", sep = "")
+          cat("\nUpper ", 100 * x$level.predict, "%-prediction limit:\n",
+              sep = "")
           ##
           uppTEp <- formatN(uppTE.predict, digits = digits)
           rownames(uppTEp) <- treats(uppTEp, nchar.trts)
@@ -770,56 +813,76 @@ print.summary.netmeta <- function(x,
       }
       if (reference.group != "") {
         if (all(colnames(TE.random) != reference.group))
-          stop(paste("Argument 'reference.group' must match any of the following values: ",
-                     paste(paste("'", colnames(TE.random), "'", sep = ""),
-                           collapse = " - "), sep = ""))
+          stop("Argument 'reference.group' must match any of ",
+               "the following values: ",
+               paste(paste0("'", colnames(TE.random), "'"),
+                     collapse = " - "))
         ##
         if (baseline.reference) {
-          TE.random.b <- TE.random[, colnames(TE.random) == reference.group]
-          lowTE.random.b <- lowTE.random[, colnames(lowTE.random) == reference.group]
-          uppTE.random.b <- uppTE.random[, colnames(uppTE.random) == reference.group]
+          TE.random.b <-
+            TE.random[, colnames(TE.random) == reference.group]
+          lowTE.random.b <-
+            lowTE.random[, colnames(lowTE.random) == reference.group]
+          uppTE.random.b <-
+            uppTE.random[, colnames(uppTE.random) == reference.group]
+          statistic.random.b <-
+            statistic.random[, colnames(statistic.random) == reference.group]
+          pval.random.b <-
+            pval.random[, colnames(pval.random) == reference.group]
         }
         else {
-          TE.random.b <- TE.random[colnames(TE.random) == reference.group]
-          lowTE.random.b <- lowTE.random[rownames(lowTE.random) == reference.group, ]
-          uppTE.random.b <- uppTE.random[rownames(uppTE.random) == reference.group, ]
+          TE.random.b <-
+            TE.random[colnames(TE.random) == reference.group]
+          lowTE.random.b <-
+            lowTE.random[rownames(lowTE.random) == reference.group, ]
+          uppTE.random.b <-
+            uppTE.random[rownames(uppTE.random) == reference.group, ]
+          statistic.random.b <-
+            statistic.random[rownames(statistic.random) == reference.group, ]
+          pval.random.b <-
+            pval.random[rownames(pval.random) == reference.group, ]
         }
+        ##
+        res <- cbind(formatN(TE.random.b, digits, text.NA = "NA",
+                             big.mark = big.mark),
+                     formatCI(formatN(round(lowTE.random.b, digits),
+                                      digits, "NA", big.mark = big.mark),
+                              formatN(round(uppTE.random.b, digits),
+                                      digits, "NA", big.mark = big.mark)),
+                     formatN(statistic.random.b, digits.stat, text.NA = "NA",
+                             big.mark = big.mark),
+                     formatPT(pval.random.b,
+                              digits = digits.pval,
+                              scientific = scientific.pval)
+                     )
+        dimnames(res) <-
+          list(colnames(TE.random), c(sm.lab, ci.lab, "z", "p-value"))
         ##
         ## Add prediction interval (or not)
         ##
         if (prediction & x$df.Q >= 2) {
           if (baseline.reference) {
-            lowTE.predict.b <- lowTE.predict[, colnames(lowTE.predict) == reference.group]
-            uppTE.predict.b <- uppTE.predict[, colnames(uppTE.predict) == reference.group]
+            lowTE.predict.b <-
+              lowTE.predict[, colnames(lowTE.predict) == reference.group]
+            uppTE.predict.b <-
+              uppTE.predict[, colnames(uppTE.predict) == reference.group]
           }
           else {
-            lowTE.predict.b <- lowTE.predict[rownames(lowTE.predict) == reference.group, ]
-            uppTE.predict.b <- uppTE.predict[rownames(uppTE.predict) == reference.group, ]
+            lowTE.predict.b <-
+              lowTE.predict[rownames(lowTE.predict) == reference.group, ]
+            uppTE.predict.b <-
+              uppTE.predict[rownames(uppTE.predict) == reference.group, ]
           }
           ##
           pi.lab <- paste(round(100 * x$level.predict, 1), "%-PI", sep = "")
           ##
-          res <- cbind(formatN(TE.random.b, digits, text.NA = "NA",
-                               big.mark = big.mark),
-                       formatCI(formatN(round(lowTE.random.b, digits),
-                                        digits, "NA", big.mark = big.mark),
-                                formatN(round(uppTE.random.b, digits),
-                                        digits, "NA", big.mark = big.mark)),
+          res <- cbind(res,
                        formatCI(formatN(round(lowTE.predict.b, digits),
                                         digits, "NA", big.mark = big.mark),
                                 formatN(round(uppTE.predict.b, digits),
                                         digits, "NA", big.mark = big.mark))
                        )
-          dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab, pi.lab))
-        }
-        else {
-          res <- cbind(formatN(TE.random.b, digits, text.NA = "NA",
-                               big.mark = big.mark),
-                       formatCI(formatN(round(lowTE.random.b, digits),
-                                        digits, "NA", big.mark = big.mark),
-                                formatN(round(uppTE.random.b, digits),
-                                        digits, "NA", big.mark = big.mark)))
-          dimnames(res) <- list(colnames(TE.fixed), c(sm.lab, ci.lab))
+          colnames(res)[ncol(res)] <- pi.lab
         }
         ##
         if (!is.na(TE.random.b[rownames(res) == reference.group]) &&
@@ -864,7 +927,8 @@ print.summary.netmeta <- function(x,
                  if (!is.na(I2))
                    paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
                  if (!(is.na(lower.I2) | is.na(upper.I2)))
-                   pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
+                   pasteCI(lower.I2, upper.I2,
+                           digits.I2, big.mark, unit = "%"),
                  "\n")
           )
     
