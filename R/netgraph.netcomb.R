@@ -5,11 +5,7 @@
 #' 
 #' @param x An object of class \code{netcomb}.
 #' @param \dots Additional arguments passed on to
-#'   \code{\link{netgraph.netmeta}} (see Details).
-#' 
-#' @details
-#' The following arguments are used internally and cannot be specified
-#' by the user: \code{thickness}, \code{seq}, \code{iterate}.
+#'   \code{\link{netgraph.netmeta}}.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de},
 #'   Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}
@@ -50,7 +46,7 @@ netgraph.netcomb <- function(x, ...) {
   meta:::chkclass(x, "netcomb")
   
   
-  res <- netgraph(x$x, thickness = "equal", seq = x$seq, iterate = FALSE, ...)
+  res <- netgraph(x$x, ...)
   
   
   invisible(res)

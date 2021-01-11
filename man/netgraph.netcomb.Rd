@@ -10,14 +10,10 @@
 \item{x}{An object of class \code{netcomb}.}
 
 \item{\dots}{Additional arguments passed on to
-\code{\link{netgraph.netmeta}} (see Details).}
+\code{\link{netgraph.netmeta}}.}
 }
 \description{
 This function generates a graph of the evidence network.
-}
-\details{
-The following arguments are used internally and cannot be specified
-by the user: \code{thickness}, \code{seq}, \code{iterate}.
 }
 \examples{
 data(Linde2016)
