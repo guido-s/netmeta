@@ -13,6 +13,9 @@
 * Calculate direct evidence proportion and indirect treatment
   estimates for network meta-analyses created with netmetabin()
 
+* Network graph for objects created with netconnection(), netcomb() or
+  discomb()
+
 ### Bug fixes
 
 * netmetabin():
