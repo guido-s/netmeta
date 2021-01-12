@@ -164,6 +164,7 @@ object is a list containing the following components:
 \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
 \item{seTE.adj}{Standard error of treatment estimate, adjusted for
   multi-arm studies.}
+\item{design}{Design of study providing pairwise comparison.}
 \item{n1, n2, event1, event2}{As defined above.}
 \item{k}{Total number of studies.}
 \item{m}{Total number of pairwise comparisons.}

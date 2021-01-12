@@ -774,6 +774,11 @@ discomb <- function(TE, seTE,
   narms <- (1 + sqrt(8 * as.vector(n.comps)  + 1)) / 2
   
   
+  designs <- designs(p0$treat1, p0$treat2, p0$studlab,
+                     sep.trts = sep.trts)
+  designs <- designs[o, ]
+  
+  
   res <- list(studlab = p0$studlab[o],
               treat1 = p0$treat1[o],
               treat2 = p0$treat2[o],
@@ -781,6 +786,8 @@ discomb <- function(TE, seTE,
               TE = p0$TE[o],
               seTE = p0$seTE[o],
               seTE.adj = sqrt(1 / p0$weights[o]),
+              ##
+              design = designs$design,
               ##
               event1 = NA,
               event2 = NA,
@@ -790,7 +797,7 @@ discomb <- function(TE, seTE,
               k = k,
               m = m,
               n = n,
-              d = NA,
+              d = length(unique(designs$design)),
               c = c,
               s = netc$n.subnets,
               ##
@@ -805,7 +812,7 @@ discomb <- function(TE, seTE,
               studies = studies,
               narms = narms,
               ##
-              designs = NA,
+              designs = unique(sort(designs$design)),
               ##
               comps = names(res.f$components$TE),
               k.comps = NA,

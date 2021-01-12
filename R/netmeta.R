@@ -218,6 +218,7 @@
 #' \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
 #' \item{seTE.adj}{Standard error of treatment estimate, adjusted for
 #'   multi-arm studies.}
+#' \item{design}{Design of study providing pairwise comparison.}
 #' \item{n1, n2, event1, event2}{As defined above.}
 #' \item{k}{Total number of studies.}
 #' \item{m}{Total number of pairwise comparisons.}
@@ -1081,6 +1082,10 @@ netmeta <- function(TE, seTE,
   ##
   o <- order(p0$order)
   ##
+  designs <- designs(res.f$treat1, res.f$treat2, res.f$studlab,
+                     sep.trts = sep.trts)
+  designs <- designs[o, ]
+  ##
   res <- list(studlab = res.f$studlab[o],
               treat1 = res.f$treat1[o],
               treat2 = res.f$treat2[o],
@@ -1088,6 +1093,8 @@ netmeta <- function(TE, seTE,
               TE = res.f$TE[o],
               seTE = res.f$seTE.orig[o],
               seTE.adj = res.f$seTE[o],
+              ##
+              design = designs$design,
               ##
               event1 = event1,
               event2 = event2,
@@ -1097,7 +1104,7 @@ netmeta <- function(TE, seTE,
               k = res.f$k,
               m = res.f$m,
               n = res.f$n,
-              d = NA,
+              d = length(unique(designs$design)),
               ##
               trts = trts,
               k.trts = rowSums(res.f$A.matrix),
@@ -1110,7 +1117,7 @@ netmeta <- function(TE, seTE,
               studies = studies,
               narms = narms,
               ##
-              designs = NA,
+              designs = unique(sort(designs$design)),
               ##
               TE.nma.fixed = res.f$TE.nma[o],
               seTE.nma.fixed = res.f$seTE.nma[o],

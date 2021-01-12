@@ -81,6 +81,7 @@
 #' \item{seTE}{Standard error of treatment estimate.}
 #' \item{seTE.adj}{Standard error of treatment estimate, adjusted for
 #'   multi-arm studies.}
+#' \item{design}{Design of study providing pairwise comparison.}
 #' \item{event1}{Number of events in first treatment group.}
 #' \item{event2}{Number of events in second treatment group.}
 #' \item{n1}{Number of observations in first treatment group.}
@@ -504,6 +505,8 @@ netcomb <- function(x,
               TE = x$TE,
               seTE = x$seTE,
               seTE.adj = x$seTE.adj,
+              ##
+              design = x$design,
               ##
               event1 = x$event1,
               event2 = x$event2,

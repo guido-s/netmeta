@@ -47,7 +47,7 @@
     netcomb()
 
 * netmeta():
-  - new argument small.values' passed on to netrank()
+  - new argument 'small.values' passed on to netrank()
 
 * netgraph.netmeta():
   - new argument 'srt.labels' to rotate treatment labels
@@ -80,15 +80,25 @@
 * netcomb():
   - export covariance matrices 'Cov.fixed' and 'Cov.random'
 
+* netmeta(), netcomb():
+  - export study design for each pairwise comparison (list element
+    'design')
+
+* discomb():
+  - export study designs (list element 'design'), list of designs
+    ('design') and number of designs ('d')
+
 * Argument 'single' renamed to 'length' in calls of chkchar(),
   chkcolor(), chklevel() and chknumeric()
 
 * New internal function is.zero() to determine whether a small number
   is essentially zero (i.e., whether *abs(x) < 10 *
-  .Machine$double.eps*
+  .Machine$double.eps*)
 
 * New internal function updateversion() to update older netmeta
   objects
+
+* New internal function designs() to determine study designs
 
 * nma.ruecker(), nma.additive():
   - use ginv() to calculate inverse of matrix L

@@ -160,7 +160,8 @@ netconnection <- function(treat1, treat2, studlab,
     studlab <- as.character(studlab)
   else {
     if (warn)
-      warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
+      warning("No information given for argument 'studlab'. ",
+              "Assuming that comparisons are from independent studies.")
     studlab <- as.character(seq_along(treat1))
   }
   ##
@@ -279,6 +280,9 @@ netconnection <- function(treat1, treat2, studlab,
   }
   
   
+  designs <- designs(treat1, treat2, studlab)
+  
+  
   res <- list(treat1 = treat1,
               treat2 = treat2,
               studlab = studlab,
@@ -287,10 +291,13 @@ netconnection <- function(treat1, treat2, studlab,
               m = m,
               n = n,
               n.subnets = n.subsets,
+              d = length(unique(designs$design)),
               ##
               D.matrix = D,
               A.matrix = A,
               L.matrix = L,
+              ##
+              designs = unique(sort(designs$design)),
               ##
               nchar.trts = nchar.trts,
               ##
@@ -338,6 +345,8 @@ print.netconnection <- function(x,
   cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
   cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
   cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
+  if (!is.null(x$d))
+    cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
   ##
   cat("Number of subnetworks: ", x$n.subnets, "\n", sep = "")
 
