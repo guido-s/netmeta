@@ -59,7 +59,8 @@
 #' @export netimpact
 
 
-netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01, verbose = FALSE) {
+netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01,
+                      verbose = FALSE) {
   
   
   meta:::chkclass(x, "netmeta")

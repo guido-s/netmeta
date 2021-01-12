@@ -1,12 +1,14 @@
 designs <- function(treat1, treat2, studlab, sep.trts = ":") {
   
   
+  id <- seq_along(studlab)
   o <- order(studlab, treat1, treat2)
   ##
-  if (any(o != seq_along(studlab))) {
+  if (any(o != id)) {
     treat1 <- treat1[o]
     treat2 <- treat2[o]
     studlab <- studlab[o]
+    id <- id[o]
   }
   
   
@@ -28,6 +30,9 @@ designs <- function(treat1, treat2, studlab, sep.trts = ":") {
   dat <- data.frame(studlab, treat1, treat2)
   ##
   res <- merge(dat, designs, by = "studlab")
+  res <- res[id, ]
+  res$treat1 <- NULL
+  res$treat2 <- NULL
   ##
   res
 }

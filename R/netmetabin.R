@@ -1779,6 +1779,8 @@ netmetabin <- function(event1, n1, event2, n2,
               seTE = data$.seTE[!data$.drop],
               seTE.adj = rep(NA, sum(!data$.drop)),
               ##
+              design = designs(treat1, treat2, studlab)$design,
+              ##
               event1 = event1,
               event2 = event2,
               n1 = n1,

@@ -776,7 +776,6 @@ discomb <- function(TE, seTE,
   
   designs <- designs(p0$treat1, p0$treat2, p0$studlab,
                      sep.trts = sep.trts)
-  designs <- designs[o, ]
   
   
   res <- list(studlab = p0$studlab[o],
@@ -787,7 +786,7 @@ discomb <- function(TE, seTE,
               seTE = p0$seTE[o],
               seTE.adj = sqrt(1 / p0$weights[o]),
               ##
-              design = designs$design,
+              design = designs$design[o],
               ##
               event1 = NA,
               event2 = NA,

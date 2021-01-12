@@ -100,6 +100,9 @@
 
 * New internal function designs() to determine study designs
 
+* New internal function netheat-internal() with auxiliary functions
+  for netheat()
+
 * nma.ruecker(), nma.additive():
   - use ginv() to calculate inverse of matrix L
   - set small numbers which are essentially zero to zero in matrix

@@ -287,6 +287,8 @@ netconnection <- function(treat1, treat2, studlab,
               treat2 = treat2,
               studlab = studlab,
               ##
+              design = designs$design,
+              ##
               k = length(unique(studlab)),
               m = m,
               n = n,

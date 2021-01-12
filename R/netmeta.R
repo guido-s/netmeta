@@ -1084,7 +1084,6 @@ netmeta <- function(TE, seTE,
   ##
   designs <- designs(res.f$treat1, res.f$treat2, res.f$studlab,
                      sep.trts = sep.trts)
-  designs <- designs[o, ]
   ##
   res <- list(studlab = res.f$studlab[o],
               treat1 = res.f$treat1[o],
@@ -1094,7 +1093,7 @@ netmeta <- function(TE, seTE,
               seTE = res.f$seTE.orig[o],
               seTE.adj = res.f$seTE[o],
               ##
-              design = designs$design,
+              design = designs$design[o],
               ##
               event1 = event1,
               event2 = event2,
@@ -1359,22 +1358,6 @@ netmeta <- function(TE, seTE,
   ##
   res$small.values <- res$small.values
   ##
-  ## Number of designs
-  ##
-  krahn <- nma.krahn(res)
-  res$d <- krahn$d
-  if (is.null(res$d))
-    res$d <- 1
-  ##
-  if (is.null(krahn$design$design))
-    res$designs <- rownames(res$Cov.fixed)
-  else
-    res$designs <- as.character(krahn$design$design)
-  ##
-  res$designs <- unique(res$designs)
-  ##
-  ##
-  ##
   if (any(res$narms > 2)) {
     tdata1 <- data.frame(studlab = res$studlab,
                          .order = seq(along = res$studlab))
@@ -1408,30 +1391,18 @@ netmeta <- function(TE, seTE,
     res$pval.Q.heterogeneity <- dd$Q.decomp$pval[2]
     res$pval.Q.inconsistency <- dd$Q.decomp$pval[3]
   }
-
-
+  
+  
   if (keepdata) {
-    if (is.null(krahn))
-      ddat <- data.frame(.studlab = data$.studlab,
-                         .design = paste(data$.treat1, data$.treat2,
-                                         sep = sep.trts),
-                         stringsAsFactors = FALSE)
-    else {
-      ddat <- unique(krahn$studies[, c("studlab", "design")])
-      names(ddat) <- paste0(".", names(ddat))
-    }
-
-    data <- merge(data,
-                  data.frame(.studlab = res$studies,
-                             .narms = res$narms),
-                  by = ".studlab",
-                  stringsAsFactors = FALSE)
+    data$.design <- designs(data$.treat1, data$.treat2, data$.studlab,
+                            sep = sep.trts)$design
     ##
-    res$data <- merge(data, ddat,
+    res$data <- merge(data,
+                      data.frame(.studlab = res$studies,
+                                 .narms = res$narms),
                       by = ".studlab",
-                      suffixes = c(".orig", ""),
                       stringsAsFactors = FALSE)
-    res$data$.design <- as.character(res$data$.design)
+    ##
     res$data <- res$data[order(res$data$.order), ]
     res$data$.order <- NULL
   }
