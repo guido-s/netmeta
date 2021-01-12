@@ -225,16 +225,16 @@ netconnection <- function(treat1, treat2, studlab,
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
-    stop(paste("Study '", names(tabnarms)[sel.narms],
-               "' has a wrong number of comparisons.",
-               "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""))
+    stop("Study '", names(tabnarms)[sel.narms],
+         "' has a wrong number of comparisons.",
+         "\n  Please provide data for all treatment comparisons ",
+         "(two-arm: 1; three-arm: 3; four-arm: 6, ...).")
   if (sum(sel.narms) > 1)
-    stop(paste("The following studies have a wrong number of comparisons: ",
-               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
-                     collapse = ", "),
-               "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""))
+    stop("The following studies have a wrong number of comparisons: ",
+         paste(paste0("'", names(tabnarms)[sel.narms], "'"),
+               collapse = ", "),
+         "\n  Please provide data for all treatment comparisons ",
+         "(two-arm: 1; three-arm: 3; four-arm: 6, ...).")
   
   
   ##
