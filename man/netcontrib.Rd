@@ -2,15 +2,42 @@
 % Please edit documentation in R/netcontrib.R
 \name{netcontrib}
 \alias{netcontrib}
+\alias{print.netcontrib}
 \title{Contribution matrix in network meta-analysis}
 \usage{
 netcontrib(x)
+
+\method{print}{netcontrib}(
+  x,
+  comb.fixed = x$x$comb.fixed,
+  comb.random = x$x$comb.random,
+  digits = 2,
+  ...
+)
 }
 \arguments{
-\item{x}{An object of class \code{netmeta}.}
+\item{x}{An ojbect of class \code{netcontrib}}
+
+\item{comb.fixed}{A logical indicating whether a league table
+should be printed for the fixed effects (common effects) network
+meta-analysis.}
+
+\item{comb.random}{A logical indicating whether a league table
+should be printed for the random effects network meta-analysis.}
+
+\item{digits}{number of rounding digits}
+
+\item{\dots}{Additional arguments (ignored at the moment).}
 }
 \value{
-An object of class \code{netcontrib}
+An object of class \code{netcontrib} with corresponding \code{print}
+function. The object is a list containing the following components:
+\item{fixed}{Numeric matrix of percentage contributions of direct comparisons
+for each network comparison for the fixed effects model.}
+\item{random}{Numeric matrix of percentage contributions of direct comparisons
+for each network comparison for the random effects model.}
+\item{x}{the \code{netmeta} object defined above.}
+
 with the contribution matrices for fixed and random NMA.
 Each matrix has the percentage contributions of each direct comparisons as columns 
 for each network comparison, direct or indirect as rows.

@@ -4,6 +4,8 @@
 #' This function generates the contribution of direct comparisons to
 #' every network treatment comparison as a different row
 #' 
+#' @aliases netcontrib print.netcontrib
+#' 
 #' @param x An object of class \code{netmeta}.
 #' 
 #' @details
@@ -20,7 +22,14 @@
 #' We present an algorithm that identifies the flow of evidence in each path and decomposes it into direct comparisons.
 #' 
 #' @return
-#' An object of class \code{netcontrib}
+#'  An object of class \code{netcontrib} with corresponding \code{print}
+#' function. The object is a list containing the following components:
+#' \item{fixed}{Numeric matrix of percentage contributions of direct comparisons
+#' for each network comparison for the fixed effects model.}
+#' \item{random}{Numeric matrix of percentage contributions of direct comparisons
+#' for each network comparison for the random effects model.}
+#' \item{x}{the \code{netmeta} object defined above.}
+#' 
 #' with the contribution matrices for fixed and random NMA.
 #' Each matrix has the percentage contributions of each direct comparisons as columns 
 #' for each network comparison, direct or indirect as rows.
@@ -51,7 +60,9 @@
 #' 
 #' }
 #' 
+#' @rdname netcontrib
 #' @export netcontrib
+
 
 netcontrib = function(x){
   if (!meta:::is.installed.package("igraph", stop = FALSE)) {
@@ -65,13 +76,54 @@ netcontrib = function(x){
     return(invisible(NULL))
   }
   res <- list( fixed = contribution.matrix(x,"fixed")
-             , random = contribution.matrix(x,"random"))
+             , random = contribution.matrix(x,"random")
+             , x = x)
   class(res) <- "netcontrib"
   ##
   res
 }
 
-#' @description
+#' @rdname netcontrib
+#' @param x An ojbect of class \code{netcontrib}
+#' @param comb.fixed A logical indicating whether a league table
+#'   should be printed for the fixed effects (common effects) network
+#'   meta-analysis.
+#' @param comb.random A logical indicating whether a league table
+#'   should be printed for the random effects network meta-analysis.
+#' @param digits number of rounding digits
+#' @param \dots Additional arguments (ignored at the moment).
+#' @method print netcontrib
+#' @export
+#' @export print.netcontrib
+
+
+print.netcontrib <- function(x,
+                            comb.fixed = x$x$comb.fixed,
+                            comb.random = x$x$comb.random,
+                            digits = 2,
+                            ...) {
+  
+  meta:::chkclass(x, "netcontrib")
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  meta:::chknumeric(digits, length = 1)
+
+   matitle(x$x)
+  if(comb.fixed){
+    cat("Contribution matrix fixed model")
+    cat("\n")
+    prmatrix(round(x$fixed, digits))
+    cat("\n")
+  }
+  if(comb.random){
+    cat("Contribution matrix random model")
+    cat("\n")
+    prmatrix(round(x$random, digits))
+  }
+  invisible(NULL)
+}
+
+
 #' Internal function for \code{netcontrib}
 #' @param x An object of class \code{netmeta}.
 #' @param model "fixed" or "random" depending on the model of NMA
