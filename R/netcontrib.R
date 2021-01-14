@@ -5,15 +5,27 @@
 #' every network treatment comparison as a different row
 #' 
 #' @param x An object of class \code{netmeta}.
-#' @param model "fixed" or "random" nma.
 #' 
 #' @details
+#' In network meta-analysis, it is important to assess the influence of the limitations or 
+#' other characteristics of individual studies on the estimates obtained from the network. 
+#' The contribution matrix, shows how much each direct treatment effect 
+#' contributes to each treatment effect estimate from network meta-analysis, is crucial in this context. 
+#' We use ideas from graph theory to derive the proportion that is contributed by each direct treatment effect.
+#' We start with the ‘projection’ matrix in a two-step network meta-analysis model, 
+#' called the H matrix, which is analogous to the hat matrix in a linear regression model.
+#' We develop a method to translate H entries to proportion contributions based on 
+#' the observation that the rows of H can be interpreted as flow networks,
+#' where a stream is defined as the composition of a path and its associated flow.
+#' We present an algorithm that identifies the flow of evidence in each path and decomposes it into direct comparisons.
 #' 
 #' @return
-#' A matrix with the percentage contributions of each direct comparisons as columns 
-#' for each network comparison, direct or indirect as rows
+#' An object of class \code{netcontrib}
+#' with the contribution matrices for fixed and random NMA.
+#' Each matrix has the percentage contributions of each direct comparisons as columns 
+#' for each network comparison, direct or indirect as rows.
 #' 
-#' @author Thodoris Papakonstantinou \email{hi@tpapak.com}
+#' @author Thodoris Papakonstantinou \email{dev@tpapak.com}
 #' 
 #' @seealso \code{\link{netmeta}}
 #' 
@@ -27,30 +39,53 @@
 #' 
 #' @examples
 #' \dontrun{
-#' # Use Woods dataset
+#' # Use the Woods dataset
 #' #
 #' data("Woods2010")
 #' p1 <- pairwise(treatment, event = r, n = N,
 #'                studlab = author, data = Woods2010, sm = "OR")
 #' 
 #' net1 <- netmeta(p1)
-#' cm = contribution.matrix(net1, model="fixed")
+#' cm = netcontrib.matrix(net1)
+#' cm$random
 #' 
 #' }
 #' 
-#' @export contribution.matrix
+#' @export netcontrib
 
-contribution.matrix <- function(x, model="random"){
-  
+netcontrib = function(x){
+  if (!meta:::is.installed.package("igraph", stop = FALSE)) {
+    warning(paste("Package 'igraph' missing.",
+                  "\n  ",
+                  "Please use the following R command for installation:",
+                  "\n  ",
+                  "install.packages(\"igraph\")",
+                  sep = ""),
+            call. = FALSE)
+    return(invisible(NULL))
+  }
+  res <- list( fixed = contribution.matrix(x,"fixed")
+             , random = contribution.matrix(x,"random"))
+  class(res) <- "netcontrib"
+  ##
+  res
+}
+
+#' @description
+#' Internal function for \code{netcontrib}
+#' @param x An object of class \code{netmeta}.
+#' @param model "fixed" or "random" depending on the model of NMA
+#' @return the contribution matrix
+contribution.matrix <- function(x, model){
   contribution.hatmatrix <- function(metaNetw, model){
   
     #H matrix
     if(model=="fixed"){
-      krahn = netmeta:::nma.krahn(metaNetw,tau.preset = 0)
+      krahn = nma.krahn(metaNetw,tau.preset = 0)
     }
     
     if(model=="random"){
-      krahn=netmeta:::nma.krahn(metaNetw,tau.preset = metaNetw$tau)
+      krahn=nma.krahn(metaNetw,tau.preset = metaNetw$tau)
     }
     
     X.full=krahn$X.full
@@ -67,7 +102,7 @@ contribution.matrix <- function(x, model="random"){
     )
   }
   
-  hatmatrix = contribution.hatmatrix(metaNetw, model)
+  hatmatrix = contribution.hatmatrix(x, model)
 
   directs <- hatmatrix$colNames
 
@@ -86,18 +121,18 @@ contribution.matrix <- function(x, model="random"){
 
   directlist <- unlist(lapply(lapply(directs,split),unlist))
 
-  edgeList <- matrix( directlist, nc = 2, byrow = TRUE)
+  edgeList <- matrix( directlist, ncol = 2, byrow = TRUE)
 
-  g <- graph_from_edgelist(edgeList , directed=FALSE)
-  g <- set.vertex.attribute(g,'label',value = V(g))
-  g <- set.edge.attribute(g,'label',value = E(g))
+  g <- igraph::graph_from_edgelist(edgeList , directed=FALSE)
+  g <- igraph::set.vertex.attribute(g,'label',value = igraph::V(g))
+  g <- igraph::set.edge.attribute(g,'label',value = igraph::E(g))
 
   setWeights <- function (g,comparison,conMat) {
-    set.edge.attribute(g,"weight",value=rep(1,dims[2]))
+    igraph::set.edge.attribute(g,"weight",value=rep(1,dims[2]))
   }
 
 
-  getFlow <- function(g,edge) {return(E(g)[edge]$flow)}
+  getFlow <- function(g,edge) {return(igraph::E(g)[edge]$flow)}
 
   sv <- function (comparison) {split(comparison)[[1]][1][1]}
 
@@ -111,13 +146,13 @@ contribution.matrix <- function(x, model="random"){
          return (c(tv(directs[comp]),sv(directs[comp])))
        }
     })
-    dedgeList <- matrix( unlist(dedgeList), nc = 2, byrow = TRUE)
+    dedgeList <- matrix( unlist(dedgeList), ncol = 2, byrow = TRUE)
     flows<-abs(hatMatrix[comparison,])
-    dg <- graph_from_edgelist(dedgeList , directed = TRUE)
-    E(dg)[]$weight <- rep(0,dims[2])
-    E(dg)[]$flow <- abs(hatMatrix[comparison,])
-    V(dg)[]$label <- V(dg)[]$name
-    dg <- set.edge.attribute(dg,'label',value = E(dg))
+    dg <- igraph::graph_from_edgelist(dedgeList , directed = TRUE)
+    igraph::E(dg)[]$weight <- rep(0,dims[2])
+    igraph::E(dg)[]$flow <- abs(hatMatrix[comparison,])
+    igraph::V(dg)[]$label <- igraph::V(dg)[]$name
+    dg <- igraph::set.edge.attribute(dg,'label',value = igraph::E(dg))
     return(dg)
   }
 
@@ -136,7 +171,7 @@ contribution.matrix <- function(x, model="random"){
   reducePath <- function (g,comparison,spl) {
     pl <- length(spl[[1]])
     splE <- lapply(spl[[1]], function(e){
-       return (E(g)[e[]])
+       return (igraph::E(g)[e[]])
     })
     flow <- min(unlist(lapply(splE, function(e){
       return(e$flow[])
@@ -144,25 +179,25 @@ contribution.matrix <- function(x, model="random"){
     gg <- Reduce(function(g, e){
       elabel <- e$label
       pfl <- e$flow[]
-      g <- set.edge.attribute(g,"flow",e, pfl-flow)
+      g <- igraph::set.edge.attribute(g,"flow",e, pfl-flow)
       cw <-  e$weight[] + (flow[1]/pl) 
       weights[comparison,elabel] <<- cw
-      return(set.edge.attribute(g,"weight",e, cw))
+      return(igraph::set.edge.attribute(g,"weight",e, cw))
     },splE, g)
     emptyEdges <- Reduce(function(removedEdges, e){
-      e <- E(gg)[e[]]
+      e <- igraph::E(gg)[e[]]
       if(e$flow[[1]][[1]]==0){
         removedEdges <- c(removedEdges, e)
       }
       return(removedEdges)
     },splE, c())
-   return(delete_edges(gg, emptyEdges))
+   return(igraph::delete_edges(gg, emptyEdges))
   }
   
  reduceGraph <- function (g,comparison) {
     getshortest <- function (g,compariston) {
       return(tryCatch({
-        return(get.shortest.paths(g,sv(comparison),tv(comparison),mode="out",output="epath",weights=NA)$epath)
+        return(igraph::get.shortest.paths(g,sv(comparison),tv(comparison),mode="out",output="epath",weights=NA)$epath)
       }, error = function(e) {
         print(paste('error:', e))
       }, warning = function(w) {return({})}
