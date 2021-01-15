@@ -632,7 +632,6 @@ netgraph.netmeta <- function(x, seq = x$seq,
       }
       ##
       W.matrix <- thickness
-      browse()
       thick <- "matrix"
     }
   }
