@@ -13,7 +13,7 @@
 #' @param sub Subtitle.
 #' @param multiarm A logical indicating whether multi-arm studies
 #'   should be marked in plot.
-#' @param col.multiarm Either a function from R library colorspace or
+#' @param col.multiarm Either a function from R package colorspace or
 #'   grDevice to define colors for multi-arm studies or a character
 #'   vector with colors to highlight multi-arm studies.
 #' @param alpha.transparency The alpha transparency of colors used to
@@ -71,6 +71,8 @@ netgraph.netimpact <- function(x,
   
   
   meta:::chkclass(x, "netimpact")
+  ##
+  x <- upgradenetmeta(x)
   
   
   col.ignore <- meta:::setchar(col.ignore,

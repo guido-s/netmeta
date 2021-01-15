@@ -44,7 +44,7 @@
 #'   comparing direct and indirect estimates should be printed.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
-#' @param digits.zval Minimal number of significant digits for z-value
+#' @param digits.stat Minimal number of significant digits for z-value
 #'   of test of agreement between direct and indirect evidence, see
 #'   \code{print.default}.
 #' @param digits.pval Minimal number of significant digits for p-value
@@ -205,10 +205,15 @@ netsplit <- function(x, method,
                      baseline.reference = x$baseline.reference,
                      sep.trts = x$sep.trts, quote.trts = "",
                      tol.direct = 0.0005,
+                     comb.fixed = x$comb.fixed,
+                     comb.random = x$comb.random,
+                     backtransf = x$backtransf,
                      warn = FALSE) {
   
   
   meta:::chkclass(x, "netmeta")
+  ##
+  x <- upgradenetmeta(x)
   ##
   is.bin <- inherits(x, "netmetabin")
   ##
@@ -225,7 +230,11 @@ netsplit <- function(x, method,
   meta:::chklogical(baseline.reference)
   meta:::chkchar(sep.trts)
   meta:::chkchar(quote.trts)
-  meta:::chknumeric(tol.direct, min = 0, single = TRUE)
+  meta:::chknumeric(tol.direct, min = 0, length = 1)
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  if (!is.null(backtransf))
+    meta:::chklogical(backtransf)
   meta:::chklogical(warn)
   
   
@@ -255,8 +264,10 @@ netsplit <- function(x, method,
   ##
   ## Change treatment order if
   ## - reference group is specified, i.e., unequal to ""
-  ## - reference group is first treatment (argument 'baseline.reference' is TRUE)
-  ## - reference group is second treatment (argument 'baseline.reference' is FALSE)
+  ## - reference group is first treatment
+  ##   (argument 'baseline.reference' is TRUE)
+  ## - reference group is second treatment
+  ##   (argument 'baseline.reference' is FALSE)
   ##
   wo <- rep_len(FALSE, length(seq.comps))
   ##
@@ -270,7 +281,9 @@ netsplit <- function(x, method,
   }
   else
     if (!missing(baseline.reference))
-      warning("Argument 'baseline.reference' ignored as reference group is not defined (argument 'reference.group').")
+      warning("Argument 'baseline.reference' ignored as ",
+              "reference group is not defined ",
+              "(argument 'reference.group').")
   ##
   if (any(wo)) {
     t1.wo <- trts$treat1[wo]
@@ -301,14 +314,14 @@ netsplit <- function(x, method,
     seTE.indirect.fixed <- x$seTE.indirect.fixed
     lower.indirect.fixed <- x$lower.indirect.fixed
     upper.indirect.fixed <- x$upper.indirect.fixed
-    zval.indirect.fixed <- x$zval.indirect.fixed
+    statistic.indirect.fixed <- x$statistic.indirect.fixed
     pval.indirect.fixed <- x$pval.indirect.fixed
     ##
     TE.indirect.fixed[sel.one.fixed] <- NA
     seTE.indirect.fixed[sel.one.fixed] <- NA
     lower.indirect.fixed[sel.one.fixed] <- NA
     upper.indirect.fixed[sel.one.fixed] <- NA
-    zval.indirect.fixed[sel.one.fixed] <- NA
+    statistic.indirect.fixed[sel.one.fixed] <- NA
     pval.indirect.fixed[sel.one.fixed] <- NA
     ##
     sel.one.random <- abs(x$P.random - 1) < tol.direct
@@ -317,14 +330,14 @@ netsplit <- function(x, method,
     seTE.indirect.random <- x$seTE.indirect.random
     lower.indirect.random <- x$lower.indirect.random
     upper.indirect.random <- x$upper.indirect.random
-    zval.indirect.random <- x$zval.indirect.random
+    statistic.indirect.random <- x$statistic.indirect.random
     pval.indirect.random <- x$pval.indirect.random
     ##
     TE.indirect.random[sel.one.random] <- NA
     seTE.indirect.random[sel.one.random] <- NA
     lower.indirect.random[sel.one.random] <- NA
     upper.indirect.random[sel.one.random] <- NA
-    zval.indirect.random[sel.one.random] <- NA
+    statistic.indirect.random[sel.one.random] <- NA
     pval.indirect.random[sel.one.random] <- NA
   }
   
@@ -385,14 +398,17 @@ netsplit <- function(x, method,
       ## Studies (potentially with multi-arm studies) to drop from
       ## calculation of indirect estimate
       ##
-      drop.studies <- unique(dat$studlab[drop.i])
+      drop.studies <- unique(dat$.studlab[drop.i])
       ##
       ## Drop studies
       ##
-      dat.i <- dat[!(dat$studlab %in% drop.studies), , drop = FALSE]
+      dat.i <- dat[!(dat$.studlab %in% drop.studies), , drop = FALSE]
       dat.i$.design <- NULL
       ##
-      con <- netconnection(dat.i$treat1, dat.i$treat2, dat.i$studlab)
+      if (nrow(dat.i) > 0)
+        con <- netconnection(dat.i$.treat1, dat.i$.treat2, dat.i$.studlab)
+      else
+        con <- list(n.subnets = 0)
       ##
       if (con$n.subnets == 1) {
         ##
@@ -403,16 +419,16 @@ netsplit <- function(x, method,
                               dat.i$.studlab,
                               data = dat.i,
                               sm = x$sm, method = x$method,
-                              comb.fixed = x$comb.fixed,
-                              comb.random = x$comb.random,
+                              comb.fixed = comb.fixed,
+                              comb.random = comb.random,
                               warn = warn)
         else
           net.i <- netmeta(dat.i$.TE, dat.i$.seTE,
                            dat.i$.treat1, dat.i$.treat2,
                            dat.i$.studlab,
                            data = dat.i,
-                           comb.fixed = x$comb.fixed,
-                           comb.random = x$comb.random,
+                           comb.fixed = comb.fixed,
+                           comb.random = comb.random,
                            warn = warn)
         ##
         if (trts[idx1.i] %in% rownames(net.i$TE.fixed) &
@@ -447,7 +463,7 @@ netsplit <- function(x, method,
     ##
     lower.indirect.fixed <- ci.if$lower
     upper.indirect.fixed <- ci.if$upper
-    zval.indirect.fixed <- ci.if$z
+    statistic.indirect.fixed <- ci.if$statistic
     pval.indirect.fixed <- ci.if$p
     ##
     if (!is.bin) {
@@ -455,7 +471,7 @@ netsplit <- function(x, method,
       ##
       lower.indirect.random <- ci.ir$lower
       upper.indirect.random <- ci.ir$upper
-      zval.indirect.random <- ci.ir$z
+      statistic.indirect.random <- ci.ir$statistic
       pval.indirect.random <- ci.ir$p
     }
   }
@@ -469,17 +485,17 @@ netsplit <- function(x, method,
   seTE.direct.fixed <- x$seTE.direct.fixed
   lower.direct.fixed <- x$lower.direct.fixed
   upper.direct.fixed <- x$upper.direct.fixed
-  zval.direct.fixed <- x$zval.direct.fixed
+  statistic.direct.fixed <- x$statistic.direct.fixed
   pval.direct.fixed <- x$pval.direct.fixed
   ##
   if (!is.null(x$P.fixed)) {
     sel.zero.fixed <- abs(x$P.fixed) < tol.direct
     ##
-    TE.direct.fixed[sel.zero.fixed]    <- NA
-    seTE.direct.fixed[sel.zero.fixed]  <- NA
+    TE.direct.fixed[sel.zero.fixed] <- NA
+    seTE.direct.fixed[sel.zero.fixed] <- NA
     lower.direct.fixed[sel.zero.fixed] <- NA
     upper.direct.fixed[sel.zero.fixed] <- NA
-    zval.direct.fixed[sel.zero.fixed]  <- NA
+    statistic.direct.fixed[sel.zero.fixed] <- NA
     pval.direct.fixed[sel.zero.fixed] <- NA
   }
   ##
@@ -487,7 +503,7 @@ netsplit <- function(x, method,
   seTE.direct.random <- x$seTE.direct.random
   lower.direct.random <- x$lower.direct.random
   upper.direct.random <- x$upper.direct.random
-  zval.direct.random <- x$zval.direct.random
+  statistic.direct.random <- x$statistic.direct.random
   pval.direct.random <- x$pval.direct.random
   ##
   if (!is.null(x$P.random)) {
@@ -497,7 +513,7 @@ netsplit <- function(x, method,
     seTE.direct.random[sel.zero.random] <- NA
     lower.direct.random[sel.zero.random] <- NA
     upper.direct.random[sel.zero.random] <- NA
-    zval.direct.random[sel.zero.random] <- NA
+    statistic.direct.random[sel.zero.random] <- NA
     pval.direct.random[sel.zero.random] <- NA
   }
   
@@ -505,59 +521,65 @@ netsplit <- function(x, method,
   ##
   ## Fixed effects model
   ##
-  fixed.low <- data.frame(comparison,
-                          TE = lowertri(x$TE.fixed),
-                          seTE = lowertri(x$seTE.fixed),
-                          lower = lowertri(x$lower.fixed),
-                          upper = lowertri(x$upper.fixed),
-                          z = lowertri(x$zval.fixed),
-                          p = lowertri(x$pval.fixed),
-                          stringsAsFactors = FALSE)
+  fixed.low <-
+    data.frame(comparison,
+               TE = lowertri(x$TE.fixed),
+               seTE = lowertri(x$seTE.fixed),
+               lower = lowertri(x$lower.fixed),
+               upper = lowertri(x$upper.fixed),
+               statistic = lowertri(x$statistic.fixed),
+               p = lowertri(x$pval.fixed),
+               stringsAsFactors = FALSE)
   ##
-  direct.fixed.low <- data.frame(comparison,
-                                 TE = lowertri(TE.direct.fixed),
-                                 seTE = lowertri(seTE.direct.fixed),
-                                 lower = lowertri(lower.direct.fixed),
-                                 upper = lowertri(upper.direct.fixed),
-                                 z = lowertri(zval.direct.fixed),
-                                 p = lowertri(pval.direct.fixed),
-                                 stringsAsFactors = FALSE)
+  direct.fixed.low <-
+    data.frame(comparison,
+               TE = lowertri(TE.direct.fixed),
+               seTE = lowertri(seTE.direct.fixed),
+               lower = lowertri(lower.direct.fixed),
+               upper = lowertri(upper.direct.fixed),
+               statistic = lowertri(statistic.direct.fixed),
+               p = lowertri(pval.direct.fixed),
+               stringsAsFactors = FALSE)
   ##
-  indirect.fixed.low <- data.frame(comparison,
-                                   TE = lowertri(TE.indirect.fixed),
-                                   seTE = lowertri(seTE.indirect.fixed),
-                                   lower = lowertri(lower.indirect.fixed),
-                                   upper = lowertri(upper.indirect.fixed),
-                                   z = lowertri(zval.indirect.fixed),
-                                   p = lowertri(pval.indirect.fixed),
-                                   stringsAsFactors = FALSE)
+  indirect.fixed.low <-
+    data.frame(comparison,
+               TE = lowertri(TE.indirect.fixed),
+               seTE = lowertri(seTE.indirect.fixed),
+               lower = lowertri(lower.indirect.fixed),
+               upper = lowertri(upper.indirect.fixed),
+               statistic = lowertri(statistic.indirect.fixed),
+               p = lowertri(pval.indirect.fixed),
+               stringsAsFactors = FALSE)
   ##
-  fixed.upp <- data.frame(comparison,
-                          TE = uppertri(x$TE.fixed),
-                          seTE = uppertri(x$seTE.fixed),
-                          lower = uppertri(x$lower.fixed),
-                          upper = uppertri(x$upper.fixed),
-                          z = uppertri(x$zval.fixed),
-                          p = uppertri(x$pval.fixed),
-                          stringsAsFactors = FALSE)
+  fixed.upp <-
+    data.frame(comparison,
+               TE = uppertri(x$TE.fixed),
+               seTE = uppertri(x$seTE.fixed),
+               lower = uppertri(x$lower.fixed),
+               upper = uppertri(x$upper.fixed),
+               statistic = uppertri(x$statistic.fixed),
+               p = uppertri(x$pval.fixed),
+               stringsAsFactors = FALSE)
   ##
-  direct.fixed.upp <- data.frame(comparison,
-                                 TE = uppertri(TE.direct.fixed),
-                                 seTE = uppertri(seTE.direct.fixed),
-                                 lower = uppertri(lower.direct.fixed),
-                                 upper = uppertri(upper.direct.fixed),
-                                 z = uppertri(zval.direct.fixed),
-                                 p = uppertri(pval.direct.fixed),
-                                 stringsAsFactors = FALSE)
+  direct.fixed.upp <-
+    data.frame(comparison,
+               TE = uppertri(TE.direct.fixed),
+               seTE = uppertri(seTE.direct.fixed),
+               lower = uppertri(lower.direct.fixed),
+               upper = uppertri(upper.direct.fixed),
+               statistic = uppertri(statistic.direct.fixed),
+               p = uppertri(pval.direct.fixed),
+               stringsAsFactors = FALSE)
   ##
-  indirect.fixed.upp <- data.frame(comparison,
-                                   TE = uppertri(TE.indirect.fixed),
-                                   seTE = uppertri(seTE.indirect.fixed),
-                                   lower = uppertri(lower.indirect.fixed),
-                                   upper = uppertri(upper.indirect.fixed),
-                                   z = uppertri(zval.indirect.fixed),
-                                   p = uppertri(pval.indirect.fixed),
-                                   stringsAsFactors = FALSE)
+  indirect.fixed.upp <-
+    data.frame(comparison,
+               TE = uppertri(TE.indirect.fixed),
+               seTE = uppertri(seTE.indirect.fixed),
+               lower = uppertri(lower.indirect.fixed),
+               upper = uppertri(upper.indirect.fixed),
+               statistic = uppertri(statistic.indirect.fixed),
+               p = uppertri(pval.indirect.fixed),
+               stringsAsFactors = FALSE)
   ##
   if (!upper) {
     fixed <- fixed.low
@@ -591,78 +613,91 @@ netsplit <- function(x, method,
                               seTE = m.fixed$seTE,
                               lower = m.fixed$lower,
                               upper = m.fixed$upper,
-                              z = m.fixed$zval,
+                              statistic = m.fixed$statistic,
                               p = m.fixed$pval,
                               stringsAsFactors = FALSE)
+  ##
+  sel.k0 <- k == 0
+  vars <- c("TE", "seTE", "lower", "upper", "statistic", "p")
+  ##
+  indirect.fixed[sel.k0, vars] <- fixed[sel.k0, vars]
   
   
   if (!is.bin) {
     ##
     ## Random effects model
     ##
-    random.low <- data.frame(comparison,
-                             TE = lowertri(x$TE.random),
-                             seTE = lowertri(x$seTE.random),
-                             lower = lowertri(x$lower.random),
-                             upper = lowertri(x$upper.random),
-                             z = lowertri(x$zval.random),
-                             p = lowertri(x$pval.random),
-                             stringsAsFactors = FALSE)
+    random.low <-
+      data.frame(comparison,
+                 TE = lowertri(x$TE.random),
+                 seTE = lowertri(x$seTE.random),
+                 lower = lowertri(x$lower.random),
+                 upper = lowertri(x$upper.random),
+                 statistic = lowertri(x$statistic.random),
+                 p = lowertri(x$pval.random),
+                 stringsAsFactors = FALSE)
     ##
-    direct.random.low <- data.frame(comparison,
-                                    TE = lowertri(TE.direct.random),
-                                    seTE = lowertri(seTE.direct.random),
-                                    lower = lowertri(lower.direct.random),
-                                    upper = lowertri(upper.direct.random),
-                                    z = lowertri(zval.direct.random),
-                                    p = lowertri(pval.direct.random),
-                                    stringsAsFactors = FALSE)
+    direct.random.low <-
+      data.frame(comparison,
+                 TE = lowertri(TE.direct.random),
+                 seTE = lowertri(seTE.direct.random),
+                 lower = lowertri(lower.direct.random),
+                 upper = lowertri(upper.direct.random),
+                 statistic = lowertri(statistic.direct.random),
+                 p = lowertri(pval.direct.random),
+                 stringsAsFactors = FALSE)
     ##
-    indirect.random.low <- data.frame(comparison,
-                                      TE = lowertri(TE.indirect.random),
-                                      seTE = lowertri(seTE.indirect.random),
-                                      lower = lowertri(lower.indirect.random),
-                                      upper = lowertri(upper.indirect.random),
-                                      z = lowertri(zval.indirect.random),
-                                      p = lowertri(pval.indirect.random),
-                                      stringsAsFactors = FALSE)
+    indirect.random.low <-
+      data.frame(comparison,
+                 TE = lowertri(TE.indirect.random),
+                 seTE = lowertri(seTE.indirect.random),
+                 lower = lowertri(lower.indirect.random),
+                 upper = lowertri(upper.indirect.random),
+                 statistic = lowertri(statistic.indirect.random),
+                 p = lowertri(pval.indirect.random),
+                 stringsAsFactors = FALSE)
     ##
-    predict.low <- data.frame(comparison,
-                              lower = lowertri(x$lower.predict),
-                              upper = lowertri(x$upper.predict),
-                              stringsAsFactors = FALSE)
+    predict.low <-
+      data.frame(comparison,
+                 lower = lowertri(x$lower.predict),
+                 upper = lowertri(x$upper.predict),
+                 stringsAsFactors = FALSE)
     ##
-    random.upp <- data.frame(comparison,
-                             TE = uppertri(x$TE.random),
-                             seTE = uppertri(x$seTE.random),
-                             lower = uppertri(x$lower.random),
-                             upper = uppertri(x$upper.random),
-                             z = uppertri(x$zval.random),
-                             p = uppertri(x$pval.random),
-                             stringsAsFactors = FALSE)
+    random.upp <-
+      data.frame(comparison,
+                 TE = uppertri(x$TE.random),
+                 seTE = uppertri(x$seTE.random),
+                 lower = uppertri(x$lower.random),
+                 upper = uppertri(x$upper.random),
+                 statistic = uppertri(x$statistic.random),
+                 p = uppertri(x$pval.random),
+                 stringsAsFactors = FALSE)
     ##
-    direct.random.upp <- data.frame(comparison,
-                                    TE = uppertri(TE.direct.random),
-                                    seTE = uppertri(seTE.direct.random),
-                                    lower = uppertri(lower.direct.random),
-                                    upper = uppertri(upper.direct.random),
-                                    z = uppertri(zval.direct.random),
-                                    p = uppertri(pval.direct.random),
-                                    stringsAsFactors = FALSE)
+    direct.random.upp <-
+      data.frame(comparison,
+                 TE = uppertri(TE.direct.random),
+                 seTE = uppertri(seTE.direct.random),
+                 lower = uppertri(lower.direct.random),
+                 upper = uppertri(upper.direct.random),
+                 statistic = uppertri(statistic.direct.random),
+                 p = uppertri(pval.direct.random),
+                 stringsAsFactors = FALSE)
     ##
-    indirect.random.upp <- data.frame(comparison,
-                                      TE = uppertri(TE.indirect.random),
-                                      seTE = uppertri(seTE.indirect.random),
-                                      lower = uppertri(lower.indirect.random),
-                                      upper = uppertri(upper.indirect.random),
-                                      z = uppertri(zval.indirect.random),
-                                      p = uppertri(pval.indirect.random),
-                                      stringsAsFactors = FALSE)
+    indirect.random.upp <-
+      data.frame(comparison,
+                 TE = uppertri(TE.indirect.random),
+                 seTE = uppertri(seTE.indirect.random),
+                 lower = uppertri(lower.indirect.random),
+                 upper = uppertri(upper.indirect.random),
+                 statistic = uppertri(statistic.indirect.random),
+                 p = uppertri(pval.indirect.random),
+                 stringsAsFactors = FALSE)
     ##
-    predict.upp <- data.frame(comparison,
-                              lower = uppertri(x$lower.predict),
-                              upper = uppertri(x$upper.predict),
-                              stringsAsFactors = FALSE)
+    predict.upp <-
+      data.frame(comparison,
+                 lower = uppertri(x$lower.predict),
+                 upper = uppertri(x$upper.predict),
+                 stringsAsFactors = FALSE)
     ##
     if (!upper) {
       random <- random.low
@@ -700,9 +735,22 @@ netsplit <- function(x, method,
                                  seTE = m.random$seTE,
                                  lower = m.random$lower,
                                  upper = m.random$upper,
-                                 z = m.random$zval,
+                                 statistic = m.random$statistic,
                                  p = m.random$pval,
                                  stringsAsFactors = FALSE)
+    ##
+    indirect.random[sel.k0, vars] <- random[sel.k0, vars]
+  }
+  else {
+    if (!upper)
+      random <- fixed.low
+    else
+      random <- fixed.upp
+    ##
+    random[!is.na(random)] <- NA
+    random$comparison <- comparison
+    direct.random <- indirect.random <- compare.random <- random
+    predict <- random[, c("comparison", "lower", "upper")]
   }
   
   
@@ -711,26 +759,28 @@ netsplit <- function(x, method,
               k = k,
               ##
               prop.fixed =
-                if (is.bin) NULL else x$prop.direct.fixed[seq.comps],
+                if (is.bin & method == "SIDDE") NULL
+                else x$prop.direct.fixed[seq.comps],
               fixed = fixed,
               direct.fixed = direct.fixed,
               indirect.fixed = indirect.fixed,
               compare.fixed = compare.fixed,
               ##
               prop.random =
-                if (is.bin) NULL else x$prop.direct.random[seq.comps],
-              random = if (is.bin) NULL else random,
-              direct.random = if (is.bin) NULL else direct.random,
-              indirect.random = if (is.bin) NULL else indirect.random,
-              compare.random = if (is.bin) NULL else compare.random,
-              predict = if (is.bin) NULL else predict,
+                if (is.bin & method == "SIDDE") NULL
+                else x$prop.direct.random[seq.comps],
+              random = random,
+              direct.random = direct.random,
+              indirect.random = indirect.random,
+              compare.random = compare.random,
+              predict = predict,
               ##
               method = method,
               ##
               sm = x$sm,
               level.comb = x$level.comb,
-              comb.fixed = x$comb.fixed,
-              comb.random = x$comb.random,
+              comb.fixed = comb.fixed,
+              comb.random = comb.random,
               ##
               prediction = x$prediction,
               level.predict = x$level.predict,
@@ -742,12 +792,13 @@ netsplit <- function(x, method,
               quote.trts = quote.trts,
               ##
               tol.direct = tol.direct,
-              backtransf = x$backtransf,
+              backtransf = backtransf,
               ##
               version = packageDescription("netmeta")$Version
               )
   ##
-  class(res) <- "netsplit"
+  class(res) <- c("netsplit",
+                  if (is.bin & method == "SIDDE") "netsplit.netmetabin")
   
   res
 }
@@ -770,7 +821,7 @@ print.netsplit <- function(x,
                            ci = FALSE,
                            test = show %in% c("all", "with.direct", "both"),
                            digits = gs("digits"),
-                           digits.zval = gs("digits.zval"),
+                           digits.stat = gs("digits.stat"),
                            digits.pval = gs("digits.pval"),
                            digits.prop = max(gs("digits.pval") - 2, 2),
                            text.NA = ".",
@@ -782,6 +833,8 @@ print.netsplit <- function(x,
 
 
   meta:::chkclass(x, "netsplit")
+  ##  
+  x <- upgradenetmeta(x)
   ##
   chklogical <- meta:::chklogical
   chknumeric <- meta:::chknumeric
@@ -791,8 +844,11 @@ print.netsplit <- function(x,
   is.relative.effect <- meta:::is.relative.effect
   rmSpace <- meta:::rmSpace
   setchar <- meta:::setchar
-
-
+  
+  
+  is.bin <- inherits(x, "netsplit.netmetabin")
+  
+  
   ## All individual results in a single row - be on the save side:
   ##
   oldopts <- options(width = 200)
@@ -805,10 +861,10 @@ print.netsplit <- function(x,
   chklogical(ci)
   chklogical(test)
   ##
-  chknumeric(digits, min = 0, single = TRUE)
-  chknumeric(digits.zval, min = 0, single = TRUE)
-  chknumeric(digits.pval, min = 1, single = TRUE)
-  chknumeric(digits.prop, min = 0, single = TRUE)
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.stat, min = 0, length = 1)
+  chknumeric(digits.pval, min = 1, length = 1)
+  chknumeric(digits.prop, min = 0, length = 1)
   ##
   if (is.null(backtransf))
     backtransf <- TRUE
@@ -904,7 +960,7 @@ print.netsplit <- function(x,
   TE.compare.fixed <- x$compare.fixed$TE[sel]
   lower.compare.fixed <- x$compare.fixed$lower[sel]
   upper.compare.fixed <- x$compare.fixed$upper[sel]
-  zval.compare.fixed <- x$compare.fixed$z[sel]
+  statistic.compare.fixed <- x$compare.fixed$statistic[sel]
   pval.compare.fixed <- x$compare.fixed$p[sel]
   ##
   if (random.available) {
@@ -925,7 +981,7 @@ print.netsplit <- function(x,
     TE.compare.random <- x$compare.random$TE[sel]
     lower.compare.random <- x$compare.random$lower[sel]
     upper.compare.random <- x$compare.random$upper[sel]
-    zval.compare.random <- x$compare.random$z[sel]
+    statistic.compare.random <- x$compare.random$statistic[sel]
     pval.compare.random <- x$compare.random$p[sel]
   }
   
@@ -1016,9 +1072,9 @@ print.netsplit <- function(x,
       names.fixed <- c(names.fixed, ci.lab)
     }
     ##
-    fixed$z <- formatN(zval.compare.fixed, digits.zval,
-                       big.mark = big.mark)
-    fixed$z[fixed$z == "--"] <- text.NA
+    fixed$statistic <- formatN(statistic.compare.fixed, digits.stat,
+                               big.mark = big.mark)
+    fixed$statistic[fixed$statistic == "--"] <- text.NA
     fixed$p <- formatPT(pval.compare.fixed, digits = digits.pval,
                         scientific = scientific.pval)
     fixed$p[rmSpace(fixed$p) == "--"] <- text.NA
@@ -1026,9 +1082,6 @@ print.netsplit <- function(x,
   }
   fixed <- as.data.frame(fixed)
   names(fixed) <- names.fixed
-  ##
-  if (is.null(prop.fixed))
-    fixed <- fixed[, !(names(fixed) %in% "prop")]
   
   
   if (random.available) {
@@ -1082,9 +1135,9 @@ print.netsplit <- function(x,
         names.random <- c(names.random, ci.lab)
       }
       ##
-      random$z <- formatN(zval.compare.random, digits.zval,
-                          big.mark = big.mark)
-      random$z[random$z == "--"] <- text.NA
+      random$statistic <- formatN(statistic.compare.random, digits.stat,
+                                  big.mark = big.mark)
+      random$statistic[random$statistic == "--"] <- text.NA
       random$p <- formatPT(pval.compare.random, digits = digits.pval,
                            scientific = scientific.pval)
       random$p[rmSpace(random$p) == "--"] <- text.NA
@@ -1092,6 +1145,16 @@ print.netsplit <- function(x,
     }
     random <- as.data.frame(random)
     names(random) <- names.random
+  }
+  
+  
+  ## Do not print direct evidence proportion for SIDDE
+  ##
+  noprop <- is.bin | x$method == "SIDDE" | all(fixed$prop == "")
+  if (noprop) {
+    fixed <- fixed[, !(names(fixed) %in% "prop")]
+    if (random.available)
+      random <- random[, !(names(random) %in% "prop")]
   }
   
   
@@ -1122,7 +1185,7 @@ print.netsplit <- function(x,
     cat("\nLegend:\n")
     cat(" comparison - Treatment comparison\n")
     cat(" k          - Number of studies providing direct evidence\n")
-    if (!is.null(prop.fixed))
+    if (!noprop)
       cat(" prop       - Direct evidence proportion\n")
     if (overall)
       cat(paste(" nma        - Estimated treatment effect ", sm.lab,

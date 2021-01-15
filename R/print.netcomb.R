@@ -16,7 +16,7 @@
 #'   characters used to create unique treatment names (see Details).
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
-#' @param digits.zval Minimal number of significant digits for z- or
+#' @param digits.stat Minimal number of significant digits for z- or
 #'   t-value, see \code{print.default}.
 #' @param digits.pval Minimal number of significant digits for p-value
 #'   of overall treatment effect, see \code{print.default}.
@@ -68,7 +68,7 @@ print.netcomb <- function(x,
                           nchar.trts = x$nchar.trts,
                           ##
                           digits = gs("digits"),
-                          digits.zval = gs("digits.zval"),
+                          digits.stat = gs("digits.stat"),
                           digits.pval = gs("digits.pval"),
                           digits.pval.Q = max(gs("digits.pval.Q"), 2),
                           digits.Q = gs("digits.Q"),
@@ -78,18 +78,20 @@ print.netcomb <- function(x,
   
   
   meta:::chkclass(x, "netcomb")
+  ##  
+  x <- upgradenetmeta(x)
   
   
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(backtransf)
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
   ##
-  meta:::chknumeric(digits, min = 0, single = TRUE)
-  meta:::chknumeric(digits.zval, min = 0, single = TRUE)
-  meta:::chknumeric(digits.pval, min = 1, single = TRUE)
-  meta:::chknumeric(digits.pval.Q, min = 1, single = TRUE)
-  meta:::chknumeric(digits.Q, min = 0, single = TRUE)
+  meta:::chknumeric(digits, min = 0, length = 1)
+  meta:::chknumeric(digits.stat, min = 0, length = 1)
+  meta:::chknumeric(digits.pval, min = 1, length = 1)
+  meta:::chknumeric(digits.pval.Q, min = 1, length = 1)
+  meta:::chknumeric(digits.Q, min = 0, length = 1)
   ##
   meta:::chklogical(scientific.pval)
   
@@ -103,17 +105,15 @@ print.netcomb <- function(x,
                        TE = x$TE.cnma.fixed,
                        lower = x$lower.cnma.fixed,
                        upper = x$upper.cnma.fixed,
-                       z = x$zval.cnma.fixed,
+                       statistic = x$statistic.cnma.fixed,
                        p = x$pval.cnma.fixed,
                        stringsAsFactors = FALSE)
   ##
   dat.f <- formatComp(cnma.f,
                       backtransf, x$sm, x$level.comb,
                       trts, trts.abbr,
-                      digits, digits.zval, digits.pval.Q,
+                      digits, digits.stat, digits.pval.Q,
                       scientific.pval, big.mark)
-  ##
-  #dat.f <- dat.f[, !(colnames(dat.f) %in% c("z", "p"))]
   ##
   cnma.r <- data.frame(studlab = x$studlab,
                        treat1 = x$treat1,
@@ -121,17 +121,15 @@ print.netcomb <- function(x,
                        TE = x$TE.cnma.random,
                        lower = x$lower.cnma.random,
                        upper = x$upper.cnma.random,
-                       z = x$zval.cnma.random,
+                       statistic = x$statistic.cnma.random,
                        p = x$pval.cnma.random,
                        stringsAsFactors = FALSE)
   ##
   dat.r <- formatComp(cnma.r,
                       backtransf, x$sm, x$level.comb,
                       trts, trts.abbr,
-                      digits, digits.zval, digits.pval.Q,
+                      digits, digits.stat, digits.pval.Q,
                       scientific.pval, big.mark)
-  ##
-  #dat.r <- dat.r[, !(colnames(dat.r) %in% c("z", "p"))]
   ##
   if (comb.fixed) {
     cat("Additive model (fixed effects model):\n")
@@ -154,7 +152,7 @@ print.netcomb <- function(x,
           nchar.trts = nchar.trts,
           ##
           digits = digits,
-          digits.zval = digits.zval,
+          digits.stat = digits.stat,
           digits.pval = digits.pval,
           digits.pval.Q = digits.pval.Q,
           digits.Q = digits.Q,

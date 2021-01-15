@@ -59,13 +59,16 @@
 #' @export netimpact
 
 
-netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01, verbose = FALSE) {
+netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01,
+                      verbose = FALSE) {
   
   
   meta:::chkclass(x, "netmeta")
   ##
-  meta:::chknumeric(seTE.ignore, min = 0, zero = TRUE, single = TRUE)
-  meta:::chknumeric(event.ignore, min = 0, zero = TRUE, single = TRUE)
+  x <- upgradenetmeta(x)
+  ##
+  meta:::chknumeric(seTE.ignore, min = 0, zero = TRUE, length = 1)
+  meta:::chknumeric(event.ignore, min = 0, zero = TRUE, length = 1)
   
   
   studlab <- x$studlab

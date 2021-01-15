@@ -33,6 +33,8 @@
 #' @param x An object of class \code{netconnection}.
 #' @param digits Minimal number of significant digits, see
 #'   \code{\link{print.default}}.
+#' @param details A logical indicating whether to print the distance
+#'   matrix.
 #' @param ... Additional arguments (ignored at the moment)
 #' 
 #' @return
@@ -82,7 +84,7 @@
 #' t2 <- c("B", "C", "E", "E", "H", "A")
 #' #
 #' nc2 <- netconnection(t1, t2)
-#' nc2
+#' print(nc2, details = TRUE)
 #' 
 #' # Number of subnetworks
 #' #
@@ -128,7 +130,7 @@ netconnection <- function(treat1, treat2, studlab,
   if (missing(treat2))
     stop("Argument 'treat2' is mandatory.")
   ##
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
   ##
   meta:::chklogical(warn)
   
@@ -158,7 +160,8 @@ netconnection <- function(treat1, treat2, studlab,
     studlab <- as.character(studlab)
   else {
     if (warn)
-      warning("No information given for argument 'studlab'. Assuming that comparisons are from independent studies.")
+      warning("No information given for argument 'studlab'. ",
+              "Assuming that comparisons are from independent studies.")
     studlab <- as.character(seq_along(treat1))
   }
   ##
@@ -177,9 +180,11 @@ netconnection <- function(treat1, treat2, studlab,
   fun <- "netconnection"
   ##
   meta:::chklength(treat2, k.All, fun,
-                   text = "Arguments 'treat1' and 'treat2' must have the same length.")
+                   text = paste0("Arguments 'treat1' and 'treat2' ",
+                                 "must have the same length."))
   meta:::chklength(studlab, k.All, fun,
-                   text = "Arguments 'treat1' and 'studlab' must have the same length.")
+                   text = paste0("Arguments 'treat1' and 'studlab' ",
+                                 "must have the same length."))
   ##
   if (is.factor(treat1))
     treat1 <- as.character(treat1)
@@ -220,16 +225,16 @@ netconnection <- function(treat1, treat2, studlab,
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
-    stop(paste("Study '", names(tabnarms)[sel.narms],
-               "' has a wrong number of comparisons.",
-               "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""))
+    stop("Study '", names(tabnarms)[sel.narms],
+         "' has a wrong number of comparisons.",
+         "\n  Please provide data for all treatment comparisons ",
+         "(two-arm: 1; three-arm: 3; four-arm: 6, ...).")
   if (sum(sel.narms) > 1)
-    stop(paste("The following studies have a wrong number of comparisons: ",
-               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
-                     collapse = ", "),
-               "\n  Please provide data for all treatment comparisons (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""))
+    stop("The following studies have a wrong number of comparisons: ",
+         paste(paste0("'", names(tabnarms)[sel.narms], "'"),
+               collapse = ", "),
+         "\n  Please provide data for all treatment comparisons ",
+         "(two-arm: 1; three-arm: 3; four-arm: 6, ...).")
   
   
   ##
@@ -275,18 +280,26 @@ netconnection <- function(treat1, treat2, studlab,
   }
   
   
+  designs <- designs(treat1, treat2, studlab)
+  
+  
   res <- list(treat1 = treat1,
               treat2 = treat2,
               studlab = studlab,
+              ##
+              design = designs$design,
               ##
               k = length(unique(studlab)),
               m = m,
               n = n,
               n.subnets = n.subsets,
+              d = length(unique(designs$design)),
               ##
               D.matrix = D,
               A.matrix = A,
               L.matrix = L,
+              ##
+              designs = unique(sort(designs$design)),
               ##
               nchar.trts = nchar.trts,
               ##
@@ -314,7 +327,9 @@ netconnection <- function(treat1, treat2, studlab,
 
 print.netconnection <- function(x,
                                 digits = max(4, .Options$digits - 3),
-                                nchar.trts = x$nchar.trts, ...) {
+                                nchar.trts = x$nchar.trts,
+                                details = FALSE,
+                                ...) {
   
   meta:::chkclass(x, "netconnection")
   ##
@@ -322,8 +337,9 @@ print.netconnection <- function(x,
     nchar.trts <- 666
   
   
-  meta:::chknumeric(digits, single = TRUE)
-  meta:::chknumeric(nchar.trts, min = 1, single = TRUE)
+  meta:::chknumeric(digits, length = 1)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  meta:::chklogical(details)
   
   
   matitle(x)
@@ -331,34 +347,38 @@ print.netconnection <- function(x,
   cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
   cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
   cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
+  if (!is.null(x$d))
+    cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
   ##
-  cat("Number of subnetworks: ", x$n.subnets, "\n\n", sep = "")
-  
-  cat("Distance matrix:\n")
-  
-  D <- round(x$D.matrix, digits = digits)
-  D[is.infinite(D)] <- "."
-  ##
-  if (x$n.subnets == 1)
-    diag(D) <- "."
-  ##
-  rownames(D) <- treats(rownames(D), nchar.trts)
-  colnames(D) <- treats(colnames(D), nchar.trts)
-  ##
-  prmatrix(D, quote = FALSE, right = TRUE)
-  
-  
-  if (any(rownames(x$D.matrix) != rownames(D))) {
-    abbr <- rownames(D)
-    full <- rownames(x$D.matrix)
+  cat("Number of subnetworks: ", x$n.subnets, "\n", sep = "")
+
+  if (details) {
+    cat("\nDistance matrix:\n")
+    
+    D <- round(x$D.matrix, digits = digits)
+    D[is.infinite(D)] <- "."
     ##
-    tmat <- data.frame(abbr, full)
-    names(tmat) <- c("Abbreviation", "Treatment name")
-    tmat <- tmat[order(tmat$Abbreviation), ]
+    if (x$n.subnets == 1)
+      diag(D) <- "."
     ##
-    cat("\nLegend:\n")
-    prmatrix(tmat, quote = FALSE, right = TRUE,
-             rowlab = rep("", length(abbr)))
+    rownames(D) <- treats(rownames(D), nchar.trts)
+    colnames(D) <- treats(colnames(D), nchar.trts)
+    ##
+    prmatrix(D, quote = FALSE, right = TRUE)
+    
+    
+    if (any(rownames(x$D.matrix) != rownames(D))) {
+      abbr <- rownames(D)
+      full <- rownames(x$D.matrix)
+      ##
+      tmat <- data.frame(abbr, full)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat("\nLegend:\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(abbr)))
+    }
   }
   
   

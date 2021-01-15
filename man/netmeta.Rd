@@ -21,6 +21,7 @@ netmeta(
   level.predict = gs("level.predict"),
   reference.group = "",
   baseline.reference = TRUE,
+  small.values = "good",
   all.treatments = NULL,
   seq = NULL,
   tau.preset = NULL,
@@ -36,7 +37,8 @@ netmeta(
   backtransf = gs("backtransf"),
   title = "",
   keepdata = gs("keepdata"),
-  warn = TRUE
+  warn = TRUE,
+  control = NULL
 )
 }
 \arguments{
@@ -87,6 +89,11 @@ intervals for a new study.}
 should be expressed as comparisons of other treatments versus the
 reference treatment (default) or vice versa. This argument is
 only considered if \code{reference.group} has been specified.}
+
+\item{small.values}{A character string specifying whether small
+treatment effects indicate a beneficial (\code{"good"}) or
+harmful (\code{"bad"}) effect (passed on to
+link\code{\link{netrank}}, can be abbreviated.}
 
 \item{all.treatments}{A logical or \code{"NULL"}. If \code{TRUE},
 matrices with all treatment effects, and confidence limits will
@@ -139,6 +146,10 @@ should be kept in netmeta object.}
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded from meta-analysis due to zero
 standard errors).}
+
+\item{control}{An optional list to control the iterative process to
+estimate the between-study variance \eqn{\tau^2}. This argument
+is passed on to \code{\link[metafor]{rma.mv}}.}
 }
 \value{
 An object of class \code{netmeta} with corresponding \code{print},
@@ -147,6 +158,7 @@ object is a list containing the following components:
 \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
 \item{seTE.adj}{Standard error of treatment estimate, adjusted for
   multi-arm studies.}
+\item{design}{Design of study providing pairwise comparison.}
 \item{n1, n2, event1, event2}{As defined above.}
 \item{k}{Total number of studies.}
 \item{m}{Total number of pairwise comparisons.}
@@ -182,8 +194,8 @@ object is a list containing the following components:
   \emph{m} of upper confidence interval limits for the consistent
   treatment effects estimated by network meta-analysis (fixed
   effects / random effects model).}
-\item{zval.nma.fixed, zval.nma.random}{A vector of length \emph{m}
-  of z-values for test of treatment effect for individual
+\item{statistic.nma.fixed, statistic.nma.random}{A vector of length
+  \emph{m} of z-values for test of treatment effect for individual
   comparisons (fixed effects / random effects model).}
 \item{pval.nma.fixed, pval.nma.random}{A vector of length \emph{m}
   of p-values for test of treatment effect for individual
@@ -203,7 +215,7 @@ object is a list containing the following components:
   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
   confidence interval limits (fixed effects / random effects
   model).}
-\item{zval.fixed, pval.fixed, zval.random,
+\item{statistic.fixed, pval.fixed, statistic.random,
   pval.random}{\emph{n}x\emph{n} matrices with z-value and p-value
   for test of overall treatment effect (fixed effects / random
   effects model).}
@@ -224,14 +236,14 @@ object is a list containing the following components:
   }{\emph{n}x\emph{n} matrices with lower and upper confidence
   interval limits from direct evidence (fixed effects / random
   effects model).}
-\item{ upper.direct.random}{\emph{n}x\emph{n} matrices with lower
+\item{upper.direct.random}{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from direct evidence (fixed
   effects / random effects model).}
-\item{zval.direct.fixed, pval.direct.fixed, zval.direct.random,
-  }{\emph{n}x\emph{n} matrices with z-value and p-value for test of
-  overall treatment effect from direct evidence (fixed effects /
-  random effects model).}
-\item{ pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
+\item{statistic.direct.fixed, pval.direct.fixed,
+  statistic.direct.random, }{\emph{n}x\emph{n} matrices with
+  z-value and p-value for test of overall treatment effect from
+  direct evidence (fixed effects / random effects model).}
+\item{pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
   and p-value for test of overall treatment effect from direct
   evidence (fixed effects / random effects model).}
 \item{TE.indirect.fixed, TE.indirect.random}{\emph{n}x\emph{n}
@@ -244,13 +256,13 @@ object is a list containing the following components:
   lower.indirect.random, }{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from indirect evidence
   (fixed effects / random effects model).}
-\item{ upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
+\item{upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from indirect evidence
   (fixed effects / random effects model).}
-\item{zval.indirect.fixed, pval.indirect.fixed,
-  zval.indirect.random, }{\emph{n}x\emph{n} matrices with z-value
-  and p-value for test of overall treatment effect from indirect
-  evidence (fixed effects / random effects model).}
+\item{statistic.indirect.fixed, pval.indirect.fixed,
+  statistic.indirect.random, }{\emph{n}x\emph{n} matrices with
+  z-value and p-value for test of overall treatment effect from
+  indirect evidence (fixed effects / random effects model).}
 \item{pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value
   and p-value for test of overall treatment effect from indirect
   evidence (fixed effects / random effects model).}
@@ -302,8 +314,8 @@ object is a list containing the following components:
 \item{sm, level, level.comb}{As defined above.}
 \item{comb.fixed, comb.random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
-\item{reference.group, baseline.reference, all.treatments}{As
-  defined above.}
+\item{reference.group, baseline.reference, small.values,
+  all.treatments}{As defined above.}
 \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
   above.}
 \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}

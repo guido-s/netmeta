@@ -37,7 +37,8 @@ nma.ruecker <- function(TE, seTE,
   ## Lplus is its Moore-Penrose pseudoinverse
   ##
   L <- t(B) %*% W %*% B
-  Lplus <- solve(L - 1 / n) + 1 / n
+  Lplus <- ginv(L)
+  Lplus[is.zero(Lplus)] <- 0
   ##
   ## R resistance distance (variance) matrix (n x n)
   ##
@@ -79,9 +80,11 @@ nma.ruecker <- function(TE, seTE,
   ## Resulting effects, all edges, as a n x n matrix:
   ##
   all <- matrix(NA, nrow = n, ncol = n)
+  ##
   for (i in 1:m) {
     all[treat1.pos[i], treat2.pos[i]] <- v[i]
   }
+  ##
   for (i in 1:n) {
     for (j in 1:n) {
       for (k in 1:n) {
@@ -190,14 +193,14 @@ nma.ruecker <- function(TE, seTE,
   ##
   lower.pooled <- ci.pooled$lower
   upper.pooled <- ci.pooled$upper
-  zval.pooled <- ci.pooled$z
+  statistic.pooled <- ci.pooled$statistic
   pval.pooled <- ci.pooled$p
   ##
   rownames(TE.pooled) <- colnames(TE.pooled) <- names.treat
   rownames(seTE.pooled) <- colnames(seTE.pooled) <- names.treat
   rownames(lower.pooled) <- colnames(lower.pooled) <- names.treat
   rownames(upper.pooled) <- colnames(upper.pooled) <- names.treat
-  rownames(zval.pooled) <- colnames(zval.pooled) <- names.treat
+  rownames(statistic.pooled) <- colnames(statistic.pooled) <- names.treat
   rownames(pval.pooled) <- colnames(pval.pooled) <- names.treat
   
   
@@ -279,7 +282,7 @@ nma.ruecker <- function(TE, seTE,
   ##
   lower.direct <- ci.direct$lower
   upper.direct <- ci.direct$upper
-  zval.direct <- ci.direct$z
+  statistic.direct <- ci.direct$statistic
   pval.direct <- ci.direct$p
   
   
@@ -297,7 +300,7 @@ nma.ruecker <- function(TE, seTE,
               seTE.nma = ci.v$seTE,
               lower.nma = ci.v$lower,
               upper.nma = ci.v$upper,
-              zval.nma = ci.v$z,
+              statistic.nma = ci.v$statistic,
               pval.nma = ci.v$p,
               leverage = diag(H),
               w.pooled = w.pooled,
@@ -309,7 +312,7 @@ nma.ruecker <- function(TE, seTE,
               seTE.pooled = seTE.pooled,
               lower.pooled = lower.pooled,
               upper.pooled = upper.pooled,
-              zval.pooled = zval.pooled,
+              statistic.pooled = statistic.pooled,
               pval.pooled = pval.pooled,
               ##
               k = length(unique(studlab)),
@@ -343,7 +346,7 @@ nma.ruecker <- function(TE, seTE,
               seTE.direct = seTE.direct,
               lower.direct = lower.direct,
               upper.direct = upper.direct,
-              zval.direct = zval.direct,
+              statistic.direct = statistic.direct,
               pval.direct = pval.direct,
               ##
               Q.decomp = Q.decomp

@@ -41,6 +41,10 @@
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa. This argument is
 #'   only considered if \code{reference.group} has been specified.
+#' @param small.values A character string specifying whether small
+#'   treatment effects indicate a beneficial (\code{"good"}) or
+#'   harmful (\code{"bad"}) effect (passed on to
+#'   link\code{\link{netrank}}, can be abbreviated.
 #' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
 #'   matrices with all treatment effects, and confidence limits will
 #'   be printed.
@@ -77,6 +81,9 @@
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
 #'   standard errors).
+#' @param control An optional list to control the iterative process to
+#'   estimate the between-study variance \eqn{\tau^2}. This argument
+#'   is passed on to \code{\link[metafor]{rma.mv}}.
 #' 
 #' @details
 #' Network meta-analysis using R package \bold{netmeta} is described
@@ -207,6 +214,7 @@
 #' \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
 #' \item{seTE.adj}{Standard error of treatment estimate, adjusted for
 #'   multi-arm studies.}
+#' \item{design}{Design of study providing pairwise comparison.}
 #' \item{n1, n2, event1, event2}{As defined above.}
 #' \item{k}{Total number of studies.}
 #' \item{m}{Total number of pairwise comparisons.}
@@ -242,8 +250,8 @@
 #'   \emph{m} of upper confidence interval limits for the consistent
 #'   treatment effects estimated by network meta-analysis (fixed
 #'   effects / random effects model).}
-#' \item{zval.nma.fixed, zval.nma.random}{A vector of length \emph{m}
-#'   of z-values for test of treatment effect for individual
+#' \item{statistic.nma.fixed, statistic.nma.random}{A vector of length
+#'   \emph{m} of z-values for test of treatment effect for individual
 #'   comparisons (fixed effects / random effects model).}
 #' \item{pval.nma.fixed, pval.nma.random}{A vector of length \emph{m}
 #'   of p-values for test of treatment effect for individual
@@ -263,7 +271,7 @@
 #'   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
 #'   confidence interval limits (fixed effects / random effects
 #'   model).}
-#' \item{zval.fixed, pval.fixed, zval.random,
+#' \item{statistic.fixed, pval.fixed, statistic.random,
 #'   pval.random}{\emph{n}x\emph{n} matrices with z-value and p-value
 #'   for test of overall treatment effect (fixed effects / random
 #'   effects model).}
@@ -284,14 +292,14 @@
 #'   }{\emph{n}x\emph{n} matrices with lower and upper confidence
 #'   interval limits from direct evidence (fixed effects / random
 #'   effects model).}
-#' \item{ upper.direct.random}{\emph{n}x\emph{n} matrices with lower
+#' \item{upper.direct.random}{\emph{n}x\emph{n} matrices with lower
 #'   and upper confidence interval limits from direct evidence (fixed
 #'   effects / random effects model).}
-#' \item{zval.direct.fixed, pval.direct.fixed, zval.direct.random,
-#'   }{\emph{n}x\emph{n} matrices with z-value and p-value for test of
-#'   overall treatment effect from direct evidence (fixed effects /
-#'   random effects model).}
-#' \item{ pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
+#' \item{statistic.direct.fixed, pval.direct.fixed,
+#'   statistic.direct.random, }{\emph{n}x\emph{n} matrices with
+#'   z-value and p-value for test of overall treatment effect from
+#'   direct evidence (fixed effects / random effects model).}
+#' \item{pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
 #'   and p-value for test of overall treatment effect from direct
 #'   evidence (fixed effects / random effects model).}
 #' \item{TE.indirect.fixed, TE.indirect.random}{\emph{n}x\emph{n}
@@ -304,13 +312,13 @@
 #'   lower.indirect.random, }{\emph{n}x\emph{n} matrices with lower
 #'   and upper confidence interval limits from indirect evidence
 #'   (fixed effects / random effects model).}
-#' \item{ upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
+#' \item{upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
 #'   and upper confidence interval limits from indirect evidence
 #'   (fixed effects / random effects model).}
-#' \item{zval.indirect.fixed, pval.indirect.fixed,
-#'   zval.indirect.random, }{\emph{n}x\emph{n} matrices with z-value
-#'   and p-value for test of overall treatment effect from indirect
-#'   evidence (fixed effects / random effects model).}
+#' \item{statistic.indirect.fixed, pval.indirect.fixed,
+#'   statistic.indirect.random, }{\emph{n}x\emph{n} matrices with
+#'   z-value and p-value for test of overall treatment effect from
+#'   indirect evidence (fixed effects / random effects model).}
 #' \item{pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value
 #'   and p-value for test of overall treatment effect from indirect
 #'   evidence (fixed effects / random effects model).}
@@ -362,8 +370,8 @@
 #' \item{sm, level, level.comb}{As defined above.}
 #' \item{comb.fixed, comb.random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
-#' \item{reference.group, baseline.reference, all.treatments}{As
-#'   defined above.}
+#' \item{reference.group, baseline.reference, small.values,
+#'   all.treatments}{As defined above.}
 #' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
 #'   above.}
 #' \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
@@ -455,6 +463,7 @@ netmeta <- function(TE, seTE,
                     ##
                     reference.group = "",
                     baseline.reference = TRUE,
+                    small.values = "good",
                     all.treatments = NULL,
                     seq = NULL,
                     ##
@@ -476,7 +485,9 @@ netmeta <- function(TE, seTE,
                     ##
                     title = "",
                     keepdata = gs("keepdata"),
-                    warn = TRUE
+                    warn = TRUE,
+                    ##
+                    control = NULL
                     ) {
 
 
@@ -500,19 +511,24 @@ netmeta <- function(TE, seTE,
   ##
   chklogical(baseline.reference)
   ##
+  small.values <- meta:::setchar(small.values, c("good", "bad"))
+  ##
   if (!is.null(all.treatments))
     chklogical(all.treatments)
   ##
-  if (!is.null(tau.preset))
-    chknumeric(tau.preset, min = 0, single = TRUE)
+  method.tau <- "DL"
+  method.tau <- meta:::setchar(method.tau, c("DL", "ML", "REML"))
   ##
-  chknumeric(tol.multiarm, min = 0, single = TRUE)
-  chknumeric(tol.multiarm.se, min = 0, single = TRUE)
+  if (!is.null(tau.preset))
+    chknumeric(tau.preset, min = 0, length = 1)
+  ##
+  chknumeric(tol.multiarm, min = 0, length = 1)
+  chknumeric(tol.multiarm.se, min = 0, length = 1)
   chklogical(details.chkmultiarm)
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
-  chknumeric(nchar.trts, min = 1, single = TRUE)
+  chknumeric(nchar.trts, min = 1, length = 1)
   ##
   chklogical(backtransf)
   ##
@@ -978,10 +994,45 @@ netmeta <- function(TE, seTE,
                        level, level.comb,
                        p0$seTE, sep.trts = sep.trts)
   ##
+  trts <- rownames(res.f$A.matrix)
+  ##
+  ##
   ## Random effects model
   ##
-  if (is.null(tau.preset))
-    tau <- res.f$tau
+  if (is.null(tau.preset)) {
+    if (method.tau %in% c("ML", "REML")) {
+      ##
+      dat.tau <- as.data.frame(res.f$B.matrix)
+      ##
+      oldnames <- colnames(dat.tau)
+      ##
+      if (reference.group == "")
+        trts.ref <- oldnames[length(oldnames)]
+      else
+        trts.ref <- reference.group
+      ##
+      newnames <- paste0("V", seq(along = colnames(dat.tau)))
+      colnames(dat.tau) <- newnames
+      trts.tau <- newnames[oldnames != trts.ref]
+      ##
+      dat.tau$TE <- res.f$TE
+      dat.tau$seTE <- res.f$seTE # adjusted standard errors
+      dat.tau$studlab <- res.f$studlab
+      dat.tau$id <- seq_along(dat.tau$TE)
+      ##
+      formula.trts <-
+        as.formula(paste("~ ", paste(trts.tau, collapse = " + "), " - 1"))
+      ##
+      tau2.reml <- rma.mv(TE, seTE^2, data = dat.tau,
+                          mods = formula.trts,
+                          random = ~ factor(id) | studlab, rho = 0,
+                          method = method.tau, control = control)$tau2
+      ##
+      tau <- sqrt(tau2.reml)
+    }
+    else
+      tau <- res.f$tau
+  }
   else
     tau <- tau.preset
   ##
@@ -1025,9 +1076,10 @@ netmeta <- function(TE, seTE,
   ## (7) Generate R object
   ##
   ##
-  trts <- rownames(res.f$A.matrix)
-  ##
   o <- order(p0$order)
+  ##
+  designs <- designs(res.f$treat1, res.f$treat2, res.f$studlab,
+                     sep.trts = sep.trts)
   ##
   res <- list(studlab = res.f$studlab[o],
               treat1 = res.f$treat1[o],
@@ -1037,6 +1089,8 @@ netmeta <- function(TE, seTE,
               seTE = res.f$seTE.orig[o],
               seTE.adj = res.f$seTE[o],
               ##
+              design = designs$design[o],
+              ##
               event1 = event1,
               event2 = event2,
               n1 = n1,
@@ -1045,7 +1099,7 @@ netmeta <- function(TE, seTE,
               k = res.f$k,
               m = res.f$m,
               n = res.f$n,
-              d = NA,
+              d = length(unique(designs$design)),
               ##
               trts = trts,
               k.trts = rowSums(res.f$A.matrix),
@@ -1058,13 +1112,13 @@ netmeta <- function(TE, seTE,
               studies = studies,
               narms = narms,
               ##
-              designs = NA,
+              designs = unique(sort(designs$design)),
               ##
               TE.nma.fixed = res.f$TE.nma[o],
               seTE.nma.fixed = res.f$seTE.nma[o],
               lower.nma.fixed = res.f$lower.nma[o],
               upper.nma.fixed = res.f$upper.nma[o],
-              zval.nma.fixed = res.f$zval.nma[o],
+              statistic.nma.fixed = res.f$statistic.nma[o],
               pval.nma.fixed = res.f$pval.nma[o],
               ##
               leverage.fixed = res.f$leverage[o],
@@ -1075,14 +1129,14 @@ netmeta <- function(TE, seTE,
               seTE.fixed = res.f$seTE.pooled,
               lower.fixed = res.f$lower.pooled,
               upper.fixed = res.f$upper.pooled,
-              zval.fixed = res.f$zval.pooled,
+              statistic.fixed = res.f$statistic.pooled,
               pval.fixed = res.f$pval.pooled,
               ##
               TE.nma.random = res.r$TE.nma[o],
               seTE.nma.random = res.r$seTE.nma[o],
               lower.nma.random = res.r$lower.nma[o],
               upper.nma.random = res.r$upper.nma[o],
-              zval.nma.random = res.r$zval.nma[o],
+              statistic.nma.random = res.r$statistic.nma[o],
               pval.nma.random = res.r$pval.nma[o],
               ##
               w.random = res.r$w.pooled[o],
@@ -1091,7 +1145,7 @@ netmeta <- function(TE, seTE,
               seTE.random = seTE.random,
               lower.random = res.r$lower.pooled,
               upper.random = res.r$upper.pooled,
-              zval.random = res.r$zval.pooled,
+              statistic.random = res.r$statistic.pooled,
               pval.random = res.r$pval.pooled,
               ##
               seTE.predict = seTE.predict,
@@ -1105,28 +1159,28 @@ netmeta <- function(TE, seTE,
               seTE.direct.fixed = res.f$seTE.direct,
               lower.direct.fixed = res.f$lower.direct,
               upper.direct.fixed = res.f$upper.direct,
-              zval.direct.fixed = res.f$zval.direct,
+              statistic.direct.fixed = res.f$statistic.direct,
               pval.direct.fixed = res.f$pval.direct,
               ##
               TE.direct.random = res.r$TE.direct,
               seTE.direct.random = res.r$seTE.direct,
               lower.direct.random = res.r$lower.direct,
               upper.direct.random = res.r$upper.direct,
-              zval.direct.random = res.r$zval.direct,
+              statistic.direct.random = res.r$statistic.direct,
               pval.direct.random = res.r$pval.direct,
               ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
               lower.indirect.fixed = NA,
               upper.indirect.fixed = NA,
-              zval.indirect.fixed = NA,
+              statistic.indirect.fixed = NA,
               pval.indirect.fixed = NA,
               ##
               TE.indirect.random = NA,
               seTE.indirect.random = NA,
               lower.indirect.random = NA,
               upper.indirect.random = NA,
-              zval.indirect.random = NA,
+              statistic.indirect.random = NA,
               pval.indirect.random = NA,
               ##
               Q = res.f$Q,
@@ -1136,6 +1190,7 @@ netmeta <- function(TE, seTE,
               lower.I2 = res.f$lower.I2,
               upper.I2 = res.f$upper.I2,
               tau = tau,
+              tau2 = tau^2,
               ##
               Q.heterogeneity = NA,
               df.Q.heterogeneity = NA,
@@ -1208,8 +1263,8 @@ netmeta <- function(TE, seTE,
   ##
   n <- res$n
   ##
-  res$prop.direct.fixed  <- netmeasures(res, random = FALSE,
-                                        warn = warn)$proportion
+  res$prop.direct.fixed <-
+    netmeasures(res, random = FALSE, warn = warn)$proportion
   ## Print warning(s) in call of netmeasures() once
   res$prop.direct.random <-
     suppressWarnings(netmeasures(res, random = TRUE,
@@ -1263,7 +1318,9 @@ netmeta <- function(TE, seTE,
   res$P.random <- P.random
   ##
   P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
+  P.fixed[P.fixed > 1] <- NA
   P.random[abs(P.random - 1) < .Machine$double.eps^0.5] <- NA
+  P.random[P.random > 1] <- NA
   ##
   ## Fixed effects model
   ##
@@ -1277,7 +1334,7 @@ netmeta <- function(TE, seTE,
   res$lower.indirect.fixed <- ci.if$lower
   res$upper.indirect.fixed <- ci.if$upper
   ##
-  res$zval.indirect.fixed <- ci.if$z
+  res$statistic.indirect.fixed <- ci.if$statistic
   res$pval.indirect.fixed <- ci.if$p
   ##
   ## Random effects model
@@ -1292,24 +1349,10 @@ netmeta <- function(TE, seTE,
   res$lower.indirect.random <- ci.ir$lower
   res$upper.indirect.random <- ci.ir$upper
   ##
-  res$zval.indirect.random <- ci.ir$z
+  res$statistic.indirect.random <- ci.ir$statistic
   res$pval.indirect.random <- ci.ir$p
   ##
-  ## Number of designs
-  ##
-  krahn <- nma.krahn(res)
-  res$d <- krahn$d
-  if (is.null(res$d))
-    res$d <- 1
-  ##
-  if (is.null(krahn$design$design))
-    res$designs <- rownames(res$Cov.fixed)
-  else
-    res$designs <- as.character(krahn$design$design)
-  ##
-  res$designs <- unique(res$designs)
-  ##
-  ##
+  res$small.values <- res$small.values
   ##
   if (any(res$narms > 2)) {
     tdata1 <- data.frame(studlab = res$studlab,
@@ -1344,30 +1387,18 @@ netmeta <- function(TE, seTE,
     res$pval.Q.heterogeneity <- dd$Q.decomp$pval[2]
     res$pval.Q.inconsistency <- dd$Q.decomp$pval[3]
   }
-
-
+  
+  
   if (keepdata) {
-    if (is.null(krahn))
-      ddat <- data.frame(.studlab = data$.studlab,
-                         .design = paste(data$.treat1, data$.treat2,
-                                         sep = sep.trts),
-                         stringsAsFactors = FALSE)
-    else {
-      ddat <- unique(krahn$studies[, c("studlab", "design")])
-      names(ddat) <- paste0(".", names(ddat))
-    }
-
-    data <- merge(data,
-                  data.frame(.studlab = res$studies,
-                             .narms = res$narms),
-                  by = ".studlab",
-                  stringsAsFactors = FALSE)
+    data$.design <- designs(data$.treat1, data$.treat2, data$.studlab,
+                            sep = sep.trts)$design
     ##
-    res$data <- merge(data, ddat,
+    res$data <- merge(data,
+                      data.frame(.studlab = res$studies,
+                                 .narms = res$narms),
                       by = ".studlab",
-                      suffixes = c(".orig", ""),
                       stringsAsFactors = FALSE)
-    res$data$.design <- as.character(res$data$.design)
+    ##
     res$data <- res$data[order(res$data$.order), ]
     res$data$.order <- NULL
   }

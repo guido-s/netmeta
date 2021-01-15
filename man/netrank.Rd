@@ -5,7 +5,7 @@
 \alias{print.netrank}
 \title{Frequentist method to rank treatments in network}
 \usage{
-netrank(x, small.values = "good")
+netrank(x, small.values = x$small.values)
 
 \method{print}{netrank}(
   x,

@@ -206,7 +206,7 @@
 #' \item{lower.fixed, upper.fixed}{\emph{n}x\emph{n} matrices with
 #'   lower and upper confidence interval limits for fixed effects
 #'   model.}
-#' \item{zval.fixed, pval.fixed}{\emph{n}x\emph{n} matrices with
+#' \item{statistic.fixed, pval.fixed}{\emph{n}x\emph{n} matrices with
 #'   z-value and p-value for test of overall treatment effect under
 #'   fixed effects model.}
 #' \item{TE.random, seTE.random}{\emph{n}x\emph{n} matrix with
@@ -216,9 +216,9 @@
 #' \item{lower.random, upper.random}{\emph{n}x\emph{n} matrices with
 #'   lower and upper confidence interval limits for random effects
 #'   model (only available if \code{method = "Inverse"}).}
-#' \item{zval.random, pval.random}{\emph{n}x\emph{n} matrices with
-#'   z-value and p-value for test of overall treatment effect under
-#'   random effects model (only available if \code{method =
+#' \item{statistic.random, pval.random}{\emph{n}x\emph{n} matrices
+#'   with z-value and p-value for test of overall treatment effect
+#'   under random effects model (only available if \code{method =
 #'   "Inverse"}).}
 #' \item{TE.direct.fixed, seTE.direct.fixed}{\emph{n}x\emph{n} matrix
 #'   with estimated treatment effects and standard errors from direct
@@ -226,7 +226,7 @@
 #' \item{lower.direct.fixed, upper.direct.fixed}{\emph{n}x\emph{n}
 #'   matrices with lower and upper confidence interval limits from
 #'   direct evidence under fixed effects model.}
-#' \item{zval.direct.fixed, pval.direct.fixed}{\emph{n}x\emph{n}
+#' \item{statistic.direct.fixed, pval.direct.fixed}{\emph{n}x\emph{n}
 #'   matrices with z-value and p-value for test of overall treatment
 #'   effect from direct evidence under fixed effects model.}
 #' \item{TE.direct.random, seTE.direct.random}{\emph{n}x\emph{n}
@@ -237,11 +237,13 @@
 #'   matrices with lower and upper confidence interval limits from
 #'   direct evidence under random effects model (only available if
 #'   \code{method = "Inverse"}).}
-#' \item{zval.direct.random, pval.direct.random}{\emph{n}x\emph{n}
-#'   matrices with z-value and p-value for test of overall treatment
-#'   effect from direct evidence under random effects model (only
-#'   available if \code{method = "Inverse"}).}
-#' \item{Q}{Overall heterogeneity / inconsistency statistic.}
+#' \item{statistic.direct.random,
+#'   pval.direct.random}{\emph{n}x\emph{n} matrices with z-value and
+#'   p-value for test of overall treatment effect from direct evidence
+#'   under random effects model (only available if \code{method =
+#'   "Inverse"}).}
+#' \item{Q}{Overall heterogeneity / inconsistency statistic. (only
+#'   available if \code{method = "Inverse"})}
 #' \item{df.Q}{Degrees of freedom for test of heterogeneity /
 #'   inconsistency.}
 #' \item{pval.Q}{P-value for test of heterogeneity / inconsistency.}
@@ -249,6 +251,17 @@
 #'   limits (only available if \code{method = "Inverse"}).}
 #' \item{tau}{Square-root of between-study variance (only available if
 #'   \code{method = "Inverse"}).}
+#' \item{Q.heterogeneity}{Overall heterogeneity statistic. (only
+#'   available if \code{method = "Inverse"})}
+#' \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
+#'   heterogeneity.}
+#' \item{pval.Q.heterogeneity}{P-value for test of overall
+#'   heterogeneity.}
+#' \item{Q.inconsistency}{Overall inconsistency statistic.}
+#' \item{df.Q.inconsistency}{Degrees of freedom for test of overall
+#'   inconsistency.}
+#' \item{pval.Q.inconsistency}{P-value for test of overall
+#'   inconsistency.}
 #' \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
 #' \item{H.matrix}{Hat matrix (\emph{m}x\emph{m})}
 #' \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
@@ -450,15 +463,15 @@ netmetabin <- function(event1, n1, event2, n2,
     chklogical(all.treatments)
   ##
   if (!is.null(tau.preset))
-    chknumeric(tau.preset, min = 0, single = TRUE)
+    chknumeric(tau.preset, min = 0, length = 1)
   ##
-  chknumeric(tol.multiarm, min = 0, single = TRUE)
-  chknumeric(tol.multiarm.se, min = 0, single = TRUE)
+  chknumeric(tol.multiarm, min = 0, length = 1)
+  chknumeric(tol.multiarm.se, min = 0, length = 1)
   chklogical(details.chkmultiarm)
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
-  chknumeric(nchar.trts, min = 1, single = TRUE)
+  chknumeric(nchar.trts, min = 1, length = 1)
   ##
   chklogical(backtransf)
   ##
@@ -1152,15 +1165,13 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ## Empty matrices for results
   ##
-  Z <- matrix(NA, nrow = n.treat, ncol = n.treat)
-  rownames(Z) <- colnames(Z) <- trts
+  NAmatrix <- matrix(NA, nrow = n.treat, ncol = n.treat)
+  rownames(NAmatrix) <- colnames(NAmatrix) <- trts
   ##
-  TE.fixed <- seTE.fixed <- Z
-  TE.direct.fixed <- seTE.direct.fixed <- Z
-  ##
-  rm(Z)
-
-
+  TE.fixed <- seTE.fixed <- NAmatrix
+  TE.direct.fixed <- seTE.direct.fixed <- NAmatrix
+  
+  
   ##
   ##
   ## (7) Conduct classic network meta-analysis using inverse variance
@@ -1746,7 +1757,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   rm(sel.treat1, sel.treat2, selstud, m.i, TE.i, seTE.i)
   ##
-  ci.d <- meta::ci(TE.direct.fixed, seTE.direct.fixed, level = level.comb)
+  ci.d <- ci(TE.direct.fixed, seTE.direct.fixed, level = level.comb)
   
   
   labels <- sort(unique(c(treat1, treat2)))
@@ -1760,10 +1771,6 @@ netmetabin <- function(event1, n1, event2, n2,
   }
   
   
-  NAmatrix <- TE.fixed
-  NAmatrix[!is.na(NAmatrix)] <- NA
-  
-  
   res <- list(studlab = studlab,
               treat1 = treat1,
               treat2 = treat2,
@@ -1771,6 +1778,8 @@ netmetabin <- function(event1, n1, event2, n2,
               TE = data$.TE[!data$.drop],
               seTE = data$.seTE[!data$.drop],
               seTE.adj = rep(NA, sum(!data$.drop)),
+              ##
+              design = designs(treat1, treat2, studlab)$design,
               ##
               event1 = event1,
               event2 = event2,
@@ -1796,14 +1805,14 @@ netmetabin <- function(event1, n1, event2, n2,
               seTE.fixed = seTE.fixed,
               lower.fixed = ci.f$lower,
               upper.fixed = ci.f$upper,
-              zval.fixed = ci.f$z,
+              statistic.fixed = ci.f$statistic,
               pval.fixed = ci.f$p,
               ##
               TE.random = NAmatrix,
               seTE.random = NAmatrix,
               lower.random = NAmatrix,
               upper.random = NAmatrix,
-              zval.random = NAmatrix,
+              statistic.random = NAmatrix,
               pval.random = NAmatrix,
               ##
               seTE.predict = NAmatrix,
@@ -1817,28 +1826,42 @@ netmetabin <- function(event1, n1, event2, n2,
               seTE.direct.fixed = seTE.direct.fixed,
               lower.direct.fixed = ci.d$lower,
               upper.direct.fixed = ci.d$upper,
-              zval.direct.fixed = ci.d$z,
+              statistic.direct.fixed = ci.d$statistic,
               pval.direct.fixed = ci.d$p,
+              ##
+              TE.direct.random = NAmatrix,
+              seTE.direct.random = NAmatrix,
+              lower.direct.random = NAmatrix,
+              upper.direct.random = NAmatrix,
+              statistic.direct.random = NAmatrix,
+              pval.direct.random = NAmatrix,
               ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
               lower.indirect.fixed = NA,
               upper.indirect.fixed = NA,
-              zval.indirect.fixed = NA,
+              statistic.indirect.fixed = NA,
               pval.indirect.fixed = NA,
               ##
-              Q = Q,
-              df.Q = df.Q,
-              pval.Q = pval.Q,
+              TE.indirect.random = NA,
+              seTE.indirect.random = NA,
+              lower.indirect.random = NA,
+              upper.indirect.random = NA,
+              statistic.indirect.random = NA,
+              pval.indirect.random = NA,
+              ##
+              Q = NA,
+              df.Q = NA,
+              pval.Q = NA,
               I2 = NA, lower.I2 = NA, upper.I2 = NA,
               tau = NA,
               ##
               Q.heterogeneity = NA,
               df.Q.heterogeneity = NA,
               pval.Q.heterogeneity = NA,
-              Q.inconsistency = NA,
-              df.Q.inconsistency = NA,
-              pval.Q.inconsistency = NA,
+              Q.inconsistency = Q,
+              df.Q.inconsistency = df.Q,
+              pval.Q.inconsistency = pval.Q,
               ##
               Q.decomp = NA,
               ##
@@ -1898,6 +1921,79 @@ netmetabin <- function(event1, n1, event2, n2,
               )
   ##
   class(res) <- c("netmetabin", "netmeta")
+  ##
+  ## Add results for indirect treatment estimates
+  ##
+  n <- res$n
+  ##
+  res$prop.direct.fixed <-
+    netmeasures(res, random = FALSE, warn = warn)$proportion
+  if (is.logical(res$prop.direct.fixed))
+    res$prop.direct.fixed <- as.numeric(res$prop.direct.fixed)
+  ##
+  P.fixed <- P.random <- matrix(NA, n, n)
+  colnames(P.fixed) <- rownames(P.fixed) <-
+    colnames(P.random) <- rownames(P.random) <- trts
+  ##
+  if (n == 2) {
+    ##
+    ## For two treatments only direct evidence is available
+    ##
+    res$prop.direct.fixed <- 1
+    names(res$prop.direct.fixed) <- paste(labels, collapse = sep.trts)
+    ##
+    sel <- row(P.fixed) != col(P.fixed)
+    P.fixed[sel] <- 1
+  }
+  else {
+    k <- 0
+    for (i in 1:(n - 1)) {
+      for (j in (i + 1):n) {
+        k <- k + 1
+        P.fixed[i, j] <- P.fixed[j, i] <- res$prop.direct.fixed[k]
+      }
+    }
+  }
+  ##
+  ## Set direct evidence estimates to 0 if only indirect evidence is available
+  ## (otherwise indirect estimates would be NA as direct estimates are NA)
+  ##
+  TE.direct.fixed <- res$TE.direct.fixed
+  ##
+  TE.direct.fixed[abs(P.fixed) < .Machine$double.eps^0.5] <- 0
+  ##
+  ## Indirect estimate is NA if only direct evidence is available
+  ##
+  res$P.fixed <- P.fixed
+  ##
+  P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
+  P.fixed[P.fixed > 1] <- NA
+  ##
+  ## Fixed effects model
+  ##
+  ci.if <- ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
+              sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
+              level = level)
+  ##
+  res$TE.indirect.fixed   <- ci.if$TE
+  res$seTE.indirect.fixed <- ci.if$seTE
+  ##
+  res$lower.indirect.fixed <- ci.if$lower
+  res$upper.indirect.fixed <- ci.if$upper
+  ##
+  res$statistic.indirect.fixed <- ci.if$statistic
+  res$pval.indirect.fixed <- ci.if$p
+  ##
+  ## No results for random effects model
+  ##
+  res$prop.direct.random <- res$prop.direct.fixed
+  res$prop.direct.random[!is.na(res$prop.direct.random)] <- NA
+  res$P.random <- P.random
+  ##
+  res$TE.indirect.random <- res$seTE.indirect.random <-
+    res$lower.indirect.random <- res$upper.indirect.random <-
+      res$statistic.indirect.random <- res$pval.indirect.random <-
+        NAmatrix
   
   
   ##

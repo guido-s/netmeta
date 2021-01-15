@@ -5,13 +5,15 @@
 #' treatments for Parkinson's disease.
 #' 
 #' The data are the mean lost work-time reduction in patients given
-#' dopamine agonists as adjunct therapy in Parkinson’s disease.  The
-#' data are given as sample size, mean and standard deviation in each
-#' trial arm. Treatments are placebo, coded 1, and four active drugs
-#' coded 2 to 5. These data are used as an example in the supplemental
-#' material of Dias et al. (2013).
+#' dopamine agonists as adjunct therapy in Parkinson’s disease
+#' (Franchini et al. 2012). The data are given as sample size, mean
+#' and standard deviation in each trial arm. Treatments are placebo
+#' and four active drugs. These data are used as an example in the
+#' supplemental material of Dias et al. (2013) where placebo is coded
+#' as 1 and the four active drugs as 2 to 5.
 #' 
-#' @name parkinson
+#' @name Franchini2012
+#' @aliases parkinson
 #' 
 #' @docType data
 #' 
@@ -42,11 +44,18 @@
 #' randomized controlled trials.
 #' \emph{Medical Decision Making},
 #' \bold{33}, 607--17
+#'
+#' Franchini AJ, Dias S, Ades AE, Jansen JP, Welton NJ (2012):
+#' Accounting for correlation in network meta-analysis with multi-arm
+#' trials.
+#' \emph{Research Synthesis Methods},
+#' \bold{3}, 142--60
+#' 
 #' 
 #' @keywords datasets
 #' 
 #' @examples
-#' data(parkinson)
+#' data(Franchini2012)
 #' 
 #' # Transform data from arm-based format to contrast-based format
 #' #
@@ -54,7 +63,7 @@
 #'                n = list(n1, n2, n3),
 #'                mean = list(y1, y2, y3),
 #'                sd = list(sd1, sd2, sd3),
-#'                data = parkinson, studlab = Study)
+#'                data = Franchini2012, studlab = Study)
 #' p1
 #' 
 #' # Conduct network meta-analysis

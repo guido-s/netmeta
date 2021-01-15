@@ -25,6 +25,8 @@
   digits.I2 = gs("digits.I2"),
   scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
+  truncate,
+  text.truncate = "*** Output truncated ***",
   ...
 )
 }
@@ -93,6 +95,13 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 
 \item{big.mark}{A character used as thousands separator.}
 
+\item{truncate}{An optional vector used to truncate the printout of
+results for individual studies (must be a logical vector of same
+length as \code{x$TE} or contain numerical values).}
+
+\item{text.truncate}{A character string printed if study results
+were truncated from the printout.}
+
 \item{\dots}{Additional arguments.}
 }
 \description{
@@ -107,6 +116,25 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD",
                 comb.random = FALSE)
 print(net1, ref = "plac", digits = 3)
+
+# Only show individual study results for multi-arm studies
+#
+print(net1, ref = "plac", digits = 3, truncate = multiarm)
+
+# Only show first three individual study results
+#
+print(net1, ref = "plac", digits = 3, truncate = 1:3)
+
+# Only show individual study results for Kim2007 and Willms1999
+#
+print(net1, ref = "plac", digits = 3,
+      truncate = c("Kim2007", "Willms1999"))
+
+# Only show individual study results for studies starting with the
+# letter "W"
+#
+print(net1, ref = "plac", digits = 3,
+      truncate = substring(studlab, 1, 1) == "W")
 
 \dontrun{
 # Conduct random effects network meta-analysis

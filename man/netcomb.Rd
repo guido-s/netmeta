@@ -46,6 +46,7 @@ containing the following components:
 \item{seTE}{Standard error of treatment estimate.}
 \item{seTE.adj}{Standard error of treatment estimate, adjusted for
   multi-arm studies.}
+\item{design}{Design of study providing pairwise comparison.}
 \item{event1}{Number of events in first treatment group.}
 \item{event2}{Number of events in second treatment group.}
 \item{n1}{Number of observations in first treatment group.}
@@ -83,7 +84,7 @@ containing the following components:
   \emph{m} of upper confidence interval limits for the consistent
   treatment effects estimated by network meta-analysis (fixed
   and random effects model).}
-\item{zval.nma.fixed, zval.nma.random}{A vector of length \emph{m}
+\item{statistic.nma.fixed, statistic.nma.random}{A vector of length \emph{m}
   of z-values for test of treatment effect for individual
   comparisons (fixed and random effects model).}
 \item{pval.nma.fixed, pval.nma.random}{A vector of length \emph{m}
@@ -103,10 +104,10 @@ containing the following components:
   \emph{m} of upper confidence interval limits for consistent
   treatment effects estimated by the additive (fixed and random
   effects) model.}
-\item{zval.cnma.fixed, zval.cnma.random}{A vector of length
+\item{statistic.cnma.fixed, statistic.cnma.random}{A vector of length
   \emph{m} of z-values for the test of an overall effect estimated
   by the additive (fixed and random effects) model.}
-\item{pval.cnma.fixed, zval.cnma.random}{A vector of length
+\item{pval.cnma.fixed, pval.cnma.random}{A vector of length
   \emph{m} of p-values for the test of an overall effect estimated
   by the additive (fixed and random effects) model.}
 \item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with overall
@@ -119,7 +120,7 @@ containing the following components:
   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
   confidence interval limits estimated by the additive (fixed and
   random effects) model.}
-\item{zval.fixed, pval.fixed, zval.random,
+\item{statistic.fixed, pval.fixed, statistic.random,
   pval.random}{\emph{n}x\emph{n} matrices with z-values and
   p-values for test of overall effect estimated by the additive
   (fixed and random effects) model.}
@@ -133,7 +134,7 @@ containing the following components:
 \item{upper.Comp.fixed, upper.Comp.random}{A vector with upper
   confidence limits for components (fixed and random effects
   model).}
-\item{zval.Comp.fixed, zval.Comp.random}{A vector with z-values for
+\item{statistic.Comp.fixed, statistic.Comp.random}{A vector with z-values for
   the overall effect of components (fixed and random effects
   model).}
 \item{pval.Comp.fixed, pval.Comp.random}{A vector with p-values for
@@ -149,7 +150,7 @@ containing the following components:
 \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
   confidence limits for combinations (fixed and random effects
   model).}
-\item{zval.Comb.fixed, zval.Comb.random}{A vector with z-values for
+\item{statistic.Comb.fixed, statistic.Comb.random}{A vector with z-values for
   the overall effect of combinations (fixed and random effects
   model).}
 \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for

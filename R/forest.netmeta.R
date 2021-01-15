@@ -205,6 +205,7 @@ forest.netmeta <- function(x,
   ##
   ##
   meta:::chkclass(x, "netmeta")
+  ##
   x <- upgradenetmeta(x)
   ##
   is.bin <- inherits(x, "netmetabin")
@@ -214,7 +215,7 @@ forest.netmeta <- function(x,
   ##
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
   ##
-  meta:::chknumeric(digits, min = 0, single = TRUE)
+  meta:::chknumeric(digits, min = 0, length = 1)
   ##
   chklogical(baseline.reference)
   ##

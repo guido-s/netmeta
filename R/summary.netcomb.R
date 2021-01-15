@@ -19,7 +19,7 @@
 #'   characters used to create unique treatment names (see Details).
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
-#' @param digits.zval Minimal number of significant digits for z- or
+#' @param digits.stat Minimal number of significant digits for z- or
 #'   t-value, see \code{print.default}.
 #' @param digits.pval Minimal number of significant digits for p-value
 #'   of overall treatment effect, see \code{print.default}.
@@ -73,7 +73,7 @@
 #' #
 #' nc1 <- netcomb(net1)
 #' summary(nc1)
-#' print(summary(nc1), digits = 2, digits.zval = 3)
+#' print(summary(nc1), digits = 2, digits.stat = 3)
 #' 
 #' \dontrun{
 #' # Conduct random effects network meta-analysis
@@ -86,7 +86,7 @@
 #' #
 #' nc2 <- netcomb(net2)
 #' summary(nc2)
-#' print(summary(nc2), digits = 2, digits.zval = 3)
+#' print(summary(nc2), digits = 2, digits.stat = 3)
 #' }
 #' 
 #' @rdname summary.netcomb
@@ -106,6 +106,8 @@ summary.netcomb <- function(object,
   ##
   ##
   meta:::chkclass(object, "netcomb")
+  ##  
+  object <- upgradenetmeta(object)
   
   
   ##
@@ -123,7 +125,7 @@ summary.netcomb <- function(object,
   ##     meta-analyses
   ##
   ##
-  keepvars <- c("TE", "seTE", "lower", "upper", "z", "p")
+  keepvars <- c("TE", "seTE", "lower", "upper", "statistic", "p")
   ##
   ci.comp <- data.frame(studlab = object$studlab,
                         treat1 = object$treat1, treat2 = object$treat2,
@@ -137,7 +139,7 @@ summary.netcomb <- function(object,
                              seTE = object$seTE.nma.fixed,
                              lower = object$lower.nma.fixed,
                              upper = object$upper.nma.fixed,
-                             z = object$zval.nma.fixed,
+                             statistic = object$statistic.nma.fixed,
                              p = object$pval.nma.fixed,
                              stringsAsFactors = FALSE)
   ##
@@ -148,7 +150,7 @@ summary.netcomb <- function(object,
                               seTE = object$seTE.cnma.fixed,
                               lower = object$lower.cnma.fixed,
                               upper = object$upper.cnma.fixed,
-                              z = object$zval.cnma.fixed,
+                              statistic = object$statistic.cnma.fixed,
                               p = object$pval.cnma.fixed,
                               stringsAsFactors = FALSE)
   ##
@@ -159,7 +161,7 @@ summary.netcomb <- function(object,
                               seTE = object$seTE.nma.random,
                               lower = object$lower.nma.random,
                               upper = object$upper.nma.random,
-                              z = object$zval.nma.random,
+                              statistic = object$statistic.nma.random,
                               p = object$pval.nma.random,
                               stringsAsFactors = FALSE)
   ##
@@ -170,7 +172,7 @@ summary.netcomb <- function(object,
                                seTE = object$seTE.cnma.random,
                                lower = object$lower.cnma.random,
                                upper = object$upper.cnma.random,
-                               z = object$zval.cnma.random,
+                               statistic = object$statistic.cnma.random,
                                p = object$pval.cnma.random,
                                stringsAsFactors = FALSE)
   ##
@@ -178,21 +180,21 @@ summary.netcomb <- function(object,
                seTE = object$seTE.fixed,
                lower = object$lower.fixed,
                upper = object$upper.fixed,
-               z = object$zval.fixed,
+               statistic = object$statistic.fixed,
                p = object$pval.fixed)
   ##
   ci.r <- list(TE = object$TE.random,
                seTE = object$seTE.random,
                lower = object$lower.random,
                upper = object$upper.random,
-               z = object$zval.random,
+               statistic = object$statistic.random,
                p = object$pval.random)
   ##
   ci.comp.f <- data.frame(TE = object$Comp.fixed,
                           seTE = object$seComp.fixed,
                           lower = object$lower.Comp.fixed,
                           upper = object$upper.Comp.fixed,
-                          z = object$zval.Comp.fixed,
+                          statistic = object$statistic.Comp.fixed,
                           p = object$pval.Comp.fixed,
                           stringsAsFactors = FALSE)
   rownames(ci.comp.f) <- object$comps
@@ -201,7 +203,7 @@ summary.netcomb <- function(object,
                           seTE = object$seComp.random,
                           lower = object$lower.Comp.random,
                           upper = object$upper.Comp.random,
-                          z = object$zval.Comp.random,
+                          statistic = object$statistic.Comp.random,
                           p = object$pval.Comp.random,
                           stringsAsFactors = FALSE)
   rownames(ci.comp.r) <- object$comps
@@ -210,7 +212,7 @@ summary.netcomb <- function(object,
                           seTE = object$seComb.fixed,
                           lower = object$lower.Comb.fixed,
                           upper = object$upper.Comb.fixed,
-                          z = object$zval.Comb.fixed,
+                          statistic = object$statistic.Comb.fixed,
                           p = object$pval.Comb.fixed,
                           stringsAsFactors = FALSE)
   rownames(ci.comb.f) <- object$trts
@@ -219,7 +221,7 @@ summary.netcomb <- function(object,
                           seTE = object$seComb.random,
                           lower = object$lower.Comb.random,
                           upper = object$upper.Comb.random,
-                          z = object$zval.Comb.random,
+                          statistic = object$statistic.Comb.random,
                           p = object$pval.Comb.random,
                           stringsAsFactors = FALSE)
   rownames(ci.comb.r) <- object$trts
@@ -334,7 +336,7 @@ print.summary.netcomb <- function(x,
                                   nchar.trts = x$nchar.trts,
                                   ##
                                   digits = gs("digits"),
-                                  digits.zval = gs("digits.zval"),
+                                  digits.stat = gs("digits.stat"),
                                   digits.pval = gs("digits.pval"),
                                   digits.pval.Q = max(gs("digits.pval.Q"), 2),
                                   digits.Q = gs("digits.Q"),
@@ -368,16 +370,16 @@ print.summary.netcomb <- function(x,
   chklogical(comb.fixed)
   chklogical(comb.random)
   chklogical(backtransf)
-  chknumeric(nchar.trts, min = 1, single = TRUE)
+  chknumeric(nchar.trts, min = 1, length = 1)
   ##
-  chknumeric(digits, min = 0, single = TRUE)
-  chknumeric(digits.zval, min = 0, single = TRUE)
-  chknumeric(digits.pval, min = 1, single = TRUE)
-  chknumeric(digits.pval.Q, min = 1, single = TRUE)
-  chknumeric(digits.Q, min = 0, single = TRUE)
-  chknumeric(digits.tau2, min = 0, single = TRUE)
-  chknumeric(digits.tau, min = 0, single = TRUE)
-  chknumeric(digits.I2, min = 0, single = TRUE)
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.stat, min = 0, length = 1)
+  chknumeric(digits.pval, min = 1, length = 1)
+  chknumeric(digits.pval.Q, min = 1, length = 1)
+  chknumeric(digits.Q, min = 0, length = 1)
+  chknumeric(digits.tau2, min = 0, length = 1)
+  chknumeric(digits.tau, min = 0, length = 1)
+  chknumeric(digits.I2, min = 0, length = 1)
   ##
   chklogical(scientific.pval)
   ##
@@ -396,6 +398,8 @@ print.summary.netcomb <- function(x,
     cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
     cat(paste("Number of active components: c = ", x$c, "\n", sep = ""))
     cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
+    if (!is.null(x$d))
+      cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
     if (inherits(x, "summary.discomb"))
       cat(paste("Number of subnetworks: s = ", x$s, "\n", sep = ""))
     ##
@@ -412,12 +416,12 @@ print.summary.netcomb <- function(x,
   
   dat1.f <- formatCC(x$combinations.fixed,
                      backtransf, x$sm, x$level, trts.abbr,
-                     digits, digits.zval, digits.pval.Q,
+                     digits, digits.stat, digits.pval,
                      scientific.pval, big.mark, x$seq)
   ##
   dat1.r <- formatCC(x$combinations.random,
                      backtransf, x$sm, x$level, trts.abbr,
-                     digits, digits.zval, digits.pval.Q,
+                     digits, digits.stat, digits.pval,
                      scientific.pval, big.mark, x$seq)
   ##
   if (comb.fixed) {
@@ -435,12 +439,12 @@ print.summary.netcomb <- function(x,
   
   dat2.f <- formatCC(x$components.fixed,
                      backtransf, x$sm, x$level, comps.abbr,
-                     digits, digits.zval, digits.pval.Q,
+                     digits, digits.stat, digits.pval,
                      scientific.pval, big.mark)
   ##
   dat2.r <- formatCC(x$components.random,
                      backtransf, x$sm, x$level, comps.abbr,
-                     digits, digits.zval, digits.pval.Q,
+                     digits, digits.stat, digits.pval,
                      scientific.pval, big.mark)
   ##
   if (comb.fixed) {
@@ -474,20 +478,26 @@ print.summary.netcomb <- function(x,
   
   
   cat("\nHeterogeneity statistics:\n")
-  
-  print(data.frame(Q = formatN(c(x$Q.additive,
-                                 x$Q.standard,
-                                 x$Q.diff),
-                               digits.Q),
-                   df.Q = formatN(c(x$df.Q.additive,
-                                    x$df.Q.standard,
-                                    x$df.Q.diff), 0),
-                   pval = formatPT(c(x$pval.Q.additive,
-                                     x$pval.Q.standard,
-                                     x$pval.Q.diff),
-                                   digits = digits.pval.Q,
-                                   scientific = scientific.pval),
-                   row.names = c("Additive model", "Standard model", "Difference")))
+
+  hetdat <- 
+    data.frame(Q = formatN(c(x$Q.additive,
+                             x$Q.standard,
+                             x$Q.diff),
+                           digits.Q),
+               df.Q = formatN(c(x$df.Q.additive,
+                                x$df.Q.standard,
+                                x$df.Q.diff), 0),
+               pval = formatPT(c(x$pval.Q.additive,
+                                 x$pval.Q.standard,
+                                 x$pval.Q.diff),
+                               digits = digits.pval.Q,
+                               scientific = scientific.pval),
+               row.names = c("Additive model", "Standard model",
+                             "Difference"))
+  ##
+  names(hetdat) <- c("Q", "df", "p-value")
+  ##
+  print(hetdat)
   
   
   if ((comb.fixed | comb.random)) {

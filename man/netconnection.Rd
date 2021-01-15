@@ -17,7 +17,13 @@ netconnection(
   warn = FALSE
 )
 
-\method{print}{netconnection}(x, digits = max(4, .Options$digits - 3), nchar.trts = x$nchar.trts, ...)
+\method{print}{netconnection}(
+  x,
+  digits = max(4, .Options$digits - 3),
+  nchar.trts = x$nchar.trts,
+  details = FALSE,
+  ...
+)
 }
 \arguments{
 \item{treat1}{Label / number for first treatment.}
@@ -45,6 +51,9 @@ printed.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{\link{print.default}}.}
+
+\item{details}{A logical indicating whether to print the distance
+matrix.}
 
 \item{...}{Additional arguments (ignored at the moment)}
 }
@@ -103,7 +112,7 @@ t1 <- c("G", "B", "B", "D", "A", "F")
 t2 <- c("B", "C", "E", "E", "H", "A")
 #
 nc2 <- netconnection(t1, t2)
-nc2
+print(nc2, details = TRUE)
 
 # Number of subnetworks
 #

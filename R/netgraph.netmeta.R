@@ -20,6 +20,10 @@
 #' @param offset Distance between edges (i.e. treatments) in graph and
 #'   treatment labels for 2-D plots (value of 0.0175 corresponds to a
 #'   difference of 1.75\% of the range on x- and y-axis).
+#' @param srt.labels The character string \code{"orthogonal"} (can be
+#'   abbreviated), a single numeric or numerical vector with value(s)
+#'   between -180 and 180 specifying the angle to rotate treatment
+#'   labels (see Details).
 #' @param scale Additional space added outside of edges
 #'   (i.e. treatments).  Increase this value for larger treatment
 #'   labels (value of 1.10 corresponds to an additional space of 10\%
@@ -49,7 +53,7 @@
 #'   highlight the comparisons given by \code{highlight}.
 #' @param multiarm A logical indicating whether multi-arm studies
 #'   should be marked in plot.
-#' @param col.multiarm Either a function from R library colorspace or
+#' @param col.multiarm Either a function from R package colorspace or
 #'   grDevice to define colors for multi-arm studies or a character
 #'   vector with colors to highlight multi-arm studies.
 #' @param alpha.transparency The alpha transparency of colors used to
@@ -169,6 +173,18 @@
 #' any but the first method. By default, \code{thickness = "se.fixed"}
 #' is used if \code{start.layout = "circle"}, \code{iterate = FALSE},
 #' and \code{plastic = TRUE}. Otherwise, the same line width is used.
+#'
+#' Argument \code{srt.labels} can be used to specific the rotation (in
+#' degrees) of the treatment labels. If \code{srt.labels} is equal to
+#' \code{"orthogonal"}, treatment labels are orthogonal to the
+#' circle. If \code{srt.labels} is a single numeric, all labels are
+#' rotated by this degree. If \code{srt.labels} is a numeric vector,
+#' it must be of the same length as the number of treatments and
+#' labels are rotated counter-clockwise starting on the right
+#' side. Finally, if \code{srt.labels} is a named numeric vector, it
+#' must be of the same length as the number of treatments and the
+#' names must be equal to the treatment names (and treatment labels
+#' are rotated according to the specified values).
 #' 
 #' Further, a couple of graphical parameters can be specified, such as
 #' color and appearance of the edges (treatments) and the nodes
@@ -310,6 +326,10 @@
 #' netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
 #'          labels = LETTERS[1:10])
 #' 
+#' # Rotate treatment labels (orthogonal to circle)
+#' #
+#' netgraph(net1, srt.labels = "o")
+#' 
 #' # Network graph in 3-D (opens a new device, where you may rotate and
 #' # zoom the plot using the mouse / the mouse wheel).
 #' # The rgl package must be installed for 3-D plots.
@@ -324,7 +344,7 @@
 
 netgraph.netmeta <- function(x, seq = x$seq,
                              labels = x$trts,
-                             cex = 1, adj = NULL,
+                             cex = 1, adj = NULL, srt.labels = 0,
                              offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
                              scale = 1.10,
                              col = "slateblue", plastic, thickness,
@@ -363,6 +383,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   
   meta:::chkclass(x, "netmeta")
   ##
+  x <- upgradenetmeta(x)
+  ##
   n.edges <- sum(x$A.matrix[upper.tri(x$A.matrix)] > 0)
   n.trts <- length(x$trts)
 
@@ -371,9 +393,30 @@ netgraph.netmeta <- function(x, seq = x$seq,
   chknumeric <- meta:::chknumeric
   chklogical <- meta:::chklogical
   ##
-  chknumeric(lwd, min = 0, zero = TRUE, single = TRUE)
-  chknumeric(lwd.min, min = 0, zero = TRUE, single = TRUE)
-  chknumeric(lwd.max, min = 0, zero = TRUE, single = TRUE)
+  if (length(srt.labels) == 1 && is.character(srt.labels)) {
+    srt.labels <- setchar(srt.labels, "orthogonal",
+                          "should be equal to 'orthogonal' or numeric (vector)")
+    if (!missing(iterate) && iterate == TRUE) {
+      warning("Orthogonal labels not supported if argument 'iterate = TRUE'")
+      srt.labels <- 0
+    }
+    ##
+    srtfunc <- function(ntrt) {
+      s <- 180 * (2 * (1:ntrt) / ntrt - 1)
+      for (i in 1:ntrt) {
+        if (i < ntrt / 4)
+          s[i] <- 360 * i / ntrt
+        if (i > 3 * ntrt / 4)
+          s[i] <- 360 * (i / ntrt - 1)
+      }
+      s
+    }
+    srt.labels <- srtfunc(x$n)
+  }
+  chknumeric(srt.labels, min = -180, max = 180)
+  chknumeric(lwd, min = 0, zero = TRUE, length = 1)
+  chknumeric(lwd.min, min = 0, zero = TRUE, length = 1)
+  chknumeric(lwd.max, min = 0, zero = TRUE, length = 1)
   chknumeric(scale.highlight, min = 0, zero = TRUE)
   ##
   if (lwd.min > lwd.max)
@@ -384,21 +427,23 @@ netgraph.netmeta <- function(x, seq = x$seq,
   is_3d <- !is_2d
   ##
   if (is_3d & !meta:::is.installed.package("rgl", stop = FALSE)) {
-    warning(paste("2-D plot generated as package 'rgl' is missing.",
-                  "\n  ",
-                  "Please install library 'rgl' in order to produce 3-D plots",
-                  "\n  ",
+    warning(paste0("2-D plot generated as package 'rgl' is missing.",
+                   "\n  ",
+                   "Please install package 'rgl' in order to ",
+                   "produce 3-D plots\n  ",
                   "(R command: 'install.packages(\"rgl\")').",
                   if (length(grep("darwin", R.Version()$os)) == 1)
-                    "\n  Note, macOS users have to install XQuartz, see https://www.xquartz.org/.",
-                  sep = ""))
+                    paste0("\n  Note, macOS users have to install ",
+                           "XQuartz, see https://www.xquartz.org/.")
+                  ))
     dim <- "2d"
     is_2d <- TRUE
     is_3d <- FALSE
   }
   ##
   missing.start.layout <- missing(start.layout)
-  start.layout <- setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
+  start.layout <-
+    setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
   ##
   mf <- match.call()
   ##
@@ -658,6 +703,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
                          cex = cex,
                          col = col,
                          adj = adj,
+                         srt.labels = srt.labels,
                          offset = offset,
                          scale = scale,
                          ##
@@ -710,7 +756,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
   ##
   ## Dataset for nodes
   ##
-  dat.nodes <- data.frame(trts, labels, seq,
+  dat.nodes <- data.frame(trts, labels, seq, srt = NA,
                           xpos, ypos, zpos = NA,
                           xpos.labels = NA, ypos.labels = NA,
                           cex = cex.points,
@@ -823,6 +869,25 @@ netgraph.netmeta <- function(x, seq = x$seq,
     dat.nodes$xpos.labels <- dat.nodes$xpos
     dat.nodes$ypos.labels <- dat.nodes$ypos
     dat.nodes$zpos.labels <- dat.nodes$zpos
+  }
+  ##
+  if (length(srt.labels) == 1)
+    dat.nodes$srt <- srt.labels
+  else {
+    if (length(srt.labels) != length(labels))
+      stop("Length of vector 'srt.labels' must be equal to",
+           "number of treatments.",
+           eval. = FALSE)
+    if (is.null(names(srt.labels)))
+      dat.nodes$srt <- srt.labels
+    else {
+      ## Check names of named vector 'srt.labels'
+      names.srt.labels <- names(srt.labels)
+      names.srt.labels <- setseq(names.srt.labels, dat.nodes$trts,
+                                 paste0("Names of vector provided in ",
+                                        "argument 'srt.labels'"))
+      dat.nodes$srt <- srt.labels[dat.nodes$trts]
+    }
   }
   ##
   ## Dataset for edges
@@ -1086,7 +1151,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
           text(dat.nodes$xpos.labels[i], dat.nodes$ypos.labels[i],
                labels = dat.nodes$labels[i],
                cex = cex,
-               adj = c(dat.nodes$adj.x[i], dat.nodes$adj.y[i]))
+               adj = c(dat.nodes$adj.x[i], dat.nodes$adj.y[i]),
+               srt = dat.nodes$srt[i])
       ##
       ## Print number of treatments
       ##
@@ -1198,9 +1264,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
       }
     }
   }
-
-  is.zero <- function(x) abs(x) < .Machine$double.eps^0.75
-  ##
+  
+  
   dat.nodes$xpos[is.zero(dat.nodes$xpos)] <- 0
   dat.nodes$ypos[is.zero(dat.nodes$ypos)] <- 0
   ##

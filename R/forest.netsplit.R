@@ -192,6 +192,8 @@ forest.netsplit <- function(x,
   ##
   meta:::chkclass(x, "netsplit")
   ##
+  x <- upgradenetmeta(x)
+  ##
   chkchar <- meta:::chkchar
   chklogical <- meta:::chklogical
   chknumeric <- meta:::chknumeric
@@ -237,8 +239,8 @@ forest.netsplit <- function(x,
   ##
   chklogical(equal.size)
   ##
-  chknumeric(digits, min = 0, single = TRUE)
-  chknumeric(digits.prop, min = 0, single = TRUE)
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.prop, min = 0, length = 1)
   chklogical(backtransf)
   ##
   chkchar(lab.NA)
@@ -371,10 +373,11 @@ forest.netsplit <- function(x,
   else
     dat.predict$TE <- NA
   ##
-  dat.predict$seTE <- dat.predict$z <- dat.predict$p <- dat.predict$prop <- NA
+  dat.predict$seTE <- dat.predict$statistic <- dat.predict$p <-
+    dat.predict$z <- dat.predict$prop <- NA
   ##
   dat.predict <- dat.predict[, c("comparison", "TE", "seTE",
-                                 "lower", "upper", "z", "p", "prop")]
+                                 "lower", "upper", "statistic", "p", "prop")]
   ##
   dat.direct$comps <- dat.indirect$comps <-
     dat.overall$comps <- dat.predict$comps <- x$comparison

@@ -136,6 +136,31 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE) {
   
   
   meta:::chkclass(x, "netmeta")
+  ##
+  x <- upgradenetmeta(x)
+  ##
+  if (inherits(x, "netmetabin")) {
+    warning("Decomposition of designs not implemented for ",
+            "objects created with netmetabin().",
+            call. = FALSE)
+    ##
+    Q.decomp <- data.frame(Q = x$Q.inconsistency,
+                           df = x$df.Q.inconsistency,
+                           pval = x$pval.Q.inconsistency)
+    ##
+    Q.decomp$pval[Q.decomp$df == 0] <- NA
+    ##
+    rownames(Q.decomp) <- "Between designs"
+    res <- list(Q.decomp = Q.decomp,
+                call = match.call(),
+                version = packageDescription("netmeta")$Version
+                )
+    ##
+    attr(res, "netmetabin") <- TRUE
+    class(res) <- "decomp.design"
+    ##
+    return(res)
+  }
   
   
   tau.within <- tau.within(x)

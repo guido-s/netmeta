@@ -123,22 +123,22 @@
 #'             row.names = FALSE, col.names = FALSE,
 #'             sep = ",")
 #' #
-#' # Create Excel files with league tables (using R package WriteXLS
-#' # which requires Perl https://www.perl.org/)
+#' # Create Excel files with league tables
+#' # (if R package writexl is available)
 #' #
-#' library(WriteXLS)
-#' #
-#' # League table from random effects model
-#' #
-#' WriteXLS(league0$random, ExcelFileName = "league0-random.xls",
-#'          SheetNames = "leaguetable (random)", col.names = FALSE)
-#' #
-#' # League tables from fixed and random effects models
-#' #
-#' WriteXLS(list(league0$fixed, league0$random),
-#'          ExcelFileName = "league0-both.xls",
-#'          SheetNames = c("leaguetable (fixed)", "leaguetable (random)"),
-#'          col.names = FALSE)
+#' if (requireNamespace("writexl", quietly = TRUE)) {
+#'   library(writexl)
+#'   #
+#'   # League table from random effects model
+#'   #
+#'   write_xlsx(league0$random,
+#'              path = "league0-random.xlsx", col_names = FALSE)
+#'   #
+#'   # League tables from fixed and random effects models
+#'   #
+#'   write_xlsx(list(fixed = league0$fixed, random = league0$random),
+#'              path = "league0-both.xlsx", col_names = FALSE)
+#' }
 #' 
 #' # Use depression dataset
 #' #
@@ -275,7 +275,7 @@ netleague <- function(x, y,
   chklogical(ci)
   chklogical(backtransf)
   chklogical(direct)
-  chknumeric(digits, min = 0, single = TRUE)
+  chknumeric(digits, min = 0, length = 1)
   ##
   bracket.old <- gs("CIbracket")
   separator.old <- gs("CIseparator")

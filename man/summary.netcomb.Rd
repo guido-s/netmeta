@@ -19,7 +19,7 @@
   backtransf = x$backtransf,
   nchar.trts = x$nchar.trts,
   digits = gs("digits"),
-  digits.zval = gs("digits.zval"),
+  digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
   digits.pval.Q = max(gs("digits.pval.Q"), 2),
   digits.Q = gs("digits.Q"),
@@ -60,7 +60,7 @@ characters used to create unique treatment names (see Details).}
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
 
-\item{digits.zval}{Minimal number of significant digits for z- or
+\item{digits.stat}{Minimal number of significant digits for z- or
 t-value, see \code{print.default}.}
 
 \item{digits.pval}{Minimal number of significant digits for p-value
@@ -121,7 +121,7 @@ net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #
 nc1 <- netcomb(net1)
 summary(nc1)
-print(summary(nc1), digits = 2, digits.zval = 3)
+print(summary(nc1), digits = 2, digits.stat = 3)
 
 \dontrun{
 # Conduct random effects network meta-analysis
@@ -134,7 +134,7 @@ net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #
 nc2 <- netcomb(net2)
 summary(nc2)
-print(summary(nc2), digits = 2, digits.zval = 3)
+print(summary(nc2), digits = 2, digits.stat = 3)
 }
 
 }

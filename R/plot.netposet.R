@@ -282,14 +282,15 @@ plot.netposet <- function(x,
   }
   ##
   if (is_3d & !meta:::is.installed.package("rgl", stop = FALSE)) {
-    warning(paste("2-D plot generated as package 'rgl' is missing.",
-                  "\n  ",
-                  "Please install library 'rgl' in order to produce 3-D plots",
-                  "\n  ",
-                  "(R command: 'install.packages(\"rgl\")').",
-                  if (length(grep("darwin", R.Version()$os)) == 1)
-                    "\n  Note, macOS users have to install XQuartz, see https://www.xquartz.org/.",
-                  sep = ""))
+    warning(paste0("2-D plot generated as package 'rgl' is missing.",
+                   "\n  ",
+                   "Please install package 'rgl' in order to ",
+                   "produce 3-D plots\n  ",
+                   "(R command: 'install.packages(\"rgl\")').",
+                   if (length(grep("darwin", R.Version()$os)) == 1)
+                     paste0("\n  Note, macOS users have to install ",
+                            "XQuartz, see https://www.xquartz.org/.")
+                   ))
     dim <- "2d"
     is_2d <- TRUE
     is_3d <- FALSE
@@ -302,15 +303,15 @@ plot.netposet <- function(x,
   meta:::chknumeric(adj.y)
   meta:::chknumeric(offset.x)
   meta:::chknumeric(offset.y)
-  meta:::chknumeric(lty.lines, min = 0, zero = 0, single = TRUE)
-  meta:::chknumeric(lwd.lines, min = 0, zero = 0, single = TRUE)
+  meta:::chknumeric(lty.lines, min = 0, zero = 0, length = 1)
+  meta:::chknumeric(lwd.lines, min = 0, zero = 0, length = 1)
   meta:::chklogical(arrows)
-  meta:::chknumeric(length, min = 0, zero = 0, single = TRUE)
+  meta:::chknumeric(length, min = 0, zero = 0, length = 1)
   if (use_pch)
     meta:::chknumeric(cex.points, min = 0, zero = 0)
   meta:::chklogical(grid)
-  meta:::chknumeric(lty.grid, min = 0, zero = 0, single = TRUE)
-  meta:::chknumeric(lwd.grid, min = 0, zero = 0, single = TRUE)
+  meta:::chknumeric(lty.grid, min = 0, zero = 0, length = 1)
+  meta:::chknumeric(lwd.grid, min = 0, zero = 0, length = 1)
   
   
   if (!(length(cex.text) %in% c(1, n.treatments)))

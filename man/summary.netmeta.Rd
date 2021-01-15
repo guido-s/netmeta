@@ -28,6 +28,8 @@
   nchar.trts = x$nchar.trts,
   header = TRUE,
   digits = gs("digits"),
+  digits.stat = gs("digits.stat"),
+  digits.pval = max(gs("digits.pval"), 2),
   digits.pval.Q = max(gs("digits.pval.Q"), 2),
   digits.Q = gs("digits.Q"),
   digits.tau2 = gs("digits.tau2"),
@@ -84,6 +86,12 @@ beginning of the printout.}
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
 
+\item{digits.stat}{Minimal number of significant digits for tests
+of overall effect, see \code{print.default}.}
+
+\item{digits.pval}{Minimal number of significant digits for p-value
+of overall effects, see \code{print.default}.}
+
 \item{digits.pval.Q}{Minimal number of significant digits for
 p-value of heterogeneity tests, see \code{print.default}.}
 
@@ -108,8 +116,8 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 \item{text.tau2}{Text printed to identify between-study variance
 \eqn{\tau^2}.}
 
-\item{text.tau}{Text printed to identify \eqn{\tau}, the square root
-of the between-study variance \eqn{\tau^2}.}
+\item{text.tau}{Text printed to identify \eqn{\tau}, the square
+root of the between-study variance \eqn{\tau^2}.}
 
 \item{text.I2}{Text printed to identify heterogeneity statistic
 I\eqn{^2}.}

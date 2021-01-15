@@ -2,6 +2,22 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
                         tol.multiarm = 0.001,
                         tol.multiarm.se = tol.multiarm,
                         details = FALSE) {
+  
+  
+  ##
+  ## Ordering data set (if necessary)
+  ##
+  o <- order(studlab, treat1, treat2)
+  ##
+  if (any(o != seq_along(studlab))) {
+    TE <- TE[o]
+    seTE <- seTE[o]
+    treat1 <- treat1[o]
+    treat2 <- treat2[o]
+    studlab <- studlab[o]
+  }
+  
+  
   tabnarms <- table(studlab)
   sel.multi <- tabnarms > 1
   ##

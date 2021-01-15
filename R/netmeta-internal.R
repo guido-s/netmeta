@@ -11,3 +11,7 @@ function (libname, pkgname)
 
 
 .special.characters <- c("+", ".", "&", "$", "#", "|", "*", "^")
+
+
+is.zero <- function(x, n = 10)
+  abs(x) < n * .Machine$double.eps

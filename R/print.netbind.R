@@ -68,7 +68,7 @@ print.netbind <- function(x,
   if (comb.fixed) {
     cat("Fixed effects model\n\n")
     print(x$fixed[, c("name", "treat",
-                      "TE", "seTE", "lower", "upper", "zval", "pval")])
+                      "TE", "seTE", "lower", "upper", "statistic", "pval")])
     if (comb.random)
       cat("\n")
   }
@@ -76,7 +76,7 @@ print.netbind <- function(x,
   if (comb.random) {
     cat("Random effects model\n\n")
     print(x$random[, c("name", "treat",
-                       "TE", "seTE", "lower", "upper", "zval", "pval")])
+                       "TE", "seTE", "lower", "upper", "statistic", "pval")])
   }
   
   
