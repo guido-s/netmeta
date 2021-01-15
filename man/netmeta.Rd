@@ -24,7 +24,6 @@ netmeta(
   small.values = "good",
   all.treatments = NULL,
   seq = NULL,
-  method.tau = "DL",
   tau.preset = NULL,
   tol.multiarm = 0.001,
   tol.multiarm.se = tol.multiarm,
@@ -102,11 +101,6 @@ be printed.}
 
 \item{seq}{A character or numerical vector specifying the sequence
 of treatments in printouts.}
-
-\item{method.tau}{A character string indicating which method is
-used to estimate the between-study variance \eqn{\tau^2} and its
-square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
-\code{"ML"}, can be abbreviated.}
 
 \item{tau.preset}{An optional value for manually setting the
 square-root of the between-study variance \eqn{\tau^2}.}

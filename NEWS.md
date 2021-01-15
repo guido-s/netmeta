@@ -1,10 +1,6 @@
-## netmeta, version 6.6-6 (2021-mm-dd)
+## netmeta, version 1.3-0 (2021-mm-dd)
 
 ### Major changes
-
-* Restricted maximum likelihood and maximum likelihood estimator for
-  between-study heterogeneity implemented by calling rma.mv() from R
-  package **metafor** internally
 
 * Treatment labels can be rotated in network graphs
 
@@ -15,6 +11,9 @@
 
 * Network graph for objects created with netconnection(), netcomb() or
   discomb()
+
+* In summaries, print z- and p-values for network estimates if a
+  reference group is defined
 
 ### Bug fixes
 

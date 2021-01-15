@@ -50,10 +50,6 @@
 #'   be printed.
 #' @param seq A character or numerical vector specifying the sequence
 #'   of treatments in printouts.
-#' @param method.tau A character string indicating which method is
-#'   used to estimate the between-study variance \eqn{\tau^2} and its
-#'   square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
-#'   \code{"ML"}, can be abbreviated.
 #' @param tau.preset An optional value for manually setting the
 #'   square-root of the between-study variance \eqn{\tau^2}.
 #' @param tol.multiarm A numeric for the tolerance for consistency of
@@ -471,7 +467,6 @@ netmeta <- function(TE, seTE,
                     all.treatments = NULL,
                     seq = NULL,
                     ##
-                    method.tau = "DL",
                     tau.preset = NULL,
                     ##
                     tol.multiarm = 0.001,
@@ -521,6 +516,7 @@ netmeta <- function(TE, seTE,
   if (!is.null(all.treatments))
     chklogical(all.treatments)
   ##
+  method.tau <- "DL"
   method.tau <- meta:::setchar(method.tau, c("DL", "ML", "REML"))
   ##
   if (!is.null(tau.preset))
@@ -1020,7 +1016,7 @@ netmeta <- function(TE, seTE,
       trts.tau <- newnames[oldnames != trts.ref]
       ##
       dat.tau$TE <- res.f$TE
-      dat.tau$seTE <- res.f$seTE
+      dat.tau$seTE <- res.f$seTE # adjusted standard errors
       dat.tau$studlab <- res.f$studlab
       dat.tau$id <- seq_along(dat.tau$TE)
       ##
@@ -1029,7 +1025,7 @@ netmeta <- function(TE, seTE,
       ##
       tau2.reml <- rma.mv(TE, seTE^2, data = dat.tau,
                           mods = formula.trts,
-                          random = ~ factor(id) | studlab, rho = 0.5,
+                          random = ~ factor(id) | studlab, rho = 0,
                           method = method.tau, control = control)$tau2
       ##
       tau <- sqrt(tau2.reml)
