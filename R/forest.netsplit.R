@@ -475,10 +475,15 @@ forest.netsplit <- function(x,
     }
     ##
     if (n.subgroup > 1)
-      m <- metagen(dat$TE, dat$seTE, studlab = dat$evidence, data = dat,
-                   sm = x$sm, byvar = dat$comps, print.byvar = FALSE)
+      m <-
+        suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 studlab = dat$evidence, data = dat,
+                                 sm = x$sm,
+                                 byvar = dat$comps, print.byvar = FALSE))
     else
-      m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat, sm = x$sm)
+      m <-
+        suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 studlab = dat$comps, data = dat, sm = x$sm))
     ##
     if (overall) {
       m$w.fixed[m$studlab == text.overall] <- max(m$w.fixed, na.rm = TRUE)
@@ -525,10 +530,15 @@ forest.netsplit <- function(x,
     }
     ##
     if (n.subgroup > 1)
-      m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat,
-                   sm = x$sm, byvar = dat$evidence, print.byvar = FALSE)
+      m <-
+        suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 studlab = dat$comps, data = dat,
+                                 sm = x$sm,
+                                 byvar = dat$evidence, print.byvar = FALSE))
     else
-      m <- metagen(dat$TE, dat$seTE, studlab = dat$comps, data = dat, sm = x$sm)
+      m <-
+        suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 studlab = dat$comps, data = dat, sm = x$sm))
     ##
     if (overall) {
       m$w.fixed[m$byvar == text.overall] <- max(m$w.fixed, na.rm = TRUE)

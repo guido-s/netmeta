@@ -604,9 +604,11 @@ netsplit <- function(x, method,
     }
   }
   ##
-  m.fixed <- metagen(direct.fixed$TE - indirect.fixed$TE,
-                     sqrt(direct.fixed$seTE^2 + indirect.fixed$seTE^2),
-                     level = x$level.comb)
+  m.fixed <-
+    suppressWarnings(metagen(direct.fixed$TE - indirect.fixed$TE,
+                             sqrt(direct.fixed$seTE^2 +
+                                  indirect.fixed$seTE^2),
+                             level = x$level.comb))
   ##
   compare.fixed <- data.frame(comparison,
                               TE = m.fixed$TE,
@@ -615,6 +617,7 @@ netsplit <- function(x, method,
                               upper = m.fixed$upper,
                               statistic = m.fixed$statistic,
                               p = m.fixed$pval,
+                              z = m.fixed$statistic,
                               stringsAsFactors = FALSE)
   ##
   sel.k0 <- k == 0
@@ -726,9 +729,11 @@ netsplit <- function(x, method,
       }
     }
     ##
-    m.random <- metagen(direct.random$TE - indirect.random$TE,
-                        sqrt(direct.random$seTE^2 + indirect.random$seTE^2),
-                        level = x$level.comb)
+    m.random <-
+      suppressWarnings(metagen(direct.random$TE - indirect.random$TE,
+                               sqrt(direct.random$seTE^2 +
+                                    indirect.random$seTE^2),
+                               level = x$level.comb))
     ##
     compare.random <- data.frame(comparison,
                                  TE = m.random$TE,
@@ -737,6 +742,7 @@ netsplit <- function(x, method,
                                  upper = m.random$upper,
                                  statistic = m.random$statistic,
                                  p = m.random$pval,
+                                 z = m.random$statistic,
                                  stringsAsFactors = FALSE)
     ##
     indirect.random[sel.k0, vars] <- random[sel.k0, vars]

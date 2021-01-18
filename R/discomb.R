@@ -693,6 +693,10 @@ discomb <- function(TE, seTE,
   ##
   colnames(X.matrix) <- colnames(C.matrix)
   rownames(X.matrix) <- studlab
+  ##
+  if (qr(X.matrix)$rank < c)
+    warning("A total of ", c - qr(X.matrix)$rank, " of ", c,
+            "treatment components cannot be estimated.")
   
   
   tdata <- data.frame(studies = p0$studlab[o], narms = p0$narms[o])
