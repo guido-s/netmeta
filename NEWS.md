@@ -46,7 +46,8 @@
     netcomb()
 
 * netmeta():
-  - new argument 'small.values' passed on to netrank()
+  - new argument 'small.values' passed on to netrank(),
+    forest.netmeta() and netposet()
 
 * netgraph.netmeta():
   - new argument 'srt.labels' to rotate treatment labels

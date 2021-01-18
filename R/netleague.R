@@ -162,7 +162,7 @@
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small = "bad")
 #' 
 #' # (2) Early remission
 #' #
@@ -172,7 +172,7 @@
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small = "bad")
 #' 
 #' options(width = 200)
 #' netleague(net1, digits = 2)
@@ -186,18 +186,18 @@
 #' #
 #' netleague(net1, net2, digits = 2, ci = FALSE)
 #' 
-#' netleague(net1, net2, seq = netrank(net1, small = "bad"), ci = FALSE)
-#' netleague(net1, net2, seq = netrank(net2, small = "bad"), ci = FALSE)
+#' netleague(net1, net2, seq = netrank(net1), ci = FALSE)
+#' netleague(net1, net2, seq = netrank(net2), ci = FALSE)
 #' 
-#' print(netrank(net1, small = "bad"))
-#' print(netrank(net2, small = "bad"))
+#' print(netrank(net1))
+#' print(netrank(net2))
 #' 
 #' 
 #' # Report results for network meta-analysis twice
 #' #
-#' netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
+#' netleague(net1, net1, seq = netrank(net1), ci = FALSE,
 #'           backtransf = FALSE)
-#' netleague(net1, net1, seq = netrank(net1, small = "bad"), ci = FALSE,
+#' netleague(net1, net1, seq = netrank(net1), ci = FALSE,
 #'           backtransf = FALSE, direct = TRUE)
 #' }
 #' 
@@ -206,7 +206,7 @@
 #' \dontrun{
 #' # Generate a partial order of treatment rankings 
 #' #
-#' np <- netposet(net1, net2, outcomes = outcomes, small.values = rep("bad",2))
+#' np <- netposet(net1, net2, outcomes = outcomes)
 #' hasse(np)
 #' plot(np)
 #' }

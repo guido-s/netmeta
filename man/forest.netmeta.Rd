@@ -15,7 +15,7 @@
   rightcols = c("effect", "ci"),
   rightlabs,
   digits = gs("digits.forest"),
-  small.values = "good",
+  small.values = x$small.values,
   digits.Pscore = 2,
   smlab = NULL,
   sortvar = x$seq,

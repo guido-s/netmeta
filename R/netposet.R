@@ -160,7 +160,7 @@
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # (2) Early remission
 #' #
@@ -170,13 +170,11 @@
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # Partial order of treatment rankings (two outcomes)
 #' #
-#' po <- netposet(netrank(net1, small.values = "bad"),
-#'                netrank(net2, small.values = "bad"),
-#'                outcomes = outcomes)
+#' po <- netposet(netrank(net1), netrank(net2), outcomes = outcomes)
 #' 
 #' # Hasse diagram
 #' #
@@ -198,7 +196,7 @@
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net3 <- netmeta(p3, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # (4) Loss to follow-up due to adverse events
 #' #
@@ -209,7 +207,7 @@
 #'                sm = "OR")
 #' #
 #' net4 <- netmeta(p4, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # (5) Adverse events
 #' #
@@ -219,21 +217,17 @@
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net5 <- netmeta(p5, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # Partial order of treatment rankings (all five outcomes)
 #' #
-#' po.ranks <- netposet(netrank(net1, small.values = "bad"),
-#'                      netrank(net2, small.values = "bad"),
-#'                      netrank(net3, small.values = "good"),
-#'                      netrank(net4, small.values = "good"),
-#'                      netrank(net5, small.values = "good"),
+#' po.ranks <- netposet(netrank(net1), netrank(net2),
+#'                      netrank(net3), netrank(net4), netrank(net5),
 #'                      outcomes = outcomes)
 #' 
 #' # Same result
 #' #
 #' po.nets <- netposet(net1, net2, net3, net4, net5,
-#'                     small.values = c("bad", "bad", "good", "good", "good"),
 #'                     outcomes = outcomes)
 #' #
 #' all.equal(po.ranks, po.nets)
@@ -248,8 +242,7 @@
 #' 
 #' # Hasse diagram for outcomes early response and early remission
 #' #
-#' po12 <- netposet(netrank(net1, small.values = "bad"),
-#'                  netrank(net2, small.values = "bad"),
+#' po12 <- netposet(netrank(net1), netrank(net2),
 #'                  outcomes = outcomes[1:2])
 #' hasse(po12)
 #' 
@@ -419,6 +412,16 @@ netposet <- function(..., outcomes, treatments, small.values,
            "and number of rankings differ.",
            call. = FALSE)
     ##
+    missing.small.values <- missing(small.values)
+    if (!missing.small.values) {
+      if (length(small.values) != n.outcomes)
+        stop("Number of values provided by argument 'small.values' ",
+             "and number of rankings differ.",
+             call. = FALSE)
+    }
+    else
+      small.values <- rep("", n.outcomes)
+    ##
     for (i in seq_along(args)) {
       if (inherits(args[[i]], "netmeta"))
         any.netmeta <- TRUE
@@ -429,15 +432,12 @@ netposet <- function(..., outcomes, treatments, small.values,
              "'netmeta' or 'netrank'.",
              call. = FALSE)
       ##
-      if (!missing(small.values))
-        small.values <- meta:::setchar(small.values, c("good", "bad"))
+      if (!missing.small.values)
+        small.values[i] <- meta:::setchar(small.values[i], c("good", "bad"))
       else {
-        if (any.netmeta)
-          warning("R function netrank() called internally with argument ",
-                  "small.values = 'good' as argument 'small.values' ",
-                  "is missing.",
-                  call. = FALSE)
-        small.values <- rep("good", n.outcomes)
+        small.values[i] <-
+          ifelse(is.null(args[[i]]$small.values),
+                 "good", args[[i]]$small.values)
       }
       ##
       if (length(small.values) != n.outcomes)
