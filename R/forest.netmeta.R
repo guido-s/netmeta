@@ -205,7 +205,6 @@ forest.netmeta <- function(x,
   ##
   ##
   meta:::chkclass(x, "netmeta")
-  ##
   x <- upgradenetmeta(x)
   ##
   is.bin <- inherits(x, "netmetabin")
@@ -488,16 +487,16 @@ forest.netmeta <- function(x,
   treat <- dat$treat
   ##
   if (one.rg)
-    m1 <- metagen(TE, seTE, data = dat,
-                  sm = x$sm,
-                  studlab = labels, backtransf = backtransf,
-                  warn = FALSE)
+    m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
+                                   sm = x$sm,
+                                   studlab = labels, backtransf = backtransf,
+                                   warn = FALSE))
   else
-    m1 <- metagen(TE, seTE, data = dat,
-                  byvar = dat$comparison,
-                  sm = x$sm,
-                  studlab = labels, backtransf = backtransf,
-                  warn = FALSE)
+    m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
+                                   byvar = dat$comparison,
+                                   sm = x$sm,
+                                   studlab = labels, backtransf = backtransf,
+                                   warn = FALSE))
   ##
   forest(m1,
          digits = digits,

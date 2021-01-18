@@ -332,7 +332,9 @@ funnel.netmeta <- function(x,
   ## (4) Calculate necessary data for funnel plot
   ##
   ##
-  m.adj <- metagen(res$TE.adj, res$seTE, studlab = res$studlab, sm = x$sm)
+  m.adj <-
+    suppressWarnings(metagen(res$TE.adj, res$seTE,
+                             studlab = res$studlab, sm = x$sm))
   ##
   n.comps <- length(unique(res$comparison))
   ##

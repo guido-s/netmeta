@@ -333,10 +333,11 @@ forest.netcomb <- function(x,
     dat <- subset(dat, trts != reference.group)
   ##
   trts <- dat$trts
-  m1 <- metagen(TE, seTE, data = dat,
-                sm = x$sm,
-                studlab = trts, backtransf = backtransf,
-                warn = FALSE)
+  m1 <-
+    suppressWarnings(metagen(TE, seTE, data = dat,
+                             sm = x$sm,
+                             studlab = trts, backtransf = backtransf,
+                             warn = FALSE))
   ##
   forest.meta(m1,
               digits = digits,

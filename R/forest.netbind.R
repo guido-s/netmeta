@@ -142,10 +142,13 @@ forest.netbind <- function(x,
   sel <- x$fixed$treat != x$reference.group
   ##
   if (pooled == "fixed") {
-    m <- metagen(x$fixed$TE, x$fixed$seTE, studlab = x$fixed$name,
-                 sm = x$sm, comb.fixed = FALSE, comb.random = FALSE,
-                 byvar = x$fixed$treat, print.byvar = FALSE,
-                 subset = x$fixed$treat != x$reference.group)
+    m <-
+      suppressWarnings(metagen(x$fixed$TE, x$fixed$seTE,
+                               studlab = x$fixed$name,
+                               sm = x$sm,
+                               comb.fixed = FALSE, comb.random = FALSE,
+                               byvar = x$fixed$treat, print.byvar = FALSE,
+                               subset = x$fixed$treat != x$reference.group))
     ##
     m$TE <- x$fixed$TE[sel]
     m$seTE <- x$fixed$seTE[sel]
@@ -163,10 +166,13 @@ forest.netbind <- function(x,
     text.pooled <- "Fixed Effects Model"
   }
   else {
-    m <- metagen(x$random$TE, x$random$seTE, studlab = x$random$name,
-                 sm = x$sm, comb.fixed = FALSE, comb.random = FALSE,
-                 byvar = x$random$treat, print.byvar = FALSE,
-                 subset = x$random$treat != x$reference.group)
+    m <-
+      suppressWarnings(metagen(x$random$TE, x$random$seTE,
+                               studlab = x$random$name,
+                               sm = x$sm,
+                               comb.fixed = FALSE, comb.random = FALSE,
+                               byvar = x$random$treat, print.byvar = FALSE,
+                               subset = x$random$treat != x$reference.group))
     ##
     m$TE <- x$random$TE[sel]
     m$seTE <- x$random$seTE[sel]
