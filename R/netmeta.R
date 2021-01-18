@@ -1352,7 +1352,7 @@ netmeta <- function(TE, seTE,
   res$statistic.indirect.random <- ci.ir$statistic
   res$pval.indirect.random <- ci.ir$p
   ##
-  res$small.values <- res$small.values
+  res$small.values <- small.values
   ##
   if (any(res$narms > 2)) {
     tdata1 <- data.frame(studlab = res$studlab,
