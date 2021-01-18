@@ -617,6 +617,7 @@ netsplit <- function(x, method,
                               upper = m.fixed$upper,
                               statistic = m.fixed$statistic,
                               p = m.fixed$pval,
+                              z = m.fixed$statistic,
                               stringsAsFactors = FALSE)
   ##
   sel.k0 <- k == 0
@@ -741,6 +742,7 @@ netsplit <- function(x, method,
                                  upper = m.random$upper,
                                  statistic = m.random$statistic,
                                  p = m.random$pval,
+                                 z = m.random$statistic,
                                  stringsAsFactors = FALSE)
     ##
     indirect.random[sel.k0, vars] <- random[sel.k0, vars]
