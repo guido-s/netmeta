@@ -1,4 +1,4 @@
-## netmeta, version 1.3-0 (2021-mm-dd)
+## netmeta, version 1.3-0 (2021-01-15)
 
 ### Major changes
 
@@ -46,7 +46,8 @@
     netcomb()
 
 * netmeta():
-  - new argument 'small.values' passed on to netrank()
+  - new argument 'small.values' passed on to netrank(),
+    forest.netmeta() and netposet()
 
 * netgraph.netmeta():
   - new argument 'srt.labels' to rotate treatment labels

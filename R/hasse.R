@@ -67,7 +67,7 @@
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # (2) Early remission
 #' #
@@ -77,13 +77,11 @@
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, comb.fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'                 seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # Partial order of treatment rankings
 #' #
-#' po <- netposet(netrank(net1, small.values = "bad"),
-#'                netrank(net2, small.values = "bad"),
-#'                outcomes = outcomes)
+#' po <- netposet(netrank(net1), netrank(net2), outcomes = outcomes)
 #' 
 #' # Hasse diagram
 #' #

@@ -26,10 +26,6 @@
 #'   \code{\link{forest.meta}} help page for details).
 #' @param digits Minimal number of significant digits for treatment
 #'   effects and confidence intervals, see \code{print.default}.
-#' @param small.values A character string specifying whether small
-#'   treatment effects indicate a beneficial (\code{"good"}) or
-#'   harmful (\code{"bad"}) effect, can be abbreviated; see
-#'   \code{\link{netrank}}.
 #' @param smlab A label printed at top of figure. By default, text
 #'   indicating either fixed effect or random effects model is
 #'   printed.
@@ -144,7 +140,6 @@ forest.netcomb <- function(x,
                            rightcols = c("effect", "ci"),
                            rightlabs = NULL,
                            digits = gs("digits.forest"),
-                           small.values = "good",
                            smlab = NULL,
                            sortvar = x$seq,
                            backtransf = x$backtransf,

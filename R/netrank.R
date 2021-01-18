@@ -111,7 +111,8 @@ netrank <- function(x, small.values = x$small.values) {
   ##
   if (is.null(small.values))
     small.values <- "good"
-  small.values <- meta:::setchar(small.values, c("good", "bad"))
+  else
+    small.values <- meta:::setchar(small.values, c("good", "bad"))
   
   
   TE.fixed <- x$TE.fixed

@@ -144,7 +144,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                studlab = id, data = Linde2015, sm = "OR")
 #
 net1 <- netmeta(p1, comb.fixed = FALSE,
-                seq = trts, ref = "Placebo")
+                seq = trts, ref = "Placebo", small.values = "bad")
 
 # (2) Early remission
 #
@@ -154,13 +154,11 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                studlab = id, data = Linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, comb.fixed = FALSE,
-                seq = trts, ref = "Placebo")
+                seq = trts, ref = "Placebo", small.values = "bad")
 
 # Partial order of treatment rankings (two outcomes)
 #
-po <- netposet(netrank(net1, small.values = "bad"),
-               netrank(net2, small.values = "bad"),
-               outcomes = outcomes)
+po <- netposet(netrank(net1), netrank(net2), outcomes = outcomes)
 
 # Hasse diagram
 #
@@ -182,7 +180,7 @@ p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                studlab = id, data = Linde2015, sm = "OR")
 #
 net3 <- netmeta(p3, comb.fixed = FALSE,
-                seq = trts, ref = "Placebo")
+                seq = trts, ref = "Placebo", small.values = "good")
 
 # (4) Loss to follow-up due to adverse events
 #
@@ -193,7 +191,7 @@ p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                sm = "OR")
 #
 net4 <- netmeta(p4, comb.fixed = FALSE,
-                seq = trts, ref = "Placebo")
+                seq = trts, ref = "Placebo", small.values = "good")
 
 # (5) Adverse events
 #
@@ -203,21 +201,17 @@ p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                studlab = id, data = Linde2015, sm = "OR")
 #
 net5 <- netmeta(p5, comb.fixed = FALSE,
-                seq = trts, ref = "Placebo")
+                seq = trts, ref = "Placebo", small.values = "good")
 
 # Partial order of treatment rankings (all five outcomes)
 #
-po.ranks <- netposet(netrank(net1, small.values = "bad"),
-                     netrank(net2, small.values = "bad"),
-                     netrank(net3, small.values = "good"),
-                     netrank(net4, small.values = "good"),
-                     netrank(net5, small.values = "good"),
+po.ranks <- netposet(netrank(net1), netrank(net2),
+                     netrank(net3), netrank(net4), netrank(net5),
                      outcomes = outcomes)
 
 # Same result
 #
 po.nets <- netposet(net1, net2, net3, net4, net5,
-                    small.values = c("bad", "bad", "good", "good", "good"),
                     outcomes = outcomes)
 #
 all.equal(po.ranks, po.nets)
@@ -232,8 +226,7 @@ hasse(po.ranks)
 
 # Hasse diagram for outcomes early response and early remission
 #
-po12 <- netposet(netrank(net1, small.values = "bad"),
-                 netrank(net2, small.values = "bad"),
+po12 <- netposet(netrank(net1), netrank(net2),
                  outcomes = outcomes[1:2])
 hasse(po12)
 
