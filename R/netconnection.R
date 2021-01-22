@@ -17,7 +17,8 @@
 #' 
 #' @aliases netconnection print.netconnection
 #' 
-#' @param treat1 Label / number for first treatment.
+#' @param treat1 Label / number for first treatment or an object of
+#'   class \code{pairwise}.
 #' @param treat2 Label / number for second treatment.
 #' @param studlab An optional - but important! - vector with study
 #'   labels (see Details).
@@ -127,8 +128,58 @@ netconnection <- function(treat1, treat2, studlab,
   ##
   if (missing(treat1))
     stop("Argument 'treat1' is mandatory.")
-  if (missing(treat2))
-    stop("Argument 'treat2' is mandatory.")
+  ##
+  if (is.null(data))
+    data <- sys.frame(sys.parent())
+  ##
+  mf <- match.call()
+  ##
+  ## Catch treat1
+  ##
+  treat1 <- eval(mf[[match("treat1", names(mf))]],
+                 data, enclos = sys.frame(sys.parent()))
+  ##
+  if (inherits(treat1, "pairwise")) {
+    if (!missing(treat2))
+      warning("Argument 'treat2' ignored as first argument is an ",
+              "object created with pairwise().", call. = FALSE)
+    if (!missing(studlab))
+      warning("Argument 'studlab' ignored as first argument is an ",
+              "object created with pairwise().", call. = FALSE)
+    ##
+    if (!missing(subset)) {
+      warning("Argument 'subset' ignored as first argument is an ",
+              "object created with pairwise().", call. = FALSE)
+      subset <- NULL
+    }
+    ##
+    treat2 <- treat1$treat2
+    studlab <- treat1$studlab
+    treat1 <- treat1$treat1
+  }
+  else {
+    if (missing(treat2))
+      stop("Argument 'treat2' is mandatory.")
+    ##
+    treat2 <- eval(mf[[match("treat2", names(mf))]],
+                   data, enclos = sys.frame(sys.parent()))
+    ##
+    studlab <- eval(mf[[match("studlab", names(mf))]],
+                    data, enclos = sys.frame(sys.parent()))
+    if (length(studlab) != 0)
+      studlab <- as.character(studlab)
+    else {
+      if (warn)
+        warning("No information given for argument 'studlab'. ",
+                "Assuming that comparisons are from independent studies.")
+      studlab <- as.character(seq_along(treat1))
+    }
+    ##
+    ## Catch subset from data:
+    ##
+    subset <- eval(mf[[match("subset", names(mf))]],
+                   data, enclos = sys.frame(sys.parent()))
+  }
   ##
   meta:::chknumeric(nchar.trts, min = 1, length = 1)
   ##
@@ -137,38 +188,12 @@ netconnection <- function(treat1, treat2, studlab,
   
   ##
   ##
-  ## (2) Read data
-  ##
-  ##
-  if (is.null(data))
-    data <- sys.frame(sys.parent())
-  ##
-  mf <- match.call()
+  ## (2) Read other data
   ##
   ## Catch treat1, treat2, studlab from data:
   ##
-  treat1 <- eval(mf[[match("treat1", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
   k.All <- length(treat1)
   ##
-  treat2 <- eval(mf[[match("treat2", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
-  ##
-  studlab <- eval(mf[[match("studlab", names(mf))]],
-                  data, enclos = sys.frame(sys.parent()))
-  if (length(studlab) != 0)
-    studlab <- as.character(studlab)
-  else {
-    if (warn)
-      warning("No information given for argument 'studlab'. ",
-              "Assuming that comparisons are from independent studies.")
-    studlab <- as.character(seq_along(treat1))
-  }
-  ##
-  ## Catch subset from data:
-  ##
-  subset <- eval(mf[[match("subset", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
   missing.subset <- is.null(subset)
   
   
@@ -277,7 +302,30 @@ netconnection <- function(treat1, treat2, studlab,
     D <- D[order.D, order.D]
     A <- A[order.D, order.D]
     L <- L[order.D, order.D]
+    ##
+    D.i <- D
+    id.treats <- character(0)
+    id.subnets <- numeric(0)
+    more.subnets <- TRUE
+    subnet.i <- 0
+    while (more.subnets) {
+      subnet.i <- subnet.i + 1
+      n.i <- seq_len(nrow(D.i))
+      next.subnet <- min(max(n.i) + 1, n.i[is.infinite(D.i[, 1])])
+      sel.i <- seq_len(next.subnet - 1)
+      id.treats <- c(id.treats, rownames(D.i)[sel.i])
+      id.subnets <- c(id.subnets, rep(subnet.i, length(sel.i)))
+      D.i <- D.i[-seq_len(next.subnet - 1), -seq_len(next.subnet - 1)]
+      more.subnets <- nrow(D.i) > 0
+    }
+    ##
+    subnet <- rep(NA, length(treat1))
+    ##
+    for (i in seq_along(id.treats))
+      subnet[treat1 == id.treats[i]] <- id.subnets[i]
   }
+  else
+    subnet <- rep(1, length(treat1))
   
   
   designs <- designs(treat1, treat2, studlab)
@@ -288,6 +336,7 @@ netconnection <- function(treat1, treat2, studlab,
               studlab = studlab,
               ##
               design = designs$design,
+              subnet = subnet,
               ##
               k = length(unique(studlab)),
               m = m,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/as.data.frame.netmeta.R
 \name{as.data.frame.netmeta}
 \alias{as.data.frame.netmeta}
-\title{Additional functions for objects of class netmeta}
+\title{Create a data frame from an object of class netmeta}
 \usage{
 \method{as.data.frame}{netmeta}(x, row.names = NULL, optional = FALSE, details = FALSE, ...)
 }

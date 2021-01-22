@@ -26,7 +26,8 @@ netconnection(
 )
 }
 \arguments{
-\item{treat1}{Label / number for first treatment.}
+\item{treat1}{Label / number for first treatment or an object of
+class \code{pairwise}.}
 
 \item{treat2}{Label / number for second treatment.}
 

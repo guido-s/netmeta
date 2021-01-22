@@ -2,6 +2,9 @@
     
 ### User-visible changes
 
+* netconnection():
+  - first argument can be of class 'pairwise'
+
 * forest.netmeta():
   - new argument 'equal.size' to determine whether square size should
     be equal or proportional to precision of estimates
