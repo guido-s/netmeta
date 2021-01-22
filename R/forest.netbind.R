@@ -92,7 +92,7 @@
 forest.netbind <- function(x,
                            pooled = ifelse(x$comb.random, "random", "fixed"),
                            ##
-                           equal.size = FALSE,
+                           equal.size = TRUE,
                            ##
                            leftcols = "studlab",
                            leftlabs = "Treatment",

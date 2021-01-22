@@ -7,7 +7,7 @@
 \method{forest}{netbind}(
   x,
   pooled = ifelse(x$comb.random, "random", "fixed"),
-  equal.size = FALSE,
+  equal.size = TRUE,
   leftcols = "studlab",
   leftlabs = "Treatment",
   rightcols = c("effect", "ci"),

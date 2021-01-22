@@ -485,7 +485,10 @@ discomb <- function(TE, seTE,
   ##
   if (compmatch(labels, sep.trts)) {
     if (!missing.sep.trts)
-      warning("Separator '", sep.trts, "' used in at least one treatment label. Try to use predefined separators: ':', '-', '_', '/', '+', '.', '|', '*'.")
+      warning("Separator '", sep.trts, "' used in at least ",
+              "one treatment label. Try to use predefined separators: ",
+              "':', '-', '_', '/', '+', '.', '|', '*'.",
+              call. = FALSE)
     ##
     if (!compmatch(labels, ":"))
       sep.trts <- ":"
@@ -528,17 +531,20 @@ discomb <- function(TE, seTE,
   ##
   if (!(any(grepl(sep.comps, treat1, fixed = TRUE)) |
         any(grepl(sep.comps, treat2, fixed = TRUE))))
-    warning("No treatment contains the component separator '", sep.comps, "'.")
+    warning("No treatment contains the component separator '", sep.comps, "'.",
+            call. = FALSE)
   ##
   if (any(treat1 == treat2))
-    stop("Treatments must be different (arguments 'treat1' and 'treat2').")
+    stop("Treatments must be different (arguments 'treat1' and 'treat2').",
+         call. = FALSE)
   ##
   if (length(studlab) != 0)
     studlab <- as.character(studlab)
   else {
     if (warn)
       warning("No information given for argument 'studlab'. ",
-              "Assuming that comparisons are from independent studies.")
+              "Assuming that comparisons are from independent studies.",
+              call. = FALSE)
     studlab <- seq(along = TE)
   }
   ##
@@ -578,7 +584,8 @@ discomb <- function(TE, seTE,
                           )
     warning("Comparison",
             if (sum(excl) > 1) "s",
-            " with missing TE / seTE or zero seTE not considered in network meta-analysis.",
+            " with missing TE / seTE or zero seTE not considered in",
+            " network meta-analysis.",
             call. = FALSE)
     cat(paste("Comparison",
               if (sum(excl) > 1) "s",
@@ -694,9 +701,22 @@ discomb <- function(TE, seTE,
   colnames(X.matrix) <- colnames(C.matrix)
   rownames(X.matrix) <- studlab
   ##
-  if (qr(X.matrix)$rank < c)
-    warning("A total of ", c - qr(X.matrix)$rank, " of ", c,
-            " treatment components cannot be estimated.")
+  if (qr(X.matrix)$rank < c) {
+    sum.trts <- apply(abs(X.matrix), 2, sum)
+    sel.trts <- names(sum.trts)[sum.trts == 0]
+    ##
+    if (length(sel.trts > 0))
+      warning("The following treatment component",
+              if (length(sel.trts) > 1) "s",
+              " cannot be estimated: ",
+               paste(paste("'", sel.trts, "'", sep = ""),
+                     collapse = ", "),
+              call. = FALSE)
+    else
+      warning("A total of ", c - qr(X.matrix)$rank, " of ", c,
+              " treatment components cannot be estimated.",
+              call. = FALSE)
+  }
   
   
   tdata <- data.frame(studies = p0$studlab[o], narms = p0$narms[o])

@@ -41,6 +41,8 @@
 #'   print in forest plot (see Details).
 #' @param drop.reference.group A logical indicating whether the
 #'   reference group should be printed in the forest plot.
+#' @param weight.study A character string indicating weighting used to
+#'   determine size of squares or diamonds.
 #' @param \dots Additional arguments for \code{\link{forest.meta}}
 #'   function.
 #' 
@@ -146,6 +148,7 @@ forest.netcomb <- function(x,
                            lab.NA = ".",
                            add.data,
                            drop.reference.group = FALSE,
+                           weight.study = "same",
                            ...) {
   
   
@@ -344,6 +347,7 @@ forest.netcomb <- function(x,
               rightlabs = rightlabs,
               smlab = smlab,
               lab.NA = lab.NA,
+              weight.study = weight.study,
               ...)
   
   

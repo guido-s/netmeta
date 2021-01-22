@@ -778,8 +778,10 @@ netmeta <- function(TE, seTE,
     else if (!compmatch(labels, "*"))
       sep.trts <- "*"
     else
-      stop("All predefined separators (':', '-', '_', '/', '+', '.', '|', '*') are used in at least one treatment label.",
-           "\n   Please specify a different character that should be used as separator (argument 'sep.trts').",
+      stop("All predefined separators (':', '-', '_', '/', '+', ",
+           "'.', '|', '*') are used in at least one treatment label.",
+           "\n   Please specify a different character that should be ",
+           "used as separator (argument 'sep.trts').",
            call. = FALSE)
   }
   ##

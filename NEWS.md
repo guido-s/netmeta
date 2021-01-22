@@ -1,3 +1,15 @@
+## netmeta, version 1.3-1 (2021-mm-dd)
+    
+### User-visible changes
+
+* forest.netmeta():
+  - new argument 'equal.size' to determine whether square size should
+    be equal or proportional to precision of estimates
+
+* forest.netbind(), forest.netsplit():
+  - new default for argument 'equal.size', i.e., square sizes are equal
+
+
 ## netmeta, version 1.3-0 (2021-01-15)
 
 ### Major changes
