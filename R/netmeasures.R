@@ -185,30 +185,54 @@ netmeasures <- function(x,
     if (random == FALSE & length(tau.preset) == 0) {
       nmak <- nma.krahn(x)
       if (is.null(nmak)) {
-        if (warn)
-          warning("Only a single design in network meta-analysis.",
-                  call. = FALSE)
-        return(invisible(NULL))
+        prop <- mpath <- 1
+        names(prop) <- names(mpath) <- x$designs
+        ##
+        res <- list(proportion = prop,
+                    meanpath = mpath,
+                    minpar = NULL,
+                    minpar.study = NULL,
+                    H.tilde = NULL,
+                    random = random,
+                    tau.preset = tau.preset)
+        ##
+        return(res)
       }
     }
     ##                                                             
     if (length(tau.preset) == 1) {
       nmak <- nma.krahn(x, tau.preset = tau.preset)
       if (is.null(nmak)) {
-        if (warn)
-          warning("Only a single design in network meta-analysis.",
-                  call. = FALSE)
-        return(invisible(NULL))
+        prop <- mpath <- 1
+        names(prop) <- names(mpath) <- x$designs
+        ##
+        res <- list(proportion = prop,
+                    meanpath = mpath,
+                    minpar = NULL,
+                    minpar.study = NULL,
+                    H.tilde = NULL,
+                    random = random,
+                    tau.preset = tau.preset)
+        ##
+        return(res)
       }
     }    
     ##                                                                            
     if (random == TRUE & length(tau.preset) == 0) {
       nmak <- nma.krahn(x, tau.preset = x$tau)
       if (is.null(nmak)) {
-        if (warn)
-          warning("Only a single design in network meta-analysis.",
-                  call. = FALSE)
-        return(invisible(NULL))
+        prop <- mpath <- 1
+        names(prop) <- names(mpath) <- x$designs
+        ##
+        res <- list(proportion = prop,
+                    meanpath = mpath,
+                    minpar = NULL,
+                    minpar.study = NULL,
+                    H.tilde = NULL,
+                    random = random,
+                    tau.preset = tau.preset)
+        ##
+        return(res)
       }
     }
     ##

@@ -1280,18 +1280,6 @@ netmeta <- function(TE, seTE,
   if (is.logical(res$prop.direct.random))
     res$prop.direct.random <- as.numeric(res$prop.direct.random)
   ##
-  desi <- unique(sort(designs$design))
-  if (length(desi) == 1) {
-    if (is.null(res$prop.direct.fixed)) {
-      res$prop.direct.fixed <- 1
-      names(res$prop.direct.fixed) <- desi
-    }
-    if (is.null(res$prop.direct.random)) {
-      res$prop.direct.random <- 1
-      names(res$prop.direct.random) <- desi
-    }
-  }
-  ##
   res$comparisons <-
     names(res$prop.direct.random)[!is.zero(res$prop.direct.random)]
   ##
