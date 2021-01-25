@@ -11,8 +11,8 @@
 #' @param cex The magnification to be used for treatment labels.
 #' @param col A single color (or vector of colors) for lines
 #'   connecting treatments (edges) if argument \code{plastic =
-#'   FALSE}. Length of the vector must be equal to the number of
-#'   edges.
+#'   FALSE}. Length of the vector must be equal to the number of edges
+#'   (see list element 'comparisons' in \code{\link{netmeta}}).
 #' @param adj One, two, or three values in [0, 1] (or a vector /
 #'   matrix with length / number of rows equal to the number of
 #'   treatments) specifying the x (and optionally y and z) adjustment

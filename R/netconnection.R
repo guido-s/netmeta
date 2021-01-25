@@ -27,6 +27,8 @@
 #' @param subset An optional vector specifying a subset of studies to
 #'   be used.
 #' @param title Title of meta-analysis / systematic review.
+#' @param sep.trts A character used in comparison names as separator
+#'   between treatment labels.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param warn A logical indicating whether warnings should be
@@ -118,6 +120,7 @@
 
 netconnection <- function(treat1, treat2, studlab,
                           data = NULL, subset = NULL,
+                          sep.trts = ":",
                           nchar.trts = 666,
                           title = "", warn = FALSE) {
   
@@ -260,6 +263,40 @@ netconnection <- function(treat1, treat2, studlab,
                collapse = ", "),
          "\n  Please provide data for all treatment comparisons ",
          "(two-arm: 1; three-arm: 3; four-arm: 6, ...).")
+  ##
+  labels <- sort(unique(c(treat1, treat2)))
+  ##
+  if (compmatch(labels, sep.trts)) {
+    if (!missing(sep.trts))
+      warning("Separator '", sep.trts,
+              "' used in at least one treatment label. ",
+              "Try to use predefined separators: ",
+              "':', '-', '_', '/', '+', '.', '|', '*'.",
+              call. = FALSE)
+    ##
+    if (!compmatch(labels, ":"))
+      sep.trts <- ":"
+    else if (!compmatch(labels, "-"))
+      sep.trts <- "-"
+    else if (!compmatch(labels, "_"))
+      sep.trts <- "_"
+    else if (!compmatch(labels, "/"))
+      sep.trts <- "/"
+    else if (!compmatch(labels, "+"))
+      sep.trts <- "+"
+    else if (!compmatch(labels, "."))
+      sep.trts <- "-"
+    else if (!compmatch(labels, "|"))
+      sep.trts <- "|"
+    else if (!compmatch(labels, "*"))
+      sep.trts <- "*"
+    else
+      stop("All predefined separators (':', '-', '_', '/', '+', ",
+           "'.', '|', '*') are used in at least one treatment label.",
+           "\n   Please specify a different character that should be ",
+           "used as separator (argument 'sep.trts').",
+           call. = FALSE)
+  }
   
   
   ##
@@ -289,43 +326,64 @@ netconnection <- function(treat1, treat2, studlab,
   ##
   n.subsets <- as.integer(table(round(eigen(L)$values, 10) == 0)[2])
   ##
-  if (n.subsets > 1) {
+  ## Block diagonal matrix in case of sub-networks
+  ##
+  maxdist <- dim(D)[1]
+  ##
+  D2 <- D
+  D2[is.infinite(D2)] <- maxdist
+  order.D <- hclust(dist(D2))$order
+  ##
+  D <- D[order.D, order.D]
+  A <- A[order.D, order.D]
+  L <- L[order.D, order.D]
+  ##
+  A.i <- A
+  D.i <- D
+  id.treats <- character(0)
+  id.subnets <- numeric(0)
+  more.subnets <- TRUE
+  subnet.i <- 0
+  res.i <- data.frame(subnet = numeric(0), comparison = character(0))
+  ##
+  while (more.subnets) {
+    subnet.i <- subnet.i + 1
+    n.i <- seq_len(nrow(D.i))
+    next.subnet <- min(max(n.i) + 1, n.i[is.infinite(D.i[, 1])])
+    sel.i <- seq_len(next.subnet - 1)
+    id.treats <- c(id.treats, rownames(D.i)[sel.i])
+    id.subnets <- c(id.subnets, rep(subnet.i, length(sel.i)))
+    D.i <- D.i[-seq_len(next.subnet - 1), -seq_len(next.subnet - 1)]
+    more.subnets <- nrow(D.i) > 0
     ##
-    ## Block diagonal matrix in case of sub-networks
+    A.subnet <- A.i[seq_len(next.subnet - 1), seq_len(next.subnet - 1)]
+    A.subnet <-
+      A.subnet[order(rownames(A.subnet)), order(colnames(A.subnet))]
     ##
-    maxdist <- dim(D)[1]
-    ##
-    D2 <- D
-    D2[is.infinite(D2)] <- maxdist
-    order.D <- hclust(dist(D2))$order
-    ##
-    D <- D[order.D, order.D]
-    A <- A[order.D, order.D]
-    L <- L[order.D, order.D]
-    ##
-    D.i <- D
-    id.treats <- character(0)
-    id.subnets <- numeric(0)
-    more.subnets <- TRUE
-    subnet.i <- 0
-    while (more.subnets) {
-      subnet.i <- subnet.i + 1
-      n.i <- seq_len(nrow(D.i))
-      next.subnet <- min(max(n.i) + 1, n.i[is.infinite(D.i[, 1])])
-      sel.i <- seq_len(next.subnet - 1)
-      id.treats <- c(id.treats, rownames(D.i)[sel.i])
-      id.subnets <- c(id.subnets, rep(subnet.i, length(sel.i)))
-      D.i <- D.i[-seq_len(next.subnet - 1), -seq_len(next.subnet - 1)]
-      more.subnets <- nrow(D.i) > 0
+    for (row.i in 1:(ncol(A.subnet) -1)) {
+      for (col.i in 2:ncol(A.subnet)) {
+        if (col.i > row.i)
+          if (A.subnet[row.i, col.i] > 0) {
+            comp.i <- paste(rownames(A.subnet)[row.i],
+                            colnames(A.subnet)[col.i],
+                            sep = sep.trts)
+            res.i <- rbind(res.i,
+                           data.frame(subnet = subnet.i,
+                                      comparison = comp.i))
+          }
+      }
     }
     ##
-    subnet <- rep(NA, length(treat1))
-    ##
-    for (i in seq_along(id.treats))
-      subnet[treat1 == id.treats[i]] <- id.subnets[i]
+    A.i <- A.i[-seq_len(next.subnet - 1), -seq_len(next.subnet - 1)]
   }
-  else
-    subnet <- rep(1, length(treat1))
+  ##
+  subnet <- rep(NA, length(treat1))
+  ##
+  for (i in seq_along(id.treats))
+    subnet[treat1 == id.treats[i]] <- id.subnets[i]
+  ##
+  comparisons <- res.i$comparison
+  subnet.comparisons <- res.i$subnet
   
   
   designs <- designs(treat1, treat2, studlab)
@@ -349,6 +407,8 @@ netconnection <- function(treat1, treat2, studlab,
               L.matrix = L,
               ##
               designs = unique(sort(designs$design)),
+              comparisons = comparisons,
+              subnet.comparisons = subnet.comparisons,
               ##
               nchar.trts = nchar.trts,
               ##

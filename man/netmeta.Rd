@@ -180,6 +180,8 @@ object is a list containing the following components:
 \item{designs}{Vector with unique designs present in the network. A
   design corresponds to the set of treatments compared within a
   study.}
+\item{designs}{Vector with unique direct comparisons present in the
+  network.}
 \item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
   consistent treatment effects estimated by network meta-analysis
   (nma) (fixed effects / random effects model).}

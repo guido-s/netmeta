@@ -5,12 +5,24 @@
 * netconnection():
   - first argument can be of class 'pairwise'
 
+* netgraph.netconnection():
+  - print subnetworks in different colors
+
 * forest.netmeta():
   - new argument 'equal.size' to determine whether square size should
     be equal or proportional to precision of estimates
 
 * forest.netbind(), forest.netsplit():
   - new default for argument 'equal.size', i.e., square sizes are equal
+
+### Internal changes
+
+* netmeta():
+  - new list element 'comparisons' with information on direct comparisons
+
+* netconnection():
+  - new list elements 'comparisons' and 'subnet.comparisons' with
+    information on direct comparisons
 
 
 ## netmeta, version 1.3-0 (2021-01-15)

@@ -4,10 +4,16 @@
 \alias{netgraph.netconnection}
 \title{Network graph for objects of class netconnection}
 \usage{
-\method{netgraph}{netconnection}(x, ...)
+\method{netgraph}{netconnection}(x, col = x$subnet.comparisons, plastic = FALSE, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netconnection}.}
+
+\item{col}{A single color (or vector of colors) for lines
+connecting treatments (edges) if argument \code{plastic = FALSE}.}
+
+\item{plastic}{A logical indicating whether the appearance of the
+comparisons should be in '3D look'.}
 
 \item{\dots}{Additional arguments passed on to
 \code{\link{netgraph.netmeta}} (see Details).}
