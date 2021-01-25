@@ -701,6 +701,8 @@ discomb <- function(TE, seTE,
   colnames(X.matrix) <- colnames(C.matrix)
   rownames(X.matrix) <- studlab
   ##
+  sel.trts <- character(0)
+  ##
   if (qr(X.matrix)$rank < c) {
     sum.trts <- apply(abs(X.matrix), 2, sum)
     sel.trts <- names(sum.trts)[sum.trts == 0]
@@ -984,6 +986,92 @@ discomb <- function(TE, seTE,
     res$multiarm <- rep(FALSE, length(res$studlab))
   }
   
+  
+  ##
+  ## Remove estimates for inestimable combinations and components
+  ##
+  if (length(sel.trts) > 0) {
+    ##
+    res$c <- res$c - length(sel.trts)
+    ##
+    ## Identify combinations
+    ##
+    sellist <- compsplit(res$trts, sep.comps)
+    sel.i <- rep(NA, length(sellist))
+    ##
+    sel.trts <- meta:::rmSpace(meta:::rmSpace(sel.trts), end = TRUE)
+    ##
+    for (i in seq_along(sellist))
+      sel.i[i] <- any(meta:::rmSpace(meta:::rmSpace(sellist[[i]]),
+                                     end = TRUE) %in% sel.trts)
+    ##
+    res$Comb.fixed[sel.i] <- NA
+    res$seComb.fixed[sel.i] <- NA
+    res$lower.Comb.fixed[sel.i] <- NA
+    res$upper.Comb.fixed[sel.i] <- NA
+    res$statistic.Comb.fixed[sel.i] <- NA
+    res$pval.Comb.fixed[sel.i] <- NA
+    ##
+    res$Comb.random[sel.i] <- NA
+    res$seComb.random[sel.i] <- NA
+    res$lower.Comb.random[sel.i] <- NA
+    res$upper.Comb.random[sel.i] <- NA
+    res$statistic.Comb.random[sel.i] <- NA
+    res$pval.Comb.random[sel.i] <- NA
+    ##
+    res$TE.fixed[sel.i, ] <- NA
+    res$seTE.fixed[sel.i, ] <- NA
+    res$lower.fixed[sel.i, ] <- NA
+    res$upper.fixed[sel.i, ] <- NA
+    res$statistic.fixed[sel.i, ] <- NA
+    res$pval.fixed[sel.i, ] <- NA
+    ##
+    res$TE.fixed[, sel.i] <- NA
+    res$seTE.fixed[, sel.i] <- NA
+    res$lower.fixed[, sel.i] <- NA
+    res$upper.fixed[, sel.i] <- NA
+    res$statistic.fixed[, sel.i] <- NA
+    res$pval.fixed[, sel.i] <- NA
+    ##
+    res$TE.random[sel.i, ] <- NA
+    res$seTE.random[sel.i, ] <- NA
+    res$lower.random[sel.i, ] <- NA
+    res$upper.random[sel.i, ] <- NA
+    res$statistic.random[sel.i, ] <- NA
+    res$pval.random[sel.i, ] <- NA
+    ##
+    res$TE.random[, sel.i] <- NA
+    res$seTE.random[, sel.i] <- NA
+    res$lower.random[, sel.i] <- NA
+    res$upper.random[, sel.i] <- NA
+    res$statistic.random[, sel.i] <- NA
+    res$pval.random[, sel.i] <- NA
+    ##
+    ## Identify components
+    ##
+    sellist <- compsplit(res$comps, sep.comps)
+    sel.i <- rep(NA, length(sellist))
+    ##
+    sel.trts <- meta:::rmSpace(meta:::rmSpace(sel.trts), end = TRUE)
+    ##
+    for (i in seq_along(sellist))
+      sel.i[i] <- any(meta:::rmSpace(meta:::rmSpace(sellist[[i]]),
+                                     end = TRUE) %in% sel.trts)
+    ##
+    res$Comp.fixed[sel.i] <- NA
+    res$seComp.fixed[sel.i] <- NA
+    res$lower.Comp.fixed[sel.i] <- NA
+    res$upper.Comp.fixed[sel.i] <- NA
+    res$statistic.Comp.fixed[sel.i] <- NA
+    res$pval.Comp.fixed[sel.i] <- NA
+    ##
+    res$Comp.random[sel.i] <- NA
+    res$seComp.random[sel.i] <- NA
+    res$lower.Comp.random[sel.i] <- NA
+    res$upper.Comp.random[sel.i] <- NA
+    res$statistic.Comp.random[sel.i] <- NA
+    res$pval.Comp.random[sel.i] <- NA
+  }
   
   res
 }
