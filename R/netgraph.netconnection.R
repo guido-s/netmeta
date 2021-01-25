@@ -4,6 +4,9 @@
 #' This function generates a graph of the evidence network.
 #' 
 #' @param x An object of class \code{netconnection}.
+#' @param seq A character or numerical vector specifying the sequence
+#'   of treatments arrangement (anticlockwise if \code{start.layout =
+#'   "circle"}).
 #' @param col A single color (or vector of colors) for lines
 #'   connecting treatments (edges) if argument \code{plastic = FALSE}.
 #' @param plastic A logical indicating whether the appearance of the
@@ -38,13 +41,18 @@
 #' @export netgraph.netconnection
 
 
-netgraph.netconnection <- function(x, col = x$subnet.comparisons,
+netgraph.netconnection <- function(x, seq,
+                                   col = x$subnet.comparisons,
                                    plastic = FALSE, ...) {
   
   
   meta:::chkclass(x, "netconnection")
   
-  x$seq <- rownames(x$A.matrix)
+  if (missing(seq))
+    seq <- rownames(x$A.matrix)
+  else
+    seq <- setseq(seq, rownames(x$A.matrix))
+  ##
   x$d <- 2
   x$trts <- rownames(x$A.matrix)
   ##
@@ -52,7 +60,7 @@ netgraph.netconnection <- function(x, col = x$subnet.comparisons,
 
 
   res <- netgraph(x, plastic = plastic, thickness = "equal",
-                  seq = x$seq, iterate = FALSE,
+                  seq = seq, iterate = FALSE,
                   col = col, ...)
 
   

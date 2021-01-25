@@ -15,6 +15,10 @@
 * forest.netbind(), forest.netsplit():
   - new default for argument 'equal.size', i.e., square sizes are equal
 
+* netmeasures():
+  - return direct evidence proportion for single design with two
+    treatments
+
 ### Internal changes
 
 * netmeta():
