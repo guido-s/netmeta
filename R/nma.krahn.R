@@ -1,4 +1,5 @@
-nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
+nma.krahn <- function(x, reference.group = x$reference.group,
+                      tau.preset = 0, sep.trts = x$sep.trts) {
   
   
   meta:::chkclass(x, "netmeta")
@@ -15,11 +16,11 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
   n <- x$n
 
 
-  if (x$reference.group == "")
+  if (reference.group == "")
     trts <- colnames(x$A.matrix)
   else
-    trts <- c(x$reference.group,
-              colnames(x$A.matrix)[colnames(x$A.matrix) != x$reference.group])
+    trts <- c(reference.group,
+              colnames(x$A.matrix)[colnames(x$A.matrix) != reference.group])
 
 
   studies.pre <- data.frame(studlab = x$studlab,
@@ -37,7 +38,7 @@ nma.krahn <- function(x, tau.preset = 0, sep.trts = x$sep.trts) {
   selmulti <- studies$narms > 2
 
 
-  sel <- studies.pre$treat2 == x$reference.group
+  sel <- studies.pre$treat2 == reference.group
   ##
   studies$treat1[sel] <- studies.pre$treat2[sel]
   studies$treat2[sel] <- studies.pre$treat1[sel]

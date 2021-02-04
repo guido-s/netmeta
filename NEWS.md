@@ -28,6 +28,9 @@
   - new list elements 'comparisons' and 'subnet.comparisons' with
     information on direct comparisons
 
+* nma.krahn():
+  - new argument 'reference.group' to specify the reference group
+
 
 ## netmeta, version 1.3-0 (2021-01-15)
 

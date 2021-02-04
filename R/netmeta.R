@@ -460,6 +460,8 @@ netmeta <- function(TE, seTE,
                     comb.fixed = gs("comb.fixed"),
                     comb.random = gs("comb.random") | !is.null(tau.preset),
                     ##
+                    method.tau = "DL",
+                    ##
                     prediction = FALSE,
                     level.predict = gs("level.predict"),
                     ##
@@ -518,7 +520,6 @@ netmeta <- function(TE, seTE,
   if (!is.null(all.treatments))
     chklogical(all.treatments)
   ##
-  method.tau <- "DL"
   method.tau <- meta:::setchar(method.tau, c("DL", "ML", "REML"))
   ##
   if (!is.null(tau.preset))
@@ -1029,7 +1030,7 @@ netmeta <- function(TE, seTE,
       ##
       tau2.reml <- rma.mv(TE, seTE^2, data = dat.tau,
                           mods = formula.trts,
-                          random = ~ factor(id) | studlab, rho = 0,
+                          random = ~ factor(id) | id, rho = 0,
                           method = method.tau, control = control)$tau2
       ##
       tau <- sqrt(tau2.reml)

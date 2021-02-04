@@ -139,13 +139,18 @@ netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01,
     seTE.random <- x$seTE.random
     seTE.random.i <- net.i$seTE.random
     ##
-    impact.fixed.i <- 1 - (lowertri(seTE.fixed) / lowertri(seTE.fixed.i))^2
+    impact.fixed.i <-
+      1 - (nma.krahn(x, reference.group = "")$network$seTE /
+           nma.krahn(net.i)$network$seTE)^2
     zero.fixed <- abs(impact.fixed.i) < .Machine$double.eps^0.5
     ##
     impact.fixed[, x$studies == i] <- impact.fixed.i
     impact.fixed[zero.fixed, x$studies == i] <- 0
     ##
-    impact.random.i <- 1 - (lowertri(seTE.random) / lowertri(seTE.random.i))^2
+    impact.random.i <-
+      1 - (nma.krahn(x, reference.group = "",
+                     tau.preset = x$tau)$network$seTE /
+           nma.krahn(net.i, tau.preset = x$tau)$network$seTE)^2
     zero.random <- abs(impact.random.i) < .Machine$double.eps^0.5
     ##
     impact.random[, x$studies == i] <- impact.random.i
