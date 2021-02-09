@@ -11,7 +11,7 @@
 #'   between-study variance \eqn{\tau^2} for a random effects model on
 #'   which the net heat plot will be based.
 #' @param showall A logical indicating whether results should be shown
-#'   for all designs or only a sensible subset, see Details.
+#'   for all designs or only a sensible subset (see Details).
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param \dots Additional arguments.
@@ -47,7 +47,8 @@
 #' multi-arm studies are marked by '_' following the treatments of the
 #' design.
 #' 
-#' By default (\code{showall = FALSE}), designs where only one
+#' By default (\code{showall = TRUE}), all designs are shown in the
+#' net heat plot. If (\code{showall = FALSE}), designs where only one
 #' treatment is involved in other designs of the network or where the
 #' removal of corresponding studies would lead to a splitting of the
 #' network do not contribute to the inconsistency assessment and are
@@ -106,7 +107,7 @@
 
 
 netheat <- function(x, random = FALSE, tau.preset = NULL,
-                    showall = FALSE,
+                    showall = TRUE,
                     nchar.trts = x$nchar.trts,
                     ...) {
   
@@ -218,18 +219,6 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
             call. = FALSE)
     return(invisible(NULL))
   }
-  else if (df.Q.between.designs == 1) {
-    warning("Net heat plot not available because detaching single designs ",
-            "leads to a network without loops.",
-            call. = FALSE)
-    return(invisible(NULL))
-  }
-  else if (df.Q.between.designs > 1 & !any(!is.na(residuals))) {
-    warning("Net heat plot not available because detaching ",
-            "single designs leads to a insufficiently connected network.",
-            call. = FALSE)
-    return(invisible(NULL))
-  }
   ##
   Q.inc.design.typ <- apply(residuals, 2, function(x) t(x) %*% solve(V) * x)
   inc <- matrix(Q.inc.design,
@@ -259,10 +248,11 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   
   t1 <- -diff
-  wi <- which(apply(t1, 2, function(x) sum(is.na(x)) == nrow(t1)))
-  if (length(wi) > 0) {
-    t1 <- t1[-wi, -wi, drop = FALSE]
-  }
+  ##
+  ## Replaces NAs with zeros
+  ##
+  t1[is.na(t1)] <- 0
+  ##
   dmat <- t1
   d1 <- dist(dmat, method = "manhattan")
   d1 <- d1 + dist(t(dmat), method = "manhattan")
@@ -296,10 +286,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
              rgb(1, 1, 1), rgb(clev, clev, 1))
   
   
-  if (length(wi) > 0)
-    Hp <- H[(as.character(design$comparison)[-wi]), -wi]
-  else
-    Hp <- H[as.character(design$comparison), ]
+  Hp <- H[as.character(design$comparison), ]
   ##
   if (!showall)
     Hp <- Hp[!(rownames(Hp) %in% drop.designs),
@@ -317,8 +304,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   
   oldpar <- va.image(t(tn) + max(abs(tn)),
-                     design, Hpn, h1, wi,
-                     col = mycol)
+                     design, Hpn, h1, col = mycol)
   ##  
   on.exit(par(oldpar))
   

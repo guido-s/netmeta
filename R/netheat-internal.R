@@ -1,5 +1,5 @@
 va.image <- function(x,
-                     design, Hpn, h1, wi,
+                     design, Hpn, h1,
                      ##
                      size = abs(Hpn), labels = NULL,
                      cex = 1, col, bg = "grey", box.bg = TRUE,
@@ -7,9 +7,6 @@ va.image <- function(x,
                      xlab = NULL, ylab = NULL, cex.axis = 1.1) {
   
   
-  if (length(wi) > 0)
-    design <- design[-wi, ]
-  ##
   design.comb <- rep(NA, length(as.character(design$comparison)))
   ##
   for (i in 1:(length(as.character(design$comparison)))) {

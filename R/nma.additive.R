@@ -15,10 +15,11 @@ nma.additive <- function(TE, weights, studlab,
   ## Laplacian matrix and pseudoinverse of L
   ##
   L <- t(X) %*% W %*% X
+  ##
   Lplus <- ginv(L) # = Cov matrix of beta (components)
+  Lplus[is.zero(Lplus)] <- 0
   colnames(Lplus) <- colnames(L)
   rownames(Lplus) <- rownames(L)
-  Lplus[is.zero(Lplus)] <- 0
   ##
   ## H matrix
   ##

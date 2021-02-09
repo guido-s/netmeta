@@ -460,8 +460,6 @@ netmeta <- function(TE, seTE,
                     comb.fixed = gs("comb.fixed"),
                     comb.random = gs("comb.random") | !is.null(tau.preset),
                     ##
-                    method.tau = "DL",
-                    ##
                     prediction = FALSE,
                     level.predict = gs("level.predict"),
                     ##
@@ -520,6 +518,7 @@ netmeta <- function(TE, seTE,
   if (!is.null(all.treatments))
     chklogical(all.treatments)
   ##
+  method.tau <- "DL"
   method.tau <- meta:::setchar(method.tau, c("DL", "ML", "REML"))
   ##
   if (!is.null(tau.preset))

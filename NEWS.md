@@ -1,5 +1,12 @@
-## netmeta, version 1.3-1 (2021-mm-dd)
+## netmeta, version 6.6-6 (2021-mm-dd)
     
+### Bug fixes
+
+* netmeta():
+  - use of ginv() instead of solve() to calculate pseudo inverse of
+    Laplace matrix resulted in wrong results for some extreme network
+    structures (bug was introduced in **netmeta**, version 1.3-0)
+
 ### User-visible changes
 
 * netconnection():
@@ -18,8 +25,16 @@
 * netmeasures():
   - return direct evidence proportion for single design with two
     treatments
+	
+* netheat():
+  - all designs are shown in net heat plot by default
 
 ### Internal changes
+
+* New internal function invmat() to calculate inverse of matrix
+
+* nma.ruecker(), multiarm():
+  - use solve() instead of ginv() to calculate inverse of matrix L
 
 * netmeta():
   - new list element 'comparisons' with information on direct comparisons
@@ -273,7 +288,7 @@
 * netmeta():
   - no error if argument 'studlab' is missing
   - tackle numerical problems with zero treatment arm variances -
-    actually by changes in internal function multiarm()      
+    actually by changes in internal function multiarm()
   - calculate the correct number of patients and events for each
     treatment arm in networks with multi-arm studies
 

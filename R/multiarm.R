@@ -26,8 +26,8 @@ multiarm <- function(r) {
   Lt <- -0.5 * t(B) %*% B %*% R %*% t(B) %*% B / k^2
   ##
   ## Compute Laplacian matrix L from Lt
-  ## 
-  L <- ginv(Lt)
+  ##
+  L <- invmat(Lt)
   ##
   ## Compute weight matrix W and variance matrix V from Laplacian L
   ## 

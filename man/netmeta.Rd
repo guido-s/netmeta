@@ -17,7 +17,6 @@ netmeta(
   level.comb = gs("level.comb"),
   comb.fixed = gs("comb.fixed"),
   comb.random = gs("comb.random") | !is.null(tau.preset),
-  method.tau = "DL",
   prediction = FALSE,
   level.predict = gs("level.predict"),
   reference.group = "",
