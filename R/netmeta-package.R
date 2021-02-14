@@ -168,7 +168,7 @@
 #'   theme element_blank element_text scale_fill_gradient2 geom_text
 #'   ggtitle
 #'
-#' @importFrom metafor rma.mv
+#' @importFrom metafor bldiag contrmat rma.mv
 
 
 NULL

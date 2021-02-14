@@ -24,6 +24,7 @@ netmeta(
   small.values = "good",
   all.treatments = NULL,
   seq = NULL,
+  method.tau = "DL",
   tau.preset = NULL,
   tol.multiarm = 0.001,
   tol.multiarm.se = tol.multiarm,
@@ -34,6 +35,7 @@ netmeta(
   n2 = NULL,
   event1 = NULL,
   event2 = NULL,
+  incr = NULL,
   backtransf = gs("backtransf"),
   title = "",
   keepdata = gs("keepdata"),
@@ -102,6 +104,11 @@ be printed.}
 \item{seq}{A character or numerical vector specifying the sequence
 of treatments in printouts.}
 
+\item{method.tau}{A character string indicating which method is
+used to estimate the between-study variance \eqn{\tau^2} and its
+square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
+\code{"ML"}, can be abbreviated.}
+
 \item{tau.preset}{An optional value for manually setting the
 square-root of the between-study variance \eqn{\tau^2}.}
 
@@ -131,6 +138,8 @@ characters used to create unique treatment names (see Details).}
 \item{event1}{Number of events in first treatment group.}
 
 \item{event2}{Number of events in second treatment group.}
+
+\item{incr}{Numerical value to each cell frequency.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
@@ -456,6 +465,12 @@ characters are used as separator (in consecutive order):
 treatment labels, a corresponding error message is printed asking
 the user to specify a different separator.
 }
+\note{
+R function \code{\link[metafor]{rma.mv}} from R package
+\pkg{metafor} (Viechtbauer 2010) is called internally to estimate
+the between-study variance \eqn{\tau^2} for the (restricted)
+maximum likelihood method.
+}
 \examples{
 data(Senn2013)
 
@@ -517,6 +532,11 @@ Senn S, Gavini F, Magrez D, Scheen A (2013):
 Issues in performing a network meta-analysis.
 \emph{Statistical Methods in Medical Research},
 \bold{22}, 169--89
+
+Viechtbauer W (2010):
+Conducting Meta-Analyses in R with the metafor Package.
+\emph{Journal of Statistical Software},
+\bold{36}, 1--48
 }
 \seealso{
 \code{\link{pairwise}}, \code{\link{forest.netmeta}},

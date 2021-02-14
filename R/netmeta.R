@@ -50,6 +50,10 @@
 #'   be printed.
 #' @param seq A character or numerical vector specifying the sequence
 #'   of treatments in printouts.
+#' @param method.tau A character string indicating which method is
+#'   used to estimate the between-study variance \eqn{\tau^2} and its
+#'   square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
+#'   \code{"ML"}, can be abbreviated.
 #' @param tau.preset An optional value for manually setting the
 #'   square-root of the between-study variance \eqn{\tau^2}.
 #' @param tol.multiarm A numeric for the tolerance for consistency of
@@ -75,6 +79,7 @@
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
 #' @param event2 Number of events in second treatment group.
+#' @param incr Numerical value to each cell frequency.
 #' @param title Title of meta-analysis / systematic review.
 #' @param keepdata A logical indicating whether original data (set)
 #'   should be kept in netmeta object.
@@ -206,6 +211,12 @@
 #' \code{"|"}, and \code{"*"}. If all of these characters are used in
 #' treatment labels, a corresponding error message is printed asking
 #' the user to specify a different separator.
+#'
+#' @note
+#' R function \code{\link[metafor]{rma.mv}} from R package
+#' \pkg{metafor} (Viechtbauer 2010) is called internally to estimate
+#' the between-study variance \eqn{\tau^2} for the (restricted)
+#' maximum likelihood method.
 #'
 #' @return
 #' An object of class \code{netmeta} with corresponding \code{print},
@@ -414,6 +425,11 @@
 #' \emph{Statistical Methods in Medical Research},
 #' \bold{22}, 169--89
 #' 
+#' Viechtbauer W (2010):
+#' Conducting Meta-Analyses in R with the metafor Package.
+#' \emph{Journal of Statistical Software},
+#' \bold{36}, 1--48
+#' 
 #' @examples
 #' data(Senn2013)
 #' 
@@ -469,6 +485,7 @@ netmeta <- function(TE, seTE,
                     all.treatments = NULL,
                     seq = NULL,
                     ##
+                    method.tau = "DL",
                     tau.preset = NULL,
                     ##
                     tol.multiarm = 0.001,
@@ -482,6 +499,7 @@ netmeta <- function(TE, seTE,
                     n2 = NULL,
                     event1 = NULL,
                     event2 = NULL,
+                    incr = NULL,
                     ##
                     backtransf = gs("backtransf"),
                     ##
@@ -518,7 +536,6 @@ netmeta <- function(TE, seTE,
   if (!is.null(all.treatments))
     chklogical(all.treatments)
   ##
-  method.tau <- "DL"
   method.tau <- meta:::setchar(method.tau, c("DL", "ML", "REML"))
   ##
   if (!is.null(tau.preset))
@@ -584,6 +601,8 @@ netmeta <- function(TE, seTE,
       event1 <- TE$event1
     if (!is.null(TE$event2))
       event2 <- TE$event2
+    if (!is.null(TE$incr))
+      incr <- TE$incr
     ##
     pairdata <- TE
     data <- TE
@@ -621,6 +640,9 @@ netmeta <- function(TE, seTE,
     ##
     event2 <- eval(mf[[match("event2", names(mf))]],
                    data, enclos = sys.frame(sys.parent()))
+    ##
+    incr <- eval(mf[[match("incr", names(mf))]],
+                 data, enclos = sys.frame(sys.parent()))
   }
   ##
   chknumeric(TE)
@@ -661,8 +683,11 @@ netmeta <- function(TE, seTE,
     available.n <- TRUE
   else
     available.n <- FALSE
-
-
+  ##
+  if (available.events & is.null(incr))
+    incr <- rep(0, length(event2))
+  
+  
   ##
   ##
   ## (2b) Store complete dataset in list object data
@@ -691,6 +716,7 @@ netmeta <- function(TE, seTE,
     data$.n1 <- n1
     data$.event2 <- event2
     data$.n2 <- n2
+    data$.incr <- incr
     ##
     ## Check for correct treatment order within comparison
     ##
@@ -751,6 +777,8 @@ netmeta <- function(TE, seTE,
       event1 <- event1[subset]
     if (!is.null(event2))
       event2 <- event2[subset]
+    if (!is.null(incr))
+      incr <- incr[subset]
   }
   ##
   labels <- sort(unique(c(treat1, treat2)))
@@ -887,6 +915,8 @@ netmeta <- function(TE, seTE,
       event1 <- event1[!excl]
     if (!is.null(event2))
       event2 <- event2[!excl]
+    if (!is.null(incr))
+      incr <- incr[!excl]
     ##
     seq <- seq[seq %in% unique(c(treat1, treat2))]
     labels <- labels[labels %in% unique(c(treat1, treat2))]
@@ -1006,33 +1036,91 @@ netmeta <- function(TE, seTE,
   if (is.null(tau.preset)) {
     if (method.tau %in% c("ML", "REML")) {
       ##
-      dat.tau <- as.data.frame(res.f$B.matrix)
+      dat.tau <-
+        data.frame(studlab = studlab,
+                   treat1 = treat1, treat2 = treat2,
+                   TE = TE, seTE = seTE)
+      if (available.events) {
+        dat.tau$event1 <- event1
+        dat.tau$event2 <- event2
+        dat.tau$incr <- incr
+      }
+      if (available.n) {
+        dat.tau$n1 <- n1
+        dat.tau$n2 <- n2
+      }
       ##
-      oldnames <- colnames(dat.tau)
+      dat.tau <- dat.tau[order(dat.tau$studlab,
+                               dat.tau$treat1, dat.tau$treat2), , drop = FALSE]
       ##
-      if (reference.group == "")
-        trts.ref <- oldnames[length(oldnames)]
-      else
-        trts.ref <- reference.group
+      keep <- logical(0)
+      wo <- logical(0)
       ##
-      newnames <- paste0("V", seq(along = colnames(dat.tau)))
-      colnames(dat.tau) <- newnames
-      trts.tau <- newnames[oldnames != trts.ref]
+      for (i in unique(dat.tau$studlab)) {
+        d.i <- dat.tau[dat.tau$studlab == i, , drop = FALSE]
+        trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
+        if (reference.group %in% trts.i)
+          ref.i <- reference.group
+        else
+          ref.i <- rev(trts.i)[1]
+        ##
+        keep.i <- !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
+        wo.i <- d.i$treat1 == ref.i
+        ##
+        keep <- c(keep, keep.i)
+        wo <- c(wo, wo.i)
+      }
       ##
-      dat.tau$TE <- res.f$TE
-      dat.tau$seTE <- res.f$seTE # adjusted standard errors
-      dat.tau$studlab <- res.f$studlab
+      dat.tau <- dat.tau[keep, , drop = FALSE]
       dat.tau$id <- seq_along(dat.tau$TE)
+      ##
+      wo <- wo[keep]
+      if (sum(wo) > 0) {
+        dat.tau$TE[wo] <- -dat.tau$TE[wo]
+        ##
+        t2.i <- dat.tau$treat2
+        e2.i <- dat.tau$event2
+        n2.i <- dat.tau$n2
+        mean2.i <- dat.tau$mean2
+        sd2.i <- dat.tau$sd2
+        ##
+        dat.tau$treat2[wo] <- dat.tau$treat1[wo]
+        dat.tau$event2[wo] <- dat.tau$event1[wo]
+        dat.tau$n2[wo] <- dat.tau$n1[wo]
+        dat.tau$mean2[wo] <- dat.tau$mean1[wo]
+        dat.tau$sd2[wo] <- dat.tau$sd1[wo]
+        ##
+        dat.tau$treat1[wo] <- t2.i[wo]
+        dat.tau$event1[wo] <- e2.i[wo]
+        dat.tau$n1[wo] <- n2.i[wo]
+        dat.tau$mean1[wo] <- mean2.i[wo]
+        dat.tau$sd1[wo] <- sd2.i[wo]
+      }
+      ##
+      ncols1 <- ncol(dat.tau)
+      dat.tau <- contrmat(dat.tau, grp1 = "treat1", grp2 = "treat2")
+      ncols2 <- ncol(dat.tau)
+      newnames <- paste0("V", seq_len(ncols2 - ncols1))
+      names(dat.tau)[(ncols1 + 1):ncols2] <- newnames
+      ##
+      trts.tau <- newnames[-length(newnames)]
       ##
       formula.trts <-
         as.formula(paste("~ ", paste(trts.tau, collapse = " + "), " - 1"))
       ##
-      tau2.reml <- rma.mv(TE, seTE^2, data = dat.tau,
-                          mods = formula.trts,
-                          random = ~ factor(id) | id, rho = 0,
-                          method = method.tau, control = control)$tau2
+      ## Calculate Variance-Covariance matrix
       ##
-      tau <- sqrt(tau2.reml)
+      if (available.n & available.events)
+        V <- bldiag(lapply(split(dat.tau, dat.tau$studlab), calcV, sm = sm))
+      else
+        V <- dat.tau$seTE^2
+      ##
+      tau2.rma <- rma.mv(TE, V, data = dat.tau,
+                         mods = formula.trts,
+                         random = ~ factor(id) | studlab, rho = 0.5,
+                         method = method.tau, control = control)$tau2
+      ##
+      tau <- sqrt(tau2.rma)
     }
     else
       tau <- res.f$tau
@@ -1099,6 +1187,7 @@ netmeta <- function(TE, seTE,
               event2 = event2,
               n1 = n1,
               n2 = n2,
+              incr = incr,
               ##
               k = res.f$k,
               m = res.f$m,
@@ -1244,6 +1333,7 @@ netmeta <- function(TE, seTE,
               all.treatments = all.treatments,
               seq = seq,
               ##
+              method.tau = method.tau,
               tau.preset = tau.preset,
               ##
               tol.multiarm = tol.multiarm,

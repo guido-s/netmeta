@@ -1,5 +1,11 @@
 ## netmeta, version 6.6-6 (2021-mm-dd)
     
+### Major changes
+
+* Restricted maximum likelihood and maximum likelihood estimator for
+  between-study heterogeneity implemented by calling rma.mv() from R
+  package **metafor** internally
+
 ### Bug fixes
 
 * netmeta():
@@ -8,6 +14,10 @@
     structures (bug was introduced in **netmeta**, version 1.3-0)
 
 ### User-visible changes
+
+* netmeta():
+  - new argument 'method.tau' to select estimation method for
+    between-study variance
 
 * netconnection():
   - first argument can be of class 'pairwise'
@@ -25,7 +35,7 @@
 * netmeasures():
   - return direct evidence proportion for single design with two
     treatments
-	
+
 * netheat():
   - all designs are shown in net heat plot by default
 
