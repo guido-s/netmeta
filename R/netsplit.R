@@ -62,7 +62,7 @@
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
 #' @param big.mark A character used as thousands separator.
-#' @param legend A logical indicating whether a legend show be
+#' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param warn A logical indicating whether warnings should be
 #'   printed.

@@ -12,7 +12,8 @@
 #' 
 #' @param TE Estimate of treatment effect, i.e. difference between
 #'   first and second treatment (e.g. log odds ratio, mean difference,
-#'   or log hazard ratio).
+#'   or log hazard ratio). Or an R object created with
+#'   \code{\link{pairwise}}.
 #' @param seTE Standard error of treatment estimate.
 #' @param treat1 Label/Number for first treatment.
 #' @param treat2 Label/Number for second treatment.
@@ -381,7 +382,7 @@ discomb <- function(TE, seTE,
   chklogical <- meta:::chklogical
   chknumeric <- meta:::chknumeric
   ##
-  chkchar(sep.comps, nchar = 1)
+  chkchar(sep.comps, nchar = 1, length = 1)
   ##
   chklevel(level)
   chklevel(level.comb)
@@ -389,6 +390,9 @@ discomb <- function(TE, seTE,
   chklogical(comb.fixed)
   chklogical(comb.random)
   ##
+  missing.reference.group <- missing(reference.group) 
+  if (missing.reference.group)
+    reference.group <- ""
   chklogical(baseline.reference)
   ##
   if (!is.null(tau.preset))
@@ -424,23 +428,53 @@ discomb <- function(TE, seTE,
   ##
   TE <- eval(mf[[match("TE", names(mf))]],
              data, enclos = sys.frame(sys.parent()))
+  ##
+  if (inherits(TE, "pairwise")) {
+    is.pairwise <- TRUE
+    ##
+    sm <- attr(TE, "sm")
+    if (missing.reference.group) {
+      reference.group <- attr(TE, "reference.group")
+      if (is.null(reference.group))
+        reference.group <- ""
+    }
+    ##
+    keep.all.comparisons <- attr(TE, "keep.all.comparisons")
+    if (!is.null(keep.all.comparisons) && !keep.all.comparisons)
+      stop("First argument is a pairwise object created with ",
+           "'keep.all.comparisons = FALSE'.",
+           call. = TRUE)
+    ##
+    seTE <- TE$seTE
+    treat1 <- TE$treat1
+    treat2 <- TE$treat2
+    studlab <- TE$studlab
+    ##
+    pairdata <- TE
+    data <- TE
+    ##
+    TE <- TE$TE
+  }
+  else {
+    is.pairwise <- FALSE
   if (missing(sm))
     if (!is.null(data) && !is.null(attr(data, "sm")))
       sm <- attr(data, "sm")
     else
       sm <- ""
-  ##
-  seTE <- eval(mf[[match("seTE", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
-  ##
-  treat1 <- eval(mf[[match("treat1", names(mf))]],
+    ##
+    seTE <- eval(mf[[match("seTE", names(mf))]],
                  data, enclos = sys.frame(sys.parent()))
-  ##
-  treat2 <- eval(mf[[match("treat2", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
-  ##
-  studlab <- eval(mf[[match("studlab", names(mf))]],
-                  data, enclos = sys.frame(sys.parent()))
+    ##
+    treat1 <- eval(mf[[match("treat1", names(mf))]],
+                   data, enclos = sys.frame(sys.parent()))
+    ##
+    treat2 <- eval(mf[[match("treat2", names(mf))]],
+                   data, enclos = sys.frame(sys.parent()))
+    ##
+    studlab <- eval(mf[[match("studlab", names(mf))]],
+                    data, enclos = sys.frame(sys.parent()))
+  }
   ##
   chknumeric(TE)
   chknumeric(seTE)

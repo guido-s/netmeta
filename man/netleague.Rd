@@ -73,8 +73,8 @@ confidence intervals are shown.
 }
 \details{
 A league table is a square matrix showing all pairwise comparisons
-in a network meta-analysis. Typically, both treatment estimates and
-confidence intervals are shown.
+in a network meta-analysis (Hutton et al., 2015). Typically, both
+treatment estimates and confidence intervals are shown.
 
 If argument \code{y} is not provided, the league table contains the
 network estimates from network meta-analysis object \code{x} in the
@@ -238,6 +238,14 @@ hasse(np)
 plot(np)
 }
 
+}
+\references{
+Hutton B, Salanti G, Caldwell DM, et al. (2015):
+The PRISMA Extension Statement for Reporting of Systematic Reviews
+Incorporating Network Meta-analyses of Health Care Interventions:
+Checklist and Explanations.
+\emph{Annals of Internal Medicine},
+\bold{162}, 777
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netposet}},

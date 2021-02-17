@@ -27,6 +27,7 @@
   big.mark = gs("big.mark"),
   truncate,
   text.truncate = "*** Output truncated ***",
+  legend = TRUE,
   ...
 )
 }
@@ -101,6 +102,9 @@ length as \code{x$TE} or contain numerical values).}
 
 \item{text.truncate}{A character string printed if study results
 were truncated from the printout.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
 
 \item{\dots}{Additional arguments.}
 }

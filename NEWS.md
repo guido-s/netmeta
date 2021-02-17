@@ -6,6 +6,12 @@
   between-study heterogeneity implemented by calling rma.mv() from R
   package **metafor** internally
 
+* R function pairwise() can be used to generate reduced data set with
+  basic comparisons [Rücker & Schwarzer
+  (2014)](https://doi.org/10.1002/sim.6236)
+
+* R function discomb() can be used with an R object created with pairwise()
+
 ### Bug fixes
 
 * netmeta():
@@ -18,8 +24,15 @@
 * netmeta():
   - new argument 'method.tau' to select estimation method for
     between-study variance
+  - new arguments 'sd1', 'sd2', 'time1', and 'time2' used to calculate
+    variance-covariance matrix for REML and ML estimator of
+    between-study heterogeneity
 
 * netconnection():
+  - first argument can be of class 'pairwise'
+
+* pairwise():
+  - new arguments 'reference.group' and 'keep.all.comparisons'
   - first argument can be of class 'pairwise'
 
 * netgraph.netconnection():
@@ -42,6 +55,9 @@
 ### Internal changes
 
 * New internal function invmat() to calculate inverse of matrix
+
+* New internal function calcV() to calculate variance-covariance
+  matrix used as input to rma.mv()
 
 * nma.ruecker(), multiarm():
   - use solve() instead of ginv() to calculate inverse of matrix L

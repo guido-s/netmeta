@@ -20,6 +20,8 @@ pairwise(
   allincr = FALSE,
   addincr = FALSE,
   allstudies = FALSE,
+  reference.group,
+  keep.all.comparisons,
   warn = FALSE,
   ...
 )
@@ -69,6 +71,12 @@ cell frequency of all studies irrespective of zero cell counts.}
 events in two treatment arms are to be included in the
 meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
 or \code{"OR"}).}
+
+\item{reference.group}{Reference treatment.}
+
+\item{keep.all.comparisons}{A logical indicating whether all
+pairwise comparisons or only comparisons with the study-specific
+reference group should be kept ('basic parameters').}
 
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded due to only providing a single
@@ -156,11 +164,12 @@ arm-based format into the contrast-based format which consists of
 \emph{pairwise} comparisons and is needed as input to the
 \code{\link{netmeta}} function.
 
-The pairwise function can transform data with binary outcomes (using the
-\code{\link{metabin}} function from R package meta), continuous outcomes
-(\code{\link{metacont}} function), incidence rates (\code{\link{metainc}}
-function), and generic outcomes (\code{\link{metagen}} function). Depending
-on the outcome, the following arguments are mandatory:
+The pairwise function can transform data with binary outcomes
+(using the \code{\link{metabin}} function from R package meta),
+continuous outcomes (\code{\link{metacont}} function), incidence
+rates (\code{\link{metainc}} function), and generic outcomes
+(\code{\link{metagen}} function). Depending on the outcome, the
+following arguments are mandatory:
 \itemize{
 \item treat, event, n (see \code{\link{metabin}});
 \item treat, n, mean, sd (see \code{\link{metacont}});
@@ -231,6 +240,11 @@ mean age.
 In general, any variable names in the original dataset that are
 identical to the main variable names (i.e., "TE", "seTE", ...) will
 be renamed to variable names with ending ".orig".
+
+A reduced data set with basic comparisons (Rücker & Schwarzer,
+2014) can be generated using argument \code{keep.all.comparisons =
+FALSE}. Furthermore, the reference group for the basic comparisons
+can be specified with argument \code{reference.group}.
 }
 \examples{
 # Example using continuous outcomes (internal call of function

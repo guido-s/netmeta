@@ -32,7 +32,7 @@ calcV <- function(x, sm) {
   n2 <- x$n2[1] + 2 * x$incr[1]
   ##
   if (sm == "OR")
-    V <- matrix(1 / (x$event2[1] + x$incr) +
+    V <- matrix(1 / (x$event2[1] + x$incr[1]) +
                 1 / (x$n2[1] - x$event2[1] + x$incr[1]),
                 nrow = nrow(x), ncol = nrow(x))
   else if (sm == "RR")
@@ -42,7 +42,19 @@ calcV <- function(x, sm) {
     V <- matrix(p2 * (1 - p2) / n2,
                 nrow = nrow(x), ncol = nrow(x))
   else if (sm == "ASD")
-    V <- matrix(0.25 * (1 / x$n2[1]),
+    V <- matrix(0.25 / x$n2[1],
+                nrow = nrow(x), ncol = nrow(x))
+  else if (sm == "MD")
+    V <- matrix(x$sd2[1]^2 / x$n2[1],
+                nrow = nrow(x), ncol = nrow(x))
+  else if (sm == "IRR")
+    V <- matrix(1 / (x$event2[1] + x$incr[1]),
+                nrow = nrow(x), ncol = nrow(x))
+  else if (sm == "IRD")
+    V <- matrix((x$event2[1] + x$incr[1]) / x$time2[1]^2,
+                nrow = nrow(x), ncol = nrow(x))
+  else if (sm == "IRSD")
+    V <- matrix(0.25 / x$time2[1],
                 nrow = nrow(x), ncol = nrow(x))
   ##
   diag(V) <- x$seTE^2
