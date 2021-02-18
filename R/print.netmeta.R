@@ -277,13 +277,14 @@ print.netmeta <- function(x,
         sortvar <- sortvar[truncate]
         res <- res[truncate, , drop = FALSE]
       }
-      
+      ##
       prmatrix(res[order(sortvar), , drop = FALSE],
                quote = FALSE, right = TRUE)
       if (!missing.truncate)
         cat(text.truncate, "\n")
       cat("\n")
-
+      
+      
       studyarms <- data.frame(narms = x$narms, row.names = x$studies)
       if (!missing.truncate)
         studyarms <-

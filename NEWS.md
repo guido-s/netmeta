@@ -19,6 +19,11 @@
     Laplace matrix resulted in wrong results for some extreme network
     structures (bug was introduced in **netmeta**, version 1.3-0)
 
+* netgraph.netmeta():
+  - highlighting more than one comparison (argument 'highlight')
+    resulted in an error if argument 'col.highlight' was not of same
+    length
+
 ### User-visible changes
 
 * netmeta():

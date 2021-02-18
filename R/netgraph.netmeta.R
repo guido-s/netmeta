@@ -562,8 +562,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
   addargs <- names(list(...))
   ##
   if ("highlight.split" %in% addargs)
-    warning("Argument 'highlight.split' has been removed from R function netgraph.\n",
-            "  This argument has been replaced by argument 'sep.trts' in R function netmeta.")
+    warning("Argument 'highlight.split' has been removed from ",
+            "R function netgraph.\n  This argument has been replaced by ",
+            "argument 'sep.trts' in R function netmeta.")
   ##
   highlight.split <- x$sep.trts
   ##
@@ -584,6 +585,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
         stop("Argument 'scale.highlight' must be a single value or ",
              "of same length as argument 'highlight'.", call. = FALSE)
   }
+  ##
+  if (length(col.highlight) == 1 & n.high > 1)
+    col.highlight <- rep(col.highlight, n.high)
   
   
   if (missing(plastic))
