@@ -1062,7 +1062,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
         for (h in seq_len(n.high)) {
           col.high.h <- col.highlight[h]
           if (col.high.h != "transparent") {
-            if (substring(col.high.h, nchar(col.high.h)) %in% 1:4)
+            if (nchar(col.high.h) > 1 &
+                substring(col.high.h, nchar(col.high.h)) %in% 1:4)
               col.high.h <- substring(col.high.h, 1, nchar(col.high.h) - 1)
             ##
             cols.highlight[h, 1:12] <- rep(paste(col.high.h, 4:1, sep = ""),
