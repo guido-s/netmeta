@@ -883,9 +883,10 @@ netgraph.netmeta <- function(x, seq = x$seq,
            "number of treatments.",
            eval. = FALSE)
     if (is.null(names(srt.labels)))
-      dat.nodes$srt <- srt.labels
+      dat.nodes$srt <- srt.labels[seq1]
     else {
       ## Check names of named vector 'srt.labels'
+      srt.labels <- srt.labels[seq1]
       names.srt.labels <- names(srt.labels)
       names.srt.labels <- setseq(names.srt.labels, dat.nodes$trts,
                                  paste0("Names of vector provided in ",

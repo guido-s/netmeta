@@ -117,6 +117,7 @@ print.decomp.design <- function(x,
                                       lab.NA = "NA", big.mark = big.mark)
   Q.inc.random$pval <- formatPT(Q.inc.random$pval, digits = digits.pval.Q,
                                 scientific = scientific.pval)
+  names(Q.inc.random) <- names(Q.inc.random)[c(1:3, 5, 4)]
   ##
   nam <- names(Q.decomp)
   names(Q.decomp)[nam == "pval"] <- "p-value"
