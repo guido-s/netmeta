@@ -55,7 +55,7 @@
 #'                studlab = author, data = Woods2010, sm = "OR")
 #' 
 #' net1 <- netmeta(p1)
-#' cm = netcontrib.matrix(net1)
+#' cm = netcontrib(net1)
 #' cm$random
 #' 
 #' }
@@ -269,7 +269,7 @@ contribution.matrix <- function(x, model){
 
   colnames(weights) <- directs
   weights <- 100 * weights
-  totalSums <-colSums(weights)
+  totalSums <- colSums(weights)
   totalTotal <- sum(totalSums)
   totalWeights <- unlist(lapply(totalSums,function(comp){
                            100 * comp/ totalTotal
