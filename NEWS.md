@@ -50,6 +50,10 @@
 * forest.netbind(), forest.netsplit():
   - new default for argument 'equal.size', i.e., square sizes are equal
 
+* forest.netbind():
+  - new argument 'subset.treatments' to select treatments shown in
+    forest plot
+
 * netmeasures():
   - return direct evidence proportion for single design with two
     treatments

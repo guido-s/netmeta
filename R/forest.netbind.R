@@ -19,6 +19,8 @@
 #'   plotted on the right side of the forest plot (see Details).
 #' @param rightlabs A character vector specifying labels for columns
 #'   on right side of the forest plot.
+#' @param subset.treatments A character vector specifying treatments
+#'   to show in forest plot as comparators to the reference.
 #' @param digits Minimal number of significant digits for treatment
 #'   effects and confidence intervals, see \code{print.default}.
 #' @param digits.prop Minimal number of significant digits for the
@@ -99,6 +101,8 @@ forest.netbind <- function(x,
                            rightcols = c("effect", "ci"),
                            rightlabs = NULL,
                            ##
+                           subset.treatments,
+                           ##
                            digits = gs("digits.forest"),
                            digits.prop = max(gs("digits.pval") - 2, 2),
                            ##
@@ -139,17 +143,23 @@ forest.netbind <- function(x,
   ## (2) Extract results for fixed and random effects model
   ##
   ##
-  sel <- x$fixed$treat != x$reference.group
-  ##
   if (pooled == "fixed") {
+    if (!missing(subset.treatments)) {
+      subset.treatments <- setchar(subset.treatments, unique(x$fixed$treat))
+      sel <- x$fixed$treat %in% subset.treatments
+    }
+    else
+      sel <- x$fixed$treat != x$reference.group
+    ##
     m <-
       suppressWarnings(metagen(x$fixed$TE, x$fixed$seTE,
                                studlab = x$fixed$name,
                                sm = x$sm,
                                comb.fixed = FALSE, comb.random = FALSE,
                                byvar = x$fixed$treat, print.byvar = FALSE,
-                               subset = x$fixed$treat != x$reference.group))
+                               subset = sel))
     ##
+    m$studlab <- x$fixed$name[sel]
     m$TE <- x$fixed$TE[sel]
     m$seTE <- x$fixed$seTE[sel]
     m$lower <- x$fixed$lower[sel]
@@ -166,14 +176,22 @@ forest.netbind <- function(x,
     text.pooled <- "Fixed Effects Model"
   }
   else {
+    if (!missing(subset.treatments)) {
+      subset.treatments <- setchar(subset.treatments, unique(x$random$treat))
+      sel <- x$random$treat %in% subset.treatments
+    }
+    else
+      sel <- x$random$treat != x$reference.group
+    ##
     m <-
       suppressWarnings(metagen(x$random$TE, x$random$seTE,
                                studlab = x$random$name,
                                sm = x$sm,
                                comb.fixed = FALSE, comb.random = FALSE,
                                byvar = x$random$treat, print.byvar = FALSE,
-                               subset = x$random$treat != x$reference.group))
+                               subset = sel))
     ##
+    m$studlab <- x$random$name[sel]
     m$TE <- x$random$TE[sel]
     m$seTE <- x$random$seTE[sel]
     m$lower <- x$random$lower[sel]

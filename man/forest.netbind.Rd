@@ -12,6 +12,7 @@
   leftlabs = "Treatment",
   rightcols = c("effect", "ci"),
   rightlabs = NULL,
+  subset.treatments,
   digits = gs("digits.forest"),
   digits.prop = max(gs("digits.pval") - 2, 2),
   backtransf = x$backtransf,
@@ -42,6 +43,9 @@ plotted on the right side of the forest plot (see Details).}
 
 \item{rightlabs}{A character vector specifying labels for columns
 on right side of the forest plot.}
+
+\item{subset.treatments}{A character vector specifying treatments
+to show in forest plot as comparators to the reference.}
 
 \item{digits}{Minimal number of significant digits for treatment
 effects and confidence intervals, see \code{print.default}.}
