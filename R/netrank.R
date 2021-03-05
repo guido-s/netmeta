@@ -6,8 +6,10 @@
 #' 
 #' @aliases netrank print.netrank
 #' 
-#' @param x An object of class \code{netmeta} (netrank function) or
+#' @param x An object of class \code{netmeta} or \code{rankogram} (netrank function) or
 #'   \code{netrank} (print function).
+#' @param method A character string specifying whether
+#'   the \code{"P-score"} or \code{"SUCRA"} ranking metric will be calculated
 #' @param comb.fixed A logical indicating whether to print P-scores
 #'   for the fixed effects (common effects) model.
 #' @param comb.random A logical indicating whether to print P-scores
@@ -24,7 +26,8 @@
 #' 
 #' @details
 #' Treatments are ranked based on a network meta-analysis. Ranking is
-#' performed by P-scores. P-scores are based solely on the point
+#' performed by a ranking metric: P-score or SUCRA. 
+#' P-scores are based solely on the point
 #' estimates and standard errors of the network estimates. They
 #' measure the extent of certainty that a treatment is better than
 #' another treatment, averaged over all competing treatments (Rücker
@@ -51,9 +54,13 @@
 #' function. The object is a list containing the following components:
 #' \item{Pscore.fixed}{A named numeric vector with P-scores for fixed
 #'   effects model.}
+#' \item{SUCRA.fixed}{A named numeric vector with SUCRAs for fixed
+#'   effects model.}
 #' \item{Pmatrix.fixed}{Numeric matrix based on pairwise one-sided
 #'   p-values for fixed effects model.}
 #' \item{Pscore.random}{A named numeric vector with P-scores for
+#'   random effects model.}
+#' \item{SUCRA.random}{A named numeric vector with SUCRAs for
 #'   random effects model.}
 #' \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided
 #'   p-values of random effects model.}
@@ -99,16 +106,32 @@
 #' print(nr2, sort = FALSE)
 #' }
 #' 
+#' \dontrun{
+#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#'                 data = Senn2013, sm = "MD")
+#' 
+#' nr3 <- netrank(net2,method="SUCRA")
+#' nr3
+#' print(nr3, sort = "fixed")
+#' print(nr3, sort = FALSE)
+#' }
+#' 
 #' @rdname netrank
 #' @export netrank
 
 
-netrank <- function(x, small.values = x$small.values) {
+netrank <- function(x, method="P-score", small.values = x$small.values) {
   
   ## Check for netmeta object
   ##
-  meta:::chkclass(x, c("netmeta", "netcomb"))
+  meta:::chkclass(x, c("netmeta", "netcomb", "rankogram"))
   ##
+  
+ if(inherits(ran1,"rankogram") & method!="SUCRA")
+   stop("You provided a rankogram object with the P-score method.
+The rankogram object is only compatible with the SUCRA method")
+   
+   
   if (is.null(small.values))
     small.values <- "good"
   else
