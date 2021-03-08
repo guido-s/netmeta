@@ -248,13 +248,17 @@ contribution.matrix <- function(x, model){
   
  reduceGraph <- function (g,comparison) {
     getshortest <- function (g,compariston) {
-      return(tryCatch({
-        return(igraph::get.shortest.paths(g,sv(comparison),tv(comparison),mode="out",output="epath",weights=NA)$epath)
-      }, error = function(e) {
-        print(paste('error:', e))
-      }, warning = function(w) {return({})}
-      )
-      )}
+      getShortest <- function() {
+        return(igraph::get.shortest.paths(g
+                                          ,sv(comparison)
+                                          ,tv(comparison)
+                                          ,mode="out"
+                                          ,output="epath"
+                                          ,weights=NA)$epath)
+      }
+      res <- suppressWarnings(getShortest())
+      return(res)
+      }
     spath <- getshortest(g,comparison)
     while(length(unlist(spath))>0){
       g <- reducePath(g,comparison,spath)
