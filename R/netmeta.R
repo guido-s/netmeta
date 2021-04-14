@@ -1644,6 +1644,11 @@ netmeta <- function(TE, seTE,
     res$n.arms <- rep(2, length(res$studlab))
     res$multiarm <- rep(FALSE, length(res$studlab))
   }
+  ##
+  ## Set leverage of multi-arm studies to NA
+  ##
+  if (any(res$multiarm))
+    res$leverage.fixed[res$multiarm] <- NA
   
   
   ##

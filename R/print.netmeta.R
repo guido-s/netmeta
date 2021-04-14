@@ -330,12 +330,14 @@ print.netmeta <- function(x,
                    if (comb.fixed)
                      formatN(round(x$Q.fixed, digits.Q), digits.Q, "NA",
                              big.mark = big.mark),
-                   if (comb.fixed) format(round(x$leverage.fixed, 2)))
+                   if (comb.fixed & !all(x$narms > 2))
+                     formatN(round(x$leverage.fixed, 2), 2, ".")
+                   )
     dimnames(res.f) <-
       list(x$studlab, c("treat1", "treat2",
                         sm.lab, ci.lab,
                         if (comb.fixed) "Q",
-                        if (comb.fixed) "leverage"))
+                        if (comb.fixed & !all(x$narms > 2)) "leverage"))
     
     
     res.r <- cbind(treat1, treat2,

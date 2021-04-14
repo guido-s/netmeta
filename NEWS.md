@@ -32,6 +32,7 @@
   - new arguments 'sd1', 'sd2', 'time1', and 'time2' used to calculate
     variance-covariance matrix for REML and ML estimator of
     between-study heterogeneity
+  - do not calculate leverages for multi-arm studies
 
 * netconnection():
   - first argument can be of class 'pairwise'
