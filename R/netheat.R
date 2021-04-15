@@ -248,11 +248,10 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   
   t1 <- -diff
-  ##
-  ## Replaces NAs with zeros
-  ##
-  t1[is.na(t1)] <- 0
-  ##
+  wi <- which(apply(t1, 2, function(x) sum(is.na(x)) == nrow(t1)))
+  if (length(wi) > 0) {
+    t1 <- t1[-wi, -wi, drop = FALSE]
+  }
   dmat <- t1
   d1 <- dist(dmat, method = "manhattan")
   d1 <- d1 + dist(t(dmat), method = "manhattan")
@@ -286,7 +285,10 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
              rgb(1, 1, 1), rgb(clev, clev, 1))
   
   
-  Hp <- H[as.character(design$comparison), ]
+  if (length(wi) > 0)
+    Hp <- H[(as.character(design$comparison)[-wi]), -wi]
+  else
+    Hp <- H[as.character(design$comparison), ]
   ##
   if (!showall)
     Hp <- Hp[!(rownames(Hp) %in% drop.designs),
@@ -304,7 +306,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   
   oldpar <- va.image(t(tn) + max(abs(tn)),
-                     design, Hpn, h1, col = mycol)
+                     design, Hpn, h1, wi,
+                     col = mycol)
   ##  
   on.exit(par(oldpar))
   
