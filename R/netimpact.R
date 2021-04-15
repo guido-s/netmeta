@@ -59,7 +59,9 @@
 #' @export netimpact
 
 
-netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01,
+netimpact <- function(x,
+                      seTE.ignore = 100 * max(x$seTE, na.rm = TRUE),
+                      event.ignore = 0.01,
                       verbose = FALSE) {
   
   
