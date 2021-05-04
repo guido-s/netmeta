@@ -118,7 +118,10 @@ netimpact <- function(x,
       seTE.i <- seTE
       seTE.i[studlab == i] <- seTE.ignore
       ##
-      net.i <- netmeta(TE, seTE.i, treat1, treat2, studlab, tau.preset = x$tau)
+      net.i <- netmeta(TE, seTE.i, treat1, treat2, studlab,
+                       tau.preset = x$tau,
+                       tol.multiarm = x$tol.multiarm,
+                       tol.multiarm.se = x$tol.multiarm.se)
     }
     else {
       event1.i <- event1

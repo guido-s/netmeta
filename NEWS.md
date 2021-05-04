@@ -79,6 +79,10 @@
   - new list elements 'comparisons' and 'subnet.comparisons' with
     information on direct comparisons
 
+* netimpact():
+  - consider values for arguments 'tol.multiarm' and 'tol.multiarm.se'
+    from network meta-analysis object
+
 * nma.krahn():
   - new argument 'reference.group' to specify the reference group
 
