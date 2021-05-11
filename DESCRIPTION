@@ -35,5 +35,4 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <DOI:10.1002/jrsm.1143>.
 License: GPL (>= 2)
 Encoding: UTF-8
-#LazyData: true
 RoxygenNote: 7.1.1
