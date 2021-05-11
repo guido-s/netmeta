@@ -338,7 +338,7 @@ netcomb <- function(x,
   ##
   x <- upgradenetmeta(x)
   ##
-  meta:::chkchar(sep.comps, nchar = 1)
+  meta:::chkchar(sep.comps, nchar = 1, length = 1)
   ##
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)

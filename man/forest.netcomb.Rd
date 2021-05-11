@@ -20,6 +20,7 @@
   lab.NA = ".",
   add.data,
   drop.reference.group = FALSE,
+  weight.study = "same",
   ...
 )
 }
@@ -75,6 +76,9 @@ print in forest plot (see Details).}
 
 \item{drop.reference.group}{A logical indicating whether the
 reference group should be printed in the forest plot.}
+
+\item{weight.study}{A character string indicating weighting used to
+determine size of squares or diamonds.}
 
 \item{\dots}{Additional arguments for \code{\link{forest.meta}}
 function.}

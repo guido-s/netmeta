@@ -5,7 +5,12 @@
 \title{Determine the importance of individual studies in network
 meta-analysis}
 \usage{
-netimpact(x, seTE.ignore = 10000, event.ignore = 0.01, verbose = FALSE)
+netimpact(
+  x,
+  seTE.ignore = 100 * max(x$seTE, na.rm = TRUE),
+  event.ignore = 0.01,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}

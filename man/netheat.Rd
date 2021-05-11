@@ -8,7 +8,7 @@ netheat(
   x,
   random = FALSE,
   tau.preset = NULL,
-  showall = FALSE,
+  showall = TRUE,
   nchar.trts = x$nchar.trts,
   ...
 )
@@ -24,7 +24,7 @@ between-study variance \eqn{\tau^2} for a random effects model on
 which the net heat plot will be based.}
 
 \item{showall}{A logical indicating whether results should be shown
-for all designs or only a sensible subset, see Details.}
+for all designs or only a sensible subset (see Details).}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
@@ -66,11 +66,15 @@ The pairwise contrasts corresponding to designs of three- or
 multi-arm studies are marked by '_' following the treatments of the
 design.
 
-By default (\code{showall = FALSE}), designs where only one
-treatment is involved in other designs of the network or where the
-removal of corresponding studies would lead to a splitting of the
-network do not contribute to the inconsistency assessment and are
-not incorporated into the net heat plot.
+Designs where only one treatment is involved in other designs of
+the network or where the removal of corresponding studies would
+lead to a splitting of the network do not contribute to the
+inconsistency assessment. By default (\code{showall = TRUE}), these
+designs are not incorporated into the net heat plot. If
+\code{showall = FALSE}, additional designs with minimal
+contribution to the inconsistency Q statistic are not incorporated
+(i.e., designs with \code{abs(Q.inc.design)} \code{<=}
+\code{.Machine$double.eps^0.5)}.).
 
 In the case of \code{random = TRUE}, the net heat plot is based on
 a random effects model generalised for multivariate meta-analysis

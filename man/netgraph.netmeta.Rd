@@ -86,8 +86,8 @@ around the network graph).}
 
 \item{col}{A single color (or vector of colors) for lines
 connecting treatments (edges) if argument \code{plastic =
-FALSE}. Length of the vector must be equal to the number of
-edges.}
+FALSE}. Length of the vector must be equal to the number of edges
+(see list element 'comparisons' in \code{\link{netmeta}}).}
 
 \item{plastic}{A logical indicating whether the appearance of the
 comparisons should be in '3D look' (not to be confused with

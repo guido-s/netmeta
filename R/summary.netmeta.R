@@ -55,6 +55,8 @@
 #'   root of the between-study variance \eqn{\tau^2}.
 #' @param text.I2 Text printed to identify heterogeneity statistic
 #'   I\eqn{^2}.
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
 #' @param \dots Additional arguments.
 #' 
 #' @return
@@ -376,6 +378,8 @@ print.summary.netmeta <- function(x,
                                   text.tau = gs("text.tau"),
                                   text.I2 = gs("text.I2"),
                                   ##
+                                  legend = TRUE,
+                                  ##
                                   ...) {
   
   
@@ -429,6 +433,8 @@ print.summary.netmeta <- function(x,
   chkchar(text.tau2)
   chkchar(text.tau)
   chkchar(text.I2)
+  ##
+  chklogical(legend)
   
   
   ##
@@ -1013,9 +1019,11 @@ print.summary.netmeta <- function(x,
     names(tmat) <- c("Abbreviation", "Treatment name")
     tmat <- tmat[order(tmat$Abbreviation), ]
     ##
-    cat("\nLegend:\n")
-    prmatrix(tmat, quote = FALSE, right = TRUE,
-             rowlab = rep("", length(abbr))) 
+    if (legend) {
+      cat("\nLegend:\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(abbr)))
+    }
   }
   
   

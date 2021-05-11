@@ -169,7 +169,7 @@ forest.netsplit <- function(x,
                             col.predict = "red",
                             col.predict.lines = "black",
                             ##
-                            equal.size = FALSE,
+                            equal.size = TRUE,
                             ##
                             leftcols,
                             leftlabs,

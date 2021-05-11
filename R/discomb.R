@@ -12,7 +12,8 @@
 #' 
 #' @param TE Estimate of treatment effect, i.e. difference between
 #'   first and second treatment (e.g. log odds ratio, mean difference,
-#'   or log hazard ratio).
+#'   or log hazard ratio). Or an R object created with
+#'   \code{\link{pairwise}}.
 #' @param seTE Standard error of treatment estimate.
 #' @param treat1 Label/Number for first treatment.
 #' @param treat2 Label/Number for second treatment.
@@ -381,7 +382,7 @@ discomb <- function(TE, seTE,
   chklogical <- meta:::chklogical
   chknumeric <- meta:::chknumeric
   ##
-  chkchar(sep.comps, nchar = 1)
+  chkchar(sep.comps, nchar = 1, length = 1)
   ##
   chklevel(level)
   chklevel(level.comb)
@@ -389,6 +390,9 @@ discomb <- function(TE, seTE,
   chklogical(comb.fixed)
   chklogical(comb.random)
   ##
+  missing.reference.group <- missing(reference.group) 
+  if (missing.reference.group)
+    reference.group <- ""
   chklogical(baseline.reference)
   ##
   if (!is.null(tau.preset))
@@ -424,23 +428,53 @@ discomb <- function(TE, seTE,
   ##
   TE <- eval(mf[[match("TE", names(mf))]],
              data, enclos = sys.frame(sys.parent()))
+  ##
+  if (inherits(TE, "pairwise")) {
+    is.pairwise <- TRUE
+    ##
+    sm <- attr(TE, "sm")
+    if (missing.reference.group) {
+      reference.group <- attr(TE, "reference.group")
+      if (is.null(reference.group))
+        reference.group <- ""
+    }
+    ##
+    keep.all.comparisons <- attr(TE, "keep.all.comparisons")
+    if (!is.null(keep.all.comparisons) && !keep.all.comparisons)
+      stop("First argument is a pairwise object created with ",
+           "'keep.all.comparisons = FALSE'.",
+           call. = TRUE)
+    ##
+    seTE <- TE$seTE
+    treat1 <- TE$treat1
+    treat2 <- TE$treat2
+    studlab <- TE$studlab
+    ##
+    pairdata <- TE
+    data <- TE
+    ##
+    TE <- TE$TE
+  }
+  else {
+    is.pairwise <- FALSE
   if (missing(sm))
     if (!is.null(data) && !is.null(attr(data, "sm")))
       sm <- attr(data, "sm")
     else
       sm <- ""
-  ##
-  seTE <- eval(mf[[match("seTE", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
-  ##
-  treat1 <- eval(mf[[match("treat1", names(mf))]],
+    ##
+    seTE <- eval(mf[[match("seTE", names(mf))]],
                  data, enclos = sys.frame(sys.parent()))
-  ##
-  treat2 <- eval(mf[[match("treat2", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
-  ##
-  studlab <- eval(mf[[match("studlab", names(mf))]],
-                  data, enclos = sys.frame(sys.parent()))
+    ##
+    treat1 <- eval(mf[[match("treat1", names(mf))]],
+                   data, enclos = sys.frame(sys.parent()))
+    ##
+    treat2 <- eval(mf[[match("treat2", names(mf))]],
+                   data, enclos = sys.frame(sys.parent()))
+    ##
+    studlab <- eval(mf[[match("studlab", names(mf))]],
+                    data, enclos = sys.frame(sys.parent()))
+  }
   ##
   chknumeric(TE)
   chknumeric(seTE)
@@ -485,7 +519,10 @@ discomb <- function(TE, seTE,
   ##
   if (compmatch(labels, sep.trts)) {
     if (!missing.sep.trts)
-      warning("Separator '", sep.trts, "' used in at least one treatment label. Try to use predefined separators: ':', '-', '_', '/', '+', '.', '|', '*'.")
+      warning("Separator '", sep.trts, "' used in at least ",
+              "one treatment label. Try to use predefined separators: ",
+              "':', '-', '_', '/', '+', '.', '|', '*'.",
+              call. = FALSE)
     ##
     if (!compmatch(labels, ":"))
       sep.trts <- ":"
@@ -504,8 +541,11 @@ discomb <- function(TE, seTE,
     else if (!compmatch(labels, "*"))
       sep.trts <- "*"
     else
-      stop("All predefined separators (':', '-', '_', '/', '+', '.', '|', '*') are used in at least one treatment label.",
-           "\n   Please specify a different character that should be used as separator (argument 'sep.trts').",
+      stop("All predefined separators ",
+           "(':', '-', '_', '/', '+', '.', '|', '*') ",
+           "are used in at least one treatment label.",
+           "\n   Please specify a different character that ",
+           "should be used as separator (argument 'sep.trts').",
            call. = FALSE)
   }
   ##
@@ -528,17 +568,20 @@ discomb <- function(TE, seTE,
   ##
   if (!(any(grepl(sep.comps, treat1, fixed = TRUE)) |
         any(grepl(sep.comps, treat2, fixed = TRUE))))
-    warning("No treatment contains the component separator '", sep.comps, "'.")
+    warning("No treatment contains the component separator '", sep.comps, "'.",
+            call. = FALSE)
   ##
   if (any(treat1 == treat2))
-    stop("Treatments must be different (arguments 'treat1' and 'treat2').")
+    stop("Treatments must be different (arguments 'treat1' and 'treat2').",
+         call. = FALSE)
   ##
   if (length(studlab) != 0)
     studlab <- as.character(studlab)
   else {
     if (warn)
       warning("No information given for argument 'studlab'. ",
-              "Assuming that comparisons are from independent studies.")
+              "Assuming that comparisons are from independent studies.",
+              call. = FALSE)
     studlab <- seq(along = TE)
   }
   ##
@@ -578,7 +621,8 @@ discomb <- function(TE, seTE,
                           )
     warning("Comparison",
             if (sum(excl) > 1) "s",
-            " with missing TE / seTE or zero seTE not considered in network meta-analysis.",
+            " with missing TE / seTE or zero seTE not considered in",
+            " network meta-analysis.",
             call. = FALSE)
     cat(paste("Comparison",
               if (sum(excl) > 1) "s",
@@ -694,9 +738,44 @@ discomb <- function(TE, seTE,
   colnames(X.matrix) <- colnames(C.matrix)
   rownames(X.matrix) <- studlab
   ##
-  if (qr(X.matrix)$rank < c)
-    warning("A total of ", c - qr(X.matrix)$rank, " of ", c,
-            " treatment components cannot be estimated.")
+  sel.comps <- character(0)
+  ##
+  if (qr(X.matrix)$rank < c) {
+    sum.trts <- apply(abs(X.matrix), 2, sum)
+    sel.comps <- gsub("^\\s+|\\s+$", "",
+                      names(sum.trts)[sum.trts == 0])
+    ##
+    if (length(sel.comps > 0)) {
+      list.trts <- lapply(compsplit(labels, sep.comps),
+                          gsub, pattern = "^\\s+|\\s+$", replacement = "")
+      sel.combs <- rep(NA, length(list.trts))
+      ##
+      for (i in seq_along(list.trts))
+        sel.combs[i] <- any(list.trts[[i]] %in% sel.comps)
+      ##
+      sel.combs <- labels[sel.combs]
+      ##
+      warning("The following treatment component",
+              if (length(sel.comps) > 1) "s",
+              " cannot be estimated: ",
+               paste(paste("'", sel.comps, "'", sep = ""),
+                     collapse = ", "),
+              "\nAccordingly, the following treatment combination",
+              if (length(sel.combs) > 1) "s",
+             " cannot be estimated:\n",
+               paste(paste("'", sel.combs, "'", sep = ""),
+                     collapse = ", "),
+             "\nPlease consider whether a network meta-analysis without",
+             " inestimable component",
+             if (length(sel.comps) > 1) "s",
+             " is sensible.",
+             call. = FALSE)
+    }
+    else
+      warning("A total of ", c - qr(X.matrix)$rank, " of ", c,
+              " treatment components cannot be estimated.",
+              call. = FALSE)
+  }
   
   
   tdata <- data.frame(studies = p0$studlab[o], narms = p0$narms[o])
@@ -964,6 +1043,88 @@ discomb <- function(TE, seTE,
     res$multiarm <- rep(FALSE, length(res$studlab))
   }
   
+  
+  ##
+  ## Remove estimates for inestimable combinations and components
+  ##
+  if (length(sel.comps) > 0) {
+    ##
+    res$c <- res$c - length(sel.comps)
+    ##
+    ## Identify combinations
+    ##
+    list.trts <- lapply(compsplit(res$trts, sep.comps),
+                        gsub, pattern = "^\\s+|\\s+$", replacement = "")
+    sel1 <- rep(NA, length(list.trts))
+    ##
+    for (i in seq_along(list.trts))
+      sel1[i] <- any(list.trts[[i]] %in% sel.comps)
+    ##
+    res$Comb.fixed[sel1] <- NA
+    res$seComb.fixed[sel1] <- NA
+    res$lower.Comb.fixed[sel1] <- NA
+    res$upper.Comb.fixed[sel1] <- NA
+    res$statistic.Comb.fixed[sel1] <- NA
+    res$pval.Comb.fixed[sel1] <- NA
+    ##
+    res$Comb.random[sel1] <- NA
+    res$seComb.random[sel1] <- NA
+    res$lower.Comb.random[sel1] <- NA
+    res$upper.Comb.random[sel1] <- NA
+    res$statistic.Comb.random[sel1] <- NA
+    res$pval.Comb.random[sel1] <- NA
+    ##
+    res$TE.fixed[sel1, ] <- NA
+    res$seTE.fixed[sel1, ] <- NA
+    res$lower.fixed[sel1, ] <- NA
+    res$upper.fixed[sel1, ] <- NA
+    res$statistic.fixed[sel1, ] <- NA
+    res$pval.fixed[sel1, ] <- NA
+    ##
+    res$TE.fixed[, sel1] <- NA
+    res$seTE.fixed[, sel1] <- NA
+    res$lower.fixed[, sel1] <- NA
+    res$upper.fixed[, sel1] <- NA
+    res$statistic.fixed[, sel1] <- NA
+    res$pval.fixed[, sel1] <- NA
+    ##
+    res$TE.random[sel1, ] <- NA
+    res$seTE.random[sel1, ] <- NA
+    res$lower.random[sel1, ] <- NA
+    res$upper.random[sel1, ] <- NA
+    res$statistic.random[sel1, ] <- NA
+    res$pval.random[sel1, ] <- NA
+    ##
+    res$TE.random[, sel1] <- NA
+    res$seTE.random[, sel1] <- NA
+    res$lower.random[, sel1] <- NA
+    res$upper.random[, sel1] <- NA
+    res$statistic.random[, sel1] <- NA
+    res$pval.random[, sel1] <- NA
+    ##
+    ## Identify components
+    ##
+    list.comps <- lapply(compsplit(res$comps, sep.comps),
+                         gsub, pattern = "^\\s+|\\s+$", replacement = "")
+    sel2 <- rep(NA, length(list.comps))
+    ##
+    for (i in seq_along(list.comps))
+      sel2[i] <- any(list.comps[[i]] %in% sel.comps)
+    ##
+    res$Comp.fixed[sel2] <- NA
+    res$seComp.fixed[sel2] <- NA
+    res$lower.Comp.fixed[sel2] <- NA
+    res$upper.Comp.fixed[sel2] <- NA
+    res$statistic.Comp.fixed[sel2] <- NA
+    res$pval.Comp.fixed[sel2] <- NA
+    ##
+    res$Comp.random[sel2] <- NA
+    res$seComp.random[sel2] <- NA
+    res$lower.Comp.random[sel2] <- NA
+    res$upper.Comp.random[sel2] <- NA
+    res$statistic.Comp.random[sel2] <- NA
+    res$pval.Comp.random[sel2] <- NA
+  }
   
   res
 }

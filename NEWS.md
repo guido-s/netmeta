@@ -1,3 +1,92 @@
+## netmeta, version 1.4-0 (2021-05-11)
+    
+### Major changes
+
+* Restricted maximum likelihood and maximum likelihood estimator for
+  between-study heterogeneity implemented by calling rma.mv() from R
+  package **metafor** internally
+
+* R function pairwise() can be used to generate reduced data set with
+  basic comparisons [Rücker & Schwarzer
+  (2014)](https://doi.org/10.1002/sim.6236)
+
+* R function discomb() can be used with an R object created with pairwise()
+
+### Bug fixes
+
+* netmeta():
+  - use of ginv() instead of solve() to calculate pseudo inverse of
+    Laplace matrix resulted in wrong results for some extreme network
+    structures (bug was introduced in **netmeta**, version 1.3-0)
+
+* netgraph.netmeta():
+  - highlighting more than one comparison (argument 'highlight')
+    resulted in an error if argument 'col.highlight' was not of same
+    length
+
+### User-visible changes
+
+* netmeta():
+  - new argument 'method.tau' to select estimation method for
+    between-study variance
+  - new arguments 'sd1', 'sd2', 'time1', and 'time2' used to calculate
+    variance-covariance matrix for REML and ML estimator of
+    between-study heterogeneity
+  - do not calculate leverages for multi-arm studies
+
+* netconnection():
+  - first argument can be of class 'pairwise'
+
+* pairwise():
+  - new arguments 'reference.group' and 'keep.all.comparisons'
+  - first argument can be of class 'pairwise'
+
+* netgraph.netconnection():
+  - print subnetworks in different colors
+
+* forest.netmeta():
+  - new argument 'equal.size' to determine whether square size should
+    be equal or proportional to precision of estimates
+
+* forest.netbind(), forest.netsplit():
+  - new default for argument 'equal.size', i.e., square sizes are equal
+
+* forest.netbind():
+  - new argument 'subset.treatments' to select treatments shown in
+    forest plot
+
+* netmeasures():
+  - return direct evidence proportion for single design with two
+    treatments
+
+* netheat():
+  - all designs are shown in net heat plot by default
+
+### Internal changes
+
+* New internal function invmat() to calculate inverse of matrix
+
+* New internal function calcV() to calculate variance-covariance
+  matrix used as input to rma.mv()
+
+* nma.ruecker(), multiarm():
+  - use solve() instead of ginv() to calculate inverse of matrix L
+
+* netmeta():
+  - new list element 'comparisons' with information on direct comparisons
+
+* netconnection():
+  - new list elements 'comparisons' and 'subnet.comparisons' with
+    information on direct comparisons
+
+* netimpact():
+  - consider values for arguments 'tol.multiarm' and 'tol.multiarm.se'
+    from network meta-analysis object
+
+* nma.krahn():
+  - new argument 'reference.group' to specify the reference group
+
+
 ## netmeta, version 1.3-0 (2021-01-15)
 
 ### Major changes
@@ -239,7 +328,7 @@
 * netmeta():
   - no error if argument 'studlab' is missing
   - tackle numerical problems with zero treatment arm variances -
-    actually by changes in internal function multiarm()      
+    actually by changes in internal function multiarm()
   - calculate the correct number of patients and events for each
     treatment arm in networks with multi-arm studies
 

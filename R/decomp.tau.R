@@ -26,12 +26,23 @@ decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
   df.net.minus <- numeric(length(designs))
   names(df.net.minus) <- designs
   ##
+  isMat <- function(x)
+    "matrix" %in% class(try(solve(x), silent = TRUE))
+  ##
   for (i in designs) {
     narms <- design$narms[design$design == i][1]
     Xb <- cbind(X.obs,matrix(0, nrow(X.obs), narms - 1))
     Xb[(rownames(X.obs) == i), ] <- 0
-    Xb[(rownames(X.obs) == i), ncol(X.obs) + (1:(narms - 1))] <- diag(narms - 1)
-    TE.net.minus[, i] <- Xb %*% ginv(t(Xb) %*% solve(V) %*% Xb) %*% t(Xb) %*% solve(V) %*% design$TE.dir
+    Xb[(rownames(X.obs) == i), ncol(X.obs) + (1:(narms - 1))] <-
+      diag(narms - 1)
+    ##
+    XVX <- t(Xb) %*% solve(V) %*% Xb
+    if (isMat(XVX))
+      TE.net.minus[, i] <-
+        Xb %*% solve(XVX) %*% t(Xb) %*% solve(V) %*% design$TE.dir
+    else
+      TE.net.minus[, i] <- rep(NA, nrow(X.obs))
+    ##
     df.net.minus[i] <- qr(Xb)$rank
   }
   ##
@@ -47,7 +58,8 @@ decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
     TE.i <- studies$TE[as.character(studies$design) == i]
     TE.dir.i <- studies$TE.dir[as.character(studies$design) == i]
     ##
-    Q.het.design[which(design$design == i)[1]] <- t(TE.i - TE.dir.i) %*% solve(Vs) %*% (TE.i - TE.dir.i)
+    Q.het.design[which(design$design == i)[1]] <- t(TE.i - TE.dir.i) %*%
+      solve(Vs) %*% (TE.i - TE.dir.i)
     freq.d[which(design$design == i)[1]] <- length(TE.i)
   }
   ##
@@ -57,12 +69,15 @@ decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
   
   
   df.het.design <- freq.d - (design$narms - 1)
-  pval.het.design <- pchisq(Q.het.design, df = df.het.design, lower.tail = FALSE)
+  pval.het.design <- pchisq(Q.het.design, df = df.het.design,
+                            lower.tail = FALSE)
   pval.het.design[df.het.design == 0] <- NA
   ##
-  Q.het <- t(studies$TE - studies$TE.dir) %*% solve(V.studies) %*% (studies$TE - studies$TE.dir)
+  Q.het <- t(studies$TE - studies$TE.dir) %*% solve(V.studies) %*%
+    (studies$TE - studies$TE.dir)
   ## Formula (7) in Krahn et al. (2013)
-  Q.net <- t(studies$TE - studies$TE.net) %*% solve(V.studies) %*% (studies$TE - studies$TE.net)
+  Q.net <- t(studies$TE - studies$TE.net) %*% solve(V.studies) %*%
+    (studies$TE - studies$TE.net)
   ## Formula (8) in Krahn et al. (2013)
   Q.inc <- Q.net - Q.het
   ##
@@ -70,7 +85,8 @@ decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
   df.net <- sum(freq.d, na.rm = TRUE) - ncol(X.obs)
   df.inc <- df.net - df.het
   ##
-  Qid <- t(design$TE.dir - design$TE.net) %*% solve(V) * (design$TE.dir - design$TE.net)
+  Qid <- t(design$TE.dir - design$TE.net) %*% solve(V) *
+    (design$TE.dir - design$TE.net)
   nam <- colnames(Qid)
   Q.inc.design <- as.vector(Qid)
   names(Q.inc.design) <- nam
@@ -82,7 +98,8 @@ decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
   ##
   if (multiarm)
     for (i in 1:length(multicomp))
-      residuals[rownames(residuals) == multicomp[i], colnames(residuals) == multicomp[i]] <- 0
+      residuals[rownames(residuals) == multicomp[i],
+                colnames(residuals) == multicomp[i]] <- 0
   
   
   Q.inc.detach <- apply(residuals, 2, function(x) t(x) %*% solve(V) %*% x)
@@ -91,7 +108,8 @@ decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
   df.inc.detach <- rep_len(NA, length(NAfd))
   df.inc.detach[!NAfd]  <- nrow(X.obs) - df.net.minus 
   ##
-  pval.inc.detach <- pchisq(Q.inc.detach, df = df.inc.detach, lower.tail = FALSE)
+  pval.inc.detach <- pchisq(Q.inc.detach, df = df.inc.detach,
+                            lower.tail = FALSE)
   pval.inc.detach[df.inc.detach == 0] <- NA
   
   

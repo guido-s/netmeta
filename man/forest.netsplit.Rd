@@ -27,7 +27,7 @@
   col.diamond.lines = "black",
   col.predict = "red",
   col.predict.lines = "black",
-  equal.size = FALSE,
+  equal.size = TRUE,
   leftcols,
   leftlabs,
   rightcols = c("effect", "ci"),

@@ -46,7 +46,7 @@ network meta-analysis:
 
 Furthermore, R package **netmeta** provides functions and datasets to
 support Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
-http://meta-analysis-with-r.org/ .
+https://www.springer.com/gp/book/9783319214153 .
 
 ### References
 

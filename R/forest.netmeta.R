@@ -5,14 +5,17 @@
 #' graphics system).
 #' 
 #' @param x An object of class \code{netmeta}.
+#' @param pooled A character string indicating whether results for the
+#'   fixed effect (\code{"fixed"}) or random effects model
+#'   (\code{"random"}) should be plotted. Can be abbreviated.
 #' @param reference.group Reference treatment(s).
 #' @param baseline.reference A logical indicating whether results
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa.
 #' @param labels An optional vector with treatment labels.
-#' @param pooled A character string indicating whether results for the
-#'   fixed effect (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#' @param equal.size A logical indicating whether all squares should
+#'   be of equal size. Otherwise, the square size is proportional to
+#'   the precision of estimates.
 #' @param leftcols A character vector specifying columns to be plotted
 #'   on the left side of the forest plot or a logical value (see
 #'   Details).
@@ -179,6 +182,7 @@ forest.netmeta <- function(x,
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
                            labels = x$trts,
+                           equal.size = TRUE,
                            leftcols = "studlab",
                            leftlabs,
                            rightcols = c("effect", "ci"),
@@ -213,6 +217,8 @@ forest.netmeta <- function(x,
   formatN <- meta:::formatN
   ##
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  ##
+  chklogical(equal.size)
   ##
   meta:::chknumeric(digits, min = 0, length = 1)
   if (is.null(small.values))
@@ -274,6 +280,11 @@ forest.netmeta <- function(x,
   if (missing(rightlabs)) {
     rightlabs <- rightcols
     rightlabs[rightcols %in% stdlabs] <- NA
+  }
+  ##
+  for (i in names(list(...))) {
+    if (!is.null(meta:::setchar(i, "weight.study", stop = FALSE)))
+      stop("Argument 'weight.study' set internally.", call. = TRUE)
   }
   
   
@@ -516,6 +527,8 @@ forest.netmeta <- function(x,
          ##
          col.by = col.by,
          print.byvar = print.byvar,
+         ##
+         weight.study = if (equal.size) "same" else pooled,
          ##
          ...)
   

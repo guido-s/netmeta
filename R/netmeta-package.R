@@ -3,7 +3,7 @@
 #' @description
 #' R package \bold{netmeta} provides frequentist methods for network
 #' meta-analysis and supports Schwarzer et al. (2015), Chapter 8 on
-#' network meta-analysis \url{http://meta-analysis-with-r.org/}.
+#' network meta-analysis \url{https://www.springer.com/gp/book/9783319214153}.
 #' 
 #' @details
 #' R package \bold{netmeta} is an add-on package for \bold{meta}
@@ -48,7 +48,7 @@
 #' 
 #' Furthermore, functions and datasets from \bold{netmeta} are
 #' utilised in Schwarzer et al. (2015), Chapter 8
-#' "Network Meta-Analysis", \url{http://meta-analysis-with-r.org/}.
+#' "Network Meta-Analysis", \url{https://www.springer.com/gp/book/9783319214153}.
 #' 
 #' Type \code{help(package = "netmeta")} for a listing of all R
 #' functions available in \bold{netmeta}.
@@ -168,7 +168,7 @@
 #'   theme element_blank element_text scale_fill_gradient2 geom_text
 #'   ggtitle
 #'
-#' @importFrom metafor rma.mv
+#' @importFrom metafor bldiag contrmat rma.mv
 
 
 NULL

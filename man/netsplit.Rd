@@ -121,7 +121,7 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 
 \item{big.mark}{A character used as thousands separator.}
 
-\item{legend}{A logical indicating whether a legend show be
+\item{legend}{A logical indicating whether a legend should be
 printed.}
 
 \item{...}{Additional arguments (ignored at the moment)}

@@ -11,8 +11,8 @@
 #' @param cex The magnification to be used for treatment labels.
 #' @param col A single color (or vector of colors) for lines
 #'   connecting treatments (edges) if argument \code{plastic =
-#'   FALSE}. Length of the vector must be equal to the number of
-#'   edges.
+#'   FALSE}. Length of the vector must be equal to the number of edges
+#'   (see list element 'comparisons' in \code{\link{netmeta}}).
 #' @param adj One, two, or three values in [0, 1] (or a vector /
 #'   matrix with length / number of rows equal to the number of
 #'   treatments) specifying the x (and optionally y and z) adjustment
@@ -562,8 +562,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
   addargs <- names(list(...))
   ##
   if ("highlight.split" %in% addargs)
-    warning("Argument 'highlight.split' has been removed from R function netgraph.\n",
-            "  This argument has been replaced by argument 'sep.trts' in R function netmeta.")
+    warning("Argument 'highlight.split' has been removed from ",
+            "R function netgraph.\n  This argument has been replaced by ",
+            "argument 'sep.trts' in R function netmeta.")
   ##
   highlight.split <- x$sep.trts
   ##
@@ -584,6 +585,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
         stop("Argument 'scale.highlight' must be a single value or ",
              "of same length as argument 'highlight'.", call. = FALSE)
   }
+  ##
+  if (length(col.highlight) == 1 & n.high > 1)
+    col.highlight <- rep(col.highlight, n.high)
   
   
   if (missing(plastic))
@@ -879,9 +883,10 @@ netgraph.netmeta <- function(x, seq = x$seq,
            "number of treatments.",
            eval. = FALSE)
     if (is.null(names(srt.labels)))
-      dat.nodes$srt <- srt.labels
+      dat.nodes$srt <- srt.labels[seq1]
     else {
       ## Check names of named vector 'srt.labels'
+      srt.labels <- srt.labels[seq1]
       names.srt.labels <- names(srt.labels)
       names.srt.labels <- setseq(names.srt.labels, dat.nodes$trts,
                                  paste0("Names of vector provided in ",
@@ -1058,7 +1063,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
         for (h in seq_len(n.high)) {
           col.high.h <- col.highlight[h]
           if (col.high.h != "transparent") {
-            if (substring(col.high.h, nchar(col.high.h)) %in% 1:4)
+            if (nchar(col.high.h) > 1 &
+                substring(col.high.h, nchar(col.high.h)) %in% 1:4)
               col.high.h <- substring(col.high.h, 1, nchar(col.high.h) - 1)
             ##
             cols.highlight[h, 1:12] <- rep(paste(col.high.h, 4:1, sep = ""),

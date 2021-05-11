@@ -1,4 +1,4 @@
-#' Additional functions for objects of class netmeta
+#' Create a data frame from an object of class netmeta
 #' 
 #' @description
 #' The \code{as.data.frame} method returns a data frame containing

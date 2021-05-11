@@ -52,6 +52,8 @@
 #'   length as \code{x$TE} or contain numerical values).
 #' @param text.truncate A character string printed if study results
 #'   were truncated from the printout.
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
 #' @param \dots Additional arguments.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
@@ -122,6 +124,9 @@ print.netmeta <- function(x,
                           scientific.pval = gs("scientific.pval"),
                           big.mark = gs("big.mark"),
                           truncate, text.truncate = "*** Output truncated ***",
+                          ##
+                          legend = TRUE,
+                          ##
                           ...
                           ) {
   
@@ -154,6 +159,8 @@ print.netmeta <- function(x,
   chknumeric(digits.I2, min = 0, length = 1)
   ##
   chklogical(scientific.pval)
+  ##
+  chklogical(legend)
   
   
   ##
@@ -270,13 +277,14 @@ print.netmeta <- function(x,
         sortvar <- sortvar[truncate]
         res <- res[truncate, , drop = FALSE]
       }
-      
+      ##
       prmatrix(res[order(sortvar), , drop = FALSE],
                quote = FALSE, right = TRUE)
       if (!missing.truncate)
         cat(text.truncate, "\n")
       cat("\n")
-
+      
+      
       studyarms <- data.frame(narms = x$narms, row.names = x$studies)
       if (!missing.truncate)
         studyarms <-
@@ -322,12 +330,14 @@ print.netmeta <- function(x,
                    if (comb.fixed)
                      formatN(round(x$Q.fixed, digits.Q), digits.Q, "NA",
                              big.mark = big.mark),
-                   if (comb.fixed) format(round(x$leverage.fixed, 2)))
+                   if (comb.fixed & !all(x$narms > 2))
+                     formatN(round(x$leverage.fixed, 2), 2, ".")
+                   )
     dimnames(res.f) <-
       list(x$studlab, c("treat1", "treat2",
                         sm.lab, ci.lab,
                         if (comb.fixed) "Q",
-                        if (comb.fixed) "leverage"))
+                        if (comb.fixed & !all(x$narms > 2)) "leverage"))
     
     
     res.r <- cbind(treat1, treat2,
@@ -396,7 +406,9 @@ print.netmeta <- function(x,
           digits.tau2 = digits.tau2,
           digits.I2 = digits.I2,
           scientific.pval = scientific.pval,
-          big.mark = big.mark)
+          big.mark = big.mark,
+          ##
+          legend = legend)
   else
     if (!is.null(abbr)) {
       abbr <- unique(abbr)
@@ -406,9 +418,11 @@ print.netmeta <- function(x,
       names(tmat) <- c("Abbreviation", "Treatment name")
       tmat <- tmat[order(tmat$Abbreviation), ]
       ##
-      cat("Legend:\n")
-      prmatrix(tmat, quote = FALSE, right = TRUE,
-               rowlab = rep("", length(abbr)))
+      if (legend) {
+        cat("Legend:\n")
+        prmatrix(tmat, quote = FALSE, right = TRUE,
+                 rowlab = rep("", length(abbr)))
+      }
     }
   
   invisible(NULL)

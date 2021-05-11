@@ -19,11 +19,12 @@ netmeta(
   comb.random = gs("comb.random") | !is.null(tau.preset),
   prediction = FALSE,
   level.predict = gs("level.predict"),
-  reference.group = "",
+  reference.group,
   baseline.reference = TRUE,
   small.values = "good",
   all.treatments = NULL,
   seq = NULL,
+  method.tau = "DL",
   tau.preset = NULL,
   tol.multiarm = 0.001,
   tol.multiarm.se = tol.multiarm,
@@ -34,6 +35,11 @@ netmeta(
   n2 = NULL,
   event1 = NULL,
   event2 = NULL,
+  incr = NULL,
+  sd1 = NULL,
+  sd2 = NULL,
+  time1 = NULL,
+  time2 = NULL,
   backtransf = gs("backtransf"),
   title = "",
   keepdata = gs("keepdata"),
@@ -44,7 +50,8 @@ netmeta(
 \arguments{
 \item{TE}{Estimate of treatment effect, i.e. difference between
 first and second treatment (e.g. log odds ratio, mean difference,
-or log hazard ratio).}
+or log hazard ratio). Or an R object created with
+\code{\link{pairwise}}.}
 
 \item{seTE}{Standard error of treatment estimate.}
 
@@ -93,7 +100,7 @@ only considered if \code{reference.group} has been specified.}
 \item{small.values}{A character string specifying whether small
 treatment effects indicate a beneficial (\code{"good"}) or
 harmful (\code{"bad"}) effect (passed on to
-link\code{\link{netrank}}, can be abbreviated.}
+\code{\link{netrank}}, can be abbreviated.}
 
 \item{all.treatments}{A logical or \code{"NULL"}. If \code{TRUE},
 matrices with all treatment effects, and confidence limits will
@@ -101,6 +108,11 @@ be printed.}
 
 \item{seq}{A character or numerical vector specifying the sequence
 of treatments in printouts.}
+
+\item{method.tau}{A character string indicating which method is
+used to estimate the between-study variance \eqn{\tau^2} and its
+square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
+\code{"ML"}, can be abbreviated.}
 
 \item{tau.preset}{An optional value for manually setting the
 square-root of the between-study variance \eqn{\tau^2}.}
@@ -132,6 +144,16 @@ characters used to create unique treatment names (see Details).}
 
 \item{event2}{Number of events in second treatment group.}
 
+\item{incr}{Numerical value to each cell frequency.  # @param mean1}
+
+\item{sd1}{Standard deviation in first treatment group.}
+
+\item{sd2}{Standard deviation in second treatment group.}
+
+\item{time1}{Person time at risk in first treatment group.}
+
+\item{time2}{Person time at risk in second treatment group.}
+
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
 \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -159,7 +181,8 @@ object is a list containing the following components:
 \item{seTE.adj}{Standard error of treatment estimate, adjusted for
   multi-arm studies.}
 \item{design}{Design of study providing pairwise comparison.}
-\item{n1, n2, event1, event2}{As defined above.}
+\item{n1, n2, event1, event2, incr}{As defined above.}
+\item{sd1, sd2, time1, time2}{As defined above.}
 \item{k}{Total number of studies.}
 \item{m}{Total number of pairwise comparisons.}
 \item{n}{Total number of treatments.}
@@ -180,6 +203,8 @@ object is a list containing the following components:
 \item{designs}{Vector with unique designs present in the network. A
   design corresponds to the set of treatments compared within a
   study.}
+\item{designs}{Vector with unique direct comparisons present in the
+  network.}
 \item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
   consistent treatment effects estimated by network meta-analysis
   (nma) (fixed effects / random effects model).}
@@ -454,6 +479,19 @@ characters are used as separator (in consecutive order):
 treatment labels, a corresponding error message is printed asking
 the user to specify a different separator.
 }
+\note{
+R function \code{\link[metafor]{rma.mv}} from R package
+\pkg{metafor} (Viechtbauer 2010) is called internally to estimate
+the between-study variance \eqn{\tau^2} for the (restricted)
+maximum likelihood method. For binary outcomes, incidence rates,
+and the mean difference, the variance-covariance matrix is
+calculated if arguments \code{event1}, \code{event2}, \code{n1},
+and \code{n2} (binary outcomes); \code{event1}, \code{event2},
+\code{time1}, and \code{time2} (incidence rates); \code{n1},
+\code{n2}, \code{sd1}, and \code{sd2} (mean difference) are
+provided. For data sets preprocessed with \code{\link{pairwise}}
+the respective variables are selected automatically.
+}
 \examples{
 data(Senn2013)
 
@@ -515,6 +553,11 @@ Senn S, Gavini F, Magrez D, Scheen A (2013):
 Issues in performing a network meta-analysis.
 \emph{Statistical Methods in Medical Research},
 \bold{22}, 169--89
+
+Viechtbauer W (2010):
+Conducting Meta-Analyses in R with the metafor Package.
+\emph{Journal of Statistical Software},
+\bold{36}, 1--48
 }
 \seealso{
 \code{\link{pairwise}}, \code{\link{forest.netmeta}},

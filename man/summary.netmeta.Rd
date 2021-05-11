@@ -40,6 +40,7 @@
   text.tau2 = gs("text.tau2"),
   text.tau = gs("text.tau"),
   text.I2 = gs("text.I2"),
+  legend = TRUE,
   ...
 )
 }
@@ -121,6 +122,9 @@ root of the between-study variance \eqn{\tau^2}.}
 
 \item{text.I2}{Text printed to identify heterogeneity statistic
 I\eqn{^2}.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
 }
 \value{
 A list is returned with the following elements:

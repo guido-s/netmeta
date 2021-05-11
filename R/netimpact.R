@@ -59,7 +59,9 @@
 #' @export netimpact
 
 
-netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01,
+netimpact <- function(x,
+                      seTE.ignore = 100 * max(x$seTE, na.rm = TRUE),
+                      event.ignore = 0.01,
                       verbose = FALSE) {
   
   
@@ -116,7 +118,10 @@ netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01,
       seTE.i <- seTE
       seTE.i[studlab == i] <- seTE.ignore
       ##
-      net.i <- netmeta(TE, seTE.i, treat1, treat2, studlab, tau.preset = x$tau)
+      net.i <- netmeta(TE, seTE.i, treat1, treat2, studlab,
+                       tau.preset = x$tau,
+                       tol.multiarm = x$tol.multiarm,
+                       tol.multiarm.se = x$tol.multiarm.se)
     }
     else {
       event1.i <- event1
@@ -128,7 +133,8 @@ netimpact <- function(x, seTE.ignore = 1e4, event.ignore = 0.01,
       n1.i[studlab == i] <- 1
       n2.i[studlab == i] <- 1
       ##
-      net.i <- netmetabin(event1.i, n1.i, event2.i, n2.i, treat1, treat2, studlab,
+      net.i <- netmetabin(event1.i, n1.i, event2.i, n2.i,
+                          treat1, treat2, studlab,
                           method = x$method, sm = x$sm)
     }
     nets[[i]] <- net.i

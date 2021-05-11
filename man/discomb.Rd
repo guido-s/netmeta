@@ -38,7 +38,8 @@ discomb(
 \arguments{
 \item{TE}{Estimate of treatment effect, i.e. difference between
 first and second treatment (e.g. log odds ratio, mean difference,
-or log hazard ratio).}
+or log hazard ratio). Or an R object created with
+\code{\link{pairwise}}.}
 
 \item{seTE}{Standard error of treatment estimate.}
 

@@ -37,7 +37,7 @@ nma.ruecker <- function(TE, seTE,
   ## Lplus is its Moore-Penrose pseudoinverse
   ##
   L <- t(B) %*% W %*% B
-  Lplus <- ginv(L)
+  Lplus <- invmat(L)
   Lplus[is.zero(Lplus)] <- 0
   ##
   ## R resistance distance (variance) matrix (n x n)

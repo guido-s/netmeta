@@ -10,6 +10,7 @@
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
   labels = x$trts,
+  equal.size = TRUE,
   leftcols = "studlab",
   leftlabs,
   rightcols = c("effect", "ci"),
@@ -42,6 +43,10 @@ should be expressed as comparisons of other treatments versus the
 reference treatment (default) or vice versa.}
 
 \item{labels}{An optional vector with treatment labels.}
+
+\item{equal.size}{A logical indicating whether all squares should
+be of equal size. Otherwise, the square size is proportional to
+the precision of estimates.}
 
 \item{leftcols}{A character vector specifying columns to be plotted
 on the left side of the forest plot or a logical value (see

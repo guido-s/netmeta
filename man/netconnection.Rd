@@ -12,6 +12,7 @@ netconnection(
   studlab,
   data = NULL,
   subset = NULL,
+  sep.trts = ":",
   nchar.trts = 666,
   title = "",
   warn = FALSE
@@ -26,7 +27,8 @@ netconnection(
 )
 }
 \arguments{
-\item{treat1}{Label / number for first treatment.}
+\item{treat1}{Label / number for first treatment or an object of
+class \code{pairwise}.}
 
 \item{treat2}{Label / number for second treatment.}
 
@@ -38,6 +40,9 @@ information.}
 
 \item{subset}{An optional vector specifying a subset of studies to
 be used.}
+
+\item{sep.trts}{A character used in comparison names as separator
+between treatment labels.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}

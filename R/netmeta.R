@@ -11,7 +11,8 @@
 #' 
 #' @param TE Estimate of treatment effect, i.e. difference between
 #'   first and second treatment (e.g. log odds ratio, mean difference,
-#'   or log hazard ratio).
+#'   or log hazard ratio). Or an R object created with
+#'   \code{\link{pairwise}}.
 #' @param seTE Standard error of treatment estimate.
 #' @param treat1 Label/Number for first treatment.
 #' @param treat2 Label/Number for second treatment.
@@ -44,12 +45,16 @@
 #' @param small.values A character string specifying whether small
 #'   treatment effects indicate a beneficial (\code{"good"}) or
 #'   harmful (\code{"bad"}) effect (passed on to
-#'   link\code{\link{netrank}}, can be abbreviated.
+#'   \code{\link{netrank}}, can be abbreviated.
 #' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
 #'   matrices with all treatment effects, and confidence limits will
 #'   be printed.
 #' @param seq A character or numerical vector specifying the sequence
 #'   of treatments in printouts.
+#' @param method.tau A character string indicating which method is
+#'   used to estimate the between-study variance \eqn{\tau^2} and its
+#'   square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
+#'   \code{"ML"}, can be abbreviated.
 #' @param tau.preset An optional value for manually setting the
 #'   square-root of the between-study variance \eqn{\tau^2}.
 #' @param tol.multiarm A numeric for the tolerance for consistency of
@@ -75,6 +80,13 @@
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
 #' @param event2 Number of events in second treatment group.
+#' @param incr Numerical value to each cell frequency.  # @param mean1
+#Mean in first treatment group.  # @param mean2 Mean in second
+#treatment group.
+#' @param sd1 Standard deviation in first treatment group.
+#' @param sd2 Standard deviation in second treatment group.
+#' @param time1 Person time at risk in first treatment group.
+#' @param time2 Person time at risk in second treatment group.
 #' @param title Title of meta-analysis / systematic review.
 #' @param keepdata A logical indicating whether original data (set)
 #'   should be kept in netmeta object.
@@ -207,6 +219,19 @@
 #' treatment labels, a corresponding error message is printed asking
 #' the user to specify a different separator.
 #'
+#' @note
+#' R function \code{\link[metafor]{rma.mv}} from R package
+#' \pkg{metafor} (Viechtbauer 2010) is called internally to estimate
+#' the between-study variance \eqn{\tau^2} for the (restricted)
+#' maximum likelihood method. For binary outcomes, incidence rates,
+#' and the mean difference, the variance-covariance matrix is
+#' calculated if arguments \code{event1}, \code{event2}, \code{n1},
+#' and \code{n2} (binary outcomes); \code{event1}, \code{event2},
+#' \code{time1}, and \code{time2} (incidence rates); \code{n1},
+#' \code{n2}, \code{sd1}, and \code{sd2} (mean difference) are
+#' provided. For data sets preprocessed with \code{\link{pairwise}}
+#' the respective variables are selected automatically.
+#'
 #' @return
 #' An object of class \code{netmeta} with corresponding \code{print},
 #' \code{summary}, \code{forest}, and \code{netrank} functions. The
@@ -215,7 +240,9 @@
 #' \item{seTE.adj}{Standard error of treatment estimate, adjusted for
 #'   multi-arm studies.}
 #' \item{design}{Design of study providing pairwise comparison.}
-#' \item{n1, n2, event1, event2}{As defined above.}
+#' \item{n1, n2, event1, event2, incr}{As defined above.}
+## \item{mean1, mean2, sd1, sd2, time1, time2}{As defined above.}
+#' \item{sd1, sd2, time1, time2}{As defined above.}
 #' \item{k}{Total number of studies.}
 #' \item{m}{Total number of pairwise comparisons.}
 #' \item{n}{Total number of treatments.}
@@ -236,6 +263,8 @@
 #' \item{designs}{Vector with unique designs present in the network. A
 #'   design corresponds to the set of treatments compared within a
 #'   study.}
+#' \item{designs}{Vector with unique direct comparisons present in the
+#'   network.}
 #' \item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
 #'   consistent treatment effects estimated by network meta-analysis
 #'   (nma) (fixed effects / random effects model).}
@@ -412,6 +441,11 @@
 #' \emph{Statistical Methods in Medical Research},
 #' \bold{22}, 169--89
 #' 
+#' Viechtbauer W (2010):
+#' Conducting Meta-Analyses in R with the metafor Package.
+#' \emph{Journal of Statistical Software},
+#' \bold{36}, 1--48
+#' 
 #' @examples
 #' data(Senn2013)
 #' 
@@ -461,12 +495,13 @@ netmeta <- function(TE, seTE,
                     prediction = FALSE,
                     level.predict = gs("level.predict"),
                     ##
-                    reference.group = "",
+                    reference.group,
                     baseline.reference = TRUE,
                     small.values = "good",
                     all.treatments = NULL,
                     seq = NULL,
                     ##
+                    method.tau = "DL",
                     tau.preset = NULL,
                     ##
                     tol.multiarm = 0.001,
@@ -480,6 +515,13 @@ netmeta <- function(TE, seTE,
                     n2 = NULL,
                     event1 = NULL,
                     event2 = NULL,
+                    incr = NULL,
+                    ##mean1 = NULL,
+                    ##mean2 = NULL,
+                    sd1 = NULL,
+                    sd2 = NULL,
+                    time1 = NULL,
+                    time2 = NULL,
                     ##
                     backtransf = gs("backtransf"),
                     ##
@@ -516,7 +558,6 @@ netmeta <- function(TE, seTE,
   if (!is.null(all.treatments))
     chklogical(all.treatments)
   ##
-  method.tau <- "DL"
   method.tau <- meta:::setchar(method.tau, c("DL", "ML", "REML"))
   ##
   if (!is.null(tau.preset))
@@ -538,6 +579,9 @@ netmeta <- function(TE, seTE,
   ##
   ## Check value for reference group
   ##
+  missing.reference.group <- missing(reference.group)
+  if (missing.reference.group)
+    reference.group <- ""
   if (is.null(all.treatments))
     if (reference.group == "")
       all.treatments <- TRUE
@@ -568,6 +612,17 @@ netmeta <- function(TE, seTE,
     is.pairwise <- TRUE
     ##
     sm <- attr(TE, "sm")
+    if (missing.reference.group) {
+      reference.group <- attr(TE, "reference.group")
+      if (is.null(reference.group))
+        reference.group <- ""
+    }
+    ##
+    keep.all.comparisons <- attr(TE, "keep.all.comparisons")
+    if (!is.null(keep.all.comparisons) && !keep.all.comparisons)
+      stop("First argument is a pairwise object created with ",
+           "'keep.all.comparisons = FALSE'.",
+           call. = TRUE)
     ##
     seTE <- TE$seTE
     treat1 <- TE$treat1
@@ -582,6 +637,20 @@ netmeta <- function(TE, seTE,
       event1 <- TE$event1
     if (!is.null(TE$event2))
       event2 <- TE$event2
+    if (!is.null(TE$incr))
+      incr <- TE$incr
+    ##if (!is.null(TE$mean1))
+    ##  mean1 <- TE$mean1
+    ##if (!is.null(TE$mean2))
+    ##  mean2 <- TE$mean2
+    if (!is.null(TE$sd1))
+      sd1 <- TE$sd1
+    if (!is.null(TE$sd2))
+      sd2 <- TE$sd2
+    if (!is.null(TE$time1))
+      time1 <- TE$time1
+    if (!is.null(TE$time2))
+      time2 <- TE$time2
     ##
     pairdata <- TE
     data <- TE
@@ -619,6 +688,27 @@ netmeta <- function(TE, seTE,
     ##
     event2 <- eval(mf[[match("event2", names(mf))]],
                    data, enclos = sys.frame(sys.parent()))
+    ##
+    incr <- eval(mf[[match("incr", names(mf))]],
+                 data, enclos = sys.frame(sys.parent()))
+    ##
+    ##mean1 <- eval(mf[[match("mean1", names(mf))]],
+    ##              data, enclos = sys.frame(sys.parent()))
+    ##
+    ##mean2 <- eval(mf[[match("mean2", names(mf))]],
+    ##              data, enclos = sys.frame(sys.parent()))
+    ##
+    sd1 <- eval(mf[[match("sd1", names(mf))]],
+                data, enclos = sys.frame(sys.parent()))
+    ##
+    sd2 <- eval(mf[[match("sd2", names(mf))]],
+                data, enclos = sys.frame(sys.parent()))
+    ##
+    time1 <- eval(mf[[match("time1", names(mf))]],
+                  data, enclos = sys.frame(sys.parent()))
+    ##
+    time2 <- eval(mf[[match("time2", names(mf))]],
+                  data, enclos = sys.frame(sys.parent()))
   }
   ##
   chknumeric(TE)
@@ -659,8 +749,26 @@ netmeta <- function(TE, seTE,
     available.n <- TRUE
   else
     available.n <- FALSE
-
-
+  ##
+  if (available.events & is.null(incr))
+    incr <- rep(0, length(event2))
+  ##
+  ##if (!is.null(mean1) & !is.null(mean2))
+  ##  available.means <- TRUE
+  ##else
+  available.means <- FALSE
+  ##
+  if (!is.null(sd1) & !is.null(sd2))
+    available.sds <- TRUE
+  else
+    available.sds <- FALSE
+  ##
+  if (!is.null(time1) & !is.null(time2))
+    available.times <- TRUE
+  else
+    available.times <- FALSE
+  
+  
   ##
   ##
   ## (2b) Store complete dataset in list object data
@@ -689,6 +797,15 @@ netmeta <- function(TE, seTE,
     data$.n1 <- n1
     data$.event2 <- event2
     data$.n2 <- n2
+    data$.incr <- incr
+    ##
+    ##data$.mean1 <- mean1
+    data$.sd1 <- sd1
+    ##data$.mean2 <- mean2
+    data$.sd2 <- sd2
+    ##
+    data$.time1 <- time1
+    data$.time2 <- time2
     ##
     ## Check for correct treatment order within comparison
     ##
@@ -710,6 +827,24 @@ netmeta <- function(TE, seTE,
         tevent1 <- data$.event1
         data$.event1[wo] <- data$.event2[wo]
         data$.event2[wo] <- tevent1[wo]
+      }
+      ##
+      ##if (meta:::isCol(data, ".mean1") & meta:::isCol(data, ".mean2")) {
+      ##  tmean1 <- data$.mean1
+      ##  data$.mean1[wo] <- data$.mean2[wo]
+      ##  data$.mean2[wo] <- tmean1[wo]
+      ##}
+      ##
+      if (meta:::isCol(data, ".sd1") & meta:::isCol(data, ".sd2")) {
+        tsd1 <- data$.sd1
+        data$.sd1[wo] <- data$.sd2[wo]
+        data$.sd2[wo] <- tsd1[wo]
+      }
+      ##
+      if (meta:::isCol(data, ".time1") & meta:::isCol(data, ".time2")) {
+        ttime1 <- data$.time1
+        data$.time1[wo] <- data$.time2[wo]
+        data$.time2[wo] <- ttime1[wo]
       }
     }
     ##
@@ -749,6 +884,20 @@ netmeta <- function(TE, seTE,
       event1 <- event1[subset]
     if (!is.null(event2))
       event2 <- event2[subset]
+    if (!is.null(incr))
+      incr <- incr[subset]
+    ##if (!is.null(mean1))
+    ##  mean1 <- mean1[subset]
+    ##if (!is.null(mean2))
+    ##  mean2 <- mean2[subset]
+    if (!is.null(sd1))
+      sd1 <- sd1[subset]
+    if (!is.null(sd2))
+      sd2 <- sd2[subset]
+    if (!is.null(time1))
+      time1 <- time1[subset]
+    if (!is.null(time2))
+      time2 <- time2[subset]
   }
   ##
   labels <- sort(unique(c(treat1, treat2)))
@@ -778,8 +927,10 @@ netmeta <- function(TE, seTE,
     else if (!compmatch(labels, "*"))
       sep.trts <- "*"
     else
-      stop("All predefined separators (':', '-', '_', '/', '+', '.', '|', '*') are used in at least one treatment label.",
-           "\n   Please specify a different character that should be used as separator (argument 'sep.trts').",
+      stop("All predefined separators (':', '-', '_', '/', '+', ",
+           "'.', '|', '*') are used in at least one treatment label.",
+           "\n   Please specify a different character that should be ",
+           "used as separator (argument 'sep.trts').",
            call. = FALSE)
   }
   ##
@@ -883,6 +1034,20 @@ netmeta <- function(TE, seTE,
       event1 <- event1[!excl]
     if (!is.null(event2))
       event2 <- event2[!excl]
+    if (!is.null(incr))
+      incr <- incr[!excl]
+    ##if (!is.null(mean1))
+    ##  mean1 <- mean1[!excl]
+    ##if (!is.null(mean2))
+    ##  mean2 <- mean2[!excl]
+    if (!is.null(sd1))
+      sd1 <- sd1[!excl]
+    if (!is.null(sd2))
+      sd2 <- sd2[!excl]
+    if (!is.null(time1))
+      time1 <- time1[!excl]
+    if (!is.null(time2))
+      time2 <- time2[!excl]
     ##
     seq <- seq[seq %in% unique(c(treat1, treat2))]
     labels <- labels[labels %in% unique(c(treat1, treat2))]
@@ -948,9 +1113,27 @@ netmeta <- function(TE, seTE,
       event1[wo] <- event2[wo]
       event2[wo] <- tevent1[wo]
     }
+    ##
+    if (available.means) {
+      tmean1 <- mean1
+      mean1[wo] <- mean2[wo]
+      mean2[wo] <- tmean1[wo]
+    }
+    ##
+    if (available.sds) {
+      tsd1 <- sd1
+      sd1[wo] <- sd2[wo]
+      sd2[wo] <- tsd1[wo]
+    }
+    ##
+    if (available.times) {
+      ttime1 <- time1
+      time1[wo] <- time2[wo]
+      time2[wo] <- ttime1[wo]
+    }
   }
-
-
+  
+  
   ##
   ##
   ## (5) Generate analysis dataset
@@ -1002,33 +1185,109 @@ netmeta <- function(TE, seTE,
   if (is.null(tau.preset)) {
     if (method.tau %in% c("ML", "REML")) {
       ##
-      dat.tau <- as.data.frame(res.f$B.matrix)
+      dat.tau <-
+        data.frame(studlab = studlab,
+                   treat1 = treat1, treat2 = treat2,
+                   TE = TE, seTE = seTE)
+      if (available.n) {
+        dat.tau$n1 <- n1
+        dat.tau$n2 <- n2
+      }
+      if (available.events) {
+        dat.tau$event1 <- event1
+        dat.tau$event2 <- event2
+        dat.tau$incr <- incr
+      }
+      if (available.means) {
+        dat.tau$mean1 <- mean1
+        dat.tau$mean2 <- mean2
+      }
+      if (available.sds) {
+        dat.tau$sd1 <- sd1
+        dat.tau$sd2 <- sd2
+      }
+      if (available.times) {
+        dat.tau$time1 <- time1
+        dat.tau$time2 <- time2
+      }
       ##
-      oldnames <- colnames(dat.tau)
+      ##dat.tau <- dat.tau[order(dat.tau$studlab,
+      ##                         dat.tau$treat1, dat.tau$treat2), , drop = FALSE]
       ##
-      if (reference.group == "")
-        trts.ref <- oldnames[length(oldnames)]
-      else
-        trts.ref <- reference.group
+      keep <- logical(0)
+      wo <- logical(0)
       ##
-      newnames <- paste0("V", seq(along = colnames(dat.tau)))
-      colnames(dat.tau) <- newnames
-      trts.tau <- newnames[oldnames != trts.ref]
+      for (i in unique(dat.tau$studlab)) {
+        d.i <- dat.tau[dat.tau$studlab == i, , drop = FALSE]
+        trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
+        if (reference.group %in% trts.i)
+          ref.i <- reference.group
+        else
+          ref.i <- rev(trts.i)[1]
+        ##
+        keep.i <- !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
+        wo.i <- d.i$treat1 == ref.i
+        ##
+        keep <- c(keep, keep.i)
+        wo <- c(wo, wo.i)
+      }
       ##
-      dat.tau$TE <- res.f$TE
-      dat.tau$seTE <- res.f$seTE # adjusted standard errors
-      dat.tau$studlab <- res.f$studlab
+      dat.tau <- dat.tau[keep, , drop = FALSE]
       dat.tau$id <- seq_along(dat.tau$TE)
+      ##
+      wo <- wo[keep]
+      if (sum(wo) > 0) {
+        dat.tau$TE[wo] <- -dat.tau$TE[wo]
+        ##
+        t2.i <- dat.tau$treat2
+        e2.i <- dat.tau$event2
+        n2.i <- dat.tau$n2
+        ##mean2.i <- dat.tau$mean2
+        sd2.i <- dat.tau$sd2
+        time2.i <- dat.tau$time2
+        ##
+        dat.tau$treat2[wo] <- dat.tau$treat1[wo]
+        dat.tau$event2[wo] <- dat.tau$event1[wo]
+        dat.tau$n2[wo] <- dat.tau$n1[wo]
+        ##dat.tau$mean2[wo] <- dat.tau$mean1[wo]
+        dat.tau$sd2[wo] <- dat.tau$sd1[wo]
+        dat.tau$time2[wo] <- dat.tau$time2[wo]
+        ##
+        dat.tau$treat1[wo] <- t2.i[wo]
+        dat.tau$event1[wo] <- e2.i[wo]
+        dat.tau$n1[wo] <- n2.i[wo]
+        ##dat.tau$mean1[wo] <- mean2.i[wo]
+        dat.tau$sd1[wo] <- sd2.i[wo]
+        dat.tau$time1[wo] <- time2.i[wo]
+      }
+      ##
+      ncols1 <- ncol(dat.tau)
+      dat.tau <- contrmat(dat.tau, grp1 = "treat1", grp2 = "treat2")
+      ncols2 <- ncol(dat.tau)
+      newnames <- paste0("V", seq_len(ncols2 - ncols1))
+      names(dat.tau)[(ncols1 + 1):ncols2] <- newnames
+      ##
+      trts.tau <- newnames[-length(newnames)]
       ##
       formula.trts <-
         as.formula(paste("~ ", paste(trts.tau, collapse = " + "), " - 1"))
       ##
-      tau2.reml <- rma.mv(TE, seTE^2, data = dat.tau,
-                          mods = formula.trts,
-                          random = ~ factor(id) | studlab, rho = 0,
-                          method = method.tau, control = control)$tau2
+      ## Calculate Variance-Covariance matrix
       ##
-      tau <- sqrt(tau2.reml)
+      if (available.n &
+          (available.events | available.times |
+           (available.sds)))
+        ##(available.means & available.sds)))
+        V <- bldiag(lapply(split(dat.tau, dat.tau$studlab), calcV, sm = sm))
+      else
+        V <- dat.tau$seTE^2
+      ##
+      rma1 <- rma.mv(TE, V, data = dat.tau,
+                     mods = formula.trts,
+                     random = ~ factor(id) | studlab, rho = 0.5,
+                     method = method.tau, control = control)
+      ##
+      tau <- sqrt(rma1$tau2)
     }
     else
       tau <- res.f$tau
@@ -1095,6 +1354,15 @@ netmeta <- function(TE, seTE,
               event2 = event2,
               n1 = n1,
               n2 = n2,
+              incr = incr,
+              ##
+              ##mean1 = mean1,
+              ##mean2 = mean2,
+              sd1 = sd1,
+              sd2 = sd2,
+              ##
+              time1 = time1,
+              time2 = time2,
               ##
               k = res.f$k,
               m = res.f$m,
@@ -1113,6 +1381,7 @@ netmeta <- function(TE, seTE,
               narms = narms,
               ##
               designs = unique(sort(designs$design)),
+              comparisons = "",
               ##
               TE.nma.fixed = res.f$TE.nma[o],
               seTE.nma.fixed = res.f$seTE.nma[o],
@@ -1239,6 +1508,7 @@ netmeta <- function(TE, seTE,
               all.treatments = all.treatments,
               seq = seq,
               ##
+              method.tau = method.tau,
               tau.preset = tau.preset,
               ##
               tol.multiarm = tol.multiarm,
@@ -1274,6 +1544,9 @@ netmeta <- function(TE, seTE,
     res$prop.direct.fixed <- as.numeric(res$prop.direct.fixed)
   if (is.logical(res$prop.direct.random))
     res$prop.direct.random <- as.numeric(res$prop.direct.random)
+  ##
+  res$comparisons <-
+    names(res$prop.direct.random)[!is.zero(res$prop.direct.random)]
   ##
   P.fixed <- P.random <- matrix(NA, n, n)
   colnames(P.fixed) <- rownames(P.fixed) <-
@@ -1371,6 +1644,11 @@ netmeta <- function(TE, seTE,
     res$n.arms <- rep(2, length(res$studlab))
     res$multiarm <- rep(FALSE, length(res$studlab))
   }
+  ##
+  ## Set leverage of multi-arm studies to NA
+  ##
+  if (any(res$multiarm))
+    res$leverage.fixed[res$multiarm] <- NA
   
   
   ##
@@ -1426,7 +1704,16 @@ netmeta <- function(TE, seTE,
     res$events.trts <- as.vector(dat.e[trts])
     names(res$events.trts) <- trts
   }
-
-
+  
+  
+  ##
+  ## Add results from rma.mv()
+  ##
+  if (method.tau %in% c("ML", "REML")) {
+    res$.metafor <- rma1
+    res$version.metafor <- packageDescription("metafor")$Version
+  }
+  
+  
   res
 }
