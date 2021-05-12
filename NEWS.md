@@ -1,4 +1,4 @@
-## netmeta, version 6.6-6 (2021-05-11)
+## netmeta, version 1.4-0 (2021-05-11)
     
 ### Major changes
 
