@@ -143,7 +143,8 @@ rankogram = function( x
   res <- list(ranking.matrix.fixed = ranking.matrix.fixed,
               SUCRA.fixed = SUCRA.fixed,
               ranking.matrix.random = ranking.matrix.random,
-              SUCRA.random = SUCRA.random)
+              SUCRA.random = SUCRA.random,
+              x = x)
      
   class(res) <- "rankogram"
      

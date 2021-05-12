@@ -110,7 +110,7 @@
 #' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'                 data = Senn2013, sm = "MD")
 #' 
-#' nr3 <- netrank(net2,method="SUCRA")
+#' nr3 <- netrank(net3,method="SUCRA")
 #' nr3
 #' print(nr3, sort = "fixed")
 #' print(nr3, sort = FALSE)
@@ -126,69 +126,133 @@ netrank <- function(x, method="P-score", small.values = x$small.values) {
   ##
   meta:::chkclass(x, c("netmeta", "netcomb", "rankogram"))
   ##
-  
- if(inherits(ran1,"rankogram") & method!="SUCRA")
-   stop("You provided a rankogram object with the P-score method.
-The rankogram object is only compatible with the SUCRA method")
-   
    
   if (is.null(small.values))
     small.values <- "good"
   else
     small.values <- meta:::setchar(small.values, c("good", "bad"))
   
-  
-  TE.fixed <- x$TE.fixed
-  pval.fixed <- x$pval.fixed
-  ##
-  TE.random <- x$TE.random
-  pval.random <- x$pval.random
-  
-  
-  ## Calculate one-sided p-values
-  ##
-  w.fixed <- (1 + sign(TE.fixed)) / 2
-  p.fixed <- pval.fixed
-  ##
-  if (small.values == "good")
-    P.fixed <- w.fixed * p.fixed / 2 + (1 - w.fixed) * (1 - p.fixed / 2)
-  else
-    P.fixed <- w.fixed * (1 - p.fixed / 2) + (1 - w.fixed) * p.fixed / 2
-  ##
-  w.random <- (1 + sign(TE.random)) / 2
-  p.random <- pval.random
-  ##
-  if (small.values == "good")
-    P.random <- w.random * p.random / 2 + (1 - w.random) * (1 - p.random / 2)
-  else
-    P.random <- w.random * (1 - p.random / 2) + (1 - w.random) * p.random / 2
-  
-  
-  ## Row means provide P-scores
-  ##
-  Pscore.fixed <- rowMeans(P.fixed, na.rm = TRUE)
-  ##
-  if (!all(is.na(TE.random)))
-    Pscore.random <- rowMeans(P.random, na.rm = TRUE)
-  else
-    Pscore.random <- NA
-  
-  
-  ##
-  if (!x$comb.random) {
-    Pscore <- Pscore.fixed
-    Pmatrix <- P.fixed
+  if(method == "SUCRA"){
+    if(inherits(x,"netcomb"))
+      stop("netcomb object is not compatible with SUCRAs")
+    if(inherits(x,"netmeta")){
+      rnk <- rankogram ( x
+                       , comb.fixed=x$comb.fixed
+                       , comb.random=x$comb.random
+                       , nsim=1000
+                       , small.values=x$small.values)
+    }else{ # x is rankogram
+     rnk <- x
+     x <- rnk$x
+    }
+    TE.fixed <- x$TE.fixed
+    pval.fixed <- x$pval.fixed
+    ##
+    TE.random <- x$TE.random
+    pval.random <- x$pval.random
+    
+    
+    ## Calculate one-sided p-values
+    ##
+    w.fixed <- (1 + sign(TE.fixed)) / 2
+    p.fixed <- pval.fixed
+    ##
+    if (small.values == "good")
+      P.fixed <- w.fixed * p.fixed / 2 + (1 - w.fixed) * (1 - p.fixed / 2)
+    else
+      P.fixed <- w.fixed * (1 - p.fixed / 2) + (1 - w.fixed) * p.fixed / 2
+    ##
+    w.random <- (1 + sign(TE.random)) / 2
+    p.random <- pval.random
+    ##
+    if (small.values == "good")
+      P.random <- w.random * p.random / 2 + (1 - w.random) * (1 - p.random / 2)
+    else
+      P.random <- w.random * (1 - p.random / 2) + (1 - w.random) * p.random / 2
+    
+    
+    ## Row means provide P-scores
+    ##
+    Pscore.fixed <- rowMeans(P.fixed, na.rm = TRUE)
+    ##
+    if (!all(is.na(TE.random)))
+      Pscore.random <- rowMeans(P.random, na.rm = TRUE)
+    else
+      Pscore.random <- NA
+    
+    
+    ##
+    if (!x$comb.random) {
+      Pscore <- Pscore.fixed
+      Pmatrix <- P.fixed
+    }
+    else {
+      Pscore <- Pscore.random
+      Pmatrix <- P.random
+    }
+    SUCRA.fixed = NULL
+    SUCRA.random = NULL
+  }else{
+   if(inherits(x,"rankogram"))
+     stop("You provided a rankogram object with the P-score method.
+  The rankogram object is only compatible with the SUCRA method")
+    
+    if(inherits(x,"netmeta")){ #P-score
+      TE.fixed <- x$TE.fixed
+      pval.fixed <- x$pval.fixed
+      ##
+      TE.random <- x$TE.random
+      pval.random <- x$pval.random
+      
+      
+      ## Calculate one-sided p-values
+      ##
+      w.fixed <- (1 + sign(TE.fixed)) / 2
+      p.fixed <- pval.fixed
+      ##
+      if (small.values == "good")
+        P.fixed <- w.fixed * p.fixed / 2 + (1 - w.fixed) * (1 - p.fixed / 2)
+      else
+        P.fixed <- w.fixed * (1 - p.fixed / 2) + (1 - w.fixed) * p.fixed / 2
+      ##
+      w.random <- (1 + sign(TE.random)) / 2
+      p.random <- pval.random
+      ##
+      if (small.values == "good")
+        P.random <- w.random * p.random / 2 + (1 - w.random) * (1 - p.random / 2)
+      else
+        P.random <- w.random * (1 - p.random / 2) + (1 - w.random) * p.random / 2
+      
+      
+      ## Row means provide P-scores
+      ##
+      Pscore.fixed <- rowMeans(P.fixed, na.rm = TRUE)
+      ##
+      if (!all(is.na(TE.random)))
+        Pscore.random <- rowMeans(P.random, na.rm = TRUE)
+      else
+        Pscore.random <- NA
+      
+      
+      ##
+      if (!x$comb.random) {
+        Pscore <- Pscore.fixed
+        Pmatrix <- P.fixed
+      }
+      else {
+        Pscore <- Pscore.random
+        Pmatrix <- P.random
+      }
+      SUCRA.fixed = NULL
+      SUCRA.random = NULL
+    }
   }
-  else {
-    Pscore <- Pscore.random
-    Pmatrix <- P.random
-  }
-  
-  
   res <- list(Pscore.fixed = Pscore.fixed,
               Pmatrix.fixed = P.fixed,
               Pscore.random = Pscore.random,
               Pmatrix.random = P.random,
+              SUCRA.fixed = SUCRA.fixed,
+              SUCRA.random = SUCRA.random,
               small.values = small.values,
               x = x,
               title = x$title,
