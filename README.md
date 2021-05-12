@@ -96,10 +96,6 @@ install.packages("devtools")
 devtools::install_github("guido-s/netmeta", ref = "develop")
 ```
 
-Note, the development version of **netmeta** always has version number
-6.6-6.
-
-
 ### Bug Reports:
 
 ```r
