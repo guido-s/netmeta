@@ -1,3 +1,30 @@
+## netmeta, version 1.5-0 (2021-mm-dd)
+    
+### Major changes
+
+* Theodoros Papakonstantinou <papakonstantinou@imbi.uni-freiburg.de>
+  is a new co-author of R package **netmeta**
+
+* Rankograms added
+
+* Surface under the cumulative ranking (SUCRA) can be calculated using
+  resampling methods
+
+### User-visible changes
+
+* New functions rankogram(), print.rankogram() and plot.rankogram()
+  for rankograms
+
+* netrank():
+  - new argument 'method' to choose between P-scores and SUCRAs
+  - can be used with an R object created with rankogram()
+
+* forest.netmeta():
+  - new argument 'nsim' to specify number of simulations for SUCRAs
+  - argument 'digits.Pscore' renamed to 'digits.prop' (as this
+    argument is also used for SUCRAs)
+
+
 ## netmeta, version 1.4-0 (2021-05-11)
     
 ### Major changes

@@ -326,15 +326,15 @@ netposet <- function(..., outcomes, treatments, small.values,
               "is a ranking matrix.",
               call. = FALSE)
     ##
-    pscore.matrix <- args[[1]]
+    ranking.matrix <- args[[1]]
     ##
-    if (any(pscore.matrix[!is.na(pscore.matrix)] > 1) |
-        any(pscore.matrix[!is.na(pscore.matrix)] < 0))
+    if (any(ranking.matrix[!is.na(ranking.matrix)] > 1) |
+        any(ranking.matrix[!is.na(ranking.matrix)] < 0))
       stop("All elements of ranking matrix must be between 0 and 1.",
            call. = FALSE)
     ##
-    n.outcomes <- ncol(pscore.matrix)
-    n.treatments <- nrow(pscore.matrix)
+    n.outcomes <- ncol(ranking.matrix)
+    n.treatments <- nrow(ranking.matrix)
     ##
     if (n.outcomes == 1)
       stop("Minimum number of two outcomes ",
@@ -348,7 +348,7 @@ netposet <- function(..., outcomes, treatments, small.values,
              call. = FALSE)
     }
     else
-      outcomes <- colnames(pscore.matrix)
+      outcomes <- colnames(ranking.matrix)
     ##
     if (!missing(treatments)) {
       if (length(treatments) != n.treatments)
@@ -357,7 +357,7 @@ netposet <- function(..., outcomes, treatments, small.values,
              call. = FALSE)
     }
     else
-      treatments <- rownames(pscore.matrix)
+      treatments <- rownames(ranking.matrix)
     ##
     ## (2) P-Score matrices
     ##
@@ -375,11 +375,11 @@ netposet <- function(..., outcomes, treatments, small.values,
       treatments <- letters[1:n.treatments]
     }
     ##
-    rownames(pscore.matrix) <- treatments
-    colnames(pscore.matrix) <- outcomes
+    rownames(ranking.matrix) <- treatments
+    colnames(ranking.matrix) <- outcomes
     ##
-    pscore.matrix.fixed <- pscore.matrix
-    pscore.matrix.random <- pscore.matrix
+    ranking.matrix.fixed <- ranking.matrix
+    ranking.matrix.random <- ranking.matrix
     ##
     if (missing(comb.fixed))
       comb.fixed <- FALSE
@@ -448,7 +448,7 @@ netposet <- function(..., outcomes, treatments, small.values,
     ##
     ## (2) Extract P-Scores
     ##
-    pscore.list.fixed <- pscore.list.random <- list()
+    ranking.list.fixed <- ranking.list.random <- list()
     comb.fixeds <- comb.randoms <- rep_len(NA, length(args))
     ##
     for (i in seq_along(args)) {
@@ -456,66 +456,66 @@ netposet <- function(..., outcomes, treatments, small.values,
       args.i <- args[[i]]
       ##
       if (inherits(args.i, "netmeta")) {
-        pscore.list.fixed[[i]] <- netrank(args.i,
-                                          small.values =
-                                            small.values[i])$Pscore.fixed
-        pscore.list.random[[i]] <- netrank(args.i,
+        ranking.list.fixed[[i]] <- netrank(args.i,
                                            small.values =
-                                             small.values[i])$Pscore.random
+                                             small.values[i])$ranking.fixed
+        ranking.list.random[[i]] <- netrank(args.i,
+                                            small.values =
+                                              small.values[i])$ranking.random
         comb.fixeds[i]  <- args.i$comb.fixed
         comb.randoms[i] <- args.i$comb.random
       }
       else if (inherits(args.i, "netrank")) {
-        pscore.list.fixed[[i]] <- args.i$Pscore.fixed
-        pscore.list.random[[i]] <- args.i$Pscore.random
+        ranking.list.fixed[[i]] <- args.i$ranking.fixed
+        ranking.list.random[[i]] <- args.i$ranking.random
         comb.fixeds[i]  <- args.i$x$comb.fixed
         comb.randoms[i] <- args.i$x$comb.random
       }
     }
     
     
-    pscore.treatments <- lapply(pscore.list.fixed, names)
-    n.treatments <- unlist(lapply(pscore.treatments, length))
+    ranking.treatments <- lapply(ranking.list.fixed, names)
+    n.treatments <- unlist(lapply(ranking.treatments, length))
     ##
     if (length(unique(n.treatments)) != 1) {
       sel.max <- seq_along(n.treatments)[n.treatments == max(n.treatments)][1]
       ##
-      treatments <- pscore.treatments[[sel.max]]
+      treatments <- ranking.treatments[[sel.max]]
       ##
       ## Act on rankings with missing treatments
       ##
       for (j in seq_along(n.treatments)[n.treatments < max(n.treatments)]) {
-        treatments.j <- pscore.treatments[[j]]
+        treatments.j <- ranking.treatments[[j]]
         missing.j <- !(treatments %in% treatments.j)
         ##
         if (any(treatments.j != treatments[!missing.j]))
           stop("Treatment names of all rankings must be in same order.",
                call. = FALSE)
         ##
-        pscore.j <- pscore.list.fixed[[j]]
-        pscore.list.fixed[[j]] <- pscore.list.fixed[[sel.max]]
-        pscore.list.fixed[[j]][treatments[!missing.j]] <- pscore.j
-        pscore.list.fixed[[j]][treatments[missing.j]]  <- NA
+        ranking.j <- ranking.list.fixed[[j]]
+        ranking.list.fixed[[j]] <- ranking.list.fixed[[sel.max]]
+        ranking.list.fixed[[j]][treatments[!missing.j]] <- ranking.j
+        ranking.list.fixed[[j]][treatments[missing.j]]  <- NA
         ##
-        pscore.j <- pscore.list.random[[j]]
-        pscore.list.random[[j]] <- pscore.list.random[[sel.max]]
-        pscore.list.random[[j]][treatments[!missing.j]] <- pscore.j
-        pscore.list.random[[j]][treatments[missing.j]]  <- NA
+        ranking.j <- ranking.list.random[[j]]
+        ranking.list.random[[j]] <- ranking.list.random[[sel.max]]
+        ranking.list.random[[j]][treatments[!missing.j]] <- ranking.j
+        ranking.list.random[[j]][treatments[missing.j]]  <- NA
         ##
-        pscore.treatments[[j]] <- treatments
-        }
+        ranking.treatments[[j]] <- treatments
+      }
     }
     else
-      treatments <- pscore.treatments[[1]]
+      treatments <- ranking.treatments[[1]]
     ##
-    for (i in seq_along(pscore.treatments))
-      if (any(pscore.treatments[[i]] != treatments)) {
-        if (all(sort(pscore.treatments[[i]]) == sort(treatments)))
+    for (i in seq_along(ranking.treatments))
+      if (any(ranking.treatments[[i]] != treatments)) {
+        if (all(sort(ranking.treatments[[i]]) == sort(treatments)))
           stop("Different order of treatments provided:\n ",
                paste(paste("'", treatments, "'", sep = ""),
                      collapse = " - "),
                "\n ",
-               paste(paste("'", pscore.treatments[[i]], "'", sep = ""),
+               paste(paste("'", ranking.treatments[[i]], "'", sep = ""),
                      collapse = " - "),
                call. = FALSE)
         else
@@ -523,21 +523,21 @@ netposet <- function(..., outcomes, treatments, small.values,
                paste(paste("'", treatments, "'", sep = ""),
                      collapse = " - "),
                "\n ",
-               paste(paste("'", pscore.treatments[[i]], "'", sep = ""),
+               paste(paste("'", ranking.treatments[[i]], "'", sep = ""),
                      collapse = " - "),
                call. = FALSE)
       }
     ##
-    pscore.matrix.fixed <- matrix(unlist(pscore.list.fixed,
-                                         use.names = FALSE),
-                                  ncol = length(outcomes), byrow = FALSE)
-    pscore.matrix.random <- matrix(unlist(pscore.list.random,
+    ranking.matrix.fixed <- matrix(unlist(ranking.list.fixed,
                                           use.names = FALSE),
                                    ncol = length(outcomes), byrow = FALSE)
-    rownames(pscore.matrix.fixed) <- treatments
-    rownames(pscore.matrix.random) <- treatments
-    colnames(pscore.matrix.fixed) <- outcomes
-    colnames(pscore.matrix.random) <- outcomes
+    ranking.matrix.random <- matrix(unlist(ranking.list.random,
+                                           use.names = FALSE),
+                                    ncol = length(outcomes), byrow = FALSE)
+    rownames(ranking.matrix.fixed) <- treatments
+    rownames(ranking.matrix.random) <- treatments
+    colnames(ranking.matrix.fixed) <- outcomes
+    colnames(ranking.matrix.random) <- outcomes
     ##
     text.netmeta.netrank <- if (any.netmeta) "netmeta" else ""
     text.netmeta.netrank <- if (any.netmeta & any.netrank) "netmeta and netrank"
@@ -566,19 +566,19 @@ netposet <- function(..., outcomes, treatments, small.values,
   } 
   
   
-  n <- nrow(pscore.matrix.fixed)
-  o <- ncol(pscore.matrix.fixed)
+  n <- nrow(ranking.matrix.fixed)
+  o <- ncol(ranking.matrix.fixed)
   
   
   Pos.fixed <- M.fixed <- matrix(0, nrow = n, ncol = n)
   ##
-  rownames(Pos.fixed) <- colnames(Pos.fixed) <- rownames(pscore.matrix.fixed)
-  rownames(M.fixed) <- colnames(M.fixed) <- rownames(pscore.matrix.fixed)
+  rownames(Pos.fixed) <- colnames(Pos.fixed) <- rownames(ranking.matrix.fixed)
+  rownames(M.fixed) <- colnames(M.fixed) <- rownames(ranking.matrix.fixed)
   ##
   Pos.random <- M.random <- matrix(0, nrow = n, ncol = n)
   ##
-  rownames(Pos.random) <- colnames(Pos.random) <- rownames(pscore.matrix.random)
-  rownames(M.random) <- colnames(M.random) <- rownames(pscore.matrix.random)
+  rownames(Pos.random) <- colnames(Pos.random) <- rownames(ranking.matrix.random)
+  rownames(M.random) <- colnames(M.random) <- rownames(ranking.matrix.random)
   
   
   ## Pos[i, j] counts how many rankings judge treatment i superior to
@@ -588,18 +588,18 @@ netposet <- function(..., outcomes, treatments, small.values,
     for (j in 1:n)
       if (i != j)
         for (k in 1:o)
-          if (!is.na(pscore.matrix.fixed[i, k]) &
-              !is.na(pscore.matrix.fixed[j, k]) &
-              pscore.matrix.fixed[i, k] >= pscore.matrix.fixed[j, k])
+          if (!is.na(ranking.matrix.fixed[i, k]) &
+              !is.na(ranking.matrix.fixed[j, k]) &
+              ranking.matrix.fixed[i, k] >= ranking.matrix.fixed[j, k])
             Pos.fixed[i, j] <- Pos.fixed[i, j] + 1
   ##
   for (i in 1:n)
     for (j in 1:n)
       if (i != j)
         for (k in 1:o)
-          if (!is.na(pscore.matrix.random[i, k]) &
-              !is.na(pscore.matrix.random[j, k]) &
-              pscore.matrix.random[i, k] >= pscore.matrix.random[j, k])
+          if (!is.na(ranking.matrix.random[i, k]) &
+              !is.na(ranking.matrix.random[j, k]) &
+              ranking.matrix.random[i, k] >= ranking.matrix.random[j, k])
             Pos.random[i, j] <- Pos.random[i, j] + 1
   
   
@@ -633,11 +633,11 @@ netposet <- function(..., outcomes, treatments, small.values,
     small.values <- NULL
   
   
-  res <- list(P.fixed = pscore.matrix.fixed,
+  res <- list(P.fixed = ranking.matrix.fixed,
               M0.fixed = M0.fixed,
               M.fixed = M.fixed,
               O.fixed = PO.fixed,
-              P.random = pscore.matrix.random,
+              P.random = ranking.matrix.random,
               M0.random = M0.random,
               M.random = M.random,
               O.random = PO.random,

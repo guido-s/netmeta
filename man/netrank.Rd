@@ -5,7 +5,7 @@
 \alias{print.netrank}
 \title{Frequentist method to rank treatments in network}
 \usage{
-netrank(x, small.values = x$small.values)
+netrank(x, small.values = x$small.values, method, nsim)
 
 \method{print}{netrank}(
   x,
@@ -17,18 +17,23 @@ netrank(x, small.values = x$small.values)
 )
 }
 \arguments{
-\item{x}{An object of class \code{netmeta} (netrank function) or
-\code{netrank} (print function).}
+\item{x}{An object of class \code{netmeta} or \code{rankogram}.}
 
 \item{small.values}{A character string specifying whether small
 treatment effects indicate a beneficial (\code{"good"}) or
 harmful (\code{"bad"}) effect, can be abbreviated.}
 
-\item{comb.fixed}{A logical indicating whether to print P-scores
-for the fixed effects (common effects) model.}
+\item{method}{A character string specifying whether the
+\code{"P-score"} or \code{"SUCRA"} ranking metric will be
+calculated.}
+
+\item{nsim}{Number of simulations to calculate SUCRAs.}
+
+\item{comb.fixed}{A logical indicating whether to print P-scores or
+SUCRAs for the fixed effects (common effects) model.}
 
 \item{comb.random}{A logical indicating whether to print P-scores
-for the random effects model.}
+or SUCRAs for the random effects model.}
 
 \item{sort}{A logical indicating whether printout should be sorted
 by decreasing P-score.}
@@ -42,15 +47,15 @@ by decreasing P-score.}
 \value{
 An object of class \code{netrank} with corresponding \code{print}
 function. The object is a list containing the following components:
-\item{Pscore.fixed}{A named numeric vector with P-scores for fixed
-  effects model.}
+\item{ranking.fixed}{A named numeric vector with P-scores or SUCRAs
+  for the fixed effects model.}
 \item{Pmatrix.fixed}{Numeric matrix based on pairwise one-sided
-  p-values for fixed effects model.}
-\item{Pscore.random}{A named numeric vector with P-scores for
-  random effects model.}
+  p-values for the fixed effects model.}
+\item{ranking.random}{A named numeric vector with P-scores or
+  SUCRAs for the random effects model.}
 \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided
-  p-values of random effects model.}
-\item{small.values, x}{As defined above.}
+  p-values of the random effects model.}
+\item{small.values, method, x}{As defined above.}
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
@@ -59,11 +64,21 @@ resampling methods.
 }
 \details{
 Treatments are ranked based on a network meta-analysis. Ranking is
-performed by P-scores. P-scores are based solely on the point
-estimates and standard errors of the network estimates. They
-measure the extent of certainty that a treatment is better than
-another treatment, averaged over all competing treatments (Rücker
-and Schwarzer 2015).
+performed by a ranking metric: P-score or SUCRA.
+
+P-scores are based solely on the point estimates and standard
+errors of the network estimates. They measure the extent of
+certainty that a treatment is better than another treatment,
+averaged over all competing treatments (Rücker and Schwarzer 2015).
+
+The Surface Under the Cumulative RAnking curve (SUCRA) is the rank
+of treatment \emph{i} within the range of treatments, measured on a
+scale from 0 (worst) to 1 (best) (Salanti et al. 2011). A
+resampling method is used to calculate SUCRAs for frequentist
+network meta-analysis. The number of simulations is determine by
+argument \code{nsim}.
+
+The interpretation of P-scores and SUCRAs is comparable.
 
 The P-score of treatment \emph{i} is defined as the mean of all 1 -
 P[\emph{j}] where P[\emph{j}] denotes the one-sided P-value of
@@ -76,10 +91,7 @@ the P-score is small.
 
 The P-score of treatment \emph{i} can be interpreted as the mean
 extent of certainty that treatment \emph{i} is better than another
-treatment. This interpretation is comparable to that of the Surface
-Under the Cumulative RAnking curve (SUCRA) which is the rank of
-treatment \emph{i} within the range of treatments, measured on a
-scale from 0 (worst) to 1 (best) (Salanti et al. 2011).
+treatment.
 }
 \examples{
 data(Senn2013)
@@ -102,6 +114,16 @@ print(nr2, sort = "fixed")
 print(nr2, sort = FALSE)
 }
 
+\dontrun{
+net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
+                data = Senn2013, sm = "MD")
+
+nr3 <- netrank(net3, method = "SUCRA", nsim = 100)
+nr3
+print(nr3, sort = "fixed")
+print(nr3, sort = FALSE)
+}
+
 }
 \references{
 Rücker G, Schwarzer G (2017):
@@ -117,9 +139,10 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \bold{64}, 163--71
 }
 \seealso{
-\code{\link{netmeta}}
+\code{\link{netmeta}}, \code{\link{rankogram}}
 }
 \author{
 Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
-  Schwarzer \email{sc@imbi.uni-freiburg.de}
+  Schwarzer \email{sc@imbi.uni-freiburg.de}, Theodoros
+  Papakonstantinou \email{papakonstantinou@imbi.uni-freiburg.de}
 }
