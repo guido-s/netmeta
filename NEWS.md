@@ -10,10 +10,18 @@
 * Surface under the cumulative ranking (SUCRA) can be calculated using
   resampling methods
 
+* Method by [Papakonstantinou et
+  al. (2018)](https://doi.org/10.12688/f1000research.14770.3) to
+  estimate the contribution of studies to network meta-analysis
+  implemented
+
 ### User-visible changes
 
 * New functions rankogram(), print.rankogram() and plot.rankogram()
   for rankograms
+
+* New functions netcontrib() and print.netcontrib() to calculate
+  network contributions
 
 * netrank():
   - new argument 'method' to choose between P-scores and SUCRAs

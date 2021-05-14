@@ -93,6 +93,5 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \code{\link{netmeta}}, \code{\link{netrank}}
 }
 \author{
-Theodoros Papakonstantinou
-  \email{papakonstantinou@imbi.uni-freiburg.de}
+Thodoris Papakonstantinou \email{dev@tpapak.com}
 }

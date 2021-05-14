@@ -17,8 +17,7 @@
 #' all treatments as a bar graph or as a line graph. Treatments are
 #' sorted according to their mean effects.
 #'
-#' @author Theodoros Papakonstantinou
-#'   \email{papakonstantinou@imbi.uni-freiburg.de}
+#' @author Thodoris Papakonstantinou \email{dev@tpapak.com}
 #' 
 #' @seealso \code{\link{rankogram}}
 #'

@@ -52,6 +52,5 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \code{\link{rankogram}}
 }
 \author{
-Theodoros Papakonstantinou
-  \email{papakonstantinou@imbi.uni-freiburg.de}
+Thodoris Papakonstantinou \email{dev@tpapak.com}
 }

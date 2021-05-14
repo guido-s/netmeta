@@ -42,8 +42,7 @@
 #' \item{nsim, comb.fixed, comb.random}{As defined above},
 #' \item{small.values, x}{As defined above},
 #'
-#' @author Theodoros Papakonstantinou
-#'   \email{papakonstantinou@imbi.uni-freiburg.de}
+#' @author Thodoris Papakonstantinou \email{dev@tpapak.com}
 #'
 #' @seealso \code{\link{netmeta}}, \code{\link{netrank}}
 #'
