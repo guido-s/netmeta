@@ -48,6 +48,8 @@
 plot.rankogram <- function(x, type = "bar", ylim, ylab, ...) {
   
   
+  meta:::is.installed.package("gridExtra")
+  ##
   meta:::chkclass(x, c("rankogram"))
   ##
   type <- meta:::setchar(type, c("bar", "line"))

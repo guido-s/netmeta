@@ -70,8 +70,10 @@
 rankogram <- function(x, nsim = 1000,
                       comb.fixed = x$comb.fixed, comb.random = x$comb.random,
                       small.values = x$small.values) {
-
   
+  
+  meta:::is.installed.package("mvtnorm")
+  ##
   meta:::chkclass(x, "netmeta")
   ##
   meta:::chknumeric(nsim, min = 1, length = 1)

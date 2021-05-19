@@ -72,16 +72,7 @@
 
 netcontrib <- function(x) {
   
-  if (!meta:::is.installed.package("igraph", stop = FALSE)) {
-    warning(paste("Package 'igraph' missing.",
-                  "\n  ",
-                  "Please use the following R command for installation:",
-                  "\n  ",
-                  "install.packages(\"igraph\")",
-                  sep = ""),
-            call. = FALSE)
-    return(invisible(NULL))
-  }
+  meta:::is.installed.package("igraph")
   
   res <- list(fixed = contribution.matrix(x, "fixed"),
               random = contribution.matrix(x, "random"),
