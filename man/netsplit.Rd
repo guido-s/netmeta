@@ -195,7 +195,9 @@ Argument \code{show} determines which comparisons are printed:
 \dQuote{direct.only} \tab Comparisons providing only direct
   evidence \cr
 \dQuote{indirect.only} \tab Comparisons providing only indirect
-  evidence
+  evidence \cr
+\dQuote{reference.only} \tab Only comparisons with the reference
+  group
 }
 }
 \examples{

@@ -32,6 +32,9 @@
   - argument 'digits.Pscore' renamed to 'digits.prop' (as this
     argument is also used for SUCRAs)
 
+* netsplit(), forest.netsplit():
+  - new option "reference.only" for argument 'show'
+
 
 ## netmeta, version 1.4-0 (2021-05-11)
     

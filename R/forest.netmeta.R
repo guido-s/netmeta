@@ -291,6 +291,9 @@ forest.netmeta <- function(x,
   for (i in names(list(...))) {
     if (!is.null(meta:::setchar(i, "weight.study", stop = FALSE)))
       stop("Argument 'weight.study' set internally.", call. = TRUE)
+    if (!is.null(meta:::setchar(i, "prediction", stop = FALSE)))
+      stop("For prediction intervals see example in help file of ",
+           "forest.netsplit().", call. = TRUE)
   }
   
   

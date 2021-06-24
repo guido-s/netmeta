@@ -104,7 +104,9 @@
 #' \dQuote{direct.only} \tab Comparisons providing only direct
 #'   evidence \cr
 #' \dQuote{indirect.only} \tab Comparisons providing only indirect
-#'   evidence
+#'   evidence \cr
+#' \dQuote{reference.only} \tab Only comparisons with the reference
+#'   group
 #' }
 #'
 #' @return
@@ -891,9 +893,11 @@ print.netsplit <- function(x,
   if (length(additional.arguments) > 0) {
     if (!is.na(charmatch("showa", additional.arguments)))
       if (!missing(show))
-        warning("Deprecated argument 'showall' ignored as argument 'show' is also provided.")
+        warning("Deprecated argument 'showall' ignored as ",
+                "argument 'show' is also provided.")
       else {
-        warning("Deprecated argument 'showall' has been replaced by argument 'show'.")
+        warning("Deprecated argument 'showall' has been replaced by ",
+                "argument 'show'.")
         show <- args[[charmatch("showa", additional.arguments)]]
         if (show)
           show <- "all"
@@ -902,7 +906,9 @@ print.netsplit <- function(x,
       }
   }
   ##
-  show <- setchar(show, c("all", "both", "with.direct", "direct.only", "indirect.only"))
+  show <- setchar(show, c("all", "both", "with.direct",
+                          "direct.only", "indirect.only",
+                          "reference.only"))
 
 
   sm <- x$sm
@@ -944,6 +950,19 @@ print.netsplit <- function(x,
     sel <- !is.na(x$direct.fixed$TE) & is.na(x$indirect.fixed$TE)
   else if (show == "indirect.only")
     sel <- is.na(x$direct.fixed$TE) & !is.na(x$fixed$TE)
+  else if (show == "reference.only") {
+    if (x$reference.group == "") {
+      warning("First treatment used as reference as argument ",
+              "'reference.group' was unspecified in netsplit().",
+              call. = FALSE)
+      x$reference.group <-
+        compsplit(x$comparison, x$sep.trts)[[1]][1]
+    }
+    ##
+    sel <-
+      apply(!is.na(sapply(compsplit(x$comparison, x$sep.trts),
+                          match, x$reference.group)), 2, sum) >= 1
+  }
   ##
   comp <- x$comparison[sel]
   ##
