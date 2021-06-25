@@ -28,6 +28,7 @@ discomb(
   tol.multiarm = 0.001,
   tol.multiarm.se = tol.multiarm,
   details.chkmultiarm = FALSE,
+  details.chkident = FALSE,
   sep.trts = ":",
   nchar.trts = 666,
   backtransf = gs("backtransf"),
@@ -105,6 +106,9 @@ design.}
 estimates and / or variances of multi-arm studies with
 inconsistent results or negative multi-arm variances should be
 printed.}
+
+\item{details.chkident}{A logical indicating whether details on
+unidentifiable components should be printed.}
 
 \item{sep.trts}{A character used in comparison names as separator
 between treatment labels.}

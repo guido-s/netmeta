@@ -23,7 +23,7 @@
   highlight = NULL,
   col.highlight = "red2",
   scale.highlight = 1,
-  multiarm = any(x$narms > 2),
+  multiarm = FALSE,
   col.multiarm = NULL,
   alpha.transparency = 0.5,
   points = FALSE,
@@ -346,28 +346,33 @@ netgraph(net2, highlight = "rosi:plac")
 # Network graph optimized, starting from a circle, with multi-arm
 # study colored
 #
-netgraph(net1, start = "circle", iterate = TRUE, col.multiarm = "purple")
+netgraph(net1, start = "circle", iterate = TRUE,
+         multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph optimized, starting from a circle, with multi-arm
 # study colored and all intermediate iteration steps visible
 #
-netgraph(net1, start = "circle", iterate = TRUE, col.multiarm = "purple",
+netgraph(net1, start = "circle", iterate = TRUE,
+         multiarm = TRUE, col.multiarm = "purple",
          allfigures = TRUE)
 
 # Network graph optimized, starting from Laplacian eigenvectors,
 # with multi-arm study colored
 #
-netgraph(net1, start = "eigen", col.multiarm = "purple")
+netgraph(net1, start = "eigen",
+         multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph optimized, starting from different Laplacian
 # eigenvectors, with multi-arm study colored
 #
-netgraph(net1, start = "prcomp", col.multiarm = "purple")
+netgraph(net1, start = "prcomp",
+         multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph optimized, starting from random initial layout,
 # with multi-arm study colored
 #
-netgraph(net1, start = "random", col.multiarm = "purple")
+netgraph(net1, start = "random",
+         multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph without plastic look and one highlighted comparison
 #

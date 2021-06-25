@@ -38,8 +38,16 @@
   - argument 'digits.Pscore' renamed to 'digits.prop' (as this
     argument is also used for SUCRAs)
 
+* netgraph.netmeta():
+  - by default, do not mark multi-arm studies (argument multiarm = FALSE)
+
 * netsplit(), forest.netsplit():
   - new option "reference.only" for argument 'show'
+
+* discomb():
+  - new check for unidentifiable components implemented
+  - new argument 'details.ident' to print more details on
+    unidentifiable components
 
 
 ## netmeta, version 1.4-0 (2021-05-11)
