@@ -15,6 +15,12 @@
   estimate the contribution of studies to network meta-analysis
   implemented
 
+### Bug fixes
+
+* netgraph.netmeta():
+  - use of arguments seq = "optimal" and srt.labels = "orthogonal"
+    resulted in wrong rotation of treatment labels
+
 ### User-visible changes
 
 * New functions rankogram(), print.rankogram() and plot.rankogram()
