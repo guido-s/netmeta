@@ -20,6 +20,8 @@
 #'   network meta-analysis should be conducted.
 #' @param tau.preset An optional value for the square-root of the
 #'   between-study variance \eqn{\tau^2}.
+#' @param details.chkident A logical indicating whether details on
+#'   unidentifiable components should be printed.
 #' 
 #' @details
 #' Treatments in network meta-analysis (NMA) can be complex
@@ -326,7 +328,8 @@ netcomb <- function(x,
                     C.matrix,
                     comb.fixed = x$comb.fixed,
                     comb.random = x$comb.random | !is.null(tau.preset),
-                    tau.preset = NULL) {
+                    tau.preset = NULL,
+                    details.chkident = FALSE) {
   
   
   ##
@@ -345,6 +348,8 @@ netcomb <- function(x,
   ##
   if (!is.null(tau.preset))
     meta:::chknumeric(tau.preset, min = 0, length = 1)
+  ##
+  meta:::chklogical(details.chkident)
   
   
   ##
@@ -441,6 +446,45 @@ netcomb <- function(x,
   ##
   colnames(X.matrix) <- colnames(C.matrix)
   rownames(X.matrix) <- studlab
+  ##
+  sel.comps <- character(0)
+  ##
+  if (qr(X.matrix)$rank < c) {
+    sum.trts <- apply(abs(X.matrix), 2, sum)
+    sel.comps <- gsub("^\\s+|\\s+$", "",
+                      names(sum.trts)[sum.trts == 0])
+    ##
+    Xplus <- ginv(X.matrix)
+    colnames(Xplus) <- rownames(X.matrix)
+    rownames(Xplus) <- colnames(X.matrix)
+    e <- eigen(Xplus %*% X.matrix)$values
+    E <- eigen(Xplus %*% X.matrix)$vectors
+    rownames(E) <- rownames(Xplus %*% X.matrix)
+    M <- as.matrix(E[, is.zero(e, n = 100)])
+    ##
+    if (dim(M)[2] > 0) {
+      sel.ident <- character(0)
+      for (m in 1:dim(M)[2])
+        sel.ident <- c(sel.ident, names(M[, m])[!is.zero(M[, m], n = 100)])
+      ##
+      sel.ident <- unique(sort(sel.ident))
+      warning(paste0("The following component",
+                     if (length(sel.ident) > 1)
+                       "s are " else " is ",
+                     "not identifiable: ",
+                     paste(paste0("'", sel.ident, "'"),
+                           collapse = ", "),
+                     if (!details.chkident)
+                       paste("\nFor more details, re-run discomb()",
+                             "with argument details.chkident = TRUE.")),
+              call. = FALSE)
+      ##
+      if (details.chkident) {
+        M[is.zero(M, n = 100)] <- 0
+        prmatrix(M, quote = FALSE, right = TRUE)
+      }
+    }
+  }
   
   
   ##
@@ -665,6 +709,90 @@ netcomb <- function(x,
               )
   ##
   class(res) <- "netcomb"
+  
+  
   ##
+  ## Remove estimates for inestimable combinations and components
+  ##
+  if (length(sel.comps) > 0) {
+    ##
+    res$c <- res$c - length(sel.comps)
+    ##
+    ## Identify combinations
+    ##
+    list.trts <- lapply(compsplit(res$trts, sep.comps),
+                        gsub, pattern = "^\\s+|\\s+$", replacement = "")
+    sel1 <- rep(NA, length(list.trts))
+    ##
+    for (i in seq_along(list.trts))
+      sel1[i] <- any(list.trts[[i]] %in% sel.comps)
+    ##
+    res$Comb.fixed[sel1] <- NA
+    res$seComb.fixed[sel1] <- NA
+    res$lower.Comb.fixed[sel1] <- NA
+    res$upper.Comb.fixed[sel1] <- NA
+    res$statistic.Comb.fixed[sel1] <- NA
+    res$pval.Comb.fixed[sel1] <- NA
+    ##
+    res$Comb.random[sel1] <- NA
+    res$seComb.random[sel1] <- NA
+    res$lower.Comb.random[sel1] <- NA
+    res$upper.Comb.random[sel1] <- NA
+    res$statistic.Comb.random[sel1] <- NA
+    res$pval.Comb.random[sel1] <- NA
+    ##
+    res$TE.fixed[sel1, ] <- NA
+    res$seTE.fixed[sel1, ] <- NA
+    res$lower.fixed[sel1, ] <- NA
+    res$upper.fixed[sel1, ] <- NA
+    res$statistic.fixed[sel1, ] <- NA
+    res$pval.fixed[sel1, ] <- NA
+    ##
+    res$TE.fixed[, sel1] <- NA
+    res$seTE.fixed[, sel1] <- NA
+    res$lower.fixed[, sel1] <- NA
+    res$upper.fixed[, sel1] <- NA
+    res$statistic.fixed[, sel1] <- NA
+    res$pval.fixed[, sel1] <- NA
+    ##
+    res$TE.random[sel1, ] <- NA
+    res$seTE.random[sel1, ] <- NA
+    res$lower.random[sel1, ] <- NA
+    res$upper.random[sel1, ] <- NA
+    res$statistic.random[sel1, ] <- NA
+    res$pval.random[sel1, ] <- NA
+    ##
+    res$TE.random[, sel1] <- NA
+    res$seTE.random[, sel1] <- NA
+    res$lower.random[, sel1] <- NA
+    res$upper.random[, sel1] <- NA
+    res$statistic.random[, sel1] <- NA
+    res$pval.random[, sel1] <- NA
+    ##
+    ## Identify components
+    ##
+    list.comps <- lapply(compsplit(res$comps, sep.comps),
+                         gsub, pattern = "^\\s+|\\s+$", replacement = "")
+    sel2 <- rep(NA, length(list.comps))
+    ##
+    for (i in seq_along(list.comps))
+      sel2[i] <- any(list.comps[[i]] %in% sel.comps)
+    ##
+    res$Comp.fixed[sel2] <- NA
+    res$seComp.fixed[sel2] <- NA
+    res$lower.Comp.fixed[sel2] <- NA
+    res$upper.Comp.fixed[sel2] <- NA
+    res$statistic.Comp.fixed[sel2] <- NA
+    res$pval.Comp.fixed[sel2] <- NA
+    ##
+    res$Comp.random[sel2] <- NA
+    res$seComp.random[sel2] <- NA
+    res$lower.Comp.random[sel2] <- NA
+    res$upper.Comp.random[sel2] <- NA
+    res$statistic.Comp.random[sel2] <- NA
+    res$pval.Comp.random[sel2] <- NA
+  }
+  
+  
   res
 }

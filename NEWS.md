@@ -44,7 +44,7 @@
 * netsplit(), forest.netsplit():
   - new option "reference.only" for argument 'show'
 
-* discomb():
+* discomb(), netcomb():
   - new check for unidentifiable components implemented
   - new argument 'details.ident' to print more details on
     unidentifiable components

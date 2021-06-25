@@ -752,12 +752,12 @@ discomb <- function(TE, seTE,
     e <- eigen(Xplus %*% X.matrix)$values
     E <- eigen(Xplus %*% X.matrix)$vectors
     rownames(E) <- rownames(Xplus %*% X.matrix)
-    M <- as.matrix(E[, is.zero(e)])
+    M <- as.matrix(E[, is.zero(e, n = 100)])
     ##
     if (dim(M)[2] > 0) {
       sel.ident <- character(0)
       for (m in 1:dim(M)[2])
-        sel.ident <- c(sel.ident, names(M[, m])[!is.zero(M[, m])])
+        sel.ident <- c(sel.ident, names(M[, m])[!is.zero(M[, m], n = 100)])
       ##
       sel.ident <- unique(sort(sel.ident))
       warning(paste0("The following component",
@@ -772,7 +772,7 @@ discomb <- function(TE, seTE,
               call. = FALSE)
       ##
       if (details.chkident) {
-        M[is.zero(M)] <- 0
+        M[is.zero(M, n = 100)] <- 0
         prmatrix(M, quote = FALSE, right = TRUE)
       }
     }

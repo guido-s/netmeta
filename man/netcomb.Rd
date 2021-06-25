@@ -11,7 +11,8 @@ netcomb(
   C.matrix,
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random | !is.null(tau.preset),
-  tau.preset = NULL
+  tau.preset = NULL,
+  details.chkident = FALSE
 )
 }
 \arguments{
@@ -33,6 +34,9 @@ network meta-analysis should be conducted.}
 
 \item{tau.preset}{An optional value for the square-root of the
 between-study variance \eqn{\tau^2}.}
+
+\item{details.chkident}{A logical indicating whether details on
+unidentifiable components should be printed.}
 }
 \value{
 An object of class \code{netcomb} with corresponding \code{print},
