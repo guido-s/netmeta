@@ -6,7 +6,14 @@
 #' 
 #' @aliases netcontrib print.netcontrib
 #' 
-#' @param x An object of class \code{netmeta}.
+#' @param x An object of class \code{netmeta} or \code{netcontrib}.
+#' @param comb.fixed A logical indicating whether a league table
+#'   should be printed for the fixed effects (common effects) network
+#'   meta-analysis.
+#' @param comb.random A logical indicating whether a league table
+#'   should be printed for the random effects network meta-analysis.
+#' @param digits number of rounding digits
+#' @param \dots Additional arguments (ignored at the moment).
 #' 
 #' @details
 #' In network meta-analysis, it is important to assess the influence
@@ -87,14 +94,6 @@ netcontrib <- function(x) {
 
 
 #' @rdname netcontrib
-#' @param x An object of class \code{netcontrib}
-#' @param comb.fixed A logical indicating whether a league table
-#'   should be printed for the fixed effects (common effects) network
-#'   meta-analysis.
-#' @param comb.random A logical indicating whether a league table
-#'   should be printed for the random effects network meta-analysis.
-#' @param digits number of rounding digits
-#' @param \dots Additional arguments (ignored at the moment).
 #' 
 #' @method print netcontrib
 #' 

@@ -604,8 +604,14 @@ netgraph.netmeta <- function(x, seq = x$seq,
 
   if (missing(thickness)) {
     if (start.layout == "circle" & iterate == FALSE & plastic == TRUE) {
-      thick <- "se.fixed"
-      thickness <- "se.fixed"
+      if (x$comb.random & !x$comb.fixed) {
+        thick <- "se.random"
+        thickness <- "se.random"
+      }
+      else {
+        thick <- "se.fixed"
+        thickness <- "se.fixed"
+      }
     }
     else {
       thick <- "equal"

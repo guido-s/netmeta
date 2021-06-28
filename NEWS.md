@@ -1,9 +1,9 @@
-## netmeta, version 1.5-0 (2021-mm-dd)
+## netmeta, version 1.5-0 (2021-06-28)
     
 ### Major changes
 
-* Theodoros Papakonstantinou <papakonstantinou@imbi.uni-freiburg.de>
-  is a new co-author of R package **netmeta**
+* Theodoros Papakonstantinou <dev@tpapak.com> is a new co-author of R
+  package **netmeta**
 
 * Rankograms added
 
@@ -34,19 +34,22 @@
   - can be used with an R object created with rankogram()
 
 * forest.netmeta():
-  - new argument 'nsim' to specify number of simulations for SUCRAs
   - argument 'digits.Pscore' renamed to 'digits.prop' (as this
     argument is also used for SUCRAs)
+  - new argument 'nsim' to specify number of simulations for SUCRAs
 
 * netgraph.netmeta():
   - by default, do not mark multi-arm studies (argument multiarm = FALSE)
+  - by default, use inverse standard error of random effects estimates
+    for argument 'thickness' if random effects network meta-analysis
+    was conducted
 
 * netsplit(), forest.netsplit():
   - new option "reference.only" for argument 'show'
 
 * discomb(), netcomb():
   - new check for unidentifiable components implemented
-  - new argument 'details.ident' to print more details on
+  - new argument 'details.chkident' to print more details on
     unidentifiable components
 
 

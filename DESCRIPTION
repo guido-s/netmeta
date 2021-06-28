@@ -1,7 +1,7 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
 Version: 1.5-0
-Date: 2021-06-25
+Date: 2021-06-28
 Depends: R (>= 3.5.0), meta (>= 4.15-1)
 Imports: magic, MASS, ggplot2 (>= 3.0.0), metafor
 Suggests: colorspace, rgl, hasseDiagram (>= 0.1.3), grid, mvtnorm, gridExtra, igraph (>= 1.0.1)
@@ -16,7 +16,7 @@ Authors@R: c(person("Gerta", "Rücker",
              person("Orestis", "Efthimiou",
                     role = "aut",
                     comment = c(ORCID = "0000-0002-0955-7572")),
-             person("Thodoris", "Papakonstantinou",
+             person("Theodoros", "Papakonstantinou",
                     role = "aut",
                     comment = c(ORCID = "0000-0002-6630-6817")),
              person("Guido", "Schwarzer",

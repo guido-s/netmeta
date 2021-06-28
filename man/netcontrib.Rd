@@ -16,7 +16,7 @@ netcontrib(x)
 )
 }
 \arguments{
-\item{x}{An object of class \code{netcontrib}}
+\item{x}{An object of class \code{netmeta} or \code{netcontrib}.}
 
 \item{comb.fixed}{A logical indicating whether a league table
 should be printed for the fixed effects (common effects) network
