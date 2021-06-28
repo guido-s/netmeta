@@ -58,6 +58,8 @@
 #'   estimates and / or variances of multi-arm studies with
 #'   inconsistent results or negative multi-arm variances should be
 #'   printed.
+#' @param details.chkident A logical indicating whether details on
+#'   unidentifiable components should be printed.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
 #' @param backtransf A logical indicating whether results should be
@@ -363,6 +365,8 @@ discomb <- function(TE, seTE,
                     tol.multiarm.se = tol.multiarm,
                     details.chkmultiarm = FALSE,
                     ##
+                    details.chkident = FALSE,
+                    ##
                     sep.trts = ":",
                     nchar.trts = 666,
                     ##
@@ -401,6 +405,8 @@ discomb <- function(TE, seTE,
   chknumeric(tol.multiarm, min = 0, length = 1)
   chknumeric(tol.multiarm.se, min = 0, length = 1)
   chklogical(details.chkmultiarm)
+  ##
+  chklogical(details.chkident)
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
@@ -595,18 +601,16 @@ discomb <- function(TE, seTE,
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
-    stop(paste("Study '", names(tabnarms)[sel.narms],
-               "' has a wrong number of comparisons.",
-               "\n  Please provide data for all treatment comparisons",
-               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""))
+    stop(paste0("Study '", names(tabnarms)[sel.narms],
+                "' has a wrong number of comparisons.",
+                "\n  Please provide data for all treatment comparisons",
+                " (two-arm: 1; three-arm: 3; four-arm: 6, ...)."))
   if (sum(sel.narms) > 1)
-    stop(paste("The following studies have a wrong number of comparisons: ",
-               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
-                     collapse = ", "),
-               "\n  Please provide data for all treatment comparisons",
-               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""))
+    stop(paste0("The following studies have a wrong number of comparisons: ",
+                paste(paste0("'", names(tabnarms)[sel.narms], "'"),
+                      collapse = ", "),
+                "\n  Please provide data for all treatment comparisons",
+                " (two-arm: 1; three-arm: 3; four-arm: 6, ...)."))
   ##
   ## Check NAs and zero standard errors
   ##
@@ -624,9 +628,9 @@ discomb <- function(TE, seTE,
             " with missing TE / seTE or zero seTE not considered in",
             " network meta-analysis.",
             call. = FALSE)
-    cat(paste("Comparison",
-              if (sum(excl) > 1) "s",
-              " not considered in network meta-analysis:\n", sep = ""))
+    cat(paste0("Comparison",
+               if (sum(excl) > 1) "s",
+               " not considered in network meta-analysis:\n"))
     prmatrix(dat.NAs, quote = FALSE, right = TRUE,
              rowlab = rep("", sum(excl)))
     cat("\n")
@@ -648,22 +652,20 @@ discomb <- function(TE, seTE,
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
-    stop(paste("After removing comparisons with missing treatment effects",
-               " or standard errors,\n  study '",
-               names(tabnarms)[sel.narms],
-               "' has a wrong number of comparisons.",
-               " Please check data and\n  consider to remove study",
-               " from network meta-analysis.",
-               sep = ""))
+    stop(paste0("After removing comparisons with missing treatment effects",
+                " or standard errors,\n  study '",
+                names(tabnarms)[sel.narms],
+                "' has a wrong number of comparisons.",
+                " Please check data and\n  consider to remove study",
+                " from network meta-analysis."))
   if (sum(sel.narms) > 1)
-    stop(paste("After removing comparisons with missing treatment effects",
-               " or standard errors,\n  the following studies have",
-               " a wrong number of comparisons: ",
-               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
-                     collapse = ", "),
-               "\n  Please check data and consider to remove studies",
-               " from network meta-analysis.",
-               sep = ""))
+    stop(paste0("After removing comparisons with missing treatment effects",
+                " or standard errors,\n  the following studies have",
+                " a wrong number of comparisons: ",
+                paste(paste0("'", names(tabnarms)[sel.narms], "'"),
+                      collapse = ", "),
+                "\n  Please check data and consider to remove studies",
+                " from network meta-analysis."))
   ##
   ## Check for correct treatment order within comparison
   ##
@@ -706,10 +708,9 @@ discomb <- function(TE, seTE,
         wrong.labels <- TRUE
     }
     if (wrong.labels) 
-      stop(paste("Row names of argument 'C.matrix' must be a ", 
-                 "permutation of treatment names:\n  ",
-                 paste(paste("'", labels, "'", sep = ""), collapse = " - "),
-                 sep = ""),
+      stop(paste0("Row names of argument 'C.matrix' must be a ", 
+                  "permutation of treatment names:\n  ",
+                  paste(paste0("'", labels, "'"), collapse = " - ")),
            call. = FALSE)
     ##
     C.matrix <- C.matrix[labels, , drop = FALSE]
@@ -745,36 +746,36 @@ discomb <- function(TE, seTE,
     sel.comps <- gsub("^\\s+|\\s+$", "",
                       names(sum.trts)[sum.trts == 0])
     ##
-    if (length(sel.comps > 0)) {
-      list.trts <- lapply(compsplit(labels, sep.comps),
-                          gsub, pattern = "^\\s+|\\s+$", replacement = "")
-      sel.combs <- rep(NA, length(list.trts))
+    Xplus <- ginv(X.matrix)
+    colnames(Xplus) <- rownames(X.matrix)
+    rownames(Xplus) <- colnames(X.matrix)
+    e <- eigen(Xplus %*% X.matrix)$values
+    E <- eigen(Xplus %*% X.matrix)$vectors
+    rownames(E) <- rownames(Xplus %*% X.matrix)
+    M <- as.matrix(E[, is.zero(e, n = 100)])
+    ##
+    if (dim(M)[2] > 0) {
+      sel.ident <- character(0)
+      for (m in 1:dim(M)[2])
+        sel.ident <- c(sel.ident, names(M[, m])[!is.zero(M[, m], n = 100)])
       ##
-      for (i in seq_along(list.trts))
-        sel.combs[i] <- any(list.trts[[i]] %in% sel.comps)
-      ##
-      sel.combs <- labels[sel.combs]
-      ##
-      warning("The following treatment component",
-              if (length(sel.comps) > 1) "s",
-              " cannot be estimated: ",
-               paste(paste("'", sel.comps, "'", sep = ""),
-                     collapse = ", "),
-              "\nAccordingly, the following treatment combination",
-              if (length(sel.combs) > 1) "s",
-             " cannot be estimated:\n",
-               paste(paste("'", sel.combs, "'", sep = ""),
-                     collapse = ", "),
-             "\nPlease consider whether a network meta-analysis without",
-             " inestimable component",
-             if (length(sel.comps) > 1) "s",
-             " is sensible.",
-             call. = FALSE)
-    }
-    else
-      warning("A total of ", c - qr(X.matrix)$rank, " of ", c,
-              " treatment components cannot be estimated.",
+      sel.ident <- unique(sort(sel.ident))
+      warning(paste0("The following component",
+                     if (length(sel.ident) > 1)
+                       "s are " else " is ",
+                     "not identifiable: ",
+                     paste(paste0("'", sel.ident, "'"),
+                           collapse = ", "),
+                     if (!details.chkident)
+                       paste("\nFor more details, re-run discomb()",
+                             "with argument details.chkident = TRUE.")),
               call. = FALSE)
+      ##
+      if (details.chkident) {
+        M[is.zero(M, n = 100)] <- 0
+        prmatrix(M, quote = FALSE, right = TRUE)
+      }
+    }
   }
   
   

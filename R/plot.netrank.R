@@ -499,25 +499,25 @@ plot.netrank <- function(..., name,
   ##
   for (i in n.i)
     if (is.netrank[i])
-      trts <- c(trts, names(args[[i]]$Pscore.fixed))
+      trts <- c(trts, names(args[[i]]$ranking.fixed))
   ##
   trts <- unique(trts)
   ##  
   if (!missing.seq)
     seq <- setseq(seq, trts)
   else {
-    trts1 <- data.frame(treat = trts, pscore = NA,
+    trts1 <- data.frame(treat = trts, ranking = NA,
                         row.names = trts,
                         stringsAsFactors = FALSE)
     first <- min(seq_along(is.netrank)[is.netrank])
-    trts.first <- names(args[[first]]$Pscore.fixed)
+    trts.first <- names(args[[first]]$ranking.fixed)
     ##
     if (comb.random)
-      trts1[trts.first, "pscore"] <- args[[first]]$Pscore.random
+      trts1[trts.first, "ranking"] <- args[[first]]$ranking.random
     else
-      trts1[trts.first, "pscore"] <- args[[first]]$Pscore.fixed
+      trts1[trts.first, "ranking"] <- args[[first]]$ranking.fixed
     ##
-    trts1 <- trts1[rev(order(trts1$pscore, na.last = FALSE)), ]
+    trts1 <- trts1[rev(order(trts1$ranking, na.last = FALSE)), ]
     seq <- trts1$treat
   }
   ##
@@ -530,22 +530,22 @@ plot.netrank <- function(..., name,
   ##
   ##
   dat <- data.frame(name = character(0), treat = character(0),
-                    pscore = numeric(0),
+                    ranking = numeric(0),
                     stringsAsFactors = FALSE)
   ##  
   for (i in n.i) {
     if (is.netrank[i]) {
       dat.i <- data.frame(name = rep_len(name[i], n.trts),
-                          treat = trts, pscore = NA,
+                          treat = trts, ranking = NA,
                           row.names = trts,
                           stringsAsFactors = FALSE)
       ##
-      trts.i <- names(args[[i]]$Pscore.fixed)
+      trts.i <- names(args[[i]]$ranking.fixed)
       ##
       if (comb.random)
-        dat.i[trts.i, "pscore"] <- args[[i]]$Pscore.random
+        dat.i[trts.i, "ranking"] <- args[[i]]$ranking.random
       else 
-        dat.i[trts.i, "pscore"] <- args[[i]]$Pscore.fixed
+        dat.i[trts.i, "ranking"] <- args[[i]]$ranking.fixed
       ##
       dat <- rbind(dat, dat.i)
     }
@@ -553,8 +553,8 @@ plot.netrank <- function(..., name,
   ##
   row.names(dat) <- seq_len(nrow(dat))
   ##
-  dat$pscore <- as.character(meta:::formatN(round(dat$pscore, digits),
-                                            digits = digits, text.NA = ""))
+  dat$ranking <- as.character(meta:::formatN(round(dat$ranking, digits),
+                                             digits = digits, text.NA = ""))
   ##
   dat$name <- factor(dat$name, levels = rev(name))
   ##
@@ -562,7 +562,7 @@ plot.netrank <- function(..., name,
                       labels = treats(seq, nchar.trts))
   ## Get rid of warnings 'Undefined global functions or variables'
   treat <- dat$treat
-  pscore <- dat$pscore
+  ranking <- dat$ranking
   
   
   ##
@@ -571,7 +571,7 @@ plot.netrank <- function(..., name,
   ##
   ##
   plt <- ggplot(dat,
-                aes(x = treat, y = name, fill = as.numeric(pscore)))
+                aes(x = treat, y = name, fill = as.numeric(ranking)))
   ##
   ## OPTIONS
   ##
@@ -596,7 +596,7 @@ plot.netrank <- function(..., name,
                          space = "Lab", name = "P-scores",
                          na.value = na.value)
   
-  plt <- plt + geom_text(aes(x = treat, y = name, label = pscore),
+  plt <- plt + geom_text(aes(x = treat, y = name, label = ranking),
                          colour = col)
 
   if (!legend)

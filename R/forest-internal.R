@@ -15,7 +15,7 @@ setLab <- function(lab, col, match, value) {
 }
 
 
-setCol <- function(col, lab, match) {
+setCol <- function(col, match) {
   idx <- charmatch(tolower(col), tolower(match), nomatch = NA)
   sel <- !is.na(idx) & idx == 1
   if (any(sel))
@@ -31,3 +31,9 @@ matchVar <- function(x, match) {
   ##
   sel
 }  
+
+
+anyCol <- function(col, match) {
+  idx <- charmatch(tolower(col), tolower(match), nomatch = NA)
+  any(!is.na(idx) & idx == 1)
+}

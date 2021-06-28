@@ -271,11 +271,11 @@ netleague <- function(x, y,
     if (is.null(seq))
       stop("Argument 'seq' must be not NULL.")
     else if (inherits(seq, "netrank")) {
-      pscore.f <- seq$Pscore.fixed
-      pscore.r <- seq$Pscore.random
+      ranking.f <- seq$ranking.fixed
+      ranking.r <- seq$ranking.random
       ##
-      seq.f <- setseq(names(pscore.f)[rev(order(pscore.f))], x$seq)
-      seq.r <- setseq(names(pscore.r)[rev(order(pscore.r))], x$seq)
+      seq.f <- setseq(names(ranking.f)[rev(order(ranking.f))], x$seq)
+      seq.r <- setseq(names(ranking.r)[rev(order(ranking.r))], x$seq)
     }
     else
       seq.f <- seq.r <- setseq(seq, x$seq)

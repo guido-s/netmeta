@@ -20,6 +20,8 @@
 #'   network meta-analysis should be conducted.
 #' @param tau.preset An optional value for the square-root of the
 #'   between-study variance \eqn{\tau^2}.
+#' @param details.chkident A logical indicating whether details on
+#'   unidentifiable components should be printed.
 #' 
 #' @details
 #' Treatments in network meta-analysis (NMA) can be complex
@@ -326,7 +328,8 @@ netcomb <- function(x,
                     C.matrix,
                     comb.fixed = x$comb.fixed,
                     comb.random = x$comb.random | !is.null(tau.preset),
-                    tau.preset = NULL) {
+                    tau.preset = NULL,
+                    details.chkident = FALSE) {
   
   
   ##
@@ -345,6 +348,8 @@ netcomb <- function(x,
   ##
   if (!is.null(tau.preset))
     meta:::chknumeric(tau.preset, min = 0, length = 1)
+  ##
+  meta:::chklogical(details.chkident)
   
   
   ##
@@ -441,6 +446,39 @@ netcomb <- function(x,
   ##
   colnames(X.matrix) <- colnames(C.matrix)
   rownames(X.matrix) <- studlab
+  ##
+  if (qr(X.matrix)$rank < c) {
+    Xplus <- ginv(X.matrix)
+    colnames(Xplus) <- rownames(X.matrix)
+    rownames(Xplus) <- colnames(X.matrix)
+    e <- eigen(Xplus %*% X.matrix)$values
+    E <- eigen(Xplus %*% X.matrix)$vectors
+    rownames(E) <- rownames(Xplus %*% X.matrix)
+    M <- as.matrix(E[, is.zero(e, n = 100)])
+    ##
+    if (dim(M)[2] > 0) {
+      sel.ident <- character(0)
+      for (m in 1:dim(M)[2])
+        sel.ident <- c(sel.ident, names(M[, m])[!is.zero(M[, m], n = 100)])
+      ##
+      sel.ident <- unique(sort(sel.ident))
+      warning(paste0("The following component",
+                     if (length(sel.ident) > 1)
+                       "s are " else " is ",
+                     "not identifiable: ",
+                     paste(paste0("'", sel.ident, "'"),
+                           collapse = ", "),
+                     if (!details.chkident)
+                       paste("\nFor more details, re-run discomb()",
+                             "with argument details.chkident = TRUE.")),
+              call. = FALSE)
+      ##
+      if (details.chkident) {
+        M[is.zero(M, n = 100)] <- 0
+        prmatrix(M, quote = FALSE, right = TRUE)
+      }
+    }
+  }
   
   
   ##
@@ -665,6 +703,7 @@ netcomb <- function(x,
               )
   ##
   class(res) <- "netcomb"
-  ##
+  
+  
   res
 }

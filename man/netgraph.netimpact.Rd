@@ -10,7 +10,7 @@
   number.of.studies = TRUE,
   main,
   sub,
-  multiarm = any(x$x$narms > 2),
+  multiarm = FALSE,
   col.multiarm = NULL,
   alpha.transparency = 0.5,
   col.ignore.multiarm = "transparent",

@@ -12,37 +12,52 @@ Official Git repository of R package **netmeta**
 A comprehensive set of functions providing frequentist methods for
 network meta-analysis:
 
-  - frequentist network meta-analysis (Rücker, 2012; Rücker &
-    Schwarzer, 2014);
+  - frequentist network meta-analysis ([Rücker, 2012](https://scholar.google.com/scholar?q=Rücker+2012+Network+meta-analysis+electrical+networks+and+graph+theory); [Rücker & Schwarzer, 2014](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2014+Reduce+dimension+or+reduce+weights));
 
-  - net heat plot and design-based decomposition of Cochran's Q (Krahn
-    et al., 2013);
+  - net heat plot and design-based decomposition of Cochran's Q
+    ([Krahn et al.,
+    2013](https://scholar.google.com/scholar?q=Krahn+Binder+König+2013+A+graphical+tool+for+locating+inconsistency+in+network+meta-analyses));
 
   - measures characterizing the flow of evidence between two
-    treatments (König et al., 2013);
+    treatments ([König et al.,
+    2013](https://scholar.google.com/scholar?q=König+Krahn+Binder+2013+Visualizing+the+flow+of+evidence+in+network+meta-analysis+and+characterizing+mixed+treatment+comparisons));
 
   - ranking of treatments based on frequentist analogue of SUCRA
-    (Rücker & Schwarzer, 2015);
+    ([Rücker & Schwarzer,
+    2015](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2015+Ranking+treatments+in+frequentist+network+meta-analysis+works+without+resampling+methods));
 
   - partial order of treatment rankings ('poset') and Hasse diagram
-    for 'poset' (Carlsen & Bruggemann, 2014; Rücker & Schwarzer,
-    2017);
+    for 'poset' ([Carlsen & Bruggemann,
+    2014](https://scholar.google.com/scholar?q=Partial+order+methodology%3A+a+valuable+tool+in+chemometrics);
+    [Rücker & Schwarzer,
+    2017](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2017+resolve+conflicting+rankings+of+outcomes+in+network+meta-analysis));
 
-  - split direct and indirect evidence to check consistency (Dias et
-    al., 2010);
+  - split direct and indirect evidence to check consistency ([Dias et
+    al.,
+    2010](https://scholar.google.com/scholar?q=Checking+consistency+in+mixed+treatment+comparison+meta-analysis));
 
   - league table with network meta-analysis results;
 
   - additive network meta-analysis for combinations of treatments
-    (Rücker et al., 2019);
+    ([Rücker et al.,
+    2019](https://scholar.google.com/scholar?q=Rücker+Schwarzer+Petropoulou+2019+Network+meta-analysis+of+multicomponent+interventions));
 
   - network meta-analysis of binary data using the Mantel-Haenszel
-    method or the non-central hypergeometric distribution (Efthimiou
-    et al., 2019);
+    method or the non-central hypergeometric distribution ([Efthimiou
+    et al.,
+    2019](https://scholar.google.com/scholar?q=Efthimiou+Rücker+Schwarzer+Higgins+Egger+Salanti+2019+Mantel-Haenszel+model));
 
-  - 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012);
+  - 'comparison-adjusted' funnel plot ([Chaimani & Salanti,
+    2012](https://scholar.google.com/scholar?q=Chaimani+Salanti+Using+network+meta-analysis+to+evaluate+the+existence+of+small-study+effects+in+a+network+of+interventions));
 
-  - automated drawing of network graphs (Rücker & Schwarzer, 2016).
+  - automated drawing of network graphs ([Rücker & Schwarzer,
+    2016](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2016+Automated+drawing+of+network+plots+in+network+meta-analysis));
+  
+  - rankograms based on Surface Under the Cumulative RAnking curve (SUCRA);
+  
+ - contribution matrix ([Papakonstantinou et al.,
+   2018](https://scholar.google.com/scholar?q=Papakonstantinou+Nikolakopoulou+Rücker+Chaimani+Schwarzer+2018+contribution+flows+streams))
+
 
 Furthermore, R package **netmeta** provides functions and datasets to
 support Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
@@ -63,6 +78,8 @@ events. *Statistics in Medicine*, 1-21](https://scholar.google.com/scholar?q=Eft
 [König J, Krahn U, Binder H (2013): Visualizing the flow of evidence in network meta-analysis and characterizing mixed treatment comparisons. *Statistics in Medicine*, **32**, 5414-29](https://scholar.google.com/scholar?q=König+Krahn+Binder+2013+Visualizing+the+flow+of+evidence+in+network+meta-analysis+and+characterizing+mixed+treatment+comparisons)
 
 [Krahn U, Binder H, König J (2013): A graphical tool for locating inconsistency in network meta-analyses. *BMC Medical Research Methodology*, **13**, 35](https://scholar.google.com/scholar?q=Krahn+Binder+König+2013+A+graphical+tool+for+locating+inconsistency+in+network+meta-analyses)
+
+[Papakonstantinou T, Nikolakopoulou A, Rücker G, Chaimani A, Schwarzer G, Egger M, Salanti G (2018): Estimating the contribution of studies in network meta-analysis: paths, flows and streams. *F1000Research*, **7**, 610](https://scholar.google.com/scholar?q=Papakonstantinou+Nikolakopoulou+Rücker+Chaimani+Schwarzer+2018+contribution+flows+streams)
 
 [Rücker G (2012): Network meta-analysis, electrical networks and graph theory. *Research Synthesis Methods*, **3**, 312-24](https://scholar.google.com/scholar?q=Rücker+2012+Network+meta-analysis+electrical+networks+and+graph+theory)
 

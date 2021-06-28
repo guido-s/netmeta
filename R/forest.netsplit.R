@@ -106,7 +106,9 @@
 #' \dQuote{direct.only} \tab Comparisons providing only direct
 #'   evidence \cr
 #' \dQuote{indirect.only} \tab Comparisons providing only indirect
-#'   evidence
+#'   evidence \cr
+#' \dQuote{reference.only} \tab Only comparisons with the reference
+#'   group
 #' }
 #'
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
@@ -134,6 +136,14 @@
 #' #
 #' forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
 #'        show = "with.direct")
+#'
+#' 
+#' # Forest plot only showing network estimates compared to reference
+#' # group and prediction intervals
+#' #
+#' forest(ns1, fontsize = 8, spacing = 0.75,
+#'        show = "ref", prediction = TRUE,
+#'        direct = FALSE, indirect = FALSE)
 #' }
 #' 
 #' @method forest netsplit
@@ -247,12 +257,17 @@ forest.netsplit <- function(x,
   ##
   if (pooled == "fixed") {
     if (!(missing(prediction)) & prediction)
-      warning("Prediction intervals not shown for estimates from fixed effect model.")
+      warning("Prediction intervals not shown for estimates ",
+              "from fixed effect model.")
     prediction <- FALSE
   }
   ##
   if (!any(c(overall, direct, indirect)))
-    stop("At least, one of the following estimates must be included in forest plot:\n- network estimates (argument 'overall')\n- direct estimates (argument 'direct')\n- indirect estimates (argument 'indirect')")
+    stop("At least, one of the following estimates ",
+         "must be included in forest plot:\n",
+         "- network estimates (argument 'overall')\n",
+         "- direct estimates (argument 'direct')\n",
+         "- indirect estimates (argument 'indirect')")
   ##
   if (missing(leftcols))
     if (direct)
@@ -310,9 +325,11 @@ forest.netsplit <- function(x,
   if (length(additional.arguments) > 0) {
     if (!is.na(charmatch("showa", additional.arguments)))
       if (!missing(show))
-        warning("Deprecated argument 'showall' ignored as argument 'show' is also provided.")
+        warning("Deprecated argument 'showall' ignored as ",
+                "argument 'show' is also provided.")
       else {
-        warning("Deprecated argument 'showall' has been replaced by argument 'show'.")
+        warning("Deprecated argument 'showall' has been replaced by ",
+                "argument 'show'.")
         show <- args[[charmatch("showa", additional.arguments)]]
         if (show)
           show <- "all"
@@ -321,7 +338,9 @@ forest.netsplit <- function(x,
       }
   }
   ##
-  show <- setchar(show, c("all", "both", "with.direct", "direct.only", "indirect.only"))
+  show <- setchar(show, c("all", "both", "with.direct",
+                          "direct.only", "indirect.only",
+                          "reference.only"))
 
 
   ##
@@ -448,6 +467,19 @@ forest.netsplit <- function(x,
   else if (show == "indirect.only")
     sel <- (is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
             is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+  else if (show == "reference.only") {
+    if (x$reference.group == "") {
+      warning("First treatment used as reference as argument ",
+              "'reference.group' was unspecified in netsplit().",
+              call. = FALSE)
+      x$reference.group <-
+        compsplit(x$comparison, x$sep.trts)[[1]][1]
+    }
+    ##
+    sel <-
+      apply(!is.na(sapply(compsplit(x$comparison, x$sep.trts),
+                          match, x$reference.group)), 2, sum) >= 1
+  }
   ##
   dat.direct <- dat.direct[sel, ]
   dat.indirect <- dat.indirect[sel, ]

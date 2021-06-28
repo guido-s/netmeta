@@ -1,3 +1,58 @@
+## netmeta, version 1.5-0 (2021-06-28)
+    
+### Major changes
+
+* Theodoros Papakonstantinou <dev@tpapak.com> is a new co-author of R
+  package **netmeta**
+
+* Rankograms added
+
+* Surface under the cumulative ranking (SUCRA) can be calculated using
+  resampling methods
+
+* Method by [Papakonstantinou et
+  al. (2018)](https://doi.org/10.12688/f1000research.14770.3) to
+  estimate the contribution of studies to network meta-analysis
+  implemented
+
+### Bug fixes
+
+* netgraph.netmeta():
+  - use of arguments seq = "optimal" and srt.labels = "orthogonal"
+    resulted in wrong rotation of treatment labels
+
+### User-visible changes
+
+* New functions rankogram(), print.rankogram() and plot.rankogram()
+  for rankograms
+
+* New functions netcontrib() and print.netcontrib() to calculate
+  network contributions
+
+* netrank():
+  - new argument 'method' to choose between P-scores and SUCRAs
+  - can be used with an R object created with rankogram()
+
+* forest.netmeta():
+  - argument 'digits.Pscore' renamed to 'digits.prop' (as this
+    argument is also used for SUCRAs)
+  - new argument 'nsim' to specify number of simulations for SUCRAs
+
+* netgraph.netmeta():
+  - by default, do not mark multi-arm studies (argument multiarm = FALSE)
+  - by default, use inverse standard error of random effects estimates
+    for argument 'thickness' if random effects network meta-analysis
+    was conducted
+
+* netsplit(), forest.netsplit():
+  - new option "reference.only" for argument 'show'
+
+* discomb(), netcomb():
+  - new check for unidentifiable components implemented
+  - new argument 'details.chkident' to print more details on
+    unidentifiable components
+
+
 ## netmeta, version 1.4-0 (2021-05-11)
     
 ### Major changes

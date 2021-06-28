@@ -179,7 +179,9 @@ Argument \code{show} determines which comparisons are printed:
 \dQuote{direct.only} \tab Comparisons providing only direct
   evidence \cr
 \dQuote{indirect.only} \tab Comparisons providing only indirect
-  evidence
+  evidence \cr
+\dQuote{reference.only} \tab Only comparisons with the reference
+  group
 }
 }
 \examples{
@@ -201,6 +203,14 @@ forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
 #
 forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
        show = "with.direct")
+
+
+# Forest plot only showing network estimates compared to reference
+# group and prediction intervals
+#
+forest(ns1, fontsize = 8, spacing = 0.75,
+       show = "ref", prediction = TRUE,
+       direct = FALSE, indirect = FALSE)
 }
 
 }
