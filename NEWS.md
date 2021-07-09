@@ -1,5 +1,43 @@
+## netmeta, version 1.6-0 (2021-mm-dd)
+
+### Major changes
+
+* Annabel Davies <annabel.davies@manchester.ac.uk> is a new co-author
+  of R package **netmeta**
+
+* Random walk algorithm implemented to estimate network contributions
+  (Davies et al., 2021, unpublished)
+
+### User-visible changes
+
+* New argument 'method' in netcontrib() to select method to estimate
+  network contributions
+
+### Internal changes
+
+* netmeta():
+  - new list elements 'seTE.adj.fixed' and 'seTE.adj.random with
+    adjusted standard errors under fixed effect and random effects
+    model (content of 'seTE.adj.fixed' is identical to the previously
+    existing element 'seTE.adj')
+  - new list elements 'H.matrix.aggr.fixed' and 'H.matrix.aggr.random'
+    with aggregated hat matrices
+
+* New internal function hatmatrix.aggr() to calculate the aggregated
+  hat matrix
+
+* Internal function contribution.matrix() moved to
+  contribution.matrix.tpapak()
+
+* New internal function contribution.matrix.davies()
+  
+* New wrapper function contribution.matrix()
+
+* New argument 'aggr' in createB() to calculate aggregated B matrix
+
+
 ## netmeta, version 1.5-0 (2021-06-28)
-    
+
 ### Major changes
 
 * Theodoros Papakonstantinou <dev@tpapak.com> is a new co-author of R

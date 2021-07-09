@@ -23,7 +23,10 @@ providing the following meta-analysis methods:
   treatments (\code{\link{netmeasures}}) described in König et
   al. (2013);
 \item ranking of treatments (\code{\link{netrank}}) based on
-  frequentist analogue of SUCRA (Rücker & Schwarzer, 2015);
+  P-scores (Rücker & Schwarzer, 2015) or SUCRAs (Salanti et al.,
+  2011);
+\item rankograms (\code{\link{rankogram}}) based on SUCRAs (Salanti
+  et al., 2011);
 \item partial order of treatment rankings (\code{\link{netposet}},
   \code{\link{plot.netposet}}) and Hasse diagram
   (\code{\link{hasse}}) according to Carlsen & Bruggemann (2014)
@@ -31,6 +34,8 @@ providing the following meta-analysis methods:
 \item split direct and indirect evidence (\code{\link{netsplit}})
   to check for consistency (Dias et al., 2010; Efthimiou et al.,
   2019);
+\item contribution of direct comparisons to network estimates
+  (\code{\link{netcontrib}}) (Papakonstantinou et al., 2018);
 \item league table with network meta-analysis results
   (\code{\link{netleague}});
 \item additive network meta-analysis for combinations of treatments
@@ -105,6 +110,12 @@ A graphical tool for locating inconsistency in network meta-analyses.
 \emph{BMC Medical Research Methodology},
 \bold{13}, 35
 
+Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
+Schwarzer, G., Egger, M., Salanti, G. (2018):
+Estimating the contribution of studies in network meta-analysis:
+paths, flows and streams.
+\emph{F1000Research}
+
 Rücker G (2012):
 Network meta-analysis, electrical networks and graph theory.
 \emph{Research Synthesis Methods},
@@ -137,6 +148,12 @@ Rücker G, Petropoulou M, Schwarzer G (2019):
 Network meta-analysis of multicomponent interventions.
 \emph{Biometrical Journal},
 1--14, https://doi.org/10.1002/bimj.201800167
+
+Salanti G, Ades AE, Ioannidis JP (2011):
+Graphical methods and numerical summaries for presenting results
+from multiple-treatment meta-analysis: an overview and tutorial.
+\emph{Journal of Clinical Epidemiology},
+\bold{64}, 163--71
 
 Schwarzer G, Carpenter JR and Rücker G (2015):
 \emph{Meta-Analysis with R (Use-R!)}.

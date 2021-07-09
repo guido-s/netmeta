@@ -48,8 +48,8 @@ containing the following components:
 \item{TE}{Estimate of treatment effect, i.e. difference between
   first and second treatment.}
 \item{seTE}{Standard error of treatment estimate.}
-\item{seTE.adj}{Standard error of treatment estimate, adjusted for
-  multi-arm studies.}
+\item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+  estimate, adjusted for multi-arm studies.}
 \item{design}{Design of study providing pairwise comparison.}
 \item{event1}{Number of events in first treatment group.}
 \item{event2}{Number of events in second treatment group.}

@@ -237,8 +237,8 @@
 #' \code{summary}, \code{forest}, and \code{netrank} functions. The
 #' object is a list containing the following components:
 #' \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
-#' \item{seTE.adj}{Standard error of treatment estimate, adjusted for
-#'   multi-arm studies.}
+#' \item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+#'   estimate, adjusted for multi-arm studies.}
 #' \item{design}{Design of study providing pairwise comparison.}
 #' \item{n1, n2, event1, event2, incr}{As defined above.}
 ## \item{mean1, mean2, sd1, sd2, time1, time2}{As defined above.}
@@ -385,6 +385,10 @@
 #'   \strong{BL+B^t}.}
 #' \item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as
 #'   \strong{H = GW = BL+B^tW}.}
+#' \item{H.matrix.aggr.fixed}{Aggregated hat matrix (fixed effect
+#'   model)}
+#' \item{H.matrix.aggr.random}{Aggregated hat matrix (random effects
+#'   model)}
 #' \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
 #'   observations in direct comparisons (if arguments \code{n1} and
 #'   \code{n2} are provided).}
@@ -1347,6 +1351,8 @@ netmeta <- function(TE, seTE,
               TE = res.f$TE[o],
               seTE = res.f$seTE.orig[o],
               seTE.adj = res.f$seTE[o],
+              seTE.adj.fixed = res.f$seTE[o],
+              seTE.adj.random = res.r$seTE[o],
               ##
               design = designs$design[o],
               ##
@@ -1490,6 +1496,10 @@ netmeta <- function(TE, seTE,
               Cov.fixed = res.f$Cov,
               Cov.random = res.r$Cov,
               ##
+              B.matrix.aggr = NA,
+              H.matrix.aggr.fixed = NA,
+              H.matrix.aggr.random = NA,
+              ##
               treat1.pos = res.f$treat1.pos[o],
               treat2.pos = res.f$treat2.pos[o],
               ##
@@ -1528,6 +1538,13 @@ netmeta <- function(TE, seTE,
               )
   ##
   class(res) <- "netmeta"
+  ##
+  ## Add aggregated B and hat matrix
+  ##
+  res$B.matrix.aggr <-
+    createB(res$treat1.pos, res$treat2.pos, res$n, aggr = TRUE)
+  res$H.matrix.aggr.fixed <- hatmatrix.aggr(res, "fixed")
+  res$H.matrix.aggr.random <- hatmatrix.aggr(res, "random")
   ##
   ## Add results for indirect treatment estimates
   ##

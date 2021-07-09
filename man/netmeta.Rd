@@ -178,8 +178,8 @@ An object of class \code{netmeta} with corresponding \code{print},
 \code{summary}, \code{forest}, and \code{netrank} functions. The
 object is a list containing the following components:
 \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
-\item{seTE.adj}{Standard error of treatment estimate, adjusted for
-  multi-arm studies.}
+\item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+  estimate, adjusted for multi-arm studies.}
 \item{design}{Design of study providing pairwise comparison.}
 \item{n1, n2, event1, event2, incr}{As defined above.}
 \item{sd1, sd2, time1, time2}{As defined above.}
@@ -325,6 +325,10 @@ object is a list containing the following components:
   \strong{BL+B^t}.}
 \item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as
   \strong{H = GW = BL+B^tW}.}
+\item{H.matrix.aggr.fixed}{Aggregated hat matrix (fixed effect
+  model)}
+\item{H.matrix.aggr.random}{Aggregated hat matrix (random effects
+  model)}
 \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
   observations in direct comparisons (if arguments \code{n1} and
   \code{n2} are provided).}

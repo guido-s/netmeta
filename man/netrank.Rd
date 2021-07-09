@@ -143,6 +143,6 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 }
 \author{
 Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
-  Schwarzer \email{sc@imbi.uni-freiburg.de}, Thodoris
+  Schwarzer \email{sc@imbi.uni-freiburg.de}, Theodoros
   Papakonstantinou \email{dev@tpapak.com}
 }

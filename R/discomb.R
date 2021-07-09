@@ -138,8 +138,8 @@
 #' \item{TE}{Estimate of treatment effect, i.e. difference between
 #'   first and second treatment.}
 #' \item{seTE}{Standard error of treatment estimate.}
-#' \item{seTE.adj}{Standard error of treatment estimate, adjusted for
-#'   multi-arm studies.}
+#' \item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+#'   estimate, adjusted for multi-arm studies.}
 #' \item{event1}{Number of events in first treatment group.}
 #' \item{event2}{Number of events in second treatment group.}
 #' \item{n1}{Number of observations in first treatment group.}
@@ -869,6 +869,8 @@ discomb <- function(TE, seTE,
               TE = p0$TE[o],
               seTE = p0$seTE[o],
               seTE.adj = sqrt(1 / p0$weights[o]),
+              seTE.adj.fixed = sqrt(1 / p0$weights[o]),
+              seTE.adj.random = sqrt(1 / p1$weights[o]),
               ##
               design = designs$design[o],
               ##

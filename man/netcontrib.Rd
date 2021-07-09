@@ -5,18 +5,27 @@
 \alias{print.netcontrib}
 \title{Contribution matrix in network meta-analysis}
 \usage{
-netcontrib(x)
+netcontrib(
+  x,
+  method = "stream",
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random
+)
 
 \method{print}{netcontrib}(
   x,
-  comb.fixed = x$x$comb.fixed,
-  comb.random = x$x$comb.random,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
   digits = 4,
   ...
 )
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} or \code{netcontrib}.}
+
+\item{method}{A character string indicating which method is to
+calculate the contribution matrix. Either \code{"stream"} or
+\code{"randomwalk"}, can be abbreviated.}
 
 \item{comb.fixed}{A logical indicating whether a league table
 should be printed for the fixed effects (common effects) network
@@ -60,12 +69,15 @@ We use ideas from graph theory to derive the proportion that is
 contributed by each direct treatment effect.  We start with the
 ‘projection’ matrix in a two-step network meta-analysis model,
 called the H matrix, which is analogous to the hat matrix in a
-linear regression model.  We develop a method to translate H
-entries to proportion contributions based on the observation that
-the rows of H can be interpreted as flow networks, where a stream
-is defined as the composition of a path and its associated flow.
-We present an algorithm that identifies the flow of evidence in
-each path and decomposes it into direct comparisons.
+linear regression model.
+
+Two methods are implemented to estimate network contributions. If
+argument \code{method = "stream"}, H entries are translated to
+proportion contributions based on the observation that the rows of
+H can be interpreted as flow networks, where a stream is defined as
+the composition of a path and its associated flow (Papakonstantinou
+et al., 2018). If argument \code{method = "randomwalk"}, a random
+walk algorithm is used (Davies et al., 2021).
 }
 \examples{
 # Use the Woods dataset
@@ -78,8 +90,14 @@ net1 <- netmeta(p1)
 cm <- netcontrib(net1)
 cm
 
+netcontrib(net1, method = "r")
+
 }
 \references{
+Davies A et al. (2021):
+Network meta-analysis and random walks.
+\emph{Unpublished}
+
 Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
 Schwarzer, G., Egger, M., Salanti, G. (2018):
 Estimating the contribution of studies in network meta-analysis:
@@ -90,6 +108,7 @@ paths, flows and streams.
 \code{\link{netmeta}}
 }
 \author{
-Thodoris Papakonstantinou \email{dev@tpapak.com}
+Theodoros Papakonstantinou \email{dev@tpapak.com}, Annabel
+  Davies \email{annabel.davies@manchester.ac.uk}
 }
 \keyword{contribution}

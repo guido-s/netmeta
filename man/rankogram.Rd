@@ -93,5 +93,5 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \code{\link{netmeta}}, \code{\link{netrank}}
 }
 \author{
-Thodoris Papakonstantinou \email{dev@tpapak.com}
+Theodoros Papakonstantinou \email{dev@tpapak.com}
 }

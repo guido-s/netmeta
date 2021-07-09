@@ -265,7 +265,20 @@ print.netmeta <- function(x,
                                        big.mark = big.mark))
       ##
       if (multiarm) {
-        res$seTE.adj <- format(round(x$seTE.adj, digits.se))
+        if (is.null(x$seTE.adj.fixed))
+          seTE.adj <- x$seTE.adj
+        else
+          seTE.adj <- x$seTE.adj.fixed
+        ##
+        if (comb.fixed & comb.random & !is.null(x$seTE.adj.random)) {
+          res$seTE.adj.f <- format(round(seTE.adj, digits.se))
+          res$seTE.adj.r <- format(round(x$seTE.adj.random, digits.se))
+        }
+        else if (comb.fixed)
+          res$seTE.adj <- format(round(seTE.adj, digits.se))
+        else if (comb.random & !is.null(x$seTE.adj.random))
+          res$seTE.adj <- format(round(x$seTE.adj.random, digits.se))
+        ##
         res$narms <- x$n.arms
         res$multiarm <- ifelse(x$multiarm, "*", "")
       }
