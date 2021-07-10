@@ -22,14 +22,14 @@ contribution.matrix.tpapak <- function(x, model) {
   ##
   ## Auxiliary R functions
   ##
-  contribution.hatmatrix <- function(metaNetw, model) {
+  contribution.hatmatrix <- function(x, model) {
     ##
     ## H matrix
     ##
     if (model == "fixed")
-      krahn <- nma.krahn(metaNetw, tau.preset = 0)
+      krahn <- nma.krahn(x, tau.preset = 0)
     else if (model == "random")
-      krahn <- nma.krahn(metaNetw, tau.preset = metaNetw$tau)
+      krahn <- nma.krahn(x, tau.preset = x$tau)
     ##
     X.full <- krahn$X.full
     direct <- krahn$direct
@@ -194,9 +194,14 @@ contribution.matrix.davies <- function(x, model) {
   ##
   ## Hat matrix
   ##
-  ## 'Full' aggregate hat matrix
+  ## 'Full' aggregated hat matrix
   ##
-  H.full <- hatmatrix.aggr(x, model, "full")
+  if (model == "fixed" & !is.null(x$H.matrix.aggr.fixed))
+    H.full <- x$H.matrix.aggr.fixed
+  else if (model == "random" & !is.null(x$H.matrix.aggr.random))
+    H.full <- x$H.matrix.aggr.random
+  else
+    H.full <- hatmatrix.aggr(x, model, "full")
   ## Total number of comparisons
   n.comps <- nrow(H.full)
   ## Create prop contribution matrix (square matrix)

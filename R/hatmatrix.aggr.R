@@ -4,7 +4,10 @@ hatmatrix.aggr <- function(x, model, type = "full") {
   type <- meta:::setchar(type, c("full", "long", "short"))
   
   ## Create aggregate B matrix
-  B <- createB(x$treat1.pos, x$treat2.pos, x$n, aggr = TRUE)
+  if (!is.null(x$B.matrix.aggr))
+    B <- x$B.matrix.aggr
+  else
+    B <- createB(x$treat1.pos, x$treat2.pos, x$n, aggr = TRUE)
   ## Number of edges (direct comparisons) = no. of rows of B
   e <- nrow(B)
   ##

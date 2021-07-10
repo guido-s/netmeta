@@ -94,9 +94,10 @@ netcontrib(net1, method = "r")
 
 }
 \references{
-Davies A et al. (2021):
+Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
+(2021):
 Network meta-analysis and random walks.
-\emph{Unpublished}
+Available from: http://arxiv.org/abs/2107.02886
 
 Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
 Schwarzer, G., Egger, M., Salanti, G. (2018):
