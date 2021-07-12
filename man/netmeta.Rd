@@ -323,12 +323,8 @@ object is a list containing the following components:
 \item{G.matrix}{Matrix with variances and covariances of
   comparisons (\emph{m}x\emph{m}). G is defined as
   \strong{BL+B^t}.}
-\item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as
-  \strong{H = GW = BL+B^tW}.}
-\item{H.matrix.aggr.fixed}{Aggregated hat matrix (fixed effect
-  model)}
-\item{H.matrix.aggr.random}{Aggregated hat matrix (random effects
-  model)}
+\item{H.matrix.fixed, H.matrix.random}{Hat matrix
+  (\emph{m}x\emph{m}), defined as \strong{H = GW = BL+B^tW}.}
 \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
   observations in direct comparisons (if arguments \code{n1} and
   \code{n2} are provided).}

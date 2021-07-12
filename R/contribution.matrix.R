@@ -196,13 +196,8 @@ contribution.matrix.davies <- function(x, model) {
   ##
   ## 'Full' aggregated hat matrix
   ##
-  if (model == "fixed" & !is.null(x$H.matrix.aggr.fixed))
-    H.full <- x$H.matrix.aggr.fixed
-  else if (model == "random" & !is.null(x$H.matrix.aggr.random))
-    H.full <- x$H.matrix.aggr.random
-  else
-    H.full <- hatmatrix.aggr(x, model, "full")
-  ## Total number of comparisons
+  H.full <- hatmatrix.aggr(x, model, type = "full")
+  ## Total number of possible pairwise comparisons
   n.comps <- nrow(H.full)
   ## Create prop contribution matrix (square matrix)
   weights <- matrix(0, nrow = n.comps, ncol = n.comps)
@@ -222,7 +217,7 @@ contribution.matrix.davies <- function(x, model) {
     ## If treatment t is not in treat1 list look in treat2.pos
     if (foundt == 0){
       for (i in 1:length(x$treat2)){
-        if (x$treat2.pos[i]==t){
+        if (x$treat2.pos[i] == t){
           label[t] <- x$treat2[i]
           foundt <- foundt + 1
         }

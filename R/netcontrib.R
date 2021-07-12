@@ -10,11 +10,12 @@
 #' @param method A character string indicating which method is to
 #'   calculate the contribution matrix. Either \code{"stream"} or
 #'   \code{"randomwalk"}, can be abbreviated.
-#' @param comb.fixed A logical indicating whether a league table
-#'   should be printed for the fixed effects (common effects) network
+#' @param comb.fixed A logical indicating whether a contribution
+#'   matrix should be printed for the fixed effects (common effects)
+#'   network meta-analysis.
+#' @param comb.random A logical indicating whether a contribution
+#'   matrix should be printed for the random effects network
 #'   meta-analysis.
-#' @param comb.random A logical indicating whether a league table
-#'   should be printed for the random effects network meta-analysis.
 #' @param digits number of rounding digits
 #' @param \dots Additional arguments (ignored at the moment).
 #' 

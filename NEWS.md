@@ -8,10 +8,16 @@
 * Random walk algorithm implemented to estimate network contributions
   (Davies et al., 2021, unpublished)
 
+* New R function to derive hat matrices
+
 ### User-visible changes
 
 * New argument 'method' in netcontrib() to select method to estimate
   network contributions
+
+* New function hatmatrix() and print.hatmatrix() to derive hat
+  matrices
+
 
 ### Internal changes
 

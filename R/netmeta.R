@@ -383,12 +383,8 @@
 #' \item{G.matrix}{Matrix with variances and covariances of
 #'   comparisons (\emph{m}x\emph{m}). G is defined as
 #'   \strong{BL+B^t}.}
-#' \item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as
-#'   \strong{H = GW = BL+B^tW}.}
-#' \item{H.matrix.aggr.fixed}{Aggregated hat matrix (fixed effect
-#'   model)}
-#' \item{H.matrix.aggr.random}{Aggregated hat matrix (random effects
-#'   model)}
+#' \item{H.matrix.fixed, H.matrix.random}{Hat matrix
+#'   (\emph{m}x\emph{m}), defined as \strong{H = GW = BL+B^tW}.}
 #' \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
 #'   observations in direct comparisons (if arguments \code{n1} and
 #'   \code{n2} are provided).}
@@ -1485,7 +1481,9 @@ netmeta <- function(TE, seTE,
               Q.matrix = res.f$Q.matrix,
               ##
               G.matrix = res.f$G.matrix[o, o],
-              H.matrix = res.f$H.matrix[o, o],
+              ##
+              H.matrix.fixed = res.f$H.matrix[o, o],
+              H.matrix.random = res.r$H.matrix[o, o],
               ##
               n.matrix = if (available.n) NA else NULL,
               events.matrix = if (available.events) NA else NULL,
@@ -1495,10 +1493,6 @@ netmeta <- function(TE, seTE,
               ##
               Cov.fixed = res.f$Cov,
               Cov.random = res.r$Cov,
-              ##
-              B.matrix.aggr = NA,
-              H.matrix.aggr.fixed = NA,
-              H.matrix.aggr.random = NA,
               ##
               treat1.pos = res.f$treat1.pos[o],
               treat2.pos = res.f$treat2.pos[o],
@@ -1539,13 +1533,6 @@ netmeta <- function(TE, seTE,
   ##
   class(res) <- "netmeta"
   ##
-  ## Add aggregated B and hat matrix
-  ##
-  res$B.matrix.aggr <-
-    createB(res$treat1.pos, res$treat2.pos, res$n, aggr = TRUE)
-  res$H.matrix.aggr.fixed <- hatmatrix.aggr(res, "fixed")
-  res$H.matrix.aggr.random <- hatmatrix.aggr(res, "random")
-  ##
   ## Add results for indirect treatment estimates
   ##
   n <- res$n
@@ -1564,6 +1551,8 @@ netmeta <- function(TE, seTE,
   ##
   res$comparisons <-
     names(res$prop.direct.random)[!is.zero(res$prop.direct.random)]
+  ##
+  ## Add P.fixed and P.random
   ##
   P.fixed <- P.random <- matrix(NA, n, n)
   colnames(P.fixed) <- rownames(P.fixed) <-

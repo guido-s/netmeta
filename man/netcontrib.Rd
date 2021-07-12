@@ -27,12 +27,13 @@ netcontrib(
 calculate the contribution matrix. Either \code{"stream"} or
 \code{"randomwalk"}, can be abbreviated.}
 
-\item{comb.fixed}{A logical indicating whether a league table
-should be printed for the fixed effects (common effects) network
-meta-analysis.}
+\item{comb.fixed}{A logical indicating whether a contribution
+matrix should be printed for the fixed effects (common effects)
+network meta-analysis.}
 
-\item{comb.random}{A logical indicating whether a league table
-should be printed for the random effects network meta-analysis.}
+\item{comb.random}{A logical indicating whether a contribution
+matrix should be printed for the random effects network
+meta-analysis.}
 
 \item{digits}{number of rounding digits}
 
