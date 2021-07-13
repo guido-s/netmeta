@@ -1,51 +1,30 @@
-contribution.matrix <- function(x, method, model) {
+contribution.matrix <- function(x, method, model, hatmatrix.F1000) {
   if (method == "stream")
-    res <- contribution.matrix.tpapak(x, model)
+    return(contribution.matrix.tpapak(x, model, hatmatrix.F1000))
   else if (method == "randomwalk")
-    res <- contribution.matrix.davies(x, model)
+    return(contribution.matrix.davies(x, model))
   else
-    res <- NULL
-  ##
-  res
+    return(NULL)
 }
 
 
 
 
 
-contribution.matrix.tpapak <- function(x, model) {
+contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
   
   meta:::chkclass(x, "netmeta")
   model <- meta:::setchar(model, c("fixed", "random"))
+  meta:::chklogical(hatmatrix.F1000)
+  ##
+  old <- hatmatrix.F1000
   
   
   ##
   ## Auxiliary R functions
   ##
-  contribution.hatmatrix <- function(x, model) {
-    ##
-    ## H matrix
-    ##
-    if (model == "fixed")
-      krahn <- nma.krahn(x, tau.preset = 0)
-    else if (model == "random")
-      krahn <- nma.krahn(x, tau.preset = x$tau)
-    ##
-    X.full <- krahn$X.full
-    direct <- krahn$direct
-    X <- krahn$X.full[direct$comparison, , drop = FALSE]
-    Vd <- diag(direct$seTE^2,
-               nrow = length(direct$seTE),
-               ncol = length(direct$seTE))
-    H <- X.full %*% solve(t(X) %*% solve(Vd) %*% X) %*%
-      t(X) %*% solve(Vd)
-    ##
-    colnames(H) <- rownames(X)
-    ##
-    return(list(colNames = colnames(H), rowNames = rownames(H), H = H))
-  }
-  ##
-  split <- function (dir) strsplit(dir, x$sep.trts)
+  split <- function(dir)
+    strsplit(dir, x$sep.trts)
   ##
   ## comparisonToEdge <- function (comp) unlist (split(comp))
   ##
@@ -53,8 +32,8 @@ contribution.matrix.tpapak <- function(x, model) {
     igraph::set.edge.attribute(g, "weight",
                                value = rep(1, dims[2]))
   ##
-  getFlow <- function(g,edge)
-    return(igraph::E(g)[edge]$flow)
+  getFlow <- function(g, edge)
+    igraph::E(g)[edge]$flow
   ##
   sv <- function (comparison)
     split(comparison)[[1]][1][1]
@@ -62,11 +41,11 @@ contribution.matrix.tpapak <- function(x, model) {
   tv <- function (comparison)
     split(comparison)[[1]][2][1]
   ##
-  initRowGraph <- function(comparison) {
+  initRowGraph <- function(x, comparison) {
     dedgeList <-
       lapply(1:length(directs),
              function(comp) {
-               if (hatMatrix[comparison, comp] > 0)
+               if (x[comparison, comp] > 0)
                  return(c(sv(directs[comp]), tv(directs[comp])))
                else
                  return(c(tv(directs[comp]), sv(directs[comp])))
@@ -74,14 +53,14 @@ contribution.matrix.tpapak <- function(x, model) {
     ##
     dedgeList <- matrix(unlist(dedgeList), ncol = 2, byrow = TRUE)
     ##
-    flows <- abs(hatMatrix[comparison, ])
+    flows <- abs(x[comparison, ])
     dg <- igraph::graph_from_edgelist(dedgeList, directed = TRUE)
     igraph::E(dg)[]$weight <- rep(0, dims[2])
-    igraph::E(dg)[]$flow <- abs(hatMatrix[comparison, ])
+    igraph::E(dg)[]$flow <- abs(x[comparison, ])
     igraph::V(dg)[]$label <- igraph::V(dg)[]$name
     dg <- igraph::set.edge.attribute(dg, 'label', value = igraph::E(dg))
     ##
-    return(dg)
+    dg
   }
   ##
   reducePath <- function(g, comparison, spl) {
@@ -107,7 +86,7 @@ contribution.matrix.tpapak <- function(x, model) {
         removedEdges <- c(removedEdges, e)
       return(removedEdges)}, splE, c())
     ##
-    return(igraph::delete_edges(gg, emptyEdges))
+    igraph::delete_edges(gg, emptyEdges)
   }
   ##
   reduceGraph <- function (g, comparison) {
@@ -130,16 +109,14 @@ contribution.matrix.tpapak <- function(x, model) {
       spath <- getshortest(g, comparison)
     }
     ##
-    return(g)
+    g
   }
   
-  
-  hatmatrix <- contribution.hatmatrix(x, model)
+  if (old)
+    H <- hatmatrix.F1000(x, model)
+  ## else
   ##
-  directs <- hatmatrix$colNames
-  ##
-  hatMatrix <- hatmatrix$H
-  rownames(hatMatrix) <- hatmatrix$rowNames
+  directs <- colnames(H)
   
   
   directlist <- unlist(lapply(lapply(directs, split), unlist))
@@ -150,35 +127,31 @@ contribution.matrix.tpapak <- function(x, model) {
   g <- igraph::set.edge.attribute(g, 'label', value = igraph::E(g))
   
   
-  dims <- dim(hatMatrix)
+  dims <- dim(H)
   ##
   contribution <- rep(0, dims[2])
   names(contribution) <- seq_len(dims[2])
   ##
   weights <- matrix(rep(0, dims[2] * dims[1]),
                     nrow = dims[1], ncol = dims[2], byrow = TRUE)
-  rownames(weights) <- rownames(hatMatrix)
+  rownames(weights) <- rownames(H)
   colnames(weights) <- seq_len(dims[2])
   
   
   ## rows of comparison matrix
-  comparisons <- unlist(lapply(rownames(hatMatrix), unlist))
+  comparisons <- unlist(lapply(rownames(H), unlist))
   ##
   lapply(comparisons,
          function (comp)
-           reduceGraph(initRowGraph(comp), comp))
-  ##
+           reduceGraph(initRowGraph(H, comp), comp))
+  
+  
   colnames(weights) <- directs
-  
-  ##weights <- 100 * weights
-  ##totalSums <- colSums(weights)
-  ##totalTotal <- sum(totalSums)
-  ##totalWeights <- unlist(lapply(totalSums, function(comp) {
-  ##                         100 * comp / totalTotal
-  ##}))
-  
-  
-  return(weights)
+  ##
+  attr(weights, "model") <- model
+  attr(weights, "hatmatrix.F1000") <- old
+  ##
+  weights
 }
 
 
@@ -374,5 +347,8 @@ contribution.matrix.davies <- function(x, model) {
     }
   }
   
+  
+  attr(weights, "model") <- model
+  ##
   weights
 }

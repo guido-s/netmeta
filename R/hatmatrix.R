@@ -14,8 +14,16 @@
 #'   meta-analysis.
 #' @param comb.random A logical indicating whether a hat matrix should
 #'   be printed for the random effects network meta-analysis.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
+#' @param nchar.studlab A numeric defining the minimum number of
+#'   characters used to create unique study labels.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
+#' @param legend.studlab A logical indicating whether a legend should
+#'   be printed for abbreviated study labels.
 #' @param \dots Additional arguments (ignored).
 #' 
 #' @details
@@ -233,14 +241,22 @@ hatmatrix <- function(x, method = "Ruecker", type,
 print.hatmatrix <- function(x,
                             comb.fixed = x$comb.fixed,
                             comb.random = x$comb.random,
+                            nchar.trts = x$x$nchar.trts,
+                            nchar.studlab = 666,
                             digits = gs("digits"),
+                            legend = TRUE,
+                            legend.studlab = TRUE,
                             ...) {
   
   meta:::chkclass(x, "hatmatrix")
   ##
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
+  meta:::chknumeric(nchar.trts, length = 1)
+  meta:::chknumeric(nchar.studlab, length = 1)
   meta:::chknumeric(digits, length = 1)
+  meta:::chklogical(legend)
+  meta:::chklogical(legend.studlab)
   ##
   matitle(x$x)
   ##
@@ -253,15 +269,119 @@ print.hatmatrix <- function(x,
                "Davies et al., 2021",
              ")\n\n"))
   ##
+  trts <- x$x$trts
+  trts.abbr <- treats(trts, nchar.trts)
+  sep.trts <- x$x$sep.trts
+  anystudy.r <- anystudy.c <- FALSE
+  anycomp.r <- anycomp.c <- FALSE
+  ##
+  fixed <- x$fixed
+  random <- x$random
+  ##
+  legend <- legend & (comb.fixed | comb.random)
+  legend.studlab <- legend.studlab & (comb.fixed | comb.random)
+  ##
   if (comb.fixed) {
+    compnames <- any(grepl(sep.trts, rownames(fixed), fixed = TRUE))
+    anystudy.r <- anystudy.r | !compnames
+    anycomp.r  <- anycomp.r  | compnames
+    ##
+    if (compnames)
+      rownames(fixed) <- comps(fixed, trts, sep.trts, nchar.trts)
+    else
+      rownames(fixed) <- treats(fixed, nchar.studlab)
+    ##
+    compnames <- any(grepl(sep.trts, colnames(fixed), fixed = TRUE))
+    anystudy.c <- anystudy.c | !compnames
+    anycomp.c  <- anycomp.c  | compnames
+    ##
+    if (compnames)
+      colnames(fixed) <- comps(fixed, trts, sep.trts, nchar.trts,
+                               row = FALSE)
+    else
+      colnames(fixed) <- treats(fixed, nchar.studlab, row = FALSE)
+    ##
     cat("Fixed effects model:\n\n")
-    prmatrix(round(x$fixed, digits))
+    prmatrix(round(fixed, digits))
     if (comb.random)
       cat("\n")
   }
   if (comb.random) {
+    compnames <- any(grepl(sep.trts, rownames(random), fixed = TRUE))
+    anystudy.r <- anystudy.r | !compnames
+    anycomp.r  <- anycomp.r  | compnames
+    ##
+    if (compnames)
+      rownames(random) <- comps(random, trts, sep.trts, nchar.trts)
+    else
+      rownames(random) <- treats(random, nchar.studlab)
+    ##
+    compnames <- any(grepl(sep.trts, colnames(random), fixed = TRUE))
+    anystudy.c <- anystudy.c | !compnames
+    anycomp.c  <- anycomp.c  | compnames
+    ##
+    if (compnames)
+      colnames(random) <- comps(random, trts, sep.trts, nchar.trts,
+                                row = FALSE)
+    else
+      colnames(random) <- treats(random, nchar.studlab, row = FALSE)
+    ##
     cat("Random effects model:\n\n")
-    prmatrix(round(x$random, digits))
+    prmatrix(round(random, digits))
+  }
+  ##
+  ## Add legend
+  ##
+  if (legend & (anycomp.r | anycomp.c)) {
+    if (any(trts != trts.abbr)) {
+      tmat <- data.frame(trts.abbr, trts)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat("\nLegend:\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(trts.abbr)))
+      ##
+      if (legend.studlab & (anystudy.r | anystudy.c))
+        cat("\n")
+    }
+    else
+      legend <- FALSE
+  }
+  ##
+  if (legend.studlab & (anystudy.r | anystudy.c)) {
+    if (anystudy.r) {
+      if (comb.fixed) {
+        studlab <- rownames(x$fixed)
+        studlab.abbr <- rownames(fixed)
+      }
+      else {
+        studlab <- rownames(x$random)
+        studlab.abbr <- rownames(random)
+      }
+    }
+    ##
+    if (anystudy.c) {
+      if (comb.fixed) {
+        studlab <- colnames(x$fixed)
+        studlab.abbr <- colnames(fixed)
+      }
+      else {
+        studlab <- colnames(x$random)
+        studlab.abbr <- colnames(random)
+      }
+    }
+    ##
+    if (any(studlab != studlab.abbr)) {
+      tmat <- data.frame(studlab.abbr, studlab)
+      names(tmat) <- c("Abbreviation", "Study label")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      if (!(legend & (anycomp.r | anycomp.c)))
+        cat("\nLegend:\n")
+      prmatrix(unique(tmat), quote = FALSE, right = TRUE,
+               rowlab = rep("", nrow(unique(tmat))))
+    }
   }
   ##
   invisible(NULL)
@@ -356,11 +476,38 @@ hatmatrix.aggr <- function(x, model, type) {
   }
   ##
   if (type == "short")
-    H <- H.short
+    return(H.short)
   else if (type == "long")
-    H <- H.long
+    return(H.long)
   else if (type == "full")
-    H <- H.full
+    return(H.full)
+  else
+    return(NULL)
+}
+
+
+
+
+
+hatmatrix.F1000 <- function(x, model) {
+  ##
+  ## H matrix
+  ##
+  if (model == "fixed")
+    krahn <- nma.krahn(x)
+  else if (model == "random")
+    krahn <- nma.krahn(x, tau.preset = x$tau)
+  ##
+  X.full <- krahn$X.full
+  direct <- krahn$direct
+  X <- krahn$X.full[direct$comparison, , drop = FALSE]
+  Vd <- diag(direct$seTE^2,
+             nrow = length(direct$seTE),
+             ncol = length(direct$seTE))
+  H <-
+    X.full %*% solve(t(X) %*% solve(Vd) %*% X) %*% t(X) %*% solve(Vd)
+  ##
+  colnames(H) <- rownames(X)
   ##
   H
 }

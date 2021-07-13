@@ -42,6 +42,8 @@
 #'   be printed in addition to treatment estimates.
 #' @param test A logical indicating whether results of a test
 #'   comparing direct and indirect estimates should be printed.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param digits.stat Minimal number of significant digits for z-value
@@ -798,6 +800,7 @@ netsplit <- function(x, method,
               baseline.reference = baseline.reference,
               sep.trts = sep.trts,
               quote.trts = quote.trts,
+              nchar.trts = x$nchar.trts,
               ##
               tol.direct = tol.direct,
               backtransf = backtransf,
@@ -828,6 +831,7 @@ print.netsplit <- function(x,
                            overall = TRUE,
                            ci = FALSE,
                            test = show %in% c("all", "with.direct", "both"),
+                           nchar.trts = x$nchar.trts,
                            digits = gs("digits"),
                            digits.stat = gs("digits.stat"),
                            digits.pval = gs("digits.pval"),
@@ -841,7 +845,7 @@ print.netsplit <- function(x,
 
 
   meta:::chkclass(x, "netsplit")
-  ##  
+  ##
   x <- upgradenetmeta(x)
   ##
   chklogical <- meta:::chklogical
@@ -868,6 +872,10 @@ print.netsplit <- function(x,
   chklogical(overall)
   chklogical(ci)
   chklogical(test)
+  ##
+  if (is.null(nchar.trts))
+    nchar.trts <- 666
+  chknumeric(nchar.trts, length = 1)
   ##
   chknumeric(digits, min = 0, length = 1)
   chknumeric(digits.stat, min = 0, length = 1)
@@ -1182,17 +1190,23 @@ print.netsplit <- function(x,
       random <- random[, !(names(random) %in% "prop")]
   }
   
-  
-  if (x$method == "SIDDE")
-    cat("Separate indirect from direct design evidence (SIDDE)\n\n")
+
+  if (comb.fixed | comb.random) {
+    if (x$method == "SIDDE")
+      cat("Separate indirect from direct design evidence (SIDDE)\n\n")
+    else
+      cat(paste("Separate indirect from direct evidence (SIDE)",
+                "using back-calculation method\n\n"))
+  }
   else
-    cat(paste("Separate indirect from direct evidence (SIDE)",
-              "using back-calculation method\n\n"))
+    legend <- FALSE
   
   
   if (comb.fixed) {
     cat("Fixed effects model: \n\n")
     fixed[is.na(fixed)] <- text.NA
+    trts <- unique(sort(unlist(compsplit(fixed$comparison, x$sep.trts))))
+    fixed$comparison <- comps(fixed$comparison, trts, x$sep.trts, nchar.trts)
     prmatrix(fixed, quote = FALSE, right = TRUE,
              rowlab = rep("", dim(fixed)[1]))
     if (comb.random)
@@ -1202,6 +1216,8 @@ print.netsplit <- function(x,
   if (comb.random) {
     cat("Random effects model: \n\n")
     random[is.na(random)] <- text.NA
+    trts <- unique(sort(unlist(compsplit(random$comparison, x$sep.trts))))
+    random$comparison <- comps(random$comparison, trts, x$sep.trts, nchar.trts)
     prmatrix(random, quote = FALSE, right = TRUE,
              rowlab = rep("", dim(random)[1]))
   }
@@ -1227,8 +1243,20 @@ print.netsplit <- function(x,
       cat(" z          - z-value of test for disagreement (direct versus indirect)\n")
       cat(" p-value    - p-value of test for disagreement (direct versus indirect)\n")
     }
+    ##
+    trts.abbr <- treats(trts, nchar.trts)
+    if (any(trts != trts.abbr)) {
+      cat("\n")
+      ##
+      tmat <- data.frame(trts.abbr, trts)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(trts.abbr)))
+    }
   }
-
-
+  
+  
   invisible(NULL)
 }

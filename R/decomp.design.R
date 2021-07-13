@@ -206,6 +206,8 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE) {
     ##
     tau.preset = tau.preset,
     ##
+    x = x,
+    ##
     call = match.call(),
     version = packageDescription("netmeta")$Version
     )

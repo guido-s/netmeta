@@ -17,7 +17,11 @@ hatmatrix(
   x,
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
+  nchar.trts = x$x$nchar.trts,
+  nchar.studlab = 666,
   digits = gs("digits"),
+  legend = TRUE,
+  legend.studlab = TRUE,
   ...
 )
 }
@@ -38,8 +42,20 @@ meta-analysis.}
 \item{comb.random}{A logical indicating whether a hat matrix should
 be printed for the random effects network meta-analysis.}
 
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
+
+\item{nchar.studlab}{A numeric defining the minimum number of
+characters used to create unique study labels.}
+
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
+
+\item{legend.studlab}{A logical indicating whether a legend should
+be printed for abbreviated study labels.}
 
 \item{\dots}{Additional arguments (ignored).}
 }

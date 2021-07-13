@@ -28,6 +28,7 @@ netsplit(
   overall = TRUE,
   ci = FALSE,
   test = show \%in\% c("all", "with.direct", "both"),
+  nchar.trts = x$nchar.trts,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
@@ -97,6 +98,9 @@ be printed in addition to treatment estimates.}
 
 \item{test}{A logical indicating whether results of a test
 comparing direct and indirect estimates should be printed.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}

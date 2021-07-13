@@ -12,12 +12,23 @@
 
 ### User-visible changes
 
-* New argument 'method' in netcontrib() to select method to estimate
-  network contributions
-
 * New function hatmatrix() and print.hatmatrix() to derive hat
   matrices
 
+* netcontrib():
+  - new argument 'method' to select method to estimate network
+    contributions
+  - new logical argument 'hatmatrix.F1000' to specify whether hat
+    matrix given in [Papakonstantinou et
+    al. (2018)](https://doi.org/10.12688/f1000research.14770.3) should
+    be used
+  - argument 'nchar.trts' from netmeta object considered in printouts
+
+* print.netsplit(), print.decomp.design():
+  -  argument 'nchar.trts' from netmeta object considered in printouts
+
+* New auxiliary function comps() to create unique comparison labels
+  with abbreviated treatment names
 
 ### Internal changes
 

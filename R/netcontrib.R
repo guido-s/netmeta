@@ -10,13 +10,21 @@
 #' @param method A character string indicating which method is to
 #'   calculate the contribution matrix. Either \code{"stream"} or
 #'   \code{"randomwalk"}, can be abbreviated.
+#' @param hatmatrix.F1000 A logical indicating whether hat matrix
+#'   given in F1000 article should be used for \code{method =
+#'   "stream"}.
 #' @param comb.fixed A logical indicating whether a contribution
 #'   matrix should be printed for the fixed effects (common effects)
 #'   network meta-analysis.
 #' @param comb.random A logical indicating whether a contribution
 #'   matrix should be printed for the random effects network
 #'   meta-analysis.
-#' @param digits number of rounding digits
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names (see Details).
+#' @param digits Minimal number of significant digits, see
+#'   \code{print.default}.
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
 #' @param \dots Additional arguments (ignored at the moment).
 #' 
 #' @details
@@ -40,6 +48,14 @@
 #' the composition of a path and its associated flow (Papakonstantinou
 #' et al., 2018). If argument \code{method = "randomwalk"}, a random
 #' walk algorithm is used (Davies et al., 2021).
+#' 
+#' By default, treatment names are not abbreviated in
+#' printouts. However, in order to get more concise printouts,
+#' argument \code{nchar.trts} can be used to define the minimum number
+#' of characters for abbreviated treatment names (see
+#' \code{\link{abbreviate}}, argument \code{minlength}). R function
+#' \code{\link{treats}} is utilised internally to create abbreviated
+#' treatment names.
 #' 
 #' @return
 #' An object of class \code{netcontrib} with corresponding
@@ -94,20 +110,28 @@
 
 netcontrib <- function(x,
                        method = "stream",
+                       hatmatrix.F1000 = TRUE,
                        comb.fixed = x$comb.fixed,
-                       comb.random = x$comb.random) {
+                       comb.random = x$comb.random,
+                       nchar.trts = x$nchar.trts) {
   
   meta:::is.installed.package("igraph")
   ##
   method <- meta:::setchar(method, c("randomwalk", "stream"))
+  meta:::chklogical(hatmatrix.F1000)
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
   
-  res <- list(fixed = contribution.matrix(x, method, "fixed"),
-              random = contribution.matrix(x, method, "random"),
+  
+  res <- list(fixed =
+                contribution.matrix(x, method, "fixed", hatmatrix.F1000),
+              random =
+                contribution.matrix(x, method, "random", hatmatrix.F1000),
               method = method,
               comb.fixed = comb.fixed,
               comb.random = comb.random,
+              nchar.trts = nchar.trts,
               x = x)
   ##
   class(res) <- "netcontrib"
@@ -131,14 +155,18 @@ print.netcontrib <- function(x,
                              comb.fixed = x$comb.fixed,
                              comb.random = x$comb.random,
                              digits = 4,
+                             nchar.trts = x$nchar.trts,
+                             legend = TRUE,
                              ...) {
   
   meta:::chkclass(x, "netcontrib")
   ##
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
-  meta:::chknumeric(digits, length = 1)
-  ##
+  meta:::chknumeric(nchar.trts, length = 1)
+  meta:::chklogical(legend)
+  
+  
   matitle(x$x)
   ##
   cat(paste0("Contribution matrix (",
@@ -148,15 +176,40 @@ print.netcontrib <- function(x,
                "Davies et al., 2021",
              ")\n\n"))
   ##
+  trts <- x$x$trts
+  trts.abbr <- treats(trts, nchar.trts)
+  ##
   if (comb.fixed) {
+    rownames(x$fixed) <- comps(x$fixed, trts, x$x$sep.trts, nchar.trts)
+    colnames(x$fixed) <- comps(x$fixed, trts, x$x$sep.trts, nchar.trts,
+                               row = FALSE)
+    ##
     cat("Fixed effects model:\n\n")
     prmatrix(round(x$fixed, digits))
     if (comb.random)
       cat("\n")
   }
   if (comb.random) {
+    rownames(x$random) <- comps(x$random, trts, x$x$sep.trts, nchar.trts)
+    colnames(x$random) <- comps(x$random, trts, x$x$sep.trts, nchar.trts,
+                                row = FALSE)
+    ##
     cat("Random effects model:\n\n")
     prmatrix(round(x$random, digits))
+  }
+  ##
+  ## Add legend
+  ##
+  if (legend & (comb.fixed | comb.random)) {
+    if (any(trts != trts.abbr)) {
+      tmat <- data.frame(trts, trts.abbr)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat("\nLegend:\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(trts.abbr)))
+    }
   }
   ##
   invisible(NULL)

@@ -107,7 +107,8 @@
 
 print.netmeta <- function(x,
                           sortvar,
-                          comb.fixed = x$comb.fixed, comb.random = x$comb.random,
+                          comb.fixed = x$comb.fixed,
+                          comb.random = x$comb.random,
                           prediction = x$prediction,
                           reference.group = x$reference.group,
                           baseline.reference = x$baseline.reference,

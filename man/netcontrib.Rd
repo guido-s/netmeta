@@ -8,8 +8,10 @@
 netcontrib(
   x,
   method = "stream",
+  hatmatrix.F1000 = TRUE,
   comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random
+  comb.random = x$comb.random,
+  nchar.trts = x$nchar.trts
 )
 
 \method{print}{netcontrib}(
@@ -17,6 +19,8 @@ netcontrib(
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
   digits = 4,
+  nchar.trts = x$nchar.trts,
+  legend = TRUE,
   ...
 )
 }
@@ -27,6 +31,10 @@ netcontrib(
 calculate the contribution matrix. Either \code{"stream"} or
 \code{"randomwalk"}, can be abbreviated.}
 
+\item{hatmatrix.F1000}{A logical indicating whether hat matrix
+given in F1000 article should be used for \code{method =
+"stream"}.}
+
 \item{comb.fixed}{A logical indicating whether a contribution
 matrix should be printed for the fixed effects (common effects)
 network meta-analysis.}
@@ -35,7 +43,14 @@ network meta-analysis.}
 matrix should be printed for the random effects network
 meta-analysis.}
 
-\item{digits}{number of rounding digits}
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names (see Details).}
+
+\item{digits}{Minimal number of significant digits, see
+\code{print.default}.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
 
 \item{\dots}{Additional arguments (ignored at the moment).}
 }
@@ -79,6 +94,14 @@ H can be interpreted as flow networks, where a stream is defined as
 the composition of a path and its associated flow (Papakonstantinou
 et al., 2018). If argument \code{method = "randomwalk"}, a random
 walk algorithm is used (Davies et al., 2021).
+
+By default, treatment names are not abbreviated in
+printouts. However, in order to get more concise printouts,
+argument \code{nchar.trts} can be used to define the minimum number
+of characters for abbreviated treatment names (see
+\code{\link{abbreviate}}, argument \code{minlength}). R function
+\code{\link{treats}} is utilised internally to create abbreviated
+treatment names.
 }
 \examples{
 # Use the Woods dataset
