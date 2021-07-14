@@ -15,6 +15,8 @@
 #' @param small.values A character string specifying whether small
 #'   treatment effects indicate a beneficial (\code{"good"}) or
 #'   harmful (\code{"bad"}) effect, can be abbreviated.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
 #'   \code{\link{print.default}}.
 #' @param \dots Additional arguments for printing.
@@ -69,7 +71,8 @@
 
 rankogram <- function(x, nsim = 1000,
                       comb.fixed = x$comb.fixed, comb.random = x$comb.random,
-                      small.values = x$small.values) {
+                      small.values = x$small.values,
+                      nchar.trts = x$nchar.trts) {
   
   
   meta:::is.installed.package("mvtnorm")
@@ -81,6 +84,10 @@ rankogram <- function(x, nsim = 1000,
   meta:::chklogical(comb.random)
   ##
   small.values <- meta:::setchar(small.values, c("good", "bad"))
+  ##
+  if (is.null(nchar.trts))
+    nchar.trts <- 666
+  meta:::chknumeric(nchar.trts, length = 1)
   
   
   resampling <- lapply(1:nsim,
@@ -241,6 +248,7 @@ rankogram <- function(x, nsim = 1000,
               comb.fixed = comb.fixed,
               comb.random = comb.random,
               small.values = small.values,
+              nchar.trts = nchar.trts,
               x = x)
   
   
@@ -262,7 +270,8 @@ rankogram <- function(x, nsim = 1000,
 print.rankogram <- function(x,
                             comb.fixed = x$comb.fixed,
                             comb.random = x$comb.random,
-                            digits = max(3, .Options$digits - 4),
+                            nchar.trts = x$nchar.trts,
+                            digits = gs("digits.prop"),
                             ...) {
   
   
@@ -270,6 +279,10 @@ print.rankogram <- function(x,
   ##  
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
+  ##
+  if (is.null(nchar.trts))
+    nchar.trts <- 666
+  meta:::chknumeric(nchar.trts, length = 1)
   ##
   meta:::chknumeric(digits, length = 1)
   
@@ -282,6 +295,9 @@ print.rankogram <- function(x,
              " simulation", if (x$nsim > 1) "s", ")\n\n"))
   ##
   if (comb.fixed) {
+    rownames(x$ranking.matrix.fixed) <-
+      treats(x$ranking.matrix.fixed, nchar.trts)
+    ##
     cat("Fixed effects model: \n\n")
     prmatrix(meta:::formatN(x$ranking.matrix.fixed, digits),
              quote = FALSE, right = TRUE, ...)
@@ -290,6 +306,9 @@ print.rankogram <- function(x,
   }
   ##
   if (comb.random) {
+    rownames(x$ranking.matrix.random) <-
+      treats(x$ranking.matrix.random, nchar.trts)
+    ##
     cat("Random effects model: \n\n")
     prmatrix(meta:::formatN(x$ranking.matrix.random, digits),
              quote = FALSE, right = TRUE, ...)

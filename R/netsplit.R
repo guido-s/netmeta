@@ -42,6 +42,8 @@
 #'   be printed in addition to treatment estimates.
 #' @param test A logical indicating whether results of a test
 #'   comparing direct and indirect estimates should be printed.
+#' @param only.reference A logical indicating whether only comparisons
+#'   with the reference group should be printed.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
@@ -106,9 +108,7 @@
 #' \dQuote{direct.only} \tab Comparisons providing only direct
 #'   evidence \cr
 #' \dQuote{indirect.only} \tab Comparisons providing only indirect
-#'   evidence \cr
-#' \dQuote{reference.only} \tab Only comparisons with the reference
-#'   group
+#'   evidence
 #' }
 #'
 #' @return
@@ -827,15 +827,20 @@ netsplit <- function(x, method,
 print.netsplit <- function(x,
                            comb.fixed = x$comb.fixed,
                            comb.random = x$comb.random,
+                           ##
                            show = "all",
                            overall = TRUE,
                            ci = FALSE,
                            test = show %in% c("all", "with.direct", "both"),
+                           only.reference = FALSE,
+                           ##
                            nchar.trts = x$nchar.trts,
+                           ##
                            digits = gs("digits"),
                            digits.stat = gs("digits.stat"),
                            digits.pval = gs("digits.pval"),
                            digits.prop = max(gs("digits.pval") - 2, 2),
+                           ##
                            text.NA = ".",
                            backtransf = x$backtransf,
                            scientific.pval = gs("scientific.pval"),
@@ -872,6 +877,10 @@ print.netsplit <- function(x,
   chklogical(overall)
   chklogical(ci)
   chklogical(test)
+  ##
+  missing.only.reference <- missing(only.reference)
+  if (!missing.only.reference)
+    chklogical(only.reference)
   ##
   if (is.null(nchar.trts))
     nchar.trts <- 666
@@ -917,8 +926,17 @@ print.netsplit <- function(x,
   show <- setchar(show, c("all", "both", "with.direct",
                           "direct.only", "indirect.only",
                           "reference.only"))
-
-
+  ##
+  if (show == "reference.only") {
+    warning("Argument 'show = \"reference.only\" replaced with ",
+            "'only.reference = TRUE'.",
+            call. = FALSE)
+    show <- "both"
+    if (missing.only.reference)
+      only.reference <- TRUE
+  }
+  
+  
   sm <- x$sm
   sm.lab <- sm
   ##
@@ -958,7 +976,8 @@ print.netsplit <- function(x,
     sel <- !is.na(x$direct.fixed$TE) & is.na(x$indirect.fixed$TE)
   else if (show == "indirect.only")
     sel <- is.na(x$direct.fixed$TE) & !is.na(x$fixed$TE)
-  else if (show == "reference.only") {
+  ##
+  if (only.reference) {
     if (x$reference.group == "") {
       warning("First treatment used as reference as argument ",
               "'reference.group' was unspecified in netsplit().",
@@ -967,9 +986,11 @@ print.netsplit <- function(x,
         compsplit(x$comparison, x$sep.trts)[[1]][1]
     }
     ##
-    sel <-
+    sel.ref <-
       apply(!is.na(sapply(compsplit(x$comparison, x$sep.trts),
                           match, x$reference.group)), 2, sum) >= 1
+    ##
+    sel <- sel & sel.ref
   }
   ##
   comp <- x$comparison[sel]

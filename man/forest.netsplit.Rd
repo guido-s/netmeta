@@ -13,6 +13,7 @@
   direct = TRUE,
   indirect = TRUE,
   prediction = x$prediction,
+  only.reference = FALSE,
   text.overall = "Network estimate",
   text.direct = "Direct estimate",
   text.indirect = "Indirect estimate",
@@ -66,6 +67,9 @@ should be printed.}
 
 \item{prediction}{A logical indicating whether prediction intervals
 should be printed.}
+
+\item{only.reference}{A logical indicating whether only comparisons
+with the reference group should be printed.}
 
 \item{text.overall}{A character string used in the plot to label
 the network estimates.}
@@ -179,9 +183,7 @@ Argument \code{show} determines which comparisons are printed:
 \dQuote{direct.only} \tab Comparisons providing only direct
   evidence \cr
 \dQuote{indirect.only} \tab Comparisons providing only indirect
-  evidence \cr
-\dQuote{reference.only} \tab Only comparisons with the reference
-  group
+  evidence
 }
 }
 \examples{

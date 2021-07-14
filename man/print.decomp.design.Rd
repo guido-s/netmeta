@@ -12,7 +12,7 @@
   digits.tau2 = gs("digits.tau2"),
   scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
-  nchar.trts = x$x$nchar.trts,
+  nchar.trts = x$nchar.trts,
   legend = TRUE,
   ...
 )

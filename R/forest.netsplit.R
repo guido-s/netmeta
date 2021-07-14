@@ -19,6 +19,8 @@
 #'   should be printed.
 #' @param prediction A logical indicating whether prediction intervals
 #'   should be printed.
+#' @param only.reference A logical indicating whether only comparisons
+#'   with the reference group should be printed.
 #' @param subgroup A character string indicating which layout should
 #'   be used in forest plot: subgroups by comparisons
 #'   (\code{"comparison"}) or subgroups by estimates
@@ -106,9 +108,7 @@
 #' \dQuote{direct.only} \tab Comparisons providing only direct
 #'   evidence \cr
 #' \dQuote{indirect.only} \tab Comparisons providing only indirect
-#'   evidence \cr
-#' \dQuote{reference.only} \tab Only comparisons with the reference
-#'   group
+#'   evidence
 #' }
 #'
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
@@ -161,6 +161,8 @@ forest.netsplit <- function(x,
                             direct = TRUE,
                             indirect = TRUE,
                             prediction = x$prediction,
+                            ##
+                            only.reference = FALSE,
                             ##
                             text.overall = "Network estimate",
                             text.direct = "Direct estimate",
@@ -218,6 +220,10 @@ forest.netsplit <- function(x,
   chklogical(direct)
   chklogical(indirect)
   chklogical(prediction)
+  ##
+  missing.only.reference <- missing(only.reference)
+  if (!missing.only.reference)
+    chklogical(only.reference)
   ##
   chkchar(text.overall)
   chkchar(text.direct)
@@ -296,20 +302,26 @@ forest.netsplit <- function(x,
   ##
   if (overall & n.subgroup > 1) {
     if (text.overall == text.predict)
-      stop("Text must be different for arguments 'text.overall' and 'text.predict'.")
+      stop("Text must be different for arguments 'text.overall' and ",
+           "'text.predict'.")
     if (text.overall == text.direct)
-      stop("Text must be different for arguments 'text.overall' and 'text.direct'.")
+      stop("Text must be different for arguments 'text.overall' and ",
+           "'text.direct'.")
     if (text.overall == text.indirect)
-      stop("Text must be different for arguments 'text.overall' and 'text.indirect'.")
+      stop("Text must be different for arguments 'text.overall' and ",
+           "'text.indirect'.")
   }
   ##
   if (prediction & n.subgroup > 1) {
     if (text.predict == text.overall)
-      stop("Text must be different for arguments 'text.predict' and 'text.overall'.")
+      stop("Text must be different for arguments 'text.predict' and ",
+           "'text.overall'.")
     if (text.predict == text.direct)
-      stop("Text must be different for arguments 'text.predict' and 'text.direct'.")
+      stop("Text must be different for arguments 'text.predict' and ",
+           "'text.direct'.")
     if (text.predict == text.indirect)
-      stop("Text must be different for arguments 'text.predict' and 'text.indirect'.")
+      stop("Text must be different for arguments 'text.predict' and ",
+           "'text.indirect'.")
   }
   ##
   ## Check for deprecated arguments in '...'
@@ -341,8 +353,17 @@ forest.netsplit <- function(x,
   show <- setchar(show, c("all", "both", "with.direct",
                           "direct.only", "indirect.only",
                           "reference.only"))
-
-
+  ##
+  if (show == "reference.only") {
+    warning("Argument 'show = \"reference.only\" replaced with ",
+            "'only.reference = TRUE'.",
+            call. = FALSE)
+    show <- "both"
+    if (missing.only.reference)
+      only.reference <- TRUE
+  }
+  
+  
   ##
   ##
   ## (2) Extract results for fixed effect and random effects model
@@ -466,8 +487,9 @@ forest.netsplit <- function(x,
             !is.na(x$direct.random$TE) & is.na(x$indirect.random$TE))
   else if (show == "indirect.only")
     sel <- (is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
-            is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
-  else if (show == "reference.only") {
+             is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+  ##
+  if (only.reference) {
     if (x$reference.group == "") {
       warning("First treatment used as reference as argument ",
               "'reference.group' was unspecified in netsplit().",
@@ -476,17 +498,19 @@ forest.netsplit <- function(x,
         compsplit(x$comparison, x$sep.trts)[[1]][1]
     }
     ##
-    sel <-
+    sel.ref <-
       apply(!is.na(sapply(compsplit(x$comparison, x$sep.trts),
                           match, x$reference.group)), 2, sum) >= 1
+    ##
+    sel <- sel & sel.ref
   }
   ##
   dat.direct <- dat.direct[sel, ]
   dat.indirect <- dat.indirect[sel, ]
   dat.overall <- dat.overall[sel, ]
   dat.predict <- dat.predict[sel, ]
-
-
+  
+  
   ##
   ##
   ## (4) Forest plot

@@ -9,6 +9,11 @@
 #'   a "line" graph should be drawn.
 #' @param ylim The y limits (min, max) of the plot.
 #' @param ylab A label for the y-axis.
+#' @param sort A logical indicating whether treatments should be
+#'   sorted by decreasing SUCRAs.
+#' @param trts Treatment(s) to show in rankogram.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
 #' @param \dots Additional graphical arguments (ignored at the
 #'   moment).
 #' 
@@ -45,7 +50,10 @@
 #' @export plot.rankogram
 
 
-plot.rankogram <- function(x, type = "bar", ylim, ylab, ...) {
+plot.rankogram <- function(x, type = "bar", ylim, ylab,
+                           sort = TRUE,
+                           trts,
+                           nchar.trts = x$nchar.trts, ...) {
   
   
   meta:::is.installed.package("gridExtra")
@@ -62,6 +70,14 @@ plot.rankogram <- function(x, type = "bar", ylim, ylab, ...) {
     meta:::chkchar(ylab, length = 1)
   else
     ylab <- "Probability"
+  if (missing(trts))
+    trts <- NULL
+  ##
+  meta:::chklogical(sort)
+  ##
+  if (is.null(nchar.trts))
+    nchar.trts <- 666
+  meta:::chknumeric(nchar.trts, length = 1)
   
   
   mytheme <-
@@ -102,7 +118,7 @@ plot.rankogram <- function(x, type = "bar", ylim, ylab, ...) {
         ggplot2::geom_line()
     ##
     p <- p + ggplot2::scale_x_continuous(breaks = seq(1, nrow(x[[rankmatrix]]), 1))
-    p <- p + ggplot2::labs(x = paste("Rank of", treat))
+    p <- p + ggplot2::labs(x = paste("Rank of", treats(treat, nchar.trts)))
     p <- p + ggplot2::labs(y = ylab)
     ##
     if (missing.ylim)
@@ -113,6 +129,17 @@ plot.rankogram <- function(x, type = "bar", ylim, ylab, ...) {
     p + mytheme
   }
   ##
-  sortedtreats <- names(sort(x[[sucras]], decreasing = TRUE))
-  rankplots <- do.call(gridExtra::grid.arrange, lapply(sortedtreats, plotranks))
+  if (sort)
+    treatnames <- names(sort(x[[sucras]], decreasing = TRUE))
+  else
+    treatnames <- names(x[[sucras]])
+  ##
+  if (!is.null(trts)) {
+    trts.c <- trts
+    for (i in seq_along(trts))
+      trts.c[i] <- setref(trts[i], treatnames, "trts")
+    treatnames <- treatnames[treatnames %in% trts.c]
+  }
+  ##
+  rankplots <- do.call(gridExtra::grid.arrange, lapply(treatnames, plotranks))
 }

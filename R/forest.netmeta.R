@@ -323,10 +323,8 @@ forest.netmeta <- function(x,
               call. = FALSE)
       reference.group <- trts[1]
     }
-    else {
-      try.ref <- try(reference.group <- setref(reference.group, trts))
-      
-    }
+    else
+      reference.group <- setref(reference.group, trts)
   }
   else
     for (i in seq_along(reference.group))

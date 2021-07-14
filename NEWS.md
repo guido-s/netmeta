@@ -24,8 +24,17 @@
     be used
   - argument 'nchar.trts' from netmeta object considered in printouts
 
-* print.netsplit(), print.decomp.design():
-  -  argument 'nchar.trts' from netmeta object considered in printouts
+* decomp.design(), print.decomp.design() print.netsplit(),
+  rankogram(), print.rankogram(), plot.rankogram():
+  -  new argument 'nchar.trts' to print abbreviated treatment names
+
+* plot.rankogram():
+  -  new argument 'trts' to specify subset of treatments
+  -  new argument 'sort' to specify order of treatments
+
+* forest.netsplit(), print.netsplit():
+  -  new argument 'only.reference' to only print comparisons with
+     reference group
 
 * New auxiliary function comps() to create unique comparison labels
   with abbreviated treatment names

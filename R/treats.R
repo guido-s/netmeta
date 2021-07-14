@@ -17,6 +17,8 @@
 #' In order to construct comparisons with uniquely abbreviated
 #' treatment names, \code{comps} calls \code{treats} internally.
 #' 
+#' @aliases treats comps
+#' 
 #' @param x A vector with treatment or comparison names or a matrix
 #'   with treatment or comparison names as row and / or column names.
 #' @param nchar.trts A numeric defining the minimum number of

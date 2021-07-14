@@ -56,7 +56,8 @@ network meta-analysis:
   - rankograms based on Surface Under the Cumulative RAnking curve (SUCRA);
   
  - contribution matrix ([Papakonstantinou et al.,
-   2018](https://scholar.google.com/scholar?q=Papakonstantinou+Nikolakopoulou+Rücker+Chaimani+Schwarzer+2018+contribution+flows+streams))
+   2018](https://scholar.google.com/scholar?q=Papakonstantinou+Nikolakopoulou+Rücker+Chaimani+Schwarzer+2018+contribution+flows+streams); [Davies et al., 2021](http://arxiv.org/abs/2107.02886))
+)
 
 
 Furthermore, R package **netmeta** provides functions and datasets to
@@ -68,6 +69,8 @@ https://www.springer.com/gp/book/9783319214153 .
 [Carlsen L, Bruggemann R (2014): Partial order methodology: a valuable tool in chemometrics. *Journal of Chemometrics*, **28**, 226-34](https://scholar.google.com/scholar?q=Partial+order+methodology%3A+a+valuable+tool+in+chemometrics)
 
 [Chaimani A, Salanti G (2012): Using network meta-analysis to evaluate the existence of small-study effects in a network of interventions. *Research Synthesis Methods*, **3**, 161-76](https://scholar.google.com/scholar?q=Chaimani+Salanti+Using+network+meta-analysis+to+evaluate+the+existence+of+small-study+effects+in+a+network+of+interventions)
+
+[Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T (2021): Network meta-analysis and random walks. Available on arXiv](http://arxiv.org/abs/2107.02886)
 
 [Dias S, Welton NJ, Caldwell DM, Ades AE (2010): Checking consistency in mixed treatment comparison meta-analysis. *Statistics in Medicine*, **29**, 932-44](https://scholar.google.com/scholar?q=Checking+consistency+in+mixed+treatment+comparison+meta-analysis)
 

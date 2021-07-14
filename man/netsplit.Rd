@@ -28,6 +28,7 @@ netsplit(
   overall = TRUE,
   ci = FALSE,
   test = show \%in\% c("all", "with.direct", "both"),
+  only.reference = FALSE,
   nchar.trts = x$nchar.trts,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
@@ -98,6 +99,9 @@ be printed in addition to treatment estimates.}
 
 \item{test}{A logical indicating whether results of a test
 comparing direct and indirect estimates should be printed.}
+
+\item{only.reference}{A logical indicating whether only comparisons
+with the reference group should be printed.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
@@ -199,9 +203,7 @@ Argument \code{show} determines which comparisons are printed:
 \dQuote{direct.only} \tab Comparisons providing only direct
   evidence \cr
 \dQuote{indirect.only} \tab Comparisons providing only indirect
-  evidence \cr
-\dQuote{reference.only} \tab Only comparisons with the reference
-  group
+  evidence
 }
 }
 \examples{

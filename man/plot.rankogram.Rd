@@ -4,7 +4,16 @@
 \alias{plot.rankogram}
 \title{Plot rankograms}
 \usage{
-\method{plot}{rankogram}(x, type = "bar", ylim, ylab, ...)
+\method{plot}{rankogram}(
+  x,
+  type = "bar",
+  ylim,
+  ylab,
+  sort = TRUE,
+  trts,
+  nchar.trts = x$nchar.trts,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link{rankogram}}.}
@@ -15,6 +24,14 @@ a "line" graph should be drawn.}
 \item{ylim}{The y limits (min, max) of the plot.}
 
 \item{ylab}{A label for the y-axis.}
+
+\item{sort}{A logical indicating whether treatments should be
+sorted by decreasing SUCRAs.}
+
+\item{trts}{Treatment(s) to show in rankogram.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
 
 \item{\dots}{Additional graphical arguments (ignored at the
 moment).}

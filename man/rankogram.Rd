@@ -10,14 +10,16 @@ rankogram(
   nsim = 1000,
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
-  small.values = x$small.values
+  small.values = x$small.values,
+  nchar.trts = x$nchar.trts
 )
 
 \method{print}{rankogram}(
   x,
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
-  digits = max(3, .Options$digits - 4),
+  nchar.trts = x$nchar.trts,
+  digits = gs("digits.prop"),
   ...
 )
 }
@@ -36,6 +38,9 @@ probabilities and SUCRAs for the random effects model.}
 \item{small.values}{A character string specifying whether small
 treatment effects indicate a beneficial (\code{"good"}) or
 harmful (\code{"bad"}) effect, can be abbreviated.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{\link{print.default}}.}
