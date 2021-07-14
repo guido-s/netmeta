@@ -181,6 +181,8 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
     ##
     ## P-scores
     ##
+    nsim <- NULL
+    ##
     TE.fixed <- x$TE.fixed
     pval.fixed <- x$pval.fixed
     ##
@@ -226,11 +228,16 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
               ##
               method = method,
               small.values = small.values,
+              ##
+              nsim = nsim,
               x = x,
               title = x$title,
               version = packageDescription("netmeta")$Version,
-              Pscore = "'Pscore' replaced by 'ranking.fixed' and 'ranking.random'.",
-              Pmatrix = "'Pmatrix' replaced by 'Pmatrix.fixed' and 'Pmatrix.random'.",
+              ##
+              Pscore = paste("'Pscore' replaced by 'ranking.fixed'",
+                             "and 'ranking.random'."),
+              Pmatrix = paste("'Pmatrix' replaced by 'Pmatrix.fixed'",
+                              "and 'Pmatrix.random'."),
               ##
               ## Backward compatibility (for R package NMAoutlier)
               ##
@@ -350,6 +357,10 @@ print.netrank <- function(x,
   else if (comb.random) {
     prmatrix(res.random, quote = FALSE, ...)
   }
+
+  if (x$method == "SUCRA" & !is.null(x$nsim))
+    cat(paste0("\n- based on ", x$nsim,
+               " simulation", if (x$nsim > 1) "s", "\n"))
   
   
   invisible(NULL)

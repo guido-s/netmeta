@@ -35,7 +35,8 @@ providing the following meta-analysis methods:
   to check for consistency (Dias et al., 2010; Efthimiou et al.,
   2019);
 \item contribution of direct comparisons to network estimates
-  (\code{\link{netcontrib}}) (Papakonstantinou et al., 2018);
+  (\code{\link{netcontrib}}) (Papakonstantinou et al., 2018; Davies
+  et al., 2021);
 \item league table with network meta-analysis results
   (\code{\link{netleague}});
 \item additive network meta-analysis for combinations of treatments
@@ -87,6 +88,11 @@ Using network meta-analysis to evaluate the existence of
 small-study effects in a network of interventions.
 \emph{Research Synthesis Methods},
 \bold{3}, 161--76
+
+Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
+(2021):
+Network meta-analysis and random walks.
+Available from: http://arxiv.org/abs/2107.02886
 
 Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
 Checking consistency in mixed treatment comparison meta-analysis.

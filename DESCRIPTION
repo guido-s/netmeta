@@ -40,8 +40,7 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012) <DOI:10.1002/jrsm.57>;
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <DOI:10.1002/jrsm.1143>;
  - rankograms based on SUCRA;
- - contribution matrix as described in Papakonstantinou et al. (2018) <DOI:10.12688/f1000research.14770.3> and Davies et al. (2021) <https://arxiv.org/abs/2107.02886>
-
+ - contribution matrix as described in Papakonstantinou et al. (2018) <DOI:10.12688/f1000research.14770.3> and Davies et al. (2021) <https://arxiv.org/abs/2107.02886>.
 License: GPL (>= 2)
 Encoding: UTF-8
 RoxygenNote: 7.1.1
