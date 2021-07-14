@@ -7,6 +7,17 @@ Official Git repository of R package **netmeta**
 [![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)
 
 
+## Authors
+
+[Gerta Rücker](https://orcid.org/0000-0002-2192-2560),
+Ulrike Krahn,
+[Jochem König](https://orcid.org/0000-0003-4683-0360),
+[Orestis Efthimiou](https://orcid.org/0000-0002-0955-7572),
+[Annabel Davies](https://orcid.org/0000-0003-2320-7701),
+[Theodoros Papakonstantinou](https://orcid.org/0000-0002-6630-6817),
+[Guido Schwarzer](https://orcid.org/0000-0001-6214-9087)
+
+
 ## Description
 
 A comprehensive set of functions providing frequentist methods for
@@ -56,13 +67,13 @@ network meta-analysis:
   - rankograms based on Surface Under the Cumulative RAnking curve (SUCRA);
   
  - contribution matrix ([Papakonstantinou et al.,
-   2018](https://scholar.google.com/scholar?q=Papakonstantinou+Nikolakopoulou+Rücker+Chaimani+Schwarzer+2018+contribution+flows+streams); [Davies et al., 2021](http://arxiv.org/abs/2107.02886))
+   2018](https://scholar.google.com/scholar?q=Papakonstantinou+Nikolakopoulou+Rücker+Chaimani+Schwarzer+2018+contribution+flows+streams); [Davies et al., 2021](http://arxiv.org/abs/2107.02886)
 )
-
 
 Furthermore, R package **netmeta** provides functions and datasets to
 support Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
 https://www.springer.com/gp/book/9783319214153 .
+
 
 ### References
 
