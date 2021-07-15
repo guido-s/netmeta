@@ -125,7 +125,8 @@
 #' @export netrank
 
 
-netrank <- function(x, small.values = x$small.values, method, nsim) {
+netrank <- function(x, small.values = x$small.values, method, nsim,
+                    comb.fixed = x$comb.fixed, comb.random = x$comb.random) {
   
   ## Check for netmeta object
   ##
@@ -144,6 +145,13 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
     small.values <- "good"
   else
     small.values <- meta:::setchar(small.values, c("good", "bad"))
+  ##
+  if (is.null(comb.fixed))
+    comb.fixed <- TRUE
+  meta:::chklogical(comb.fixed)
+  if (is.null(comb.random))
+    comb.random <- TRUE
+  meta:::chklogical(comb.random)
   
   
   if (method == "SUCRA") {
@@ -160,7 +168,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
       rnk <- rankogram(x,
                        nsim = nsim,
                        small.values = small.values,
-                       comb.fixed = x$comb.fixed, comb.random = x$comb.random)
+                       comb.fixed = comb.fixed, comb.random = comb.random)
     }
     else {
       if (!missing(nsim))
@@ -230,6 +238,10 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
               small.values = small.values,
               ##
               nsim = nsim,
+              ##
+              comb.fixed = comb.fixed,
+              comb.random = comb.random,
+              ##
               x = x,
               title = x$title,
               version = packageDescription("netmeta")$Version,
@@ -261,8 +273,8 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
 
 
 print.netrank <- function(x,
-                          comb.fixed = x$x$comb.fixed,
-                          comb.random = x$x$comb.random,
+                          comb.fixed = x$comb.fixed,
+                          comb.random = x$comb.random,
                           sort = TRUE,
                           digits = max(4, .Options$digits - 3),
                           ...) {
@@ -270,7 +282,11 @@ print.netrank <- function(x,
   
   meta:::chkclass(x, "netrank")
   ##
+  if (is.null(comb.fixed))
+    comb.fixed <- !is.null(x$ranking.fixed)
   meta:::chklogical(comb.fixed)
+  if (is.null(comb.random))
+    comb.random <- !is.null(x$ranking.random)
   meta:::chklogical(comb.random)
   ##
   if (is.character(sort))

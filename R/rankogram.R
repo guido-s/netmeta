@@ -74,8 +74,9 @@
 #'
 #' ran1 <- rankogram(net1, nsim = 100)
 #' ran1
+#' print(ran1, cumulative.rankprob = TRUE)
 #'
-#' plot(ran1)      
+#' plot(ran1)
 #'
 #' @rdname rankogram
 #' @export rankogram
@@ -179,8 +180,6 @@ rankogram <- function(x, nsim = 1000,
     names(ranking.fixed) <- rownames(ranking.matrix.fixed)
     ##
     ranking.fixed <- ranking.fixed[x$trts]
-    ##
-    cumrank.matrix.fixed <- t(apply(ranking.matrix.fixed, 1, cumsum))
   }
   
   
@@ -251,13 +250,13 @@ rankogram <- function(x, nsim = 1000,
   if (!comb.fixed) {
     ranking.matrix.fixed <- NULL
     ranking.fixed <- NULL
-    cumrank.matrix.fixed <- NULL
+    rank.cum.fixed <- NULL
   }
   ##
   if (!comb.random) {
     ranking.matrix.random <- NULL
     ranking.random <- NULL
-    cumrank.matrix.random <- NULL
+    rank.cum.random <- NULL
   }
   
   
@@ -266,8 +265,8 @@ rankogram <- function(x, nsim = 1000,
               ranking.matrix.random = ranking.matrix.random,
               ranking.random = ranking.random,
               ##
-              cumrank.matrix.fixed = cumrank.matrix.fixed,
-              cumrank.matrix.random = cumrank.matrix.random,
+              cumrank.matrix.fixed = rank.cum.fixed,
+              cumrank.matrix.random = rank.cum.random,
               ##
               nsim = nsim,
               comb.fixed = comb.fixed,

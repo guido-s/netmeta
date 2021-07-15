@@ -5,12 +5,19 @@
 \alias{print.netrank}
 \title{Frequentist method to rank treatments in network}
 \usage{
-netrank(x, small.values = x$small.values, method, nsim)
+netrank(
+  x,
+  small.values = x$small.values,
+  method,
+  nsim,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random
+)
 
 \method{print}{netrank}(
   x,
-  comb.fixed = x$x$comb.fixed,
-  comb.random = x$x$comb.random,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
   sort = TRUE,
   digits = max(4, .Options$digits - 3),
   ...

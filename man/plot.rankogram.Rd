@@ -76,8 +76,8 @@ net1 <- netmeta(p1, small.values = "good")
 ran1 <- rankogram(net1, nsim = 100)
 ran1
 
-plot(ran1)      
-plot(ran1, type = "l")      
+plot(ran1)
+plot(ran1, type = "l")
 plot(ran1, cumulative.rankprob = TRUE)
 
 }

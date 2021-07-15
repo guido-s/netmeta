@@ -98,8 +98,9 @@ net1 <- netmeta(p1, small.values = "good")
 
 ran1 <- rankogram(net1, nsim = 100)
 ran1
+print(ran1, cumulative.rankprob = TRUE)
 
-plot(ran1)      
+plot(ran1)
 
 }
 \references{

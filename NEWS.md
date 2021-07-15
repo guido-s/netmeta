@@ -46,6 +46,10 @@
 * print.rankogram():
   - new argument 'cumulative.rankprob' to show cumulative ranking
     probabilites
+  
+* netrank():
+  - new arguments 'comb.fixed' and 'comb.random'
+  - new list elements 'comb.fixed' and 'comb.random'
 
 * forest.netsplit(), print.netsplit():
   -  new argument 'only.reference' to only print comparisons with

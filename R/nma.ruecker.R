@@ -127,7 +127,8 @@ nma.ruecker <- function(TE, seTE,
     I2 <- lower.I2 <- upper.I2 <- NA
   }
   else {
-    tau2 <- max(0, (Q - df) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
+    tau2 <-
+      max(0, (Q - df) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
     tau <- sqrt(tau2)
     ci.I2 <- meta:::isquared(Q, df, level.comb)
     I2 <- ci.I2$TE
