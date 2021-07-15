@@ -1,8 +1,8 @@
 contribution.matrix <- function(x, method, model, hatmatrix.F1000) {
-  if (method == "stream")
-    return(contribution.matrix.tpapak(x, model, hatmatrix.F1000))
-  else if (method == "randomwalk")
+  if (method == "randomwalk")
     return(contribution.matrix.davies(x, model))
+  else if (method == "stream")
+    return(contribution.matrix.tpapak(x, model, hatmatrix.F1000))
   else
     return(NULL)
 }
@@ -114,7 +114,8 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
   
   if (old)
     H <- hatmatrix.F1000(x, model)
-  ## else
+  else
+    H <- hatmatrix.aggr(x, model, "long")
   ##
   directs <- colnames(H)
   
@@ -147,6 +148,8 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
   
   
   colnames(weights) <- directs
+  ##
+  weights[is.zero(weights)] <- 0
   ##
   attr(weights, "model") <- model
   attr(weights, "hatmatrix.F1000") <- old
@@ -348,6 +351,10 @@ contribution.matrix.davies <- function(x, model) {
   }
   
   
+  weights[is.zero(weights)] <- 0
+  ##
+  weights <- weights[, apply(weights, 2, sum) > 0, drop = FALSE]
+  ##
   attr(weights, "model") <- model
   ##
   weights

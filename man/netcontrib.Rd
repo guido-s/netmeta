@@ -8,7 +8,7 @@
 netcontrib(
   x,
   method = "stream",
-  hatmatrix.F1000 = TRUE,
+  hatmatrix.F1000 = FALSE,
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
   nchar.trts = x$nchar.trts
@@ -28,15 +28,15 @@ netcontrib(
 \item{x}{An object of class \code{netmeta} or \code{netcontrib}.}
 
 \item{method}{A character string indicating which method is to
-calculate the contribution matrix. Either \code{"stream"} or
-\code{"randomwalk"}, can be abbreviated.}
+calculate the contribution matrix. Either \code{"randomwalk"} or
+\code{"stream"}, can be abbreviated.}
 
 \item{hatmatrix.F1000}{A logical indicating whether hat matrix
 given in F1000 article should be used for \code{method =
 "stream"}.}
 
 \item{comb.fixed}{A logical indicating whether a contribution
-matrix should be printed for the fixed effects (common effects)
+matrix should be printed for the fixed effect (common effect)
 network meta-analysis.}
 
 \item{comb.random}{A logical indicating whether a contribution
@@ -71,29 +71,73 @@ as columns for each network comparison, direct or indirect as rows.
 }
 \description{
 This function generates the contribution of direct comparisons to
-every network treatment comparison as a different row
+every network treatment comparison. The output is a matrix where
+rows represent network treatment effects and columns represent the
+contribution of direct treatment effects.
 }
 \details{
-In network meta-analysis, it is important to assess the influence
-of the limitations or other characteristics of individual studies
-on the estimates obtained from the network. The contribution
-matrix, shows how much each direct treatment effect contributes to
-each treatment effect estimate from network meta-analysis, is
-crucial in this context.
+In network meta-analysis (NMA), it is important to assess the
+influence of limitations or other characteristics of individual
+studies on the estimates obtained from the network. To this end,
+the contribution matrix shows how much each direct treatment effect
+contributes to each treatment effect estimate from network
+meta-analysis.
 
 We use ideas from graph theory to derive the proportion that is
-contributed by each direct treatment effect.  We start with the
-‘projection’ matrix in a two-step network meta-analysis model,
+contributed by each direct treatment effect. We start with the
+'projection' matrix in a two-step network meta-analysis model,
 called the H matrix, which is analogous to the hat matrix in a
-linear regression model.
+linear regression model. H entries are translated to proportion
+contributions based on the observation that the rows of H can be
+interpreted as flow networks.  A stream is defined as the
+composition of a path and its associated flow (Papakonstantinou et
+al., 2018).
 
-Two methods are implemented to estimate network contributions. If
-argument \code{method = "stream"}, H entries are translated to
-proportion contributions based on the observation that the rows of
-H can be interpreted as flow networks, where a stream is defined as
-the composition of a path and its associated flow (Papakonstantinou
-et al., 2018). If argument \code{method = "randomwalk"}, a random
-walk algorithm is used (Davies et al., 2021).
+To account for multi-arm trials, we use the H matrix from a
+two-step (aggregate) version of the graph theoretical NMA model
+(Davies et al., 2021). This H matrix can be obtained from
+\code{\link{hatmatrix}} with argument \code{method = "davies"}.
+
+Two methods are implemented to estimate the streams and as a
+result, the proportion contributions:
+
+(1) If argument \code{method = "randomwalk"}, an analytical
+random-walk (RW) approach is used (Davies et al., 2021). Here, the
+"full" version of the aggregate H matrix (\code{\link{hatmatrix}}
+with arguments \code{method = "davies"} and \code{type = "full"})
+is used to define RW transition matrices. For each pair of
+treatments (ij) in the network, the elements in the corresponding
+row of H-full define a transition matrix from node i to node j. We
+use the \bold{igraph} package to find every (directed) path from
+node i to node j. The flow through each path is then equal to the
+probability that a walker takes that path. This is simply the
+product of the transition probabilities associated with each edge
+along the path.
+
+(2) If argument \code{method = "stream"}, an iterative algorithm is
+used (Papakonstantinou et al., 2018). Broadly speaking, each
+iteration of the algorithm consists of the following steps: (i) A
+path in the evidence flow network is selected. (ii) The minimum
+flow through the edges making up the path is identified. This is
+assigned as the flow associated with the path. (iii) The flow of
+the path is subtracted from the values of flow in the edges that
+make up that path. This means that the edge corresponding to the
+minimum flow in that path is removed from the graph. (iv) A new
+path is then selected from the remaining graph. The process repeats
+until all the evidence flow in the edges has been assigned to a
+path.
+
+In the original F1000 paper (Papakonstantinou et al., 2018), the
+hat matrix used did not account for correlations due to multi-arm
+trials. For reproducibility the result of this version can be
+obtained by specifying \code{hatmatrix.F1000 = TRUE} for
+\code{method = "stream"}. For other purposes, this method is not
+recommended.
+
+Once the streams have been identified (either by method (1) or
+(2)), the proportion contribution of each direct comparison is
+equal to the sum over the flow of evidence in each path containing
+that edge divided by the number of edges that make up that path.
 
 By default, treatment names are not abbreviated in
 printouts. However, in order to get more concise printouts,

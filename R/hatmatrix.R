@@ -74,24 +74,50 @@
 #' 
 #' \subsection{Hat matrices by Davies et al. (2021)}{
 #' 
-#' One of the following hat matrices is estimated if \code{method
-#' = "Davies"}.
+#' One of three hat matrices is estimated if \code{method = "Davies"}.
 #'
-#' Use of \code{type = "short"} (default) results in a hat matrix of
-#' dimension \emph{e} x \emph{e}, where \emph{e} is the number of
-#' (unique) edges (direct comparisons) in the network.
+#' Here, we focus on the hat matrix of the aggregate (two-step)
+#' version of the graph theoretical NMA model. In the first step, a
+#' pairwise meta-analysis is performed across each edge using the
+#' adjusted weights (these account for correlations due to multi-arm
+#' trials). From this we obtain direct treatment effect estimates (and
+#' corresponding aggregate weights) associated with each edge. In step
+#' two, we combine these direct estimates in a network meta analysis
+#' to obtain the network estimates.  This is done using weighted least
+#' squares regression. The hat matrix associated with this second step
+#' is called the \emph{aggregate hat matrix}.
+#' 
+#' All three versions of the aggregate hat matrix contain the same
+#' information: the second two can be derived directly from the
+#' first. They differ in their dimensionality.
+#' 
+#' Each row of the hat matrix that represents a treatment comparison
+#' (\emph{ij}) describes the flow of evidence through each edge for
+#' that comparison. This defines a directed acyclic 'flow graph' from
+#' node \emph{i} to node \emph{j}.
 #'
-#' Use of \code{type = "long"} results in a hat matrix of dimension
-#' \emph{n(n-1)/2} x \emph{e}. This hat matrix describes the flow of
-#' evidence through each direct comparison for every possible pair of
-#' treatments (regardless of whether there is direct evidence for this
-#' pair).
+#' (1) Use of \code{type = "short"} (default) results in a hat matrix
+#' of dimension \emph{e} x \emph{e}, where \emph{e} is the number of
+#' (unique) edges (direct comparisons) in the network. This is the
+#' aggregate hat matrix described in Davies et al. (2021). Each row
+#' and column represents a pair of treatments for which there is at
+#' least one direct comparison.
 #'
-#' Use of \code{type = "full"} results in a hat matrix of dimension
-#' \emph{n(n-1)/2} x \emph{n(n-1)/2}. In comparison to the long hat
-#' matrix, columns of zeroes are added for comparisons that do not
-#' have any direct evidence. This hat matrix is used to calculate the
-#' transition matrices for the random walk in
+#' (2) Use of \code{type = "long"} results in a hat matrix of
+#' dimension \emph{n(n-1)/2} x \emph{e}. There is a row for every
+#' possible pair of treatments in the network - regardless of whether
+#' there is direct evidence for this comparison. Each column
+#' represents a pair of treatments for which there is at least one
+#' direct comparison. The extra rows can be calculated from the short
+#' hat matrix using consistency equations.
+#' 
+#'
+#' (3) Use of \code{type = "full"} results in a hat matrix of
+#' dimension \emph{n(n-1)/2} x \emph{n(n-1)/2}. In comparison to the
+#' long hat matrix, columns of zeroes are added for comparisons that
+#' do not have any direct evidence. Therefore, there is a row and
+#' column for every pair of treatments in the network. This hat matrix
+#' is used to calculate the transition matrices for the random walk in
 #' \code{\link{netcontrib}}.
 #' }
 #'
@@ -189,32 +215,6 @@ hatmatrix <- function(x, method = "Ruecker", type,
   else if (method == "Davies") {
     res$fixed <- hatmatrix.aggr(x, "fixed", type)
     res$random <- hatmatrix.aggr(x, "random", type)
-    ##
-    ## Row and col names
-    ##
-    if (type == "short") {
-      rownames(res$fixed) <- colnames(res$fixed) <- x$comparisons
-      rownames(res$random) <- colnames(res$random) <- x$comparisons
-    }
-    else {
-      allcomps <- ""
-      k <- 0
-      for (i in 1:(x$n - 1)) {
-        for (j in (i + 1):x$n) {
-          k <- k + 1
-          allcomps[k] <- paste(x$trts[i], x$trts[j], sep = x$sep.trts)
-        }
-      }
-    }
-    if (type == "long") {
-      rownames(res$fixed) <- rownames(res$random) <- allcomps
-      colnames(res$fixed) <- x$comparisons
-      colnames(res$random) <- x$comparisons
-    }
-    else if (type == "full") {
-      rownames(res$fixed) <- colnames(res$fixed) <- allcomps
-      rownames(res$random) <- colnames(res$random) <- allcomps
-    }
   }
   ##
   res$method <- method
@@ -476,13 +476,37 @@ hatmatrix.aggr <- function(x, model, type) {
   }
   ##
   if (type == "short")
-    return(H.short)
+    H <- H.short
   else if (type == "long")
-    return(H.long)
+    H <- H.long
   else if (type == "full")
-    return(H.full)
+    H <- H.full
   else
     return(NULL)
+  ##
+  ## Row and col names
+  ##
+  if (type == "short")
+    rownames(H) <- colnames(H) <- x$comparisons
+  else {
+    allcomps <- ""
+    k <- 0
+    for (i in 1:(x$n - 1)) {
+      for (j in (i + 1):x$n) {
+        k <- k + 1
+        allcomps[k] <- paste(x$trts[i], x$trts[j], sep = x$sep.trts)
+      }
+    }
+    ##
+    if (type == "long") {
+      rownames(H) <- allcomps
+      colnames(H) <- x$comparisons
+    }
+    else if (type == "full")
+      rownames(H) <- colnames(H) <- allcomps
+  }
+  
+  H
 }
 
 
