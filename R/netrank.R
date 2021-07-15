@@ -73,7 +73,7 @@
 #' 
 #' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
 #'   Schwarzer \email{sc@@imbi.uni-freiburg.de}, Theodoros
-#'   Papakonstantinou \email{dev@tpapak.com}
+#'   Papakonstantinou \email{dev@@tpapak.com}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{rankogram}}
 #' 

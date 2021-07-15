@@ -72,8 +72,8 @@
 #' matrix has the percentage contributions of each direct comparison
 #' as columns for each network comparison, direct or indirect as rows.
 #' 
-#' @author Theodoros Papakonstantinou \email{dev@tpapak.com}, Annabel
-#'   Davies \email{annabel.davies@manchester.ac.uk}
+#' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Annabel
+#'   Davies \email{annabel.davies@@manchester.ac.uk}
 #' 
 #' @seealso \code{\link{netmeta}}
 #' 

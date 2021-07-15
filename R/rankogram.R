@@ -15,10 +15,14 @@
 #' @param small.values A character string specifying whether small
 #'   treatment effects indicate a beneficial (\code{"good"}) or
 #'   harmful (\code{"bad"}) effect, can be abbreviated.
+#' @param cumulative.rankprob A logical indicating whether cumulative
+#'   ranking probabilites should be printed.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
 #'   \code{\link{print.default}}.
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
 #' @param \dots Additional arguments for printing.
 #'
 #' @details
@@ -41,14 +45,21 @@
 #'   of each treatment being at each possible rank for the random
 #'   effects model.}
 #' \item{ranking.random}{SUCRA values for the random effects model.}
+#' \item{cumrank.matrix.fixed}{Numeric matrix giving the cumulative
+#'   ranking probability of each treatment for the
+#'   fixed effects model.}
+#' \item{cumrank.matrix.random}{Numeric matrix giving the cumulative
+#'   ranking probability of each treatment for the random effects
+#'   model.}
 #' \item{nsim, comb.fixed, comb.random}{As defined above},
 #' \item{small.values, x}{As defined above},
 #'
-#' @author Theodoros Papakonstantinou \email{dev@tpapak.com}
+#' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Guido
+#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #'
 #' @seealso \code{\link{netmeta}}, \code{\link{netrank}}
 #'
-#' @references 
+#' @references
 #' Salanti G, Ades AE, Ioannidis JP (2011):
 #' Graphical methods and numerical summaries for presenting results
 #' from multiple-treatment meta-analysis: an overview and tutorial.
@@ -72,6 +83,7 @@
 rankogram <- function(x, nsim = 1000,
                       comb.fixed = x$comb.fixed, comb.random = x$comb.random,
                       small.values = x$small.values,
+                      cumulative.rankprob = FALSE,
                       nchar.trts = x$nchar.trts) {
   
   
@@ -79,11 +91,14 @@ rankogram <- function(x, nsim = 1000,
   ##
   meta:::chkclass(x, "netmeta")
   ##
+  chklogical <- meta:::chklogical
   meta:::chknumeric(nsim, min = 1, length = 1)
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
+  chklogical(comb.fixed)
+  chklogical(comb.random)
   ##
   small.values <- meta:::setchar(small.values, c("good", "bad"))
+  ##
+  chklogical(cumulative.rankprob)
   ##
   if (is.null(nchar.trts))
     nchar.trts <- 666
@@ -164,6 +179,8 @@ rankogram <- function(x, nsim = 1000,
     names(ranking.fixed) <- rownames(ranking.matrix.fixed)
     ##
     ranking.fixed <- ranking.fixed[x$trts]
+    ##
+    cumrank.matrix.fixed <- t(apply(ranking.matrix.fixed, 1, cumsum))
   }
   
   
@@ -226,17 +243,21 @@ rankogram <- function(x, nsim = 1000,
     names(ranking.random) <- rownames(ranking.matrix.random)
     ##
     ranking.random <- ranking.random[x$trts]
+    ##
+    cumrank.matrix.random <- t(apply(ranking.matrix.random, 1, cumsum))
   }
   
 
   if (!comb.fixed) {
     ranking.matrix.fixed <- NULL
     ranking.fixed <- NULL
+    cumrank.matrix.fixed <- NULL
   }
   ##
   if (!comb.random) {
     ranking.matrix.random <- NULL
     ranking.random <- NULL
+    cumrank.matrix.random <- NULL
   }
   
   
@@ -244,10 +265,15 @@ rankogram <- function(x, nsim = 1000,
               ranking.fixed = ranking.fixed,
               ranking.matrix.random = ranking.matrix.random,
               ranking.random = ranking.random,
+              ##
+              cumrank.matrix.fixed = cumrank.matrix.fixed,
+              cumrank.matrix.random = cumrank.matrix.random,
+              ##
               nsim = nsim,
               comb.fixed = comb.fixed,
               comb.random = comb.random,
               small.values = small.values,
+              cumulative.rankprob = cumulative.rankprob,
               nchar.trts = nchar.trts,
               x = x)
   
@@ -270,48 +296,82 @@ rankogram <- function(x, nsim = 1000,
 print.rankogram <- function(x,
                             comb.fixed = x$comb.fixed,
                             comb.random = x$comb.random,
+                            cumulative.rankprob = x$cumulative.rankprob,
                             nchar.trts = x$nchar.trts,
                             digits = gs("digits.prop"),
+                            legend = TRUE,
                             ...) {
   
   
   meta:::chkclass(x, "rankogram")
-  ##  
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
+  ##
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
+  chklogical(comb.fixed)
+  chklogical(comb.random)
+  if (is.null(cumulative.rankprob))
+    cumulative.rankprob <- FALSE
+  chklogical(cumulative.rankprob)
   ##
   if (is.null(nchar.trts))
     nchar.trts <- 666
-  meta:::chknumeric(nchar.trts, length = 1)
+  chknumeric(nchar.trts, length = 1)
   ##
-  meta:::chknumeric(digits, length = 1)
+  chknumeric(digits, length = 1)
+  chklogical(legend)
   
-
+  
   if (!comb.fixed & !comb.random)
     return(invisible(NULL))
 
 
-  cat(paste0("Rankogram (based on ", x$nsim,
-             " simulation", if (x$nsim > 1) "s", ")\n\n"))
+  cat(paste0(if (cumulative.rankprob)
+               "Cumulative ranking probabilities" else "Rankogram",
+             " (based on ", x$nsim, " simulation",
+             if (x$nsim > 1) "s", ")\n\n"))
   ##
   if (comb.fixed) {
-    rownames(x$ranking.matrix.fixed) <-
-      treats(x$ranking.matrix.fixed, nchar.trts)
+    if (cumulative.rankprob)
+      fixed <- x$cumrank.matrix.fixed
+    else
+      fixed <- x$ranking.matrix.fixed
+    rownames(fixed) <- treats(fixed, nchar.trts)
     ##
     cat("Fixed effects model: \n\n")
-    prmatrix(meta:::formatN(x$ranking.matrix.fixed, digits),
-             quote = FALSE, right = TRUE, ...)
+    prmatrix(meta:::formatN(fixed, digits), quote = FALSE, right = TRUE, ...)
     if (comb.random)
       cat("\n")
   }
   ##
   if (comb.random) {
-    rownames(x$ranking.matrix.random) <-
-      treats(x$ranking.matrix.random, nchar.trts)
+    if (cumulative.rankprob)
+      random <- x$cumrank.matrix.random
+    else
+      random <- x$ranking.matrix.random
+    rownames(random) <-
+      treats(random, nchar.trts)
     ##
     cat("Random effects model: \n\n")
-    prmatrix(meta:::formatN(x$ranking.matrix.random, digits),
-             quote = FALSE, right = TRUE, ...)
+    prmatrix(meta:::formatN(random, digits), quote = FALSE, right = TRUE, ...)
+  }
+  
+  
+  if (legend) {
+    if (comb.fixed)
+      trts <- rownames(x$ranking.matrix.fixed)
+    else if (comb.random)
+      trts <- rownames(x$ranking.matrix.random)
+    ##
+    trts.abbr <- treats(trts, nchar.trts)
+    if (any(trts != trts.abbr)) {
+      cat("\nLegend:\n")
+      tmat <- data.frame(trts.abbr, trts)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(trts.abbr)))
+    }
   }
   
   

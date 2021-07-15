@@ -11,6 +11,7 @@ rankogram(
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
   small.values = x$small.values,
+  cumulative.rankprob = FALSE,
   nchar.trts = x$nchar.trts
 )
 
@@ -18,8 +19,10 @@ rankogram(
   x,
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
+  cumulative.rankprob = x$cumulative.rankprob,
   nchar.trts = x$nchar.trts,
   digits = gs("digits.prop"),
+  legend = TRUE,
   ...
 )
 }
@@ -39,11 +42,17 @@ probabilities and SUCRAs for the random effects model.}
 treatment effects indicate a beneficial (\code{"good"}) or
 harmful (\code{"bad"}) effect, can be abbreviated.}
 
+\item{cumulative.rankprob}{A logical indicating whether cumulative
+ranking probabilites should be printed.}
+
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{\link{print.default}}.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
 
 \item{\dots}{Additional arguments for printing.}
 }
@@ -59,6 +68,12 @@ following components:
   of each treatment being at each possible rank for the random
   effects model.}
 \item{ranking.random}{SUCRA values for the random effects model.}
+\item{cumrank.matrix.fixed}{Numeric matrix giving the cumulative
+  ranking probability of each treatment for the
+  fixed effects model.}
+\item{cumrank.matrix.random}{Numeric matrix giving the cumulative
+  ranking probability of each treatment for the random effects
+  model.}
 \item{nsim, comb.fixed, comb.random}{As defined above},
 \item{small.values, x}{As defined above},
 }
@@ -98,5 +113,6 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \code{\link{netmeta}}, \code{\link{netrank}}
 }
 \author{
-Theodoros Papakonstantinou \email{dev@tpapak.com}
+Theodoros Papakonstantinou \email{dev@tpapak.com}, Guido
+  Schwarzer \email{sc@imbi.uni-freiburg.de}
 }

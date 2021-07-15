@@ -6,11 +6,13 @@
 \usage{
 \method{plot}{rankogram}(
   x,
-  type = "bar",
-  ylim,
-  ylab,
+  type = if (cumulative.rankprob) "step" else "bar",
+  pooled = ifelse(x$comb.random, "random", "fixed"),
   sort = TRUE,
   trts,
+  cumulative.rankprob = x$cumulative.rankprob,
+  ylim,
+  ylab,
   nchar.trts = x$nchar.trts,
   ...
 )
@@ -18,17 +20,25 @@
 \arguments{
 \item{x}{An object of class \code{\link{rankogram}}.}
 
-\item{type}{A character string specifying whether a "bar" chart or
-a "line" graph should be drawn.}
+\item{type}{A character string specifying whether a "bar" chart, a
+"line" graph, or "step" functions should be drawn. Can be
+abbreviated.}
 
-\item{ylim}{The y limits (min, max) of the plot.}
-
-\item{ylab}{A label for the y-axis.}
+\item{pooled}{A character string indicating whether results for the
+fixed effects (\code{"fixed"}) or random effects model
+(\code{"random"}) should be plotted. Can be abbreviated.}
 
 \item{sort}{A logical indicating whether treatments should be
 sorted by decreasing SUCRAs.}
 
 \item{trts}{Treatment(s) to show in rankogram.}
+
+\item{cumulative.rankprob}{A logical indicating whether cumulative
+ranking probabilites should be shown.}
+
+\item{ylim}{The y limits (min, max) of the plot.}
+
+\item{ylab}{A label for the y-axis.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
@@ -41,9 +51,21 @@ This function produces a rankogram, i.e., an image plot of ranking
 probabilities for all treatments.
 }
 \details{
-This function produces an image plot of ranking probabilities for
-all treatments as a bar graph or as a line graph. Treatments are
-sorted according to their mean effects.
+This function produces an image plot of (cumulative) ranking
+probabilities for all treatments as a bar graph, a line graph or as
+step functions (argument \code{type}).
+
+By default (argument \code{pooled}), results for the random effects
+model are shown if a network meta-analysis was conducted for both
+the fixed effect and random effects model.
+
+Treatments are sorted according to their mean effects if argument
+\code{sort = TRUE} (default).  A subset of treatments can be
+specified using argument \code{trts}.
+
+Cumulative ranking probabilites are shown if
+\code{cumulative.rankprob = TRUE}. By default, step functions are
+shown for cumulative ranking probabilites.
 }
 \examples{
 data(Woods2010)
@@ -56,6 +78,7 @@ ran1
 
 plot(ran1)      
 plot(ran1, type = "l")      
+plot(ran1, cumulative.rankprob = TRUE)
 
 }
 \references{
@@ -69,5 +92,6 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \code{\link{rankogram}}
 }
 \author{
-Theodoros Papakonstantinou \email{dev@tpapak.com}
+Theodoros Papakonstantinou \email{dev@tpapak.com}, Guido
+  Schwarzer \email{sc@imbi.uni-freiburg.de}
 }

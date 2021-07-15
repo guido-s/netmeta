@@ -28,9 +28,24 @@
   rankogram(), print.rankogram(), plot.rankogram():
   -  new argument 'nchar.trts' to print abbreviated treatment names
 
+* rankogram():
+  - new list elements 'cumrank.matrix.fixed' and
+    'cumrank.matrix.random' with cumulative ranking probabilites
+  - new argument 'cumulative.rankprob' to show cumulative ranking
+    probabilites
+  - new argument 'trts' to specify subset of treatments
+
 * plot.rankogram():
-  -  new argument 'trts' to specify subset of treatments
-  -  new argument 'sort' to specify order of treatments
+  - new argument 'pooled' to select results from fixed effect or
+    random effects model
+  - new argument 'trts' to specify subset of treatments
+  - new argument 'sort' to specify order of treatments
+  - new argument 'cumulative.rankprob' to show cumulative ranking
+    probabilites
+
+* print.rankogram():
+  - new argument 'cumulative.rankprob' to show cumulative ranking
+    probabilites
 
 * forest.netsplit(), print.netsplit():
   -  new argument 'only.reference' to only print comparisons with
