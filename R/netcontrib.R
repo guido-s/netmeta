@@ -11,10 +11,10 @@
 #' @param x An object of class \code{netmeta} or \code{netcontrib}.
 #' @param method A character string indicating which method is to
 #'   calculate the contribution matrix. Either \code{"randomwalk"} or
-#'   \code{"stream"}, can be abbreviated.
+#'   \code{"shortestpath"}, can be abbreviated.
 #' @param hatmatrix.F1000 A logical indicating whether hat matrix
 #'   given in F1000 article should be used for \code{method =
-#'   "stream"}.
+#'   "shortestpath"}.
 #' @param comb.fixed A logical indicating whether a contribution
 #'   matrix should be printed for the fixed effect (common effect)
 #'   network meta-analysis.
@@ -68,25 +68,25 @@
 #' product of the transition probabilities associated with each edge
 #' along the path.
 #' 
-#' (2) If argument \code{method = "stream"}, an iterative algorithm is
-#' used (Papakonstantinou et al., 2018). Broadly speaking, each
-#' iteration of the algorithm consists of the following steps: (i) A
-#' path in the evidence flow network is selected. (ii) The minimum
-#' flow through the edges making up the path is identified. This is
-#' assigned as the flow associated with the path. (iii) The flow of
-#' the path is subtracted from the values of flow in the edges that
-#' make up that path. This means that the edge corresponding to the
-#' minimum flow in that path is removed from the graph. (iv) A new
-#' path is then selected from the remaining graph. The process repeats
-#' until all the evidence flow in the edges has been assigned to a
-#' path.
+#' (2) If argument \code{method = "shortestpath"}, an iterative
+#' algorithm is used (Papakonstantinou et al., 2018). Broadly
+#' speaking, each iteration of the algorithm consists of the following
+#' steps: (i) A path in the evidence flow network is selected. (ii)
+#' The minimum flow through the edges making up the path is
+#' identified. This is assigned as the flow associated with the
+#' path. (iii) The flow of the path is subtracted from the values of
+#' flow in the edges that make up that path. This means that the edge
+#' corresponding to the minimum flow in that path is removed from the
+#' graph. (iv) A new path is then selected from the remaining
+#' graph. The process repeats until all the evidence flow in the edges
+#' has been assigned to a path.
 #' 
 #' In the original F1000 paper (Papakonstantinou et al., 2018), the
 #' hat matrix used did not account for correlations due to multi-arm
 #' trials. For reproducibility the result of this version can be
 #' obtained by specifying \code{hatmatrix.F1000 = TRUE} for
-#' \code{method = "stream"}. For other purposes, this method is not
-#' recommended.
+#' \code{method = "shortestpath"}. For other purposes, this method is
+#' not recommended.
 #' 
 #' Once the streams have been identified (either by method (1) or
 #' (2)), the proportion contribution of each direct comparison is
@@ -153,7 +153,7 @@
 
 
 netcontrib <- function(x,
-                       method = "stream",
+                       method = "shortestpath",
                        hatmatrix.F1000 = FALSE,
                        comb.fixed = x$comb.fixed,
                        comb.random = x$comb.random,
@@ -161,7 +161,7 @@ netcontrib <- function(x,
   
   meta:::is.installed.package("igraph")
   ##
-  method <- meta:::setchar(method, c("randomwalk", "stream"))
+  method <- meta:::setchar(method, c("randomwalk", "shortestpath"))
   meta:::chklogical(hatmatrix.F1000)
   if (method == "randomwalk" & hatmatrix.F1000) {
     warning("Argument 'hatmatrix.F1000' ignored for random walk method.",
@@ -220,12 +220,12 @@ print.netcontrib <- function(x,
   matitle(x$x)
   ##
   cat(paste0("Contribution matrix (",
-             if (is.null(x$method) | x$method == "stream")
+             if (is.null(x$method) | x$method == "shortestpath")
                "Papakonstantinou et al., 2018, F1000Research"
              else
                "Davies et al., 2021",
              ")"))
-  if ((is.null(x$method) | x$method == "stream") & x$hatmatrix.F1000)
+  if ((is.null(x$method) | x$method == "shortestpath") & x$hatmatrix.F1000)
     cat(paste(",\nhat matrix does not take correlation of",
               "multi-arm studies into account"))
   ##

@@ -1,7 +1,7 @@
 contribution.matrix <- function(x, method, model, hatmatrix.F1000) {
   if (method == "randomwalk")
     return(contribution.matrix.davies(x, model))
-  else if (method == "stream")
+  else if (method == "shortestpath")
     return(contribution.matrix.tpapak(x, model, hatmatrix.F1000))
   else
     return(NULL)
@@ -176,47 +176,18 @@ contribution.matrix.davies <- function(x, model) {
   H.full <- hatmatrix.aggr(x, model, type = "full")
   ## Total number of possible pairwise comparisons
   n.comps <- nrow(H.full)
-  ## Create prop contribution matrix (square matrix)
-  weights <- matrix(0, nrow = n.comps, ncol = n.comps)
-  ##
-  ## Treatment labels
-  ##
-  label <- vector("character", x$n) 
-  for (t in 1:x$n) {
-    foundt <- 0
-    ## Look for treatment 't' in vector treat1.pos
-    for (i in seq_along(x$treat1)) {
-      if (x$treat1.pos[i] == t) {
-        label[t] <- x$treat1[i] 
-        foundt <- foundt + 1
-      }
-    }
-    ## If treatment t is not in treat1 list look in treat2.pos
-    if (foundt == 0){
-      for (i in 1:length(x$treat2)){
-        if (x$treat2.pos[i] == t){
-          label[t] <- x$treat2[i]
-          foundt <- foundt + 1
-        }
-      }
-    }
-  }
+
   
-  ## Create labels for rows and columns of the contribution matrix
-  label.names <- vector("character", n.comps)
-  count <- 0
-  for (t1 in 1:(x$n - 1)) {
-    for (t2 in (t1 + 1):x$n) {
-      count <- count + 1
-      ## Label row and column by the treatment comparison
-      label.names[count] <- paste(label[t1], label[t2], sep = x$sep.trts)
-    }
-  }
   ##
-  rownames(weights) <- label.names
-  colnames(weights) <- label.names
+  ## Create prop contribution matrix (square matrix)
+  ##
+  weights <- matrix(0, nrow = n.comps, ncol = n.comps)
+  rownames(weights) <- colnames(weights) <- rownames(H.full)
+  
+  
   ##
   ## Cycle through comparisons
+  ##
   r <- 0
   for (t1 in 1:(x$n - 1)) {
     for (t2 in (t1 + 1):x$n) {
@@ -262,8 +233,11 @@ contribution.matrix.davies <- function(x, model) {
           }
         }
       }
+
+      ##
       ## Create the transition matrix by normalising the values in
       ## each row of Q
+      ##
       P <- matrix(0, nrow = x$n, ncol = x$n)
       for (i in 1:x$n) {
         sum_row <- 0.0
@@ -286,10 +260,15 @@ contribution.matrix.davies <- function(x, model) {
         }
       }
       ##
+      P[is.zero(P, n = 1000)] <- 0
+      
+      
+      ##
       ## Find all possible paths
       ##
       ## Define an igraph using P as an adjacency matrix the graph is
       ## directed (and acyclic) and weighted
+      ##
       Pgraph <-
         igraph::graph_from_adjacency_matrix(P,"directed",
                                             weighted = TRUE, diag = FALSE)
