@@ -90,7 +90,8 @@
 #' TRUE}, default), the following columns will be printed on the left
 #' side of the forest plot: the comparisons (column \code{"studlab"}
 #' in \code{\link{forest.meta}}), number of pairwise comparisons
-#' (\code{"k"}), and direct evidence proportion (\code{"k"}).
+#' (\code{"k"}), direct evidence proportion (\code{"k"}), and
+#' I\eqn{^2} from pairwise comparison (\code{"I2"}).
 #' 
 #' If direct estimates are not included in the forest plot
 #' (\code{direct = FALSE}), only the comparisons (\code{"studlab"})
@@ -277,7 +278,7 @@ forest.netsplit <- function(x,
   ##
   if (missing(leftcols))
     if (direct)
-      leftcols <- c("studlab", "k", "prop")
+      leftcols <- c("studlab", "k", "prop", "I2")
     else
       leftcols <- "studlab"
   ##
@@ -286,6 +287,7 @@ forest.netsplit <- function(x,
     leftlabs[leftcols == "studlab"] <- "Comparison"
     leftlabs[leftcols == "k"] <- "Number of\nStudies"
     leftlabs[leftcols == "prop"] <- "Direct\nEvidence"
+    leftlabs[leftcols == "I2"] <- "I2"
   }
   ##
   n.subgroup <- direct + indirect + overall + prediction
@@ -371,8 +373,14 @@ forest.netsplit <- function(x,
   ##
   if (pooled == "fixed") {
     dat.direct <- x$direct.fixed
+    ##
     dat.indirect <- x$indirect.fixed
+    dat.indirect$Q <- dat.indirect$tau2 <-
+      dat.indirect$tau <- dat.indirect$I2 <- NA
+    ##
     dat.overall <- x$fixed
+    dat.overall$Q <- dat.overall$tau2 <-
+      dat.overall$tau <- dat.overall$I2 <- NA
     ##
     dat.direct$prop <- formatPT(x$prop.fixed, digits = digits.prop)
     dat.indirect$prop <- NA
@@ -383,8 +391,14 @@ forest.netsplit <- function(x,
   }
   else {
     dat.direct <- x$direct.random
+    ##
     dat.indirect <- x$indirect.random
+    dat.indirect$Q <- dat.indirect$tau2 <-
+      dat.indirect$tau <- dat.indirect$I2 <- NA
+    ##
     dat.overall <- x$random
+    dat.overall$Q <- dat.overall$tau2 <-
+      dat.overall$tau <- dat.overall$I2 <- NA
     ##
     dat.direct$prop <- formatPT(x$prop.random, digits = digits.prop)
     dat.indirect$prop <- NA
@@ -418,6 +432,10 @@ forest.netsplit <- function(x,
   ##
   dat.predict <- dat.predict[, c("comparison", "TE", "seTE",
                                  "lower", "upper", "statistic", "p", "prop")]
+  dat.predict$Q < NA
+  dat.predict$tau2 <- NA
+  dat.predict$tau <- NA
+  dat.predict$I2 <- NA
   ##
   dat.direct$comps <- dat.indirect$comps <-
     dat.overall$comps <- dat.predict$comps <- x$comparison

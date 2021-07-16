@@ -31,6 +31,8 @@
 #'   example.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
+#' @param nchar.studlab A numeric defining the minimum number of
+#'   characters used to create unique study labels.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param digits.se Minimal number of significant digits for standard
@@ -115,7 +117,9 @@ print.netmeta <- function(x,
                           all.treatments = x$all.treatments,
                           details = TRUE, ma = TRUE,
                           ##
-                          backtransf = x$backtransf, nchar.trts = x$nchar.trts,
+                          backtransf = x$backtransf,
+                          nchar.trts = x$nchar.trts,
+                          nchar.studlab = x$nchar.studlab,
                           digits = gs("digits"),
                           digits.se = gs("digits.se"),
                           digits.pval.Q = max(gs("digits.pval.Q"), 2),
@@ -151,6 +155,9 @@ print.netmeta <- function(x,
   ##
   chklogical(backtransf)
   chknumeric(nchar.trts, min = 1, length = 1)
+  if (is.null(nchar.studlab))
+    nchar.studlab <- 666
+  chknumeric(nchar.studlab, min = 1, length = 1)
   ##
   chknumeric(digits, min = 0, length = 1)
   chknumeric(digits.se, min = 0, length = 1)
@@ -292,8 +299,9 @@ print.netmeta <- function(x,
         res <- res[truncate, , drop = FALSE]
       }
       ##
-      prmatrix(res[order(sortvar), , drop = FALSE],
-               quote = FALSE, right = TRUE)
+      res <- res[order(sortvar), , drop = FALSE]
+      dimnames(res)[[1]] <- treats(dimnames(res)[[1]], nchar.studlab)
+      prmatrix(res, quote = FALSE, right = TRUE)
       if (!missing.truncate)
         cat(text.truncate, "\n")
       cat("\n")
@@ -304,6 +312,7 @@ print.netmeta <- function(x,
         studyarms <-
           studyarms[rownames(studyarms) %in% rownames(res), , drop = FALSE]
       cat("Number of treatment arms (by study):\n")
+      rownames(studyarms) <- treats(rownames(studyarms), nchar.studlab)
       prmatrix(studyarms, quote = FALSE, right = TRUE)
       if (!missing.truncate)
         cat(text.truncate, "\n")
@@ -348,10 +357,11 @@ print.netmeta <- function(x,
                      formatN(round(x$leverage.fixed, 2), 2, ".")
                    )
     dimnames(res.f) <-
-      list(x$studlab, c("treat1", "treat2",
-                        sm.lab, ci.lab,
-                        if (comb.fixed) "Q",
-                        if (comb.fixed & !all(x$narms > 2)) "leverage"))
+      list(treats(x$studlab, nchar.studlab),
+           c("treat1", "treat2",
+             sm.lab, ci.lab,
+             if (comb.fixed) "Q",
+             if (comb.fixed & !all(x$narms > 2)) "leverage"))
     
     
     res.r <- cbind(treat1, treat2,
@@ -361,7 +371,8 @@ print.netmeta <- function(x,
                             formatN(round(uppTE.r, digits), digits, "NA",
                                     big.mark = big.mark)))
     dimnames(res.r) <-
-      list(x$studlab, c("treat1", "treat2", sm.lab, ci.lab))
+      list(treats(x$studlab, nchar.studlab),
+           c("treat1", "treat2", sm.lab, ci.lab))
     
     
     if (comb.fixed) {

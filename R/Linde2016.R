@@ -42,7 +42,7 @@
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, reference.group = "placebo",
 #'                 sm = "OR", comb.fixed = FALSE,
-#'                 nchar = 6)
+#'                 nchar.trts = 6)
 #' #
 #' summary(net1)
 #' 
@@ -52,7 +52,7 @@
 #' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = Linde2016, reference.group = "placebo",
 #'                 sm = "OR", comb.fixed = FALSE,
-#'                 nchar = 6)
+#'                 nchar.trts = 6)
 #' #
 #' summary(net2)
 #' }

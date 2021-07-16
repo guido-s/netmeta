@@ -165,7 +165,8 @@ If direct estimates are included in the forest plot (\code{direct =
 TRUE}, default), the following columns will be printed on the left
 side of the forest plot: the comparisons (column \code{"studlab"}
 in \code{\link{forest.meta}}), number of pairwise comparisons
-(\code{"k"}), and direct evidence proportion (\code{"k"}).
+(\code{"k"}), direct evidence proportion (\code{"k"}), and
+I\eqn{^2} from pairwise comparison (\code{"I2"}).
 
 If direct estimates are not included in the forest plot
 (\code{direct = FALSE}), only the comparisons (\code{"studlab"})

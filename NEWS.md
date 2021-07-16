@@ -10,6 +10,9 @@
 
 * New R function to derive hat matrices
 
+* I2 from pairwise comparisons shown in forest plot with direct and
+  indirect evidence
+
 ### User-visible changes
 
 * New function hatmatrix() and print.hatmatrix() to derive hat
@@ -51,9 +54,12 @@
   - new arguments 'comb.fixed' and 'comb.random'
   - new list elements 'comb.fixed' and 'comb.random'
 
+* forest.netsplit():
+  - print I2 from pairwise comparisons if argument direct = TRUE
+
 * forest.netsplit(), print.netsplit():
-  -  new argument 'only.reference' to only print comparisons with
-     reference group
+  - new argument 'only.reference' to only print comparisons with
+    reference group
 
 * New auxiliary function comps() to create unique comparison labels
   with abbreviated treatment names
@@ -65,8 +71,11 @@
     adjusted standard errors under fixed effect and random effects
     model (content of 'seTE.adj.fixed' is identical to the previously
     existing element 'seTE.adj')
-  - new list elements 'H.matrix.aggr.fixed' and 'H.matrix.aggr.random'
-    with aggregated hat matrices
+  - new list elements 'H.matrix.fixed' (replacing list element
+    'H.matrix') and 'H.matrix.random'
+  - new list elements 'Q.direct', 'tau2.direct', 'tau.direct' and
+    'I2.direct' with information on the between-study heterogeneity of
+    direct comparisons
 
 * New internal function hatmatrix.aggr() to calculate the aggregated
   hat matrix

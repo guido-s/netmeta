@@ -17,6 +17,7 @@
   ma = TRUE,
   backtransf = x$backtransf,
   nchar.trts = x$nchar.trts,
+  nchar.studlab = x$nchar.studlab,
   digits = gs("digits"),
   digits.se = gs("digits.se"),
   digits.pval.Q = max(gs("digits.pval.Q"), 2),
@@ -71,6 +72,9 @@ example.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
+
+\item{nchar.studlab}{A numeric defining the minimum number of
+characters used to create unique study labels.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}

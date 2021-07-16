@@ -76,6 +76,8 @@
 #'   example.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names (see Details).
+#' @param nchar.studlab A numeric defining the minimum number of
+#'   characters used to create unique study labels.
 #' @param n1 Number of observations in first treatment group.
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
@@ -510,6 +512,7 @@ netmeta <- function(TE, seTE,
                     ##
                     sep.trts = ":",
                     nchar.trts = 666,
+                    nchar.studlab = 666,
                     ##
                     n1 = NULL,
                     n2 = NULL,
@@ -570,6 +573,7 @@ netmeta <- function(TE, seTE,
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
   chknumeric(nchar.trts, min = 1, length = 1)
+  chknumeric(nchar.studlab, length = 1)
   ##
   chklogical(backtransf)
   ##
@@ -1175,7 +1179,8 @@ netmeta <- function(TE, seTE,
                        p0$narms, p0$studlab,
                        sm,
                        level, level.comb,
-                       p0$seTE, sep.trts = sep.trts)
+                       p0$seTE, 0, sep.trts,
+                       method.tau)
   ##
   trts <- rownames(res.f$A.matrix)
   ##
@@ -1303,7 +1308,8 @@ netmeta <- function(TE, seTE,
                        p1$narms, p1$studlab,
                        sm,
                        level, level.comb,
-                       p1$seTE, tau, sep.trts = sep.trts)
+                       p1$seTE, tau, sep.trts,
+                       method.tau)
   ##
   TE.random <- res.r$TE.pooled
   seTE.random <- res.r$seTE.pooled
@@ -1440,6 +1446,10 @@ netmeta <- function(TE, seTE,
               statistic.direct.random = res.r$statistic.direct,
               pval.direct.random = res.r$pval.direct,
               ##
+              Q.direct = res.r$Q.direct,
+              tau2.direct = res.r$tau2.direct,
+              I2.direct = res.r$I2.direct,
+              ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
               lower.indirect.fixed = NA,
@@ -1521,6 +1531,7 @@ netmeta <- function(TE, seTE,
               ##
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,
+              nchar.studlab = nchar.studlab,
               ##
               backtransf = backtransf,
               ##

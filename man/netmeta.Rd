@@ -31,6 +31,7 @@ netmeta(
   details.chkmultiarm = FALSE,
   sep.trts = ":",
   nchar.trts = 666,
+  nchar.studlab = 666,
   n1 = NULL,
   n2 = NULL,
   event1 = NULL,
@@ -135,6 +136,9 @@ between treatment labels.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names (see Details).}
+
+\item{nchar.studlab}{A numeric defining the minimum number of
+characters used to create unique study labels.}
 
 \item{n1}{Number of observations in first treatment group.}
 

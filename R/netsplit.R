@@ -543,6 +543,10 @@ netsplit <- function(x, method,
                upper = lowertri(upper.direct.fixed),
                statistic = lowertri(statistic.direct.fixed),
                p = lowertri(pval.direct.fixed),
+               Q = lowertri(x$Q.direct),
+               tau2 = lowertri(x$tau2.direct),
+               tau = sqrt(lowertri(x$tau2.direct)),
+               I2 = lowertri(x$I2.direct),
                stringsAsFactors = FALSE)
   ##
   indirect.fixed.low <-
@@ -573,6 +577,10 @@ netsplit <- function(x, method,
                upper = uppertri(upper.direct.fixed),
                statistic = uppertri(statistic.direct.fixed),
                p = uppertri(pval.direct.fixed),
+               Q = uppertri(x$Q.direct),
+               tau2 = uppertri(x$tau2.direct),
+               tau = sqrt(uppertri(x$tau2.direct)),
+               I2 = uppertri(x$I2.direct),
                stringsAsFactors = FALSE)
   ##
   indirect.fixed.upp <-
@@ -652,6 +660,10 @@ netsplit <- function(x, method,
                  upper = lowertri(upper.direct.random),
                  statistic = lowertri(statistic.direct.random),
                  p = lowertri(pval.direct.random),
+                 Q = lowertri(x$Q.direct),
+                 tau2 = lowertri(x$tau2.direct),
+                 tau = sqrt(lowertri(x$tau2.direct)),
+                 I2 = lowertri(x$I2.direct),
                  stringsAsFactors = FALSE)
     ##
     indirect.random.low <-
@@ -688,6 +700,10 @@ netsplit <- function(x, method,
                  upper = uppertri(upper.direct.random),
                  statistic = uppertri(statistic.direct.random),
                  p = uppertri(pval.direct.random),
+                 Q = uppertri(x$Q.direct),
+                 tau2 = uppertri(x$tau2.direct),
+                 tau = sqrt(uppertri(x$tau2.direct)),
+                 I2 = uppertri(x$I2.direct),
                  stringsAsFactors = FALSE)
     ##
     indirect.random.upp <-

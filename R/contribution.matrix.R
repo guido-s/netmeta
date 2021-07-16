@@ -90,7 +90,7 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
   }
   ##
   reduceGraph <- function (g, comparison) {
-    getshortest <- function (g, compariston) {
+    getshortest <- function (g, comparison) {
       getShortest <- function() {
         return(igraph::get.shortest.paths(g,
                                           sv(comparison),
@@ -111,6 +111,7 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
     ##
     g
   }
+  
   
   if (old)
     H <- hatmatrix.F1000(x, model)
