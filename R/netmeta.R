@@ -98,6 +98,7 @@
 #' @param control An optional list to control the iterative process to
 #'   estimate the between-study variance \eqn{\tau^2}. This argument
 #'   is passed on to \code{\link[metafor]{rma.mv}}.
+#' @param nchar Deprecated argument (replaced by \code{nchar.trts}).
 #' 
 #' @details
 #' Network meta-analysis using R package \bold{netmeta} is described
@@ -532,7 +533,8 @@ netmeta <- function(TE, seTE,
                     keepdata = gs("keepdata"),
                     warn = TRUE,
                     ##
-                    control = NULL
+                    control = NULL,
+                    nchar = nchar.trts
                     ) {
 
 
@@ -593,8 +595,21 @@ netmeta <- function(TE, seTE,
       all.treatments <- FALSE
   ##
   chklogical(baseline.reference)
-
-
+  ##
+  ## Check for deprecated argument 'nchar'
+  ##
+  if (!missing(nchar))
+    if (!missing(nchar.trts))
+      warning("Deprecated argument 'nchar' ignored as ",
+              "argument 'nchar.trts' is also provided.")
+    else {
+      warning("Deprecated argument 'nchar' has been replaced by ",
+              "argument 'nchar.trts'.")
+      nchar.trts <- nchar
+      chknumeric(nchar.trts, min = 1, length = 1)
+    }
+  
+  
   ##
   ##
   ## (2) Read data
@@ -1447,6 +1462,7 @@ netmeta <- function(TE, seTE,
               pval.direct.random = res.r$pval.direct,
               ##
               Q.direct = res.r$Q.direct,
+              tau.direct = sqrt(res.r$tau2.direct),
               tau2.direct = res.r$tau2.direct,
               I2.direct = res.r$I2.direct,
               ##

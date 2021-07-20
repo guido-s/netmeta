@@ -45,7 +45,8 @@ netmeta(
   title = "",
   keepdata = gs("keepdata"),
   warn = TRUE,
-  control = NULL
+  control = NULL,
+  nchar = nchar.trts
 )
 }
 \arguments{
@@ -176,6 +177,8 @@ standard errors).}
 \item{control}{An optional list to control the iterative process to
 estimate the between-study variance \eqn{\tau^2}. This argument
 is passed on to \code{\link[metafor]{rma.mv}}.}
+
+\item{nchar}{Deprecated argument (replaced by \code{nchar.trts}).}
 }
 \value{
 An object of class \code{netmeta} with corresponding \code{print},

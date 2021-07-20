@@ -211,7 +211,7 @@ contribution.matrix.davies <- function(x, model) {
       for (i in 1:(x$n - 1)) {
         for (j in (i + 1):x$n) {
           idx <- idx + 1
-          Q[i,j] <- H.full[r, idx]
+          Q[i, j] <- H.full[r, idx]
         }
       }
       ## Now use H_ij = -H_ji to define the lower half of Q
@@ -233,12 +233,14 @@ contribution.matrix.davies <- function(x, model) {
           }
         }
       }
-
+      
+      
       ##
       ## Create the transition matrix by normalising the values in
       ## each row of Q
       ##
       P <- matrix(0, nrow = x$n, ncol = x$n)
+      ##
       for (i in 1:x$n) {
         sum_row <- 0.0
         for (j in 1:x$n)
@@ -248,7 +250,9 @@ contribution.matrix.davies <- function(x, model) {
           for (j in 1:x$n)
             P[i, j] <- Q[i, j] / sum_row
       }
+      ##
       ## Edit row corresponding to sink (t2)
+      ##
       for (j in 1:x$n) {
         if (j == t2) {
           ## Once the walker reaches the sink it remains there forever
@@ -283,6 +287,7 @@ contribution.matrix.davies <- function(x, model) {
       ## that path vector containing the probability of taking each
       ## path
       prob.paths <- vector("numeric", length(all.paths))
+      prob.edge  <- vector("numeric", n.comps)
       ##
       for (i in 1:length(all.paths)) {
         prob <- 1.0
@@ -292,41 +297,19 @@ contribution.matrix.davies <- function(x, model) {
           prob <- prob * P[all.paths[[i]][j], all.paths[[i]][j + 1]]
         }
         prob.paths[i] <- prob
-      }
-      ##
-      ## Calculate proportion contributions
-      ##
-      ## Contribution of an edge = sum over flow of evidence in each
-      ## path...  containing that edge divided by the length of the
-      ## path vector containing prop contirbutions for row r
-      prob.edge <- vector("numeric", n.comps)
-      ##
-      ind <- 1 #index for path number
-      for (i in 1:(x$n - 1)) {
-        for (j in (i + 1):x$n) {
-          for (k in 1:length(all.paths)) {
-            ## Does path k contain the edge ij (or ji)?
-            edgeij <- 0
-            for (l in 1:(length(all.paths[[k]]) - 1)) {
-              if (all.paths[[k]][l] == i & all.paths[[k]][l + 1] == j)
-                edgeij <- 1
-              else if (all.paths[[k]][l] == j & all.paths[[k]][l + 1] == i)
-                edgeij <- 1
-            }
-            ## If yes: p_ab = sum_{paths i containing ab}
-            ## phi_i/length(pi_i)
-            if (edgeij == 1) {
-              path.length <- length(all.paths[[k]]) - 1
-              ## Add phi_i / length(pi_i) to p_ab
-              prob.edge[ind] <- prob.edge[ind] + (prob.paths[k] / path.length)
-            }
-          }
-          ## Assign this contribution to the contribution matrix
-          weights[r, ind] <- prob.edge[ind]
-          ##
-          ind <- ind + 1
+        ##
+        for (j in 1:(length(all.paths[[i]]) - 1)) {
+          ## find edge labels 
+          a <- min(c(all.paths[[i]][j], all.paths[[i]][j + 1]))
+          b <- max(c(all.paths[[i]][j], all.paths[[i]][j + 1]))
+          ## find index of edge probabilities
+          ind <- x$n * (a - 1) - (a * (a - 1) / 2) + (b - a)
+          path.length <- length(all.paths[[i]]) - 1
+          prob.edge[ind] <- prob.edge[ind] + prob.paths[i] / path.length
         }
       }
+      ##
+      weights[r, ] <- prob.edge
     }
   }
   

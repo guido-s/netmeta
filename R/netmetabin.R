@@ -1170,6 +1170,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   TE.fixed <- seTE.fixed <- NAmatrix
   TE.direct.fixed <- seTE.direct.fixed <- NAmatrix
+  Q.direct <- tau2.direct <- I2.direct <- NAmatrix
   
   
   ##
@@ -1741,18 +1742,28 @@ netmetabin <- function(event1, n1, event2, n2,
     selstud <- treat1 == sel.treat1 & treat2 == sel.treat2
     ##
     m.i <- metabin(event1, n1, event2, n2, subset = selstud,
-                   sm = "OR",
+                   method = "MH", sm = "OR",
                    incr = incr, allincr = allincr, addincr = addincr,
-                   allstudies = allstudies, MH.exact = !cc.pooled)
+                   allstudies = allstudies, MH.exact = !cc.pooled,
+                   Q.Cochrane = FALSE)
     ##
     TE.i   <- m.i$TE.fixed
     seTE.i <- m.i$seTE.fixed
+    Q.i <- m.i$Q
+    tau2.i <- m.i$tau2
+    I2.i <- m.i$I2
     ##
     TE.direct.fixed[sel.treat1, sel.treat2]   <- TE.i
     seTE.direct.fixed[sel.treat1, sel.treat2] <- seTE.i
+    Q.direct[sel.treat1, sel.treat2] <- Q.i
+    tau2.direct[sel.treat1, sel.treat2] <- tau2.i
+    I2.direct[sel.treat1, sel.treat2] <- I2.i
     ##
     TE.direct.fixed[sel.treat2, sel.treat1]   <- -TE.i
     seTE.direct.fixed[sel.treat2, sel.treat1] <- seTE.i
+    Q.direct[sel.treat2, sel.treat1] <- Q.i
+    tau2.direct[sel.treat2, sel.treat1] <- tau2.i
+    I2.direct[sel.treat2, sel.treat1] <- I2.i
   }
   ##
   rm(sel.treat1, sel.treat2, selstud, m.i, TE.i, seTE.i)
@@ -1837,6 +1848,11 @@ netmetabin <- function(event1, n1, event2, n2,
               upper.direct.random = NAmatrix,
               statistic.direct.random = NAmatrix,
               pval.direct.random = NAmatrix,
+              ##
+              Q.direct = Q.direct,
+              tau.direct = sqrt(tau2.direct),
+              tau2.direct = tau2.direct,
+              I2.direct = I2.direct,
               ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,

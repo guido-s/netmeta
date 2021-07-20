@@ -803,16 +803,35 @@ pairwise <- function(treat,
                           nrow = narms * (narms - 1) / 2)
       colnames(notunique) <- names.adddata
       ##
+      oneNA <- matrix(NA,
+                      ncol = length(names.adddata),
+                      nrow = narms * (narms - 1) / 2)
+      ##
+      allNA <- matrix(NA,
+                      ncol = length(names.adddata),
+                      nrow = narms * (narms - 1) / 2)
+      colnames(oneNA) <- names.adddata
+      ##
       n.ij <- 0
       ##
       for (i in 1:(narms - 1)) {
         for (j in (i + 1):narms) {
           n.ij <- n.ij + 1
-          notunique[n.ij, ] <- apply(adddata[[i]] != adddata[[j]], 2, anytrue)
+          notunique[n.ij, ] <-
+            apply(adddata[[i]] != adddata[[j]], 2, anytrue)
+          ##
+          allNA[n.ij, ] <- apply(is.na(adddata[[j]]), 2, all)
+          ##
+          oneNA[n.ij, ] <-
+            apply(is.na(adddata[[i]]) & !is.na(adddata[[j]]), 2, anytrue)
         }
       }
       ##
       notunique <- apply(notunique, 2, anytrue)
+      oneNA <- apply(oneNA, 2, anytrue)
+      allNA <- apply(allNA, 2, anytrue)
+      ##print(apply(rbind(notunique, oneNA, allNA), 2, anytrue))
+      notunique <- apply(rbind(notunique, oneNA, allNA), 2, anytrue)
       ##
       for (i in 1:(narms - 1)) {
         for (j in (i + 1):narms) {
@@ -820,7 +839,7 @@ pairwise <- function(treat,
           dat.j <- adddata[[j]]
           ##
           if (any(!notunique))
-            dat.ij <- dat.i[, names.adddata[!notunique]]
+            dat.ij <- dat.i[, names.adddata[!notunique], drop = FALSE]
           else
             stop("Study label must be unique for single treatment arm.")
           ##

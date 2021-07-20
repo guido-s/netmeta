@@ -61,6 +61,11 @@
   - new argument 'only.reference' to only print comparisons with
     reference group
 
+* pairwise():
+  - keep all variables from original dataset if variable is missing
+    for one group but not the other (so far, only the first variable
+    was kept)
+
 * New auxiliary function comps() to create unique comparison labels
   with abbreviated treatment names
 

@@ -545,7 +545,7 @@ netsplit <- function(x, method,
                p = lowertri(pval.direct.fixed),
                Q = lowertri(x$Q.direct),
                tau2 = lowertri(x$tau2.direct),
-               tau = sqrt(lowertri(x$tau2.direct)),
+               tau = lowertri(x$tau.direct),
                I2 = lowertri(x$I2.direct),
                stringsAsFactors = FALSE)
   ##
@@ -579,7 +579,7 @@ netsplit <- function(x, method,
                p = uppertri(pval.direct.fixed),
                Q = uppertri(x$Q.direct),
                tau2 = uppertri(x$tau2.direct),
-               tau = sqrt(uppertri(x$tau2.direct)),
+               tau = uppertri(x$tau.direct),
                I2 = uppertri(x$I2.direct),
                stringsAsFactors = FALSE)
   ##
@@ -662,7 +662,7 @@ netsplit <- function(x, method,
                  p = lowertri(pval.direct.random),
                  Q = lowertri(x$Q.direct),
                  tau2 = lowertri(x$tau2.direct),
-                 tau = sqrt(lowertri(x$tau2.direct)),
+                 tau = lowertri(x$tau.direct),
                  I2 = lowertri(x$I2.direct),
                  stringsAsFactors = FALSE)
     ##
@@ -702,7 +702,7 @@ netsplit <- function(x, method,
                  p = uppertri(pval.direct.random),
                  Q = uppertri(x$Q.direct),
                  tau2 = uppertri(x$tau2.direct),
-                 tau = sqrt(uppertri(x$tau2.direct)),
+                 tau = uppertri(x$tau.direct),
                  I2 = uppertri(x$I2.direct),
                  stringsAsFactors = FALSE)
     ##
