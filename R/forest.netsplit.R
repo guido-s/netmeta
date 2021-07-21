@@ -288,6 +288,9 @@ forest.netsplit <- function(x,
     leftlabs[leftcols == "k"] <- "Number of\nStudies"
     leftlabs[leftcols == "prop"] <- "Direct\nEvidence"
     leftlabs[leftcols == "I2"] <- "I2"
+    leftlabs[leftcols == "tau2"] <- "tau2"
+    leftlabs[leftcols == "tau"] <- "tau"
+    leftlabs[leftcols == "Q"] <- "Q"
   }
   ##
   n.subgroup <- direct + indirect + overall + prediction
