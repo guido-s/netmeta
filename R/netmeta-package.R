@@ -21,8 +21,7 @@
 #' \item ranking of treatments (\code{\link{netrank}}) based on
 #'   P-scores (Rücker & Schwarzer, 2015) or SUCRAs (Salanti et al.,
 #'   2011);
-#' \item rankograms (\code{\link{rankogram}}) based on SUCRAs (Salanti
-#'   et al., 2011);
+#' \item rankograms (\code{\link{rankogram}}) (Salanti et al., 2011);
 #' \item partial order of treatment rankings (\code{\link{netposet}},
 #'   \code{\link{plot.netposet}}) and Hasse diagram
 #'   (\code{\link{hasse}}) according to Carlsen & Bruggemann (2014)

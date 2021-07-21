@@ -64,7 +64,7 @@ network meta-analysis:
   - automated drawing of network graphs ([Rücker & Schwarzer,
     2016](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2016+Automated+drawing+of+network+plots+in+network+meta-analysis));
   
-  - rankograms based on Surface Under the Cumulative RAnking curve (SUCRA);
+  - rankograms and ranking by Surface Under the Cumulative RAnking curve (SUCRA) values;
   
  - contribution matrix ([Papakonstantinou et al.,
    2018](https://scholar.google.com/scholar?q=Papakonstantinou+Nikolakopoulou+Rücker+Chaimani+Schwarzer+2018+contribution+flows+streams); [Davies et al., 2021](http://arxiv.org/abs/2107.02886)

@@ -1,8 +1,8 @@
 #' Frequentist method to rank treatments in network
 #' 
 #' @description
-#' Ranking treatments in frequentist network meta-analysis without
-#' resampling methods.
+#' Ranking treatments in frequentist network meta-analysis with and
+#' without resampling methods.
 #' 
 #' @aliases netrank print.netrank
 #' 
