@@ -8,15 +8,30 @@
 * Random walk algorithm implemented to estimate network contributions
   (Davies et al., 2021, unpublished)
 
-* New R function to derive hat matrices
+* New R function hatmatrix() to derive hat matrices
+
+* New R function netpairwise() to conduct pairwise meta-analyses for
+  all comparisons with direct evidence
 
 * I2 from pairwise comparisons shown in forest plot with direct and
   indirect evidence
 
+### Bug fixes
+
+* forest.netbind(), forest.netcomb(), forest.netmeta(),
+  forest.netsplit():
+  - do not print empty row above descriptions if arguments
+    'label.left' or 'label.right' is used
+
 ### User-visible changes
 
-* New function hatmatrix() and print.hatmatrix() to derive hat
+* New functions hatmatrix() and print.hatmatrix() to derive hat
   matrices
+
+* New functions netpairwise(), forest.netpairwise(),
+  print.netpairwise(), summary.netpairwise() and
+  print.summary.netpairwise() to conduct pairwise meta-analyses for
+  all comparisons with direct evidence
 
 * netcontrib():
   - new argument 'method' to select method to estimate network

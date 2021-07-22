@@ -66,8 +66,8 @@ function. The object is a list containing the following components:
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
-Ranking treatments in frequentist network meta-analysis without
-resampling methods.
+Ranking treatments in frequentist network meta-analysis with and
+without resampling methods.
 }
 \details{
 Treatments are ranked based on a network meta-analysis. Ranking is
