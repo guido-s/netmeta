@@ -14,6 +14,9 @@
 #'   as odds ratios rather than log odds ratios, for example.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names (see Details).
+#' @param show.combs A character string indicating which combinations
+#'   to show in printouts. Either \code{"onlyobserved"} or
+#'   \code{"obs.2comps"}, can be abbreviated.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param digits.stat Minimal number of significant digits for z- or
@@ -66,6 +69,7 @@ print.netcomb <- function(x,
                           comb.random = x$comb.random,
                           backtransf = x$backtransf,
                           nchar.trts = x$nchar.trts,
+                          show.combs = "onlyobserved",
                           ##
                           digits = gs("digits"),
                           digits.stat = gs("digits.stat"),
@@ -86,6 +90,7 @@ print.netcomb <- function(x,
   meta:::chklogical(comb.random)
   meta:::chklogical(backtransf)
   meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  show.combs <- meta:::setchar(show.combs, c("onlyobserved", "obs.2comps"))
   ##
   meta:::chknumeric(digits, min = 0, length = 1)
   meta:::chknumeric(digits.stat, min = 0, length = 1)
@@ -149,6 +154,7 @@ print.netcomb <- function(x,
           comb.fixed = comb.fixed,
           comb.random = comb.random,
           backtransf = backtransf,
+          show.combs = show.combs,
           nchar.trts = nchar.trts,
           ##
           digits = digits,

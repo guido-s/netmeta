@@ -9,6 +9,7 @@
   object,
   comb.fixed = object$comb.fixed,
   comb.random = object$comb.random,
+  show.combs = "onlyobserved",
   ...
 )
 
@@ -18,6 +19,7 @@
   comb.random = x$comb.random,
   backtransf = x$backtransf,
   nchar.trts = x$nchar.trts,
+  show.combs = x$show.combs,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
@@ -42,6 +44,10 @@ fixed effects (common effects) model should be printed.}
 
 \item{comb.random}{A logical indicating whether results for the
 random effects model should be printed.}
+
+\item{show.combs}{A character string indicating which combinations
+to show in printouts. Either \code{"onlyobserved"} or
+\code{"obs.2comps"}, can be abbreviated.}
 
 \item{\dots}{Additional arguments.}
 
@@ -90,8 +96,8 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 \item{text.tau2}{Text printed to identify between-study variance
 \eqn{\tau^2}.}
 
-\item{text.tau}{Text printed to identify \eqn{\tau}, the square root
-of the between-study variance \eqn{\tau^2}.}
+\item{text.tau}{Text printed to identify \eqn{\tau}, the square
+root of the between-study variance \eqn{\tau^2}.}
 
 \item{text.I2}{Text printed to identify heterogeneity statistic
 I\eqn{^2}.}

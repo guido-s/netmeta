@@ -505,7 +505,7 @@ netcomb <- function(x,
                         p0$treat1[o], p0$treat2[o], x$level.comb,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
-                        x$n, x$sep.trts)
+                        x$n, x$sep.trts, sep.comps)
   
   
   ##
@@ -533,7 +533,7 @@ netcomb <- function(x,
                         p1$treat1[o], p1$treat2[o], x$level.comb,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
-                        x$n, x$sep.trts)
+                        x$n, x$sep.trts, sep.comps)
   
   
   res <- list(studlab = x$studlab,
@@ -646,6 +646,22 @@ netcomb <- function(x,
               upper.Comb.random = unname(res.r$combinations$upper),
               statistic.Comb.random = unname(res.r$combinations$statistic),
               pval.Comb.random = unname(res.r$combinations$p),
+              ##
+              Comb.fixed.2comps = res.r$combinations.2comps$TE,
+              seComb.fixed.2comps = res.f$combinations.2comps$seTE,
+              lower.Comb.fixed.2comps = res.f$combinations.2comps$lower,
+              upper.Comb.fixed.2comps = res.f$combinations.2comps$upper,
+              statistic.Comb.fixed.2comps =
+                res.f$combinations.2comps$statistic,
+              pval.Comb.fixed.2comps = res.f$combinations.2comps$p,
+              ##
+              Comb.random.2comps = res.r$combinations.2comps$TE,
+              seComb.random.2comps = res.r$combinations.2comps$seTE,
+              lower.Comb.random.2comps = res.r$combinations.2comps$lower,
+              upper.Comb.random.2comps = res.r$combinations.2comps$upper,
+              statistic.Comb.random.2comps =
+                res.r$combinations.2comps$statistic,
+              pval.Comb.random.2comps = res.r$combinations.2comps$p,
               ##
               Q.additive = Q.additive,
               df.Q.additive = df.Q.additive,

@@ -10,6 +10,7 @@
   comb.random = x$comb.random,
   backtransf = x$backtransf,
   nchar.trts = x$nchar.trts,
+  show.combs = "onlyobserved",
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
@@ -36,6 +37,10 @@ as odds ratios rather than log odds ratios, for example.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names (see Details).}
+
+\item{show.combs}{A character string indicating which combinations
+to show in printouts. Either \code{"onlyobserved"} or
+\code{"obs.2comps"}, can be abbreviated.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}

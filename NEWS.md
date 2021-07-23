@@ -16,6 +16,10 @@
 * I2 from pairwise comparisons shown in forest plot with direct and
   indirect evidence
 
+* For component network meta-analysis, results for all possible
+  combinations of two components are calculated
+
+
 ### Bug fixes
 
 * forest.netbind(), forest.netcomb(), forest.netmeta(),
@@ -81,6 +85,9 @@
     for one group but not the other (so far, only the first variable
     was kept)
 
+* summary.netcomb(), print.summary.netcomb(), print.netcomb():
+  - new argument 'show.combs'
+
 * New auxiliary function comps() to create unique comparison labels
   with abbreviated treatment names
 
@@ -96,6 +103,18 @@
   - new list elements 'Q.direct', 'tau2.direct', 'tau.direct' and
     'I2.direct' with information on the between-study heterogeneity of
     direct comparisons
+
+* netcomb(), discomb():
+  - new list elements 'Comb.fixed.2comps', ... and
+    'Comb.random.2comps', ...
+	
+* compsplit():
+  - remove leading and trailing blanks
+
+* nma.additive():
+  - new argument 'sep.comps'
+  - calculate and export estimates for all possible combinations with
+    two components (list element 'combinations.2comps')
 
 * New internal function hatmatrix.aggr() to calculate the aggregated
   hat matrix
