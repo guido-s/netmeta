@@ -239,30 +239,9 @@ contribution.matrix.davies <- function(x, model) {
       ## Create the transition matrix by normalising the values in
       ## each row of Q
       ##
-      P <- matrix(0, nrow = x$n, ncol = x$n)
-      ##
-      for (i in 1:x$n) {
-        sum_row <- 0.0
-        for (j in 1:x$n)
-          sum_row <- sum_row + Q[i, j]
-        ##
-        if (sum_row != 0)
-          for (j in 1:x$n)
-            P[i, j] <- Q[i, j] / sum_row
-      }
-      ##
-      ## Edit row corresponding to sink (t2)
-      ##
-      for (j in 1:x$n) {
-        if (j == t2) {
-          ## Once the walker reaches the sink it remains there forever
-          P[t2, j] <- 1.0
-        }
-        else {
-          ## No transitions can occur from the sink to another node
-          P[t2, j] <- 0.0
-        }
-      }
+      P <- ginv(diag(rowSums(Q))) %*% Q
+      P[t2, ] <- rep(0, x$n)
+      P[t2, t2] <- 1
       ##
       P[is.zero(P, n = 1000)] <- 0
       
