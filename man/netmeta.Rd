@@ -321,9 +321,10 @@ object is a list containing the following components:
 \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
 \item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
-\item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}
-\item{Lplus.matrix}{Moore-Penrose pseudoinverse of the Laplacian
-  matrix (\emph{n}x\emph{n}).}
+\item{L.matrix.fixed, L.matrix.random}{Laplacian matrix
+  (\emph{n}x\emph{n}).}
+\item{Lplus.matrix.fixed, Lplus.matrix.random}{Moore-Penrose
+  pseudoinverse of the Laplacian matrix (\emph{n}x\emph{n}).}
 \item{Q.matrix}{Matrix of heterogeneity statistics for pairwise
   meta-analyses, where direct comparisons exist
   (\emph{n}x\emph{n}).}

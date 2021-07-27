@@ -16,9 +16,6 @@
 * I2 from pairwise comparisons shown in forest plot with direct and
   indirect evidence
 
-* For component network meta-analysis, results for all possible
-  combinations of two components are calculated
-
 
 ### Bug fixes
 
@@ -105,16 +102,15 @@
     direct comparisons
 
 * netcomb(), discomb():
-  - new list elements 'Comb.fixed.2comps', ... and
-    'Comb.random.2comps', ...
+  - new list elements 'L.matrix.fixed', 'Lplus.matrix.fixed',
+    'H.matrix.fixed', 'L.matrix.random', 'Lplus.matrix.random' and
+    'H.matrix.random'
 	
 * compsplit():
   - remove leading and trailing blanks
 
 * nma.additive():
-  - new argument 'sep.comps'
-  - calculate and export estimates for all possible combinations with
-    two components (list element 'combinations.2comps')
+  - new list elements 'L.matrix', 'Lplus.matrix' and 'H.matrix'
 
 * New internal function hatmatrix.aggr() to calculate the aggregated
   hat matrix

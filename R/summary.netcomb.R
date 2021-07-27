@@ -17,9 +17,6 @@
 #'   example.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names (see Details).
-#' @param show.combs A character string indicating which combinations
-#'   to show in printouts. Either \code{"onlyobserved"} or
-#'   \code{"obs.2comps"}, can be abbreviated.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param digits.stat Minimal number of significant digits for z- or
@@ -101,7 +98,6 @@
 summary.netcomb <- function(object,
                             comb.fixed = object$comb.fixed,
                             comb.random = object$comb.random,
-                            show.combs = "onlyobserved",
                             ...) {
   
   ##
@@ -229,32 +225,6 @@ summary.netcomb <- function(object,
                           p = object$pval.Comb.random,
                           stringsAsFactors = FALSE)
   rownames(ci.comb.r) <- object$trts
-  ##
-  ci.comb.f.2comps <- NULL
-  if (!is.null(object$Comb.fixed.2comps)) {
-    ci.comb.f.2comps <-
-      data.frame(TE = object$Comb.fixed.2comps,
-                 seTE = object$seComb.fixed.2comps,
-                 lower = object$lower.Comb.fixed.2comps,
-                 upper = object$upper.Comb.fixed.2comps,
-                 statistic = object$statistic.Comb.fixed.2comps,
-                 p = object$pval.Comb.fixed.2comps,
-                 stringsAsFactors = FALSE)
-    rownames(ci.comb.f.2comps) <- names(object$Comb.fixed.2comps)
-  }
-  ##
-  ci.comb.r.2comps <- NULL
-  if (!is.null(object$Comb.random.2comps)) {
-    ci.comb.r.2comps <-
-      data.frame(TE = object$Comb.random.2comps,
-                 seTE = object$seComb.random.2comps,
-                 lower = object$lower.Comb.random.2comps,
-                 upper = object$upper.Comb.random.2comps,
-                 statistic = object$statistic.Comb.random.2comps,
-                 p = object$pval.Comb.random.2comps,
-                 stringsAsFactors = FALSE)
-    rownames(ci.comb.r.2comps) <- names(object$Comb.random.2comps)
-  }
   
   
   ##
@@ -295,9 +265,6 @@ summary.netcomb <- function(object,
               ##
               combinations.fixed = ci.comb.f,
               combinations.random = ci.comb.r,
-              ##
-              combinations.fixed.2comps = ci.comb.f.2comps,
-              combinations.random.2comps = ci.comb.r.2comps,
               ##
               fixed = ci.f, random = ci.r,
               ##
@@ -340,8 +307,6 @@ summary.netcomb <- function(object,
               ##
               backtransf = object$backtransf,
               ##
-              show.combs = show.combs,
-              ##
               title = object$title,
               ##
               call = match.call(),
@@ -369,7 +334,6 @@ print.summary.netcomb <- function(x,
                                   comb.random = x$comb.random,
                                   backtransf = x$backtransf,
                                   nchar.trts = x$nchar.trts,
-                                  show.combs = x$show.combs,
                                   ##
                                   digits = gs("digits"),
                                   digits.stat = gs("digits.stat"),
@@ -407,7 +371,6 @@ print.summary.netcomb <- function(x,
   chklogical(comb.random)
   chklogical(backtransf)
   chknumeric(nchar.trts, min = 1, length = 1)
-  show.combs <- meta:::setchar(show.combs, c("onlyobserved", "obs.2comps"))
   ##
   chknumeric(digits, min = 0, length = 1)
   chknumeric(digits.stat, min = 0, length = 1)
@@ -471,36 +434,6 @@ print.summary.netcomb <- function(x,
     cat("Results for combinations (additive model, random effects model):\n")
     print(dat1.r)
     cat("\n")
-  }
-  
-
-  if (show.combs == "obs.2comps") {
-    trts.abbr.2comps <-
-      treats(rownames(x$combinations.fixed.2comps), nchar.trts)
-    ##
-    dat1.f <- formatCC(x$combinations.fixed.2comps,
-                       backtransf, x$sm, x$level, trts.abbr.2comps,
-                       digits, digits.stat, digits.pval,
-                       scientific.pval, big.mark)
-    ##
-    dat1.r <- formatCC(x$combinations.random.2comps,
-                       backtransf, x$sm, x$level, trts.abbr.2comps,
-                       digits, digits.stat, digits.pval,
-                       scientific.pval, big.mark)
-    ##
-    if (comb.fixed) {
-      cat(paste0("Results for all possible combinations of two components\n",
-                 "(additive model, fixed effects model):\n"))
-      print(dat1.f)
-      cat("\n")
-    }
-    ##
-    if (comb.random) {
-      cat(paste0("Results for all possible combinations of two components\n",
-                 "(additive model, random effects model):\n"))
-      print(dat1.r)
-      cat("\n")
-    }
   }
   
   

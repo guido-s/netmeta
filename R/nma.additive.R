@@ -3,7 +3,7 @@ nma.additive <- function(TE, weights, studlab,
                          level.comb,
                          X, C.matrix, B.matrix,
                          Q, df.Q.additive, df.Q.diff,
-                         n, sep.trts, sep.comps) {
+                         n, sep.trts) {
   
   
   m <- length(TE)
@@ -38,27 +38,6 @@ nma.additive <- function(TE, weights, studlab,
   theta <- as.vector(C.matrix %*% beta)
   se.theta <- sqrt(diag(C.matrix %*% Lplus %*% t(C.matrix)))
   names(theta) <- names(se.theta)
-  ##
-  ## Calculate estimates for all potential combinations of two
-  ## components (theta.2comps)
-  ##
-  n.beta <- length(beta)
-  C.2comps <- abs(createB(ncol = n.beta))
-  colnames(C.2comps) <- names(beta)
-  theta.2comps <- as.vector(C.2comps %*% beta)
-  se.theta.2comps <- sqrt(diag(C.2comps %*% Lplus %*% t(C.2comps)))
-  ##
-  nam.beta <- names(beta)
-  k <- 0
-  names.2comps <- vector(mode = "numeric", length = choose(n.beta, 2))
-  ##
-  for (i in 1:(n.beta - 1)) {
-    for (j in (i + 1):n.beta) {
-      k <- k + 1
-      names.2comps[k] <- paste(nam.beta[i], nam.beta[j], sep = sep.comps)
-    }
-  }
-  names(theta.2comps) <- names(se.theta.2comps) <- names.2comps
   ##
   ## delta = treatment estimates for observed comparisons
   ##
@@ -117,9 +96,6 @@ nma.additive <- function(TE, weights, studlab,
   ##
   combinations <- meta::ci(theta, se.theta, level = level.comb)
   ##
-  combinations.2comps <-
-    meta::ci(theta.2comps, se.theta.2comps, level = level.comb)
-  ##
   ## Test of total heterogeneity / inconsistency:
   ##
   Q.additive <- as.vector(t(delta - TE) %*% W %*% (delta - TE))
@@ -171,7 +147,6 @@ nma.additive <- function(TE, weights, studlab,
               all.comparisons = all.comparisons,
               components = components,
               combinations = combinations,
-              combinations.2comps = combinations.2comps,
               ##
               Q.additive = Q.additive,
               df.Q.additive = df.Q.additive,
@@ -182,7 +157,12 @@ nma.additive <- function(TE, weights, studlab,
               pval.Q.diff = pval.Q.diff,
               ##
               tau = tau,
-              I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2)
+              I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2,
+              ##
+              L.matrix = L,
+              Lplus.matrix = Lplus,
+              H.matrix = H
+              )
   
   
   res

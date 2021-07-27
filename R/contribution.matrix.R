@@ -43,7 +43,7 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
   ##
   initRowGraph <- function(x, comparison) {
     dedgeList <-
-      lapply(1:length(directs),
+      lapply(seq_len(length(directs)),
              function(comp) {
                if (x[comparison, comp] > 0)
                  return(c(sv(directs[comp]), tv(directs[comp])))
@@ -176,7 +176,7 @@ contribution.matrix.davies <- function(x, model) {
   H.full <- hatmatrix.aggr(x, model, type = "full")
   ## Total number of possible pairwise comparisons
   n.comps <- nrow(H.full)
-
+  
   
   ##
   ## Create prop contribution matrix (square matrix)
@@ -188,107 +188,97 @@ contribution.matrix.davies <- function(x, model) {
   ##
   ## Cycle through comparisons
   ##
+  n <- x$n
   r <- 0
-  for (t1 in 1:(x$n - 1)) {
-    for (t2 in (t1 + 1):x$n) {
-      r <- r + 1 
+  for (t1 in seq_len(n - 1)) {
+    for (t2 in (t1 + 1):n) {
+      r <- r + 1
+      ##
       ## For each row, t1 is the source and t2 is the sink
       ##
-      ## Teransition matrix
-      ##
-      ## Create a transition matrix from t1 (source) to t2 (sink)
+      ## Create a transition matrix (P, n x n) from t1 (source) to t2 (sink)
       ## using H.full
-      ##
-      ## Transition matrix (P) is n x n
       ##
       ## Create a dummy n x n matrix Q (this is a step in getting P)
       ##
-      ## Assign Q[i,j] equal to the element of H.full in row r and
+      ## Assign Q[i, j] equal to the element of H.full in row r and
       ## column representing comparison ij this defines only the upper
       ## half of the matrix Q
-      Q <- matrix(0, nrow = x$n, ncol = x$n)
+      ##
+      Q <- matrix(0, nrow = n, ncol = n)
       idx <- 0
-      for (i in 1:(x$n - 1)) {
-        for (j in (i + 1):x$n) {
+      for (i in seq_len(n - 1))
+        for (j in (i + 1):n) {
           idx <- idx + 1
           Q[i, j] <- H.full[r, idx]
         }
-      }
+      ##
       ## Now use H_ij = -H_ji to define the lower half of Q
-      for (i in 1:x$n) {
-        for (j in 1:x$n) {
-          if (i != j) {
+      ##
+      for (i in seq_len(n))
+        for (j in seq_len(n))
+          if (i != j)
             Q[j, i] <- -Q[i, j]
-          }
-        }
-      }
+      ##
       ## RW can only move in direction of flow therefore if H_ij < 0
       ## then set Q[i, j] = 0
-      for (i in 1:x$n) {
-        for (j in 1:x$n) {
-          if (i != j) {
-            if (Q[i, j] <= 0) {
-              Q[i, j] <- 0.0
-            }
-          }
-        }
-      }
-      
-      
+      ##
+      for (i in seq_len(n))
+        for (j in seq_len(n))
+          if (i != j & Q[i, j] <= 0)
+            Q[i, j] <- 0.0
       ##
       ## Create the transition matrix by normalising the values in
       ## each row of Q
       ##
       P <- ginv(diag(rowSums(Q))) %*% Q
-      P[t2, ] <- rep(0, x$n)
+      P[t2, ] <- rep(0, n)
       P[t2, t2] <- 1
       ##
       P[is.zero(P, n = 1000)] <- 0
-      
-      
       ##
       ## Find all possible paths
       ##
-      ## Define an igraph using P as an adjacency matrix the graph is
+      ## Define an igraph using P as adjacency matrix. The graph is
       ## directed (and acyclic) and weighted
       ##
       Pgraph <-
-        igraph::graph_from_adjacency_matrix(P,"directed",
+        igraph::graph_from_adjacency_matrix(P, "directed",
                                             weighted = TRUE, diag = FALSE)
-      ## Now find all possible paths from source to sink simple paths
-      ## means no vertex is visited more than once this is true for us
-      ## as the graph is acyclic
+      ##
+      ## Now find all possible paths from source to sink
+      ##
+      ## Simple paths means no vertex is visited more than once this
+      ## is true for us as the graph is acyclic
+      ##
       all.paths <- igraph::all_simple_paths(Pgraph, t1, t2, mode = "out")
       ##
       ## Calculate streams
       ##
-      ## Evidence flow through path = probability of a walker taking
-      ## that path vector containing the probability of taking each
-      ## path
-      prob.paths <- vector("numeric", length(all.paths))
-      prob.edge  <- vector("numeric", n.comps)
+      R <- matrix(0, nrow = n, ncol = n)
+      colnames(R) <- rownames(R) <- x$seq
       ##
-      for (i in 1:length(all.paths)) {
-        prob <- 1.0
-        for (j in 1:(length(all.paths[[i]]) - 1)) {
-          ## Prob of taking a path = product of transition
-          ## probabilities in each edge along the path
-          prob <- prob * P[all.paths[[i]][j], all.paths[[i]][j + 1]]
-        }
-        prob.paths[i] <- prob
+      for (p in seq_len(length(all.paths))) {
+        path.p <- all.paths[[p]]
+        L.p <- length(path.p) - 1
+        prob.p <- 1 / L.p
         ##
-        for (j in 1:(length(all.paths[[i]]) - 1)) {
-          ## find edge labels 
-          a <- min(c(all.paths[[i]][j], all.paths[[i]][j + 1]))
-          b <- max(c(all.paths[[i]][j], all.paths[[i]][j + 1]))
-          ## find index of edge probabilities
-          ind <- x$n * (a - 1) - (a * (a - 1) / 2) + (b - a)
-          path.length <- length(all.paths[[i]]) - 1
-          prob.edge[ind] <- prob.edge[ind] + prob.paths[i] / path.length
-        }
+        ## Prob of taking a path.p = product of transition
+        ## probabilities in each edge along the path
+        ##
+        for (i in seq_len(L.p))
+          prob.p <- prob.p * P[path.p[i], path.p[i + 1]]
+        ##
+        for (i in seq_len(L.p))
+          R[path.p[i], path.p[i + 1]] <-
+            R[path.p[i], path.p[i + 1]] + prob.p
+        ##
+        for (i in seq_len(n - 1))
+          for (j in (i + 1):n)
+            R[i, j] <- R[j, i] <- max(R[i, j], R[j, i])
       }
       ##
-      weights[r, ] <- prob.edge
+      weights[r, ] <- uppertri(R)
     }
   }
   

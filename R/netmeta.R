@@ -377,9 +377,10 @@
 #' \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
 #' \item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 #' \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
-#' \item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}
-#' \item{Lplus.matrix}{Moore-Penrose pseudoinverse of the Laplacian
-#'   matrix (\emph{n}x\emph{n}).}
+#' \item{L.matrix.fixed, L.matrix.random}{Laplacian matrix
+#'   (\emph{n}x\emph{n}).}
+#' \item{Lplus.matrix.fixed, Lplus.matrix.random}{Moore-Penrose
+#'   pseudoinverse of the Laplacian matrix (\emph{n}x\emph{n}).}
 #' \item{Q.matrix}{Matrix of heterogeneity statistics for pairwise
 #'   meta-analyses, where direct comparisons exist
 #'   (\emph{n}x\emph{n}).}
@@ -1502,8 +1503,12 @@ netmeta <- function(TE, seTE,
               A.matrix = res.f$A.matrix,
               X.matrix = res.f$B.matrix[o, ],
               B.matrix = res.f$B.matrix[o, ],
-              L.matrix = res.f$L.matrix,
-              Lplus.matrix = res.f$Lplus.matrix,
+              ##
+              L.matrix.fixed = res.f$L.matrix,
+              Lplus.matrix.fixed = res.f$Lplus.matrix,
+              L.matrix.random = res.r$L.matrix,
+              Lplus.matrix.random = res.r$Lplus.matrix,
+              ##
               Q.matrix = res.f$Q.matrix,
               ##
               G.matrix = res.f$G.matrix[o, o],

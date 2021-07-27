@@ -9,7 +9,6 @@
   object,
   comb.fixed = object$comb.fixed,
   comb.random = object$comb.random,
-  show.combs = "onlyobserved",
   ...
 )
 
@@ -19,7 +18,6 @@
   comb.random = x$comb.random,
   backtransf = x$backtransf,
   nchar.trts = x$nchar.trts,
-  show.combs = x$show.combs,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
@@ -44,10 +42,6 @@ fixed effects (common effects) model should be printed.}
 
 \item{comb.random}{A logical indicating whether results for the
 random effects model should be printed.}
-
-\item{show.combs}{A character string indicating which combinations
-to show in printouts. Either \code{"onlyobserved"} or
-\code{"obs.2comps"}, can be abbreviated.}
 
 \item{\dots}{Additional arguments.}
 
