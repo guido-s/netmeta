@@ -191,9 +191,7 @@ plot.rankogram <- function(x,
     treatnames <- names(x[[sucras]])
   ##
   if (!is.null(trts)) {
-    trts.c <- trts
-    for (i in seq_along(trts))
-      trts.c[i] <- setref(trts[i], treatnames, "trts")
+    trts.c <- setref(trts, treatnames, varname = "trts", length = 0)
     treatnames <- treatnames[treatnames %in% trts.c]
   }
   ##

@@ -316,19 +316,14 @@ forest.netmeta <- function(x,
     anyCol(rightcols, "SUCRA") || anyCol(leftcols, "SUCRA") ||
     any(matchVar(sortvar.c, "SUCRA")) || any(matchVar(sortvar.c, "-SUCRA"))
   ##
-  if (one.rg) {
-    if (reference.group == "") {
-      warning("First treatment used as reference as argument ",
-              "'reference.group' is unspecified.",
-              call. = FALSE)
-      reference.group <- trts[1]
-    }
-    else
-      reference.group <- setref(reference.group, trts)
+  if (one.rg && reference.group == "") {
+    warning("First treatment used as reference as argument ",
+            "'reference.group' is unspecified.",
+            call. = FALSE)
+    reference.group <- trts[1]
   }
-  else
-    for (i in seq_along(reference.group))
-      reference.group[i] <- setref(reference.group[i], trts)
+  ##
+  reference.group <- setref(reference.group, trts, length = 0)
   ##
   if (pooled == "fixed") {
     TE   <- x$TE.fixed

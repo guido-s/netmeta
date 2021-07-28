@@ -24,7 +24,7 @@
 #' @param subset An optional vector specifying a subset of studies to
 #'   be used.
 #' @param inactive A character string defining the inactive treatment
-#'   (see Details).
+#'   component (see Details).
 #' @param sep.comps A single character to define separator between
 #'   treatment components.
 #' @param C.matrix C matrix (see Details).
@@ -688,6 +688,7 @@ discomb <- function(TE, seTE,
   ##
   if (missing(C.matrix)) {
     C.matrix <- createC(netc, sep.comps, inactive)
+    inactive <- attr(C.matrix, "inactive")
     C.matrix <- C.matrix[labels, , drop = FALSE]
   }
   else {
@@ -700,10 +701,16 @@ discomb <- function(TE, seTE,
     if (is.null(rownames(C.matrix)))
       wrong.labels <- TRUE
     else {
-      if (length(unique(labels)) == length(unique(tolower(labels)))) 
+      if (length(unique(labels)) ==
+          length(unique(tolower(labels))) &&
+          length(unique(rownames(C.matrix))) ==
+          length(unique(tolower(rownames(C.matrix))))
+          )
         idx <- charmatch(tolower(rownames(C.matrix)), 
                          tolower(labels), nomatch = NA)
-      else idx <- charmatch(rownames(C.matrix), labels, nomatch = NA)
+      else
+        idx <- charmatch(rownames(C.matrix), labels, nomatch = NA)
+      ##
       if (any(is.na(idx)) || any(idx == 0)) 
         wrong.labels <- TRUE
     }

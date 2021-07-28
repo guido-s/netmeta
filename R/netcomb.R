@@ -10,7 +10,7 @@
 #' 
 #' @param x An object of class \code{netmeta}.
 #' @param inactive A character string defining the inactive treatment
-#'   (see Details).
+#'   component (see Details).
 #' @param sep.comps A single character to define separator between
 #'   treatment components.
 #' @param C.matrix C matrix (see Details).
@@ -380,8 +380,9 @@ netcomb <- function(x,
     ##
     ## Create C-matrix from netmeta object
     ##
-    C.matrix <- as.matrix(createC(x, sep.comps, inactive))
-    C.matrix <- C.matrix[trts, , drop = FALSE]
+    C.matrix <- createC(x, sep.comps, inactive)
+    inactive <- attr(C.matrix, "inactive")
+    C.matrix <- as.matrix(C.matrix)[trts, , drop = FALSE]
   }
   else {
     ##
@@ -403,7 +404,11 @@ netcomb <- function(x,
     if (is.null(rownames(C.matrix)))
       wrong.labels <- TRUE
     else {
-      if (length(unique(trts)) == length(unique(tolower(trts))))
+      if (length(unique(trts)) ==
+          length(unique(tolower(trts))) &&
+          length(unique(rownames(C.matrix))) ==
+          length(unique(tolower(rownames(C.matrix))))
+          )
         idx <- charmatch(tolower(rownames(C.matrix)),
                          tolower(trts), nomatch = NA)
       else

@@ -24,6 +24,11 @@
   - do not print empty row above descriptions if arguments
     'label.left' or 'label.right' is used
 
+* netcomb(), discomb():
+  - value provided for argument 'inactive' must be a single treatment
+    component not a combination of treatment components (check was
+    missing)
+
 ### User-visible changes
 
 * New functions hatmatrix() and print.hatmatrix() to derive hat
@@ -108,6 +113,9 @@
 	
 * compsplit():
   - remove leading and trailing blanks
+	
+* setref():
+  - argument 'reference.group' can be a vector instead of a single value
 
 * nma.additive():
   - new list elements 'L.matrix', 'Lplus.matrix' and 'H.matrix'

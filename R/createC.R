@@ -14,17 +14,29 @@ createC <- function(x,
     else
       trts <- x$trts
     ##
+    trts.all <- trts
+    ##
+    ## Set of all components
+    ##
+    components <- unique(sort(unlist(compsplit(trts, sep.comps))))
+    ##
     ## Inactive treatment must be empty or one of the treatments
     ##
     inactive.given <- !is.null(inactive)
     ##
     if (inactive.given) {
-      inactive <- meta:::setchar(inactive, trts)
+      inactive <- meta:::setchar(inactive, components)
       ##
       trts <- trts[trts != inactive]
+      ##
       if (length(trts) == 0)
-        stop("All treatments equal to reference treatment (argument 'inactive')",
+        stop("All treatments equal to reference treatment ",
+             "(argument 'inactive')",
              call. = FALSE)
+      ##
+      ## Remove inactive treatment from list of components
+      ##
+      components <- components[components != inactive]
     }
     
     
@@ -37,17 +49,6 @@ createC <- function(x,
     ##
     components.list <- lapply(components.list, meta:::rmSpace)
     components.list <- lapply(components.list, meta:::rmSpace, end = TRUE)
-    
-    
-    ##
-    ## Determine treatment components of interest
-    ##
-    components <- unique(sort(unlist(components.list)))
-    ##
-    ## Remove inactive treatment from list of components
-    ##
-    if (inactive.given)
-      components <- components[components != inactive]
     
     
     ##
@@ -70,7 +71,7 @@ createC <- function(x,
     ##
     ## Add row for reference group (and convert to matrix with numeric values)
     ##
-    if (inactive.given)
+    if (inactive.given && inactive %in% trts.all)
       C <- rbind(C, rep(0, length(components)))
     else
       C <- 1L * C
@@ -80,7 +81,7 @@ createC <- function(x,
     C <- data.frame(C)
     names(C) <- components
     ##
-    if (inactive.given)
+    if (inactive.given && inactive %in% trts.all)
       rownames(C) <- c(trts, inactive)
     else
       rownames(C) <- trts
@@ -91,6 +92,8 @@ createC <- function(x,
            call. = TRUE)
     ##
     meta:::chknumeric(ncomb, min = 1, max = min(ncol, 5), length = 1)
+    ##
+    inactive <- NULL
     ##
     nrow <- choose(ncol, ncomb)
     C <- matrix(0, nrow = nrow, ncol = ncol)
@@ -147,5 +150,7 @@ createC <- function(x,
   }
   
   
+  attr(C, "inactive") <- inactive
+  ##
   C
 }

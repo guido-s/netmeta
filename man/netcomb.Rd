@@ -19,7 +19,7 @@ netcomb(
 \item{x}{An object of class \code{netmeta}.}
 
 \item{inactive}{A character string defining the inactive treatment
-(see Details).}
+component (see Details).}
 
 \item{sep.comps}{A single character to define separator between
 treatment components.}
