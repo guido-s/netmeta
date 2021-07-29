@@ -2,14 +2,14 @@
 % Please edit documentation in R/print.netcomb.R
 \name{print.netcomb}
 \alias{print.netcomb}
-\title{Print objects of class netcomb}
+\title{Print method for component network meta-analysis}
 \usage{
 \method{print}{netcomb}(
   x,
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
   backtransf = x$backtransf,
-  nchar.trts = x$nchar.trts,
+  nchar.comps = x$nchar.comps,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
@@ -17,6 +17,7 @@
   digits.Q = gs("digits.Q"),
   scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
+  nchar.trts = nchar.comps,
   ...
 )
 }
@@ -34,8 +35,8 @@ back transformed in printouts and forest plots. If
 \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
 as odds ratios rather than log odds ratios, for example.}
 
-\item{nchar.trts}{A numeric defining the minimum number of
-characters used to create unique treatment names (see Details).}
+\item{nchar.comps}{A numeric defining the minimum number of
+characters used to create unique component names.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
@@ -58,10 +59,13 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 
 \item{big.mark}{A character used as thousands separator.}
 
+\item{nchar.trts}{Deprecated argument (replaced by
+\code{nchar.comps}).}
+
 \item{\dots}{Additional arguments.}
 }
 \description{
-Print method for objects of class \code{netcomb}.
+Print method for component network meta-analysis.
 }
 \examples{
 data(Linde2016)

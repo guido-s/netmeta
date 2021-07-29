@@ -332,24 +332,26 @@ print.hatmatrix <- function(x,
   ##
   ## Add legend
   ##
-  if (legend & (anycomp.r | anycomp.c)) {
-    if (any(trts != trts.abbr)) {
+  if (legend && (anycomp.r | anycomp.c)) {
+    diff.trts <- trts != trts.abbr
+    if (any(diff.trts)) {
       tmat <- data.frame(trts.abbr, trts)
       names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[diff.trts, ]
       tmat <- tmat[order(tmat$Abbreviation), ]
       ##
       cat("\nLegend:\n")
       prmatrix(tmat, quote = FALSE, right = TRUE,
                rowlab = rep("", length(trts.abbr)))
       ##
-      if (legend.studlab & (anystudy.r | anystudy.c))
+      if (legend.studlab && (anystudy.r | anystudy.c))
         cat("\n")
     }
     else
       legend <- FALSE
   }
   ##
-  if (legend.studlab & (anystudy.r | anystudy.c)) {
+  if (legend.studlab && (anystudy.r | anystudy.c)) {
     if (anystudy.r) {
       if (comb.fixed) {
         studlab <- rownames(x$fixed)
@@ -372,12 +374,14 @@ print.hatmatrix <- function(x,
       }
     }
     ##
-    if (any(studlab != studlab.abbr)) {
+    diff.studlab <- studlab != studlab.abbr
+    if (any(diff.studlab)) {
       tmat <- data.frame(studlab.abbr, studlab)
       names(tmat) <- c("Abbreviation", "Study label")
+      tmat <- tmat[diff.studlab, ]
       tmat <- tmat[order(tmat$Abbreviation), ]
       ##
-      if (!(legend & (anycomp.r | anycomp.c)))
+      if (!(legend && (anycomp.r | anycomp.c)))
         cat("\nLegend:\n")
       prmatrix(unique(tmat), quote = FALSE, right = TRUE,
                rowlab = rep("", nrow(unique(tmat))))

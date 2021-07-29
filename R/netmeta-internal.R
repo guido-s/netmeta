@@ -63,14 +63,22 @@ calcV <- function(x, sm) {
 }
 
 
+
+
+
 ##
 ## Abbreviated component labels
 ##
-comp2abbr <- function(x, lev, abbr, split) {
+compos <- function(x, lev, abbr, split, add) {
   x.list <- compsplit(x, split = split)
+  if (!missing(add))
+    add <- ifelse(add, " ", "")
+  else
+    add <- ifelse(attr(x.list, "withspace"), " ", "")
+  ##
   x.list <- lapply(x.list, factor, levels = lev, labels = abbr)
   x.list <- lapply(x.list, as.character)
-  x.list <- lapply(x.list, paste, collapse = split)
-  
+  x.list <- lapply(x.list, paste, collapse = paste0(add, split, add))
+  ##
   unlist(x.list)
 }

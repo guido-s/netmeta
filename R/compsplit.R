@@ -4,11 +4,17 @@ compsplit <- function(x, split) {
     split <- paste("\\", split, sep = "")
 
   res <- strsplit(x, split)
-  
-  if (is.list(res))
+
+  if (is.list(res)) {
+    withspace <- any(unlist(lapply(res, grepl, pattern = "^\\s+|\\s+$")))
     res <- lapply(res, gsub, pattern = "^\\s+|\\s+$", replacement = "")
-  else
+  }
+  else {
+    withspace <- any(grepl("^\\s+|\\s+$", "", res))
     res <- gsub("^\\s+|\\s+$", "", res)
+  }
+  ##
+  attr(res, "withspace") <- withspace
   
   res
 }

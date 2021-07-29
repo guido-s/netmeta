@@ -30,10 +30,11 @@ discomb(
   details.chkmultiarm = FALSE,
   details.chkident = FALSE,
   sep.trts = ":",
-  nchar.trts = 666,
+  nchar.comps = 666,
   backtransf = gs("backtransf"),
   title = "",
-  warn = TRUE
+  warn = TRUE,
+  nchar.trts = nchar.comps
 )
 }
 \arguments{
@@ -113,8 +114,9 @@ unidentifiable components should be printed.}
 \item{sep.trts}{A character used in comparison names as separator
 between treatment labels.}
 
-\item{nchar.trts}{A numeric defining the minimum number of
-characters used to create unique treatment names (see Details).}
+\item{nchar.comps}{A numeric defining the minimum number of
+characters used to create unique names for components (see
+Details).}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
@@ -127,6 +129,9 @@ example.}
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded from meta-analysis due to zero
 standard errors).}
+
+\item{nchar.trts}{Deprecated argument (replaced by
+\code{nchar.comps}).}
 }
 \value{
 An object of classes \code{discomb} and \code{netcomb} with
@@ -247,8 +252,8 @@ components:
 \item{comb.fixed, comb.random, tau.preset}{As defined above.}
 \item{sep.trts}{A character used in comparison names as separator
   between treatment labels.}
-\item{nchar.trts}{A numeric defining the minimum number of
-  characters used to create unique treatment and component names.}
+\item{nchar.comps}{A numeric defining the minimum number of
+  characters used to create unique component names.}
 \item{inactive, sep.comps}{As defined above.}
 \item{backtransf}{A logical indicating whether results should be
   back transformed in printouts and forest plots.}
@@ -319,6 +324,14 @@ Argument \code{sep.comps} can be used to specify the separator
 between individual components. By default, the matrix \strong{C} is
 calculated internally from treatment names. However, it is possible
 to specify a different matrix using argument \code{C.matrix}.
+
+By default, component names are not abbreviated in
+printouts. However, in order to get more concise printouts,
+argument \code{nchar.comps} can be used to define the minimum
+number of characters for abbreviated component names (see
+\code{\link{abbreviate}}, argument \code{minlength}). R function
+\code{\link{treats}} is utilised internally to create abbreviated
+component names.
 }
 \examples{
 # Artificial dataset

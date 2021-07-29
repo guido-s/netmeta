@@ -16,6 +16,9 @@
 * I2 from pairwise comparisons shown in forest plot with direct and
   indirect evidence
 
+* In component network meta-analysis, individual component names
+  instead of full treatment names can be abbreviated for complex
+  interventions with more than one component
 
 ### Bug fixes
 
@@ -90,6 +93,12 @@
 * summary.netcomb(), print.summary.netcomb(), print.netcomb():
   - new argument 'show.combs'
 
+* netcomb():
+  - new argument 'nchar.comps' to abbreviate component names
+
+* discomb(), print.netcomb(), print.summary.netcomb():
+  - new argument 'nchar.comps' replaces argument 'nchar.trts'
+
 * New auxiliary function comps() to create unique comparison labels
   with abbreviated treatment names
 
@@ -126,7 +135,12 @@
 * Internal function contribution.matrix() moved to
   contribution.matrix.tpapak()
 
-* New internal functions contribution.matrix.davies() and comp2abbr()
+* New internal functions contribution.matrix.davies()
+
+* New internal function compos() to abbreviate component names
+
+* New internal function createC.full() to create full C matrix for all
+  k-fold combinations of n components
   
 * New wrapper function contribution.matrix()
 

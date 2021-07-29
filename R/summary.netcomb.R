@@ -15,8 +15,8 @@
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
 #'   presented as odds ratios rather than log odds ratios, for
 #'   example.
-#' @param nchar.trts A numeric defining the minimum number of
-#'   characters used to create unique treatment names (see Details).
+#' @param nchar.comps A numeric defining the minimum number of
+#'   characters used to create unique names for components.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param digits.stat Minimal number of significant digits for z- or
@@ -45,6 +45,8 @@
 #'   I\eqn{^2}.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
+#' @param nchar.trts Deprecated argument (replaced by
+#'   \code{nchar.comps}).
 #' @param \dots Additional arguments.
 #'
 #' @return
@@ -301,8 +303,8 @@ summary.netcomb <- function(object,
               ##
               tau.preset = object$tau.preset,
               ##
-              sep.trts = object$sep.trts,
-              nchar.trts = object$nchar.trts,
+              sep.comps = object$sep.comps,
+              nchar.comps = meta:::replaceNULL(object$nchar.comps, 666),
               ##
               inactive = object$inactive,
               sep.comps = object$sep.comps,
@@ -335,7 +337,7 @@ print.summary.netcomb <- function(x,
                                   comb.fixed = x$comb.fixed,
                                   comb.random = x$comb.random,
                                   backtransf = x$backtransf,
-                                  nchar.trts = x$nchar.trts,
+                                  nchar.comps = x$nchar.comps,
                                   ##
                                   digits = gs("digits"),
                                   digits.stat = gs("digits.stat"),
@@ -353,6 +355,7 @@ print.summary.netcomb <- function(x,
                                   text.I2 = gs("text.I2"),
                                   ##
                                   legend = TRUE,
+                                  nchar.trts = nchar.comps,
                                   ...) {
   
   
@@ -373,7 +376,7 @@ print.summary.netcomb <- function(x,
   chklogical(comb.fixed)
   chklogical(comb.random)
   chklogical(backtransf)
-  chknumeric(nchar.trts, min = 1, length = 1)
+  chknumeric(nchar.comps, min = 1, length = 1)
   ##
   chknumeric(digits, min = 0, length = 1)
   chknumeric(digits.stat, min = 0, length = 1)
@@ -391,6 +394,19 @@ print.summary.netcomb <- function(x,
   chkchar(text.I2)
   ##
   chklogical(legend)
+  ##
+  ## Check for deprecated argument 'nchar.trts'
+  ##
+  if (!missing(nchar.trts))
+    if (!missing(nchar.comps))
+      warning("Deprecated argument 'nchar.trts' ignored as ",
+              "argument 'nchar.comps' is also provided.")
+    else {
+      warning("Deprecated argument 'nchar.trts' has been replaced by ",
+              "argument 'nchar.comps'.")
+      nchar.comps <- nchar.trts
+      chknumeric(nchar.comps, min = 1, length = 1)
+    }
   
   
   I2 <- round(100 * x$I2, digits.I2)
@@ -412,20 +428,19 @@ print.summary.netcomb <- function(x,
   }
   
   
-  trts <- x$trts
-  trts.abbr <- treats(trts, nchar.trts)
-  ##
-  comps <- x$comps
-  comps.abbr <- treats(comps, nchar.trts)
+  comps <- sort(c(x$comps, x$inactive))
+  comps.abbr <- treats(comps, nchar.comps)
   
   
   dat1.f <- formatCC(x$combinations.fixed,
-                     backtransf, x$sm, x$level, trts.abbr,
+                     backtransf, x$sm, x$level,
+                     comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
                      scientific.pval, big.mark, x$seq)
   ##
   dat1.r <- formatCC(x$combinations.random,
-                     backtransf, x$sm, x$level, trts.abbr,
+                     backtransf, x$sm, x$level,
+                     comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
                      scientific.pval, big.mark, x$seq)
   ##
@@ -443,12 +458,14 @@ print.summary.netcomb <- function(x,
   
   
   dat2.f <- formatCC(x$components.fixed,
-                     backtransf, x$sm, x$level, comps.abbr,
+                     backtransf, x$sm, x$level,
+                     comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
                      scientific.pval, big.mark)
   ##
   dat2.r <- formatCC(x$components.random,
-                     backtransf, x$sm, x$level, comps.abbr,
+                     backtransf, x$sm, x$level,
+                     comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
                      scientific.pval, big.mark)
   ##
@@ -506,34 +523,14 @@ print.summary.netcomb <- function(x,
   
   
   if (legend && (comb.fixed | comb.random)) {
-    diff.trts <- trts != trts.abbr
-    any.trts <- any(diff.trts)
     diff.comps <- comps != comps.abbr
-    any.comps <- any(diff.comps)
-    ##
-    if (any.trts | any.comps)
-      cat("\nLegend", if (any.trts & any.comps) "s", ":", sep = "")
-    ##
-    if (any.trts) {
-      ##
-      tmat <- data.frame(trts.abbr, trts)
-      tmat <- tmat[diff.trts, ]
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      cat("\n")
-      prmatrix(tmat, quote = FALSE, right = TRUE,
-               rowlab = rep("", length(trts.abbr))) 
-    }
-    ##
-    if (any.comps) {
-      ##
+    if (any(diff.comps)) {
       tmat <- data.frame(comps.abbr, comps)
       tmat <- tmat[diff.comps, ]
       names(tmat) <- c("Abbreviation", " Component name")
       tmat <- tmat[order(tmat$Abbreviation), ]
       ##
-      cat("\n")
+      cat("\nLegend:\n")
       prmatrix(tmat, quote = FALSE, right = TRUE,
                rowlab = rep("", length(comps.abbr))) 
     }

@@ -1282,11 +1282,13 @@ print.netsplit <- function(x,
     }
     ##
     trts.abbr <- treats(trts, nchar.trts)
-    if (any(trts != trts.abbr)) {
+    diff.trts <- trts != trts.abbr
+    if (any(diff.trts)) {
       cat("\n")
       ##
       tmat <- data.frame(trts.abbr, trts)
       names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[diff.trts, ]
       tmat <- tmat[order(tmat$Abbreviation), ]
       ##
       prmatrix(tmat, quote = FALSE, right = TRUE,

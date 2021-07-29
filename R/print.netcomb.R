@@ -1,7 +1,7 @@
-#' Print objects of class netcomb
+#' Print method for component network meta-analysis
 #' 
 #' @description
-#' Print method for objects of class \code{netcomb}.
+#' Print method for component network meta-analysis.
 #' 
 #' @param x An object of class \code{netcomb}
 #' @param comb.fixed A logical indicating whether results for the
@@ -12,8 +12,8 @@
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
 #'   as odds ratios rather than log odds ratios, for example.
-#' @param nchar.trts A numeric defining the minimum number of
-#'   characters used to create unique treatment names (see Details).
+#' @param nchar.comps A numeric defining the minimum number of
+#'   characters used to create unique component names.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param digits.stat Minimal number of significant digits for z- or
@@ -28,6 +28,8 @@
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
 #' @param big.mark A character used as thousands separator.
+#' @param nchar.trts Deprecated argument (replaced by
+#'   \code{nchar.comps}).
 #' @param \dots Additional arguments.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
@@ -65,7 +67,7 @@ print.netcomb <- function(x,
                           comb.fixed = x$comb.fixed,
                           comb.random = x$comb.random,
                           backtransf = x$backtransf,
-                          nchar.trts = x$nchar.trts,
+                          nchar.comps = x$nchar.comps,
                           ##
                           digits = gs("digits"),
                           digits.stat = gs("digits.stat"),
@@ -74,6 +76,7 @@ print.netcomb <- function(x,
                           digits.Q = gs("digits.Q"),
                           scientific.pval = gs("scientific.pval"),
                           big.mark = gs("big.mark"),
+                          nchar.trts = nchar.comps,
                           ...) {
   
   
@@ -85,7 +88,9 @@ print.netcomb <- function(x,
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
   meta:::chklogical(backtransf)
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  ##
+  nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
+  meta:::chknumeric(nchar.comps, min = 1, length = 1)
   ##
   meta:::chknumeric(digits, min = 0, length = 1)
   meta:::chknumeric(digits.stat, min = 0, length = 1)
@@ -94,10 +99,23 @@ print.netcomb <- function(x,
   meta:::chknumeric(digits.Q, min = 0, length = 1)
   ##
   meta:::chklogical(scientific.pval)
+  ##
+  ## Check for deprecated argument 'nchar.trts'
+  ##
+  if (!missing(nchar.trts))
+    if (!missing(nchar.comps))
+      warning("Deprecated argument 'nchar.trts' ignored as ",
+              "argument 'nchar.comps' is also provided.")
+    else {
+      warning("Deprecated argument 'nchar.trts' has been replaced by ",
+              "argument 'nchar.comps'.")
+      nchar.comps <- nchar.trts
+      meta:::chknumeric(nchar.comps, min = 1, length = 1)
+    }
   
   
-  trts <- x$trts
-  trts.abbr <- treats(trts, nchar.trts)
+  comps <- sort(c(x$comps, x$inactive))
+  comps.abbr <- treats(comps, nchar.comps)
   ##
   cnma.f <- data.frame(studlab = x$studlab,
                        treat1 = x$treat1,
@@ -111,7 +129,7 @@ print.netcomb <- function(x,
   ##
   dat.f <- formatComp(cnma.f,
                       backtransf, x$sm, x$level.comb,
-                      trts, trts.abbr,
+                      comps, comps.abbr, x$sep.comps,
                       digits, digits.stat, digits.pval.Q,
                       scientific.pval, big.mark)
   ##
@@ -127,7 +145,7 @@ print.netcomb <- function(x,
   ##
   dat.r <- formatComp(cnma.r,
                       backtransf, x$sm, x$level.comb,
-                      trts, trts.abbr,
+                      comps, comps.abbr, x$sep.comps,
                       digits, digits.stat, digits.pval.Q,
                       scientific.pval, big.mark)
   ##
@@ -149,7 +167,7 @@ print.netcomb <- function(x,
           comb.fixed = comb.fixed,
           comb.random = comb.random,
           backtransf = backtransf,
-          nchar.trts = nchar.trts,
+          nchar.comps = nchar.comps,
           ##
           digits = digits,
           digits.stat = digits.stat,

@@ -1,6 +1,6 @@
 formatComp <- function(x,
                        backtransf, sm, level,
-                       trts, trts.abbr,
+                       comps, comps.abbr, sep.comps,
                        digits, digits.stat, digits.pval.Q,
                        scientific.pval, big.mark) {
   
@@ -28,10 +28,8 @@ formatComp <- function(x,
     res$upper <- exp(res$upper)
   }
   ##
-  res$treat1 <- as.character(factor(res$treat1,
-                                    levels = trts, labels = trts.abbr))
-  res$treat2 <- as.character(factor(res$treat2,
-                                    levels = trts, labels = trts.abbr))
+  res$treat1 <- compos(res$treat1, comps, comps.abbr, sep.comps)
+  res$treat2 <- compos(res$treat2, comps, comps.abbr, sep.comps)
   ##
   res$TE <- formatN(res$TE, digits, "NA", big.mark)
   res$lower <- meta:::formatCI(formatN(round(res$lower, digits),

@@ -1,5 +1,6 @@
 formatCC <- function(x,
-                     backtransf, sm, level, abbr,
+                     backtransf, sm, level,
+                     comps, comps.abbr, sep.comps,
                      digits, digits.stat, digits.pval.Q,
                      scientific.pval, big.mark, seq = NULL) {
   
@@ -20,19 +21,17 @@ formatCC <- function(x,
   ## First column contains row names
   ##
   res <- x
-  rnam <- rownames(res)
   ##
   if (!is.null(seq))
     res <- res[seq, ]
+  ##
+  rownames(res) <- compos(rownames(res), comps, comps.abbr, sep.comps)
   ##
   if (backtransf & relative) {
     res$TE <- exp(res$TE)
     res$lower <- exp(res$lower)
     res$upper <- exp(res$upper)
   }
-  ##
-  rownames(res) <- as.character(factor(rownames(res),
-                                       levels = rnam, labels = abbr))
   ##
   res$TE <- formatN(res$TE, digits, "NA", big.mark)
   res$lower <- meta:::formatCI(formatN(round(res$lower, digits),

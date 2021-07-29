@@ -258,9 +258,11 @@ print.netcontrib <- function(x,
   ## Add legend
   ##
   if (legend & (comb.fixed | comb.random)) {
-    if (any(trts != trts.abbr)) {
+    diff.trts <- trts != trts.abbr
+    if (any(diff.trts)) {
       tmat <- data.frame(trts, trts.abbr)
       names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[diff.trts, ]
       tmat <- tmat[order(tmat$Abbreviation), ]
       ##
       cat("\nLegend:\n")

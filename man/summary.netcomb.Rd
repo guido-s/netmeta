@@ -17,7 +17,7 @@
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
   backtransf = x$backtransf,
-  nchar.trts = x$nchar.trts,
+  nchar.comps = x$nchar.comps,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
@@ -32,6 +32,7 @@
   text.tau = gs("text.tau"),
   text.I2 = gs("text.I2"),
   legend = TRUE,
+  nchar.trts = nchar.comps,
   ...
 )
 }
@@ -55,8 +56,8 @@ back transformed in printouts and forest plots. If
 presented as odds ratios rather than log odds ratios, for
 example.}
 
-\item{nchar.trts}{A numeric defining the minimum number of
-characters used to create unique treatment names (see Details).}
+\item{nchar.comps}{A numeric defining the minimum number of
+characters used to create unique names for components.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
@@ -99,6 +100,9 @@ I\eqn{^2}.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}
+
+\item{nchar.trts}{Deprecated argument (replaced by
+\code{nchar.comps}).}
 }
 \value{
 A list is returned with the same elements as a

@@ -91,66 +91,35 @@ createC <- function(x,
       stop("Either argument 'x' or 'ncol' must be provided.",
            call. = TRUE)
     ##
-    meta:::chknumeric(ncomb, min = 1, max = min(ncol, 5), length = 1)
+    meta:::chknumeric(ncomb, min = 1, max = ncol, length = 1)
     ##
     inactive <- NULL
     ##
-    nrow <- choose(ncol, ncomb)
-    C <- matrix(0, nrow = nrow, ncol = ncol)
-    ##
-    i <- 0
-    ##
-    if (ncomb == 1)
-      diag(C) <- 1
-    else if (ncomb == 2) {
-      for (pos1.i in 1:(ncol - 1)) {
-        for (pos2.i in (pos1.i + 1):ncol) {
-          i <- i + 1
-          C[i, pos1.i] <- C[i, pos2.i] <- 1
-        }
-      }
-    }
-    else if (ncomb == 3) {
-      for (pos1.i in 1:(ncol - 2)) {
-        for (pos2.i in (pos1.i + 1):(ncol - 1)) {
-          for (pos3.i in (pos2.i + 1):ncol) {
-            i <- i + 1
-            C[i, pos1.i] <- C[i, pos2.i] <- C[i, pos3.i] <- 1
-          }
-        }
-      }
-    }
-    else if (ncomb == 4) {
-      for (pos1.i in 1:(ncol - 3)) {
-        for (pos2.i in (pos1.i + 1):(ncol - 2)) {
-          for (pos3.i in (pos2.i + 1):(ncol - 1)) {
-            for (pos4.i in (pos3.i + 1):ncol) {
-              i <- i + 1
-              C[i, pos1.i] <- C[i, pos2.i] <- C[i, pos3.i] <- C[i, pos4.i] <- 1
-            }
-          }
-        }
-      }
-    }
-    else if (ncomb == 5) {
-      for (pos1.i in 1:(ncol - 4)) {
-        for (pos2.i in (pos1.i + 1):(ncol - 3)) {
-          for (pos3.i in (pos2.i + 1):(ncol - 2)) {
-            for (pos4.i in (pos3.i + 1):(ncol - 1)) {
-              for (pos5.i in (pos4.i + 1):ncol) {
-              i <- i + 1
-              C[i, pos1.i] <- C[i, pos2.i] <- C[i, pos3.i] <-
-                C[i, pos4.i] <- C[i, pos5.i] <- 1
-              }
-            }
-          }
-        }
-      }
-    }
+    C <- createC.full(ncol, ncomb)
   }
   
   
   attr(C, "inactive") <- inactive
   ##
   C
+}
+
+
+
+
+
+createC.full <- function(n, k) {
+  if (k > n)
+    stop("Error: k may not exceed n")
+  else if (k == 0)
+    res <- as.matrix(t(rep(0, n)))
+  else if (k == n)
+    res <- as.matrix(t(rep(1, n)))
+  else
+    res <- rbind(cbind(createC.full(n - 1, k - 1),
+                       rep(1, choose(n - 1, k - 1))),
+                 cbind(createC.full(n - 1, k),
+                       rep(0, choose(n - 1, k))))
+  ##
+  res
 }

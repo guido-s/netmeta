@@ -22,6 +22,9 @@
 #'   between-study variance \eqn{\tau^2}.
 #' @param details.chkident A logical indicating whether details on
 #'   unidentifiable components should be printed.
+#' @param nchar.comps A numeric defining the minimum number of
+#'   characters used to create unique names for components (see
+#'   Details).
 #' 
 #' @details
 #' Treatments in network meta-analysis (NMA) can be complex
@@ -70,6 +73,14 @@
 #' between individual components. By default, the matrix \strong{C} is
 #' calculated internally from treatment names. However, it is possible
 #' to specify a different matrix using argument \code{C.matrix}.
+#' 
+#' By default, component names are not abbreviated in
+#' printouts. However, in order to get more concise printouts,
+#' argument \code{nchar.comps} can be used to define the minimum
+#' number of characters for abbreviated component names (see
+#' \code{\link{abbreviate}}, argument \code{minlength}). R function
+#' \code{\link{treats}} is utilised internally to create abbreviated
+#' component names.
 #'
 #' @return
 #' An object of class \code{netcomb} with corresponding \code{print},
@@ -222,8 +233,8 @@
 #' \item{comb.fixed, comb.random, tau.preset}{As defined above.}
 #' \item{sep.trts}{A character used in comparison names as separator
 #'   between treatment labels.}
-#' \item{nchar.trts}{A numeric defining the minimum number of
-#'   characters used to create unique treatment and component names.}
+#' \item{nchar.comps}{A numeric defining the minimum number of
+#'   characters used to create unique component names.}
 #' \item{inactive, sep.comps}{As defined above.}
 #' \item{backtransf}{A logical indicating whether results should be
 #'   back transformed in printouts and forest plots.}
@@ -329,7 +340,8 @@ netcomb <- function(x,
                     comb.fixed = x$comb.fixed,
                     comb.random = x$comb.random | !is.null(tau.preset),
                     tau.preset = NULL,
-                    details.chkident = FALSE) {
+                    details.chkident = FALSE,
+                    nchar.comps = x$nchar.trts) {
   
   
   ##
@@ -350,6 +362,7 @@ netcomb <- function(x,
     meta:::chknumeric(tau.preset, min = 0, length = 1)
   ##
   meta:::chklogical(details.chkident)
+  meta:::chknumeric(nchar.comps, min = 1, length = 1)
   
   
   ##
@@ -703,10 +716,10 @@ netcomb <- function(x,
               details.chkmultiarm = x$details.chkmultiarm,
               ##
               sep.trts = x$sep.trts,
-              nchar.trts = x$nchar.trts,
+              sep.comps = sep.comps,
+              nchar.comps = nchar.comps,
               ##
               inactive = inactive,
-              sep.comps = sep.comps,
               ##
               backtransf = x$backtransf,
               ##

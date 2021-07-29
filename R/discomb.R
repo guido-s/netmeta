@@ -67,12 +67,15 @@
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
 #'   presented as odds ratios rather than log odds ratios, for
 #'   example.
-#' @param nchar.trts A numeric defining the minimum number of
-#'   characters used to create unique treatment names (see Details).
+#' @param nchar.comps A numeric defining the minimum number of
+#'   characters used to create unique names for components (see
+#'   Details).
 #' @param title Title of meta-analysis / systematic review.
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
 #'   standard errors).
+#' @param nchar.trts Deprecated argument (replaced by
+#'   \code{nchar.comps}).
 #' 
 #' @details
 #' Treatments in network meta-analysis (NMA) can be complex
@@ -126,6 +129,14 @@
 #' between individual components. By default, the matrix \strong{C} is
 #' calculated internally from treatment names. However, it is possible
 #' to specify a different matrix using argument \code{C.matrix}.
+#' 
+#' By default, component names are not abbreviated in
+#' printouts. However, in order to get more concise printouts,
+#' argument \code{nchar.comps} can be used to define the minimum
+#' number of characters for abbreviated component names (see
+#' \code{\link{abbreviate}}, argument \code{minlength}). R function
+#' \code{\link{treats}} is utilised internally to create abbreviated
+#' component names.
 #' 
 #' @return
 #' An object of classes \code{discomb} and \code{netcomb} with
@@ -246,8 +257,8 @@
 #' \item{comb.fixed, comb.random, tau.preset}{As defined above.}
 #' \item{sep.trts}{A character used in comparison names as separator
 #'   between treatment labels.}
-#' \item{nchar.trts}{A numeric defining the minimum number of
-#'   characters used to create unique treatment and component names.}
+#' \item{nchar.comps}{A numeric defining the minimum number of
+#'   characters used to create unique component names.}
 #' \item{inactive, sep.comps}{As defined above.}
 #' \item{backtransf}{A logical indicating whether results should be
 #'   back transformed in printouts and forest plots.}
@@ -368,12 +379,13 @@ discomb <- function(TE, seTE,
                     details.chkident = FALSE,
                     ##
                     sep.trts = ":",
-                    nchar.trts = 666,
+                    nchar.comps = 666,
                     ##
                     backtransf = gs("backtransf"),
                     ##
                     title = "",
-                    warn = TRUE) {
+                    warn = TRUE,
+                    nchar.trts = nchar.comps) {
   
   
   ##
@@ -410,12 +422,25 @@ discomb <- function(TE, seTE,
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
-  chknumeric(nchar.trts, min = 1, length = 1)
+  chknumeric(nchar.comps, min = 1, length = 1)
   ##
   chklogical(backtransf)
   ##
   chkchar(title)
   chklogical(warn)
+  ##
+  ## Check for deprecated argument 'nchar.trts'
+  ##
+  if (!missing(nchar.trts))
+    if (!missing(nchar.comps))
+      warning("Deprecated argument 'nchar.trts' ignored as ",
+              "argument 'nchar.comps' is also provided.")
+    else {
+      warning("Deprecated argument 'nchar.trts' has been replaced by ",
+              "argument 'nchar.comps'.")
+      nchar.comps <- nchar.trts
+      chknumeric(nchar.comps, min = 1, length = 1)
+    }
   
   
   ##
@@ -1017,7 +1042,7 @@ discomb <- function(TE, seTE,
               tau.preset = tau.preset,
               ##
               sep.trts = sep.trts,
-              nchar.trts = nchar.trts,
+              nchar.comps = nchar.comps,
               ##
               inactive = inactive,
               sep.comps = sep.comps,
