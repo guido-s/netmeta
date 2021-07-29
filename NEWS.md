@@ -126,7 +126,7 @@
 * Internal function contribution.matrix() moved to
   contribution.matrix.tpapak()
 
-* New internal function contribution.matrix.davies()
+* New internal functions contribution.matrix.davies() and comp2abbr()
   
 * New wrapper function contribution.matrix()
 

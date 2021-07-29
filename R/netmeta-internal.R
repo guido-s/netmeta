@@ -61,3 +61,16 @@ calcV <- function(x, sm) {
   ##
   V
 }
+
+
+##
+## Abbreviated component labels
+##
+comp2abbr <- function(x, lev, abbr, split) {
+  x.list <- compsplit(x, split = split)
+  x.list <- lapply(x.list, factor, levels = lev, labels = abbr)
+  x.list <- lapply(x.list, as.character)
+  x.list <- lapply(x.list, paste, collapse = split)
+  
+  unlist(x.list)
+}

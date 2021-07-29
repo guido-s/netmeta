@@ -246,6 +246,11 @@ A reduced data set with basic comparisons (Rücker & Schwarzer,
 FALSE}. Furthermore, the reference group for the basic comparisons
 can be specified with argument \code{reference.group}.
 }
+\note{
+This function must not be confused with \code{\link{netpairwise}}
+which can be used to conduct pairwise meta-analyses for all
+comparisons with direct evidence in a network meta-analysis.
+}
 \examples{
 # Example using continuous outcomes (internal call of function
 # metacont)
@@ -367,7 +372,8 @@ net5
 \seealso{
 \code{\link{netmeta}}, \code{\link{metacont}},
   \code{\link{metagen}}, \code{\link{metabin}},
-  \code{\link{metainc}}, \code{\link{netgraph.netmeta}}
+  \code{\link{metainc}}, \code{\link{netgraph.netmeta}},
+  \code{\link{pairwise}}
 }
 \author{
 Gerta Rücker\email{ruecker@imbi.uni-freiburg.de}, Guido

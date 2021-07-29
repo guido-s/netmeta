@@ -7,7 +7,7 @@
 \alias{print.summary.netpairwise}
 \alias{forest.netpairwise}
 \title{Conduct pairwise meta-analyses for all comparisons with direct
-evidence}
+evidence in a network meta-analysis}
 \usage{
 netpairwise(
   x,
@@ -83,6 +83,12 @@ heterogeneity variance is allowed to differ between comparisons.
 
 The R function \code{\link{metagen}} is called internally.
 }
+\note{
+This function must not be confused with \code{\link{pairwise}}
+which can be used as a pre-processing step to convert data from
+arm-based to contrast-based format by calculating all pairwise
+comparisons within a study.
+}
 \examples{
 data(Senn2013)
 oldsets <- settings.meta(digits = 2, digits.tau2 = 2, digits.tau = 2)
@@ -113,7 +119,8 @@ settings.meta(oldsets)
 
 }
 \seealso{
-\code{\link{netmeta}}, \code{\link{netsplit}}
+\code{\link{netmeta}}, \code{\link{netsplit}},
+  \code{\link{pairwise}}
 }
 \author{
 Guido Schwarzer \email{sc@imbi.uni-freiburg.de}

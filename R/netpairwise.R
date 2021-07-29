@@ -1,5 +1,5 @@
 #' Conduct pairwise meta-analyses for all comparisons with direct
-#' evidence
+#' evidence in a network meta-analysis
 #' 
 #' @description
 #' Conduct pairwise meta-analyses for all comparisons with direct
@@ -38,6 +38,12 @@
 #' 
 #' The R function \code{\link{metagen}} is called internally.
 #' 
+#' @note
+#' This function must not be confused with \code{\link{pairwise}}
+#' which can be used as a pre-processing step to convert data from
+#' arm-based to contrast-based format by calculating all pairwise
+#' comparisons within a study.
+#' 
 #' @return
 #' Either a single \code{\link{metagen}} object with pairwise
 #' comparisons as subgroups or a list with \code{\link{metagen}}
@@ -45,7 +51,8 @@
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
-#' @seealso \code{\link{netmeta}}, \code{\link{netsplit}}
+#' @seealso \code{\link{netmeta}}, \code{\link{netsplit}},
+#'   \code{\link{pairwise}}
 #' 
 #' @examples
 #' data(Senn2013)

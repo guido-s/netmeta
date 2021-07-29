@@ -43,6 +43,8 @@
 #'   root of the between-study variance \eqn{\tau^2}.
 #' @param text.I2 Text printed to identify heterogeneity statistic
 #'   I\eqn{^2}.
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
 #' @param \dots Additional arguments.
 #'
 #' @return
@@ -350,6 +352,7 @@ print.summary.netcomb <- function(x,
                                   text.tau = gs("text.tau"),
                                   text.I2 = gs("text.I2"),
                                   ##
+                                  legend = TRUE,
                                   ...) {
   
   
@@ -386,6 +389,8 @@ print.summary.netcomb <- function(x,
   chkchar(text.tau2)
   chkchar(text.tau)
   chkchar(text.I2)
+  ##
+  chklogical(legend)
   
   
   I2 <- round(100 * x$I2, digits.I2)
@@ -500,9 +505,11 @@ print.summary.netcomb <- function(x,
   print(hetdat)
   
   
-  if ((comb.fixed | comb.random)) {
-    any.trts <- any(trts != trts.abbr)
-    any.comps <- any(comps != comps.abbr)
+  if (legend && (comb.fixed | comb.random)) {
+    diff.trts <- trts != trts.abbr
+    any.trts <- any(diff.trts)
+    diff.comps <- comps != comps.abbr
+    any.comps <- any(diff.comps)
     ##
     if (any.trts | any.comps)
       cat("\nLegend", if (any.trts & any.comps) "s", ":", sep = "")
@@ -510,6 +517,7 @@ print.summary.netcomb <- function(x,
     if (any.trts) {
       ##
       tmat <- data.frame(trts.abbr, trts)
+      tmat <- tmat[diff.trts, ]
       names(tmat) <- c("Abbreviation", "Treatment name")
       tmat <- tmat[order(tmat$Abbreviation), ]
       ##
@@ -521,6 +529,7 @@ print.summary.netcomb <- function(x,
     if (any.comps) {
       ##
       tmat <- data.frame(comps.abbr, comps)
+      tmat <- tmat[diff.comps, ]
       names(tmat) <- c("Abbreviation", " Component name")
       tmat <- tmat[order(tmat$Abbreviation), ]
       ##
