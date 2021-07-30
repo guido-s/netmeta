@@ -27,6 +27,8 @@
   digits.tau = gs("digits.tau"),
   digits.I2 = gs("digits.I2"),
   scientific.pval = gs("scientific.pval"),
+  zero.pval = gs("zero.pval"),
+  JAMA.pval = gs("JAMA.pval"),
   big.mark = gs("big.mark"),
   text.tau2 = gs("text.tau2"),
   text.tau = gs("text.tau"),
@@ -86,6 +88,13 @@ statistic, see \code{print.default}.}
 \item{scientific.pval}{A logical specifying whether p-values should
 be printed in scientific notation, e.g., 1.2345e-01 instead of
 0.12345.}
+
+\item{zero.pval}{A logical specifying whether p-values should be
+printed with a leading zero.}
+
+\item{JAMA.pval}{A logical specifying whether p-values for test of
+component or combination effect should be printed according to
+JAMA reporting standards.}
 
 \item{big.mark}{A character used as thousands separator.}
 

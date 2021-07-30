@@ -16,8 +16,11 @@
   digits.pval.Q = max(gs("digits.pval.Q"), 2),
   digits.Q = gs("digits.Q"),
   scientific.pval = gs("scientific.pval"),
+  zero.pval = gs("zero.pval"),
+  JAMA.pval = gs("JAMA.pval"),
   big.mark = gs("big.mark"),
   nchar.trts = nchar.comps,
+  legend = TRUE,
   ...
 )
 }
@@ -57,10 +60,19 @@ heterogeneity statistics, see \code{print.default}.}
 be printed in scientific notation, e.g., 1.2345e-01 instead of
 0.12345.}
 
+\item{zero.pval}{A logical specifying whether p-values should be
+printed with a leading zero.}
+
+\item{JAMA.pval}{A logical specifying whether p-values for test of
+effects should be printed according to JAMA reporting standards.}
+
 \item{big.mark}{A character used as thousands separator.}
 
 \item{nchar.trts}{Deprecated argument (replaced by
 \code{nchar.comps}).}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
 
 \item{\dots}{Additional arguments.}
 }

@@ -27,9 +27,15 @@
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
+#' @param zero.pval A logical specifying whether p-values should be
+#'   printed with a leading zero.
+#' @param JAMA.pval A logical specifying whether p-values for test of
+#'   effects should be printed according to JAMA reporting standards.
 #' @param big.mark A character used as thousands separator.
 #' @param nchar.trts Deprecated argument (replaced by
 #'   \code{nchar.comps}).
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
 #' @param \dots Additional arguments.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
@@ -74,9 +80,16 @@ print.netcomb <- function(x,
                           digits.pval = gs("digits.pval"),
                           digits.pval.Q = max(gs("digits.pval.Q"), 2),
                           digits.Q = gs("digits.Q"),
+                          ##
                           scientific.pval = gs("scientific.pval"),
+                          zero.pval = gs("zero.pval"),
+                          JAMA.pval = gs("JAMA.pval"),
+                          ##
                           big.mark = gs("big.mark"),
+                          ##
                           nchar.trts = nchar.comps,
+                          ##
+                          legend = TRUE,
                           ...) {
   
   
@@ -85,20 +98,27 @@ print.netcomb <- function(x,
   x <- upgradenetmeta(x)
   
   
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chklogical(backtransf)
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
+  ##
+  chklogical(comb.fixed)
+  chklogical(comb.random)
+  chklogical(backtransf)
   ##
   nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
-  meta:::chknumeric(nchar.comps, min = 1, length = 1)
+  chknumeric(nchar.comps, min = 1, length = 1)
   ##
-  meta:::chknumeric(digits, min = 0, length = 1)
-  meta:::chknumeric(digits.stat, min = 0, length = 1)
-  meta:::chknumeric(digits.pval, min = 1, length = 1)
-  meta:::chknumeric(digits.pval.Q, min = 1, length = 1)
-  meta:::chknumeric(digits.Q, min = 0, length = 1)
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.stat, min = 0, length = 1)
+  chknumeric(digits.pval, min = 1, length = 1)
+  chknumeric(digits.pval.Q, min = 1, length = 1)
+  chknumeric(digits.Q, min = 0, length = 1)
   ##
-  meta:::chklogical(scientific.pval)
+  chklogical(scientific.pval)
+  chklogical(zero.pval)
+  chklogical(JAMA.pval)
+  ##
+  chklogical(legend)
   ##
   ## Check for deprecated argument 'nchar.trts'
   ##
@@ -110,7 +130,7 @@ print.netcomb <- function(x,
       warning("Deprecated argument 'nchar.trts' has been replaced by ",
               "argument 'nchar.comps'.")
       nchar.comps <- nchar.trts
-      meta:::chknumeric(nchar.comps, min = 1, length = 1)
+      chknumeric(nchar.comps, min = 1, length = 1)
     }
   
   
@@ -131,7 +151,8 @@ print.netcomb <- function(x,
                       backtransf, x$sm, x$level.comb,
                       comps, comps.abbr, x$sep.comps,
                       digits, digits.stat, digits.pval.Q,
-                      scientific.pval, big.mark)
+                      scientific.pval, zero.pval, JAMA.pval,
+                      big.mark)
   ##
   cnma.r <- data.frame(studlab = x$studlab,
                        treat1 = x$treat1,
@@ -147,7 +168,8 @@ print.netcomb <- function(x,
                       backtransf, x$sm, x$level.comb,
                       comps, comps.abbr, x$sep.comps,
                       digits, digits.stat, digits.pval.Q,
-                      scientific.pval, big.mark)
+                      scientific.pval, zero.pval, JAMA.pval,
+                      big.mark)
   ##
   if (comb.fixed) {
     cat("Additive model (fixed effects model):\n")
@@ -161,7 +183,7 @@ print.netcomb <- function(x,
     cat("\n")
   }
   
-
+  
   if (comb.fixed | comb.random)
     print(summary(x),
           comb.fixed = comb.fixed,
@@ -174,8 +196,16 @@ print.netcomb <- function(x,
           digits.pval = digits.pval,
           digits.pval.Q = digits.pval.Q,
           digits.Q = digits.Q,
+          ##
           scientific.pval = scientific.pval,
-          big.mark = big.mark, ...)
+          zero.pval = zero.pval,
+          JAMA.pval = JAMA.pval,
+          ##
+          big.mark = big.mark,
+          ##
+          legend = legend,
+          ##
+          ...)
   else
     cat("Please use argument 'comb.fixed = TRUE' or",
         "'comb.random = TRUE' to print meta-analysis results.\n",

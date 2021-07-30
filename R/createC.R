@@ -116,10 +116,10 @@ createC.full <- function(n, k) {
   else if (k == n)
     res <- as.matrix(t(rep(1, n)))
   else
-    res <- rbind(cbind(createC.full(n - 1, k - 1),
-                       rep(1, choose(n - 1, k - 1))),
-                 cbind(createC.full(n - 1, k),
-                       rep(0, choose(n - 1, k))))
+    res <- rbind(cbind(rep(1, choose(n - 1, k - 1)),
+                       createC.full(n - 1, k - 1)),
+                 cbind(rep(0, choose(n - 1, k)),
+                       createC.full(n - 1, k)))
   ##
   res
 }

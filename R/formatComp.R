@@ -1,8 +1,9 @@
 formatComp <- function(x,
                        backtransf, sm, level,
                        comps, comps.abbr, sep.comps,
-                       digits, digits.stat, digits.pval.Q,
-                       scientific.pval, big.mark) {
+                       digits, digits.stat, digits.pval,
+                       scientific.pval, zero.pval, JAMA.pval,
+                       big.mark) {
   
   
   formatN <- meta:::formatN
@@ -38,8 +39,10 @@ formatComp <- function(x,
                                        digits, "NA", big.mark))
   res$statistic <- formatN(res$statistic, digits.stat, big.mark = big.mark)
   res$p <- meta:::formatPT(res$p,
-                           digits = digits.pval.Q,
-                           scientific = scientific.pval)
+                           digits = digits.pval,
+                           scientific = scientific.pval,
+                           zero = zero.pval,
+                           JAMA = JAMA.pval)
   ##
   res$upper <- res$z <- NULL
   ##

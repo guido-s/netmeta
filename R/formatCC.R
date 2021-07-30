@@ -2,7 +2,9 @@ formatCC <- function(x,
                      backtransf, sm, level,
                      comps, comps.abbr, sep.comps,
                      digits, digits.stat, digits.pval.Q,
-                     scientific.pval, big.mark, seq = NULL) {
+                     scientific.pval, zero.pval, JAMA.pval,
+                     big.mark,
+                     seq = NULL) {
   
   
   formatN <- meta:::formatN
@@ -42,7 +44,9 @@ formatCC <- function(x,
                            digits.stat, big.mark = big.mark)
   res$p <- meta:::formatPT(res$p,
                            digits = digits.pval.Q,
-                           scientific = scientific.pval)
+                           scientific = scientific.pval,
+                           zero = zero.pval,
+                           JAMA = JAMA.pval)
   ##
   res$seTE <- res$upper <- res$z <- NULL
   ##

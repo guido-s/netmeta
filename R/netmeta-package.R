@@ -36,14 +36,23 @@
 #'   (\code{\link{netleague}});
 #' \item additive network meta-analysis for combinations of treatments
 #'   (\code{\link{netcomb}}, \code{\link{discomb}} for disconnected
-#'   networks) (Rücker et al., 2019);
+#'   networks) (Rücker et al., 2020);
+#' \item calculate comparison effects of two arbitrary complex
+#'   interventions in component network meta-analysis
+#'   (\code{\link{netcomparison}});
+#' \item calculate effect of arbitrary complex interventions in
+#'   component network meta-analysis (\code{\link{netcomplex}});
 #' \item network meta-analysis of binary data
 #'   (\code{\link{netmetabin}}) using the Mantel-Haenszel or
 #'   non-central hypergeometric distribution method (Efthimiou et al.,
 #'   2019);
 #' \item\sQuote{comparison-adjusted} funnel plot
 #'   (\code{\link{funnel.netmeta}}) to assess funnel plot asymmetry in
-#'   network meta-analysis (Chaimani & Salanti, 2012)
+#'   network meta-analysis (Chaimani & Salanti, 2012);
+#' \item conduct pairwise meta-analyses for all comparisons with
+#'   direct evidence in a network meta-analysis
+#'   (\code{\link{netpairwise}});
+#'   \code{\link{netbind}} to show these results in a forest plot;
 #' \item automated drawing of network graphs
 #'   (\code{\link{netgraph.netmeta}}) described in Rücker & Schwarzer
 #'   (2016);
@@ -152,10 +161,10 @@
 #' \emph{Research Synthesis Methods},
 #' \bold{8}, 526--36
 #' 
-#' Rücker G, Petropoulou M, Schwarzer G (2019):
+#' Rücker G, Petropoulou M, Schwarzer G (2020):
 #' Network meta-analysis of multicomponent interventions.
 #' \emph{Biometrical Journal},
-#' 1--14, https://doi.org/10.1002/bimj.201800167
+#' \bold{62}, 808--21
 #' 
 #' Salanti G, Ades AE, Ioannidis JP (2011):
 #' Graphical methods and numerical summaries for presenting results

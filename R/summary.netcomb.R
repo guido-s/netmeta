@@ -36,6 +36,11 @@
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
+#' @param zero.pval A logical specifying whether p-values should be
+#'   printed with a leading zero.
+#' @param JAMA.pval A logical specifying whether p-values for test of
+#'   component or combination effect should be printed according to
+#'   JAMA reporting standards.
 #' @param big.mark A character used as thousands separator.
 #' @param text.tau2 Text printed to identify between-study variance
 #'   \eqn{\tau^2}.
@@ -347,7 +352,11 @@ print.summary.netcomb <- function(x,
                                   digits.tau2 = gs("digits.tau2"),
                                   digits.tau = gs("digits.tau"),
                                   digits.I2 = gs("digits.I2"),
+                                  ##
                                   scientific.pval = gs("scientific.pval"),
+                                  zero.pval = gs("zero.pval"),
+                                  JAMA.pval = gs("JAMA.pval"),
+                                  ##
                                   big.mark = gs("big.mark"),
                                   ##
                                   text.tau2 = gs("text.tau2"),
@@ -388,6 +397,8 @@ print.summary.netcomb <- function(x,
   chknumeric(digits.I2, min = 0, length = 1)
   ##
   chklogical(scientific.pval)
+  chklogical(zero.pval)
+  chklogical(JAMA.pval)
   ##
   chkchar(text.tau2)
   chkchar(text.tau)
@@ -436,13 +447,17 @@ print.summary.netcomb <- function(x,
                      backtransf, x$sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
-                     scientific.pval, big.mark, x$seq)
+                     scientific.pval, zero.pval, JAMA.pval,
+                     big.mark,
+                     x$seq)
   ##
   dat1.r <- formatCC(x$combinations.random,
                      backtransf, x$sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
-                     scientific.pval, big.mark, x$seq)
+                     scientific.pval, zero.pval, JAMA.pval,
+                     big.mark,
+                     x$seq)
   ##
   if (comb.fixed) {
     cat("Results for combinations (additive model, fixed effects model):\n")
@@ -461,13 +476,15 @@ print.summary.netcomb <- function(x,
                      backtransf, x$sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
-                     scientific.pval, big.mark)
+                     scientific.pval, zero.pval, JAMA.pval,
+                     big.mark)
   ##
   dat2.r <- formatCC(x$components.random,
                      backtransf, x$sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
-                     scientific.pval, big.mark)
+                     scientific.pval, zero.pval, JAMA.pval,
+                     big.mark)
   ##
   if (comb.fixed) {
     cat("Results for components (fixed effects model):\n")

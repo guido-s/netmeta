@@ -96,7 +96,7 @@
 #' 
 #' The additive CNMA model has been implemented using Bayesian methods
 #' (Mills et al., 2012; Welton et al., 2013). This function implements
-#' the additive model in a frequentist way (Rücker et al., 2019).
+#' the additive model in a frequentist way (Rücker et al., 2020).
 #' 
 #' The underlying multivariate model is given by
 #' 
@@ -137,6 +137,17 @@
 #' \code{\link{abbreviate}}, argument \code{minlength}). R function
 #' \code{\link{treats}} is utilised internally to create abbreviated
 #' component names.
+#' 
+#' @note
+#' This function calculates effects for individual components and
+#' complex interventions present in the network.
+#'
+#' R function \code{\link{netcomplex}} can be used to calculate the
+#' effect for arbitrary complex interventions in a component network
+#' meta-analysis. Furthermore, R function \code{\link{netcomparison}}
+#' can be used to calculate the effect for comparisons of two
+#' arbitrary complex intervention in a component network
+#' meta-analysis.
 #' 
 #' @return
 #' An object of classes \code{discomb} and \code{netcomb} with
@@ -271,8 +282,10 @@
 #' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
 #'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
-#' @seealso \link{netcomb}, \link{forest.netcomb},
-#'   \link{summary.netcomb}, \link{netmeta}, \link{netconnection}
+#' @seealso \code{\link{netcomb}}, \code{\link{forest.netcomb}},
+#'   \code{\link{summary.netcomb}}, \code{\link{netmeta}},
+#'   \code{\link{netconnection}}, \code{\link{netcomplex}},
+#'   \code{\link{netcomparison}}
 #' 
 #' @references
 #' König J, Krahn U, Binder H (2013):
@@ -287,10 +300,10 @@
 #' \emph{Journal of Clinical Epidemiology},
 #' \bold{65}, 1282--8
 #' 
-#' Rücker G, Petropoulou M, Schwarzer G (2019):
+#' Rücker G, Petropoulou M, Schwarzer G (2020):
 #' Network meta-analysis of multicomponent interventions.
 #' \emph{Biometrical Journal},
-#' 1--14, https://doi.org/10.1002/bimj.201800167
+#' \bold{62}, 808--21
 #' 
 #' Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009):
 #' Mixed treatment comparison meta-analysis of complex interventions:

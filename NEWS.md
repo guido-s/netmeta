@@ -13,6 +13,12 @@
 * New R function netpairwise() to conduct pairwise meta-analyses for
   all comparisons with direct evidence
 
+* New R function netcomplex() to calculate effect of arbitrary complex
+  interventions in component network meta-analysis
+
+* New R function netcomparison() to calculate omparison effects of two
+  arbitrary complex interventions in component network meta-analysis
+
 * I2 from pairwise comparisons shown in forest plot with direct and
   indirect evidence
 
@@ -141,7 +147,9 @@
 
 * New internal function createC.full() to create full C matrix for all
   k-fold combinations of n components
-  
+
+* New internal function charfac()
+
 * New wrapper function contribution.matrix()
 
 * New argument 'aggr' in createB() to calculate aggregated B matrix

@@ -1,7 +1,7 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
 Version: 1.6-0
-Date: 2021-07-29
+Date: 2021-07-30
 Depends: R (>= 3.5.0), meta (>= 4.19-0)
 Imports: magic, MASS, ggplot2 (>= 3.0.0), metafor
 Suggests: colorspace, rgl, hasseDiagram (>= 0.1.3), grid, mvtnorm, gridExtra, igraph (>= 1.0.1)
@@ -35,7 +35,7 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <DOI:10.1002/cem.2569>; (Rücker & Schwarzer, 2017) <DOI:10.1002/jrsm.1270>;
  - split direct and indirect evidence to check consistency (Dias et al., 2010) <DOI:10.1002/sim.3767>, (Efthimiou et al., 2019) <DOI:10.1002/sim.8158>;
  - league table with network meta-analysis results;
- - additive network meta-analysis for combinations of treatments (Rücker et al., 2019) <DOI:10.1002/bimj.201800167>;
+ - additive network meta-analysis for combinations of treatments (Rücker et al., 2020) <DOI:10.1002/bimj.201800167>;
  - network meta-analysis of binary data using the Mantel-Haenszel or non-central hypergeometric distribution method (Efthimiou et al., 2019) <DOI:10.1002/sim.8158>;
  - 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012) <DOI:10.1002/jrsm.57>;
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <DOI:10.1002/jrsm.1143>;

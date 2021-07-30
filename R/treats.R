@@ -110,9 +110,6 @@ comps <- function(x, trts, sep.trts, nchar.trts = 8, row = TRUE) {
   ##
   trts.abbr <- treats(trts, nchar.trts)  
   
-  charfac <- function(x, ...)
-    as.character(factor(x, ...))
-  
   if (is.matrix(x)) {
     if (row)
       comps <- rownames(x)
