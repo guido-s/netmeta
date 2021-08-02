@@ -182,11 +182,19 @@ netcomparison <- function(x, treat1, treat2,
   meta:::chknumeric(nchar.comps, min = 1, length = 1)
   
   
+  treat1.orig <- treat1
+  treat2.orig <- treat2
+  ##
+  if (length(treat1) == 1 & length(treat2) > 1)
+    treat1 <- rep(treat1, length(treat2))
+  else if (length(treat1) > 1 & length(treat2) == 1)
+    treat2 <- rep(treat2, length(treat1))
+  ##
   n.comparisons <- length(treat1)
+  ##
   meta:::chklength(treat2, n.comparisons, "treat1")
   ##
   comps <- x$comps
-  ##compsplit(x, split = split)
   
   
   ##
@@ -204,9 +212,6 @@ netcomparison <- function(x, treat1, treat2,
   ##
   comps1.list <- lapply(comps1.list, setref, c(comps, x$inactive), length = 0)
   comps2.list <- lapply(comps2.list, setref, c(comps, x$inactive), length = 0)
-  ##
-  treat1.orig <- treat1
-  treat2.orig <- treat2
   ##
   add1 <- add2 <- rep("", n.comparisons)
   ##
@@ -396,10 +401,10 @@ print.netcomparison <- function(x,
     comps.abbr <- treats(comps, nchar.comps)
     ##
     for (i in seq_len(n.comparisons))
-      treat1[i] <- compos(x$treat1, comps, comps.abbr,
+      treat1[i] <- compos(x$treat1[i], comps, comps.abbr,
                           x$x$sep.comps, x$add1[i] == " ")
     for (i in seq_len(n.comparisons))
-      treat2[i] <- compos(x$treat2, comps, comps.abbr,
+      treat2[i] <- compos(x$treat2[i], comps, comps.abbr,
                           x$x$sep.comps, x$add2[i] == " ")
     ##
     comps1.list <- compsplit(x$treat1, x$x$sep.comps)
