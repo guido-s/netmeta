@@ -11,10 +11,10 @@ formatCC <- function(x,
   relative <- meta:::is.relative.effect(sm)
   
   
-  arm.lab <- meta:::sm2armlab(sm)
+  sm.lab <- sm
   ##
   if (!backtransf & relative)
-    arm.lab <- paste("log", tolower(arm.lab))
+    sm.lab <- paste0("log", sm.lab)
   ##  
   ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
   
@@ -50,7 +50,7 @@ formatCC <- function(x,
   res$seTE <- res$upper <- res$z <- NULL
   ##
   sel <- names(res) == "TE"
-  names(res)[sel] <- arm.lab
+  names(res)[sel] <- sm.lab
   ##
   sel <- names(res) == "lower"
   names(res)[sel] <- ci.lab

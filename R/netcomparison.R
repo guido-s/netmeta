@@ -437,7 +437,7 @@ print.netcomparison <- function(x,
   relative <- meta:::is.relative.effect(x$x$sm)
   ##
   if (!backtransf & relative)
-    sm.lab <- paste("log", x$x$sm, sep = "")
+    sm.lab <- paste0("log", x$x$sm)
   ##  
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   
