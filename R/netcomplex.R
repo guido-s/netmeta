@@ -368,12 +368,12 @@ print.netcomplex <- function(x,
   }
   
   
-  sm.lab <- x$x$sm
-  ##
   relative <- meta:::is.relative.effect(x$x$sm)
   ##
+  arm.lab <- meta:::sm2armlab(x$x$sm)
+  ##
   if (!backtransf & relative)
-    sm.lab <- paste("log", x$x$sm, sep = "")
+    arm.lab <- paste("log", tolower(arm.lab))
   ##  
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   
@@ -449,7 +449,7 @@ print.netcomplex <- function(x,
     ##
     cat(msg)
     ##
-    dimnames(res.f)[[2]] <- c(sm.lab, ci.lab, "z", "p-value")
+    dimnames(res.f)[[2]] <- c(arm.lab, ci.lab, "z", "p-value")
     ##
     cat("(additive CNMA model, fixed effects model):\n")
     prmatrix(res.f, quote = FALSE, right = TRUE, na.print = "--")
@@ -479,7 +479,7 @@ print.netcomplex <- function(x,
                            "NA", big.mark = big.mark),
             pval = pval.r)
     ##
-    dimnames(res.r)[[2]] <- c(sm.lab, ci.lab, "z", "p-value")
+    dimnames(res.r)[[2]] <- c(arm.lab, ci.lab, "z", "p-value")
     ##
     cat(msg)
     ##

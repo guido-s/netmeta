@@ -8,18 +8,17 @@ formatCC <- function(x,
   
   
   formatN <- meta:::formatN
-  
-  
-  sm.lab <- sm
-  ##
   relative <- meta:::is.relative.effect(sm)
+  
+  
+  arm.lab <- meta:::sm2armlab(sm)
   ##
   if (!backtransf & relative)
-    sm.lab <- paste("log", sm, sep = "")
+    arm.lab <- paste("log", tolower(arm.lab))
   ##  
   ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
   
-
+  
   ## First column contains row names
   ##
   res <- x
@@ -51,7 +50,7 @@ formatCC <- function(x,
   res$seTE <- res$upper <- res$z <- NULL
   ##
   sel <- names(res) == "TE"
-  names(res)[sel] <- sm.lab
+  names(res)[sel] <- arm.lab
   ##
   sel <- names(res) == "lower"
   names(res)[sel] <- ci.lab

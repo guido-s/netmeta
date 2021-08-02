@@ -13,7 +13,7 @@ formatComp <- function(x,
   sm.lab <- sm
   ##
   if (!backtransf & relative)
-    sm.lab <- paste("log", sm, sep = "")
+    sm.lab <- paste0("log", sm)
   ##  
   ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
   

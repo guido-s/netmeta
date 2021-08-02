@@ -74,7 +74,7 @@
   - new argument 'trts' to specify subset of treatments
   - new argument 'sort' to specify order of treatments
   - new argument 'cumulative.rankprob' to show cumulative ranking
-    probabilites
+    probabilities
 
 * print.rankogram():
   - new argument 'cumulative.rankprob' to show cumulative ranking
