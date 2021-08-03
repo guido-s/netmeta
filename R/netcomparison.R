@@ -9,9 +9,9 @@
 #' @param x An object of class \code{netcomb} or \code{netcomparison}
 #'   (print function).
 #' @param treat1 A character vector defining the first complex
-#'   intervention.
+#'   intervention(s).
 #' @param treat2 A character vector defining the second complex
-#'   intervention.
+#'   intervention(s).
 #' @param comb.fixed A logical indicating whether results for fixed
 #'   effect model should be conducted.
 #' @param comb.random A logical indicating whether results for random
@@ -47,9 +47,17 @@
 #' @details
 #' R functions \code{\link{netcomb}} and \code{\link{discomb}}
 #' calculate effects for individual components and complex
-#' interventions present in the network. This function can be used to
-#' calculate the effect for comparisons of two arbitrary complex
-#' intervention defined by arguments \code{treat1} and \code{treat2}.
+#' interventions present in the component network meta-analysis
+#' (CNMA). This function can be used to calculate the effect for
+#' comparisons of two arbitrary complex interventions defined by
+#' arguments \code{treat1} and \code{treat2}.
+#'
+#' All complex interventions occuring in the network are considered
+#' for the first complex intervention if argument \code{treat1} is
+#' missing. The reference group defined in the (C)NMA is used as
+#' second complex intervention if argument \code{treat2} is
+#' missing. The first complex intervention in the (C)NMA is used if
+#' the reference group is not defined.
 #' 
 #' The following matrices are needed to calculate comparison effects
 #' of arbitrary complex interventions, (Rücker et al., 2020, Section
@@ -181,9 +189,30 @@ netcomparison <- function(x, treat1, treat2,
   ##
   meta:::chknumeric(nchar.comps, min = 1, length = 1)
   
-  
-  treat1.orig <- treat1
-  treat2.orig <- treat2
+
+  missing.treat1 <- missing(treat1)
+  missing.treat2 <- missing(treat2)
+  ##
+  if (missing(treat1)) {
+    treat1.orig <- NULL
+    treat2.orig <- NULL
+    treat1 <- x$trts
+  }
+  else
+    treat1.orig <- treat1
+  ##
+  if (missing(treat2)) {
+    treat2.orig <- NULL
+    treat2 <- x$reference.group
+    if (treat2 == "") {
+      treat2 <- treat1[1]
+      treat1 <- treat1[-1]
+    }
+    else
+      treat1 <- treat1[treat1 != treat2]
+  }
+  else
+    treat2.orig <- treat2
   ##
   if (length(treat1) == 1 & length(treat2) > 1)
     treat1 <- rep(treat1, length(treat2))
@@ -245,7 +274,7 @@ netcomparison <- function(x, treat1, treat2,
       comparison[i] <-
         paste0(paste(comps1.list[[i]][sel1.i],
                      collapse = paste0(add1[i], x$sep.comps, add1[i])),
-               x$x$sep.trts,
+               x$sep.trts,
                paste(comps2.list[[i]][sel2.i],
                      collapse = paste0(add2[i], x$sep.comps, add2[i])))
   }
@@ -497,6 +526,8 @@ print.netcomparison <- function(x,
                             c("comparison", "treat1", "treat2",
                               sm.lab, ci.lab, "z", "p-value"))
     ##
+    res.f[res.f[, "treat1"] == res.f[, "treat2"], 4:7] <- "."
+    ##
     cat(paste0("Results for comparisons (additive CNMA model, ",
                "fixed effects model):\n\n"))
     ##
@@ -533,6 +564,8 @@ print.netcomparison <- function(x,
     dimnames(res.r) <- list(rep("", nrow(res.r)),
                             c("comparison", "treat1", "treat2",
                               sm.lab, ci.lab, "z", "p-value"))
+    ##
+    res.r[res.r[, "treat1"] == res.r[, "treat2"], 4:7] <- "."
     ##
     cat(paste0("Results for comparisons (additive CNMA model, ",
                "random effects model):\n\n"))

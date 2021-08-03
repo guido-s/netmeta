@@ -59,7 +59,9 @@
 #' C matrix is needed which describes how the complex interventions
 #' are composed by the components (Rücker et al., 2020, Section
 #' 3.2). The C matrix is constructed internally if not provided by
-#' argument \code{complex}.
+#' argument \code{complex}. All complex interventions occuring in the
+#' network are considered if argument \code{complex} is missing.
+
 #' 
 #' By default, component names are not abbreviated in
 #' printouts. However, in order to get more concise printouts,
@@ -183,12 +185,18 @@ netcomplex <- function(x, complex,
   nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
   meta:::chknumeric(nchar.comps, min = 1, length = 1)
   
-  
+
+  if (missing(complex)) {
+    complex <- x$trts
+    complex.orig <- complex
+  }
+  else
+    complex.orig <- complex    
+  ##
   n.comps <- length(x$comps)
   n.complex <- length(complex)
   ##
   comps <- x$comps
-  complex.orig <- complex
   add <- rep("", n.complex)
   ##
   if (is.matrix(complex)) {

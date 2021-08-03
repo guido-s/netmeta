@@ -1037,6 +1037,14 @@ discomb <- function(TE, seTE,
               B.matrix = B.matrix,
               C.matrix = C.matrix,
               ##
+              L.matrix.fixed = res.f$L.matrix,
+              Lplus.matrix.fixed = res.f$Lplus.matrix,
+              L.matrix.random = res.r$L.matrix,
+              Lplus.matrix.random = res.r$Lplus.matrix,
+              ##
+              H.matrix.fixed = res.f$H.matrix[o, o],
+              H.matrix.random = res.r$H.matrix[o, o],
+              ##
               n.matrix = NA,
               events.matrix = NA,
               ##

@@ -38,10 +38,10 @@ netcomparison(
 (print function).}
 
 \item{treat1}{A character vector defining the first complex
-intervention.}
+intervention(s).}
 
 \item{treat2}{A character vector defining the second complex
-intervention.}
+intervention(s).}
 
 \item{comb.fixed}{A logical indicating whether results for fixed
 effect model should be conducted.}
@@ -121,9 +121,17 @@ meta-analysis.
 \details{
 R functions \code{\link{netcomb}} and \code{\link{discomb}}
 calculate effects for individual components and complex
-interventions present in the network. This function can be used to
-calculate the effect for comparisons of two arbitrary complex
-intervention defined by arguments \code{treat1} and \code{treat2}.
+interventions present in the component network meta-analysis
+(CNMA). This function can be used to calculate the effect for
+comparisons of two arbitrary complex interventions defined by
+arguments \code{treat1} and \code{treat2}.
+
+All complex interventions occuring in the network are considered
+for the first complex intervention if argument \code{treat1} is
+missing. The reference group defined in the (C)NMA is used as
+second complex intervention if argument \code{treat2} is
+missing. The first complex intervention in the (C)NMA is used if
+the reference group is not defined.
 
 The following matrices are needed to calculate comparison effects
 of arbitrary complex interventions, (Rücker et al., 2020, Section

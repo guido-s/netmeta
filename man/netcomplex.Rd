@@ -130,7 +130,8 @@ In order to calculate effects of arbitrary complex interventions, a
 C matrix is needed which describes how the complex interventions
 are composed by the components (Rücker et al., 2020, Section
 3.2). The C matrix is constructed internally if not provided by
-argument \code{complex}.
+argument \code{complex}. All complex interventions occuring in the
+network are considered if argument \code{complex} is missing.
 
 By default, component names are not abbreviated in
 printouts. However, in order to get more concise printouts,
