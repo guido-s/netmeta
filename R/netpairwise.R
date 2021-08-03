@@ -22,10 +22,24 @@
 #'   should be printed.
 #' @param level.predict The level used to calculate prediction
 #'   intervals for a new study.
+#' @param reference.group Reference treatment.
+#' @param baseline.reference A logical indicating whether results
+#'   should be expressed as comparisons of other treatments versus the
+#'   reference treatment (default) or vice versa. This argument is
+#'   only considered if \code{reference.group} has been specified.
 #' @param method.tau A character string indicating which method is
 #'   used to estimate the between-study variance \eqn{\tau^2} and its
 #'   square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
 #'   \code{"ML"}, can be abbreviated.
+#' @param sep.trts A character used in comparison names as separator
+#'   between treatment labels.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names (see Details).
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in printouts and forest plots. If
+#'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
+#'   presented as odds ratios rather than log odds ratios, for
+#'   example.
 #' @param ... Additional arguments (passed on to \code{metagen} or
 #'   print functions).
 #' 
@@ -95,7 +109,12 @@ netpairwise <- function(x,
                         level.comb = x$level.comb,
                         prediction = x$prediction,
                         level.predict = x$level.predict,
+                        reference.group = x$reference.group,
+                        baseline.reference = x$baseline.reference,
                         method.tau = x$method.tau,
+                        sep.trts = x$sep.trts,
+                        nchar.trts = x$nchar.trts,
+                        backtransf = x$backtransf,
                         ...) {
   
   
@@ -120,31 +139,73 @@ netpairwise <- function(x,
   chklevel(level.comb)
   chklevel(level.predict)
   ##
+  reference.group <- setref(reference.group, c(x$trts, ""))
+  chklogical(baseline.reference)
+  ##
   method.tau <- meta:::setchar(method.tau, c("DL", "ML", "REML"))
-  
+  ##
+  meta:::chkchar(sep.trts)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  chklogical(backtransf)
 
+  
+  
+  trts.abbr <- treats(x$trts, nchar.trts)
+  trt1 <- as.character(factor(x$data$.treat1,
+                              levels = x$trts, labels = trts.abbr))
+  trt2 <- as.character(factor(x$data$.treat2,
+                              levels = x$trts, labels = trts.abbr))
+  TE <- x$data$.TE
+  seTE <- x$data$.seTE
+  studlab <- x$data$.studlab
+  ##
+  wo <- trt1 > trt2
+  ##
+  if (any(wo)) {
+    TE[wo] <- -TE[wo]
+    ttrt1 <- trt1
+    trt1[wo] <- trt2[wo]
+    trt2[wo] <- ttrt1[wo]
+  }
+  ##
+  if (reference.group != "") {
+    if (baseline.reference) {
+      wo1 <- trt1 == reference.group
+      if (any(wo1)) {
+        TE[wo1] <- -TE[wo1]
+        ttrt1 <- trt1
+        trt1[wo1] <- trt2[wo1]
+        trt2[wo1] <- ttrt1[wo1]
+      }
+    }
+    else {
+      wo2 <- trt2 == reference.group
+      if (any(wo2)) {
+        TE[wo2] <- -TE[wo2]
+        ttrt1 <- trt1
+        trt1[wo2] <- trt2[wo2]
+        trt2[wo2] <- ttrt1[wo2]
+      }
+    }
+  }
+  
+  
   if (!separate) {
-    trts.abbr <- treats(x$trts, x$nchar.trts)
-    trt1 <- as.character(factor(x$data$.treat1,
-                                levels = x$trts, labels = trts.abbr))
-    trt2 <- as.character(factor(x$data$.treat2,
-                                levels = x$trts, labels = trts.abbr))
-    res <-
-      metagen(x$data$.TE, x$data$.seTE, studlab = x$data$.studlab,
-              sm = x$sm,
-              byvar = paste0(trt1, x$sep.trts, trt2),
-              bylab = "comparison",
-              print.byvar = FALSE,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
-              level = level,
-              level.comb = level.comb,
-              prediction = prediction,
-              level.predict = level.predict,
-              method.tau = method.tau,
-              overall = FALSE, overall.hetstat = FALSE,
-              test.subgroup = FALSE,
-              ...)
+    res <- metagen(TE, seTE, studlab = studlab,
+                   sm = x$sm,
+                   byvar = paste0(trt1, sep.trts, trt2),
+                   bylab = "comparison",
+                   print.byvar = FALSE,
+                   comb.fixed = comb.fixed,
+                   comb.random = comb.random,
+                   level = level,
+                   level.comb = level.comb,
+                   prediction = prediction,
+                   level.predict = level.predict,
+                   method.tau = method.tau,
+                   overall = FALSE, overall.hetstat = FALSE,
+                   test.subgroup = FALSE,
+                   ...)
     ##
     res$k.study <- x$k
     res$k <- x$m
@@ -154,19 +215,18 @@ netpairwise <- function(x,
     class(res) <- c(class(res), "netpairwise")
   }
   else {
-    comps <- unique(x$data[, c(".treat1", ".treat2")])
+    comps <- unique(data.frame(trt1, trt2))
+    comps <- comps[order(comps$trt1, comps$trt2), ]
     n.comps <- nrow(comps)
     ##
     res <- vector("list", length = n.comps)
     ##
     for (i in seq_len(n.comps)) {
-      comp.i <- paste0(comps$.treat1[i], x$sep.trts, comps$.treat2[i])
+      comp.i <- paste0(comps$trt1[i], sep.trts, comps$trt2[i])
       res[[i]] <-
-        metagen(x$data$.TE, x$data$.seTE, studlab = x$data$.studlab,
+        metagen(TE, seTE, studlab = studlab,
                 sm = x$sm,
-                subset =
-                  x$data$.treat1 == comps$.treat1[i] &
-                  x$data$.treat2 == comps$.treat2[i],
+                subset = trt1 == comps$trt1[i] & trt2 == comps$trt2[i],
                 complab = comp.i,
                 comb.fixed = comb.fixed,
                 comb.random = comb.random,
@@ -181,6 +241,7 @@ netpairwise <- function(x,
       class(res) <- "netpairwise"
     }
   }
+  
   
   res
 }

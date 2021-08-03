@@ -18,7 +18,12 @@ netpairwise(
   level.comb = x$level.comb,
   prediction = x$prediction,
   level.predict = x$level.predict,
+  reference.group = x$reference.group,
+  baseline.reference = x$baseline.reference,
   method.tau = x$method.tau,
+  sep.trts = x$sep.trts,
+  nchar.trts = x$nchar.trts,
+  backtransf = x$backtransf,
   ...
 )
 
@@ -55,10 +60,29 @@ should be printed.}
 \item{level.predict}{The level used to calculate prediction
 intervals for a new study.}
 
+\item{reference.group}{Reference treatment.}
+
+\item{baseline.reference}{A logical indicating whether results
+should be expressed as comparisons of other treatments versus the
+reference treatment (default) or vice versa. This argument is
+only considered if \code{reference.group} has been specified.}
+
 \item{method.tau}{A character string indicating which method is
 used to estimate the between-study variance \eqn{\tau^2} and its
 square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
 \code{"ML"}, can be abbreviated.}
+
+\item{sep.trts}{A character used in comparison names as separator
+between treatment labels.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names (see Details).}
+
+\item{backtransf}{A logical indicating whether results should be
+back transformed in printouts and forest plots. If
+\code{backtransf = TRUE}, results for \code{sm = "OR"} are
+presented as odds ratios rather than log odds ratios, for
+example.}
 
 \item{...}{Additional arguments (passed on to \code{metagen} or
 print functions).}
