@@ -28,6 +28,10 @@
 
 ### Bug fixes
 
+* netmeta():
+  - fix error in calculation of between-study variance using REML or
+    ML method
+
 * forest.netbind(), forest.netcomb(), forest.netmeta(),
   forest.netsplit():
   - do not print empty row above descriptions if arguments

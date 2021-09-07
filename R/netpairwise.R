@@ -158,6 +158,8 @@ netpairwise <- function(x,
   TE <- x$data$.TE
   seTE <- x$data$.seTE
   studlab <- x$data$.studlab
+  n1 <- x$data$.n1
+  n2 <- x$data$.n2
   ##
   wo <- trt1 > trt2
   ##
@@ -166,6 +168,9 @@ netpairwise <- function(x,
     ttrt1 <- trt1
     trt1[wo] <- trt2[wo]
     trt2[wo] <- ttrt1[wo]
+    tn1 <- n1
+    n1[wo] <- n2[wo]
+    n2[wo] <- tn1[wo]
   }
   ##
   if (reference.group != "") {
@@ -176,6 +181,9 @@ netpairwise <- function(x,
         ttrt1 <- trt1
         trt1[wo1] <- trt2[wo1]
         trt2[wo1] <- ttrt1[wo1]
+        tn1 <- n1
+        n1[wo1] <- n2[wo1]
+        n2[wo1] <- tn1[wo1]
       }
     }
     else {
@@ -185,6 +193,9 @@ netpairwise <- function(x,
         ttrt1 <- trt1
         trt1[wo2] <- trt2[wo2]
         trt2[wo2] <- ttrt1[wo2]
+        tn1 <- n1
+        n1[wo2] <- n2[wo2]
+        n2[wo2] <- tn1[wo2]
       }
     }
   }
@@ -192,6 +203,7 @@ netpairwise <- function(x,
   
   if (!separate) {
     res <- metagen(TE, seTE, studlab = studlab,
+                   n.e = n1, n.c = n2,
                    sm = x$sm,
                    byvar = paste0(trt1, sep.trts, trt2),
                    bylab = "comparison",
@@ -225,6 +237,7 @@ netpairwise <- function(x,
       comp.i <- paste0(comps$trt1[i], sep.trts, comps$trt2[i])
       res[[i]] <-
         metagen(TE, seTE, studlab = studlab,
+                n.e = n1, n.c = n2,
                 sm = x$sm,
                 subset = trt1 == comps$trt1[i] & trt2 == comps$trt2[i],
                 complab = comp.i,

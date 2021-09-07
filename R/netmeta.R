@@ -1296,10 +1296,10 @@ netmeta <- function(TE, seTE,
       ## Calculate Variance-Covariance matrix
       ##
       if (available.n &
-          (available.events | available.times |
-           (available.sds)))
-        ##(available.means & available.sds)))
+          (available.events | available.times | (available.sds))) {
+        dat.tau <- dat.tau[order(dat.tau$studlab), ]
         V <- bldiag(lapply(split(dat.tau, dat.tau$studlab), calcV, sm = sm))
+      }
       else
         V <- dat.tau$seTE^2
       ##
@@ -1749,6 +1749,9 @@ netmeta <- function(TE, seTE,
   ##
   if (method.tau %in% c("ML", "REML")) {
     res$.metafor <- rma1
+    res$.dat.tau <- dat.tau
+    res$.V <- V
+    res$.formula.trts <- formula.trts
     res$version.metafor <- packageDescription("metafor")$Version
   }
   

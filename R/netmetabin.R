@@ -80,6 +80,9 @@
 #'   estimates and / or variances of multi-arm studies with
 #'   inconsistent results or negative multi-arm variances should be
 #'   printed (only considered if \code{method = "Inverse"}).
+#' @param details.chkdata A logical indicating whether number of
+#'   events and participants of studies with inconsistent data should
+#'   be printed.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
 #' @param nchar.trts A numeric defining the minimum number of
@@ -277,7 +280,8 @@
 #'   defined above.}
 #' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
 #'   above.}
-#' \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
+#' \item{details.chkmultiarm, details.chkdata}{As defined above.}
+#' \item{sep.trts, nchar.trts}{As defined above.}
 #' \item{backtransf, title, warn}{As defined above.}
 #' \item{data}{Data set (in contrast-based format).}
 #' \item{data.design}{List with data in arm-based format (each list
@@ -394,6 +398,7 @@ netmetabin <- function(event1, n1, event2, n2,
                        tol.multiarm = 0.001,
                        tol.multiarm.se = tol.multiarm,
                        details.chkmultiarm = FALSE,
+                       details.chkdata = TRUE,
                        ##
                        sep.trts = ":",
                        nchar.trts = 666,
@@ -468,6 +473,7 @@ netmetabin <- function(event1, n1, event2, n2,
   chknumeric(tol.multiarm, min = 0, length = 1)
   chknumeric(tol.multiarm.se, min = 0, length = 1)
   chklogical(details.chkmultiarm)
+  chklogical(details.chkdata)
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
@@ -800,6 +806,43 @@ netmetabin <- function(event1, n1, event2, n2,
                          stringsAsFactors = FALSE)
   dat.wide <- dat.wide[order(dat.wide$studlab,
                              dat.wide$treat1, dat.wide$treat2), ]
+  ##
+  ## Check for correct number of treatments
+  ##
+  d.long <- unique(dat.long[, c("studlab", "treat", "event", "n")])
+  d.long <- d.long[order(d.long$studlab, d.long$treat), , drop = FALSE]
+  ##
+  tabnarms <- table(d.long$studlab, d.long$treat)
+  larger.one <- function(x) any(x > 1)
+  sel.study <- apply(tabnarms, 1, larger.one)
+  ##
+  if (sum(sel.study) == 1) {
+    if (details.chkdata) {
+      cat("Inconsistent number of events and participants:\n")
+      d.l <- d.long[d.long$studlab == rownames(tabnarms)[sel.study], ]
+      prmatrix(d.l,
+               quote = FALSE, right = TRUE,
+               rowlab = rep("", nrow(d.l)))
+    }
+    stop(paste0("Study '", rownames(tabnarms)[sel.study],
+                "' has inconsistent data. Please check the original data."),
+         call. = FALSE)
+  }
+  if (sum(sel.study) > 1) {
+    if (details.chkdata) {
+      cat("Inconsistent number of events and participants:\n")
+      d.l <- d.long[d.long$studlab %in% rownames(tabnarms)[sel.study], ]
+      prmatrix(d.l,
+               quote = FALSE, right = TRUE,
+               rowlab = rep("", nrow(d.l)))
+    }
+    ##
+    stop(paste0("The following studies have inconsistent data: ",
+                paste(paste0("'", rownames(tabnarms)[sel.study], "'"),
+                      collapse = " - "),
+                "\n  Please check the original data."),
+         call. = FALSE)
+  }
   ##
   get.designs <- function(x) {
     ##
@@ -1922,6 +1965,7 @@ netmetabin <- function(event1, n1, event2, n2,
               tol.multiarm = tol.multiarm,
               tol.multiarm.se = tol.multiarm.se,
               details.chkmultiarm = details.chkmultiarm,
+              details.chkdata = details.chkdata,
               ##
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,

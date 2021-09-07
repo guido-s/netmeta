@@ -35,6 +35,7 @@ netmetabin(
   tol.multiarm = 0.001,
   tol.multiarm.se = tol.multiarm,
   details.chkmultiarm = FALSE,
+  details.chkdata = TRUE,
   sep.trts = ":",
   nchar.trts = 666,
   backtransf = gs("backtransf"),
@@ -148,6 +149,10 @@ design (only considered if \code{method = "Inverse"}).}
 estimates and / or variances of multi-arm studies with
 inconsistent results or negative multi-arm variances should be
 printed (only considered if \code{method = "Inverse"}).}
+
+\item{details.chkdata}{A logical indicating whether number of
+events and participants of studies with inconsistent data should
+be printed.}
 
 \item{sep.trts}{A character used in comparison names as separator
 between treatment labels.}
@@ -272,7 +277,8 @@ following components:
   defined above.}
 \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
   above.}
-\item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
+\item{details.chkmultiarm, details.chkdata}{As defined above.}
+\item{sep.trts, nchar.trts}{As defined above.}
 \item{backtransf, title, warn}{As defined above.}
 \item{data}{Data set (in contrast-based format).}
 \item{data.design}{List with data in arm-based format (each list

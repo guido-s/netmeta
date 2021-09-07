@@ -431,14 +431,14 @@ forest.netsplit <- function(x,
     dat.predict$TE <- NA
   ##
   dat.predict$seTE <- dat.predict$statistic <- dat.predict$p <-
-    dat.predict$z <- dat.predict$prop <- NA
+    dat.predict$Q <- NA
   ##
   dat.predict <- dat.predict[, c("comparison", "TE", "seTE",
-                                 "lower", "upper", "statistic", "p", "prop")]
-  dat.predict$Q < NA
+                                 "lower", "upper", "statistic", "p", "Q")]
   dat.predict$tau2 <- NA
   dat.predict$tau <- NA
   dat.predict$I2 <- NA
+  dat.predict$prop <- NA
   ##
   dat.direct$comps <- dat.indirect$comps <-
     dat.overall$comps <- dat.predict$comps <- x$comparison

@@ -500,7 +500,7 @@ netcomb <- function(x,
                      paste(paste0("'", sel.ident, "'"),
                            collapse = ", "),
                      if (!details.chkident)
-                       paste("\nFor more details, re-run discomb()",
+                       paste("\nFor more details, re-run netcomb()",
                              "with argument details.chkident = TRUE.")),
               call. = FALSE)
       ##
