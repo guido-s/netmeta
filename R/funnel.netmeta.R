@@ -222,9 +222,12 @@ funnel.netmeta <- function(x,
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
   ##
   if (missing(order)) {
-    warning("In order to construct a 'comparison-adjusted' funnel plot,\n",
-            "  please provide a meaningful order of treatments using argument 'order'\n",
-            "  (see help page of funnel.netmeta for some examples).")
+    warning("In order to construct a 'comparison-adjusted' funnel plot",
+            ",\n  ",
+            "please provide a meaningful order of treatments ",
+            "using argument 'order'",
+            "\n  ",
+            "(see help page of funnel.netmeta for some examples).")
     return(invisible(NULL))
   }
   else

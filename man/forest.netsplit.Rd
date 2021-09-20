@@ -14,6 +14,7 @@
   indirect = TRUE,
   prediction = x$prediction,
   only.reference = FALSE,
+  sortvar = NULL,
   text.overall = "Network estimate",
   text.direct = "Direct estimate",
   text.indirect = "Indirect estimate",
@@ -70,6 +71,9 @@ should be printed.}
 
 \item{only.reference}{A logical indicating whether only comparisons
 with the reference group should be printed.}
+
+\item{sortvar}{An optional vector used to sort comparisons (must be
+of same length as the total number of comparisons).}
 
 \item{text.overall}{A character string used in the plot to label
 the network estimates.}

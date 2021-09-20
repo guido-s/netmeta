@@ -88,12 +88,17 @@
   - new arguments 'comb.fixed' and 'comb.random'
   - new list elements 'comb.fixed' and 'comb.random'
 
+* netsplit():
+  - new argument 'order' to specify order in comparisons; see help
+    page of funnel.netmeta()
+
 * forest.netsplit():
   - print I2 from pairwise comparisons if argument direct = TRUE
 
 * forest.netsplit(), print.netsplit():
   - new argument 'only.reference' to only print comparisons with
     reference group
+  - new argument 'sortvar' to sort comparisons
 
 * pairwise():
   - keep all variables from original dataset if variable is missing

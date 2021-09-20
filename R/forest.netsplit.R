@@ -21,6 +21,8 @@
 #'   should be printed.
 #' @param only.reference A logical indicating whether only comparisons
 #'   with the reference group should be printed.
+#' @param sortvar An optional vector used to sort comparisons (must be
+#'   of same length as the total number of comparisons).
 #' @param subgroup A character string indicating which layout should
 #'   be used in forest plot: subgroups by comparisons
 #'   (\code{"comparison"}) or subgroups by estimates
@@ -165,6 +167,8 @@ forest.netsplit <- function(x,
                             ##
                             only.reference = FALSE,
                             ##
+                            sortvar = NULL,
+                            ##
                             text.overall = "Network estimate",
                             text.direct = "Direct estimate",
                             text.indirect = "Indirect estimate",
@@ -225,6 +229,18 @@ forest.netsplit <- function(x,
   missing.only.reference <- missing(only.reference)
   if (!missing.only.reference)
     chklogical(only.reference)
+  ##
+  if (!is.null(sortvar)) {
+    if (length(sortvar) == 1)
+      if (tolower(sortvar) == "k")
+        sortvar <- x$k
+      else if (tolower(sortvar) == "-k")
+        sortvar <- -x$k
+      else
+        stop("Wrong value for argument 'sortvar'.", call. = FALSE)
+    else
+      sortvar <- setchar(sortvar, x$comparison)
+  }
   ##
   chkchar(text.overall)
   chkchar(text.direct)
@@ -530,6 +546,17 @@ forest.netsplit <- function(x,
   dat.indirect <- dat.indirect[sel, ]
   dat.overall <- dat.overall[sel, ]
   dat.predict <- dat.predict[sel, ]
+  ##
+  if (!is.null(sortvar)) {
+    sortvar <- sortvar[sel]
+    ##
+    o <- order(sortvar)
+    ##
+    dat.direct <- dat.direct[o, ]
+    dat.indirect <- dat.indirect[o, ]
+    dat.overall <- dat.overall[o, ]
+    dat.predict <- dat.predict[o, ]
+  }
   
   
   ##

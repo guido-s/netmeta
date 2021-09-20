@@ -82,9 +82,7 @@
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
 #' @param event2 Number of events in second treatment group.
-#' @param incr Numerical value to each cell frequency.  # @param mean1
-#Mean in first treatment group.  # @param mean2 Mean in second
-#treatment group.
+#' @param incr Numerical value added to each cell frequency.
 #' @param sd1 Standard deviation in first treatment group.
 #' @param sd2 Standard deviation in second treatment group.
 #' @param time1 Person time at risk in first treatment group.

@@ -149,7 +149,7 @@ characters used to create unique study labels.}
 
 \item{event2}{Number of events in second treatment group.}
 
-\item{incr}{Numerical value to each cell frequency.  # @param mean1}
+\item{incr}{Numerical value added to each cell frequency.}
 
 \item{sd1}{Standard deviation in first treatment group.}
 

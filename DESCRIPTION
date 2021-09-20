@@ -1,8 +1,8 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
 Version: 1.6-0
-Date: 2021-09-07
-Depends: R (>= 3.5.0), meta (>= 4.19-0)
+Date: 2021-09-20
+Depends: R (>= 3.5.0), meta (>= 4.19-1)
 Imports: magic, MASS, ggplot2 (>= 3.0.0), metafor
 Suggests: colorspace, rgl, hasseDiagram (>= 0.1.3), grid, mvtnorm, gridExtra, igraph (>= 1.0.1)
 Authors@R: c(person("Gerta", "Rücker",
@@ -43,4 +43,4 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - contribution matrix as described in Papakonstantinou et al. (2018) <DOI:10.12688/f1000research.14770.3> and Davies et al. (2021) <https://arxiv.org/abs/2107.02886>.
 License: GPL (>= 2)
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

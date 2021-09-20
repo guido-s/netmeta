@@ -41,9 +41,8 @@
 #' @param smlab A label printed at top of figure. By default, text
 #'   indicating either fixed effect or random effects model is
 #'   printed.
-#' @param sortvar An optional vector used to sort the individual
-#'   studies (must be of same length as the total number of
-#'   treatments).
+#' @param sortvar An optional vector used to sort treatments (must be
+#'   of same length as the total number of treatments).
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in forest plots. If \code{backtransf = TRUE},
 #'   results for \code{sm = "OR"} are presented as odds ratios rather

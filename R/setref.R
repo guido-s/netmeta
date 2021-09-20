@@ -46,7 +46,7 @@ setref <- function(reference.group, levs, length = 1,
     if (anyNA(idx) || any(idx == 0))
       stop("Admissible values for ", text.within, ":\n  ",
            paste(paste("'", levs, "'", sep = ""), collapse = " - "),
-           "\n  (unmatches value", if (sum(is.na(idx)) > 1) "s",
+           "\n  (unmatched value", if (sum(is.na(idx)) > 1) "s",
            ": ",
            paste(paste("'", reference.group[is.na(idx)], "'", sep = ""),
                  collapse = " - "),
