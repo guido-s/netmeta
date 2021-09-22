@@ -1,7 +1,7 @@
 chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
                         tol.multiarm = 0.001,
                         tol.multiarm.se = tol.multiarm,
-                        details = FALSE) {
+                        details = FALSE, debug = FALSE) {
   
   
   ##
@@ -23,8 +23,9 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
   ##
   if (any(sel.multi)) {
     ##
-    msgdetails <- paste0("  - For more details, re-run netmeta() with argument ",
-                         "details.chkmultiarm = TRUE.\n")
+    msgdetails <-
+      paste0("  - For more details, re-run netmeta() with argument ",
+             "details.chkmultiarm = TRUE.\n")
     ##
     studlab.multi <- names(tabnarms)[sel.multi]
     ##
@@ -175,6 +176,12 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
       ## Check treatment estimates
       ##
       TE.diff <- TE.s - B %*% as.vector(ginv(B) %*% TE.s)
+      if (debug) {
+        cat("*** TE.diff = TE - B %*% as.vector(ginv(B) %*% TE) ***\n")
+        print(data.frame(TE = TE.s,
+                         TE.calc =  B %*% as.vector(ginv(B) %*% TE.s),
+                         TE.diff))
+      }
       ##
       inconsistent.TE[s.idx] <- any(abs(TE.diff) > tol.multiarm)
       ##
@@ -190,9 +197,19 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
       ## Check standard errors
       ##
       A <- abs(B)
+      ##
       sigma2 <- as.vector(ginv(A) %*% varTE.s)
       ##
       varTE.diff <- varTE.s - A %*% sigma2
+      ##
+      if (debug) {
+        cat("*** varTE.diff = varTE - A %*% sigma2 ***\n")
+        cat("*** with sigma2 = as.vector(ginv(A) %*% varTE) ***\n")
+        print(data.frame(varTE = varTE.s,
+                         varTE.calc = A %*% sigma2,
+                         varTE.diff))
+        print(data.frame(sigma2))
+      }
       ##
       inconsistent.varTE[s.idx] <- any(abs(varTE.diff) > tol.multiarm.se^2)
       ##
@@ -331,13 +348,14 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
     if (inconsistent | negative) {
       ##
       if (iTE > 0)
-        msgTE <- paste("  ",
-                       if (iTE == 1) "- Study " else "- Studies ",
-                       "with inconsistent treatment estimates: ",
-                       paste(paste("'", studlab.inconsistent.TE, "'", sep = ""),
-                             collapse = ", "),
-                       "\n",
-                       sep = "")
+        msgTE <-
+          paste("  ",
+                if (iTE == 1) "- Study " else "- Studies ",
+                "with inconsistent treatment estimates: ",
+                paste(paste("'", studlab.inconsistent.TE, "'", sep = ""),
+                      collapse = ", "),
+                "\n",
+                sep = "")
       else
         msgTE <- ""
       ##
