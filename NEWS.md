@@ -19,12 +19,22 @@
 * New R function netcomparison() to calculate omparison effects of two
   arbitrary complex interventions in component network meta-analysis
 
+* Calculation of standardised mean differences and corresponding
+  standard errors in pairwise() is based on [Crippa & Orsini
+  (2016)](https://doi.org/10.1186/s12874-016-0189-0), equations (4)
+  and (5), which provides consistent treatment estimates and standard
+  errors for multi-arm studies
+
 * I2 from pairwise comparisons shown in forest plot with direct and
   indirect evidence
 
 * In component network meta-analysis, individual component names
   instead of full treatment names can be abbreviated for complex
   interventions with more than one component
+
+* Do not stop calculations if standard errors of multi-arm studies are
+  inconsistent (instead only check for positive variance estimates of
+  single treatment arms)
 
 ### Bug fixes
 

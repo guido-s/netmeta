@@ -27,7 +27,7 @@ netmeta(
   method.tau = "DL",
   tau.preset = NULL,
   tol.multiarm = 0.001,
-  tol.multiarm.se = tol.multiarm,
+  tol.multiarm.se = NULL,
   details.chkmultiarm = FALSE,
   sep.trts = ":",
   nchar.trts = 666,
@@ -125,7 +125,8 @@ design.}
 
 \item{tol.multiarm.se}{A numeric for the tolerance for consistency
 of standard errors in multi-arm studies which are consistent by
-design.}
+design. This check is not conducted if the argument is
+\code{NULL}.}
 
 \item{details.chkmultiarm}{A logical indicating whether treatment
 estimates and / or variances of multi-arm studies with

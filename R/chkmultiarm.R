@@ -1,6 +1,6 @@
 chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
                         tol.multiarm = 0.001,
-                        tol.multiarm.se = tol.multiarm,
+                        tol.multiarm.se = NULL,
                         details = FALSE, debug = FALSE) {
   
   
@@ -211,7 +211,10 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
         print(data.frame(sigma2))
       }
       ##
-      inconsistent.varTE[s.idx] <- any(abs(varTE.diff) > tol.multiarm.se^2)
+      if (!is.null(tol.multiarm.se))
+        inconsistent.varTE[s.idx] <- any(abs(varTE.diff) > tol.multiarm.se^2)
+      else
+        inconsistent.varTE <- rep_len(FALSE, length(inconsistent.varTE))
       ##
       is.negative <- sigma2 < 0
       negative.sigma2[s.idx] <- any(is.negative)

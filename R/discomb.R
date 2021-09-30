@@ -53,7 +53,8 @@
 #'   design.
 #' @param tol.multiarm.se A numeric for the tolerance for consistency
 #'   of standard errors in multi-arm studies which are consistent by
-#'   design.
+#'   design. This check is not conducted if the argument is
+#'   \code{NULL}.
 #' @param details.chkmultiarm A logical indicating whether treatment
 #'   estimates and / or variances of multi-arm studies with
 #'   inconsistent results or negative multi-arm variances should be
@@ -386,7 +387,7 @@ discomb <- function(TE, seTE,
                     tau.preset = NULL,
                     ##
                     tol.multiarm = 0.001,
-                    tol.multiarm.se = tol.multiarm,
+                    tol.multiarm.se = NULL,
                     details.chkmultiarm = FALSE,
                     ##
                     details.chkident = FALSE,
@@ -428,7 +429,8 @@ discomb <- function(TE, seTE,
     chknumeric(tau.preset, min = 0, length = 1)
   ##
   chknumeric(tol.multiarm, min = 0, length = 1)
-  chknumeric(tol.multiarm.se, min = 0, length = 1)
+  if (!is.null(tol.multiarm.se))
+    chknumeric(tol.multiarm.se, min = 0, length = 1)
   chklogical(details.chkmultiarm)
   ##
   chklogical(details.chkident)

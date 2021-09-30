@@ -517,9 +517,6 @@ netcomb <- function(x,
   ##
   df.Q.additive <- x$df.Q + x$n - 1 - qr(X.matrix)$rank
   ##
-  if (is.null(x$tol.multiarm.se))
-    x$tol.multiarm.se <- x$tol.multiarm
-  ##
   net <- netmeta(TE, seTE, treat1, treat2, studlab,
                  tol.multiarm = x$tol.multiarm,
                  tol.multiarm.se = x$tol.multiarm.se,
