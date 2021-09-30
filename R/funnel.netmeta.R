@@ -320,6 +320,11 @@ funnel.netmeta <- function(x,
   ## (3) Calculate 'comparison-adjusted' treatment effects
   ##
   ##
+  if (is.numeric(treat1))
+    treat1 <- as.character(treat1)
+  if (is.numeric(treat2))
+    treat2 <- as.character(treat2)
+  ##
   if (pooled == "fixed")
     for (i in seq_along(res$TE))
       res$TE.direct[i] <- x$TE.direct.fixed[treat1[i], treat2[i]]

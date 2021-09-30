@@ -42,6 +42,9 @@
     component not a combination of treatment components (check was
     missing)
 
+* funnel.netmeta():
+  - works now with numeric treatment labels
+
 ### User-visible changes
 
 * New functions hatmatrix() and print.hatmatrix() to derive hat
