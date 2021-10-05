@@ -83,7 +83,7 @@
 #' #
 #' np1 <- netpairwise(net1)
 #' np1
-#' print(summary(np1), details.method = FALSE)
+#' print(np1, details.method = FALSE)
 #'
 #' \dontrun{
 #' forest(np1)

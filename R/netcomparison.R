@@ -351,6 +351,8 @@ netcomparison <- function(x, treat1, treat2,
               inactive = x$inactive,
               nchar.comps = nchar.comps,
               ##
+              backtransf = x$backtransf,
+              ##
               B.matrix = B.matrix,
               C.matrix = C.matrix,
               ##
@@ -380,7 +382,7 @@ print.netcomparison <- function(x,
                                 ##
                                 comb.fixed = x$comb.fixed,
                                 comb.random = x$comb.random,
-                                backtransf = x$x$backtransf,
+                                backtransf = x$backtransf,
                                 ##
                                 nchar.comps = x$nchar.comps,
                                 ##

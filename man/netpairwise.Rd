@@ -128,7 +128,7 @@ net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
 #
 np1 <- netpairwise(net1)
 np1
-print(summary(np1), details.method = FALSE)
+print(np1, details.method = FALSE)
 
 \dontrun{
 forest(np1)

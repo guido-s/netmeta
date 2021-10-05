@@ -496,7 +496,7 @@ netcomb <- function(x,
       warning(paste0("The following component",
                      if (length(sel.ident) > 1)
                        "s are " else " is ",
-                     "not identifiable: ",
+                     "not uniquely identifiable: ",
                      paste(paste0("'", sel.ident, "'"),
                            collapse = ", "),
                      if (!details.chkident)

@@ -20,7 +20,7 @@ netcomparison(
   x,
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
-  backtransf = x$x$backtransf,
+  backtransf = x$backtransf,
   nchar.comps = x$nchar.comps,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),

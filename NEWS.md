@@ -22,7 +22,7 @@
 * Calculation of standardised mean differences and corresponding
   standard errors in pairwise() is based on [Crippa & Orsini
   (2016)](https://doi.org/10.1186/s12874-016-0189-0), equations (4)
-  and (5), which provides consistent treatment estimates and standard
+  and (5), providing consistent treatment estimates and standard
   errors for multi-arm studies
 
 * I2 from pairwise comparisons shown in forest plot with direct and
