@@ -4,7 +4,12 @@
 \alias{decomp.design}
 \title{Design-based decomposition of Cochran's Q in network meta-analysis}
 \usage{
-decomp.design(x, tau.preset = x$tau.preset, warn = TRUE)
+decomp.design(
+  x,
+  tau.preset = x$tau.preset,
+  warn = TRUE,
+  nchar.trts = x$nchar.trts
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}
@@ -14,6 +19,9 @@ between-study variance \eqn{\tau^2} (see Details).}
 
 \item{warn}{A logical indicating whether warnings should be
 printed.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
 }
 \value{
 A list containing the following components:

@@ -62,7 +62,8 @@
 #'   design.
 #' @param tol.multiarm.se A numeric for the tolerance for consistency
 #'   of standard errors in multi-arm studies which are consistent by
-#'   design.
+#'   design. This check is not conducted if the argument is
+#'   \code{NULL}.
 #' @param details.chkmultiarm A logical indicating whether treatment
 #'   estimates and / or variances of multi-arm studies with
 #'   inconsistent results or negative multi-arm variances should be
@@ -76,13 +77,13 @@
 #'   example.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names (see Details).
+#' @param nchar.studlab A numeric defining the minimum number of
+#'   characters used to create unique study labels.
 #' @param n1 Number of observations in first treatment group.
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
 #' @param event2 Number of events in second treatment group.
-#' @param incr Numerical value to each cell frequency.  # @param mean1
-#Mean in first treatment group.  # @param mean2 Mean in second
-#treatment group.
+#' @param incr Numerical value added to each cell frequency.
 #' @param sd1 Standard deviation in first treatment group.
 #' @param sd2 Standard deviation in second treatment group.
 #' @param time1 Person time at risk in first treatment group.
@@ -96,6 +97,7 @@
 #' @param control An optional list to control the iterative process to
 #'   estimate the between-study variance \eqn{\tau^2}. This argument
 #'   is passed on to \code{\link[metafor]{rma.mv}}.
+#' @param nchar Deprecated argument (replaced by \code{nchar.trts}).
 #' 
 #' @details
 #' Network meta-analysis using R package \bold{netmeta} is described
@@ -237,8 +239,8 @@
 #' \code{summary}, \code{forest}, and \code{netrank} functions. The
 #' object is a list containing the following components:
 #' \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
-#' \item{seTE.adj}{Standard error of treatment estimate, adjusted for
-#'   multi-arm studies.}
+#' \item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+#'   estimate, adjusted for multi-arm studies.}
 #' \item{design}{Design of study providing pairwise comparison.}
 #' \item{n1, n2, event1, event2, incr}{As defined above.}
 ## \item{mean1, mean2, sd1, sd2, time1, time2}{As defined above.}
@@ -374,17 +376,18 @@
 #' \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
 #' \item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 #' \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
-#' \item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}
-#' \item{Lplus.matrix}{Moore-Penrose pseudoinverse of the Laplacian
-#'   matrix (\emph{n}x\emph{n}).}
+#' \item{L.matrix.fixed, L.matrix.random}{Laplacian matrix
+#'   (\emph{n}x\emph{n}).}
+#' \item{Lplus.matrix.fixed, Lplus.matrix.random}{Moore-Penrose
+#'   pseudoinverse of the Laplacian matrix (\emph{n}x\emph{n}).}
 #' \item{Q.matrix}{Matrix of heterogeneity statistics for pairwise
 #'   meta-analyses, where direct comparisons exist
 #'   (\emph{n}x\emph{n}).}
 #' \item{G.matrix}{Matrix with variances and covariances of
 #'   comparisons (\emph{m}x\emph{m}). G is defined as
 #'   \strong{BL+B^t}.}
-#' \item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as
-#'   \strong{H = GW = BL+B^tW}.}
+#' \item{H.matrix.fixed, H.matrix.random}{Hat matrix
+#'   (\emph{m}x\emph{m}), defined as \strong{H = GW = BL+B^tW}.}
 #' \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
 #'   observations in direct comparisons (if arguments \code{n1} and
 #'   \code{n2} are provided).}
@@ -505,11 +508,12 @@ netmeta <- function(TE, seTE,
                     tau.preset = NULL,
                     ##
                     tol.multiarm = 0.001,
-                    tol.multiarm.se = tol.multiarm,
+                    tol.multiarm.se = NULL,
                     details.chkmultiarm = FALSE,
                     ##
                     sep.trts = ":",
                     nchar.trts = 666,
+                    nchar.studlab = 666,
                     ##
                     n1 = NULL,
                     n2 = NULL,
@@ -529,7 +533,8 @@ netmeta <- function(TE, seTE,
                     keepdata = gs("keepdata"),
                     warn = TRUE,
                     ##
-                    control = NULL
+                    control = NULL,
+                    nchar = nchar.trts
                     ) {
 
 
@@ -564,12 +569,14 @@ netmeta <- function(TE, seTE,
     chknumeric(tau.preset, min = 0, length = 1)
   ##
   chknumeric(tol.multiarm, min = 0, length = 1)
-  chknumeric(tol.multiarm.se, min = 0, length = 1)
+  if (!is.null(tol.multiarm.se))
+    chknumeric(tol.multiarm.se, min = 0, length = 1)
   chklogical(details.chkmultiarm)
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
   chknumeric(nchar.trts, min = 1, length = 1)
+  chknumeric(nchar.studlab, length = 1)
   ##
   chklogical(backtransf)
   ##
@@ -589,8 +596,21 @@ netmeta <- function(TE, seTE,
       all.treatments <- FALSE
   ##
   chklogical(baseline.reference)
-
-
+  ##
+  ## Check for deprecated argument 'nchar'
+  ##
+  if (!missing(nchar))
+    if (!missing(nchar.trts))
+      warning("Deprecated argument 'nchar' ignored as ",
+              "argument 'nchar.trts' is also provided.")
+    else {
+      warning("Deprecated argument 'nchar' has been replaced by ",
+              "argument 'nchar.trts'.")
+      nchar.trts <- nchar
+      chknumeric(nchar.trts, min = 1, length = 1)
+    }
+  
+  
   ##
   ##
   ## (2) Read data
@@ -1175,7 +1195,8 @@ netmeta <- function(TE, seTE,
                        p0$narms, p0$studlab,
                        sm,
                        level, level.comb,
-                       p0$seTE, sep.trts = sep.trts)
+                       p0$seTE, 0, sep.trts,
+                       method.tau)
   ##
   trts <- rownames(res.f$A.matrix)
   ##
@@ -1275,10 +1296,10 @@ netmeta <- function(TE, seTE,
       ## Calculate Variance-Covariance matrix
       ##
       if (available.n &
-          (available.events | available.times |
-           (available.sds)))
-        ##(available.means & available.sds)))
+          (available.events | available.times | (available.sds))) {
+        dat.tau <- dat.tau[order(dat.tau$studlab), ]
         V <- bldiag(lapply(split(dat.tau, dat.tau$studlab), calcV, sm = sm))
+      }
       else
         V <- dat.tau$seTE^2
       ##
@@ -1303,7 +1324,8 @@ netmeta <- function(TE, seTE,
                        p1$narms, p1$studlab,
                        sm,
                        level, level.comb,
-                       p1$seTE, tau, sep.trts = sep.trts)
+                       p1$seTE, tau, sep.trts,
+                       method.tau)
   ##
   TE.random <- res.r$TE.pooled
   seTE.random <- res.r$seTE.pooled
@@ -1347,6 +1369,8 @@ netmeta <- function(TE, seTE,
               TE = res.f$TE[o],
               seTE = res.f$seTE.orig[o],
               seTE.adj = res.f$seTE[o],
+              seTE.adj.fixed = res.f$seTE[o],
+              seTE.adj.random = res.r$seTE[o],
               ##
               design = designs$design[o],
               ##
@@ -1438,6 +1462,11 @@ netmeta <- function(TE, seTE,
               statistic.direct.random = res.r$statistic.direct,
               pval.direct.random = res.r$pval.direct,
               ##
+              Q.direct = res.r$Q.direct,
+              tau.direct = sqrt(res.r$tau2.direct),
+              tau2.direct = res.r$tau2.direct,
+              I2.direct = res.r$I2.direct,
+              ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
               lower.indirect.fixed = NA,
@@ -1474,12 +1503,18 @@ netmeta <- function(TE, seTE,
               A.matrix = res.f$A.matrix,
               X.matrix = res.f$B.matrix[o, ],
               B.matrix = res.f$B.matrix[o, ],
-              L.matrix = res.f$L.matrix,
-              Lplus.matrix = res.f$Lplus.matrix,
+              ##
+              L.matrix.fixed = res.f$L.matrix,
+              Lplus.matrix.fixed = res.f$Lplus.matrix,
+              L.matrix.random = res.r$L.matrix,
+              Lplus.matrix.random = res.r$Lplus.matrix,
+              ##
               Q.matrix = res.f$Q.matrix,
               ##
               G.matrix = res.f$G.matrix[o, o],
-              H.matrix = res.f$H.matrix[o, o],
+              ##
+              H.matrix.fixed = res.f$H.matrix[o, o],
+              H.matrix.random = res.r$H.matrix[o, o],
               ##
               n.matrix = if (available.n) NA else NULL,
               events.matrix = if (available.events) NA else NULL,
@@ -1517,6 +1552,7 @@ netmeta <- function(TE, seTE,
               ##
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,
+              nchar.studlab = nchar.studlab,
               ##
               backtransf = backtransf,
               ##
@@ -1547,6 +1583,8 @@ netmeta <- function(TE, seTE,
   ##
   res$comparisons <-
     names(res$prop.direct.random)[!is.zero(res$prop.direct.random)]
+  ##
+  ## Add P.fixed and P.random
   ##
   P.fixed <- P.random <- matrix(NA, n, n)
   colnames(P.fixed) <- rownames(P.fixed) <-
@@ -1711,6 +1749,9 @@ netmeta <- function(TE, seTE,
   ##
   if (method.tau %in% c("ML", "REML")) {
     res$.metafor <- rma1
+    res$.dat.tau <- dat.tau
+    res$.V <- V
+    res$.formula.trts <- formula.trts
     res$version.metafor <- packageDescription("metafor")$Version
   }
   

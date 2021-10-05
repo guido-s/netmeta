@@ -2,52 +2,74 @@
 % Please edit documentation in R/treats.R
 \name{treats}
 \alias{treats}
+\alias{comps}
 \title{Abbreviate treatment names}
 \usage{
 treats(x, nchar.trts = 8, row = TRUE)
+
+comps(x, trts, sep.trts, nchar.trts = 8, row = TRUE)
 }
 \arguments{
-\item{x}{A vector with treatment names or a matrix with treatment
-names as row and / or column names.}
+\item{x}{A vector with treatment or comparison names or a matrix
+with treatment or comparison names as row and / or column names.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
 
 \item{row}{A logical indicating whether row or column names should
 be used (only considered if argument \code{x} is a matrix).}
+
+\item{trts}{A character vector with treatment names.}
+
+\item{sep.trts}{A character used in comparison names as separator
+between treatment labels.}
 }
 \description{
-Auxiliary function to create uniquely abbreviated treatment names.
+Auxiliary functions to create uniquely abbreviated treatment names.
 }
 \details{
-This auxiliary function can be used to create uniquely abbreviated
-treatment names (and is used internally in several R functions for
-this purpose).
+These auxiliary functions can be used to create uniquely
+abbreviated treatment names (and are used internally in several R
+functions for this purpose).
 
-Initially, to construct uniquely abbreviated treatment names,
-\code{\link{substring}} is used to extract the first
+In order to construct uniquely abbreviated treatment names,
+\code{treats} uses \code{\link{substring}} to extract the first
 \code{nchar.trts} characters. If these abbreviated treatment names
 are not unique, \code{\link{abbreviate}} with argument
 \code{minlength = nchar.trts} is used.
+
+In order to construct comparisons with uniquely abbreviated
+treatment names, \code{comps} calls \code{treats} internally.
 }
 \examples{
 data(Senn2013)
 #
-net1 <- netmeta(TE, seTE, treat1, treat2,
+net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
                 studlab, data = Senn2013)
 
-# Use matrix with fixed effects estimates to create unique
-# treatment names (with four characters)
+# Full treatment names
 #
-treats(net1$TE.fixed, nchar.trts = 4)
+net1$trts
+
+# Treatment names with four characters
+#
+treats(net1$trts, nchar.trts = 4)
 
 # With two characters
 #
-treats(net1$TE.fixed, nchar.trts = 2)
+treats(net1$trts, nchar.trts = 2)
 
-# With one character
+# With one character (if possible)
 #
-treats(net1$TE.fixed, nchar.trts = 1)
+treats(net1$trts, nchar.trts = 1)
+
+# Full comparison names
+#
+net1$comparisons
+
+# Abbreviated comparison names
+#
+with(net1, comps(comparisons, trts, sep.trts, nchar = 4))
 
 }
 \seealso{

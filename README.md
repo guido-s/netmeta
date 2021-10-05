@@ -7,6 +7,17 @@ Official Git repository of R package **netmeta**
 [![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)
 
 
+## Authors
+
+[Gerta Rücker](https://orcid.org/0000-0002-2192-2560),
+Ulrike Krahn,
+[Jochem König](https://orcid.org/0000-0003-4683-0360),
+[Orestis Efthimiou](https://orcid.org/0000-0002-0955-7572),
+[Annabel Davies](https://orcid.org/0000-0003-2320-7701),
+[Theodoros Papakonstantinou](https://orcid.org/0000-0002-6630-6817),
+[Guido Schwarzer](https://orcid.org/0000-0001-6214-9087)
+
+
 ## Description
 
 A comprehensive set of functions providing frequentist methods for
@@ -40,7 +51,7 @@ network meta-analysis:
 
   - additive network meta-analysis for combinations of treatments
     ([Rücker et al.,
-    2019](https://scholar.google.com/scholar?q=Rücker+Schwarzer+Petropoulou+2019+Network+meta-analysis+of+multicomponent+interventions));
+    2020](https://scholar.google.com/scholar?q=Rücker+Schwarzer+Petropoulou+2020+Network+meta-analysis+of+multicomponent+interventions));
 
   - network meta-analysis of binary data using the Mantel-Haenszel
     method or the non-central hypergeometric distribution ([Efthimiou
@@ -53,21 +64,24 @@ network meta-analysis:
   - automated drawing of network graphs ([Rücker & Schwarzer,
     2016](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2016+Automated+drawing+of+network+plots+in+network+meta-analysis));
   
-  - rankograms based on Surface Under the Cumulative RAnking curve (SUCRA);
+  - rankograms and ranking by Surface Under the Cumulative RAnking curve (SUCRA) values;
   
  - contribution matrix ([Papakonstantinou et al.,
-   2018](https://scholar.google.com/scholar?q=Papakonstantinou+Nikolakopoulou+Rücker+Chaimani+Schwarzer+2018+contribution+flows+streams))
-
+   2018](https://scholar.google.com/scholar?q=Papakonstantinou+Nikolakopoulou+Rücker+Chaimani+Schwarzer+2018+contribution+flows+streams); [Davies et al., 2021](http://arxiv.org/abs/2107.02886)
+)
 
 Furthermore, R package **netmeta** provides functions and datasets to
 support Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
 https://www.springer.com/gp/book/9783319214153 .
+
 
 ### References
 
 [Carlsen L, Bruggemann R (2014): Partial order methodology: a valuable tool in chemometrics. *Journal of Chemometrics*, **28**, 226-34](https://scholar.google.com/scholar?q=Partial+order+methodology%3A+a+valuable+tool+in+chemometrics)
 
 [Chaimani A, Salanti G (2012): Using network meta-analysis to evaluate the existence of small-study effects in a network of interventions. *Research Synthesis Methods*, **3**, 161-76](https://scholar.google.com/scholar?q=Chaimani+Salanti+Using+network+meta-analysis+to+evaluate+the+existence+of+small-study+effects+in+a+network+of+interventions)
+
+[Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T (2021): Network meta-analysis and random walks. Available on arXiv](http://arxiv.org/abs/2107.02886)
 
 [Dias S, Welton NJ, Caldwell DM, Ades AE (2010): Checking consistency in mixed treatment comparison meta-analysis. *Statistics in Medicine*, **29**, 932-44](https://scholar.google.com/scholar?q=Checking+consistency+in+mixed+treatment+comparison+meta-analysis)
 
@@ -91,7 +105,7 @@ events. *Statistics in Medicine*, 1-21](https://scholar.google.com/scholar?q=Eft
 
 [Rücker G, Schwarzer G (2017): Resolve conflicting rankings of outcomes in network meta-analysis: Partial ordering of treatments. *Research Synthesis Methods*, **8**, 526-36](https://scholar.google.com/scholar?q=Rücker+Schwarzer+2017+resolve+conflicting+rankings+of+outcomes+in+network+meta-analysis)
 
-[Rücker G, Petropoulou M, Schwarzer G (2019): Network meta-analysis of multicomponent interventions. *Biometrical Journal*, 1-14](https://scholar.google.com/scholar?q=Rücker+Schwarzer+Petropoulou+2019+Network+meta-analysis+of+multicomponent+interventions)
+[Rücker G, Petropoulou M, Schwarzer G (2020): Network meta-analysis of multicomponent interventions. *Biometrical Journal*, **62**, 808-21](https://scholar.google.com/scholar?q=Rücker+Schwarzer+Petropoulou+2020+Network+meta-analysis+of+multicomponent+interventions)
 
 [Schwarzer G, Carpenter JR and Rücker G (2015): *Meta-Analysis with R (Use-R!)*. Springer International Publishing, Switzerland](http://www.springer.com/gp/book/9783319214153)
 

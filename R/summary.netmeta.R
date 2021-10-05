@@ -314,6 +314,7 @@ summary.netmeta <- function(object,
               ##
               tau.preset = object$tau.preset,
               ##
+              n.trts = object$n.trts,
               sep.trts = object$sep.trts,
               nchar.trts = object$nchar.trts,
               ##
@@ -550,10 +551,13 @@ print.summary.netmeta <- function(x,
   
   if (comb.fixed | comb.random) {
     cat(paste("Number of studies: k = ", k, "\n", sep = ""))
-    cat(paste("Number of treatments: n = ", n, "\n", sep = ""))
-    cat(paste("Number of pairwise comparisons: m = ", m, "\n", sep = ""))
+    if (!is.null(x$n.trts))
+      cat(paste0("Number of observations: o = ", sum(x$n.trts, na.rm = TRUE),
+                 "\n"))
+    cat(paste0("Number of treatments: n = ", n, "\n"))
+    cat(paste0("Number of pairwise comparisons: m = ", m, "\n"))
     if (!oldversion)
-      cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
+      cat(paste0("Number of designs: d = ", x$d, "\n"))
     
     
     if (reference.group != "")
@@ -1017,6 +1021,7 @@ print.summary.netmeta <- function(x,
     ##
     tmat <- data.frame(abbr, full)
     names(tmat) <- c("Abbreviation", "Treatment name")
+    tmat <- tmat[abbr != full, ]
     tmat <- tmat[order(tmat$Abbreviation), ]
     ##
     if (legend) {

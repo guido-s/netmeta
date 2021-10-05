@@ -11,6 +11,7 @@ netsplit(
   upper = TRUE,
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
+  order = NULL,
   sep.trts = x$sep.trts,
   quote.trts = "",
   tol.direct = 5e-04,
@@ -28,6 +29,9 @@ netsplit(
   overall = TRUE,
   ci = FALSE,
   test = show \%in\% c("all", "with.direct", "both"),
+  only.reference = FALSE,
+  sortvar = NULL,
+  nchar.trts = x$nchar.trts,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
@@ -51,14 +55,20 @@ abbreviated. See Details.}
 \item{upper}{A logical indicating whether treatment comparisons
 should be selected from the lower or upper triangle of the
 treatment effect matrices (see list elements \code{TE.fixed} and
-\code{TE.random} in the \code{netmeta} object).}
+\code{TE.random} in the \code{netmeta} object). Ignored if
+argument \code{order} is provided.}
 
-\item{reference.group}{Reference treatment.}
+\item{reference.group}{Reference treatment. Ignored if argument
+\code{order} is provided.}
 
 \item{baseline.reference}{A logical indicating whether results
 should be expressed as comparisons of other treatments versus the
 reference treatment or vice versa. This argument is only
-considered if \code{reference.group} is not equal to \code{""}.}
+considered if \code{reference.group} is not equal to \code{""}
+and argument\code{order} is not provided.}
+
+\item{order}{A optional character or numerical vector specifying
+the order of treatments in comparisons.}
 
 \item{sep.trts}{A character string used in comparison names as
 separator between treatment labels, e.g., " vs ".}
@@ -97,6 +107,15 @@ be printed in addition to treatment estimates.}
 
 \item{test}{A logical indicating whether results of a test
 comparing direct and indirect estimates should be printed.}
+
+\item{only.reference}{A logical indicating whether only comparisons
+with the reference group should be printed.}
+
+\item{sortvar}{An optional vector used to sort comparisons (must be
+of same length as the total number of comparisons).}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
@@ -195,9 +214,7 @@ Argument \code{show} determines which comparisons are printed:
 \dQuote{direct.only} \tab Comparisons providing only direct
   evidence \cr
 \dQuote{indirect.only} \tab Comparisons providing only indirect
-  evidence \cr
-\dQuote{reference.only} \tab Only comparisons with the reference
-  group
+  evidence
 }
 }
 \examples{

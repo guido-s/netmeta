@@ -10,7 +10,7 @@
 #' 
 #' @param x An object of class \code{netmeta}.
 #' @param inactive A character string defining the inactive treatment
-#'   (see Details).
+#'   component (see Details).
 #' @param sep.comps A single character to define separator between
 #'   treatment components.
 #' @param C.matrix C matrix (see Details).
@@ -22,6 +22,9 @@
 #'   between-study variance \eqn{\tau^2}.
 #' @param details.chkident A logical indicating whether details on
 #'   unidentifiable components should be printed.
+#' @param nchar.comps A numeric defining the minimum number of
+#'   characters used to create unique names for components (see
+#'   Details).
 #' 
 #' @details
 #' Treatments in network meta-analysis (NMA) can be complex
@@ -38,7 +41,7 @@
 #' 
 #' The additive CNMA model has been implemented using Bayesian methods
 #' (Mills et al., 2012; Welton et al., 2013). This function implements
-#' the additive model in a frequentist way (Rücker et al., 2019).
+#' the additive model in a frequentist way (Rücker et al., 2020).
 #' 
 #' The underlying multivariate model is given by
 #' 
@@ -70,6 +73,25 @@
 #' between individual components. By default, the matrix \strong{C} is
 #' calculated internally from treatment names. However, it is possible
 #' to specify a different matrix using argument \code{C.matrix}.
+#' 
+#' By default, component names are not abbreviated in
+#' printouts. However, in order to get more concise printouts,
+#' argument \code{nchar.comps} can be used to define the minimum
+#' number of characters for abbreviated component names (see
+#' \code{\link{abbreviate}}, argument \code{minlength}). R function
+#' \code{\link{treats}} is utilised internally to create abbreviated
+#' component names.
+#' 
+#' @note
+#' This function calculates effects for individual components and
+#' complex interventions present in the network.
+#'
+#' R function \code{\link{netcomplex}} can be used to calculate the
+#' effect for arbitrary complex interventions in a component network
+#' meta-analysis. Furthermore, R function \code{\link{netcomparison}}
+#' can be used to calculate the effect for comparisons of two
+#' arbitrary complex intervention in a component network
+#' meta-analysis.
 #'
 #' @return
 #' An object of class \code{netcomb} with corresponding \code{print},
@@ -81,8 +103,8 @@
 #' \item{TE}{Estimate of treatment effect, i.e. difference between
 #'   first and second treatment.}
 #' \item{seTE}{Standard error of treatment estimate.}
-#' \item{seTE.adj}{Standard error of treatment estimate, adjusted for
-#'   multi-arm studies.}
+#' \item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+#'   estimate, adjusted for multi-arm studies.}
 #' \item{design}{Design of study providing pairwise comparison.}
 #' \item{event1}{Number of events in first treatment group.}
 #' \item{event2}{Number of events in second treatment group.}
@@ -177,8 +199,8 @@
 #' \item{pval.Comp.fixed, pval.Comp.random}{A vector with p-values for
 #'   the overall effect of components (fixed and random effects
 #'   model).}
-#' \item{Comb.fixed, Comb.random}{A vector of combination effects (fixed
-#'   and random effects model).}
+#' \item{Comb.fixed, Comb.random}{A vector of combination effects
+#'   (fixed and random effects model).}
 #' \item{seComb.fixed, seComb.random}{A vector with corresponding
 #'   standard errors (fixed and random effects model).}
 #' \item{lower.Comb.fixed, lower.Comb.random}{A vector with lower
@@ -187,9 +209,9 @@
 #' \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
 #'   confidence limits for combinations (fixed and random effects
 #'   model).}
-#' \item{statistic.Comb.fixed, statistic.Comb.random}{A vector with z-values for
-#'   the overall effect of combinations (fixed and random effects
-#'   model).}
+#' \item{statistic.Comb.fixed, statistic.Comb.random}{A vector with
+#'   z-values for the overall effect of combinations (fixed and random
+#'   effects model).}
 #' \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
 #'   the overall effect of combinations (fixed and random effects
 #'   model).}
@@ -222,8 +244,8 @@
 #' \item{comb.fixed, comb.random, tau.preset}{As defined above.}
 #' \item{sep.trts}{A character used in comparison names as separator
 #'   between treatment labels.}
-#' \item{nchar.trts}{A numeric defining the minimum number of
-#'   characters used to create unique treatment and component names.}
+#' \item{nchar.comps}{A numeric defining the minimum number of
+#'   characters used to create unique component names.}
 #' \item{inactive, sep.comps}{As defined above.}
 #' \item{backtransf}{A logical indicating whether results should be
 #'   back transformed in printouts and forest plots.}
@@ -236,8 +258,9 @@
 #' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
 #'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
-#' @seealso \link{discomb}, \link{netmeta}, \link{forest.netcomb},
-#'   \link{print.netcomb}
+#' @seealso \code{\link{discomb}}, \code{\link{netmeta}},
+#'   \code{\link{forest.netcomb}}, \code{\link{print.netcomb}},
+#'   \code{\link{netcomplex}}, \code{\link{netcomparison}}
 #' 
 #' @references
 #' König J, Krahn U, Binder H (2013):
@@ -252,10 +275,10 @@
 #' \emph{Journal of Clinical Epidemiology},
 #' \bold{65}, 1282--8
 #' 
-#' Rücker G, Petropoulou M, Schwarzer G (2019):
+#' Rücker G, Petropoulou M, Schwarzer G (2020):
 #' Network meta-analysis of multicomponent interventions.
 #' \emph{Biometrical Journal},
-#' 1--14, https://doi.org/10.1002/bimj.201800167
+#' \bold{62}, 808--21
 #' 
 #' Welton NJ, Caldwell DM, Adamopoulos E, Vedhara K (2009):
 #' Mixed treatment comparison meta-analysis of complex interventions:
@@ -329,7 +352,8 @@ netcomb <- function(x,
                     comb.fixed = x$comb.fixed,
                     comb.random = x$comb.random | !is.null(tau.preset),
                     tau.preset = NULL,
-                    details.chkident = FALSE) {
+                    details.chkident = FALSE,
+                    nchar.comps = x$nchar.trts) {
   
   
   ##
@@ -350,6 +374,8 @@ netcomb <- function(x,
     meta:::chknumeric(tau.preset, min = 0, length = 1)
   ##
   meta:::chklogical(details.chkident)
+  nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
+  meta:::chknumeric(nchar.comps, min = 1, length = 1)
   
   
   ##
@@ -380,8 +406,9 @@ netcomb <- function(x,
     ##
     ## Create C-matrix from netmeta object
     ##
-    C.matrix <- as.matrix(createC(x, sep.comps, inactive))
-    C.matrix <- C.matrix[trts, , drop = FALSE]
+    C.matrix <- createC(x, sep.comps, inactive)
+    inactive <- attr(C.matrix, "inactive")
+    C.matrix <- as.matrix(C.matrix)[trts, , drop = FALSE]
   }
   else {
     ##
@@ -403,7 +430,11 @@ netcomb <- function(x,
     if (is.null(rownames(C.matrix)))
       wrong.labels <- TRUE
     else {
-      if (length(unique(trts)) == length(unique(tolower(trts))))
+      if (length(unique(trts)) ==
+          length(unique(tolower(trts))) &&
+          length(unique(rownames(C.matrix))) ==
+          length(unique(tolower(rownames(C.matrix))))
+          )
         idx <- charmatch(tolower(rownames(C.matrix)),
                          tolower(trts), nomatch = NA)
       else
@@ -465,11 +496,11 @@ netcomb <- function(x,
       warning(paste0("The following component",
                      if (length(sel.ident) > 1)
                        "s are " else " is ",
-                     "not identifiable: ",
+                     "not uniquely identifiable: ",
                      paste(paste0("'", sel.ident, "'"),
                            collapse = ", "),
                      if (!details.chkident)
-                       paste("\nFor more details, re-run discomb()",
+                       paste("\nFor more details, re-run netcomb()",
                              "with argument details.chkident = TRUE.")),
               call. = FALSE)
       ##
@@ -485,9 +516,6 @@ netcomb <- function(x,
   ## Fixed effects models
   ##
   df.Q.additive <- x$df.Q + x$n - 1 - qr(X.matrix)$rank
-  ##
-  if (is.null(x$tol.multiarm.se))
-    x$tol.multiarm.se <- x$tol.multiarm
   ##
   net <- netmeta(TE, seTE, treat1, treat2, studlab,
                  tol.multiarm = x$tol.multiarm,
@@ -543,6 +571,8 @@ netcomb <- function(x,
               TE = x$TE,
               seTE = x$seTE,
               seTE.adj = x$seTE.adj,
+              seTE.adj.fixed = x$seTE.adj.fixed,
+              seTE.adj.random = x$seTE.adj.random,
               ##
               design = x$design,
               ##
@@ -664,6 +694,14 @@ netcomb <- function(x,
               B.matrix = B.matrix,
               C.matrix = C.matrix,
               ##
+              L.matrix.fixed = res.f$L.matrix,
+              Lplus.matrix.fixed = res.f$Lplus.matrix,
+              L.matrix.random = res.r$L.matrix,
+              Lplus.matrix.random = res.r$Lplus.matrix,
+              ##
+              H.matrix.fixed = res.f$H.matrix[o, o],
+              H.matrix.random = res.r$H.matrix[o, o],
+              ##
               n.matrix = x$n.matrix,
               events.matrix = x$events.matrix,
               ##
@@ -688,10 +726,10 @@ netcomb <- function(x,
               details.chkmultiarm = x$details.chkmultiarm,
               ##
               sep.trts = x$sep.trts,
-              nchar.trts = x$nchar.trts,
+              sep.comps = sep.comps,
+              nchar.comps = nchar.comps,
               ##
               inactive = inactive,
-              sep.comps = sep.comps,
               ##
               backtransf = x$backtransf,
               ##

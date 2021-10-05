@@ -12,6 +12,8 @@
   digits.tau2 = gs("digits.tau2"),
   scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
+  nchar.trts = x$nchar.trts,
+  legend = TRUE,
   ...
 )
 }
@@ -36,6 +38,12 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 0.12345.}
 
 \item{big.mark}{A character used as thousands separator.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
 
 \item{\dots}{Additional arguments (ignored at the moment).}
 }

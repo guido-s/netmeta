@@ -27,10 +27,11 @@ netmeta(
   method.tau = "DL",
   tau.preset = NULL,
   tol.multiarm = 0.001,
-  tol.multiarm.se = tol.multiarm,
+  tol.multiarm.se = NULL,
   details.chkmultiarm = FALSE,
   sep.trts = ":",
   nchar.trts = 666,
+  nchar.studlab = 666,
   n1 = NULL,
   n2 = NULL,
   event1 = NULL,
@@ -44,7 +45,8 @@ netmeta(
   title = "",
   keepdata = gs("keepdata"),
   warn = TRUE,
-  control = NULL
+  control = NULL,
+  nchar = nchar.trts
 )
 }
 \arguments{
@@ -123,7 +125,8 @@ design.}
 
 \item{tol.multiarm.se}{A numeric for the tolerance for consistency
 of standard errors in multi-arm studies which are consistent by
-design.}
+design. This check is not conducted if the argument is
+\code{NULL}.}
 
 \item{details.chkmultiarm}{A logical indicating whether treatment
 estimates and / or variances of multi-arm studies with
@@ -136,6 +139,9 @@ between treatment labels.}
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names (see Details).}
 
+\item{nchar.studlab}{A numeric defining the minimum number of
+characters used to create unique study labels.}
+
 \item{n1}{Number of observations in first treatment group.}
 
 \item{n2}{Number of observations in second treatment group.}
@@ -144,7 +150,7 @@ characters used to create unique treatment names (see Details).}
 
 \item{event2}{Number of events in second treatment group.}
 
-\item{incr}{Numerical value to each cell frequency.  # @param mean1}
+\item{incr}{Numerical value added to each cell frequency.}
 
 \item{sd1}{Standard deviation in first treatment group.}
 
@@ -172,14 +178,16 @@ standard errors).}
 \item{control}{An optional list to control the iterative process to
 estimate the between-study variance \eqn{\tau^2}. This argument
 is passed on to \code{\link[metafor]{rma.mv}}.}
+
+\item{nchar}{Deprecated argument (replaced by \code{nchar.trts}).}
 }
 \value{
 An object of class \code{netmeta} with corresponding \code{print},
 \code{summary}, \code{forest}, and \code{netrank} functions. The
 object is a list containing the following components:
 \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
-\item{seTE.adj}{Standard error of treatment estimate, adjusted for
-  multi-arm studies.}
+\item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+  estimate, adjusted for multi-arm studies.}
 \item{design}{Design of study providing pairwise comparison.}
 \item{n1, n2, event1, event2, incr}{As defined above.}
 \item{sd1, sd2, time1, time2}{As defined above.}
@@ -314,17 +322,18 @@ object is a list containing the following components:
 \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
 \item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
-\item{L.matrix}{Laplacian matrix (\emph{n}x\emph{n}).}
-\item{Lplus.matrix}{Moore-Penrose pseudoinverse of the Laplacian
-  matrix (\emph{n}x\emph{n}).}
+\item{L.matrix.fixed, L.matrix.random}{Laplacian matrix
+  (\emph{n}x\emph{n}).}
+\item{Lplus.matrix.fixed, Lplus.matrix.random}{Moore-Penrose
+  pseudoinverse of the Laplacian matrix (\emph{n}x\emph{n}).}
 \item{Q.matrix}{Matrix of heterogeneity statistics for pairwise
   meta-analyses, where direct comparisons exist
   (\emph{n}x\emph{n}).}
 \item{G.matrix}{Matrix with variances and covariances of
   comparisons (\emph{m}x\emph{m}). G is defined as
   \strong{BL+B^t}.}
-\item{H.matrix}{Hat matrix (\emph{m}x\emph{m}), defined as
-  \strong{H = GW = BL+B^tW}.}
+\item{H.matrix.fixed, H.matrix.random}{Hat matrix
+  (\emph{m}x\emph{m}), defined as \strong{H = GW = BL+B^tW}.}
 \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
   observations in direct comparisons (if arguments \code{n1} and
   \code{n2} are provided).}

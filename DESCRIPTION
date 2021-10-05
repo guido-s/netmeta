@@ -1,8 +1,8 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
-Version: 1.5-0
-Date: 2021-06-28
-Depends: R (>= 3.5.0), meta (>= 4.15-1)
+Version: 1.6-0
+Date: 2021-10-05
+Depends: R (>= 3.5.0), meta (>= 4.19-1)
 Imports: magic, MASS, ggplot2 (>= 3.0.0), metafor
 Suggests: colorspace, rgl, hasseDiagram (>= 0.1.3), grid, mvtnorm, gridExtra, igraph (>= 1.0.1)
 Authors@R: c(person("Gerta", "Rücker",
@@ -16,6 +16,9 @@ Authors@R: c(person("Gerta", "Rücker",
              person("Orestis", "Efthimiou",
                     role = "aut",
                     comment = c(ORCID = "0000-0002-0955-7572")),
+             person("Annabel", "Davies",
+                    role = "aut",
+                    comment = c(ORCID = "0000-0003-2320-7701")),
              person("Theodoros", "Papakonstantinou",
                     role = "aut",
                     comment = c(ORCID = "0000-0002-6630-6817")),
@@ -32,12 +35,12 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <DOI:10.1002/cem.2569>; (Rücker & Schwarzer, 2017) <DOI:10.1002/jrsm.1270>;
  - split direct and indirect evidence to check consistency (Dias et al., 2010) <DOI:10.1002/sim.3767>, (Efthimiou et al., 2019) <DOI:10.1002/sim.8158>;
  - league table with network meta-analysis results;
- - additive network meta-analysis for combinations of treatments (Rücker et al., 2019) <DOI:10.1002/bimj.201800167>;
+ - additive network meta-analysis for combinations of treatments (Rücker et al., 2020) <DOI:10.1002/bimj.201800167>;
  - network meta-analysis of binary data using the Mantel-Haenszel or non-central hypergeometric distribution method (Efthimiou et al., 2019) <DOI:10.1002/sim.8158>;
  - 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012) <DOI:10.1002/jrsm.57>;
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <DOI:10.1002/jrsm.1143>;
- - rankograms based on SUCRA;
- - contribution matrix as described in Papakonstantinou et al. (2018) <DOI:10.12688/f1000research.14770.3>.
+ - rankograms and ranking by SUCRAs;
+ - contribution matrix as described in Papakonstantinou et al. (2018) <DOI:10.12688/f1000research.14770.3> and Davies et al. (2021) <https://arxiv.org/abs/2107.02886>.
 License: GPL (>= 2)
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

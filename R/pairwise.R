@@ -116,26 +116,19 @@
 #' In the long arm-based format, argument \code{studlab} is mandatory
 #' to identify rows contributing to individual studies.
 #' 
-#' Additional arguments for meta-analysis functions can be provided using
-#' argument \code{'\dots'}. The following is a list of some important
-#' arguments:
-#' \tabular{cll}{
-#' Argument \tab Description \tab R function \cr
-#' \code{sm} \tab Summary measure \tab \code{\link{metabin}},
-#'   \code{\link{metacont}}, \code{\link{metainc}},
-#'   \code{\link{metagen}} \cr
-#' \code{method} \tab Meta-analysis method \tab \code{\link{metabin}},
-#'   \code{\link{metainc}} \cr
-#' \code{method.tau} \tab Estimation of between-study variance \tab
-#'   \code{\link{metabin}}, \code{\link{metacont}},
-#'   \code{\link{metainc}}, \code{\link{metagen}} \cr
-#' \code{method.smd} \tab Standardised mean difference \tab
-#'   \code{\link{metacont}}
-#' }
-#' More information on these as well as other arguments is given in
-#' the help pages of R functions \code{\link{metabin}},
-#' \code{\link{metacont}}, \code{\link{metainc}}, and
-#' \code{\link{metagen}}, respectively.
+#' Additional arguments for meta-analysis functions can be provided
+#' using argument '\dots'. The most important argument is \code{sm}
+#' defining the summary measure. More information on this and other
+#' arguments is given in the help pages of R functions
+#' \code{\link{metabin}}, \code{\link{metacont}},
+#' \code{\link{metainc}}, and \code{\link{metagen}}, respectively.
+#'
+#' For standardised mean differences (argument \code{sm = "SMD"}),
+#' equations (4) and (5) in Crippa & Orsini (2016) are used to
+#' calculated SMDs and standard errors. These equations guarantee
+#' consistent SMDs and standard errors for multi-arm studies. Note,
+#' the summary measure is actually Cohen's d as Hedges' g is not
+#' consistent in multi-arm studies.
 #' 
 #' The value of pairwise is a data frame with as many rows as there
 #' are pairwise comparisons. For each study with \emph{p} treatments,
@@ -163,6 +156,11 @@
 #' FALSE}. Furthermore, the reference group for the basic comparisons
 #' can be specified with argument \code{reference.group}.
 #'
+#' @note
+#' This function must not be confused with \code{\link{netpairwise}}
+#' which can be used to conduct pairwise meta-analyses for all
+#' comparisons with direct evidence in a network meta-analysis.
+#' 
 #' @return
 #' A data frame with the following columns:
 #' \item{TE}{Treatment estimate comparing treatment 'treat1' and
@@ -208,7 +206,14 @@
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{metacont}},
 #'   \code{\link{metagen}}, \code{\link{metabin}},
-#'   \code{\link{metainc}}, \code{\link{netgraph.netmeta}}
+#'   \code{\link{metainc}}, \code{\link{netgraph.netmeta}},
+#'   \code{\link{pairwise}}
+#' 
+#' @references
+#' Crippa A, Orsini N (2016):
+#' Dose-response meta-analysis of differences in means.
+#' \emph{BMC Medical Research Methodology},
+#' \bold{16}:91.
 #' 
 #' @keywords datagen
 #' 
@@ -803,16 +808,35 @@ pairwise <- function(treat,
                           nrow = narms * (narms - 1) / 2)
       colnames(notunique) <- names.adddata
       ##
+      oneNA <- matrix(NA,
+                      ncol = length(names.adddata),
+                      nrow = narms * (narms - 1) / 2)
+      ##
+      allNA <- matrix(NA,
+                      ncol = length(names.adddata),
+                      nrow = narms * (narms - 1) / 2)
+      colnames(oneNA) <- names.adddata
+      ##
       n.ij <- 0
       ##
       for (i in 1:(narms - 1)) {
         for (j in (i + 1):narms) {
           n.ij <- n.ij + 1
-          notunique[n.ij, ] <- apply(adddata[[i]] != adddata[[j]], 2, anytrue)
+          notunique[n.ij, ] <-
+            apply(adddata[[i]] != adddata[[j]], 2, anytrue)
+          ##
+          allNA[n.ij, ] <- apply(is.na(adddata[[j]]), 2, all)
+          ##
+          oneNA[n.ij, ] <-
+            apply(is.na(adddata[[i]]) & !is.na(adddata[[j]]), 2, anytrue)
         }
       }
       ##
       notunique <- apply(notunique, 2, anytrue)
+      oneNA <- apply(oneNA, 2, anytrue)
+      allNA <- apply(allNA, 2, anytrue)
+      ##print(apply(rbind(notunique, oneNA, allNA), 2, anytrue))
+      notunique <- apply(rbind(notunique, oneNA, allNA), 2, anytrue)
       ##
       for (i in 1:(narms - 1)) {
         for (j in (i + 1):narms) {
@@ -820,7 +844,7 @@ pairwise <- function(treat,
           dat.j <- adddata[[j]]
           ##
           if (any(!notunique))
-            dat.ij <- dat.i[, names.adddata[!notunique]]
+            dat.ij <- dat.i[, names.adddata[!notunique], drop = FALSE]
           else
             stop("Study label must be unique for single treatment arm.")
           ##
@@ -1039,7 +1063,9 @@ pairwise <- function(treat,
           if (nrow(dat) > 0) {
             m1 <- metacont(dat$n1, dat$mean1, dat$sd1,
                            dat$n2, dat$mean2, dat$sd2,
-                           warn = warn, method.tau.ci = "", ...)
+                           warn = warn,
+                           method.tau.ci = "",
+                           method.smd = "Cohen", ...)
             ##
             dat$TE   <- m1$TE
             dat$seTE <- m1$seTE
@@ -1060,7 +1086,8 @@ pairwise <- function(treat,
           }
           else
             if (i == 1 & j == 2)
-              stop("No studies available for comparison of first and second treatment.",
+              stop("No studies available for comparison of ",
+                   "first and second treatment.",
                    call. = FALSE)
         }
       }
@@ -1325,6 +1352,31 @@ pairwise <- function(treat,
       prmatrix(res.NAs,
                quote = FALSE, right = TRUE, na.print = "NA",
                rowlab = rep("", nrow(res.NAs)))
+    }
+    
+    
+    ## Calculate standard error for SMDs
+    ##
+    if (type == "continuous" & m1$sm == "SMD") {
+      res$.seTE <- res$seTE
+      ##
+      for (i in unique(res$studlab)) {
+        sel.i <- res$studlab == i
+        dat.i <- res[sel.i, ]
+        ##
+        ## Calculate total sample size in study i
+        ##
+        ndat.i <- rbind(data.frame(treat = dat.i$treat1, n = dat.i$n1),
+                        data.frame(treat = dat.i$treat2, n = dat.i$n2))
+        n.i <- sum(ndat.i[!duplicated(ndat.i), ]$n)
+        ##
+        ## Crippa & Orsini (2016), BMC Med Res Meth, equation (5)
+        ##
+        varTE.i <-
+          1 / res$n1[sel.i] + 1 / res$n2[sel.i] + res$TE[sel.i]^2 / (2 * n.i)
+        ##
+        res$seTE[sel.i] <- sqrt(varTE.i)
+      }
     }
     
     

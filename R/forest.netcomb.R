@@ -186,7 +186,8 @@ forest.netcomb <- function(x,
   labels <- colnames(x$TE.fixed)
   ##
   if (reference.group == "") {
-    warning("First treatment used as reference as argument 'reference.group' is unspecified.")
+    warning("First treatment used as reference as ",
+            "argument 'reference.group' is unspecified.")
     reference.group <- labels[1]
   }
   else
@@ -337,18 +338,18 @@ forest.netcomb <- function(x,
                              studlab = trts, backtransf = backtransf,
                              warn = FALSE))
   ##
-  forest.meta(m1,
-              digits = digits,
-              comb.fixed = FALSE, comb.random = FALSE,
-              hetstat = FALSE,
-              leftcols = leftcols,
-              leftlabs = leftlabs,
-              rightcols = rightcols,
-              rightlabs = rightlabs,
-              smlab = smlab,
-              lab.NA = lab.NA,
-              weight.study = weight.study,
-              ...)
+  forest(m1,
+         digits = digits,
+         comb.fixed = FALSE, comb.random = FALSE,
+         overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
+         leftcols = leftcols,
+         leftlabs = leftlabs,
+         rightcols = rightcols,
+         rightlabs = rightlabs,
+         smlab = smlab,
+         lab.NA = lab.NA,
+         weight.study = weight.study,
+         ...)
   
   
   invisible(NULL)

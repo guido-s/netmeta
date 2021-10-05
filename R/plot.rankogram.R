@@ -5,19 +5,43 @@
 #' probabilities for all treatments.
 #'
 #' @param x An object of class \code{\link{rankogram}}.
-#' @param type A character string specifying whether a "bar" chart or
-#'   a "line" graph should be drawn.
+#' @param type A character string specifying whether a "bar" chart, a
+#'   "line" graph, or "step" functions should be drawn. Can be
+#'   abbreviated.
+#' @param pooled A character string indicating whether results for the
+#'   fixed effects (\code{"fixed"}) or random effects model
+#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#' @param sort A logical indicating whether treatments should be
+#'   sorted by decreasing SUCRAs.
+#' @param trts Treatment(s) to show in rankogram.
+#' @param cumulative.rankprob A logical indicating whether cumulative
+#'   ranking probabilites should be shown.
 #' @param ylim The y limits (min, max) of the plot.
 #' @param ylab A label for the y-axis.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
 #' @param \dots Additional graphical arguments (ignored at the
 #'   moment).
 #' 
 #' @details
-#' This function produces an image plot of ranking probabilities for
-#' all treatments as a bar graph or as a line graph. Treatments are
-#' sorted according to their mean effects.
+#' This function produces an image plot of (cumulative) ranking
+#' probabilities for all treatments as a bar graph, a line graph or as
+#' step functions (argument \code{type}).
 #'
-#' @author Thodoris Papakonstantinou \email{dev@tpapak.com}
+#' By default (argument \code{pooled}), results for the random effects
+#' model are shown if a network meta-analysis was conducted for both
+#' the fixed effect and random effects model.
+#'
+#' Treatments are sorted according to their mean effects if argument
+#' \code{sort = TRUE} (default).  A subset of treatments can be
+#' specified using argument \code{trts}.
+#'
+#' Cumulative ranking probabilites are shown if
+#' \code{cumulative.rankprob = TRUE}. By default, step functions are
+#' shown for cumulative ranking probabilites.
+#'
+#' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Guido
+#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
 #' @seealso \code{\link{rankogram}}
 #'
@@ -37,22 +61,37 @@
 #' ran1 <- rankogram(net1, nsim = 100)
 #' ran1
 #'
-#' plot(ran1)      
-#' plot(ran1, type = "l")      
+#' plot(ran1)
+#' plot(ran1, type = "l")
+#' plot(ran1, cumulative.rankprob = TRUE)
 #' 
 #' @method plot rankogram
 #' @export
 #' @export plot.rankogram
 
 
-plot.rankogram <- function(x, type = "bar", ylim, ylab, ...) {
+plot.rankogram <- function(x,
+                           type = if (cumulative.rankprob) "step" else "bar",
+                           pooled = ifelse(x$comb.random, "random", "fixed"),
+                           sort = TRUE, trts,
+                           cumulative.rankprob = x$cumulative.rankprob,
+                           ylim, ylab,
+                           nchar.trts = x$nchar.trts, ...) {
   
   
   meta:::is.installed.package("gridExtra")
   ##
   meta:::chkclass(x, c("rankogram"))
   ##
-  type <- meta:::setchar(type, c("bar", "line"))
+  type <- meta:::setchar(type, c("bar", "line", "step"))
+  ##
+  pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  ##
+  meta:::chklogical(sort)
+  ##
+  if (is.null(cumulative.rankprob))
+    cumulative.rankprob <- FALSE
+  meta:::chklogical(cumulative.rankprob)
   ##
   missing.ylim <- missing(ylim)
   if (!missing.ylim)
@@ -60,8 +99,18 @@ plot.rankogram <- function(x, type = "bar", ylim, ylab, ...) {
   ##
   if (!missing(ylab))
     meta:::chkchar(ylab, length = 1)
-  else
-    ylab <- "Probability"
+  else {
+    if (cumulative.rankprob)
+      ylab <- "Cumulative\nprobability"
+    else
+      ylab <- "Probability"
+  }
+  if (missing(trts))
+    trts <- NULL
+  ##
+  if (is.null(nchar.trts))
+    nchar.trts <- 666
+  meta:::chknumeric(nchar.trts, length = 1)
   
   
   mytheme <-
@@ -79,13 +128,32 @@ plot.rankogram <- function(x, type = "bar", ylim, ylab, ...) {
           )
   
   
-  if (!is.null(x$ranking.matrix.random)) {
-    rankmatrix = "ranking.matrix.random"
-    sucras = "ranking.random"
+  if (pooled == "random") {
+    if (cumulative.rankprob)
+      rankmatrix <- "cumrank.matrix.random"
+    else 
+      rankmatrix <- "ranking.matrix.random"
+    ##
+    sucras <- "ranking.random"
   }
-  else {
-    rankmatrix = "ranking.matrix.fixed"
-    sucras = "ranking.fixed"
+  else if (pooled == "fixed") {
+    if (cumulative.rankprob)
+      rankmatrix <- "cumrank.matrix.fixed"
+    else 
+      rankmatrix <- "ranking.matrix.fixed"
+    ##
+    sucras <- "ranking.fixed"
+  }
+  else
+    return(invisible(NULL))
+  ##
+  if (is.null(x[[rankmatrix]])) {
+    warning("No results for ", pooled, " effect",
+            if (pooled == "random") "s", " model available. ",
+            "Rerun rankogram() with argument 'comb.",
+            pooled, " = TRUE'.",
+            call. = FALSE)
+    return(NULL)
   }
   
   
@@ -100,9 +168,13 @@ plot.rankogram <- function(x, type = "bar", ylim, ylab, ...) {
     else if (type == "line")
       p <- ggplot2::ggplot(mapping = aes(df$pos, df$ranks)) +
         ggplot2::geom_line()
+    else if (type == "step")
+      p <- ggplot2::ggplot(mapping = aes(df$pos, df$ranks)) +
+        ggplot2::geom_step()
     ##
-    p <- p + ggplot2::scale_x_continuous(breaks = seq(1, nrow(x[[rankmatrix]]), 1))
-    p <- p + ggplot2::labs(x = paste("Rank of", treat))
+    p <- p +
+      ggplot2::scale_x_continuous(breaks = seq(1, nrow(x[[rankmatrix]]), 1))
+    p <- p + ggplot2::labs(x = paste("Rank of", treats(treat, nchar.trts)))
     p <- p + ggplot2::labs(y = ylab)
     ##
     if (missing.ylim)
@@ -113,6 +185,15 @@ plot.rankogram <- function(x, type = "bar", ylim, ylab, ...) {
     p + mytheme
   }
   ##
-  sortedtreats <- names(sort(x[[sucras]], decreasing = TRUE))
-  rankplots <- do.call(gridExtra::grid.arrange, lapply(sortedtreats, plotranks))
+  if (sort)
+    treatnames <- names(sort(x[[sucras]], decreasing = TRUE))
+  else
+    treatnames <- names(x[[sucras]])
+  ##
+  if (!is.null(trts)) {
+    trts.c <- setref(trts, treatnames, varname = "trts", length = 0)
+    treatnames <- treatnames[treatnames %in% trts.c]
+  }
+  ##
+  rankplots <- do.call(gridExtra::grid.arrange, lapply(treatnames, plotranks))
 }

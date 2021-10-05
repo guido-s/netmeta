@@ -5,27 +5,52 @@
 \alias{print.netcontrib}
 \title{Contribution matrix in network meta-analysis}
 \usage{
-netcontrib(x)
+netcontrib(
+  x,
+  method = "shortestpath",
+  hatmatrix.F1000 = FALSE,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
+  nchar.trts = x$nchar.trts
+)
 
 \method{print}{netcontrib}(
   x,
-  comb.fixed = x$x$comb.fixed,
-  comb.random = x$x$comb.random,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
   digits = 4,
+  nchar.trts = x$nchar.trts,
+  legend = TRUE,
   ...
 )
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} or \code{netcontrib}.}
 
-\item{comb.fixed}{A logical indicating whether a league table
-should be printed for the fixed effects (common effects) network
+\item{method}{A character string indicating which method is to
+calculate the contribution matrix. Either \code{"randomwalk"} or
+\code{"shortestpath"}, can be abbreviated.}
+
+\item{hatmatrix.F1000}{A logical indicating whether hat matrix
+given in F1000 article should be used for \code{method =
+"shortestpath"}.}
+
+\item{comb.fixed}{A logical indicating whether a contribution
+matrix should be printed for the fixed effect (common effect)
+network meta-analysis.}
+
+\item{comb.random}{A logical indicating whether a contribution
+matrix should be printed for the random effects network
 meta-analysis.}
 
-\item{comb.random}{A logical indicating whether a league table
-should be printed for the random effects network meta-analysis.}
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names (see Details).}
 
-\item{digits}{number of rounding digits}
+\item{digits}{Minimal number of significant digits, see
+\code{print.default}.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
 
 \item{\dots}{Additional arguments (ignored at the moment).}
 }
@@ -46,26 +71,81 @@ as columns for each network comparison, direct or indirect as rows.
 }
 \description{
 This function generates the contribution of direct comparisons to
-every network treatment comparison as a different row
+every network treatment comparison. The output is a matrix where
+rows represent network treatment effects and columns represent the
+contribution of direct treatment effects.
 }
 \details{
-In network meta-analysis, it is important to assess the influence
-of the limitations or other characteristics of individual studies
-on the estimates obtained from the network. The contribution
-matrix, shows how much each direct treatment effect contributes to
-each treatment effect estimate from network meta-analysis, is
-crucial in this context.
+In network meta-analysis (NMA), it is important to assess the
+influence of limitations or other characteristics of individual
+studies on the estimates obtained from the network. To this end,
+the contribution matrix shows how much each direct treatment effect
+contributes to each treatment effect estimate from network
+meta-analysis.
 
 We use ideas from graph theory to derive the proportion that is
-contributed by each direct treatment effect.  We start with the
-‘projection’ matrix in a two-step network meta-analysis model,
+contributed by each direct treatment effect. We start with the
+'projection' matrix in a two-step network meta-analysis model,
 called the H matrix, which is analogous to the hat matrix in a
-linear regression model.  We develop a method to translate H
-entries to proportion contributions based on the observation that
-the rows of H can be interpreted as flow networks, where a stream
-is defined as the composition of a path and its associated flow.
-We present an algorithm that identifies the flow of evidence in
-each path and decomposes it into direct comparisons.
+linear regression model. H entries are translated to proportion
+contributions based on the observation that the rows of H can be
+interpreted as flow networks.  A stream is defined as the
+composition of a path and its associated flow (Papakonstantinou et
+al., 2018).
+
+To account for multi-arm trials, we use the H matrix from a
+two-step (aggregate) version of the graph theoretical NMA model
+(Davies et al., 2021). This H matrix can be obtained from
+\code{\link{hatmatrix}} with argument \code{method = "davies"}.
+
+Two methods are implemented to estimate the streams and as a
+result, the proportion contributions:
+
+(1) If argument \code{method = "randomwalk"}, an analytical
+random-walk (RW) approach is used (Davies et al., 2021). Here, the
+"full" version of the aggregate H matrix (\code{\link{hatmatrix}}
+with arguments \code{method = "davies"} and \code{type = "full"})
+is used to define RW transition matrices. For each pair of
+treatments (ij) in the network, the elements in the corresponding
+row of H-full define a transition matrix from node i to node j. We
+use the \bold{igraph} package to find every (directed) path from
+node i to node j. The flow through each path is then equal to the
+probability that a walker takes that path. This is simply the
+product of the transition probabilities associated with each edge
+along the path.
+
+(2) If argument \code{method = "shortestpath"}, an iterative
+algorithm is used (Papakonstantinou et al., 2018). Broadly
+speaking, each iteration of the algorithm consists of the following
+steps: (i) A path in the evidence flow network is selected. (ii)
+The minimum flow through the edges making up the path is
+identified. This is assigned as the flow associated with the
+path. (iii) The flow of the path is subtracted from the values of
+flow in the edges that make up that path. This means that the edge
+corresponding to the minimum flow in that path is removed from the
+graph. (iv) A new path is then selected from the remaining
+graph. The process repeats until all the evidence flow in the edges
+has been assigned to a path.
+
+In the original F1000 paper (Papakonstantinou et al., 2018), the
+hat matrix used did not account for correlations due to multi-arm
+trials. For reproducibility the result of this version can be
+obtained by specifying \code{hatmatrix.F1000 = TRUE} for
+\code{method = "shortestpath"}. For other purposes, this method is
+not recommended.
+
+Once the streams have been identified (either by method (1) or
+(2)), the proportion contribution of each direct comparison is
+equal to the sum over the flow of evidence in each path containing
+that edge divided by the number of edges that make up that path.
+
+By default, treatment names are not abbreviated in
+printouts. However, in order to get more concise printouts,
+argument \code{nchar.trts} can be used to define the minimum number
+of characters for abbreviated treatment names (see
+\code{\link{abbreviate}}, argument \code{minlength}). R function
+\code{\link{treats}} is utilised internally to create abbreviated
+treatment names.
 }
 \examples{
 # Use the Woods dataset
@@ -78,8 +158,15 @@ net1 <- netmeta(p1)
 cm <- netcontrib(net1)
 cm
 
+netcontrib(net1, method = "r")
+
 }
 \references{
+Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
+(2021):
+Network meta-analysis and random walks.
+Available from: http://arxiv.org/abs/2107.02886
+
 Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
 Schwarzer, G., Egger, M., Salanti, G. (2018):
 Estimating the contribution of studies in network meta-analysis:
@@ -90,6 +177,7 @@ paths, flows and streams.
 \code{\link{netmeta}}
 }
 \author{
-Thodoris Papakonstantinou \email{dev@tpapak.com}
+Theodoros Papakonstantinou \email{dev@tpapak.com}, Annabel
+  Davies \email{annabel.davies@manchester.ac.uk}
 }
 \keyword{contribution}

@@ -17,7 +17,7 @@
   comb.fixed = x$comb.fixed,
   comb.random = x$comb.random,
   backtransf = x$backtransf,
-  nchar.trts = x$nchar.trts,
+  nchar.comps = x$nchar.comps,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
@@ -27,10 +27,14 @@
   digits.tau = gs("digits.tau"),
   digits.I2 = gs("digits.I2"),
   scientific.pval = gs("scientific.pval"),
+  zero.pval = gs("zero.pval"),
+  JAMA.pval = gs("JAMA.pval"),
   big.mark = gs("big.mark"),
   text.tau2 = gs("text.tau2"),
   text.tau = gs("text.tau"),
   text.I2 = gs("text.I2"),
+  legend = TRUE,
+  nchar.trts = nchar.comps,
   ...
 )
 }
@@ -54,8 +58,8 @@ back transformed in printouts and forest plots. If
 presented as odds ratios rather than log odds ratios, for
 example.}
 
-\item{nchar.trts}{A numeric defining the minimum number of
-characters used to create unique treatment names (see Details).}
+\item{nchar.comps}{A numeric defining the minimum number of
+characters used to create unique names for components.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
@@ -85,16 +89,29 @@ statistic, see \code{print.default}.}
 be printed in scientific notation, e.g., 1.2345e-01 instead of
 0.12345.}
 
+\item{zero.pval}{A logical specifying whether p-values should be
+printed with a leading zero.}
+
+\item{JAMA.pval}{A logical specifying whether p-values for test of
+component or combination effect should be printed according to
+JAMA reporting standards.}
+
 \item{big.mark}{A character used as thousands separator.}
 
 \item{text.tau2}{Text printed to identify between-study variance
 \eqn{\tau^2}.}
 
-\item{text.tau}{Text printed to identify \eqn{\tau}, the square root
-of the between-study variance \eqn{\tau^2}.}
+\item{text.tau}{Text printed to identify \eqn{\tau}, the square
+root of the between-study variance \eqn{\tau^2}.}
 
 \item{text.I2}{Text printed to identify heterogeneity statistic
 I\eqn{^2}.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
+
+\item{nchar.trts}{Deprecated argument (replaced by
+\code{nchar.comps}).}
 }
 \value{
 A list is returned with the same elements as a

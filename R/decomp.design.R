@@ -47,6 +47,8 @@
 #'   between-study variance \eqn{\tau^2} (see Details).
 #' @param warn A logical indicating whether warnings should be
 #'   printed.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
 #' 
 #' @return
 #' A list containing the following components:
@@ -132,12 +134,18 @@
 #' @export decomp.design
 
 
-decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE) {
+decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE,
+                          nchar.trts = x$nchar.trts) {
   
   
   meta:::chkclass(x, "netmeta")
   ##
   x <- upgradenetmeta(x)
+  ##
+  if (!is.null(tau.preset))
+    meta:::chknumeric(tau.preset, min = 0, length = 1)
+  meta:::chklogical(warn)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
   ##
   if (inherits(x, "netmetabin")) {
     warning("Decomposition of designs not implemented for ",
@@ -205,6 +213,9 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE) {
     residuals.inc.detach.random.preset = residuals.inc.detach.random.preset,
     ##
     tau.preset = tau.preset,
+    nchar.trts = nchar.trts,
+    ##
+    x = x,
     ##
     call = match.call(),
     version = packageDescription("netmeta")$Version

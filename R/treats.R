@@ -1,25 +1,33 @@
 #' Abbreviate treatment names
 #' 
 #' @description
-#' Auxiliary function to create uniquely abbreviated treatment names.
+#' Auxiliary functions to create uniquely abbreviated treatment names.
 #' 
 #' @details
-#' This auxiliary function can be used to create uniquely abbreviated
-#' treatment names (and is used internally in several R functions for
-#' this purpose).
+#' These auxiliary functions can be used to create uniquely
+#' abbreviated treatment names (and are used internally in several R
+#' functions for this purpose).
 #' 
-#' Initially, to construct uniquely abbreviated treatment names,
-#' \code{\link{substring}} is used to extract the first
+#' In order to construct uniquely abbreviated treatment names,
+#' \code{treats} uses \code{\link{substring}} to extract the first
 #' \code{nchar.trts} characters. If these abbreviated treatment names
 #' are not unique, \code{\link{abbreviate}} with argument
 #' \code{minlength = nchar.trts} is used.
+#'
+#' In order to construct comparisons with uniquely abbreviated
+#' treatment names, \code{comps} calls \code{treats} internally.
 #' 
-#' @param x A vector with treatment names or a matrix with treatment
-#'   names as row and / or column names.
+#' @aliases treats comps
+#' 
+#' @param x A vector with treatment or comparison names or a matrix
+#'   with treatment or comparison names as row and / or column names.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param row A logical indicating whether row or column names should
 #'   be used (only considered if argument \code{x} is a matrix).
+#' @param trts A character vector with treatment names.
+#' @param sep.trts A character used in comparison names as separator
+#'   between treatment labels.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
@@ -29,21 +37,32 @@
 #' @examples
 #' data(Senn2013)
 #' #
-#' net1 <- netmeta(TE, seTE, treat1, treat2,
+#' net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
 #'                 studlab, data = Senn2013)
 #' 
-#' # Use matrix with fixed effects estimates to create unique
-#' # treatment names (with four characters)
+#' # Full treatment names
 #' #
-#' treats(net1$TE.fixed, nchar.trts = 4)
+#' net1$trts
+#' 
+#' # Treatment names with four characters
+#' #
+#' treats(net1$trts, nchar.trts = 4)
 #' 
 #' # With two characters
 #' #
-#' treats(net1$TE.fixed, nchar.trts = 2)
+#' treats(net1$trts, nchar.trts = 2)
 #' 
-#' # With one character
+#' # With one character (if possible)
 #' #
-#' treats(net1$TE.fixed, nchar.trts = 1)
+#' treats(net1$trts, nchar.trts = 1)
+#'
+#' # Full comparison names
+#' #
+#' net1$comparisons
+#' 
+#' # Abbreviated comparison names
+#' #
+#' with(net1, comps(comparisons, trts, sep.trts, nchar = 4))
 #' 
 #' @export treats
 
@@ -71,5 +90,39 @@ treats <- function(x, nchar.trts = 8, row = TRUE) {
   if (length(unique(res)) != length(unique(trts)))
     res <- as.character(abbreviate(trts, nchar.trts))
   ##
+  res
+}
+
+
+
+
+
+#' @rdname treats
+#' 
+#' @export comps
+
+
+comps <- function(x, trts, sep.trts, nchar.trts = 8, row = TRUE) {
+  
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  meta:::chklogical(row)
+  meta:::chkchar(sep.trts)
+  ##
+  trts.abbr <- treats(trts, nchar.trts)  
+  
+  if (is.matrix(x)) {
+    if (row)
+      comps <- rownames(x)
+    else
+      comps <- colnames(x)
+  }
+  else
+    comps <- x
+  
+  trts.list <- compsplit(comps, sep.trts)
+  trts.list.c <- lapply(trts.list, charfac, levels = trts, labels = trts.abbr)
+  ##
+  res <- sapply(trts.list.c, paste, collapse = sep.trts)
+
   res
 }

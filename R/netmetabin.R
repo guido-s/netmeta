@@ -75,11 +75,15 @@
 #'   design (only considered if \code{method = "Inverse"}).
 #' @param tol.multiarm.se A numeric for the tolerance for consistency
 #'   of standard errors in multi-arm studies which are consistent by
-#'   design (only considered if \code{method = "Inverse"}).
+#'   design (only considered if the argument is not \code{NULL} and
+#'   \code{method = "Inverse"}).
 #' @param details.chkmultiarm A logical indicating whether treatment
 #'   estimates and / or variances of multi-arm studies with
 #'   inconsistent results or negative multi-arm variances should be
 #'   printed (only considered if \code{method = "Inverse"}).
+#' @param details.chkdata A logical indicating whether number of
+#'   events and participants of studies with inconsistent data should
+#'   be printed.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
 #' @param nchar.trts A numeric defining the minimum number of
@@ -277,7 +281,8 @@
 #'   defined above.}
 #' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
 #'   above.}
-#' \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
+#' \item{details.chkmultiarm, details.chkdata}{As defined above.}
+#' \item{sep.trts, nchar.trts}{As defined above.}
 #' \item{backtransf, title, warn}{As defined above.}
 #' \item{data}{Data set (in contrast-based format).}
 #' \item{data.design}{List with data in arm-based format (each list
@@ -392,8 +397,9 @@ netmetabin <- function(event1, n1, event2, n2,
                        tau.preset = NULL,
                        ##
                        tol.multiarm = 0.001,
-                       tol.multiarm.se = tol.multiarm,
+                       tol.multiarm.se = NULL,
                        details.chkmultiarm = FALSE,
+                       details.chkdata = TRUE,
                        ##
                        sep.trts = ":",
                        nchar.trts = 666,
@@ -466,8 +472,10 @@ netmetabin <- function(event1, n1, event2, n2,
     chknumeric(tau.preset, min = 0, length = 1)
   ##
   chknumeric(tol.multiarm, min = 0, length = 1)
-  chknumeric(tol.multiarm.se, min = 0, length = 1)
+  if (!is.null(tol.multiarm.se))
+    chknumeric(tol.multiarm.se, min = 0, length = 1)
   chklogical(details.chkmultiarm)
+  chklogical(details.chkdata)
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
@@ -800,6 +808,43 @@ netmetabin <- function(event1, n1, event2, n2,
                          stringsAsFactors = FALSE)
   dat.wide <- dat.wide[order(dat.wide$studlab,
                              dat.wide$treat1, dat.wide$treat2), ]
+  ##
+  ## Check for correct number of treatments
+  ##
+  d.long <- unique(dat.long[, c("studlab", "treat", "event", "n")])
+  d.long <- d.long[order(d.long$studlab, d.long$treat), , drop = FALSE]
+  ##
+  tabnarms <- table(d.long$studlab, d.long$treat)
+  larger.one <- function(x) any(x > 1)
+  sel.study <- apply(tabnarms, 1, larger.one)
+  ##
+  if (sum(sel.study) == 1) {
+    if (details.chkdata) {
+      cat("Inconsistent number of events and participants:\n")
+      d.l <- d.long[d.long$studlab == rownames(tabnarms)[sel.study], ]
+      prmatrix(d.l,
+               quote = FALSE, right = TRUE,
+               rowlab = rep("", nrow(d.l)))
+    }
+    stop(paste0("Study '", rownames(tabnarms)[sel.study],
+                "' has inconsistent data. Please check the original data."),
+         call. = FALSE)
+  }
+  if (sum(sel.study) > 1) {
+    if (details.chkdata) {
+      cat("Inconsistent number of events and participants:\n")
+      d.l <- d.long[d.long$studlab %in% rownames(tabnarms)[sel.study], ]
+      prmatrix(d.l,
+               quote = FALSE, right = TRUE,
+               rowlab = rep("", nrow(d.l)))
+    }
+    ##
+    stop(paste0("The following studies have inconsistent data: ",
+                paste(paste0("'", rownames(tabnarms)[sel.study], "'"),
+                      collapse = " - "),
+                "\n  Please check the original data."),
+         call. = FALSE)
+  }
   ##
   get.designs <- function(x) {
     ##
@@ -1170,6 +1215,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   TE.fixed <- seTE.fixed <- NAmatrix
   TE.direct.fixed <- seTE.direct.fixed <- NAmatrix
+  Q.direct <- tau2.direct <- I2.direct <- NAmatrix
   
   
   ##
@@ -1741,18 +1787,28 @@ netmetabin <- function(event1, n1, event2, n2,
     selstud <- treat1 == sel.treat1 & treat2 == sel.treat2
     ##
     m.i <- metabin(event1, n1, event2, n2, subset = selstud,
-                   sm = "OR",
+                   method = "MH", sm = "OR",
                    incr = incr, allincr = allincr, addincr = addincr,
-                   allstudies = allstudies, MH.exact = !cc.pooled)
+                   allstudies = allstudies, MH.exact = !cc.pooled,
+                   Q.Cochrane = FALSE)
     ##
     TE.i   <- m.i$TE.fixed
     seTE.i <- m.i$seTE.fixed
+    Q.i <- m.i$Q
+    tau2.i <- m.i$tau2
+    I2.i <- m.i$I2
     ##
     TE.direct.fixed[sel.treat1, sel.treat2]   <- TE.i
     seTE.direct.fixed[sel.treat1, sel.treat2] <- seTE.i
+    Q.direct[sel.treat1, sel.treat2] <- Q.i
+    tau2.direct[sel.treat1, sel.treat2] <- tau2.i
+    I2.direct[sel.treat1, sel.treat2] <- I2.i
     ##
     TE.direct.fixed[sel.treat2, sel.treat1]   <- -TE.i
     seTE.direct.fixed[sel.treat2, sel.treat1] <- seTE.i
+    Q.direct[sel.treat2, sel.treat1] <- Q.i
+    tau2.direct[sel.treat2, sel.treat1] <- tau2.i
+    I2.direct[sel.treat2, sel.treat1] <- I2.i
   }
   ##
   rm(sel.treat1, sel.treat2, selstud, m.i, TE.i, seTE.i)
@@ -1778,6 +1834,8 @@ netmetabin <- function(event1, n1, event2, n2,
               TE = data$.TE[!data$.drop],
               seTE = data$.seTE[!data$.drop],
               seTE.adj = rep(NA, sum(!data$.drop)),
+              seTE.adj.fixed = rep(NA, sum(!data$.drop)),
+              seTE.adj.random = rep(NA, sum(!data$.drop)),
               ##
               design = designs(treat1, treat2, studlab)$design,
               ##
@@ -1835,6 +1893,11 @@ netmetabin <- function(event1, n1, event2, n2,
               upper.direct.random = NAmatrix,
               statistic.direct.random = NAmatrix,
               pval.direct.random = NAmatrix,
+              ##
+              Q.direct = Q.direct,
+              tau.direct = sqrt(tau2.direct),
+              tau2.direct = tau2.direct,
+              I2.direct = I2.direct,
               ##
               TE.indirect.fixed = NA,
               seTE.indirect.fixed = NA,
@@ -1904,6 +1967,7 @@ netmetabin <- function(event1, n1, event2, n2,
               tol.multiarm = tol.multiarm,
               tol.multiarm.se = tol.multiarm.se,
               details.chkmultiarm = details.chkmultiarm,
+              details.chkdata = details.chkdata,
               ##
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,

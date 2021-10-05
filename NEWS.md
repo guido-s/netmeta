@@ -1,5 +1,184 @@
+## netmeta, version 1.6-0 (2021-10-05)
+
+### Major changes
+
+* Annabel Davies <annabel.davies@manchester.ac.uk> is a new co-author
+  of R package **netmeta**
+
+* Random walk algorithm implemented to estimate network contributions
+  (Davies et al., 2021, unpublished)
+
+* New R function hatmatrix() to derive hat matrices
+
+* New R function netpairwise() to conduct pairwise meta-analyses for
+  all comparisons with direct evidence
+
+* New R function netcomplex() to calculate effect of arbitrary complex
+  interventions in component network meta-analysis
+
+* New R function netcomparison() to calculate omparison effects of two
+  arbitrary complex interventions in component network meta-analysis
+
+* Calculation of standardised mean differences and corresponding
+  standard errors in pairwise() is based on [Crippa & Orsini
+  (2016)](https://doi.org/10.1186/s12874-016-0189-0), equations (4)
+  and (5), providing consistent treatment estimates and standard
+  errors for multi-arm studies
+
+* I2 from pairwise comparisons shown in forest plot with direct and
+  indirect evidence
+
+* In component network meta-analysis, individual component names
+  instead of full treatment names can be abbreviated for complex
+  interventions with more than one component
+
+* Do not stop calculations if standard errors of multi-arm studies are
+  inconsistent (instead only check for positive variance estimates of
+  single treatment arms)
+
+### Bug fixes
+
+* netmeta():
+  - fix error in calculation of between-study variance using REML or
+    ML method
+
+* forest.netbind(), forest.netcomb(), forest.netmeta(),
+  forest.netsplit():
+  - do not print empty row above descriptions if arguments
+    'label.left' or 'label.right' is used
+
+* netcomb(), discomb():
+  - value provided for argument 'inactive' must be a single treatment
+    component not a combination of treatment components (check was
+    missing)
+
+* funnel.netmeta():
+  - works now with numeric treatment labels
+
+### User-visible changes
+
+* New functions hatmatrix() and print.hatmatrix() to derive hat
+  matrices
+
+* New functions netpairwise(), forest.netpairwise(),
+  print.netpairwise(), summary.netpairwise() and
+  print.summary.netpairwise() to conduct pairwise meta-analyses for
+  all comparisons with direct evidence
+
+* netcontrib():
+  - new argument 'method' to select method to estimate network
+    contributions
+  - new logical argument 'hatmatrix.F1000' to specify whether hat
+    matrix given in [Papakonstantinou et
+    al. (2018)](https://doi.org/10.12688/f1000research.14770.3) should
+    be used
+  - argument 'nchar.trts' from netmeta object considered in printouts
+
+* decomp.design(), print.decomp.design() print.netsplit(),
+  rankogram(), print.rankogram(), plot.rankogram():
+  -  new argument 'nchar.trts' to print abbreviated treatment names
+
+* rankogram():
+  - new list elements 'cumrank.matrix.fixed' and
+    'cumrank.matrix.random' with cumulative ranking probabilites
+  - new argument 'cumulative.rankprob' to show cumulative ranking
+    probabilites
+  - new argument 'trts' to specify subset of treatments
+
+* plot.rankogram():
+  - new argument 'pooled' to select results from fixed effect or
+    random effects model
+  - new argument 'trts' to specify subset of treatments
+  - new argument 'sort' to specify order of treatments
+  - new argument 'cumulative.rankprob' to show cumulative ranking
+    probabilities
+
+* print.rankogram():
+  - new argument 'cumulative.rankprob' to show cumulative ranking
+    probabilites
+  
+* netrank():
+  - new arguments 'comb.fixed' and 'comb.random'
+  - new list elements 'comb.fixed' and 'comb.random'
+
+* netsplit():
+  - new argument 'order' to specify order in comparisons; see help
+    page of funnel.netmeta()
+
+* forest.netsplit():
+  - print I2 from pairwise comparisons if argument direct = TRUE
+
+* forest.netsplit(), print.netsplit():
+  - new argument 'only.reference' to only print comparisons with
+    reference group
+  - new argument 'sortvar' to sort comparisons
+
+* pairwise():
+  - keep all variables from original dataset if variable is missing
+    for one group but not the other (so far, only the first variable
+    was kept)
+
+* summary.netcomb(), print.summary.netcomb(), print.netcomb():
+  - new argument 'show.combs'
+
+* netcomb():
+  - new argument 'nchar.comps' to abbreviate component names
+
+* discomb(), print.netcomb(), print.summary.netcomb():
+  - new argument 'nchar.comps' replaces argument 'nchar.trts'
+
+* New auxiliary function comps() to create unique comparison labels
+  with abbreviated treatment names
+
+### Internal changes
+
+* netmeta():
+  - new list elements 'seTE.adj.fixed' and 'seTE.adj.random with
+    adjusted standard errors under fixed effect and random effects
+    model (content of 'seTE.adj.fixed' is identical to the previously
+    existing element 'seTE.adj')
+  - new list elements 'H.matrix.fixed' (replacing list element
+    'H.matrix') and 'H.matrix.random'
+  - new list elements 'Q.direct', 'tau2.direct', 'tau.direct' and
+    'I2.direct' with information on the between-study heterogeneity of
+    direct comparisons
+
+* netcomb(), discomb():
+  - new list elements 'L.matrix.fixed', 'Lplus.matrix.fixed',
+    'H.matrix.fixed', 'L.matrix.random', 'Lplus.matrix.random' and
+    'H.matrix.random'
+	
+* compsplit():
+  - remove leading and trailing blanks
+	
+* setref():
+  - argument 'reference.group' can be a vector instead of a single value
+
+* nma.additive():
+  - new list elements 'L.matrix', 'Lplus.matrix' and 'H.matrix'
+
+* New internal function hatmatrix.aggr() to calculate the aggregated
+  hat matrix
+
+* Internal function contribution.matrix() moved to
+  contribution.matrix.tpapak()
+
+* New internal functions contribution.matrix.davies()
+
+* New internal function compos() to abbreviate component names
+
+* New internal function createC.full() to create full C matrix for all
+  k-fold combinations of n components
+
+* New internal function charfac()
+
+* New wrapper function contribution.matrix()
+
+* New argument 'aggr' in createB() to calculate aggregated B matrix
+
+
 ## netmeta, version 1.5-0 (2021-06-28)
-    
+
 ### Major changes
 
 * Theodoros Papakonstantinou <dev@tpapak.com> is a new co-author of R
@@ -325,7 +504,7 @@
   treatment estimates and standard errors)
 
 * New default for consistency tolerance: 0.001 instead of 0.0005
-
+
 * Print tau in addition to tau2 in outputs
 
 * Print confidence interval for I2 in outputs

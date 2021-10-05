@@ -41,9 +41,8 @@
 #' @param smlab A label printed at top of figure. By default, text
 #'   indicating either fixed effect or random effects model is
 #'   printed.
-#' @param sortvar An optional vector used to sort the individual
-#'   studies (must be of same length as the total number of
-#'   treatments).
+#' @param sortvar An optional vector used to sort treatments (must be
+#'   of same length as the total number of treatments).
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in forest plots. If \code{backtransf = TRUE},
 #'   results for \code{sm = "OR"} are presented as odds ratios rather
@@ -316,21 +315,14 @@ forest.netmeta <- function(x,
     anyCol(rightcols, "SUCRA") || anyCol(leftcols, "SUCRA") ||
     any(matchVar(sortvar.c, "SUCRA")) || any(matchVar(sortvar.c, "-SUCRA"))
   ##
-  if (one.rg) {
-    if (reference.group == "") {
-      warning("First treatment used as reference as argument ",
-              "'reference.group' is unspecified.",
-              call. = FALSE)
-      reference.group <- trts[1]
-    }
-    else {
-      try.ref <- try(reference.group <- setref(reference.group, trts))
-      
-    }
+  if (one.rg && reference.group == "") {
+    warning("First treatment used as reference as argument ",
+            "'reference.group' is unspecified.",
+            call. = FALSE)
+    reference.group <- trts[1]
   }
-  else
-    for (i in seq_along(reference.group))
-      reference.group[i] <- setref(reference.group[i], trts)
+  ##
+  reference.group <- setref(reference.group, trts, length = 0)
   ##
   if (pooled == "fixed") {
     TE   <- x$TE.fixed
@@ -567,8 +559,8 @@ forest.netmeta <- function(x,
   ##
   forest(m1,
          digits = digits,
-         comb.fixed = FALSE, comb.random = FALSE,
-         hetstat = FALSE,
+         overall = FALSE, comb.fixed = FALSE, comb.random = FALSE,
+         hetstat = FALSE, test.subgroup = FALSE,
          leftcols = leftcols,
          leftlabs = leftlabs,
          rightcols = rightcols,

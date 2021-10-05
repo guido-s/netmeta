@@ -475,13 +475,14 @@ print.netconnection <- function(x,
     ##
     prmatrix(D, quote = FALSE, right = TRUE)
     
-    
-    if (any(rownames(x$D.matrix) != rownames(D))) {
+    diff.rownames <- rownames(x$D.matrix) != rownames(D)
+    if (any(diff.rownames)) {
       abbr <- rownames(D)
       full <- rownames(x$D.matrix)
       ##
       tmat <- data.frame(abbr, full)
       names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[diff.rownames, ]
       tmat <- tmat[order(tmat$Abbreviation), ]
       ##
       cat("\nLegend:\n")

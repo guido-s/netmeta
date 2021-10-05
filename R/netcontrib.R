@@ -2,37 +2,104 @@
 #' 
 #' @description
 #' This function generates the contribution of direct comparisons to
-#' every network treatment comparison as a different row
+#' every network treatment comparison. The output is a matrix where
+#' rows represent network treatment effects and columns represent the
+#' contribution of direct treatment effects.
 #' 
 #' @aliases netcontrib print.netcontrib
 #' 
 #' @param x An object of class \code{netmeta} or \code{netcontrib}.
-#' @param comb.fixed A logical indicating whether a league table
-#'   should be printed for the fixed effects (common effects) network
+#' @param method A character string indicating which method is to
+#'   calculate the contribution matrix. Either \code{"randomwalk"} or
+#'   \code{"shortestpath"}, can be abbreviated.
+#' @param hatmatrix.F1000 A logical indicating whether hat matrix
+#'   given in F1000 article should be used for \code{method =
+#'   "shortestpath"}.
+#' @param comb.fixed A logical indicating whether a contribution
+#'   matrix should be printed for the fixed effect (common effect)
+#'   network meta-analysis.
+#' @param comb.random A logical indicating whether a contribution
+#'   matrix should be printed for the random effects network
 #'   meta-analysis.
-#' @param comb.random A logical indicating whether a league table
-#'   should be printed for the random effects network meta-analysis.
-#' @param digits number of rounding digits
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names (see Details).
+#' @param digits Minimal number of significant digits, see
+#'   \code{print.default}.
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
 #' @param \dots Additional arguments (ignored at the moment).
 #' 
 #' @details
-#' In network meta-analysis, it is important to assess the influence
-#' of the limitations or other characteristics of individual studies
-#' on the estimates obtained from the network. The contribution
-#' matrix, shows how much each direct treatment effect contributes to
-#' each treatment effect estimate from network meta-analysis, is
-#' crucial in this context.
+#' In network meta-analysis (NMA), it is important to assess the
+#' influence of limitations or other characteristics of individual
+#' studies on the estimates obtained from the network. To this end,
+#' the contribution matrix shows how much each direct treatment effect
+#' contributes to each treatment effect estimate from network
+#' meta-analysis.
 #' 
 #' We use ideas from graph theory to derive the proportion that is
-#' contributed by each direct treatment effect.  We start with the
-#' ‘projection’ matrix in a two-step network meta-analysis model,
+#' contributed by each direct treatment effect. We start with the
+#' 'projection' matrix in a two-step network meta-analysis model,
 #' called the H matrix, which is analogous to the hat matrix in a
-#' linear regression model.  We develop a method to translate H
-#' entries to proportion contributions based on the observation that
-#' the rows of H can be interpreted as flow networks, where a stream
-#' is defined as the composition of a path and its associated flow.
-#' We present an algorithm that identifies the flow of evidence in
-#' each path and decomposes it into direct comparisons.
+#' linear regression model. H entries are translated to proportion
+#' contributions based on the observation that the rows of H can be
+#' interpreted as flow networks.  A stream is defined as the
+#' composition of a path and its associated flow (Papakonstantinou et
+#' al., 2018).
+#'
+#' To account for multi-arm trials, we use the H matrix from a
+#' two-step (aggregate) version of the graph theoretical NMA model
+#' (Davies et al., 2021). This H matrix can be obtained from
+#' \code{\link{hatmatrix}} with argument \code{method = "davies"}.
+#' 
+#' Two methods are implemented to estimate the streams and as a
+#' result, the proportion contributions:
+#' 
+#' (1) If argument \code{method = "randomwalk"}, an analytical
+#' random-walk (RW) approach is used (Davies et al., 2021). Here, the
+#' "full" version of the aggregate H matrix (\code{\link{hatmatrix}}
+#' with arguments \code{method = "davies"} and \code{type = "full"})
+#' is used to define RW transition matrices. For each pair of
+#' treatments (ij) in the network, the elements in the corresponding
+#' row of H-full define a transition matrix from node i to node j. We
+#' use the \bold{igraph} package to find every (directed) path from
+#' node i to node j. The flow through each path is then equal to the
+#' probability that a walker takes that path. This is simply the
+#' product of the transition probabilities associated with each edge
+#' along the path.
+#' 
+#' (2) If argument \code{method = "shortestpath"}, an iterative
+#' algorithm is used (Papakonstantinou et al., 2018). Broadly
+#' speaking, each iteration of the algorithm consists of the following
+#' steps: (i) A path in the evidence flow network is selected. (ii)
+#' The minimum flow through the edges making up the path is
+#' identified. This is assigned as the flow associated with the
+#' path. (iii) The flow of the path is subtracted from the values of
+#' flow in the edges that make up that path. This means that the edge
+#' corresponding to the minimum flow in that path is removed from the
+#' graph. (iv) A new path is then selected from the remaining
+#' graph. The process repeats until all the evidence flow in the edges
+#' has been assigned to a path.
+#' 
+#' In the original F1000 paper (Papakonstantinou et al., 2018), the
+#' hat matrix used did not account for correlations due to multi-arm
+#' trials. For reproducibility the result of this version can be
+#' obtained by specifying \code{hatmatrix.F1000 = TRUE} for
+#' \code{method = "shortestpath"}. For other purposes, this method is
+#' not recommended.
+#' 
+#' Once the streams have been identified (either by method (1) or
+#' (2)), the proportion contribution of each direct comparison is
+#' equal to the sum over the flow of evidence in each path containing
+#' that edge divided by the number of edges that make up that path.
+#'
+#' By default, treatment names are not abbreviated in
+#' printouts. However, in order to get more concise printouts,
+#' argument \code{nchar.trts} can be used to define the minimum number
+#' of characters for abbreviated treatment names (see
+#' \code{\link{abbreviate}}, argument \code{minlength}). R function
+#' \code{\link{treats}} is utilised internally to create abbreviated
+#' treatment names.
 #' 
 #' @return
 #' An object of class \code{netcontrib} with corresponding
@@ -49,11 +116,17 @@
 #' matrix has the percentage contributions of each direct comparison
 #' as columns for each network comparison, direct or indirect as rows.
 #' 
-#' @author Thodoris Papakonstantinou \email{dev@tpapak.com}
+#' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Annabel
+#'   Davies \email{annabel.davies@@manchester.ac.uk}
 #' 
 #' @seealso \code{\link{netmeta}}
 #' 
 #' @references
+#' Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
+#' (2021):
+#' Network meta-analysis and random walks.
+#' Available from: http://arxiv.org/abs/2107.02886
+#' 
 #' Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
 #' Schwarzer, G., Egger, M., Salanti, G. (2018):
 #' Estimating the contribution of studies in network meta-analysis:
@@ -72,18 +145,45 @@
 #' net1 <- netmeta(p1)
 #' cm <- netcontrib(net1)
 #' cm
+#'
+#' netcontrib(net1, method = "r")
 #' 
 #' @rdname netcontrib
 #' @export netcontrib
 
 
-netcontrib <- function(x) {
+netcontrib <- function(x,
+                       method = "shortestpath",
+                       hatmatrix.F1000 = FALSE,
+                       comb.fixed = x$comb.fixed,
+                       comb.random = x$comb.random,
+                       nchar.trts = x$nchar.trts) {
   
   meta:::is.installed.package("igraph")
+  ##
+  method <- meta:::setchar(method, c("randomwalk", "shortestpath"))
+  meta:::chklogical(hatmatrix.F1000)
+  if (method == "randomwalk" & hatmatrix.F1000) {
+    warning("Argument 'hatmatrix.F1000' ignored for random walk method.",
+            call. = FALSE)
+    hatmatrix.F1000 <- FALSE
+  }
+  meta:::chklogical(comb.fixed)
+  meta:::chklogical(comb.random)
+  meta:::chknumeric(nchar.trts, min = 1, length = 1)
   
-  res <- list(fixed = contribution.matrix(x, "fixed"),
-              random = contribution.matrix(x, "random"),
+  
+  res <- list(fixed =
+                contribution.matrix(x, method, "fixed", hatmatrix.F1000),
+              random =
+                contribution.matrix(x, method, "random", hatmatrix.F1000),
+              method = method,
+              comb.fixed = comb.fixed,
+              comb.random = comb.random,
+              hatmatrix.F1000 = hatmatrix.F1000,
+              nchar.trts = nchar.trts,
               x = x)
+  ##
   class(res) <- "netcontrib"
   ##
   res
@@ -102,200 +202,74 @@ netcontrib <- function(x) {
 
 
 print.netcontrib <- function(x,
-                             comb.fixed = x$x$comb.fixed,
-                             comb.random = x$x$comb.random,
+                             comb.fixed = x$comb.fixed,
+                             comb.random = x$comb.random,
                              digits = 4,
+                             nchar.trts = x$nchar.trts,
+                             legend = TRUE,
                              ...) {
   
   meta:::chkclass(x, "netcontrib")
   ##
   meta:::chklogical(comb.fixed)
   meta:::chklogical(comb.random)
-  meta:::chknumeric(digits, length = 1)
-  ##
+  meta:::chknumeric(nchar.trts, length = 1)
+  meta:::chklogical(legend)
+  
+  
   matitle(x$x)
   ##
-  cat(paste("Contribution matrix (Papakonstantinou et al., 2018, ",
-            "F1000Research)\n\n"))
+  cat(paste0("Contribution matrix (",
+             if (is.null(x$method) | x$method == "shortestpath")
+               "Papakonstantinou et al., 2018, F1000Research"
+             else
+               "Davies et al., 2021",
+             ")"))
+  if ((is.null(x$method) | x$method == "shortestpath") & x$hatmatrix.F1000)
+    cat(paste(",\nhat matrix does not take correlation of",
+              "multi-arm studies into account"))
+  ##
+  cat("\n\n")
+  
+  
+  ##
+  trts <- x$x$trts
+  trts.abbr <- treats(trts, nchar.trts)
   ##
   if (comb.fixed) {
+    rownames(x$fixed) <- comps(x$fixed, trts, x$x$sep.trts, nchar.trts)
+    colnames(x$fixed) <- comps(x$fixed, trts, x$x$sep.trts, nchar.trts,
+                               row = FALSE)
+    ##
     cat("Fixed effects model:\n\n")
     prmatrix(round(x$fixed, digits))
     if (comb.random)
       cat("\n")
   }
   if (comb.random) {
+    rownames(x$random) <- comps(x$random, trts, x$x$sep.trts, nchar.trts)
+    colnames(x$random) <- comps(x$random, trts, x$x$sep.trts, nchar.trts,
+                                row = FALSE)
+    ##
     cat("Random effects model:\n\n")
     prmatrix(round(x$random, digits))
   }
   ##
-  invisible(NULL)
-}
-
-
-
-
-
-contribution.matrix <- function(x, model) {
-  
+  ## Add legend
   ##
-  ## Auxiliary R functions
-  ##
-  contribution.hatmatrix <- function(metaNetw, model) {
-    ##
-    ## H matrix
-    ##
-    if (model == "fixed")
-      krahn <- nma.krahn(metaNetw, tau.preset = 0)
-    else if (model == "random")
-      krahn <- nma.krahn(metaNetw, tau.preset = metaNetw$tau)
-    ##
-    X.full <- krahn$X.full
-    direct <- krahn$direct
-    X <- krahn$X.full[direct$comparison, , drop = FALSE]
-    Vd <- diag(direct$seTE^2,
-               nrow = length(direct$seTE),
-               ncol = length(direct$seTE))
-    H <- X.full %*% solve(t(X) %*% solve(Vd) %*% X) %*%
-      t(X) %*% solve(Vd)
-    ##
-    colnames(H) <- rownames(X)
-    ##
-    return(list(colNames = colnames(H), rowNames = rownames(H), H = H))
-  }
-  ##
-  split <- function (dir) strsplit(dir, x$sep.trts)
-  ##
-  ## comparisonToEdge <- function (comp) unlist (split(comp))
-  ##
-  setWeights <- function(g, comparison, conMat)
-    igraph::set.edge.attribute(g, "weight",
-                               value = rep(1, dims[2]))
-  ##
-  getFlow <- function(g,edge)
-    return(igraph::E(g)[edge]$flow)
-  ##
-  sv <- function (comparison)
-    split(comparison)[[1]][1][1]
-  ##
-  tv <- function (comparison)
-    split(comparison)[[1]][2][1]
-  ##
-  initRowGraph <- function(comparison) {
-    dedgeList <-
-      lapply(1:length(directs),
-             function(comp) {
-               if (hatMatrix[comparison, comp] > 0)
-                 return(c(sv(directs[comp]), tv(directs[comp])))
-               else
-                 return(c(tv(directs[comp]), sv(directs[comp])))
-             })
-    ##
-    dedgeList <- matrix(unlist(dedgeList), ncol = 2, byrow = TRUE)
-    ##
-    flows <- abs(hatMatrix[comparison, ])
-    dg <- igraph::graph_from_edgelist(dedgeList, directed = TRUE)
-    igraph::E(dg)[]$weight <- rep(0, dims[2])
-    igraph::E(dg)[]$flow <- abs(hatMatrix[comparison, ])
-    igraph::V(dg)[]$label <- igraph::V(dg)[]$name
-    dg <- igraph::set.edge.attribute(dg, 'label', value = igraph::E(dg))
-    ##
-    return(dg)
-  }
-  ##
-  reducePath <- function(g, comparison, spl) {
-    pl <- length(spl[[1]])
-    splE <- lapply(spl[[1]], function(e) {
-      return (igraph::E(g)[e[]])
-    })
-    flow <- min(unlist(lapply(splE,
-                              function(e) {
-                                return(e$flow[])
-                              })))
-    gg <- Reduce(function(g, e) {
-      elabel <- e$label
-      pfl <- e$flow[]
-      g <- igraph::set.edge.attribute(g, "flow", e, pfl-flow)
-      cw <- e$weight[] + (flow[1] / pl) 
-      weights[comparison, elabel] <<- cw
-      return(igraph::set.edge.attribute(g, "weight", e, cw))},
-      splE, g)
-    emptyEdges <- Reduce(function(removedEdges, e) {
-      e <- igraph::E(gg)[e[]]
-      if(e$flow[[1]][[1]] == 0)
-        removedEdges <- c(removedEdges, e)
-      return(removedEdges)}, splE, c())
-    ##
-    return(igraph::delete_edges(gg, emptyEdges))
-  }
-  ##
-  reduceGraph <- function (g, comparison) {
-    getshortest <- function (g, compariston) {
-      getShortest <- function() {
-        return(igraph::get.shortest.paths(g,
-                                          sv(comparison),
-                                          tv(comparison),
-                                          mode = "out",
-                                          output = "epath",
-                                          weights = NA)$epath)
-      }
+  if (legend & (comb.fixed | comb.random)) {
+    diff.trts <- trts != trts.abbr
+    if (any(diff.trts)) {
+      tmat <- data.frame(trts, trts.abbr)
+      names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[diff.trts, ]
+      tmat <- tmat[order(tmat$Abbreviation), ]
       ##
-      res <- suppressWarnings(getShortest())
-      return(res)
+      cat("\nLegend:\n")
+      prmatrix(tmat, quote = FALSE, right = TRUE,
+               rowlab = rep("", length(trts.abbr)))
     }
-    spath <- getshortest(g, comparison)
-    while (length(unlist(spath)) > 0) {
-      g <- reducePath(g, comparison, spath)
-      spath <- getshortest(g, comparison)
-    }
-    ##
-    return(g)
   }
-  
-  
-  hatmatrix <- contribution.hatmatrix(x, model)
   ##
-  directs <- hatmatrix$colNames
-  ##
-  hatMatrix <- hatmatrix$H
-  rownames(hatMatrix) <- hatmatrix$rowNames
-  
-  
-  directlist <- unlist(lapply(lapply(directs, split), unlist))
-  edgeList <- matrix(directlist, ncol = 2, byrow = TRUE)
-  ##
-  g <- igraph::graph_from_edgelist(edgeList , directed = FALSE)
-  g <- igraph::set.vertex.attribute(g, 'label', value = igraph::V(g))
-  g <- igraph::set.edge.attribute(g, 'label', value = igraph::E(g))
-  
-  
-  dims <- dim(hatMatrix)
-  ##
-  contribution <- rep(0, dims[2])
-  names(contribution) <- seq_len(dims[2])
-  ##
-  weights <- matrix(rep(0, dims[2] * dims[1]),
-                    nrow = dims[1], ncol = dims[2], byrow = TRUE)
-  rownames(weights) <- rownames(hatMatrix)
-  colnames(weights) <- seq_len(dims[2])
-  
-  
-  ## rows of comparison matrix
-  comparisons <- unlist(lapply(rownames(hatMatrix), unlist))
-  ##
-  lapply(comparisons,
-         function (comp)
-           reduceGraph(initRowGraph(comp), comp))
-  ##
-  colnames(weights) <- directs
-  
-  ##weights <- 100 * weights
-  ##totalSums <- colSums(weights)
-  ##totalTotal <- sum(totalSums)
-  ##totalWeights <- unlist(lapply(totalSums, function(comp) {
-  ##                         100 * comp / totalTotal
-  ##}))
-  
-  
-  return(weights)
+  invisible(NULL)
 }

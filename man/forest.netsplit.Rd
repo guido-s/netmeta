@@ -13,6 +13,8 @@
   direct = TRUE,
   indirect = TRUE,
   prediction = x$prediction,
+  only.reference = FALSE,
+  sortvar = NULL,
   text.overall = "Network estimate",
   text.direct = "Direct estimate",
   text.indirect = "Indirect estimate",
@@ -66,6 +68,12 @@ should be printed.}
 
 \item{prediction}{A logical indicating whether prediction intervals
 should be printed.}
+
+\item{only.reference}{A logical indicating whether only comparisons
+with the reference group should be printed.}
+
+\item{sortvar}{An optional vector used to sort comparisons (must be
+of same length as the total number of comparisons).}
 
 \item{text.overall}{A character string used in the plot to label
 the network estimates.}
@@ -161,7 +169,8 @@ If direct estimates are included in the forest plot (\code{direct =
 TRUE}, default), the following columns will be printed on the left
 side of the forest plot: the comparisons (column \code{"studlab"}
 in \code{\link{forest.meta}}), number of pairwise comparisons
-(\code{"k"}), and direct evidence proportion (\code{"k"}).
+(\code{"k"}), direct evidence proportion (\code{"k"}), and
+I\eqn{^2} from pairwise comparison (\code{"I2"}).
 
 If direct estimates are not included in the forest plot
 (\code{direct = FALSE}), only the comparisons (\code{"studlab"})
@@ -179,9 +188,7 @@ Argument \code{show} determines which comparisons are printed:
 \dQuote{direct.only} \tab Comparisons providing only direct
   evidence \cr
 \dQuote{indirect.only} \tab Comparisons providing only indirect
-  evidence \cr
-\dQuote{reference.only} \tab Only comparisons with the reference
-  group
+  evidence
 }
 }
 \examples{

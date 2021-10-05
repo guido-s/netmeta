@@ -222,9 +222,12 @@ funnel.netmeta <- function(x,
   pooled <- meta:::setchar(pooled, c("fixed", "random"))
   ##
   if (missing(order)) {
-    warning("In order to construct a 'comparison-adjusted' funnel plot,\n",
-            "  please provide a meaningful order of treatments using argument 'order'\n",
-            "  (see help page of funnel.netmeta for some examples).")
+    warning("In order to construct a 'comparison-adjusted' funnel plot",
+            ",\n  ",
+            "please provide a meaningful order of treatments ",
+            "using argument 'order'",
+            "\n  ",
+            "(see help page of funnel.netmeta for some examples).")
     return(invisible(NULL))
   }
   else
@@ -316,6 +319,11 @@ funnel.netmeta <- function(x,
   ##
   ## (3) Calculate 'comparison-adjusted' treatment effects
   ##
+  ##
+  if (is.numeric(treat1))
+    treat1 <- as.character(treat1)
+  if (is.numeric(treat2))
+    treat2 <- as.character(treat2)
   ##
   if (pooled == "fixed")
     for (i in seq_along(res$TE))

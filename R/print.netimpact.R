@@ -105,6 +105,7 @@ print.netimpact <- function(x,
       ##
       tmat <- data.frame(abbr, full)
       names(tmat) <- c("Abbreviation", "Treatment name")
+      tmat <- tmat[abbr != full, ]
       tmat <- tmat[order(tmat$Abbreviation), ]
       ##
       cat("\nLegend:\n")

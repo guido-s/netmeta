@@ -1,8 +1,8 @@
 #' Frequentist method to rank treatments in network
 #' 
 #' @description
-#' Ranking treatments in frequentist network meta-analysis without
-#' resampling methods.
+#' Ranking treatments in frequentist network meta-analysis with and
+#' without resampling methods.
 #' 
 #' @aliases netrank print.netrank
 #' 
@@ -72,8 +72,8 @@
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
 #' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
-#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}, Thodoris
-#'   Papakonstantinou \email{dev@tpapak.com}
+#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}, Theodoros
+#'   Papakonstantinou \email{dev@@tpapak.com}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{rankogram}}
 #' 
@@ -125,7 +125,8 @@
 #' @export netrank
 
 
-netrank <- function(x, small.values = x$small.values, method, nsim) {
+netrank <- function(x, small.values = x$small.values, method, nsim,
+                    comb.fixed = x$comb.fixed, comb.random = x$comb.random) {
   
   ## Check for netmeta object
   ##
@@ -144,6 +145,13 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
     small.values <- "good"
   else
     small.values <- meta:::setchar(small.values, c("good", "bad"))
+  ##
+  if (is.null(comb.fixed))
+    comb.fixed <- TRUE
+  meta:::chklogical(comb.fixed)
+  if (is.null(comb.random))
+    comb.random <- TRUE
+  meta:::chklogical(comb.random)
   
   
   if (method == "SUCRA") {
@@ -160,7 +168,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
       rnk <- rankogram(x,
                        nsim = nsim,
                        small.values = small.values,
-                       comb.fixed = x$comb.fixed, comb.random = x$comb.random)
+                       comb.fixed = comb.fixed, comb.random = comb.random)
     }
     else {
       if (!missing(nsim))
@@ -180,6 +188,8 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
   else {
     ##
     ## P-scores
+    ##
+    nsim <- NULL
     ##
     TE.fixed <- x$TE.fixed
     pval.fixed <- x$pval.fixed
@@ -226,11 +236,20 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
               ##
               method = method,
               small.values = small.values,
+              ##
+              nsim = nsim,
+              ##
+              comb.fixed = comb.fixed,
+              comb.random = comb.random,
+              ##
               x = x,
               title = x$title,
               version = packageDescription("netmeta")$Version,
-              Pscore = "'Pscore' replaced by 'ranking.fixed' and 'ranking.random'.",
-              Pmatrix = "'Pmatrix' replaced by 'Pmatrix.fixed' and 'Pmatrix.random'.",
+              ##
+              Pscore = paste("'Pscore' replaced by 'ranking.fixed'",
+                             "and 'ranking.random'."),
+              Pmatrix = paste("'Pmatrix' replaced by 'Pmatrix.fixed'",
+                              "and 'Pmatrix.random'."),
               ##
               ## Backward compatibility (for R package NMAoutlier)
               ##
@@ -254,8 +273,8 @@ netrank <- function(x, small.values = x$small.values, method, nsim) {
 
 
 print.netrank <- function(x,
-                          comb.fixed = x$x$comb.fixed,
-                          comb.random = x$x$comb.random,
+                          comb.fixed = x$comb.fixed,
+                          comb.random = x$comb.random,
                           sort = TRUE,
                           digits = max(4, .Options$digits - 3),
                           ...) {
@@ -263,7 +282,11 @@ print.netrank <- function(x,
   
   meta:::chkclass(x, "netrank")
   ##
+  if (is.null(comb.fixed))
+    comb.fixed <- !is.null(x$ranking.fixed)
   meta:::chklogical(comb.fixed)
+  if (is.null(comb.random))
+    comb.random <- !is.null(x$ranking.random)
   meta:::chklogical(comb.random)
   ##
   if (is.character(sort))
@@ -350,6 +373,10 @@ print.netrank <- function(x,
   else if (comb.random) {
     prmatrix(res.random, quote = FALSE, ...)
   }
+
+  if (x$method == "SUCRA" & !is.null(x$nsim))
+    cat(paste0("\n- based on ", x$nsim,
+               " simulation", if (x$nsim > 1) "s", "\n"))
   
   
   invisible(NULL)

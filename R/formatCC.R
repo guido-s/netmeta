@@ -1,38 +1,38 @@
 formatCC <- function(x,
-                     backtransf, sm, level, abbr,
+                     backtransf, sm, level,
+                     comps, comps.abbr, sep.comps,
                      digits, digits.stat, digits.pval.Q,
-                     scientific.pval, big.mark, seq = NULL) {
+                     scientific.pval, zero.pval, JAMA.pval,
+                     big.mark,
+                     seq = NULL) {
   
   
   formatN <- meta:::formatN
+  relative <- meta:::is.relative.effect(sm)
   
   
   sm.lab <- sm
   ##
-  relative <- meta:::is.relative.effect(sm)
-  ##
   if (!backtransf & relative)
-    sm.lab <- paste("log", sm, sep = "")
+    sm.lab <- paste0("log", sm.lab)
   ##  
   ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
   
-
+  
   ## First column contains row names
   ##
   res <- x
-  rnam <- rownames(res)
   ##
   if (!is.null(seq))
     res <- res[seq, ]
+  ##
+  rownames(res) <- compos(rownames(res), comps, comps.abbr, sep.comps)
   ##
   if (backtransf & relative) {
     res$TE <- exp(res$TE)
     res$lower <- exp(res$lower)
     res$upper <- exp(res$upper)
   }
-  ##
-  rownames(res) <- as.character(factor(rownames(res),
-                                       levels = rnam, labels = abbr))
   ##
   res$TE <- formatN(res$TE, digits, "NA", big.mark)
   res$lower <- meta:::formatCI(formatN(round(res$lower, digits),
@@ -43,7 +43,9 @@ formatCC <- function(x,
                            digits.stat, big.mark = big.mark)
   res$p <- meta:::formatPT(res$p,
                            digits = digits.pval.Q,
-                           scientific = scientific.pval)
+                           scientific = scientific.pval,
+                           zero = zero.pval,
+                           JAMA = JAMA.pval)
   ##
   res$seTE <- res$upper <- res$z <- NULL
   ##

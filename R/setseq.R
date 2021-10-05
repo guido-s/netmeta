@@ -15,7 +15,7 @@ setseq <- function(seq, levs, text) {
     if (anyNA(seq))
       stop("Missing values not allowed in argument '",
            name, "'.", call. = FALSE)
-    if (any(!(seq %in% (1:length(levs)))))
+    if (any(!(seq %in% seq_len(length(levs)))))
       stop(paste("Argument '", name,
                  "' must be a permutation of the integers from 1 to ",
                  length(levs), ".", sep = ""), call. = FALSE)
@@ -26,6 +26,7 @@ setseq <- function(seq, levs, text) {
       idx <- charmatch(tolower(seq), tolower(levs), nomatch = NA)
     else
       idx <- charmatch(seq, levs, nomatch = NA)
+    ##
     if (anyNA(idx) || any(idx == 0))
       stop(paste(text,
                  " must be a permutation of the following values:\n  ",

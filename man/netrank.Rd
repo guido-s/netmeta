@@ -5,12 +5,19 @@
 \alias{print.netrank}
 \title{Frequentist method to rank treatments in network}
 \usage{
-netrank(x, small.values = x$small.values, method, nsim)
+netrank(
+  x,
+  small.values = x$small.values,
+  method,
+  nsim,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random
+)
 
 \method{print}{netrank}(
   x,
-  comb.fixed = x$x$comb.fixed,
-  comb.random = x$x$comb.random,
+  comb.fixed = x$comb.fixed,
+  comb.random = x$comb.random,
   sort = TRUE,
   digits = max(4, .Options$digits - 3),
   ...
@@ -59,8 +66,8 @@ function. The object is a list containing the following components:
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
-Ranking treatments in frequentist network meta-analysis without
-resampling methods.
+Ranking treatments in frequentist network meta-analysis with and
+without resampling methods.
 }
 \details{
 Treatments are ranked based on a network meta-analysis. Ranking is
@@ -143,6 +150,6 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 }
 \author{
 Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
-  Schwarzer \email{sc@imbi.uni-freiburg.de}, Thodoris
+  Schwarzer \email{sc@imbi.uni-freiburg.de}, Theodoros
   Papakonstantinou \email{dev@tpapak.com}
 }

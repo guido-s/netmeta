@@ -1,7 +1,7 @@
-#' Print objects of class netcomb
+#' Print method for component network meta-analysis
 #' 
 #' @description
-#' Print method for objects of class \code{netcomb}.
+#' Print method for component network meta-analysis.
 #' 
 #' @param x An object of class \code{netcomb}
 #' @param comb.fixed A logical indicating whether results for the
@@ -12,8 +12,8 @@
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
 #'   as odds ratios rather than log odds ratios, for example.
-#' @param nchar.trts A numeric defining the minimum number of
-#'   characters used to create unique treatment names (see Details).
+#' @param nchar.comps A numeric defining the minimum number of
+#'   characters used to create unique component names.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param digits.stat Minimal number of significant digits for z- or
@@ -27,7 +27,15 @@
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
+#' @param zero.pval A logical specifying whether p-values should be
+#'   printed with a leading zero.
+#' @param JAMA.pval A logical specifying whether p-values for test of
+#'   effects should be printed according to JAMA reporting standards.
 #' @param big.mark A character used as thousands separator.
+#' @param nchar.trts Deprecated argument (replaced by
+#'   \code{nchar.comps}).
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
 #' @param \dots Additional arguments.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
@@ -65,15 +73,23 @@ print.netcomb <- function(x,
                           comb.fixed = x$comb.fixed,
                           comb.random = x$comb.random,
                           backtransf = x$backtransf,
-                          nchar.trts = x$nchar.trts,
+                          nchar.comps = x$nchar.comps,
                           ##
                           digits = gs("digits"),
                           digits.stat = gs("digits.stat"),
                           digits.pval = gs("digits.pval"),
                           digits.pval.Q = max(gs("digits.pval.Q"), 2),
                           digits.Q = gs("digits.Q"),
+                          ##
                           scientific.pval = gs("scientific.pval"),
+                          zero.pval = gs("zero.pval"),
+                          JAMA.pval = gs("JAMA.pval"),
+                          ##
                           big.mark = gs("big.mark"),
+                          ##
+                          nchar.trts = nchar.comps,
+                          ##
+                          legend = TRUE,
                           ...) {
   
   
@@ -82,22 +98,44 @@ print.netcomb <- function(x,
   x <- upgradenetmeta(x)
   
   
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chklogical(backtransf)
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
   ##
-  meta:::chknumeric(digits, min = 0, length = 1)
-  meta:::chknumeric(digits.stat, min = 0, length = 1)
-  meta:::chknumeric(digits.pval, min = 1, length = 1)
-  meta:::chknumeric(digits.pval.Q, min = 1, length = 1)
-  meta:::chknumeric(digits.Q, min = 0, length = 1)
+  chklogical(comb.fixed)
+  chklogical(comb.random)
+  chklogical(backtransf)
   ##
-  meta:::chklogical(scientific.pval)
+  nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
+  chknumeric(nchar.comps, min = 1, length = 1)
+  ##
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.stat, min = 0, length = 1)
+  chknumeric(digits.pval, min = 1, length = 1)
+  chknumeric(digits.pval.Q, min = 1, length = 1)
+  chknumeric(digits.Q, min = 0, length = 1)
+  ##
+  chklogical(scientific.pval)
+  chklogical(zero.pval)
+  chklogical(JAMA.pval)
+  ##
+  chklogical(legend)
+  ##
+  ## Check for deprecated argument 'nchar.trts'
+  ##
+  if (!missing(nchar.trts))
+    if (!missing(nchar.comps))
+      warning("Deprecated argument 'nchar.trts' ignored as ",
+              "argument 'nchar.comps' is also provided.")
+    else {
+      warning("Deprecated argument 'nchar.trts' has been replaced by ",
+              "argument 'nchar.comps'.")
+      nchar.comps <- nchar.trts
+      chknumeric(nchar.comps, min = 1, length = 1)
+    }
   
   
-  trts <- x$trts
-  trts.abbr <- treats(trts, nchar.trts)
+  comps <- sort(c(x$comps, x$inactive))
+  comps.abbr <- treats(comps, nchar.comps)
   ##
   cnma.f <- data.frame(studlab = x$studlab,
                        treat1 = x$treat1,
@@ -111,9 +149,10 @@ print.netcomb <- function(x,
   ##
   dat.f <- formatComp(cnma.f,
                       backtransf, x$sm, x$level.comb,
-                      trts, trts.abbr,
+                      comps, comps.abbr, x$sep.comps,
                       digits, digits.stat, digits.pval.Q,
-                      scientific.pval, big.mark)
+                      scientific.pval, zero.pval, JAMA.pval,
+                      big.mark)
   ##
   cnma.r <- data.frame(studlab = x$studlab,
                        treat1 = x$treat1,
@@ -127,9 +166,10 @@ print.netcomb <- function(x,
   ##
   dat.r <- formatComp(cnma.r,
                       backtransf, x$sm, x$level.comb,
-                      trts, trts.abbr,
+                      comps, comps.abbr, x$sep.comps,
                       digits, digits.stat, digits.pval.Q,
-                      scientific.pval, big.mark)
+                      scientific.pval, zero.pval, JAMA.pval,
+                      big.mark)
   ##
   if (comb.fixed) {
     cat("Additive model (fixed effects model):\n")
@@ -143,21 +183,29 @@ print.netcomb <- function(x,
     cat("\n")
   }
   
-
+  
   if (comb.fixed | comb.random)
     print(summary(x),
           comb.fixed = comb.fixed,
           comb.random = comb.random,
           backtransf = backtransf,
-          nchar.trts = nchar.trts,
+          nchar.comps = nchar.comps,
           ##
           digits = digits,
           digits.stat = digits.stat,
           digits.pval = digits.pval,
           digits.pval.Q = digits.pval.Q,
           digits.Q = digits.Q,
+          ##
           scientific.pval = scientific.pval,
-          big.mark = big.mark, ...)
+          zero.pval = zero.pval,
+          JAMA.pval = JAMA.pval,
+          ##
+          big.mark = big.mark,
+          ##
+          legend = legend,
+          ##
+          ...)
   else
     cat("Please use argument 'comb.fixed = TRUE' or",
         "'comb.random = TRUE' to print meta-analysis results.\n",
