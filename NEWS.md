@@ -1,4 +1,4 @@
-## netmeta, version 1.6-0 (2021-mm-dd)
+## netmeta, version 1.6-0 (2021-10-05)
 
 ### Major changes
 
@@ -504,7 +504,7 @@
   treatment estimates and standard errors)
 
 * New default for consistency tolerance: 0.001 instead of 0.0005
-
+
 * Print tau in addition to tau2 in outputs
 
 * Print confidence interval for I2 in outputs
