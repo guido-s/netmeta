@@ -40,7 +40,7 @@ net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 sm = "OR", comb.fixed = FALSE,
                 nchar.trts = 6)
 #
-summary(net1)
+net1
 
 \dontrun{
 # Conduct random effects network meta-analysis
@@ -50,7 +50,7 @@ net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 sm = "OR", comb.fixed = FALSE,
                 nchar.trts = 6)
 #
-summary(net2)
+net2
 }
 }
 \seealso{

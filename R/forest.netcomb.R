@@ -118,7 +118,7 @@
 #'                 seq = trts,
 #'                 sm = "OR", comb.fixed = FALSE)
 #' #
-#' summary(net2)
+#' net2
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)

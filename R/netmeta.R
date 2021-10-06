@@ -37,7 +37,8 @@
 #'   should be printed.
 #' @param level.predict The level used to calculate prediction
 #'   intervals for a new study.
-#' @param reference.group Reference treatment.
+#' @param reference.group Reference treatment (first treatment is used
+#'   if argument is missing).
 #' @param baseline.reference A logical indicating whether results
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa. This argument is
@@ -480,7 +481,7 @@
 #' net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
 #'                 data = Senn2013, sm = "MD", comb.fixed = FALSE,
 #'                 seq = trts, reference = "Placebo")
-#' print(summary(net3), digits = 2)
+#' print(net3, digits = 2)
 #' }
 #' 
 #' @export netmeta
@@ -584,17 +585,6 @@ netmeta <- function(TE, seTE,
   chklogical(keepdata)
   chklogical(warn)
   ##
-  ## Check value for reference group
-  ##
-  missing.reference.group <- missing(reference.group)
-  if (missing.reference.group)
-    reference.group <- ""
-  if (is.null(all.treatments))
-    if (reference.group == "")
-      all.treatments <- TRUE
-    else
-      all.treatments <- FALSE
-  ##
   chklogical(baseline.reference)
   ##
   ## Check for deprecated argument 'nchar'
@@ -609,6 +599,8 @@ netmeta <- function(TE, seTE,
       nchar.trts <- nchar
       chknumeric(nchar.trts, min = 1, length = 1)
     }
+  ##
+  missing.reference.group <- missing(reference.group)
   
   
   ##
@@ -962,10 +954,20 @@ netmeta <- function(TE, seTE,
       seq <- as.character(seq)
   }
   ##
+  ## Check value for reference group
+  ##
+  if (missing.reference.group)
+    reference.group <- labels[1]
+  if (is.null(all.treatments))
+    if (reference.group == "")
+      all.treatments <- TRUE
+    else
+      all.treatments <- FALSE
+  ##
   if (reference.group != "")
     reference.group <- setref(reference.group, labels)
-
-
+  
+  
   ##
   ##
   ## (4) Additional checks

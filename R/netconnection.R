@@ -111,8 +111,8 @@
 #' net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6,
 #'                   subset = !(t1 %in% c("A", "F", "H") & t2 %in% c("A", "F", "H")))
 #' 
-#' summary(net2.1)
-#' summary(net2.2)
+#' net2.1
+#' net2.2
 #' 
 #' @rdname netconnection
 #' @export netconnection

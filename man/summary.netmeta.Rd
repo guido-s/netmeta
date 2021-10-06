@@ -2,8 +2,7 @@
 % Please edit documentation in R/summary.netmeta.R
 \name{summary.netmeta}
 \alias{summary.netmeta}
-\alias{print.summary.netmeta}
-\title{Print and summary method for objects of class netmeta}
+\title{Summary method for objects of class netmeta}
 \usage{
 \method{summary}{netmeta}(
   object,
@@ -13,34 +12,6 @@
   reference.group = object$reference.group,
   baseline.reference = object$baseline.reference,
   all.treatments = object$all.treatments,
-  ...
-)
-
-\method{print}{summary.netmeta}(
-  x,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
-  prediction = x$prediction,
-  reference.group = x$reference.group,
-  baseline.reference = x$baseline.reference,
-  all.treatments = x$all.treatments,
-  backtransf = x$backtransf,
-  nchar.trts = x$nchar.trts,
-  header = TRUE,
-  digits = gs("digits"),
-  digits.stat = gs("digits.stat"),
-  digits.pval = max(gs("digits.pval"), 2),
-  digits.pval.Q = max(gs("digits.pval.Q"), 2),
-  digits.Q = gs("digits.Q"),
-  digits.tau2 = gs("digits.tau2"),
-  digits.tau = gs("digits.tau"),
-  digits.I2 = gs("digits.I2"),
-  scientific.pval = gs("scientific.pval"),
-  big.mark = gs("big.mark"),
-  text.tau2 = gs("text.tau2"),
-  text.tau = gs("text.tau"),
-  text.I2 = gs("text.I2"),
-  legend = TRUE,
   ...
 )
 }
@@ -68,63 +39,6 @@ matrices with all treatment effects, and confidence limits will
 be printed.}
 
 \item{\dots}{Additional arguments.}
-
-\item{x}{An object of class \code{summary.netmeta}.}
-
-\item{backtransf}{A logical indicating whether results should be
-back transformed in printouts and forest plots. If
-\code{backtransf = TRUE}, results for \code{sm = "OR"} are
-presented as odds ratios rather than log odds ratios, for
-example.}
-
-\item{nchar.trts}{A numeric defining the minimum number of
-characters used to create unique treatment names.}
-
-\item{header}{A logical indicating whether information on title of
-meta-analysis, comparison and outcome should be printed at the
-beginning of the printout.}
-
-\item{digits}{Minimal number of significant digits, see
-\code{print.default}.}
-
-\item{digits.stat}{Minimal number of significant digits for tests
-of overall effect, see \code{print.default}.}
-
-\item{digits.pval}{Minimal number of significant digits for p-value
-of overall effects, see \code{print.default}.}
-
-\item{digits.pval.Q}{Minimal number of significant digits for
-p-value of heterogeneity tests, see \code{print.default}.}
-
-\item{digits.Q}{Minimal number of significant digits for
-heterogeneity statistics, see \code{print.default}.}
-
-\item{digits.tau2}{Minimal number of significant digits for
-between-study variance, see \code{print.default}.}
-
-\item{digits.tau}{Minimal number of significant digits for square
-root of between-study variance, see \code{print.default}.}
-
-\item{digits.I2}{Minimal number of significant digits for I-squared
-statistic, see \code{print.default}.}
-
-\item{scientific.pval}{A logical specifying whether p-values should
-be printed in scientific notation, e.g., 1.2345e-01 instead of
-0.12345.}
-
-\item{big.mark}{A character used as thousands separator.}
-
-\item{text.tau2}{Text printed to identify between-study variance
-\eqn{\tau^2}.}
-
-\item{text.tau}{Text printed to identify \eqn{\tau}, the square
-root of the between-study variance \eqn{\tau^2}.}
-
-\item{text.I2}{Text printed to identify heterogeneity statistic
-I\eqn{^2}.}
-
-\item{legend}{A logical indicating whether a legend should be
-printed.}
 }
 \value{
 A list is returned with the following elements:
@@ -192,7 +106,7 @@ A list is returned with the following elements:
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
-Print and summary method for objects of class \code{netmeta}.
+Summary method for objects of class \code{netmeta}.
 }
 \examples{
 data(Senn2013)

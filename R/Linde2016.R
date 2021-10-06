@@ -44,7 +44,7 @@
 #'                 sm = "OR", comb.fixed = FALSE,
 #'                 nchar.trts = 6)
 #' #
-#' summary(net1)
+#' net1
 #' 
 #' \dontrun{
 #' # Conduct random effects network meta-analysis
@@ -54,7 +54,7 @@
 #'                 sm = "OR", comb.fixed = FALSE,
 #'                 nchar.trts = 6)
 #' #
-#' summary(net2)
+#' net2
 #' }
 
 

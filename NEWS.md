@@ -1,3 +1,14 @@
+## netmeta, version 2.0-0 (2021-mm-dd)
+
+### Major changes
+
+* Behaviour of print.netmeta() and print.summary.netmeta() switched
+  (to be in line with other print and summary functions in R)
+  
+* By default, reference group is defined by first treatment in
+  (component) network meta-analysis
+
+
 ## netmeta, version 1.6-0 (2021-10-05)
 
 ### Major changes

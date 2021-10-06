@@ -40,7 +40,8 @@
 #'   events in two treatment arms are to be included in the
 #'   meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
 #'   or \code{"OR"}).
-#' @param reference.group Reference treatment.
+#' @param reference.group Reference treatment (first treatment is used
+#'   if argument is missing).
 #' @param keep.all.comparisons A logical indicating whether all
 #'   pairwise comparisons or only comparisons with the study-specific
 #'   reference group should be kept ('basic parameters').
@@ -372,6 +373,8 @@ pairwise <- function(treat,
     data <- sys.frame(sys.parent())
   mf <- match.call()
   ##
+  missing.reference.group <- missing(reference.group)
+  ##
   ## Catch studlab, treat, event, n, mean, sd, time from data:
   ##
   treat <- eval(mf[[match("treat", names(mf))]],
@@ -381,7 +384,7 @@ pairwise <- function(treat,
     is.pairwise <- TRUE
     res <- treat
     ##
-    if (missing(reference.group))
+    if (missing.reference.group)
       if (!is.null(attributes(treat)$reference.group))
         reference.group <- attributes(treat)$reference.group
     if (missing(keep.all.comparisons))
@@ -444,14 +447,8 @@ pairwise <- function(treat,
   else {
     is.pairwise <- FALSE
     ##
-    if (missing(reference.group))
-      reference.group <- ""
     if (missing(keep.all.comparisons))
       keep.all.comparisons <- TRUE
-    if (is.numeric(reference.group))
-      meta:::chknumeric(reference.group, length = 1)
-    else
-      meta:::chkchar(reference.group, length = 1)
     meta:::chklogical(keep.all.comparisons)
     ##
     studlab <- eval(mf[[match("studlab", names(mf))]],
@@ -1409,10 +1406,22 @@ pairwise <- function(treat,
     rownames(res) <- 1:nrow(res)
   }
   
-  
+
+  ##
+  ## Use first treatment as reference if argument is missing
+  ##
+  labels <- unique(sort(c(res$treat1, res$treat2)))
+  ##
+  if (missing.reference.group)
+    reference.group <- labels[1]
+  if (is.numeric(reference.group))
+    meta:::chknumeric(reference.group, length = 1)
+  else
+    meta:::chkchar(reference.group, length = 1)
+  ##
   if (reference.group != "" | !keep.all.comparisons) {
     reference.group <-
-      meta:::setchar(reference.group, c(unique(c(res$treat1, res$treat2)), ""))
+      meta:::setchar(reference.group, c(labels, ""))
     ##
     drop <- logical(0)
     wo <- logical(0)

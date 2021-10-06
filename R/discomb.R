@@ -39,7 +39,8 @@
 #'   (common effects) network meta-analysis should be conducted.
 #' @param comb.random A logical indicating whether a random effects
 #'   network meta-analysis should be conducted.
-#' @param reference.group Reference treatment.
+#' @param reference.group Reference treatment (first treatment is used
+#'   if argument is missing).
 #' @param baseline.reference A logical indicating whether results
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa. This argument is
@@ -380,7 +381,7 @@ discomb <- function(TE, seTE,
                     comb.fixed = gs("comb.fixed"),
                     comb.random = gs("comb.random") | !is.null(tau.preset),
                     ##
-                    reference.group = "",
+                    reference.group,
                     baseline.reference = TRUE,
                     seq = NULL,
                     ##
@@ -419,10 +420,6 @@ discomb <- function(TE, seTE,
   ##
   chklogical(comb.fixed)
   chklogical(comb.random)
-  ##
-  missing.reference.group <- missing(reference.group) 
-  if (missing.reference.group)
-    reference.group <- ""
   chklogical(baseline.reference)
   ##
   if (!is.null(tau.preset))
@@ -456,6 +453,8 @@ discomb <- function(TE, seTE,
       nchar.comps <- nchar.trts
       chknumeric(nchar.comps, min = 1, length = 1)
     }
+  ##
+  missing.reference.group <- missing(reference.group) 
   
   
   ##
@@ -602,6 +601,11 @@ discomb <- function(TE, seTE,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
+  ##
+  ## Check value for reference group
+  ##
+  if (missing.reference.group)
+    reference.group <- labels[1]
   ##
   if (reference.group != "")
     reference.group <- setref(reference.group, labels)

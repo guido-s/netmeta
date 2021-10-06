@@ -21,7 +21,7 @@ discomb(
   level.comb = gs("level.comb"),
   comb.fixed = gs("comb.fixed"),
   comb.random = gs("comb.random") | !is.null(tau.preset),
-  reference.group = "",
+  reference.group,
   baseline.reference = TRUE,
   seq = NULL,
   tau.preset = NULL,
@@ -82,7 +82,8 @@ for pooled estimates.}
 \item{comb.random}{A logical indicating whether a random effects
 network meta-analysis should be conducted.}
 
-\item{reference.group}{Reference treatment.}
+\item{reference.group}{Reference treatment (first treatment is used
+if argument is missing).}
 
 \item{baseline.reference}{A logical indicating whether results
 should be expressed as comparisons of other treatments versus the

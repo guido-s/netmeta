@@ -72,7 +72,8 @@ events in two treatment arms are to be included in the
 meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
 or \code{"OR"}).}
 
-\item{reference.group}{Reference treatment.}
+\item{reference.group}{Reference treatment (first treatment is used
+if argument is missing).}
 
 \item{keep.all.comparisons}{A logical indicating whether all
 pairwise comparisons or only comparisons with the study-specific

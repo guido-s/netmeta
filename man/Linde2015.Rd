@@ -80,7 +80,7 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI",
 net1 <- netmeta(p1, comb.fixed = FALSE,
                 reference = "Placebo",
 		seq = trts)
-print(summary(net1), digits = 2)
+print(net1, digits = 2)
 }
 \seealso{
 \code{\link{pairwise}}, \code{\link{metabin}},

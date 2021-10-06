@@ -299,14 +299,14 @@
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, ref = "placebo",
 #'                 sm = "OR", comb.fixed = FALSE)
-#' summary(net1)
+#' net1
 #' forest(net1, xlim = c(0.2, 50))
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
 #' #
 #' nc1 <- netcomb(net1, inactive = "placebo")
-#' summary(nc1)
+#' nc1
 #' forest(nc1, xlim = c(0.2, 50))
 #' 
 #' \dontrun{
@@ -331,14 +331,14 @@
 #'                 data = Linde2016, ref = "placebo",
 #'                 seq = trts,
 #'                 sm = "OR", comb.fixed = FALSE)
-#' summary(net1)
+#' net1
 #' forest(net1, xlim = c(0.2, 50))
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
 #' #
 #' nc1 <- netcomb(net1, inactive = "placebo")
-#' summary(nc1)
+#' nc1
 #' forest(nc1, xlim = c(0.2, 50))
 #' }
 #' 
