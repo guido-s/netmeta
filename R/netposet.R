@@ -659,7 +659,6 @@ netposet <- function(..., outcomes, treatments, small.values,
 #' @rdname netposet
 #' @method print netposet
 #' @export
-#' @export print.netposet
 
 
 print.netposet <- function(x,

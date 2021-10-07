@@ -105,7 +105,6 @@
 #' 
 #' @method print summary.netmeta
 #' @export
-#' @export print.summary.netmeta
 
 
 print.summary.netmeta <- function(x,

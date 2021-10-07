@@ -344,7 +344,6 @@
 #' 
 #' @method netgraph netmeta
 #' @export
-#' @export netgraph.netmeta
 
 
 netgraph.netmeta <- function(x, seq = x$seq,

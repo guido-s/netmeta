@@ -4,6 +4,8 @@
 #' @description
 #' Draws a forest plot in the active graphics window (using grid
 #' graphics system).
+#'
+#' @aliases forest.netcomplex plot.netcomplex
 #' 
 #' @param x An object of class \code{netcomplex}.
 #' @param pooled A character string indicating whether results for the
@@ -87,7 +89,6 @@
 #' 
 #' @method forest netcomplex
 #' @export
-#' @export forest.netcomplex
 
 
 forest.netcomplex <- function(x,
@@ -209,3 +210,15 @@ forest.netcomplex <- function(x,
   
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netcomplex
+#' @method plot netcomplex
+#' @export
+#'
+
+plot.netcomplex <- function(x, ...)
+  forest(x, ...)

@@ -620,7 +620,7 @@ netmeta <- function(TE, seTE,
   TE <- eval(mf[[match("TE", names(mf))]],
              data, enclos = sys.frame(sys.parent()))
   ##
-  if (inherits(TE, "pairwise")) {
+  if (is.data.frame(TE) & !is.null(attr(TE, "pairwise"))) {
     is.pairwise <- TRUE
     ##
     sm <- attr(TE, "sm")

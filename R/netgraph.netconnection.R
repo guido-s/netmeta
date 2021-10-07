@@ -38,7 +38,6 @@
 #' 
 #' @method netgraph netconnection
 #' @export
-#' @export netgraph.netconnection
 
 
 netgraph.netconnection <- function(x, seq,

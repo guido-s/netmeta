@@ -30,7 +30,6 @@
 #'
 #' @method as.data.frame netmeta 
 #' @export
-#' @export as.data.frame.netmeta
 
 
 as.data.frame.netmeta <- function(x, row.names = NULL,

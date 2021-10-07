@@ -2,6 +2,8 @@
 % Please edit documentation in R/forest.netcomb.R
 \name{forest.netcomb}
 \alias{forest.netcomb}
+\alias{forest.netcomt}
+\alias{plot.netcomb}
 \title{Forest plot for additive network meta-analysis}
 \usage{
 \method{forest}{netcomb}(
@@ -23,6 +25,8 @@
   weight.study = "same",
   ...
 )
+
+\method{plot}{netcomb}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netcomb}.}

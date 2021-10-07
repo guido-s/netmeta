@@ -95,7 +95,6 @@
 #' 
 #' @method print netcomb
 #' @export
-#' @export print.netcomb
 
 
 print.netcomb <- function(x,

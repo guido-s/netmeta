@@ -3,6 +3,8 @@
 #' @description
 #' Draws a forest plot in the active graphics window (using grid
 #' graphics system).
+#'
+#' @aliases forest.netmeta plot.netmeta
 #' 
 #' @param x An object of class \code{netmeta}.
 #' @param pooled A character string indicating whether results for the
@@ -176,7 +178,6 @@
 #' 
 #' @method forest netmeta
 #' @export
-#' @export forest.netmeta
 
 
 forest.netmeta <- function(x,
@@ -584,3 +585,15 @@ forest.netmeta <- function(x,
   ##
   invisible(dat.out)
 }
+
+
+
+
+
+#' @rdname forest.netmeta
+#' @method plot netmeta
+#' @export
+#'
+
+plot.netmeta <- function(x, ...)
+  forest(x, ...)

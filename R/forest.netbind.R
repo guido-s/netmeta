@@ -3,6 +3,8 @@
 #' @description
 #' Forest plot to show network estimates of two or more network
 #' meta-analyses.
+#'
+#' @aliases forest.netbind plot.netbind
 #' 
 #' @param x An object of class \code{netbind}.
 #' @param pooled A character string indicating whether results for the
@@ -88,7 +90,6 @@
 #' 
 #' @method forest netbind
 #' @export
-#' @export forest.netbind
 
 
 forest.netbind <- function(x,
@@ -252,3 +253,15 @@ forest.netbind <- function(x,
   
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netbind
+#' @method plot netbind
+#' @export
+#'
+
+plot.netbind <- function(x, ...)
+  forest(x, ...)

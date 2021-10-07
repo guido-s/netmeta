@@ -189,7 +189,6 @@
 #' 
 #' @method plot netposet
 #' @export
-#' @export plot.netposet
 
 
 plot.netposet <- function(x,

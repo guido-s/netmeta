@@ -47,7 +47,6 @@
 #' 
 #' @method netgraph discomb
 #' @export
-#' @export netgraph.discomb
 
 
 netgraph.discomb <- function(x, ...) {

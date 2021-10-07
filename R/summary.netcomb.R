@@ -54,10 +54,8 @@
 #' print(summary(nc2), digits = 2, digits.stat = 3)
 #' }
 #' 
-#' @rdname summary.netcomb
 #' @method summary netcomb
 #' @export
-#' @export summary.netcomb
 
 
 summary.netcomb <- function(object,

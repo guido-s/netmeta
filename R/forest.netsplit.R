@@ -4,6 +4,8 @@
 #' Forest plot to show direct and indirect evidence in network
 #' meta-analysis.  Furthermore, estimates from network meta-analysis
 #' as well as prediction intervals can be printed.
+#'
+#' @aliases forest.netsplit plot.netsplit
 #' 
 #' @param x An object of class \code{netsplit}.
 #' @param pooled A character string indicating whether results for the
@@ -122,9 +124,14 @@
 #' 
 #' @examples
 #' data(Senn2013)
+#' 
+#' # Only consider first five studies (to reduce runtime of example)
 #' #
+#' studies <- unique(Senn2013$studlab)
+#' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
+#' 
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-#'                 studlab, data = Senn2013,
+#'                 studlab, data = Senn2013.5,
 #'                 comb.fixed = FALSE)
 #' #
 #' ns1 <- netsplit(net1)
@@ -151,7 +158,6 @@
 #' 
 #' @method forest netsplit
 #' @export
-#' @export forest.netsplit
 
 
 forest.netsplit <- function(x,
@@ -678,3 +684,15 @@ forest.netsplit <- function(x,
 
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netsplit
+#' @method plot netsplit
+#' @export
+#'
+
+plot.netsplit <- function(x, ...)
+  forest(x, ...)

@@ -315,7 +315,6 @@ netcomplex <- function(x, complex,
 #' @rdname netcomplex
 #' @method print netcomplex
 #' @export
-#' @export print.netcomplex
 
 print.netcomplex <- function(x,
                              comb.fixed = x$comb.fixed,

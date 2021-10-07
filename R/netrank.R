@@ -269,7 +269,6 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
 #' @rdname netrank
 #' @method print netrank
 #' @export
-#' @export print.netrank
 
 
 print.netrank <- function(x,

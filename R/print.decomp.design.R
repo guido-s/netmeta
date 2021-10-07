@@ -39,7 +39,6 @@
 #' 
 #' @method print decomp.design
 #' @export
-#' @export print.decomp.design
 
 
 print.decomp.design <- function(x,

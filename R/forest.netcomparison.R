@@ -4,6 +4,8 @@
 #' @description
 #' Draws a forest plot in the active graphics window (using grid
 #' graphics system).
+#'
+#' @aliases forest.netcomparison plot.netcomparison
 #' 
 #' @param x An object of class \code{netcomparison}.
 #' @param pooled A character string indicating whether results for the
@@ -86,7 +88,6 @@
 #' 
 #' @method forest netcomparison
 #' @export
-#' @export forest.netcomparison
 
 
 forest.netcomparison <- function(x,
@@ -229,3 +230,15 @@ forest.netcomparison <- function(x,
   
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netcomparison
+#' @method plot netcomparison
+#' @export
+#'
+
+plot.netcomparison <- function(x, ...)
+  forest(x, ...)

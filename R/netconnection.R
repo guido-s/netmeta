@@ -76,7 +76,8 @@
 #' # Extract distance matrix
 #' #
 #' nc1$D.matrix
-#' 
+#'
+#' \dontrun{
 #' # Conduct network meta-analysis (results not shown)
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data = Senn2013)
@@ -104,15 +105,18 @@
 #' # Conduct network meta-analysis on first subnetwork
 #' #
 #' net2.1 <- netmeta(1:6, 1:6, t1, t2, 1:6,
-#'                   subset = (t1 %in% c("A", "F", "H") & t2 %in% c("A", "F", "H")))
+#'                   subset = (t1 %in% c("A", "F", "H") &
+#'                             t2 %in% c("A", "F", "H")))
 #' 
 #' # Conduct network meta-analysis on second subnetwork
 #' #
 #' net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6,
-#'                   subset = !(t1 %in% c("A", "F", "H") & t2 %in% c("A", "F", "H")))
+#'                   subset = !(t1 %in% c("A", "F", "H") &
+#'                              t2 %in% c("A", "F", "H")))
 #' 
 #' net2.1
 #' net2.2
+#' }  
 #' 
 #' @rdname netconnection
 #' @export netconnection
@@ -142,7 +146,7 @@ netconnection <- function(treat1, treat2, studlab,
   treat1 <- eval(mf[[match("treat1", names(mf))]],
                  data, enclos = sys.frame(sys.parent()))
   ##
-  if (inherits(treat1, "pairwise")) {
+  if (is.data.frame(treat1) & !is.null(attr(treat1, "pairwise"))) {
     if (!missing(treat2))
       warning("Argument 'treat2' ignored as first argument is an ",
               "object created with pairwise().", call. = FALSE)
@@ -431,7 +435,6 @@ netconnection <- function(treat1, treat2, studlab,
 #' @rdname netconnection
 #' @method print netconnection
 #' @export
-#' @export print.netconnection
 
 
 print.netconnection <- function(x,

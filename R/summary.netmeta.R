@@ -113,10 +113,8 @@
 #' summary(net2)
 #' }
 #' 
-#' @rdname summary.netmeta
 #' @method summary netmeta
 #' @export
-#' @export summary.netmeta
 
 
 summary.netmeta <- function(object,

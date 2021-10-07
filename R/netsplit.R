@@ -792,7 +792,6 @@ netsplit <- function(x, method,
 #' @rdname netsplit
 #' @method print netsplit
 #' @export
-#' @export print.netsplit
 
 
 print.netsplit <- function(x,

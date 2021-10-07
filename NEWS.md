@@ -2,22 +2,23 @@
 
 ### Major changes
 
-* Behaviour of print.netmeta() and print.summary.netmeta() switched
-  (to be in line with other print and summary functions in R)
-  
-* By default, reference group is defined by first treatment in
-  (component) network meta-analysis
-
-
-## netmeta, version 1.6-0 (2021-10-05)
-
-### Major changes
+* Behaviour of print and print.summary functions switched (to be in
+  line with other print and print.summary functions in R)
 
 * Annabel Davies <annabel.davies@manchester.ac.uk> is a new co-author
   of R package **netmeta**
 
 * Random walk algorithm implemented to estimate network contributions
-  (Davies et al., 2021, unpublished)
+  [(Davies et al., 2021)](http://arxiv.org/abs/2107.02886)
+
+* Calculation of standardised mean differences and corresponding
+  standard errors in pairwise() is based on [Crippa & Orsini
+  (2016)](https://doi.org/10.1186/s12874-016-0189-0), equations (4)
+  and (5), providing consistent treatment estimates and standard
+  errors for multi-arm studies
+  
+* By default, reference group is defined by first treatment in
+  (component) network meta-analysis
 
 * New R function hatmatrix() to derive hat matrices
 
@@ -27,14 +28,9 @@
 * New R function netcomplex() to calculate effect of arbitrary complex
   interventions in component network meta-analysis
 
-* New R function netcomparison() to calculate omparison effects of two
-  arbitrary complex interventions in component network meta-analysis
-
-* Calculation of standardised mean differences and corresponding
-  standard errors in pairwise() is based on [Crippa & Orsini
-  (2016)](https://doi.org/10.1186/s12874-016-0189-0), equations (4)
-  and (5), providing consistent treatment estimates and standard
-  errors for multi-arm studies
+* New R function netcomparison() to calculate comparison effects of
+  two arbitrary complex interventions in component network
+  meta-analysis
 
 * I2 from pairwise comparisons shown in forest plot with direct and
   indirect evidence

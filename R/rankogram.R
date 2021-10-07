@@ -289,7 +289,6 @@ rankogram <- function(x, nsim = 1000,
 #' @rdname rankogram
 #' @method print rankogram
 #' @export
-#' @export print.rankogram
 
 
 print.rankogram <- function(x,

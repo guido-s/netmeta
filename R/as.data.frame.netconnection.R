@@ -25,7 +25,6 @@
 #'
 #' @method as.data.frame netconnection 
 #' @export
-#' @export as.data.frame.netconnection
 
 
 as.data.frame.netconnection <- function(x, ...){

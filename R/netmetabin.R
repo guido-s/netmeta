@@ -516,7 +516,7 @@ netmetabin <- function(event1, n1, event2, n2,
   event1 <- eval(mf[[match("event1", names(mf))]],
                  data, enclos = sys.frame(sys.parent()))
   ##
-  if (inherits(event1, "pairwise")) {
+  if (is.data.frame(event1) & !is.null(attr(event1, "pairwise"))) {
     is.pairwise <- TRUE
     ##
     if (missing(sm) & method == "Inverse")

@@ -2,6 +2,7 @@
 % Please edit documentation in R/forest.netcomparison.R
 \name{forest.netcomparison}
 \alias{forest.netcomparison}
+\alias{plot.netcomparison}
 \title{Forest plot for complex interventions in component network
 meta-analysis}
 \usage{
@@ -22,6 +23,8 @@ meta-analysis}
   weight.study = "same",
   ...
 )
+
+\method{plot}{netcomparison}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netcomparison}.}

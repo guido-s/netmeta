@@ -121,11 +121,15 @@
 #' @examples
 #' data(Senn2013)
 #' 
-#' # Generation of an object of class 'netmeta' with reference
-#' # treatment 'plac', i.e. placebo
+#' # Only consider first five studies (to reduce runtime of example)
+#' #
+#' studies <- unique(Senn2013$studlab)
+#' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
+#' 
+#' # Conduct network meta-analysis with placebo as reference treatment
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD", reference = "plac")
+#'                 data = Senn2013.5, sm = "MD", reference = "plac")
 #' 
 #' # Decomposition of Cochran's Q
 #' #

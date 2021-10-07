@@ -39,15 +39,16 @@
 #'   \code{\link{netgraph.netimpact}}, \code{\link{print.netimpact}}
 #' 
 #' @examples
-#' data(parkinson)
+#' data(Franchini2012)
 #' 
 #' # Only consider first four studies (to reduce runtime of example)
 #' #
+#' studies <- unique(Franchini2012$Study)
 #' p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
 #'                n = list(n1, n2, n3),
 #'                mean = list(y1, y2, y3),
 #'                sd = list(sd1, sd2, sd3),
-#'                data = subset(parkinson, Study < 5),
+#'                data = subset(Franchini2012, Study %in% studies[1:4]),
 #'                studlab = Study)
 #' 
 #' net1 <- netmeta(p1)

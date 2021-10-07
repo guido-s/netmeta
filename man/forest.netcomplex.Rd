@@ -2,6 +2,7 @@
 % Please edit documentation in R/forest.netcomplex.R
 \name{forest.netcomplex}
 \alias{forest.netcomplex}
+\alias{plot.netcomplex}
 \title{Forest plot for complex interventions in component network
 meta-analysis}
 \usage{
@@ -22,6 +23,8 @@ meta-analysis}
   weight.study = "same",
   ...
 )
+
+\method{plot}{netcomplex}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netcomplex}.}

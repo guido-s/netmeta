@@ -2,6 +2,7 @@
 % Please edit documentation in R/forest.netbind.R
 \name{forest.netbind}
 \alias{forest.netbind}
+\alias{plot.netbind}
 \title{Forest plot showing results of two or more network meta-analyses}
 \usage{
 \method{forest}{netbind}(
@@ -20,6 +21,8 @@
   smlab,
   ...
 )
+
+\method{plot}{netbind}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netbind}.}

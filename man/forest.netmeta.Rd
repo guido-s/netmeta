@@ -2,6 +2,7 @@
 % Please edit documentation in R/forest.netmeta.R
 \name{forest.netmeta}
 \alias{forest.netmeta}
+\alias{plot.netmeta}
 \title{Forest plot for network meta-analysis}
 \usage{
 \method{forest}{netmeta}(
@@ -29,6 +30,8 @@
   print.byvar = FALSE,
   ...
 )
+
+\method{plot}{netmeta}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta}.}

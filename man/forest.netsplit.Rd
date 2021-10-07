@@ -2,6 +2,7 @@
 % Please edit documentation in R/forest.netsplit.R
 \name{forest.netsplit}
 \alias{forest.netsplit}
+\alias{plot.netsplit}
 \title{Forest plot for direct and indirect evidence}
 \usage{
 \method{forest}{netsplit}(
@@ -41,6 +42,8 @@
   smlab,
   ...
 )
+
+\method{plot}{netsplit}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netsplit}.}
@@ -193,9 +196,14 @@ Argument \code{show} determines which comparisons are printed:
 }
 \examples{
 data(Senn2013)
+
+# Only consider first five studies (to reduce runtime of example)
 #
+studies <- unique(Senn2013$studlab)
+Senn2013.5 <- subset(Senn2013, studlab \%in\% studies[1:5])
+
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-                studlab, data = Senn2013,
+                studlab, data = Senn2013.5,
                 comb.fixed = FALSE)
 #
 ns1 <- netsplit(net1)

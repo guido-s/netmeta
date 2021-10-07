@@ -266,7 +266,6 @@ netpairwise <- function(x,
 #' @rdname netpairwise
 #' @method print netpairwise
 #' @export
-#' @export print.netpairwise
 
 
 print.netpairwise <- function(x, ...) {
@@ -291,7 +290,6 @@ print.netpairwise <- function(x, ...) {
 #' @rdname netpairwise
 #' @method summary netpairwise
 #' @export
-#' @export summary.netpairwise
 
 
 summary.netpairwise <- function(object, ...) {
@@ -313,7 +311,6 @@ summary.netpairwise <- function(object, ...) {
 #' @rdname netpairwise
 #' @method print summary.netpairwise
 #' @export
-#' @export print.summary.netpairwise
 
 
 print.summary.netpairwise <- function(x, ...) {
@@ -338,7 +335,6 @@ print.summary.netpairwise <- function(x, ...) {
 #' @rdname netpairwise
 #' @method forest netpairwise
 #' @export
-#' @export forest.netpairwise
 
 
 forest.netpairwise <- function(x, ...) {
@@ -352,3 +348,15 @@ forest.netpairwise <- function(x, ...) {
   
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netpairwise
+#' @method plot netpairwise
+#' @export
+#'
+
+plot.netpairwise <- function(x, ...)
+  forest(x, ...)

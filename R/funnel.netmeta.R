@@ -163,7 +163,6 @@
 #'
 #' @method funnel netmeta
 #' @export
-#' @export funnel.netmeta
 
 
 funnel.netmeta <- function(x,

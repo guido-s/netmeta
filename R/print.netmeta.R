@@ -61,7 +61,6 @@
 #' @rdname netmeta
 #' @method print netmeta
 #' @export
-#' @export print.netmeta
 
 
 print.netmeta <- function(x,

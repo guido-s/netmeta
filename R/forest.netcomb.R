@@ -3,6 +3,8 @@
 #' @description
 #' Draws a forest plot in the active graphics window (using grid
 #' graphics system).
+#'
+#' @aliases forest.netcomt plot.netcomb
 #' 
 #' @param x An object of class \code{netcomb}.
 #' @param reference.group Reference treatment(s).
@@ -130,7 +132,6 @@
 #' 
 #' @method forest netcomb
 #' @export
-#' @export forest.netcomb
 
 
 forest.netcomb <- function(x,
@@ -354,3 +355,15 @@ forest.netcomb <- function(x,
   
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netcomb
+#' @method plot netcomb
+#' @export
+#'
+
+plot.netcomb <- function(x, ...)
+  forest(x, ...)

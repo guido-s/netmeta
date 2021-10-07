@@ -376,7 +376,6 @@ netcomparison <- function(x, treat1, treat2,
 #' @rdname netcomparison
 #' @method print netcomparison
 #' @export
-#' @export print.netcomparison
 
 print.netcomparison <- function(x,
                                 ##

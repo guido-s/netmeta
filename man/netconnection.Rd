@@ -107,6 +107,7 @@ nc1$n.subnets
 #
 nc1$D.matrix
 
+\dontrun{
 # Conduct network meta-analysis (results not shown)
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data = Senn2013)
@@ -134,15 +135,18 @@ try(net2 <- netmeta(1:6, 1:6, t1, t2, 1:6))
 # Conduct network meta-analysis on first subnetwork
 #
 net2.1 <- netmeta(1:6, 1:6, t1, t2, 1:6,
-                  subset = (t1 \%in\% c("A", "F", "H") & t2 \%in\% c("A", "F", "H")))
+                  subset = (t1 \%in\% c("A", "F", "H") &
+                            t2 \%in\% c("A", "F", "H")))
 
 # Conduct network meta-analysis on second subnetwork
 #
 net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6,
-                  subset = !(t1 \%in\% c("A", "F", "H") & t2 \%in\% c("A", "F", "H")))
+                  subset = !(t1 \%in\% c("A", "F", "H") &
+                             t2 \%in\% c("A", "F", "H")))
 
 net2.1
 net2.2
+}  
 
 }
 \seealso{

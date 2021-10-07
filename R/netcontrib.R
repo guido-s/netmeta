@@ -198,7 +198,6 @@ netcontrib <- function(x,
 #' @method print netcontrib
 #' 
 #' @export
-#' @export print.netcontrib
 
 
 print.netcontrib <- function(x,

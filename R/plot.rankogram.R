@@ -67,7 +67,6 @@
 #' 
 #' @method plot rankogram
 #' @export
-#' @export plot.rankogram
 
 
 plot.rankogram <- function(x,

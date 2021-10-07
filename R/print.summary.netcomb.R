@@ -66,7 +66,6 @@
 #' 
 #' @method print summary.netcomb
 #' @export
-#' @export print.summary.netcomb
 
 
 print.summary.netcomb <- function(x,

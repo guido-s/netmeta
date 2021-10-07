@@ -547,7 +547,6 @@ netleague <- function(x, y,
 #' @rdname netleague
 #' @method print netleague
 #' @export
-#' @export print.netleague
 
 
 print.netleague <- function(x,

@@ -179,7 +179,6 @@
 #' 
 #' @method plot netrank
 #' @export
-#' @export plot.netrank
 
 
 plot.netrank <- function(..., name,

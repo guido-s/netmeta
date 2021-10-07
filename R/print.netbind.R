@@ -49,7 +49,6 @@
 #' 
 #' @method print netbind
 #' @export
-#' @export print.netbind
 
 
 print.netbind <- function(x,

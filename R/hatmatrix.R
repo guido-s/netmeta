@@ -235,7 +235,6 @@ hatmatrix <- function(x, method = "Ruecker", type,
 #' @rdname hatmatrix
 #' @method print hatmatrix
 #' @export
-#' @export print.hatmatrix
 
 
 print.hatmatrix <- function(x,
