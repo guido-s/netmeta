@@ -4,6 +4,14 @@
 
 * Behaviour of print and print.summary functions switched (to be in
   line with other print and print.summary functions in R)
+  
+* By default, reference group is defined by first treatment in
+  (component) network meta-analysis
+
+
+## netmeta, version 1.6-0 (2021-10-05)
+
+### Major changes
 
 * Annabel Davies <annabel.davies@manchester.ac.uk> is a new co-author
   of R package **netmeta**
@@ -16,9 +24,6 @@
   (2016)](https://doi.org/10.1186/s12874-016-0189-0), equations (4)
   and (5), providing consistent treatment estimates and standard
   errors for multi-arm studies
-  
-* By default, reference group is defined by first treatment in
-  (component) network meta-analysis
 
 * New R function hatmatrix() to derive hat matrices
 
