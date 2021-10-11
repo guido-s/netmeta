@@ -7,8 +7,8 @@
 \method{plot}{netrank}(
   ...,
   name,
-  comb.fixed,
-  comb.random,
+  fixed,
+  random,
   seq,
   low = "red",
   mid = "yellow",
@@ -29,7 +29,10 @@
   hjust.y = 1,
   vjust.y = 0,
   nchar.trts,
-  digits = 3
+  digits = 3,
+  comb.fixed,
+  comb.random,
+  warn.deprecated = gs("warn.deprecated")
 )
 }
 \arguments{
@@ -38,11 +41,11 @@
 \item{name}{An optional character vector providing descriptive
 names for the network meta-analysis objects.}
 
-\item{comb.fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be plotted.}
+\item{fixed}{A logical indicating whether results for the fixed
+effects / common effects model should be plotted.}
 
-\item{comb.random}{A logical indicating whether results for the
-random effects model should be plotted.}
+\item{random}{A logical indicating whether results for the random
+effects model should be plotted.}
 
 \item{seq}{A character or numerical vector specifying the sequence
 of treatments on the x-axis.}
@@ -108,6 +111,13 @@ characters used to create unique treatment names.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
+
+\item{comb.fixed}{Deprecated argument (replaced by 'fixed').}
+
+\item{comb.random}{Deprecated argument (replaced by 'random').}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
 }
 \value{
 A ggplot2 object.
@@ -148,7 +158,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, comb.fixed = FALSE,
+net1 <- netmeta(p1, fixed = FALSE,
                 seq = trts, ref = "Placebo")
 
 # (2) Early remission
@@ -158,7 +168,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, comb.fixed = FALSE,
+net2 <- netmeta(p2, fixed = FALSE,
                 seq = trts, ref = "Placebo")
 
 # Image plot of treatment rankings (two outcomes)
@@ -181,7 +191,7 @@ p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net3 <- netmeta(p3, comb.fixed = FALSE,
+net3 <- netmeta(p3, fixed = FALSE,
                 seq = trts, ref = "Placebo")
 
 # (4) Loss to follow-up due to adverse events
@@ -192,7 +202,7 @@ p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                studlab = id, data = subset(Linde2015, id != 55),
                sm = "OR")
 #
-net4 <- netmeta(p4, comb.fixed = FALSE,
+net4 <- netmeta(p4, fixed = FALSE,
                 seq = trts, ref = "Placebo")
 
 # (5) Adverse events
@@ -202,7 +212,7 @@ p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net5 <- netmeta(p5, comb.fixed = FALSE,
+net5 <- netmeta(p5, fixed = FALSE,
                 seq = trts, ref = "Placebo")
 
 # Image plot of treatment rankings (two outcomes)

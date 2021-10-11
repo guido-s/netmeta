@@ -7,8 +7,8 @@
 \method{funnel}{netmeta}(
   x,
   order,
-  pooled = ifelse(x$comb.random, "random", "fixed"),
-  xlab,
+  pooled = ifelse(x$random, "random", "fixed"),
+  xlab = NULL,
   level = x$level,
   pch,
   col = "black",

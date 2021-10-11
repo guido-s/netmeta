@@ -37,9 +37,9 @@ as.data.frame.netmeta <- function(x, row.names = NULL,
                                   details = FALSE, ...){
   
   
-  meta:::chkclass(x, "netmeta")
+  chkclass(x, "netmeta")
   ##
-  x <- upgradenetmeta(x)
+  x <- updateversion(x)
   
   
   ## Remove element 'call' from object of class meta to get rid

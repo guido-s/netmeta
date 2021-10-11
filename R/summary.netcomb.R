@@ -4,11 +4,13 @@
 #' Summary method for objects of class \code{netcomb}.
 #' 
 #' @param object An object of class \code{netcomb}.
-#' @param comb.fixed A logical indicating whether results for the
-#'   fixed effects (common effects) model should be printed.
-#' @param comb.random A logical indicating whether results for the
-#'   random effects model should be printed.
-#' @param \dots Additional arguments.
+#' @param fixed A logical indicating whether results for the fixed
+#'   effects / common effects model should be printed.
+#' @param random A logical indicating whether results for the random
+#'   effects model should be printed.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #'
 #' @return
 #' A list is returned with the same elements as a
@@ -32,7 +34,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components
 #' #
@@ -45,7 +47,7 @@
 #' #
 #' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = Linde2016, reference.group = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components
 #' #
@@ -59,8 +61,9 @@
 
 
 summary.netcomb <- function(object,
-                            comb.fixed = object$comb.fixed,
-                            comb.random = object$comb.random,
+                            fixed = object$fixed,
+                            random = object$random,
+                            warn.deprecated = gs("warn.deprecated"),
                             ...) {
   
   ##
@@ -68,9 +71,8 @@ summary.netcomb <- function(object,
   ## (1) Check for netcomb object
   ##
   ##
-  meta:::chkclass(object, "netcomb")
-  ##  
-  object <- upgradenetmeta(object)
+  chkclass(object, "netcomb")
+  object <- updateversion(object)
   
   
   ##
@@ -78,8 +80,17 @@ summary.netcomb <- function(object,
   ## (2) Check other arguments
   ##
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  missing.fixed <- missing(fixed)
+  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <-
+    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+  chklogical(random)
   
   
   ##
@@ -249,11 +260,11 @@ summary.netcomb <- function(object,
               sm = object$sm,
               method = object$method,
               level = object$level,
-              level.comb = object$level.comb,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              level.ma = object$level.ma,
+              fixed = fixed,
+              random = random,
               ##
-              ci.lab = paste0(round(100 * object$level.comb, 1),"%-CI"),
+              ci.lab = paste0(round(100 * object$level.ma, 1),"%-CI"),
               ##
               reference.group = object$reference.group,
               baseline.reference = object$baseline.reference,
@@ -263,7 +274,7 @@ summary.netcomb <- function(object,
               tau.preset = object$tau.preset,
               ##
               sep.comps = object$sep.comps,
-              nchar.comps = meta:::replaceNULL(object$nchar.comps, 666),
+              nchar.comps = replaceNULL(object$nchar.comps, 666),
               ##
               inactive = object$inactive,
               sep.comps = object$sep.comps,

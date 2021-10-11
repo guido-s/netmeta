@@ -1,6 +1,6 @@
 nma.additive <- function(TE, weights, studlab,
                          treat1, treat2,
-                         level.comb,
+                         level,
                          X, C.matrix, B.matrix,
                          Q, df.Q.additive, df.Q.diff,
                          n, sep.trts) {
@@ -87,14 +87,14 @@ nma.additive <- function(TE, weights, studlab,
   
   
   comparisons <- c(list(studlab = studlab, treat1 = treat1, treat2 = treat2),
-                   ci(delta, se.delta, level = level.comb))
+                   ci(delta, se.delta, level = level))
   ##
   all.comparisons <- ci(delta.all.matrix, se.delta.all.matrix,
-                        level = level.comb)
+                        level = level)
   ##
-  components <- meta::ci(beta, se.beta, level = level.comb)
+  components <- meta::ci(beta, se.beta, level = level)
   ##
-  combinations <- meta::ci(theta, se.theta, level = level.comb)
+  combinations <- meta::ci(theta, se.theta, level = level)
   ##
   ## Test of total heterogeneity / inconsistency:
   ##
@@ -136,7 +136,7 @@ nma.additive <- function(TE, weights, studlab,
                    sum(diag((I - H) %*%
                             (B.matrix %*% t(B.matrix) * E / 2) %*% W)))
     tau <- sqrt(tau2)
-    ci.I2 <- meta:::isquared(Q.additive, df.Q.additive, level.comb)
+    ci.I2 <- isquared(Q.additive, df.Q.additive, level)
     I2 <- ci.I2$TE
     lower.I2 <- ci.I2$lower
     upper.I2 <- ci.I2$upper

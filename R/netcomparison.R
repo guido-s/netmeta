@@ -12,9 +12,9 @@
 #'   intervention(s).
 #' @param treat2 A character vector defining the second complex
 #'   intervention(s).
-#' @param comb.fixed A logical indicating whether results for fixed
-#'   effect model should be conducted.
-#' @param comb.random A logical indicating whether results for random
+#' @param fixed A logical indicating whether results for fixed effects
+#'   / common effects model should be conducted.
+#' @param random A logical indicating whether results for random
 #'   effects model should be conducted.
 #' @param level The level used to calculate confidence intervals for
 #'   combinations of components.
@@ -104,7 +104,7 @@
 #' \item{trts}{Treatments included in comparisons.}
 #' \item{comps}{Components included in comparisons.}
 #' \item{treat1, treat2}{A defined above.}
-#' \item{comb.fixed, comb.random}{A defined above.}
+#' \item{fixed, random}{A defined above.}
 #' \item{level, nchar.comps, backtransf, x}{A defined above.}
 #' \item{B.matrix}{B matrix.}
 #' \item{C.matrix}{C matrix.}
@@ -132,7 +132,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, ref = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -153,7 +153,7 @@
 #' TE <- c(0, 1, 0)
 #' seTE <- rep(1, 3)
 #' # Conduct (C)NMA
-#' net2 <- netmeta(TE, seTE, t1, t2, comb.random = FALSE)
+#' net2 <- netmeta(TE, seTE, t1, t2, random = FALSE)
 #' nc2 <- netcomb(net2)
 #'
 #' # Result for comparison A vs B + D
@@ -175,19 +175,20 @@
 
 
 netcomparison <- function(x, treat1, treat2,
-                          comb.fixed = x$comb.fixed,
-                          comb.random = x$comb.random,
-                          level = x$level.comb,
+                          fixed = x$fixed,
+                          random = x$random,
+                          level = x$level.ma,
                           nchar.comps = x$nchar.comps) {
   
   
-  meta:::chkclass(x, "netcomb")
+  chkclass(x, "netcomb")
+  x <- updateversion(x)
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chklevel(level)
+  chklogical(fixed)
+  chklogical(random)
+  chklevel(level)
   ##
-  meta:::chknumeric(nchar.comps, min = 1, length = 1)
+  chknumeric(nchar.comps, min = 1, length = 1)
   
 
   missing.treat1 <- missing(treat1)
@@ -221,7 +222,7 @@ netcomparison <- function(x, treat1, treat2,
   ##
   n.comparisons <- length(treat1)
   ##
-  meta:::chklength(treat2, n.comparisons, "treat1")
+  chklength(treat2, n.comparisons, "treat1")
   ##
   comps <- x$comps
   
@@ -342,8 +343,8 @@ netcomparison <- function(x, treat1, treat2,
               statistic.random = ci.r$statistic,
               pval.random = ci.r$p,
               ##
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              fixed = fixed,
+              random = random,
               level = level,
               ##
               trts = trts,
@@ -362,7 +363,11 @@ netcomparison <- function(x, treat1, treat2,
               add2 = add2,
               ##
               treat1.orig = treat1.orig,
-              treat2.orig = treat2.orig)
+              treat2.orig = treat2.orig,
+              ##
+              version = packageDescription("netmeta")$Version
+              )
+
   ##
   class(res) <- c("netcomparison", class(res))
   
@@ -379,8 +384,8 @@ netcomparison <- function(x, treat1, treat2,
 
 print.netcomparison <- function(x,
                                 ##
-                                comb.fixed = x$comb.fixed,
-                                comb.random = x$comb.random,
+                                fixed = x$fixed,
+                                random = x$random,
                                 backtransf = x$backtransf,
                                 ##
                                 nchar.comps = x$nchar.comps,
@@ -397,13 +402,10 @@ print.netcomparison <- function(x,
                                 legend = TRUE,
                                 ...) {
   
-  meta:::chkclass(x, "netcomparison")
+  chkclass(x, "netcomparison")
   ##
-  chknumeric <- meta:::chknumeric
-  chklogical <- meta:::chklogical
-  ##
-  chklogical(comb.fixed)
-  chklogical(comb.random)
+  chklogical(fixed)
+  chklogical(random)
   chklogical(backtransf)
   ##
   chknumeric(nchar.comps, min = 1, length = 1)
@@ -416,7 +418,7 @@ print.netcomparison <- function(x,
   chklogical(zero.pval)
   chklogical(JAMA.pval)
   ##
-  meta:::chklogical(legend)
+  chklogical(legend)
   
   
   ##
@@ -426,7 +428,7 @@ print.netcomparison <- function(x,
   treat1 <- rep("", n.comparisons)
   treat2 <- rep("", n.comparisons)
   ##
-  if (comb.fixed | comb.random) {
+  if (fixed | random) {
     comps <- c(x$comps, x$inactive)
     comps.abbr <- treats(comps, nchar.comps)
     ##
@@ -464,7 +466,7 @@ print.netcomparison <- function(x,
   
   sm.lab <- x$x$sm
   ##
-  relative <- meta:::is.relative.effect(x$x$sm)
+  relative <- is.relative.effect(x$x$sm)
   ##
   if (!backtransf & relative)
     sm.lab <- paste0("log", x$x$sm)
@@ -472,7 +474,7 @@ print.netcomparison <- function(x,
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   
   
-  if (comb.fixed) {
+  if (fixed) {
     TE.fixed <- x$TE.fixed
     lower.fixed <- x$lower.fixed
     upper.fixed <- x$upper.fixed
@@ -484,7 +486,7 @@ print.netcomparison <- function(x,
     }
   }
   ##
-  if (comb.random) {
+  if (random) {
     TE.random <- x$TE.random
     lower.random <- x$lower.random
     upper.random <- x$upper.random
@@ -497,11 +499,7 @@ print.netcomparison <- function(x,
   }
   
   
-  formatN <- meta:::formatN
-  formatCI <- meta:::formatCI
-  formatPT <- meta:::formatPT
-  ##
-  if (comb.fixed) {
+  if (fixed) {
     pval.f <- formatPT(x$pval.fixed, digits = digits.pval,
                        scientific = scientific.pval,
                        zero = zero.pval, JAMA = JAMA.pval,
@@ -534,12 +532,12 @@ print.netcomparison <- function(x,
     ##
     prmatrix(res.f, quote = FALSE, right = TRUE, na.print = "--")
     ##
-    if (comb.random)
+    if (random)
       cat("\n")
   }
   
   
-  if (comb.random) {
+  if (random) {
     ##
     pval.r <- formatPT(x$pval.random, digits = digits.pval,
                        scientific = scientific.pval,
@@ -575,7 +573,7 @@ print.netcomparison <- function(x,
   }
   
   
-  if (legend && (comb.fixed | comb.random)) {
+  if (legend && (fixed | random)) {
     diff.comps <- comps != comps.abbr
     any.comps <- any()
     ##

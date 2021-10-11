@@ -6,8 +6,8 @@
 \usage{
 \method{print}{netcomb}(
   x,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$fixed,
+  random = x$random,
   backtransf = x$backtransf,
   nchar.comps = x$nchar.comps,
   digits = gs("digits"),
@@ -26,7 +26,7 @@
   text.tau = gs("text.tau"),
   text.I2 = gs("text.I2"),
   legend = TRUE,
-  nchar.trts = nchar.comps,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
@@ -34,10 +34,10 @@
 \item{x}{An object of class \code{netcomb} or
 \code{summary.netcomb}.}
 
-\item{comb.fixed}{A logical indicating whether results for the
+\item{fixed}{A logical indicating whether results for the
 fixed effects (common effects) model should be printed.}
 
-\item{comb.random}{A logical indicating whether results for the
+\item{random}{A logical indicating whether results for the
 random effects model should be printed.}
 
 \item{backtransf}{A logical indicating whether results should be
@@ -98,10 +98,10 @@ I\eqn{^2}.}
 \item{legend}{A logical indicating whether a legend should be
 printed.}
 
-\item{nchar.trts}{Deprecated argument (replaced by
-\code{nchar.comps}).}
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
 
-\item{\dots}{Additional arguments.}
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \description{
 Print method for objects of class \code{netcomb}.
@@ -118,7 +118,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive model for treatment components
 #
@@ -131,7 +131,7 @@ print(nc1, digits = 2, digits.stat = 3)
 #
 net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive model for treatment components
 #

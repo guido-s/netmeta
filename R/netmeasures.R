@@ -16,6 +16,9 @@
 #'   between-study variance \eqn{\tau^2}.
 #' @param warn A logical indicating whether warnings should be
 #'   printed.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #' 
 #' @details
 #' The direct evidence proportion gives the absolute contribution of
@@ -43,7 +46,7 @@
 #' 
 #' All measures are calculated based on the fixed effects
 #' meta-analysis by default. In the case that in function
-#' \code{netmeta} the argument \code{comb.random = TRUE}, all measures
+#' \code{netmeta} the argument \code{random = TRUE}, all measures
 #' are calculated for a random effects model. The value of the
 #' square-root of the between-study variance \eqn{\tau^2} can also be
 #' prespecified by argument \code{tau.preset} in function
@@ -85,7 +88,7 @@
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'                 data = Senn2013, sm = "MD", reference = "plac",
-#'                 comb.random = FALSE)
+#'                 random = FALSE)
 #' 
 #' # Calculate measures based on a fixed effects model
 #' #        
@@ -103,7 +106,7 @@
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'                 data = Senn2013, sm = "MD", reference = "plac",
-#'                 comb.fixed = FALSE)
+#'                 fixed = FALSE)
 #' 
 #' # Calculate measures based on a random effects model
 #' #                          
@@ -114,20 +117,34 @@
 
 
 netmeasures <- function(x,
-                        random = x$comb.random | !missing(tau.preset),
-                        tau.preset = x$tau.preset, warn = TRUE) {
+                        random = x$random | !missing(tau.preset),
+                        tau.preset = x$tau.preset,
+                        warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                        ...) {
   
-  
   ##
   ##
-  ## (1) Checks
+  ## (1) Check for netmeta object and upgrade object
   ##
   ##
-  meta:::chkclass(x, "netmeta")
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   ##
   is.bin <- inherits(x, "netmetabin")
+
+
   ##
-  meta:::chklogical(random)
+  ##
+  ## (2) Check other arguments
+  ##
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  random <-
+    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+  chklogical(random)
+  ##
   if (is.bin & random) {
     txt <-
       paste0("Argument 'random' set to FALSE for ",
@@ -150,7 +167,7 @@ netmeasures <- function(x,
   }
   ##
   if (!is.null(tau.preset)) {
-    meta:::chknumeric(tau.preset, min = 0, length = 1)
+    chknumeric(tau.preset, min = 0, length = 1)
     if (!random & warn) {
       warning("Measures calculated for random effects model ",
               "(argument random=TRUE) as argument 'tau.preset' is provided.")
@@ -160,7 +177,7 @@ netmeasures <- function(x,
   
   ##
   ##
-  ## (2) Calculate measures
+  ## (3) Calculate measures
   ##
   ##
   if (is.bin) {
@@ -296,13 +313,20 @@ netmeasures <- function(x,
   }
   
   
+  ##
+  ##
+  ## (3) Create netmeasures object
+  ##
+  ##
   res <- list(proportion = proportion,
               meanpath = meanpath,
               minpar = minpar,
               minpar.study = minpar.study,
               H.tilde = H.tilde,
               random = random,
-              tau.preset = tau.preset)
+              tau.preset = tau.preset,
+              version = packageDescription("netmeta")$Version
+              )
   ##
   res
 }

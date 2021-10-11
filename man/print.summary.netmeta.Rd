@@ -7,8 +7,8 @@
 \method{print}{summary.netmeta}(
   x,
   sortvar,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$x$fixed,
+  random = x$x$random,
   prediction = x$prediction,
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
@@ -29,6 +29,7 @@
   truncate,
   text.truncate = "*** Output truncated ***",
   legend = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
@@ -38,11 +39,11 @@
 \item{sortvar}{An optional vector used to sort individual studies
 (must be of same length as \code{x$TE}).}
 
-\item{comb.fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be printed.}
+\item{fixed}{A logical indicating whether results for the fixed
+effects / common effects model should be printed.}
 
-\item{comb.random}{A logical indicating whether results for the
-random effects model should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects model should be printed.}
 
 \item{prediction}{A logical indicating whether prediction intervals
 should be printed.}
@@ -103,13 +104,16 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 \item{truncate}{An optional vector used to truncate the printout of
 results for individual studies (must be a logical vector of
 length corresponding to the number of pairwise
-comparisons\code{x$TE} or contain numerical values).}
+comparisons \code{x$TE} or contain numerical values).}
 
 \item{text.truncate}{A character string printed if study results
 were truncated from the printout.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
 
 \item{\dots}{Additional arguments.}
 }
@@ -123,7 +127,7 @@ data(Senn2013)
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD",
-                comb.random = FALSE, ref = "plac")
+                random = FALSE, ref = "plac")
 snet1 <- summary(net1)
 print(snet1, digits = 3)
 
@@ -150,7 +154,7 @@ print(snet1, ref = "plac", digits = 3,
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD",
-                comb.fixed = FALSE, ref = "plac")
+                fixed = FALSE, ref = "plac")
 print(summary(net2), digits = 3)
 }
 

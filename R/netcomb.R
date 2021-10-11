@@ -14,10 +14,10 @@
 #' @param sep.comps A single character to define separator between
 #'   treatment components.
 #' @param C.matrix C matrix (see Details).
-#' @param comb.fixed A logical indicating whether a fixed effects
-#'   (common effects) network meta-analysis should be conducted.
-#' @param comb.random A logical indicating whether a random effects
-#'   network meta-analysis should be conducted.
+#' @param fixed A logical indicating whether a fixed effects / common
+#'   effects network meta-analysis should be conducted.
+#' @param random A logical indicating whether a random effects network
+#'   meta-analysis should be conducted.
 #' @param tau.preset An optional value for the square-root of the
 #'   between-study variance \eqn{\tau^2}.
 #' @param details.chkident A logical indicating whether details on
@@ -25,6 +25,9 @@
 #' @param nchar.comps A numeric defining the minimum number of
 #'   characters used to create unique names for components (see
 #'   Details).
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #' 
 #' @details
 #' Treatments in network meta-analysis (NMA) can be complex
@@ -240,8 +243,8 @@
 #' \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 #' \item{C.matrix}{As defined above.}
 #' \item{sm}{Summary measure.}
-#' \item{level.comb}{Level for confidence intervals.}
-#' \item{comb.fixed, comb.random, tau.preset}{As defined above.}
+#' \item{level.ma}{Level for confidence intervals.}
+#' \item{fixed, random, tau.preset}{As defined above.}
 #' \item{sep.trts}{A character used in comparison names as separator
 #'   between treatment labels.}
 #' \item{nchar.comps}{A numeric defining the minimum number of
@@ -298,7 +301,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, ref = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' net1
 #' forest(net1, xlim = c(0.2, 50))
 #' 
@@ -330,7 +333,7 @@
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = Linde2016, ref = "placebo",
 #'                 seq = trts,
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' net1
 #' forest(net1, xlim = c(0.2, 50))
 #' 
@@ -349,11 +352,14 @@ netcomb <- function(x,
                     inactive = NULL,
                     sep.comps = "+",
                     C.matrix,
-                    comb.fixed = x$comb.fixed,
-                    comb.random = x$comb.random | !is.null(tau.preset),
+                    fixed = x$fixed,
+                    random = x$random | !is.null(tau.preset),
                     tau.preset = NULL,
                     details.chkident = FALSE,
-                    nchar.comps = x$nchar.trts) {
+                    nchar.comps = x$nchar.trts,
+                    ##
+                    warn.deprecated = gs("warn.deprecated"),
+                    ...) {
   
   
   ##
@@ -361,21 +367,32 @@ netcomb <- function(x,
   ## (1) Check arguments
   ##
   ##
-  meta:::chkclass(x, "netmeta")
+  chkclass(x, "netmeta")
   ##
-  x <- upgradenetmeta(x)
+  x <- updateversion(x)
   ##
-  meta:::chkchar(sep.comps, nchar = 1, length = 1)
-  ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
+  chkchar(sep.comps, nchar = 1, length = 1)
   ##
   if (!is.null(tau.preset))
-    meta:::chknumeric(tau.preset, min = 0, length = 1)
+    chknumeric(tau.preset, min = 0, length = 1)
   ##
-  meta:::chklogical(details.chkident)
-  nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
-  meta:::chknumeric(nchar.comps, min = 1, length = 1)
+  chklogical(details.chkident)
+  nchar.comps <- replaceNULL(nchar.comps, 666)
+  chknumeric(nchar.comps, min = 1, length = 1)
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  missing.fixed <- missing(fixed)
+  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <-
+    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+  chklogical(random)
   
   
   ##
@@ -530,7 +547,7 @@ netcomb <- function(x,
   
   
   res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
-                        p0$treat1[o], p0$treat2[o], x$level.comb,
+                        p0$treat1[o], p0$treat2[o], x$level.ma,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         x$n, x$sep.trts)
@@ -558,7 +575,7 @@ netcomb <- function(x,
   ##
   p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
   res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
-                        p1$treat1[o], p1$treat2[o], x$level.comb,
+                        p1$treat1[o], p1$treat2[o], x$level.ma,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         x$n, x$sep.trts)
@@ -711,9 +728,9 @@ netcomb <- function(x,
               sm = x$sm,
               method = "Inverse",
               level = x$level,
-              level.comb = x$level.comb,
-              comb.fixed = x$comb.fixed,
-              comb.random = x$comb.random,
+              level.ma = x$level.ma,
+              fixed = x$fixed,
+              random = x$random,
               ##
               reference.group = x$reference.group,
               baseline.reference = x$baseline.reference,

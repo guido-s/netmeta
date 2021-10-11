@@ -132,7 +132,7 @@
 #' 
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
 #'                 studlab, data = Senn2013.5,
-#'                 comb.fixed = FALSE)
+#'                 fixed = FALSE)
 #' #
 #' ns1 <- netsplit(net1)
 #' 
@@ -161,7 +161,7 @@
 
 
 forest.netsplit <- function(x,
-                            pooled = ifelse(x$comb.random, "random", "fixed"),
+                            pooled = ifelse(x$x$random, "random", "fixed"),
                             show = "both",
                             ##
                             subgroup = "comparison",
@@ -213,15 +213,8 @@ forest.netsplit <- function(x,
   ## (1) Check and set arguments
   ##
   ##
-  meta:::chkclass(x, "netsplit")
-  ##
-  x <- upgradenetmeta(x)
-  ##
-  chkchar <- meta:::chkchar
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  formatPT <- meta:::formatPT
-  setchar <- meta:::setchar
+  chkclass(x, "netsplit")
+  x <- updateversion(x)
   ##
   pooled <- setchar(pooled, c("fixed", "random"))
   ##
@@ -323,7 +316,7 @@ forest.netsplit <- function(x,
   ##
   if (missing(text.predict))
     if (!(length(x$level.predict) == 0) &&
-        x$level.comb != x$level.predict)
+        x$level.ma != x$level.predict)
       text.predict <- paste(text.predict, " (",
                             round(x$level.predict * 100), "%-PI)", sep = "")
   ##
@@ -610,7 +603,7 @@ forest.netsplit <- function(x,
     ##
     forest(m,
            digits = digits,
-           comb.fixed = FALSE, comb.random = FALSE,
+           fixed = FALSE, random = FALSE,
            hetstat = FALSE, test.subgroup = FALSE,
            leftcols = leftcols,
            leftlabs = leftlabs,
@@ -665,7 +658,7 @@ forest.netsplit <- function(x,
     ##
     forest(m,
            digits = digits,
-           comb.fixed = FALSE, comb.random = FALSE,
+           fixed = FALSE, random = FALSE,
            overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
            leftcols = leftcols,
            leftlabs = leftlabs,

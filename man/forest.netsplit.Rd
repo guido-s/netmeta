@@ -7,7 +7,7 @@
 \usage{
 \method{forest}{netsplit}(
   x,
-  pooled = ifelse(x$comb.random, "random", "fixed"),
+  pooled = ifelse(x$x$random, "random", "fixed"),
   show = "both",
   subgroup = "comparison",
   overall = TRUE,
@@ -204,7 +204,7 @@ Senn2013.5 <- subset(Senn2013, studlab \%in\% studies[1:5])
 
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
                 studlab, data = Senn2013.5,
-                comb.fixed = FALSE)
+                fixed = FALSE)
 #
 ns1 <- netsplit(net1)
 

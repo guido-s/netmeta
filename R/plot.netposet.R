@@ -127,7 +127,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, comb.fixed = FALSE,
+#' net1 <- netmeta(p1, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # (2) Early remission
@@ -137,7 +137,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, comb.fixed = FALSE,
+#' net2 <- netmeta(p2, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # Partial order of treatment rankings
@@ -166,7 +166,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net3 <- netmeta(p3, comb.fixed = FALSE,
+#' net3 <- netmeta(p3, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # Partial order of treatment rankings (with three outcomes) 
@@ -193,7 +193,7 @@
 
 plot.netposet <- function(x,
                           plottype = "scatter",
-                          pooled = ifelse(x$comb.random, "random", "fixed"),
+                          pooled = ifelse(x$random, "random", "fixed"),
                           dim = "2d",
                           sel.x = 1, sel.y = 2, sel.z = 3,
                           cex = 1, col = "black",
@@ -208,9 +208,11 @@ plot.netposet <- function(x,
                           col.grid = "gray", lty.grid = 2, lwd.grid = 1,
                           ...) {
   
-  meta:::chkclass(x, "netposet")
+  
+  chkclass(x, "netposet")
+  x <- updateversion(x)
   ##
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("fixed", "random"))
   
   
   if (pooled == "fixed") {
@@ -229,7 +231,7 @@ plot.netposet <- function(x,
   n.treatments <- length(treatments)
   
   
-  dim <- meta:::setchar(dim, c("2d", "3d"))
+  dim <- setchar(dim, c("2d", "3d"))
   is_2d <- dim == "2d"
   is_3d <- !is_2d
   ##
@@ -240,7 +242,7 @@ plot.netposet <- function(x,
     is_3d <- FALSE
   }
   ##
-  plottype <- meta:::setchar(plottype, c("scatter", "biplot"))
+  plottype <- setchar(plottype, c("scatter", "biplot"))
   is_biplot <- plottype == "biplot"
   ##
   if (is_biplot) {
@@ -269,14 +271,14 @@ plot.netposet <- function(x,
     p.matrix <- prcomp(p.matrix, scale = TRUE)$x
   }
   else {
-    sel.x <- as.numeric(meta:::setchar(sel.x, seq_len(n.outcomes)))
-    sel.y <- as.numeric(meta:::setchar(sel.y, seq_len(n.outcomes)))
+    sel.x <- as.numeric(setchar(sel.x, seq_len(n.outcomes)))
+    sel.y <- as.numeric(setchar(sel.y, seq_len(n.outcomes)))
     ##
     if (n.outcomes > 2)
-      sel.z <- as.numeric(meta:::setchar(sel.z, seq_len(n.outcomes)))
+      sel.z <- as.numeric(setchar(sel.z, seq_len(n.outcomes)))
   }
   ##
-  if (is_3d & !meta:::is.installed.package("rgl", stop = FALSE)) {
+  if (is_3d & !is.installed.package("rgl", stop = FALSE)) {
     warning(paste0("2-D plot generated as package 'rgl' is missing.",
                    "\n  ",
                    "Please install package 'rgl' in order to ",
@@ -293,20 +295,20 @@ plot.netposet <- function(x,
   ##
   use_pch <- !is.null(pch)
   ##
-  meta:::chknumeric(cex.text, min = 0, zero = 0)
-  meta:::chknumeric(adj.x)
-  meta:::chknumeric(adj.y)
-  meta:::chknumeric(offset.x)
-  meta:::chknumeric(offset.y)
-  meta:::chknumeric(lty.lines, min = 0, zero = 0, length = 1)
-  meta:::chknumeric(lwd.lines, min = 0, zero = 0, length = 1)
-  meta:::chklogical(arrows)
-  meta:::chknumeric(length, min = 0, zero = 0, length = 1)
+  chknumeric(cex.text, min = 0, zero = 0)
+  chknumeric(adj.x)
+  chknumeric(adj.y)
+  chknumeric(offset.x)
+  chknumeric(offset.y)
+  chknumeric(lty.lines, min = 0, zero = 0, length = 1)
+  chknumeric(lwd.lines, min = 0, zero = 0, length = 1)
+  chklogical(arrows)
+  chknumeric(length, min = 0, zero = 0, length = 1)
   if (use_pch)
-    meta:::chknumeric(cex.points, min = 0, zero = 0)
-  meta:::chklogical(grid)
-  meta:::chknumeric(lty.grid, min = 0, zero = 0, length = 1)
-  meta:::chknumeric(lwd.grid, min = 0, zero = 0, length = 1)
+    chknumeric(cex.points, min = 0, zero = 0)
+  chklogical(grid)
+  chknumeric(lty.grid, min = 0, zero = 0, length = 1)
+  chknumeric(lwd.grid, min = 0, zero = 0, length = 1)
   
   
   if (!(length(cex.text) %in% c(1, n.treatments)))

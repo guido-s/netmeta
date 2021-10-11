@@ -15,9 +15,9 @@ netmeta(
   subset = NULL,
   sm,
   level = gs("level"),
-  level.comb = gs("level.comb"),
-  comb.fixed = gs("comb.fixed"),
-  comb.random = gs("comb.random") | !is.null(tau.preset),
+  level.ma = gs("level.ma"),
+  fixed = gs("fixed"),
+  random = gs("random") | !is.null(tau.preset),
   prediction = FALSE,
   level.predict = gs("level.predict"),
   reference.group,
@@ -45,15 +45,17 @@ netmeta(
   backtransf = gs("backtransf"),
   title = "",
   keepdata = gs("keepdata"),
-  warn = TRUE,
   control = NULL,
-  nchar = nchar.trts
+  warn = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
+  nchar = nchar.trts,
+  ...
 )
 
 \method{print}{netmeta}(
   x,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$fixed,
+  random = x$random,
   prediction = x$prediction,
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
@@ -75,6 +77,7 @@ netmeta(
   text.tau = gs("text.tau"),
   text.I2 = gs("text.I2"),
   legend = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
@@ -106,14 +109,14 @@ e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
 \item{level}{The level used to calculate confidence intervals for
 individual comparisons.}
 
-\item{level.comb}{The level used to calculate confidence intervals
-for pooled estimates.}
+\item{level.ma}{The level used to calculate confidence intervals
+for network estimates.}
 
-\item{comb.fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be printed.}
+\item{fixed}{A logical indicating whether results for the fixed
+effects / common effects model should be printed.}
 
-\item{comb.random}{A logical indicating whether results for the
-random effects model should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects model should be printed.}
 
 \item{prediction}{A logical indicating whether prediction intervals
 should be printed.}
@@ -200,17 +203,22 @@ example.}
 \item{keepdata}{A logical indicating whether original data (set)
 should be kept in netmeta object.}
 
-\item{warn}{A logical indicating whether warnings should be printed
-(e.g., if studies are excluded from meta-analysis due to zero
-standard errors).}
-
 \item{control}{An optional list to control the iterative process to
 estimate the between-study variance \eqn{\tau^2}. This argument
 is passed on to \code{\link[metafor]{rma.mv}}.}
 
+\item{warn}{A logical indicating whether warnings should be printed
+(e.g., if studies are excluded from meta-analysis due to zero
+standard errors).}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
 \item{nchar}{Deprecated argument (replaced by \code{nchar.trts}).}
 
-\item{x}{An object of class \code{summary.netmeta}.}
+\item{\dots}{Additional arguments.}
+
+\item{x}{An object of class \code{netmeta}.}
 
 \item{header}{A logical indicating whether information on title of
 meta-analysis, comparison and outcome should be printed at the
@@ -257,8 +265,6 @@ I\eqn{^2}.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}
-
-\item{\dots}{Additional arguments.}
 }
 \value{
 An object of class \code{netmeta} with corresponding \code{print},
@@ -424,15 +430,15 @@ object is a list containing the following components:
 \item{Cov.fixed}{Variance-covariance matrix (fixed effects model)}
 \item{Cov.random}{Variance-covariance matrix (random effects
   model)}
-\item{sm, level, level.comb}{As defined above.}
-\item{comb.fixed, comb.random}{As defined above.}
+\item{sm, level, level.ma}{As defined above.}
+\item{fixed, random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
 \item{reference.group, baseline.reference, small.values,
   all.treatments}{As defined above.}
 \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
   above.}
 \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
-\item{backtransf, title, warn}{As defined above.}
+\item{backtransf, title, warn, warn.deprecated}{As defined above.}
 \item{call}{Function call.}
 \item{version}{Version of R package netmeta used to create object.}
 }
@@ -538,15 +544,15 @@ based on the common between-study variance \eqn{\tau^2} from the
 network meta-analysis.
 
 Internally, both fixed effects and random effects models are
-calculated regardless of values choosen for arguments
-\code{comb.fixed} and \code{comb.random}. Accordingly, the network
-estimates for the random effects model can be extracted from
-component \code{TE.random} of an object of class \code{"netmeta"}
-even if argument \code{comb.random = FALSE}. However, all functions
-in R package \bold{netmeta} will adequately consider the values for
-\code{comb.fixed} and \code{comb.random}. E.g. function
+calculated regardless of values choosen for arguments \code{fixed}
+and \code{random}. Accordingly, the network estimates for the
+random effects model can be extracted from component
+\code{TE.random} of an object of class \code{"netmeta"} even if
+argument \code{random = FALSE}. However, all functions in R package
+\bold{netmeta} will adequately consider the values for \code{fixed}
+and \code{random}. E.g. function
 \code{\link{print.summary.netmeta}} will not print results for the
-random effects model if \code{comb.random = FALSE}.
+random effects model if \code{random = FALSE}.
 
 By default, treatment names are not abbreviated in
 printouts. However, in order to get more concise printouts,
@@ -589,7 +595,7 @@ data(Senn2013)
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD",
-                comb.random = FALSE)
+                random = FALSE)
 net1
 net1$Q.decomp
 
@@ -602,7 +608,7 @@ print(net1, reference = "plac")
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD",
-                comb.fixed = FALSE)
+                fixed = FALSE)
 net2
 
 # Change printing order of treatments with placebo last and use
@@ -611,7 +617,7 @@ net2
 trts <- c("acar", "benf", "metf", "migl", "piog",
           "rosi", "sita", "sulf", "vild", "plac")
 net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-                data = Senn2013, sm = "MD", comb.fixed = FALSE,
+                data = Senn2013, sm = "MD", fixed = FALSE,
                 seq = trts, reference = "Placebo")
 print(net3, digits = 2)
 }

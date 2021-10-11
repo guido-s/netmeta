@@ -4,19 +4,28 @@
 \alias{print.netbind}
 \title{Print method for objects of class netbind}
 \usage{
-\method{print}{netbind}(x, comb.fixed = x$comb.fixed, comb.random = x$comb.random, ...)
+\method{print}{netbind}(
+  x,
+  fixed = x$x$fixed,
+  random = x$x$random,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netbind} or
 \code{summary.netbind}.}
 
-\item{comb.fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be printed.}
+\item{fixed}{A logical indicating whether results for the fixed
+effects / common effects model should be printed.}
 
-\item{comb.random}{A logical indicating whether results for the
-random effects model should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects model should be printed.}
 
-\item{\dots}{Additional arguments (ignored).}
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \description{
 Print method for objects of class \code{netbind}.
@@ -34,7 +43,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive CNMA model with placebo as inactive component and
 # reference
@@ -49,7 +58,7 @@ nb1 <- netbind(nc1, net1,
                col.square = c("red", "black"))
 
 nb1
-print(nb1, comb.fixed = TRUE)
+print(nb1, fixed = TRUE)
 
 }
 \seealso{

@@ -26,7 +26,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, ref = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -42,7 +42,7 @@
 netgraph.netcomb <- function(x, ...) {
   
   
-  meta:::chkclass(x, "netcomb")
+  chkclass(x, "netcomb")
   
   
   res <- netgraph(x$x, ...)

@@ -9,11 +9,11 @@
 #'   \code{"Davies"} (can be abbreviated, see Details).
 #' @param type A character string indicating which specific hat matrix
 #'   should be derived (can be abbreviated, see Details).
-#' @param comb.fixed A logical indicating whether a hat matrix should
-#'   be printed for the fixed effects (common effects) network
+#' @param fixed A logical indicating whether a hat matrix should be
+#'   printed for the fixed effects / common effects network
 #'   meta-analysis.
-#' @param comb.random A logical indicating whether a hat matrix should
-#'   be printed for the random effects network meta-analysis.
+#' @param random A logical indicating whether a hat matrix should be
+#'   printed for the random effects network meta-analysis.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param nchar.studlab A numeric defining the minimum number of
@@ -152,7 +152,7 @@
 #' first10 <- subset(Dong2013, id <= 10)
 #' p1 <- pairwise(treatment, death, randomized, studlab = id,
 #'                data = first10, sm = "OR")
-#' net1 <- netmeta(p1, comb.fixed = FALSE)
+#' net1 <- netmeta(p1, fixed = FALSE)
 #' 
 #' hatmatrix(net1)
 #' hatmatrix(net1, method = "k")
@@ -165,13 +165,12 @@
 
 
 hatmatrix <- function(x, method = "Ruecker", type,
-                      comb.fixed = x$comb.fixed,
-                      comb.random = x$comb.random) {
+                      fixed = x$fixed,
+                      random = x$random) {
   
   
-  meta:::chkclass(x, "netmeta")
-  ##
-  setchar <- meta:::setchar
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   ##
   method <- setchar(method, c("Ruecker", "Krahn", "Davies"))
   ##
@@ -219,9 +218,12 @@ hatmatrix <- function(x, method = "Ruecker", type,
   ##
   res$method <- method
   res$type <- type
-  res$comb.fixed <- comb.fixed
-  res$comb.random <- comb.random
+  ##
   res$x <- x
+  res$x$fixed <- fixed
+  res$x$random <- random
+  ##
+  res$version <- packageDescription("netmeta")$Version
   ##
   class(res) <- "hatmatrix"
   ##
@@ -238,8 +240,8 @@ hatmatrix <- function(x, method = "Ruecker", type,
 
 
 print.hatmatrix <- function(x,
-                            comb.fixed = x$comb.fixed,
-                            comb.random = x$comb.random,
+                            fixed = x$x$fixed,
+                            random = x$x$random,
                             nchar.trts = x$x$nchar.trts,
                             nchar.studlab = 666,
                             digits = gs("digits"),
@@ -247,15 +249,19 @@ print.hatmatrix <- function(x,
                             legend.studlab = TRUE,
                             ...) {
   
-  meta:::chkclass(x, "hatmatrix")
+  chkclass(x, "hatmatrix")
+  x <- updateversion(x)
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chknumeric(nchar.trts, length = 1)
-  meta:::chknumeric(nchar.studlab, length = 1)
-  meta:::chknumeric(digits, length = 1)
-  meta:::chklogical(legend)
-  meta:::chklogical(legend.studlab)
+  chklogical(fixed)
+  fixed.logical <- fixed
+  chklogical(random)
+  random.logical <- random
+  ##
+  chknumeric(nchar.trts, length = 1)
+  chknumeric(nchar.studlab, length = 1)
+  chknumeric(digits, length = 1)
+  chklogical(legend)
+  chklogical(legend.studlab)
   ##
   matitle(x$x)
   ##
@@ -277,10 +283,10 @@ print.hatmatrix <- function(x,
   fixed <- x$fixed
   random <- x$random
   ##
-  legend <- legend & (comb.fixed | comb.random)
-  legend.studlab <- legend.studlab & (comb.fixed | comb.random)
+  legend <- legend & (fixed.logical | random.logical)
+  legend.studlab <- legend.studlab & (fixed.logical | random.logical)
   ##
-  if (comb.fixed) {
+  if (fixed.logical) {
     compnames <- any(grepl(sep.trts, rownames(fixed), fixed = TRUE))
     anystudy.r <- anystudy.r | !compnames
     anycomp.r  <- anycomp.r  | compnames
@@ -302,10 +308,10 @@ print.hatmatrix <- function(x,
     ##
     cat("Fixed effects model:\n\n")
     prmatrix(round(fixed, digits))
-    if (comb.random)
+    if (random.logical)
       cat("\n")
   }
-  if (comb.random) {
+  if (random.logical) {
     compnames <- any(grepl(sep.trts, rownames(random), fixed = TRUE))
     anystudy.r <- anystudy.r | !compnames
     anycomp.r  <- anycomp.r  | compnames
@@ -352,7 +358,7 @@ print.hatmatrix <- function(x,
   ##
   if (legend.studlab && (anystudy.r | anystudy.c)) {
     if (anystudy.r) {
-      if (comb.fixed) {
+      if (fixed.logical) {
         studlab <- rownames(x$fixed)
         studlab.abbr <- rownames(fixed)
       }
@@ -363,7 +369,7 @@ print.hatmatrix <- function(x,
     }
     ##
     if (anystudy.c) {
-      if (comb.fixed) {
+      if (fixed.logical) {
         studlab <- colnames(x$fixed)
         studlab.abbr <- colnames(fixed)
       }
@@ -396,8 +402,8 @@ print.hatmatrix <- function(x,
 
 hatmatrix.aggr <- function(x, model, type) {
   
-  model <- meta:::setchar(model, c("fixed", "random"))
-  type <- meta:::setchar(type, c("full", "long", "short"))
+  model <- setchar(model, c("fixed", "random"))
+  type <- setchar(type, c("full", "long", "short"))
   
   ## Create aggregate B matrix
   if (!is.null(x$B.matrix.aggr))

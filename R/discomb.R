@@ -33,11 +33,11 @@
 #'   \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.
 #' @param level The level used to calculate confidence intervals for
 #'   individual comparisons.
-#' @param level.comb The level used to calculate confidence intervals
-#'   for pooled estimates.
-#' @param comb.fixed A logical indicating whether a fixed effects
-#'   (common effects) network meta-analysis should be conducted.
-#' @param comb.random A logical indicating whether a random effects
+#' @param level.ma The level used to calculate confidence intervals
+#'   for network estimates.
+#' @param fixed A logical indicating whether a fixed effects / common
+#'   effects network meta-analysis should be conducted.
+#' @param random A logical indicating whether a random effects
 #'   network meta-analysis should be conducted.
 #' @param reference.group Reference treatment (first treatment is used
 #'   if argument is missing).
@@ -76,8 +76,11 @@
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
 #'   standard errors).
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
 #' @param nchar.trts Deprecated argument (replaced by
 #'   \code{nchar.comps}).
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #' 
 #' @details
 #' Treatments in network meta-analysis (NMA) can be complex
@@ -266,8 +269,8 @@
 #' \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 #' \item{C.matrix}{As defined above.}
 #' \item{sm}{Summary measure.}
-#' \item{level.comb}{Level for confidence intervals.}
-#' \item{comb.fixed, comb.random, tau.preset}{As defined above.}
+#' \item{level.ma}{Level for confidence intervals.}
+#' \item{fixed, random, tau.preset}{As defined above.}
 #' \item{sep.trts}{A character used in comparison names as separator
 #'   between treatment labels.}
 #' \item{nchar.comps}{A numeric defining the minimum number of
@@ -377,9 +380,9 @@ discomb <- function(TE, seTE,
                     ##
                     sm,
                     level = gs("level"),
-                    level.comb = gs("level.comb"),
-                    comb.fixed = gs("comb.fixed"),
-                    comb.random = gs("comb.random") | !is.null(tau.preset),
+                    level.ma = gs("level.ma"),
+                    fixed = gs("fixed"),
+                    random = gs("random") | !is.null(tau.preset),
                     ##
                     reference.group,
                     baseline.reference = TRUE,
@@ -399,8 +402,9 @@ discomb <- function(TE, seTE,
                     backtransf = gs("backtransf"),
                     ##
                     title = "",
-                    warn = TRUE,
-                    nchar.trts = nchar.comps) {
+                    warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                    nchar.trts = nchar.comps,
+                    ...) {
   
   
   ##
@@ -408,18 +412,11 @@ discomb <- function(TE, seTE,
   ## (1) Check arguments
   ##
   ##
-  chkchar <- meta:::chkchar
-  chklevel <- meta:::chklevel
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  ##
   chkchar(sep.comps, nchar = 1, length = 1)
   ##
   chklevel(level)
-  chklevel(level.comb)
   ##
-  chklogical(comb.fixed)
-  chklogical(comb.random)
+  missing.reference.group <- missing(reference.group) 
   chklogical(baseline.reference)
   ##
   if (!is.null(tau.preset))
@@ -434,27 +431,36 @@ discomb <- function(TE, seTE,
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
-  chknumeric(nchar.comps, min = 1, length = 1)
   ##
   chklogical(backtransf)
   ##
   chkchar(title)
   chklogical(warn)
   ##
-  ## Check for deprecated argument 'nchar.trts'
+  ## Check for deprecated arguments in '...'
   ##
-  if (!missing(nchar.trts))
-    if (!missing(nchar.comps))
-      warning("Deprecated argument 'nchar.trts' ignored as ",
-              "argument 'nchar.comps' is also provided.")
-    else {
-      warning("Deprecated argument 'nchar.trts' has been replaced by ",
-              "argument 'nchar.comps'.")
-      nchar.comps <- nchar.trts
-      chknumeric(nchar.comps, min = 1, length = 1)
-    }
+  args  <- list(...)
+  chklogical(warn.deprecated)
   ##
-  missing.reference.group <- missing(reference.group) 
+  level.ma <- deprecated(level.ma, missing(level.ma), args, "level.comb",
+                         warn.deprecated)
+  chklevel(level.ma)
+  ##
+  missing.fixed <- missing(fixed)
+  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <-
+    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+  chklogical(random)
+  ##
+  nchar.comps <-
+    deprecated2(nchar.comps, missing(nchar.comps),
+                nchar.trts, missing(nchar.trts),
+                warn.deprecated)
+  nchar.comps <- replaceNULL(nchar.comps, 666)
+  chknumeric(nchar.comps, min = 1, length = 1)
   
   
   ##
@@ -636,10 +642,6 @@ discomb <- function(TE, seTE,
   }
   ##
   ## Check for correct number of comparisons
-  ##
-  is.wholenumber <-
-    function(x, tol = .Machine$double.eps^0.5)
-      abs(x - round(x)) < tol
   ##
   tabnarms <- table(studlab)
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
@@ -868,7 +870,7 @@ discomb <- function(TE, seTE,
   
   
   res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
-                        p0$treat1[o], p0$treat2[o], level.comb,
+                        p0$treat1[o], p0$treat2[o], level.ma,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
@@ -895,7 +897,7 @@ discomb <- function(TE, seTE,
   p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
   ##
   res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
-                        p1$treat1[o], p1$treat2[o], level.comb,
+                        p1$treat1[o], p1$treat2[o], level.ma,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
@@ -1057,9 +1059,9 @@ discomb <- function(TE, seTE,
               sm = sm,
               method = "Inverse",
               level = level,
-              level.comb = level.comb,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random, 
+              level.ma = level.ma,
+              fixed = fixed,
+              random = random, 
               ##
               reference.group = reference.group,
               baseline.reference = baseline.reference,

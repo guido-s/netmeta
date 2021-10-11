@@ -7,8 +7,7 @@ formatCC <- function(x,
                      seq = NULL) {
   
   
-  formatN <- meta:::formatN
-  relative <- meta:::is.relative.effect(sm)
+  relative <- is.relative.effect(sm)
   
   
   sm.lab <- sm
@@ -35,13 +34,13 @@ formatCC <- function(x,
   }
   ##
   res$TE <- formatN(res$TE, digits, "NA", big.mark)
-  res$lower <- meta:::formatCI(formatN(round(res$lower, digits),
+  res$lower <- formatCI(formatN(round(res$lower, digits),
                                        digits, "NA", big.mark),
                                formatN(round(res$upper, digits),
                                        digits, "NA", big.mark))
   res$statistic <- formatN(round(res$statistic, digits.stat),
                            digits.stat, big.mark = big.mark)
-  res$p <- meta:::formatPT(res$p,
+  res$p <- formatPT(res$p,
                            digits = digits.pval.Q,
                            scientific = scientific.pval,
                            zero = zero.pval,

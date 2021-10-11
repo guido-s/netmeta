@@ -18,7 +18,7 @@ stress <- function(x,
   ## Function stress for optimising 2-D and 3-D representation of a
   ## graph, given its adjacency matrix A.matrix
   ##
-  dim <- meta:::setchar(dim, c("2d", "3d"))
+  dim <- setchar(dim, c("2d", "3d"))
   is_2d <- dim == "2d"
   is_3d <- !is_2d
   

@@ -6,21 +6,25 @@
 \usage{
 \method{summary}{netcomb}(
   object,
-  comb.fixed = object$comb.fixed,
-  comb.random = object$comb.random,
+  fixed = object$fixed,
+  random = object$random,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
 \arguments{
 \item{object}{An object of class \code{netcomb}.}
 
-\item{comb.fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be printed.}
+\item{fixed}{A logical indicating whether results for the fixed
+effects / common effects model should be printed.}
 
-\item{comb.random}{A logical indicating whether results for the
-random effects model should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects model should be printed.}
 
-\item{\dots}{Additional arguments.}
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \value{
 A list is returned with the same elements as a
@@ -41,7 +45,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive model for treatment components
 #
@@ -54,7 +58,7 @@ print(summary(nc1), digits = 2, digits.stat = 3)
 #
 net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive model for treatment components
 #

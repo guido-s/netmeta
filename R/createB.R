@@ -1,4 +1,4 @@
-createB <- function (pos1, pos2, ncol, aggr = FALSE) {
+createB <- function(pos1, pos2, ncol, aggr = FALSE) {
   
   
   if (!aggr) {

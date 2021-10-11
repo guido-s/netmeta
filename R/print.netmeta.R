@@ -3,11 +3,11 @@
 #' @description
 #' Print method for objects of class \code{netmeta}.
 #' 
-#' @param x An object of class \code{summary.netmeta}.
-#' @param comb.fixed A logical indicating whether results for the
-#'   fixed effects (common effects) model should be printed.
-#' @param comb.random A logical indicating whether results for the
-#'   random effects model should be printed.
+#' @param x An object of class \code{netmeta}.
+#' @param fixed A logical indicating whether results for the fixed
+#'   effects / common effects model should be printed.
+#' @param random A logical indicating whether results for the random
+#'   effects model should be printed.
 #' @param prediction A logical indicating whether prediction intervals
 #'   should be printed.
 #' @param reference.group Reference treatment.
@@ -56,6 +56,8 @@
 #'   I\eqn{^2}.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments.
 #' 
 #' @rdname netmeta
@@ -64,8 +66,8 @@
 
 
 print.netmeta <- function(x,
-                          comb.fixed = x$comb.fixed,
-                          comb.random = x$comb.random,
+                          fixed = x$fixed,
+                          random = x$random,
                           prediction = x$prediction,
                           reference.group = x$reference.group,
                           baseline.reference = x$baseline.reference,
@@ -90,23 +92,21 @@ print.netmeta <- function(x,
                           ##
                           legend = TRUE,
                           ##
+                          warn.deprecated = gs("warn.deprecated"),
+                          ##
                           ...) {
   
   
-  meta:::chkclass(x, "netmeta")
+  ##
+  ##
+  ## (1) Check for netmeta object and upgrade object
+  ##
+  ##
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   ##
   is.bin <- inherits(x, "netmetabin")
-  ##
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  chkchar <- meta:::chkchar
-  formatCI <- meta:::formatCI
-  formatN <- meta:::formatN
-  formatPT <- meta:::formatPT
-  is.relative.effect <- meta:::is.relative.effect
-  pasteCI <- meta:::pasteCI
-  
-  
+  ##  
   if (is.null(x$df.Q))
     oldversion <- TRUE
   else
@@ -115,19 +115,18 @@ print.netmeta <- function(x,
   if (is.null(x$lower.predict))
     prediction <- FALSE
   ##
-  if (is.null(x$backtransf))
-    backtransf <- TRUE
-  ##
   if (is.null(x$nchar.trts))
     nchar.trts <- 666
   
   
-  chklogical(comb.fixed)
-  chklogical(comb.random)
+  ##
+  ##
+  ## (2) Check other arguments
+  ##
+  ##
   chklogical(prediction)
   chklogical(baseline.reference)
   ##
-  chklogical(backtransf)
   chknumeric(nchar.trts, min = 1, length = 1)
   ##
   chknumeric(digits, min = 0, length = 1)
@@ -145,42 +144,63 @@ print.netmeta <- function(x,
   chkchar(text.I2)
   ##
   chklogical(legend)
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
+  ##
+  backtransf <-
+    deprecated(backtransf, missing(backtransf), args, "logscale")
+  if (is.untransformed(x$sm))
+    backtransf <- TRUE
+  backtransf <- replaceNULL(backtransf, TRUE)
+  chklogical(backtransf)
   
   
   ##
-  ## Additional arguments
   ##
-  fun <- "print.netmeta"
-  addargs <- names(list(...))
+  ## (3) Some additional settings
   ##
-  meta:::warnarg("logscale", addargs, fun, otherarg = "backtransf")
-  
-  
+  ##
   k <- x$k
   m <- x$m
   n <- x$n
   sm <- x$sm
-  
+  ##
   sm.lab <- sm
   ##
   if (!backtransf & is.relative.effect(sm))
     sm.lab <- paste("log", sm, sep = "")
-
-  ci.lab <- paste(round(100 * x$level.comb, 1), "%-CI", sep = "")
-
+  ##
+  ci.lab <- paste(round(100 * x$level.ma, 1), "%-CI", sep = "")
   
+  
+  ##
+  ##
+  ## (4) Set and backtransform results of meta-analysis
+  ##
+  ##
   TE.fixed <- x$TE.fixed
   seTE.fixed <- x$seTE.fixed
   lowTE.fixed <- x$lower.fixed
   uppTE.fixed <- x$upper.fixed
-  statistic.fixed <- meta:::replaceNULL(x$statistic.fixed, x$zval.fixed)
+  statistic.fixed <- replaceNULL(x$statistic.fixed, x$zval.fixed)
   pval.fixed <- x$pval.fixed
   ##
   TE.random <- x$TE.random
   seTE.random <- x$seTE.random
   lowTE.random <- x$lower.random
   uppTE.random <- x$upper.random
-  statistic.random <- meta:::replaceNULL(x$statistic.random, x$zval.random)
+  statistic.random <- replaceNULL(x$statistic.random, x$zval.random)
   pval.random <- x$pval.random
   ##
   lowTE.predict <- x$lower.predict
@@ -206,8 +226,7 @@ print.netmeta <- function(x,
       uppTE.predict <- uppTE.predict[x$seq, x$seq]
     }
   }
-  
-  
+  ##  
   noeffect <- 0
   ##
   if (backtransf & is.relative.effect(sm)) {
@@ -247,18 +266,21 @@ print.netmeta <- function(x,
   upper.I2 <- round(100 * x$upper.I2, digits.I2)
   
   
+  ##
+  ##
+  ## (5) Print result for network meta-analysis
+  ##
+  ##
   if (header)
     matitle(x)
-  
-  
+  ##  
   if (reference.group != "" & missing(all.treatments))
     all.treatments <- FALSE
   ##
   if (reference.group != "")
     reference.group <- setref(reference.group, rownames(TE.fixed))
-  
-  
-  if (comb.fixed | comb.random) {
+  ##  
+  if (fixed | random) {
     cat(paste("Number of studies: k = ", k, "\n", sep = ""))
     if (!is.null(x$n.trts))
       cat(paste0("Number of observations: o = ", sum(x$n.trts, na.rm = TRUE),
@@ -267,8 +289,7 @@ print.netmeta <- function(x,
     cat(paste0("Number of pairwise comparisons: m = ", m, "\n"))
     if (!oldversion)
       cat(paste0("Number of designs: d = ", x$d, "\n"))
-    
-    
+    ##    
     if (reference.group != "")
       if (baseline.reference)
         comptext <- paste("comparison: ",
@@ -299,9 +320,8 @@ print.netmeta <- function(x,
                                   "'", sep = "")
                           else
                             "other treatments", sep = "")
-    
-    
-    if (comb.fixed) {
+    ##    
+    if (fixed) {
       if (all.treatments | reference.group != "") {
         text.fixed <- "Fixed effects model"
         ##
@@ -327,7 +347,7 @@ print.netmeta <- function(x,
         ##
         prmatrix(TEf, quote = FALSE, right = TRUE)
         ##
-        cat("\nLower ", 100 * x$level.comb, "%-confidence limit:\n", sep = "")
+        cat("\nLower ", 100 * x$level.ma, "%-confidence limit:\n", sep = "")
         ##
         lowTEf <- formatN(lowTE.fixed, digits = digits)
         rownames(lowTEf) <- treats(lowTEf, nchar.trts)
@@ -338,7 +358,7 @@ print.netmeta <- function(x,
         ##
         prmatrix(lowTEf, quote = FALSE, right = TRUE)
         ##
-        cat("\nUpper ", 100 * x$level.comb, "%-confidence limit:\n", sep = "")
+        cat("\nUpper ", 100 * x$level.ma, "%-confidence limit:\n", sep = "")
         ##
         uppTEf <- formatN(uppTE.fixed, digits = digits)
         rownames(uppTEf) <- treats(uppTEf, nchar.trts)
@@ -351,7 +371,7 @@ print.netmeta <- function(x,
         ##
         ## Print prediction intervals
         ##
-        if (!comb.random & prediction & x$df.Q >= 2) {
+        if (!random & prediction & x$df.Q >= 2) {
           cat("\nPrediction intervals\n")
           ##
           cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n",
@@ -426,7 +446,7 @@ print.netmeta <- function(x,
         ##
         ## Add prediction interval (or not)
         ##
-        if (!comb.random & prediction & x$df.Q >= 2) {
+        if (!random & prediction & x$df.Q >= 2) {
           if (baseline.reference) {
             lowTE.predict.b <-
               lowTE.predict[, colnames(lowTE.predict) == reference.group]
@@ -454,16 +474,15 @@ print.netmeta <- function(x,
           res[rownames(res) == reference.group, ] <- "."
         ##
         rownames(res) <- treats(rownames(res), nchar.trts)
-        
+        ##
         cat("\nTreatment estimate (sm = '", sm.lab,
             "', ", comptext, "):\n", sep = "")
-        
+        ##
         prmatrix(res, quote = FALSE, right = TRUE)
       }
     }
-    
-    
-    if (comb.random) {
+    ##    
+    if (random) {
       if (all.treatments | reference.group != "")
         cat("\nRandom effects model\n")
       if (all.treatments) {
@@ -478,7 +497,7 @@ print.netmeta <- function(x,
         ##
         prmatrix(TEr, quote = FALSE, right = TRUE)
         ##
-        cat("\nLower ", 100 * x$level.comb, "%-confidence limit:\n", sep = "")
+        cat("\nLower ", 100 * x$level.ma, "%-confidence limit:\n", sep = "")
         ##
         lowTEr <- formatN(lowTE.random, digits = digits)
         rownames(lowTEr) <- treats(lowTEr, nchar.trts)
@@ -489,7 +508,7 @@ print.netmeta <- function(x,
         ##
         prmatrix(lowTEr, quote = FALSE, right = TRUE)
         ##
-        cat("\nUpper ", 100 * x$level.comb, "%-confidence limit:\n", sep = "")
+        cat("\nUpper ", 100 * x$level.ma, "%-confidence limit:\n", sep = "")
         ##
         uppTEr <- formatN(uppTE.random, digits = digits)
         rownames(uppTEr) <- treats(uppTEr, nchar.trts)
@@ -609,7 +628,7 @@ print.netmeta <- function(x,
           res[rownames(res) == reference.group, ] <- "."
         ##
         rownames(res) <- treats(rownames(res), nchar.trts)
-        
+        ##
         cat("\nTreatment estimate (sm = '", sm.lab,
             "', ", comptext, "):\n", sep = "")
         
@@ -618,8 +637,7 @@ print.netmeta <- function(x,
     }
     ##
     zlab <- "z"
-    
-    
+    ##    
     if (!is.null(x$tau.preset))
       tau <- x$tau.preset
     else
@@ -650,10 +668,8 @@ print.netmeta <- function(x,
                            digits.I2, big.mark, unit = "%"),
                  "\n")
           )
-    
-    
+    ##    
     if (m > 1) {
-
       if (is.bin) {
         Q.overall <- x$Q.inconsistency
         df.Q.overall <- x$df.Q.inconsistency
@@ -677,14 +693,14 @@ print.netmeta <- function(x,
                                      scientific = scientific.pval)
         }
       }
-      
+      ##
       if (is.bin & x$d == 1)
         cat("")
       else if (x$d == 1 | is.bin |
                is.na(x$Q.heterogeneity) | is.na(x$Q.inconsistency)) {
         Qdata <- cbind(round(Q.overall, digits.Q), df.Q.overall,
                        pval.Q.overall)
-        
+        ##
         dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
         ##
         cat(paste0("\nTest of ", hi.txt, ":\n"))
@@ -708,8 +724,7 @@ print.netmeta <- function(x,
         prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
       }
     }
-    
-    
+    ##    
     if (!is.null(x$tau.preset)) {
       cat("\nDetails:")
       ##
@@ -722,8 +737,7 @@ print.netmeta <- function(x,
                 tau2, "\n", sep = ""))
     }
   }
-  
-  
+  ##  
   if (any(rownames(TE.fixed) != treats(TE.fixed, nchar.trts))) {
     abbr <- unique(treats(TE.fixed, nchar.trts))
     full <- unique(rownames(TE.fixed))

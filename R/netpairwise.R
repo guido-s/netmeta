@@ -7,16 +7,16 @@
 #' 
 #' @param x An object of class \code{netmeta} or \code{netpairwise}.
 #' @param object An object of class \code{netpairwise}.
-#' @param separate A logical indicating whether results for
-#'   pairwise comparisons should be printed as separate meta-analyses
-#'   or as subgroups which is more concise.
-#' @param comb.fixed A logical indicating whether a fixed effects
-#'   (common effects) network meta-analysis should be conducted.
-#' @param comb.random A logical indicating whether a random effects
-#'   network meta-analysis should be conducted.
+#' @param separate A logical indicating whether results for pairwise
+#'   comparisons should be printed as separate meta-analyses or as
+#'   subgroups which is more concise.
+#' @param fixed A logical indicating whether a fixed effects / common
+#'   effects network meta-analysis should be conducted.
+#' @param random A logical indicating whether a random effects network
+#'   meta-analysis should be conducted.
 #' @param level The level used to calculate confidence intervals for
 #'   individual comparisons.
-#' @param level.comb The level used to calculate confidence intervals
+#' @param level.ma The level used to calculate confidence intervals
 #'   for pooled estimates.
 #' @param prediction A logical indicating whether prediction intervals
 #'   should be printed.
@@ -76,7 +76,7 @@
 #' #
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
 #'                 data = Senn2013, sm = "MD",
-#'                 comb.fixed = FALSE)
+#'                 fixed = FALSE)
 #' 
 #' # Calculate and print consise results for all pairwise
 #' # meta-analyses
@@ -103,10 +103,10 @@
 
 netpairwise <- function(x,
                         separate = FALSE,
-                        comb.fixed = x$comb.fixed,
-                        comb.random = x$comb.random,
+                        fixed = x$fixed,
+                        random = x$random,
                         level = x$level,
-                        level.comb = x$level.comb,
+                        level.ma = x$level.ma,
                         prediction = x$prediction,
                         level.predict = x$level.predict,
                         reference.group = x$reference.group,
@@ -121,31 +121,29 @@ netpairwise <- function(x,
   ##
   ## Check for netmeta object
   ##
-  meta:::chkclass(x, "netmeta")
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   
   
   ##
   ## Check other arguments
   ##
-  chklevel <- meta:::chklevel
-  chklogical <- meta:::chklogical
-  ##
   chklogical(separate)
-  chklogical(comb.fixed)
-  chklogical(comb.random)
+  chklogical(fixed)
+  chklogical(random)
   chklogical(prediction)
   ##
   chklevel(level)
-  chklevel(level.comb)
+  chklevel(level.ma)
   chklevel(level.predict)
   ##
   reference.group <- setref(reference.group, c(x$trts, ""))
   chklogical(baseline.reference)
   ##
-  method.tau <- meta:::setchar(method.tau, c("DL", "ML", "REML"))
+  method.tau <- setchar(method.tau, c("DL", "ML", "REML"))
   ##
-  meta:::chkchar(sep.trts)
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  chkchar(sep.trts)
+  chknumeric(nchar.trts, min = 1, length = 1)
   chklogical(backtransf)
 
   
@@ -205,13 +203,13 @@ netpairwise <- function(x,
     res <- metagen(TE, seTE, studlab = studlab,
                    n.e = n1, n.c = n2,
                    sm = x$sm,
-                   byvar = paste0(trt1, sep.trts, trt2),
-                   bylab = "comparison",
-                   print.byvar = FALSE,
-                   comb.fixed = comb.fixed,
-                   comb.random = comb.random,
+                   subgroup = paste0(trt1, sep.trts, trt2),
+                   subgroup.name = "comparison",
+                   print.subgroup.name = FALSE,
+                   fixed = fixed,
+                   random = random,
                    level = level,
-                   level.comb = level.comb,
+                   level.ma = level.ma,
                    prediction = prediction,
                    level.predict = level.predict,
                    method.tau = method.tau,
@@ -241,20 +239,21 @@ netpairwise <- function(x,
                 sm = x$sm,
                 subset = trt1 == comps$trt1[i] & trt2 == comps$trt2[i],
                 complab = comp.i,
-                comb.fixed = comb.fixed,
-                comb.random = comb.random,
+                fixed = fixed,
+                random = random,
                 level = level,
-                level.comb = level.comb,
+                level.ma = level.ma,
                 prediction = prediction,
                 level.predict = level.predict,
                 method.tau = method.tau,
                 ...)
       attr(res[[i]], "comparison") <- comp.i
-      ##
-      class(res) <- "netpairwise"
     }
+    ##
+    attr(res, "version") <- packageDescription("netmeta")$Version
+    ##
+    class(res) <- "netpairwise"
   }
-  
   
   res
 }
@@ -270,7 +269,7 @@ netpairwise <- function(x,
 
 print.netpairwise <- function(x, ...) {
   
-  meta:::chkclass(x, "netpairwise")
+  chkclass(x, "netpairwise")
   
   n <- 1
   for (i in 1:length(x)) {
@@ -294,7 +293,7 @@ print.netpairwise <- function(x, ...) {
 
 summary.netpairwise <- function(object, ...) {
   
-  meta:::chkclass(object, "netpairwise")
+  chkclass(object, "netpairwise")
   
   for (i in seq_len(length(object)))
     object[[i]] <- summary(object[[i]])
@@ -315,7 +314,7 @@ summary.netpairwise <- function(object, ...) {
 
 print.summary.netpairwise <- function(x, ...) {
   
-  meta:::chkclass(x, "summary.netpairwise")
+  chkclass(x, "summary.netpairwise")
   
   n <- 1
   for (i in seq_len(length(x))) {
@@ -339,7 +338,7 @@ print.summary.netpairwise <- function(x, ...) {
 
 forest.netpairwise <- function(x, ...) {
   
-  meta:::chkclass(x, "netpairwise")
+  chkclass(x, "netpairwise")
   
   for (i in seq_len(length(x)))
     forest(x[[i]],
@@ -353,7 +352,7 @@ forest.netpairwise <- function(x, ...) {
 
 
 
-#' @rdname forest.netpairwise
+#' @rdname netpairwise
 #' @method plot netpairwise
 #' @export
 #'

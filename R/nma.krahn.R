@@ -2,7 +2,7 @@ nma.krahn <- function(x, reference.group = x$reference.group,
                       tau.preset = 0, sep.trts = x$sep.trts) {
   
   
-  meta:::chkclass(x, "netmeta")
+  chkclass(x, "netmeta")
   
   
   if (is.na(tau.preset))

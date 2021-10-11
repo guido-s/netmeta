@@ -69,8 +69,8 @@
 
 treats <- function(x, nchar.trts = 8, row = TRUE) {
   
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
-  meta:::chklogical(row)
+  chknumeric(nchar.trts, min = 1, length = 1)
+  chklogical(row)
   
   if (is.matrix(x)) {
     if (row)
@@ -104,9 +104,9 @@ treats <- function(x, nchar.trts = 8, row = TRUE) {
 
 comps <- function(x, trts, sep.trts, nchar.trts = 8, row = TRUE) {
   
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
-  meta:::chklogical(row)
-  meta:::chkchar(sep.trts)
+  chknumeric(nchar.trts, min = 1, length = 1)
+  chklogical(row)
+  chkchar(sep.trts)
   ##
   trts.abbr <- treats(trts, nchar.trts)  
   

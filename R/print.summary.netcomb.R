@@ -4,9 +4,9 @@
 #' Print detailed information  for component network meta-analysis.
 #' 
 #' @param x An object of class \code{summary.netcomb}
-#' @param comb.fixed A logical indicating whether results for the
+#' @param fixed A logical indicating whether results for the
 #'   fixed effects (common effects) model should be printed.
-#' @param comb.random A logical indicating whether results for the
+#' @param random A logical indicating whether results for the
 #'   random effects model should be printed.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
@@ -32,10 +32,10 @@
 #' @param JAMA.pval A logical specifying whether p-values for test of
 #'   effects should be printed according to JAMA reporting standards.
 #' @param big.mark A character used as thousands separator.
-#' @param nchar.trts Deprecated argument (replaced by
-#'   \code{nchar.comps}).
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
@@ -57,7 +57,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components
 #' #
@@ -69,8 +69,8 @@
 
 
 print.summary.netcomb <- function(x,
-                                  comb.fixed = x$comb.fixed,
-                                  comb.random = x$comb.random,
+                                  fixed = x$x$fixed,
+                                  random = x$x$random,
                                   backtransf = x$backtransf,
                                   nchar.comps = x$nchar.comps,
                                   ##
@@ -86,24 +86,26 @@ print.summary.netcomb <- function(x,
                                   ##
                                   big.mark = gs("big.mark"),
                                   ##
-                                  nchar.trts = nchar.comps,
-                                  ##
                                   legend = TRUE,
+                                  ##
+                                  warn.deprecated = gs("warn.deprecated"),
+                                  ##
                                   ...) {
   
   
-  meta:::chkclass(x, "summary.netcomb")
+  ##
+  ##
+  ## (1) Check for summary.netcomb object and upgrade object
+  ##
+  ##
+  chkclass(x, "summary.netcomb")
+  updateversion(x)
   
   
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
   ##
-  chklogical(comb.fixed)
-  chklogical(comb.random)
-  chklogical(backtransf)
   ##
-  nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
-  chknumeric(nchar.comps, min = 1, length = 1)
+  ## (2) Check other arguments
+  ##
   ##
   chknumeric(digits, min = 0, length = 1)
   chknumeric(digits.stat, min = 0, length = 1)
@@ -117,20 +119,31 @@ print.summary.netcomb <- function(x,
   ##
   chklogical(legend)
   ##
-  ## Check for deprecated argument 'nchar.trts'
   ##
-  if (!missing(nchar.trts))
-    if (!missing(nchar.comps))
-      warning("Deprecated argument 'nchar.trts' ignored as ",
-              "argument 'nchar.comps' is also provided.")
-    else {
-      warning("Deprecated argument 'nchar.trts' has been replaced by ",
-              "argument 'nchar.comps'.")
-      nchar.comps <- nchar.trts
-      chknumeric(nchar.comps, min = 1, length = 1)
-    }
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
+  ##
+  nchar.comps <-
+    deprecated(nchar.comps, missing(nchar.comps), args, "nchar.trts")
+  nchar.comps <- replaceNULL(nchar.comps, 666)
+  chknumeric(nchar.comps, min = 1, length = 1)
   
   
+  ##
+  ##
+  ## (3) Print summary results
+  ##
+  ##
   comps <- sort(c(x$comps, x$inactive))
   comps.abbr <- treats(comps, nchar.comps)
   ##
@@ -138,7 +151,7 @@ print.summary.netcomb <- function(x,
   comp.f$seTE <- NULL
   ##
   dat.f <- formatComp(comp.f,
-                      backtransf, x$sm, x$level.comb,
+                      backtransf, x$sm, x$level.ma,
                       comps, comps.abbr, x$sep.comps,
                       digits, digits.stat, digits.pval.Q,
                       scientific.pval, zero.pval, JAMA.pval,
@@ -148,29 +161,28 @@ print.summary.netcomb <- function(x,
   comp.r$seTE <- NULL
   ##
   dat.r <- formatComp(comp.r,
-                      backtransf, x$sm, x$level.comb,
+                      backtransf, x$sm, x$level.ma,
                       comps, comps.abbr, x$sep.comps,
                       digits, digits.stat, digits.pval.Q,
                       scientific.pval, zero.pval, JAMA.pval,
                       big.mark)
   ##
-  if (comb.fixed) {
+  if (fixed) {
     cat("Additive model (fixed effects model):\n")
     prmatrix(dat.f, quote = FALSE, right = TRUE, ...)
     cat("\n")
   }
   ##
-  if (comb.random) {
+  if (random) {
     cat("Additive model (random effects model):\n")
     prmatrix(dat.r, quote = FALSE, right = TRUE, ...)
     cat("\n")
   }
-  
-  
-  if (comb.fixed | comb.random)
+  ##  
+  if (fixed | random)
     print.netcomb(x$x,
-                  comb.fixed = comb.fixed,
-                  comb.random = comb.random,
+                  fixed = fixed,
+                  random = random,
                   backtransf = backtransf,
                   nchar.comps = nchar.comps,
                   ##
@@ -190,9 +202,8 @@ print.summary.netcomb <- function(x,
                   ##
                   ...)
   else
-    cat("Please use argument 'comb.fixed = TRUE' or",
-        "'comb.random = TRUE' to print meta-analysis results.\n",
-        sep = "")
+    cat(paste("Please use argument 'fixed = TRUE' or 'random = TRUE'",
+              "to print network meta-analysis results.\n"))
   
   
   invisible(NULL)

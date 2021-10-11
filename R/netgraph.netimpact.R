@@ -40,14 +40,14 @@
 #' @examples
 #' data(Franchini2012)
 #' 
-#' # Only consider first four studies (to reduce runtime of example)
+#' # Only consider first two studies (to reduce runtime of example)
 #' #
 #' studies <- unique(Franchini2012$Study)
 #' p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
 #'                n = list(n1, n2, n3),
 #'                mean = list(y1, y2, y3),
 #'                sd = list(sd1, sd2, sd3),
-#'                data = subset(Franchini2012, Study %in% studies[1:4]),
+#'                data = subset(Franchini2012, Study %in% studies[1:2]),
 #'                studlab = Study)
 #' 
 #' net1 <- netmeta(p1)
@@ -70,17 +70,17 @@ netgraph.netimpact <- function(x,
                                ...) {
   
   
-  meta:::chkclass(x, "netimpact")
+  chkclass(x, "netimpact")
   ##
-  x <- upgradenetmeta(x)
+  x <- updateversion(x)
   
   
-  col.ignore <- meta:::setchar(col.ignore,
+  col.ignore <- setchar(col.ignore,
                                c("transparent", colours()),
                                text = paste0("should be any color ",
                                              "defined in colours()"))
   ##
-  col.ignore.multiarm <- meta:::setchar(col.ignore.multiarm,
+  col.ignore.multiarm <- setchar(col.ignore.multiarm,
                                         c("transparent", colours()),
                                         text = paste0("should be any color ",
                                                       "defined in colours()"))

@@ -18,9 +18,9 @@ discomb(
   C.matrix,
   sm,
   level = gs("level"),
-  level.comb = gs("level.comb"),
-  comb.fixed = gs("comb.fixed"),
-  comb.random = gs("comb.random") | !is.null(tau.preset),
+  level.ma = gs("level.ma"),
+  fixed = gs("fixed"),
+  random = gs("random") | !is.null(tau.preset),
   reference.group,
   baseline.reference = TRUE,
   seq = NULL,
@@ -34,7 +34,9 @@ discomb(
   backtransf = gs("backtransf"),
   title = "",
   warn = TRUE,
-  nchar.trts = nchar.comps
+  warn.deprecated = gs("warn.deprecated"),
+  nchar.trts = nchar.comps,
+  ...
 )
 }
 \arguments{
@@ -73,13 +75,13 @@ e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
 \item{level}{The level used to calculate confidence intervals for
 individual comparisons.}
 
-\item{level.comb}{The level used to calculate confidence intervals
-for pooled estimates.}
+\item{level.ma}{The level used to calculate confidence intervals
+for network estimates.}
 
-\item{comb.fixed}{A logical indicating whether a fixed effects
-(common effects) network meta-analysis should be conducted.}
+\item{fixed}{A logical indicating whether a fixed effects / common
+effects network meta-analysis should be conducted.}
 
-\item{comb.random}{A logical indicating whether a random effects
+\item{random}{A logical indicating whether a random effects
 network meta-analysis should be conducted.}
 
 \item{reference.group}{Reference treatment (first treatment is used
@@ -132,8 +134,13 @@ example.}
 (e.g., if studies are excluded from meta-analysis due to zero
 standard errors).}
 
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
 \item{nchar.trts}{Deprecated argument (replaced by
 \code{nchar.comps}).}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \value{
 An object of classes \code{discomb} and \code{netcomb} with
@@ -250,8 +257,8 @@ components:
 \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 \item{C.matrix}{As defined above.}
 \item{sm}{Summary measure.}
-\item{level.comb}{Level for confidence intervals.}
-\item{comb.fixed, comb.random, tau.preset}{As defined above.}
+\item{level.ma}{Level for confidence intervals.}
+\item{fixed, random, tau.preset}{As defined above.}
 \item{sep.trts}{A character used in comparison names as separator
   between treatment labels.}
 \item{nchar.comps}{A numeric defining the minimum number of

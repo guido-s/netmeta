@@ -30,7 +30,7 @@
 as.data.frame.netconnection <- function(x, ...){
   
   
-  meta:::chkclass(x, "netconnection")
+  chkclass(x, "netconnection")
   
   
   ## Drop unnecessary list elements

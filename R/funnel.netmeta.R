@@ -167,9 +167,9 @@
 
 funnel.netmeta <- function(x,
                            order,
-                           pooled = ifelse(x$comb.random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "fixed"),
                            ##
-                           xlab,
+                           xlab = NULL,
                            level = x$level,
                            ##
                            pch,
@@ -210,15 +210,10 @@ funnel.netmeta <- function(x,
   ## (1) Check and set arguments
   ##
   ##
-  chkchar <- meta:::chkchar
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   ##
-  meta:::chkclass(x, "netmeta")
-  ##
-  x <- upgradenetmeta(x)
-  ##
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("fixed", "random"))
   ##
   if (missing(order)) {
     warning("In order to construct a 'comparison-adjusted' funnel plot",
@@ -306,10 +301,10 @@ funnel.netmeta <- function(x,
                     TE, TE.direct = NA, TE.adj = NA, seTE)
   ##
   if (missing(xlab)) {
-    if (meta:::xlab(x$sm, backtransf) == "")
+    if (xlab(x$sm, backtransf) == "")
       xlab <- "Centered at comparison-specific effect"
     else
-      xlab <- paste(meta:::xlab(x$sm, backtransf),
+      xlab <- paste(xlab(x$sm, backtransf),
                     "centered at\ncomparison-specific effect")
   }
   
@@ -407,7 +402,7 @@ funnel.netmeta <- function(x,
          pch = res$pch,
          col = res$col,
          level = level,
-         comb.fixed = FALSE, comb.random = FALSE,
+         fixed = FALSE, random = FALSE,
          xlab = xlab,
          backtransf = backtransf,
          ref.triangle = TRUE,
@@ -429,7 +424,7 @@ funnel.netmeta <- function(x,
   ##
   if (linreg | rank | mm)
     legend(pos.tests,
-           legend = paste(meta:::formatPT(c(if (linreg) mb.linreg$p.value,
+           legend = paste(formatPT(c(if (linreg) mb.linreg$p.value,
                                             if (rank) mb.rank$p.value,
                                             if (mm) mb.mm$p.value),
                                           digits = digits.pval, lab = TRUE),

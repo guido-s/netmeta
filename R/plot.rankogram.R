@@ -71,33 +71,35 @@
 
 plot.rankogram <- function(x,
                            type = if (cumulative.rankprob) "step" else "bar",
-                           pooled = ifelse(x$comb.random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "fixed"),
                            sort = TRUE, trts,
                            cumulative.rankprob = x$cumulative.rankprob,
                            ylim, ylab,
                            nchar.trts = x$nchar.trts, ...) {
   
   
-  meta:::is.installed.package("gridExtra")
+  chkclass(x, c("rankogram"))
+  x <- updateversion(x)
   ##
-  meta:::chkclass(x, c("rankogram"))
+  is.installed.package("gridExtra")
+  
+  
+  type <- setchar(type, c("bar", "line", "step"))
   ##
-  type <- meta:::setchar(type, c("bar", "line", "step"))
+  pooled <- setchar(pooled, c("fixed", "random"))
   ##
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
-  ##
-  meta:::chklogical(sort)
+  chklogical(sort)
   ##
   if (is.null(cumulative.rankprob))
     cumulative.rankprob <- FALSE
-  meta:::chklogical(cumulative.rankprob)
+  chklogical(cumulative.rankprob)
   ##
   missing.ylim <- missing(ylim)
   if (!missing.ylim)
-    meta:::chknumeric(ylim, min = 0, max = 1, length = 2)
+    chknumeric(ylim, min = 0, max = 1, length = 2)
   ##
   if (!missing(ylab))
-    meta:::chkchar(ylab, length = 1)
+    chkchar(ylab, length = 1)
   else {
     if (cumulative.rankprob)
       ylab <- "Cumulative\nprobability"
@@ -109,7 +111,7 @@ plot.rankogram <- function(x,
   ##
   if (is.null(nchar.trts))
     nchar.trts <- 666
-  meta:::chknumeric(nchar.trts, length = 1)
+  chknumeric(nchar.trts, length = 1)
   
   
   mytheme <-

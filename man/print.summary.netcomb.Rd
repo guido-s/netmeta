@@ -6,8 +6,8 @@
 \usage{
 \method{print}{summary.netcomb}(
   x,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$x$fixed,
+  random = x$x$random,
   backtransf = x$backtransf,
   nchar.comps = x$nchar.comps,
   digits = gs("digits"),
@@ -19,18 +19,18 @@
   zero.pval = gs("zero.pval"),
   JAMA.pval = gs("JAMA.pval"),
   big.mark = gs("big.mark"),
-  nchar.trts = nchar.comps,
   legend = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
 \arguments{
 \item{x}{An object of class \code{summary.netcomb}}
 
-\item{comb.fixed}{A logical indicating whether results for the
+\item{fixed}{A logical indicating whether results for the
 fixed effects (common effects) model should be printed.}
 
-\item{comb.random}{A logical indicating whether results for the
+\item{random}{A logical indicating whether results for the
 random effects model should be printed.}
 
 \item{backtransf}{A logical indicating whether results should be
@@ -68,11 +68,11 @@ effects should be printed according to JAMA reporting standards.}
 
 \item{big.mark}{A character used as thousands separator.}
 
-\item{nchar.trts}{Deprecated argument (replaced by
-\code{nchar.comps}).}
-
 \item{legend}{A logical indicating whether a legend should be
 printed.}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
 
 \item{\dots}{Additional arguments.}
 }
@@ -91,7 +91,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive model for treatment components
 #

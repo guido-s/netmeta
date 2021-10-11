@@ -356,11 +356,11 @@ pairwise <- function(treat,
   ## (1) Check arguments
   ##
   ##
-  meta:::chknumeric(incr, min = 0, length = 1)
-  meta:::chklogical(allincr)
-  meta:::chklogical(addincr)
-  meta:::chklogical(allstudies)
-  meta:::chklogical(warn)
+  chknumeric(incr, min = 0, length = 1)
+  chklogical(allincr)
+  chklogical(addincr)
+  chklogical(allstudies)
+  chklogical(warn)
   
   
   ##
@@ -449,7 +449,7 @@ pairwise <- function(treat,
     ##
     if (missing(keep.all.comparisons))
       keep.all.comparisons <- TRUE
-    meta:::chklogical(keep.all.comparisons)
+    chklogical(keep.all.comparisons)
     ##
     studlab <- eval(mf[[match("studlab", names(mf))]],
                     data, enclos = sys.frame(sys.parent()))
@@ -483,43 +483,43 @@ pairwise <- function(treat,
       if (is.list(event))
         chklist(event)
       else
-        meta:::chknumeric(event)
+        chknumeric(event)
     ##
     if (!is.null(n))
       if (is.list(n))
         chklist(n)
       else
-        meta:::chknumeric(n)
+        chknumeric(n)
     ##
     if (!is.null(mean))
       if (is.list(mean))
         chklist(mean)
       else
-        meta:::chknumeric(mean)
+        chknumeric(mean)
     ##
     if (!is.null(sd))
       if (is.list(sd))
         chklist(sd)
       else
-        meta:::chknumeric(sd)
+        chknumeric(sd)
     ##
     if (!is.null(TE))
       if (is.list(TE))
         chklist(TE)
       else
-        meta:::chknumeric(TE)
+        chknumeric(TE)
     ##
     if (!is.null(seTE))
       if (is.list(seTE))
         chklist(seTE)
       else
-        meta:::chknumeric(seTE)
+        chknumeric(seTE)
     ##
     if (!is.null(time))
       if (is.list(time))
         chklist(time)
       else
-        meta:::chknumeric(time)
+        chknumeric(time)
     
     
     if (!is.null(TE) & !is.null(seTE))
@@ -890,7 +890,7 @@ pairwise <- function(treat,
       else
         sm <- gs("smbin")
       ##
-      sm <- meta:::setchar(sm, c("OR", "RD", "RR", "ASD"))
+      sm <- setchar(sm, c("OR", "RD", "RR", "ASD"))
       ##
       sparse <- switch(sm,
                        OR = (n.zeros > 0) | (n.all > 0),
@@ -1417,13 +1417,13 @@ pairwise <- function(treat,
   if (missing.reference.group)
     reference.group <- labels[1]
   if (is.numeric(reference.group))
-    meta:::chknumeric(reference.group, length = 1)
+    chknumeric(reference.group, length = 1)
   else
-    meta:::chkchar(reference.group, length = 1)
+    chkchar(reference.group, length = 1)
   ##
   if (reference.group != "" | !keep.all.comparisons) {
     reference.group <-
-      meta:::setchar(reference.group, c(labels, ""))
+      setchar(reference.group, c(labels, ""))
     ##
     drop <- logical(0)
     wo <- logical(0)

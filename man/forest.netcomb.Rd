@@ -8,7 +8,7 @@
 \usage{
 \method{forest}{netcomb}(
   x,
-  pooled = ifelse(x$comb.random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "fixed"),
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
   leftcols = "studlab",
@@ -124,7 +124,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, ref = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
@@ -154,7 +154,7 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, ref = "placebo",
                 seq = trts,
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 #
 net2
 

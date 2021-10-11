@@ -6,8 +6,7 @@ formatComp <- function(x,
                        big.mark) {
   
   
-  formatN <- meta:::formatN
-  relative <- meta:::is.relative.effect(sm)
+  relative <- is.relative.effect(sm)
   
   
   sm.lab <- sm
@@ -33,12 +32,12 @@ formatComp <- function(x,
   res$treat2 <- compos(res$treat2, comps, comps.abbr, sep.comps)
   ##
   res$TE <- formatN(res$TE, digits, "NA", big.mark)
-  res$lower <- meta:::formatCI(formatN(round(res$lower, digits),
+  res$lower <- formatCI(formatN(round(res$lower, digits),
                                        digits, "NA", big.mark),
                                formatN(round(res$upper, digits),
                                        digits, "NA", big.mark))
   res$statistic <- formatN(res$statistic, digits.stat, big.mark = big.mark)
-  res$p <- meta:::formatPT(res$p,
+  res$p <- formatPT(res$p,
                            digits = digits.pval,
                            scientific = scientific.pval,
                            zero = zero.pval,

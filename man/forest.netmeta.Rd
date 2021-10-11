@@ -7,7 +7,7 @@
 \usage{
 \method{forest}{netmeta}(
   x,
-  pooled = ifelse(x$comb.random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "fixed"),
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
   labels = x$trts,
@@ -184,7 +184,7 @@ forest(net1, xlim = c(-1.5, 1), ref = "plac",
 # Random effects effect model
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD", comb.fixed = FALSE)
+                data = Senn2013, sm = "MD", fixed = FALSE)
 
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
        xlab = "HbA1c difference")

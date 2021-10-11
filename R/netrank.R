@@ -14,14 +14,16 @@
 #'   \code{"P-score"} or \code{"SUCRA"} ranking metric will be
 #'   calculated.
 #' @param nsim Number of simulations to calculate SUCRAs.
-#' @param comb.fixed A logical indicating whether to print P-scores or
+#' @param fixed A logical indicating whether to print P-scores or
 #'   SUCRAs for the fixed effects (common effects) model.
-#' @param comb.random A logical indicating whether to print P-scores
+#' @param random A logical indicating whether to print P-scores
 #'   or SUCRAs for the random effects model.
 #' @param sort A logical indicating whether printout should be sorted
 #'   by decreasing P-score.
 #' @param digits Minimal number of significant digits, see
 #'   \code{\link{print.default}}.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments passed on to
 #'   \code{\link{print.data.frame}} function (used internally).
 #' 
@@ -95,7 +97,7 @@
 #' 
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'                 data = Senn2013, sm = "MD",
-#'                 comb.random = FALSE)
+#'                 random = FALSE)
 #' 
 #' nr1 <- netrank(net1)
 #' nr1
@@ -126,32 +128,49 @@
 
 
 netrank <- function(x, small.values = x$small.values, method, nsim,
-                    comb.fixed = x$comb.fixed, comb.random = x$comb.random) {
+                    fixed = x$fixed, random = x$random,
+                    warn.deprecated = gs("warn.deprecated"),
+                    ...) {
   
-  ## Check for netmeta object
   ##
-  meta:::chkclass(x, c("netmeta", "netcomb", "rankogram"))
+  ##
+  ## (1) Check and upgrade object
+  ##
+  ##
+  chkclass(x, c("netmeta", "netcomb", "rankogram"))
+  x <- updateversion(x)
   
   
+  ##
+  ##
+  ## (2) Check other arguments
+  ##
+  ##
   if (missing(method))
     if (inherits(x, c("netmeta", "netcomb")))
       method <- "P-score"
     else
       method <- "SUCRA"
   else
-    method <- meta:::setchar(method, c("P-score", "SUCRA"))
+    method <- setchar(method, c("P-score", "SUCRA"))
   ##
   if (is.null(small.values))
     small.values <- "good"
   else
-    small.values <- meta:::setchar(small.values, c("good", "bad"))
+    small.values <- setchar(small.values, c("good", "bad"))
   ##
-  if (is.null(comb.fixed))
-    comb.fixed <- TRUE
-  meta:::chklogical(comb.fixed)
-  if (is.null(comb.random))
-    comb.random <- TRUE
-  meta:::chklogical(comb.random)
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
   
   
   if (method == "SUCRA") {
@@ -168,7 +187,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
       rnk <- rankogram(x,
                        nsim = nsim,
                        small.values = small.values,
-                       comb.fixed = comb.fixed, comb.random = comb.random)
+                       fixed = fixed, random = random)
     }
     else {
       if (!missing(nsim))
@@ -204,17 +223,21 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
     p.fixed <- pval.fixed
     ##
     if (small.values == "good")
-      P.fixed <- w.fixed * p.fixed / 2 + (1 - w.fixed) * (1 - p.fixed / 2)
+      P.fixed <-
+        w.fixed * p.fixed / 2 + (1 - w.fixed) * (1 - p.fixed / 2)
     else
-      P.fixed <- w.fixed * (1 - p.fixed / 2) + (1 - w.fixed) * p.fixed / 2
+      P.fixed <-
+        w.fixed * (1 - p.fixed / 2) + (1 - w.fixed) * p.fixed / 2
     ##
     w.random <- (1 + sign(TE.random)) / 2
     p.random <- pval.random
     ##
     if (small.values == "good")
-      P.random <- w.random * p.random / 2 + (1 - w.random) * (1 - p.random / 2)
+      P.random <-
+        w.random * p.random / 2 + (1 - w.random) * (1 - p.random / 2)
     else
-      P.random <- w.random * (1 - p.random / 2) + (1 - w.random) * p.random / 2
+      P.random <-
+        w.random * (1 - p.random / 2) + (1 - w.random) * p.random / 2
     
     
     ## Row means provide P-scores
@@ -239,8 +262,8 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
               ##
               nsim = nsim,
               ##
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              fixed = fixed,
+              random = random,
               ##
               x = x,
               title = x$title,
@@ -272,39 +295,57 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
 
 
 print.netrank <- function(x,
-                          comb.fixed = x$comb.fixed,
-                          comb.random = x$comb.random,
+                          fixed = x$fixed,
+                          random = x$random,
                           sort = TRUE,
                           digits = max(4, .Options$digits - 3),
+                          warn.deprecated = gs("warn.deprecated"),
                           ...) {
   
-  
-  meta:::chkclass(x, "netrank")
   ##
-  if (is.null(comb.fixed))
-    comb.fixed <- !is.null(x$ranking.fixed)
-  meta:::chklogical(comb.fixed)
-  if (is.null(comb.random))
-    comb.random <- !is.null(x$ranking.random)
-  meta:::chklogical(comb.random)
+  ##
+  ## (1) Check netrank object and upgrade object
+  ##
+  ##
+  chkclass(x, "netrank")
+  x <- updateversion(x)
+  
+  
+  ##
+  ##
+  ## (2) Check other arguments
+  ##
   ##
   if (is.character(sort))
-    sort <- meta:::setchar(sort, c("fixed", "random"))
+    sort <- setchar(sort, c("fixed", "random"))
   else
-    meta:::chklogical(sort)
+    chklogical(sort)
   ##
-  meta:::chknumeric(digits, length = 1)
+  chknumeric(digits, length = 1)
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
   
   
-  both <- (comb.fixed + comb.random) == 2
+  both <- (fixed + random) == 2
   ##
   if (!both & is.character(sort)) {
-    if (comb.fixed & sort == "random") {
+    if (fixed & sort == "random") {
       warning("Argument 'sort=\"random\"' ignored for fixed effects model.",
               call. = FALSE)
       sort <- TRUE
     }
-    if (comb.random & sort == "fixed") {
+    if (random & sort == "fixed") {
       warning("Argument 'sort=\"fixed\"' ignored for random effects model.",
               call. = FALSE)
       sort <- TRUE
@@ -336,25 +377,25 @@ print.netrank <- function(x,
   }
   else {
     if (sort) {
-      if (comb.fixed)
+      if (fixed)
         res.fixed <-
           as.data.frame(round(x$ranking.fixed[order(-x$ranking.fixed)],
                               digits))
-      if (comb.random)
+      if (random)
         res.random <-
           as.data.frame(round(x$ranking.random[order(-x$ranking.random)],
                               digits))
     }
     else {
-      if (comb.fixed)
+      if (fixed)
         res.fixed <- as.data.frame(round(x$ranking.fixed[x$x$seq], digits))
-      if (comb.random)
+      if (random)
         res.random <- as.data.frame(round(x$ranking.random[x$x$seq], digits))
     }
     ##
-    if (comb.fixed)
+    if (fixed)
       colnames(res.fixed)  <- x$method
-    if (comb.random)
+    if (random)
       colnames(res.random) <- x$method
   }
   ##
@@ -363,13 +404,13 @@ print.netrank <- function(x,
   if (both)
     prmatrix(res.both, quote = FALSE, ...)
   ##
-  else if (comb.fixed) {
+  else if (fixed) {
     prmatrix(res.fixed, quote = FALSE, ...)
-    if (comb.random)
+    if (random)
       cat("\n")
   }
   ##
-  else if (comb.random) {
+  else if (random) {
     prmatrix(res.random, quote = FALSE, ...)
   }
 

@@ -1,7 +1,7 @@
 tau.within <- function(x) {
   
   
-  meta:::chkclass(x, "netmeta")
+  chkclass(x, "netmeta")
   
   
   nmak <- nma.krahn(x)

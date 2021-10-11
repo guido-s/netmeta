@@ -4,9 +4,9 @@
 #' Summary method for objects of class \code{netmeta}.
 #' 
 #' @param object An object of class \code{netmeta}.
-#' @param comb.fixed A logical indicating whether results for the
-#'   fixed effects (common effects) model should be printed.
-#' @param comb.random A logical indicating whether results for the
+#' @param fixed A logical indicating whether results for the
+#'   fixed effects / common effects model should be printed.
+#' @param random A logical indicating whether results for the
 #'   random effects model should be printed.
 #' @param prediction A logical indicating whether prediction intervals
 #'   should be printed.
@@ -18,7 +18,9 @@
 #' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
 #'   matrices with all treatment effects, and confidence limits will
 #'   be printed.
-#' @param \dots Additional arguments.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #' 
 #' @return
 #'
@@ -68,9 +70,9 @@
 #'   used for pooling of studies.}
 #' \item{level}{The level used to calculate confidence intervals for
 #'   individual studies.}
-#' \item{level.comb}{The level used to calculate confidence intervals
+#' \item{level.ma}{The level used to calculate confidence intervals
 #'   for pooled estimates.}
-#' \item{comb.fixed, comb.random}{As defined above.}
+#' \item{fixed, random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
 #' \item{reference.group, baseline.reference}{As defined above.}
 #' \item{all.treatments, backtransf}{As defined above.}
@@ -90,7 +92,7 @@
 #' 
 #' @seealso \code{\link{netmeta}}
 #' 
-#' @keywords print
+#' @keywords summary
 #' 
 #' @examples
 #' data(Senn2013)
@@ -99,7 +101,7 @@
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'                 data = Senn2013, sm = "MD",
-#'                 comb.random = FALSE)
+#'                 random = FALSE)
 #' print(net1, ref = "plac", digits = 3)
 #' summary(net1)
 #'
@@ -108,7 +110,7 @@
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'                 data = Senn2013, sm = "MD",
-#'                 comb.fixed = FALSE)
+#'                 fixed = FALSE)
 #' print(net2, ref = "plac", digits = 3)
 #' summary(net2)
 #' }
@@ -118,24 +120,24 @@
 
 
 summary.netmeta <- function(object,
-                            comb.fixed = object$comb.fixed,
-                            comb.random = object$comb.random,
+                            fixed = object$fixed,
+                            random = object$random,
                             prediction = object$prediction,
                             reference.group = object$reference.group,
                             baseline.reference = object$baseline.reference,
                             all.treatments = object$all.treatments,
+                            warn.deprecated = gs("warn.deprecated"),
                             ...) {
   
   ##
   ##
-  ## (1) Check for netmeta object and upgrade older meta objects
+  ## (1) Check for netmeta object and upgrade object
   ##
   ##
-  meta:::chkclass(object, "netmeta")
+  chkclass(object, "netmeta")
+  object <- updateversion(object)
   ##
   is.bin <- inherits(object, "netmetabin")
-  ##  
-  object <- upgradenetmeta(object)
   
   
   ##
@@ -143,18 +145,24 @@ summary.netmeta <- function(object,
   ## (2) Check other arguments
   ##
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chklogical(prediction)
-  meta:::chklogical(baseline.reference)
-  ##
-  cl <- "netmeta()"
-  addargs <- names(list(...))
+  chklogical(prediction)
+  chklogical(baseline.reference)
   ##
   fun <- "summary.netmeta"
   ##
-  meta:::warnarg("level", addargs, fun, cl)
-  meta:::warnarg("level.comb", addargs, fun, cl)
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  missing.fixed <- missing(fixed)
+  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <-
+    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+  chklogical(random)
   
   
   ##
@@ -219,6 +227,9 @@ summary.netmeta <- function(object,
   ## (4) Create summary.netmeta object
   ##
   ##
+  object$fixed <- fixed
+  object$random <- random
+  ##
   res <- list(comparison = ci.comp,
               comparison.nma.fixed = ci.nma.fixed,
               comparison.nma.random = ci.nma.random,
@@ -251,9 +262,7 @@ summary.netmeta <- function(object,
               sm = object$sm,
               method = object$method,
               level = object$level,
-              level.comb = object$level.comb,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              level.ma = object$level.ma,
               ##
               prediction = prediction,
               level.predict = object$level.predict,
@@ -264,7 +273,7 @@ summary.netmeta <- function(object,
               allstudies = object$allstudies,
               cc.pooled = object$cc.pooled,
               ##
-              ci.lab = paste0(round(100 * object$level.comb, 1),"%-CI"),
+              ci.lab = paste0(round(100 * object$level.ma, 1),"%-CI"),
               ##
               reference.group = NA,
               baseline.reference = NA,

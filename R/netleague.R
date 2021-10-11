@@ -10,11 +10,11 @@
 #' @param x An object of class \code{netmeta} or \code{netleague}
 #'   (mandatory).
 #' @param y An object of class \code{netmeta} (optional).
-#' @param comb.fixed A logical indicating whether a league table
-#'   should be printed for the fixed effects (common effects) network
+#' @param fixed A logical indicating whether a league table should be
+#'   printed for the fixed effects / common effects network
 #'   meta-analysis.
-#' @param comb.random A logical indicating whether a league table
-#'   should be printed for the random effects network meta-analysis.
+#' @param random A logical indicating whether a league table should be
+#'   printed for the random effects network meta-analysis.
 #' @param seq A character or numerical vector specifying the sequence
 #'   of treatments in rows and columns of a league table.
 #' @param ci A logical indicating whether confidence intervals should
@@ -34,7 +34,9 @@
 #'   between lower and upper confidence interval.
 #' @param text.NA A character string to label missing values.
 #' @param big.mark A character used as thousands separator.
-#' @param \dots Additional arguments (ignored at the moment).
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments.
 #' 
 #' @details
 #' A league table is a square matrix showing all pairwise comparisons
@@ -113,15 +115,15 @@
 #' 
 #' # League table for fixed effects model
 #' #
-#' netleague(net0, comb.random = FALSE, digits = 2)
+#' netleague(net0, random = FALSE, digits = 2)
 #' 
 #' # Change order of treatments according to treatment ranking (random
 #' # effects model)
 #' #
-#' netleague(net0, comb.fixed = FALSE, digits = 2,
+#' netleague(net0, fixed = FALSE, digits = 2,
 #'           seq = netrank(net0))
 #' #
-#' print(netrank(net0), comb.fixed = FALSE)
+#' print(netrank(net0), fixed = FALSE)
 #' 
 #' \dontrun{
 #' # Create a CSV file with league table for random effects model
@@ -170,7 +172,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, comb.fixed = FALSE,
+#' net1 <- netmeta(p1, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small = "bad")
 #' 
 #' # (2) Early remission
@@ -180,7 +182,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, comb.fixed = FALSE,
+#' net2 <- netmeta(p2, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small = "bad")
 #' 
 #' options(width = 200)
@@ -225,32 +227,28 @@
 
 
 netleague <- function(x, y,
-                      comb.fixed = x$comb.fixed, comb.random = x$comb.random,
+                      fixed = x$fixed, random = x$random,
                       seq = x$seq, ci = TRUE, backtransf = TRUE,
                       direct = FALSE,
                       digits = gs("digits"),
                       bracket = gs("CIbracket"),
                       separator = gs("CIseparator"),
                       text.NA = ".",
-                      big.mark = gs("big.mark")) {
+                      big.mark = gs("big.mark"),
+                      warn.deprecated = gs("warn.deprecated"),
+                      ...) {
   
   
   ##
   ##
-  ## (1) Check arguments
+  ## (1) Check class and arguments
   ##
   ##
-  meta:::chkclass(x, "netmeta")
-  ##
-  chkchar <- meta:::chkchar
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  formatCI <- meta:::formatCI
-  formatN <- meta:::formatN
-  is.relative.effect <- meta:::is.relative.effect
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   ##
   if (!missing(y)) {
-    meta:::chkclass(y, "netmeta")
+    chkclass(y, "netmeta")
     ##
     if (length(x$seq) != length(y$seq))
       stop("Arguments 'x' and 'y' must have the same number of treatments.")
@@ -260,9 +258,6 @@ netleague <- function(x, y,
     x.is.y <- all.equal(x, y)
     x.is.y <- is.logical(x.is.y) && x.is.y
   }
-  ##
-  chklogical(comb.fixed)
-  chklogical(comb.random)
   ##
   if (missing(seq)) {
     seq.f <- seq.r <- seq
@@ -293,6 +288,19 @@ netleague <- function(x, y,
   ##
   chkchar(text.NA)
   chkchar(big.mark)
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
   
   
   ##
@@ -305,7 +313,7 @@ netleague <- function(x, y,
     lower.fixed.x <- x$lower.direct.fixed
     upper.fixed.x <- x$upper.direct.fixed
     ##
-    if (comb.random) {
+    if (random) {
       TE.random.x    <- x$TE.direct.random
       lower.random.x <- x$lower.direct.random
       upper.random.x <- x$upper.direct.random
@@ -316,7 +324,7 @@ netleague <- function(x, y,
     lower.fixed.x <- x$lower.fixed
     upper.fixed.x <- x$upper.fixed
     ##
-    if (comb.random) {
+    if (random) {
       TE.random.x    <- x$TE.random
       lower.random.x <- x$lower.random
       upper.random.x <- x$upper.random
@@ -328,7 +336,7 @@ netleague <- function(x, y,
     lower.fixed.x <- exp(lower.fixed.x)
     upper.fixed.x <- exp(upper.fixed.x)
     ##
-    if (comb.random) {
+    if (random) {
       TE.random.x    <- exp(TE.random.x)
       lower.random.x <- exp(lower.random.x)
       upper.random.x <- exp(upper.random.x)
@@ -341,7 +349,7 @@ netleague <- function(x, y,
       lower.fixed.y <- y$lower.direct.fixed
       upper.fixed.y <- y$upper.direct.fixed
       ##
-      if (comb.random) {
+      if (random) {
         TE.random.y    <- y$TE.direct.random
         lower.random.y <- y$lower.direct.random
         upper.random.y <- y$upper.direct.random
@@ -352,7 +360,7 @@ netleague <- function(x, y,
       lower.fixed.y <- y$lower.fixed
       upper.fixed.y <- y$upper.fixed
       ##
-      if (comb.random) {
+      if (random) {
         TE.random.y    <- y$TE.random
         lower.random.y <- y$lower.random
         upper.random.y <- y$upper.random
@@ -364,7 +372,7 @@ netleague <- function(x, y,
       lower.fixed.y <- exp(lower.fixed.y)
       upper.fixed.y <- exp(upper.fixed.y)
       ##
-      if (comb.random) {
+      if (random) {
         TE.random.y    <- exp(TE.random.y)
         lower.random.y <- exp(lower.random.y)
         upper.random.y <- exp(upper.random.y)
@@ -376,7 +384,7 @@ netleague <- function(x, y,
       lower.fixed.y <- t(lower.fixed.y)
       upper.fixed.y <- t(upper.fixed.y)
       ##
-      if (comb.random) {
+      if (random) {
         TE.random.y    <- t(TE.random.y)
         lower.random.y <- t(lower.random.y)
         upper.random.y <- t(upper.random.y)
@@ -389,7 +397,7 @@ netleague <- function(x, y,
       lower.fixed.y <- exp(x$lower.direct.fixed)
       upper.fixed.y <- exp(x$upper.direct.fixed)
       ##
-      if (comb.random) {
+      if (random) {
         TE.random.y    <- exp(x$TE.direct.random)
         lower.random.y <- exp(x$lower.direct.random)
         upper.random.y <- exp(x$upper.direct.random)
@@ -400,7 +408,7 @@ netleague <- function(x, y,
       lower.fixed.y <- x$lower.direct.fixed
       upper.fixed.y <- x$upper.direct.fixed
       ##
-      if (comb.random) {
+      if (random) {
         TE.random.y    <- x$TE.direct.random
         lower.random.y <- x$lower.direct.random
         upper.random.y <- x$upper.direct.random
@@ -414,7 +422,7 @@ netleague <- function(x, y,
   lower.fixed.x <- t(lower.fixed.x)
   upper.fixed.x <- t(upper.fixed.x)
   ##
-  if (comb.random) {
+  if (random) {
     TE.random.x <- t(TE.random.x)
     lower.random.x <- t(lower.random.x)
     upper.random.x <- t(upper.random.x)
@@ -424,7 +432,7 @@ netleague <- function(x, y,
   lower.fixed.y <- t(lower.fixed.y)
   upper.fixed.y <- t(upper.fixed.y)
   ##
-  if (comb.random) {
+  if (random) {
     TE.random.y <- t(TE.random.y)
     lower.random.y <- t(lower.random.y)
     upper.random.y <- t(upper.random.y)
@@ -484,7 +492,7 @@ netleague <- function(x, y,
   ## (4) Print league table for random effects model
   ##
   ##
-  if (comb.random) {
+  if (random) {
     TE.random.x    <- round(   TE.random.x[seq.r, seq.r], digits)
     lower.random.x <- round(lower.random.x[seq.r, seq.r], digits)
     upper.random.x <- round(upper.random.x[seq.r, seq.r], digits)
@@ -528,11 +536,11 @@ netleague <- function(x, y,
   
   
   res <- list(fixed = nl.f,
-              random = if (comb.random) nl.r else NA,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              random = if (random) nl.r else NA,
               seq = seq, ci = ci, backtransf = backtransf,
-              digits = digits)
+              x = list(fixed = fixed, random = random),
+              digits = digits,
+              version = packageDescription("netmeta")$Version)
   ##
   class(res) <- "netleague"
   
@@ -550,8 +558,9 @@ netleague <- function(x, y,
 
 
 print.netleague <- function(x,
-                            comb.fixed = x$comb.fixed,
-                            comb.random = x$comb.random,
+                            fixed = x$x$fixed,
+                            random = x$x$random,
+                            warn.deprecated = gs("warn.deprecated"),
                             ...) {
   
   
@@ -560,10 +569,21 @@ print.netleague <- function(x,
   ## (1) Check arguments
   ##
   ##
-  meta:::chkclass(x, "netleague")
+  chkclass(x, "netleague")
+  x <- updateversion(x)
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
   
   
   ##
@@ -571,13 +591,13 @@ print.netleague <- function(x,
   ## (2) Print league table for fixed effects model
   ##
   ##
-  if (comb.fixed) {
+  if (fixed) {
     cat("League table (fixed effects model):\n")
     ##
     prmatrix(x$fixed, quote = FALSE, right = TRUE,
              rowlab = rep("", nrow(x$fixed)),
              collab = rep("", ncol(x$fixed)))
-    if (comb.random)
+    if (random)
       cat("\n")
   }
   
@@ -587,10 +607,10 @@ print.netleague <- function(x,
   ## (3) Print league table for random effects model
   ##
   ##
-  if (comb.random) {
+  if (random) {
     cat("League table (random effects model):\n")
     ##
-    prmatrix(x$rando, quote = FALSE, right = TRUE,
+    prmatrix(x$random, quote = FALSE, right = TRUE,
              rowlab = rep("", nrow(x$random)),
              collab = rep("", ncol(x$random)))
   }

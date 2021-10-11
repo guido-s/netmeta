@@ -33,9 +33,19 @@
 #' @examples
 #' data(Senn2013)
 #' 
+#' # Only consider first five studies (to reduce runtime of example)
+#' #
+#' studies <- unique(Senn2013$studlab)
+#' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
+#' 
+#' # Conduct network meta-analysis with placebo as reference treatment
+#' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD")
-#' print(decomp.design(net1))
+#'                 data = Senn2013.5, sm = "MD", reference = "plac")
+#' 
+#' # Decomposition of Cochran's Q
+#' #
+#' decomp.design(net1)
 #' 
 #' @method print decomp.design
 #' @export
@@ -53,12 +63,7 @@ print.decomp.design <- function(x,
                                 ...) {
   
   
-  meta:::chkclass(x, "decomp.design")
-  ##
-  formatPT <- meta:::formatPT
-  formatN <- meta:::formatN
-  chknumeric <- meta:::chknumeric
-  chklogical <- meta:::chklogical
+  chkclass(x, "decomp.design")
   ##
   chknumeric(digits.Q, min = 0, length = 1)
   chknumeric(digits.pval.Q, min = 0, length = 1)
@@ -80,7 +85,7 @@ print.decomp.design <- function(x,
     Qdata <- x$Q.decomp
     ##
     Qdata$Q <- round(Qdata$Q, digits.Q)
-    Qdata$pval <- meta:::formatPT(Qdata$pval,
+    Qdata$pval <- formatPT(Qdata$pval,
                                   digits = digits.pval.Q,
                                   scientific = scientific.pval)
     ##

@@ -5,9 +5,19 @@
 \alias{print.netposet}
 \title{Partial order of treatments in network meta-analysis}
 \usage{
-netposet(..., outcomes, treatments, small.values, comb.fixed, comb.random)
+netposet(
+  ...,
+  outcomes,
+  treatments,
+  small.values,
+  fixed,
+  random,
+  comb.fixed,
+  comb.random,
+  warn.deprecated = gs("warn.deprecated")
+)
 
-\method{print}{netposet}(x, pooled = ifelse(x$comb.random, "random", "fixed"), ...)
+\method{print}{netposet}(x, pooled = ifelse(x$random, "random", "fixed"), ...)
 }
 \arguments{
 \item{\dots}{See details.}
@@ -18,11 +28,18 @@ netposet(..., outcomes, treatments, small.values, comb.fixed, comb.random)
 
 \item{small.values}{See details.}
 
-\item{comb.fixed}{A logical indicating whether to show results for
-the fixed effects (common effects) model.}
+\item{fixed}{A logical indicating whether to show results for the
+fixed effects / common effects model.}
 
-\item{comb.random}{A logical indicating whether to show results for
-the random effects model.}
+\item{random}{A logical indicating whether to show results for the
+random effects model.}
+
+\item{comb.fixed}{Deprecated argument; replaced by \code{fixed}.}
+
+\item{comb.random}{Deprecated argument; replaced by \code{random}.}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
 
 \item{x}{An object of class \code{netposet}.}
 
@@ -49,7 +66,7 @@ containing the following components:
 \item{M.random}{"Full" Hasse matrix (random effects model).}
 \item{O.random}{Matrix with information about partial ordering
   (random effects model).}
-\item{small.values, comb.fixed, comb.random}{As.defined above.}
+\item{small.values, fixed, random}{As.defined above.}
 \item{call}{Function call.}
 \item{version}{Version of R package netmeta used to create object.}
 }
@@ -109,13 +126,13 @@ outcome whether small values are good or bad; see
 \code{\link{netrank}}. This argument is ignored for a ranking
 matrix and \code{netrank} objects.
 
-Arguments \code{comb.fixed} and \code{comb.random} can be used to
+Arguments \code{fixed} and \code{random} can be used to
 define whether results should be printed and plotted for fixed and
 / or random effects model. If netmeta and netrank objects are
-provided in argument \code{\dots{}}, values for \code{comb.fixed}
-and \code{comb.random} within these objects are considered; if
-these values are not unique, argument \code{comb.fixed} and / or
-\code{comb.random} are set to \code{TRUE}.
+provided in argument \code{\dots{}}, values for \code{fixed}
+and \code{random} within these objects are considered; if
+these values are not unique, argument \code{fixed} and / or
+\code{random} are set to \code{TRUE}.
 
 In function \code{print.netposet}, argument \code{\dots{}} is
 passed on to the printing function.
@@ -143,7 +160,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, comb.fixed = FALSE,
+net1 <- netmeta(p1, fixed = FALSE,
                 seq = trts, ref = "Placebo", small.values = "bad")
 
 # (2) Early remission
@@ -153,7 +170,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, comb.fixed = FALSE,
+net2 <- netmeta(p2, fixed = FALSE,
                 seq = trts, ref = "Placebo", small.values = "bad")
 
 # Partial order of treatment rankings (two outcomes)
@@ -179,7 +196,7 @@ p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net3 <- netmeta(p3, comb.fixed = FALSE,
+net3 <- netmeta(p3, fixed = FALSE,
                 seq = trts, ref = "Placebo", small.values = "good")
 
 # (4) Loss to follow-up due to adverse events
@@ -190,7 +207,7 @@ p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                studlab = id, data = subset(Linde2015, id != 55),
                sm = "OR")
 #
-net4 <- netmeta(p4, comb.fixed = FALSE,
+net4 <- netmeta(p4, fixed = FALSE,
                 seq = trts, ref = "Placebo", small.values = "good")
 
 # (5) Adverse events
@@ -200,7 +217,7 @@ p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net5 <- netmeta(p5, comb.fixed = FALSE,
+net5 <- netmeta(p5, fixed = FALSE,
                 seq = trts, ref = "Placebo", small.values = "good")
 
 # Partial order of treatment rankings (all five outcomes)

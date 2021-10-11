@@ -7,15 +7,18 @@
 netbind(
   ...,
   name,
-  comb.fixed,
-  comb.random,
+  fixed,
+  random,
   col.study = "black",
   col.inside = "white",
   col.square = "gray",
   col.square.lines = col.square,
   backtransf,
   reference.group,
-  baseline.reference
+  baseline.reference,
+  warn.deprecated = gs("warn.deprecated"),
+  comb.fixed,
+  comb.random
 )
 }
 \arguments{
@@ -25,11 +28,11 @@ with network meta-analyses.}
 \item{name}{An optional character vector providing descriptive
 names for the network meta-analysis objects.}
 
-\item{comb.fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be reported.}
+\item{fixed}{A logical indicating whether results for the fixed
+effects (common effects) model should be reported.}
 
-\item{comb.random}{A logical indicating whether results for the
-random effects model should be reported.}
+\item{random}{A logical indicating whether results for the random
+effects model should be reported.}
 
 \item{col.study}{The colour for network estimates and confidence
 limits.}
@@ -52,6 +55,13 @@ odds ratios, for example.}
 should be expressed as comparisons of other treatments versus the
 reference treatment (default) or vice versa. This argument is
 only considered if \code{reference.group} has been specified.}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{comb.fixed}{Deprecated argument; replaced by \code{fixed}.}
+
+\item{comb.random}{Deprecated argument; replaced by \code{random}.}
 }
 \value{
 An object of class \code{"netbind"} with corresponding
@@ -62,8 +72,7 @@ following components:
 \item{random}{A data frame with results for the random effects
   model.}
 \item{sm}{Summary measure used in network meta-analyses.}
-\item{level.comb}{Level for confidence intervals.}
-\item{comb.fixed, comb.random, backtransf}{As defined above.}
+\item{level.ma}{Level for confidence intervals.}
 \item{reference.group, baseline.reference}{As defined above.}
 }
 \description{
@@ -84,7 +93,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive CNMA model with placebo as inactive component and
 # reference

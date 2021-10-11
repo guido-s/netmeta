@@ -6,22 +6,23 @@
 \usage{
 \method{summary}{netmeta}(
   object,
-  comb.fixed = object$comb.fixed,
-  comb.random = object$comb.random,
+  fixed = object$fixed,
+  random = object$random,
   prediction = object$prediction,
   reference.group = object$reference.group,
   baseline.reference = object$baseline.reference,
   all.treatments = object$all.treatments,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
 \arguments{
 \item{object}{An object of class \code{netmeta}.}
 
-\item{comb.fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be printed.}
+\item{fixed}{A logical indicating whether results for the
+fixed effects / common effects model should be printed.}
 
-\item{comb.random}{A logical indicating whether results for the
+\item{random}{A logical indicating whether results for the
 random effects model should be printed.}
 
 \item{prediction}{A logical indicating whether prediction intervals
@@ -38,7 +39,10 @@ only considered if \code{reference.group} has been specified.}
 matrices with all treatment effects, and confidence limits will
 be printed.}
 
-\item{\dots}{Additional arguments.}
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \value{
 A list is returned with the following elements:
@@ -87,9 +91,9 @@ A list is returned with the following elements:
   used for pooling of studies.}
 \item{level}{The level used to calculate confidence intervals for
   individual studies.}
-\item{level.comb}{The level used to calculate confidence intervals
+\item{level.ma}{The level used to calculate confidence intervals
   for pooled estimates.}
-\item{comb.fixed, comb.random}{As defined above.}
+\item{fixed, random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
 \item{reference.group, baseline.reference}{As defined above.}
 \item{all.treatments, backtransf}{As defined above.}
@@ -115,7 +119,7 @@ data(Senn2013)
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD",
-                comb.random = FALSE)
+                random = FALSE)
 print(net1, ref = "plac", digits = 3)
 summary(net1)
 
@@ -124,7 +128,7 @@ summary(net1)
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD",
-                comb.fixed = FALSE)
+                fixed = FALSE)
 print(net2, ref = "plac", digits = 3)
 summary(net2)
 }
@@ -136,4 +140,4 @@ summary(net2)
 \author{
 Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
 }
-\keyword{print}
+\keyword{summary}

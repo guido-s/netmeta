@@ -45,7 +45,7 @@ netgraph.netconnection <- function(x, seq,
                                    plastic = FALSE, ...) {
   
   
-  meta:::chkclass(x, "netconnection")
+  chkclass(x, "netconnection")
   
   if (missing(seq))
     seq <- rownames(x$A.matrix)

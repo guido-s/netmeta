@@ -27,11 +27,11 @@
 #'   \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.
 #' @param level The level used to calculate confidence intervals for
 #'   individual comparisons.
-#' @param level.comb The level used to calculate confidence intervals
-#'   for pooled estimates.
-#' @param comb.fixed A logical indicating whether a fixed effects
-#'   (common effects) network meta-analysis should be conducted.
-#' @param comb.random A logical indicating whether a random effects
+#' @param level.ma The level used to calculate confidence intervals
+#'   for network estimates.
+#' @param fixed A logical indicating whether a fixed effects / common
+#'   effects network meta-analysis should be conducted.
+#' @param random A logical indicating whether a random effects
 #'   network meta-analysis should be conducted.
 #' @param prediction A logical indicating whether prediction intervals
 #'   should be printed.
@@ -92,13 +92,16 @@
 #' @param title Title of meta-analysis / systematic review.
 #' @param keepdata A logical indicating whether original data (set)
 #'   should be kept in netmeta object.
-#' @param warn A logical indicating whether warnings should be printed
-#'   (e.g., if studies are excluded from meta-analysis due to zero
-#'   standard errors).
 #' @param control An optional list to control the iterative process to
 #'   estimate the between-study variance \eqn{\tau^2}. This argument
 #'   is passed on to \code{\link[metafor]{rma.mv}}.
+#' @param warn A logical indicating whether warnings should be printed
+#'   (e.g., if studies are excluded from meta-analysis due to zero
+#'   standard errors).
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
 #' @param nchar Deprecated argument (replaced by \code{nchar.trts}).
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #' 
 #' @details
 #' Network meta-analysis using R package \bold{netmeta} is described
@@ -191,15 +194,15 @@
 #' network meta-analysis.
 #' 
 #' Internally, both fixed effects and random effects models are
-#' calculated regardless of values choosen for arguments
-#' \code{comb.fixed} and \code{comb.random}. Accordingly, the network
-#' estimates for the random effects model can be extracted from
-#' component \code{TE.random} of an object of class \code{"netmeta"}
-#' even if argument \code{comb.random = FALSE}. However, all functions
-#' in R package \bold{netmeta} will adequately consider the values for
-#' \code{comb.fixed} and \code{comb.random}. E.g. function
+#' calculated regardless of values choosen for arguments \code{fixed}
+#' and \code{random}. Accordingly, the network estimates for the
+#' random effects model can be extracted from component
+#' \code{TE.random} of an object of class \code{"netmeta"} even if
+#' argument \code{random = FALSE}. However, all functions in R package
+#' \bold{netmeta} will adequately consider the values for \code{fixed}
+#' and \code{random}. E.g. function
 #' \code{\link{print.summary.netmeta}} will not print results for the
-#' random effects model if \code{comb.random = FALSE}.
+#' random effects model if \code{random = FALSE}.
 #' 
 #' By default, treatment names are not abbreviated in
 #' printouts. However, in order to get more concise printouts,
@@ -400,15 +403,15 @@
 #' \item{Cov.fixed}{Variance-covariance matrix (fixed effects model)}
 #' \item{Cov.random}{Variance-covariance matrix (random effects
 #'   model)}
-#' \item{sm, level, level.comb}{As defined above.}
-#' \item{comb.fixed, comb.random}{As defined above.}
+#' \item{sm, level, level.ma}{As defined above.}
+#' \item{fixed, random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
 #' \item{reference.group, baseline.reference, small.values,
 #'   all.treatments}{As defined above.}
 #' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
 #'   above.}
 #' \item{details.chkmultiarm, sep.trts, nchar.trts}{As defined above.}
-#' \item{backtransf, title, warn}{As defined above.}
+#' \item{backtransf, title, warn, warn.deprecated}{As defined above.}
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
@@ -457,7 +460,7 @@
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'                 data = Senn2013, sm = "MD",
-#'                 comb.random = FALSE)
+#'                 random = FALSE)
 #' net1
 #' net1$Q.decomp
 #' 
@@ -470,7 +473,7 @@
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'                 data = Senn2013, sm = "MD",
-#'                 comb.fixed = FALSE)
+#'                 fixed = FALSE)
 #' net2
 #' 
 #' # Change printing order of treatments with placebo last and use
@@ -479,7 +482,7 @@
 #' trts <- c("acar", "benf", "metf", "migl", "piog",
 #'           "rosi", "sita", "sulf", "vild", "plac")
 #' net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'                 data = Senn2013, sm = "MD", comb.fixed = FALSE,
+#'                 data = Senn2013, sm = "MD", fixed = FALSE,
 #'                 seq = trts, reference = "Placebo")
 #' print(net3, digits = 2)
 #' }
@@ -492,9 +495,9 @@ netmeta <- function(TE, seTE,
                     data = NULL, subset = NULL,
                     sm,
                     level = gs("level"),
-                    level.comb = gs("level.comb"),
-                    comb.fixed = gs("comb.fixed"),
-                    comb.random = gs("comb.random") | !is.null(tau.preset),
+                    level.ma = gs("level.ma"),
+                    fixed = gs("fixed"),
+                    random = gs("random") | !is.null(tau.preset),
                     ##
                     prediction = FALSE,
                     level.predict = gs("level.predict"),
@@ -532,11 +535,12 @@ netmeta <- function(TE, seTE,
                     ##
                     title = "",
                     keepdata = gs("keepdata"),
-                    warn = TRUE,
-                    ##
                     control = NULL,
-                    nchar = nchar.trts
-                    ) {
+                    ##
+                    warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                    ##
+                    nchar = nchar.trts,
+                    ...) {
 
 
   ##
@@ -544,27 +548,20 @@ netmeta <- function(TE, seTE,
   ## (1) Check arguments
   ##
   ##
-  chkchar <- meta:::chkchar
-  chklevel <- meta:::chklevel
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  ##
   chklevel(level)
-  chklevel(level.comb)
   chklevel(level.predict)
   ##
-  chklogical(comb.fixed)
-  chklogical(comb.random)
   chklogical(prediction)
   ##
+  missing.reference.group <- missing(reference.group)
   chklogical(baseline.reference)
   ##
-  small.values <- meta:::setchar(small.values, c("good", "bad"))
+  small.values <- setchar(small.values, c("good", "bad"))
   ##
   if (!is.null(all.treatments))
     chklogical(all.treatments)
   ##
-  method.tau <- meta:::setchar(method.tau, c("DL", "ML", "REML"))
+  method.tau <- setchar(method.tau, c("DL", "ML", "REML"))
   ##
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
@@ -576,7 +573,6 @@ netmeta <- function(TE, seTE,
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
-  chknumeric(nchar.trts, min = 1, length = 1)
   chknumeric(nchar.studlab, length = 1)
   ##
   chklogical(backtransf)
@@ -587,20 +583,28 @@ netmeta <- function(TE, seTE,
   ##
   chklogical(baseline.reference)
   ##
-  ## Check for deprecated argument 'nchar'
+  ## Check for deprecated arguments in '...'
   ##
-  if (!missing(nchar))
-    if (!missing(nchar.trts))
-      warning("Deprecated argument 'nchar' ignored as ",
-              "argument 'nchar.trts' is also provided.")
-    else {
-      warning("Deprecated argument 'nchar' has been replaced by ",
-              "argument 'nchar.trts'.")
-      nchar.trts <- nchar
-      chknumeric(nchar.trts, min = 1, length = 1)
-    }
+  args  <- list(...)
+  chklogical(warn.deprecated)
   ##
-  missing.reference.group <- missing(reference.group)
+  level.ma <- deprecated(level.ma, missing(level.ma), args, "level.comb",
+                         warn.deprecated)
+  chklevel(level.ma)
+  ##
+  missing.fixed <- missing(fixed)
+  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <-
+    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+  chklogical(random)
+  ##
+  nchar.trts <-
+    deprecated2(nchar.trts, missing(nchar.trts), nchar, missing(nchar),
+                warn.deprecated)
+  chknumeric(nchar.trts, min = 1, length = 1)
   
   
   ##
@@ -829,31 +833,31 @@ netmeta <- function(TE, seTE,
       data$.treat1[wo] <- data$.treat2[wo]
       data$.treat2[wo] <- ttreat1[wo]
       ##
-      if (meta:::isCol(data, ".n1") & meta:::isCol(data, ".n2")) {
+      if (isCol(data, ".n1") & isCol(data, ".n2")) {
         tn1 <- data$.n1
         data$.n1[wo] <- data$.n2[wo]
         data$.n2[wo] <- tn1[wo]
       }
       ##
-      if (meta:::isCol(data, ".event1") & meta:::isCol(data, ".event2")) {
+      if (isCol(data, ".event1") & isCol(data, ".event2")) {
         tevent1 <- data$.event1
         data$.event1[wo] <- data$.event2[wo]
         data$.event2[wo] <- tevent1[wo]
       }
       ##
-      ##if (meta:::isCol(data, ".mean1") & meta:::isCol(data, ".mean2")) {
+      ##if (isCol(data, ".mean1") & isCol(data, ".mean2")) {
       ##  tmean1 <- data$.mean1
       ##  data$.mean1[wo] <- data$.mean2[wo]
       ##  data$.mean2[wo] <- tmean1[wo]
       ##}
       ##
-      if (meta:::isCol(data, ".sd1") & meta:::isCol(data, ".sd2")) {
+      if (isCol(data, ".sd1") & isCol(data, ".sd2")) {
         tsd1 <- data$.sd1
         data$.sd1[wo] <- data$.sd2[wo]
         data$.sd2[wo] <- tsd1[wo]
       }
       ##
-      if (meta:::isCol(data, ".time1") & meta:::isCol(data, ".time2")) {
+      if (isCol(data, ".time1") & isCol(data, ".time2")) {
         ttime1 <- data$.time1
         data$.time1[wo] <- data$.time2[wo]
         data$.time2[wo] <- ttime1[wo]
@@ -978,10 +982,6 @@ netmeta <- function(TE, seTE,
          call. = FALSE)
   ##
   ## Check for correct number of comparisons
-  ##
-  is.wholenumber <-
-    function(x, tol = .Machine$double.eps^0.5)
-      abs(x - round(x)) < tol
   ##
   tabnarms <- table(studlab)
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
@@ -1196,7 +1196,7 @@ netmeta <- function(TE, seTE,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
                        sm,
-                       level, level.comb,
+                       level, level.ma,
                        p0$seTE, 0, sep.trts,
                        method.tau)
   ##
@@ -1325,7 +1325,7 @@ netmeta <- function(TE, seTE,
                        p1$treat1.pos, p1$treat2.pos,
                        p1$narms, p1$studlab,
                        sm,
-                       level, level.comb,
+                       level, level.ma,
                        p1$seTE, tau, sep.trts,
                        method.tau)
   ##
@@ -1533,9 +1533,11 @@ netmeta <- function(TE, seTE,
               sm = sm,
               method = "Inverse",
               level = level,
-              level.comb = level.comb,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              level.ma = level.ma,
+              fixed = fixed,
+              random = random,
+              comb.fixed = fixed,
+              comb.random = random,
               ##
               prediction = prediction,
               level.predict = level.predict,

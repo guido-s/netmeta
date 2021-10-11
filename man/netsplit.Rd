@@ -15,16 +15,18 @@ netsplit(
   sep.trts = x$sep.trts,
   quote.trts = "",
   tol.direct = 5e-04,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$fixed,
+  random = x$random,
   backtransf = x$backtransf,
-  warn = FALSE
+  warn = FALSE,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
 )
 
 \method{print}{netsplit}(
   x,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$x$fixed,
+  random = x$x$random,
   show = "all",
   overall = TRUE,
   ci = FALSE,
@@ -41,6 +43,7 @@ netsplit(
   scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
   legend = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
@@ -80,11 +83,11 @@ labels.}
 direct evidence proportion from 0 or 1 to classify a comparison
 as providing only indirect or direct evidence, respectively.}
 
-\item{comb.fixed}{A logical indicating whether results for the
-fixed effects (common effects) network meta-analysis should be
+\item{fixed}{A logical indicating whether results for the
+fixed effects / common effects network meta-analysis should be
 printed.}
 
-\item{comb.random}{A logical indicating whether results for the
+\item{random}{A logical indicating whether results for the
 random effects network meta-analysis should be printed.}
 
 \item{backtransf}{A logical indicating whether printed results
@@ -94,6 +97,11 @@ rather than log odds ratios.}
 
 \item{warn}{A logical indicating whether warnings should be
 printed.}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments.}
 
 \item{show}{A character string indicating which comparisons should
 be printed (see Details).}
@@ -142,14 +150,12 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}
-
-\item{...}{Additional arguments (ignored at the moment)}
 }
 \value{
 An object of class \code{netsplit} with corresponding \code{print}
 and \code{forest} functions. The object is a list containing the
 following components:
-\item{comb.fixed, comb.random}{As defined above.}
+\item{fixed, random}{As defined above.}
 \item{comparison}{A vector with treatment comparisons.}
 \item{prop.fixed, prop.random}{A vector with direct evidence
   proportions (fixed / random effects model).}
@@ -169,7 +175,7 @@ following components:
   effects model), i.e., data frame with columns comparison, TE,
   seTE, lower, upper, z, and p.}
 \item{sm}{A character string indicating underlying summary measure}
-\item{level.comb}{The level used to calculate confidence intervals
+\item{level.ma}{The level used to calculate confidence intervals
   for pooled estimates.}
 \item{version}{Version of R package netmeta used to create object.}
 }
@@ -226,8 +232,10 @@ p1 <- pairwise(treatment, event = r, n = N,
 net1 <- netmeta(p1)
 #
 print(netsplit(net1), digits = 2)
+
+\dontrun{
 print(netsplit(net1), digits = 2,
-      backtransf = FALSE, comb.fixed = FALSE)
+      backtransf = FALSE, fixed = FALSE)
 
 data(Senn2013)
 #
@@ -238,7 +246,6 @@ print(netsplit(net2), digits = 2)
 # Layout of Puhan et al. (2014), Table 1
 print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
 
-\dontrun{
 data(Dong2013)
 p3 <- pairwise(treatment, death, randomized, studlab = id,
                data = Dong2013, sm = "OR")

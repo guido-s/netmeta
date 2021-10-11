@@ -5,9 +5,9 @@
 #' 
 #' @param x An object of class \code{netcomb} or
 #'   \code{summary.netcomb}.
-#' @param comb.fixed A logical indicating whether results for the
+#' @param fixed A logical indicating whether results for the
 #'   fixed effects (common effects) model should be printed.
-#' @param comb.random A logical indicating whether results for the
+#' @param random A logical indicating whether results for the
 #'   random effects model should be printed.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
@@ -49,9 +49,9 @@
 #'   I\eqn{^2}.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
-#' @param nchar.trts Deprecated argument (replaced by
-#'   \code{nchar.comps}).
-#' @param \dots Additional arguments.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #'
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
@@ -71,7 +71,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components
 #' #
@@ -84,7 +84,7 @@
 #' #
 #' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = Linde2016, reference.group = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components
 #' #
@@ -98,8 +98,8 @@
 
 
 print.netcomb <- function(x,
-                          comb.fixed = x$comb.fixed,
-                          comb.random = x$comb.random,
+                          fixed = x$fixed,
+                          random = x$random,
                           backtransf = x$backtransf,
                           nchar.comps = x$nchar.comps,
                           ##
@@ -123,28 +123,27 @@ print.netcomb <- function(x,
                           text.I2 = gs("text.I2"),
                           ##
                           legend = TRUE,
-                          nchar.trts = nchar.comps,
+                          ##
+                          warn.deprecated = gs("warn.deprecated"),
+                          ##
                           ...) {
   
   
   ##
   ##
-  ## (1) Check class and arguments
+  ## (1) Check for netcomb object and upgrade object
   ##
   ##
-  meta:::chkclass(x, "netcomb")
-  ##  
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  chkchar <- meta:::chkchar
-  formatN <- meta:::formatN
-  formatPT <- meta:::formatPT
-  pasteCI <- meta:::pasteCI
-  ##  
-  chklogical(comb.fixed)
-  chklogical(comb.random)
+  chkclass(x, "netcomb")
+  x <- updateversion(x)
+  
+  
+  ##
+  ##
+  ## (2) Check other arguments
+  ##
+  ##
   chklogical(backtransf)
-  chknumeric(nchar.comps, min = 1, length = 1)
   ##
   chknumeric(digits, min = 0, length = 1)
   chknumeric(digits.stat, min = 0, length = 1)
@@ -165,26 +164,33 @@ print.netcomb <- function(x,
   ##
   chklogical(legend)
   ##
-  ## Check for deprecated argument 'nchar.trts'
+  ## Check for deprecated arguments in '...'
   ##
-  if (!missing(nchar.trts))
-    if (!missing(nchar.comps))
-      warning("Deprecated argument 'nchar.trts' ignored as ",
-              "argument 'nchar.comps' is also provided.")
-    else {
-      warning("Deprecated argument 'nchar.trts' has been replaced by ",
-              "argument 'nchar.comps'.")
-      nchar.comps <- nchar.trts
-      chknumeric(nchar.comps, min = 1, length = 1)
-    }
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
+  ##
+  nchar.comps <-
+    deprecated(nchar.comps, missing(nchar.comps), args, "nchar.trts")
   
   
+  ##
+  ##
+  ## (3) Print results
+  ##
+  ##
   I2 <- round(100 * x$I2, digits.I2)
   lower.I2 <- round(100 * x$lower.I2, digits.I2)
   upper.I2 <- round(100 * x$upper.I2, digits.I2)
-  
-  
-  if (comb.fixed | comb.random) {
+  ##  
+  if (fixed | random) {
     cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
     cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
     cat(paste("Number of active components: c = ", x$c, "\n", sep = ""))
@@ -196,12 +202,10 @@ print.netcomb <- function(x,
     ##
     cat("\n")
   }
-  
-  
+  ##  
   comps <- sort(c(x$comps, x$inactive))
   comps.abbr <- treats(comps, nchar.comps)
-  
-  
+  ##  
   ci.comb.f <- data.frame(TE = x$Comb.fixed,
                           seTE = x$seComb.fixed,
                           lower = x$lower.Comb.fixed,
@@ -236,19 +240,18 @@ print.netcomb <- function(x,
                      big.mark,
                      x$seq)
   ##
-  if (comb.fixed) {
+  if (fixed) {
     cat("Results for combinations (additive model, fixed effects model):\n")
     print(dat1.f)
     cat("\n")
   }
   ##
-  if (comb.random) {
+  if (random) {
     cat("Results for combinations (additive model, random effects model):\n")
     print(dat1.r)
     cat("\n")
   }
-  
-  
+  ##  
   ci.comp.f <- data.frame(TE = x$Comp.fixed,
                           seTE = x$seComp.fixed,
                           lower = x$lower.Comp.fixed,
@@ -281,18 +284,17 @@ print.netcomb <- function(x,
                      scientific.pval, zero.pval, JAMA.pval,
                      big.mark)
   ##
-  if (comb.fixed) {
+  if (fixed) {
     cat("Results for components (fixed effects model):\n")
     print(dat2.f)
     cat("\n")
   }
   ##
-  if (comb.random) {
+  if (random) {
     cat("Results for components (random effects model):\n")
     print(dat2.r)
   }
-  
-  
+  ##  
   cat(paste0("\nQuantifying heterogeneity / inconsistency:\n",
              formatPT(x$tau^2,
                       lab = TRUE, labval = text.tau2,
@@ -309,10 +311,9 @@ print.netcomb <- function(x,
                pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
              "\n")
       )
-  
-  
+  ##  
   cat("\nHeterogeneity statistics:\n")
-
+  ##
   hetdat <- 
     data.frame(Q = formatN(c(x$Q.additive,
                              x$Q.standard,
@@ -332,9 +333,8 @@ print.netcomb <- function(x,
   names(hetdat) <- c("Q", "df", "p-value")
   ##
   print(hetdat)
-  
-  
-  if (legend && (comb.fixed | comb.random)) {
+  ##  
+  if (legend && (fixed | random)) {
     diff.comps <- comps != comps.abbr
     if (any(diff.comps)) {
       tmat <- data.frame(comps.abbr, comps)
@@ -347,7 +347,6 @@ print.netcomb <- function(x,
                rowlab = rep("", length(comps.abbr))) 
     }
   }
-  
   
   invisible(NULL)
 }

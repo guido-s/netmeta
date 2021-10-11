@@ -178,7 +178,7 @@
 #'
 #' @keywords package
 #' 
-#' @importFrom meta forest forest.meta funnel funnel.meta metabias
+#' @importFrom meta forest funnel metabias
 #'   metabin metacont metagen metainc gs ci cilayout
 #'
 #' @importFrom magic adiag
@@ -192,6 +192,7 @@
 #'   prcomp reshape rnorm sd
 #'
 #' @importFrom utils installed.packages packageDescription
+#'   packageVersion
 #'
 #' @importFrom MASS ginv
 #'

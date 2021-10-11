@@ -3,7 +3,7 @@ nma.ruecker <- function(TE, seTE,
                         treat1.pos, treat2.pos,
                         narms, studlab,
                         sm = "",
-                        level, level.comb,
+                        level, level.ma,
                         seTE.orig, tau.direct = 0, sep.trts = ":",
                         method.tau = "DL") {
   
@@ -131,7 +131,7 @@ nma.ruecker <- function(TE, seTE,
     tau2 <-
       max(0, (Q - df) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
     tau <- sqrt(tau2)
-    ci.I2 <- meta:::isquared(Q, df, level.comb)
+    ci.I2 <- isquared(Q, df, level.ma)
     I2 <- ci.I2$TE
     lower.I2 <- ci.I2$lower
     upper.I2 <- ci.I2$upper
@@ -191,7 +191,7 @@ nma.ruecker <- function(TE, seTE,
   TE.pooled <- all
   seTE.pooled <- sqrt(R)
   ##
-  ci.pooled <- meta::ci(all, sqrt(R), level = level.comb)
+  ci.pooled <- meta::ci(all, sqrt(R), level = level.ma)
   ##
   lower.pooled <- ci.pooled$lower
   upper.pooled <- ci.pooled$upper
@@ -297,7 +297,7 @@ nma.ruecker <- function(TE, seTE,
     
   }
   ##
-  ci.direct <- meta::ci(TE.direct, seTE.direct, level = level.comb)
+  ci.direct <- meta::ci(TE.direct, seTE.direct, level = level.ma)
   ##
   lower.direct <- ci.direct$lower
   upper.direct <- ci.direct$upper
@@ -349,7 +349,7 @@ nma.ruecker <- function(TE, seTE,
               ##
               sm = sm,
               level = level,
-              level.comb = level.comb,
+              level.ma = level.ma,
               ##
               A.matrix = A.matrix,
               B.matrix = B,

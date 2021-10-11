@@ -14,10 +14,6 @@
 .special.characters <- c("+", ".", "&", "$", "#", "|", "*", "^")
 
 
-is.zero <- function(x, n = 10)
-  abs(x) < n * .Machine$double.eps
-
-
 invmat <- function(X) {
   n <- nrow(X)
   J <- matrix(1, nrow = n, ncol = n)
@@ -62,9 +58,6 @@ calcV <- function(x, sm) {
   ##
   V
 }
-
-
-
 
 
 ##

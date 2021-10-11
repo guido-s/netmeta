@@ -7,7 +7,7 @@
 \method{plot}{netposet}(
   x,
   plottype = "scatter",
-  pooled = ifelse(x$comb.random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "fixed"),
   dim = "2d",
   sel.x = 1,
   sel.y = 2,
@@ -170,7 +170,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, comb.fixed = FALSE,
+net1 <- netmeta(p1, fixed = FALSE,
                 seq = trts, ref = "Placebo", small.values = "bad")
 
 # (2) Early remission
@@ -180,7 +180,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, comb.fixed = FALSE,
+net2 <- netmeta(p2, fixed = FALSE,
                 seq = trts, ref = "Placebo", small.values = "bad")
 
 # Partial order of treatment rankings
@@ -209,7 +209,7 @@ p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net3 <- netmeta(p3, comb.fixed = FALSE,
+net3 <- netmeta(p3, fixed = FALSE,
                 seq = trts, ref = "Placebo", small.values = "good")
 
 # Partial order of treatment rankings (with three outcomes) 

@@ -142,14 +142,14 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE,
                           nchar.trts = x$nchar.trts) {
   
   
-  meta:::chkclass(x, "netmeta")
+  chkclass(x, "netmeta")
   ##
-  x <- upgradenetmeta(x)
+  x <- updateversion(x)
   ##
   if (!is.null(tau.preset))
-    meta:::chknumeric(tau.preset, min = 0, length = 1)
-  meta:::chklogical(warn)
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+    chknumeric(tau.preset, min = 0, length = 1)
+  chklogical(warn)
+  chknumeric(nchar.trts, min = 1, length = 1)
   ##
   if (inherits(x, "netmetabin")) {
     warning("Decomposition of designs not implemented for ",

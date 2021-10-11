@@ -9,10 +9,10 @@
 #'   with network meta-analyses.
 #' @param name An optional character vector providing descriptive
 #'   names for the network meta-analysis objects.
-#' @param comb.fixed A logical indicating whether results for the
-#'   fixed effects (common effects) model should be reported.
-#' @param comb.random A logical indicating whether results for the
-#'   random effects model should be reported.
+#' @param fixed A logical indicating whether results for the fixed
+#'   effects (common effects) model should be reported.
+#' @param random A logical indicating whether results for the random
+#'   effects model should be reported.
 #' @param col.study The colour for network estimates and confidence
 #'   limits.
 #' @param col.inside The colour for network estimates and confidence
@@ -28,6 +28,10 @@
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa. This argument is
 #'   only considered if \code{reference.group} has been specified.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param comb.fixed Deprecated argument; replaced by \code{fixed}.
+#' @param comb.random Deprecated argument; replaced by \code{random}.
 #' 
 #' @return
 #' An object of class \code{"netbind"} with corresponding
@@ -38,8 +42,7 @@
 #' \item{random}{A data frame with results for the random effects
 #'   model.}
 #' \item{sm}{Summary measure used in network meta-analyses.}
-#' \item{level.comb}{Level for confidence intervals.}
-#' \item{comb.fixed, comb.random, backtransf}{As defined above.}
+#' \item{level.ma}{Level for confidence intervals.}
 #' \item{reference.group, baseline.reference}{As defined above.}
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
@@ -60,7 +63,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive CNMA model with placebo as inactive component and
 #' # reference
@@ -83,7 +86,7 @@
 
 
 netbind <- function(..., name,
-                    comb.fixed, comb.random,
+                    fixed, random,
                     ##
                     col.study = "black",
                     col.inside = "white",
@@ -91,7 +94,9 @@ netbind <- function(..., name,
                     col.square.lines = col.square,
                     ##
                     backtransf,
-                    reference.group, baseline.reference
+                    reference.group, baseline.reference,
+                    warn.deprecated = gs("warn.deprecated"),
+                    comb.fixed, comb.random
                     ) {
   
   
@@ -100,12 +105,12 @@ netbind <- function(..., name,
   ## (1) Extract list elements and basic checks
   ##
   ##
+  chklogical(warn.deprecated)
+  ##
   is.nma <- function(x)
     inherits(x, "netmeta") |
       inherits(x, "netcomb") |
       inherits(x, "discomb")
-  ##
-  chklogical <- meta:::chklogical
   ##
   args <- list(...)
   ##
@@ -135,16 +140,16 @@ netbind <- function(..., name,
            "'netmeta', 'netcomb', or 'discomb'.",
            call. = FALSE)
     ##
-    args[[i]] <- upgradenetmeta(args[[i]])
+    args[[i]] <- updateversion(args[[i]])
   }
   ##
   levs <- numeric(0)
   for (i in n.i)
-    levs[i] <- args[[i]]$level.comb
+    levs[i] <- args[[i]]$level.ma
   ##
   if (length(unique(levs)) != 1)
     stop("Different confidence levels used in network meta-analyses ",
-         "(see list element 'level.comb').",
+         "(see list element 'level.ma').",
          call. = FALSE)
   ##
   sms <- character(0)
@@ -222,51 +227,72 @@ netbind <- function(..., name,
   
   
   ##
-  ## (3) Determine comb.fixed
+  ## (3) Determine fixed
   ##
-  if (missing(comb.fixed)) {
+  missing.fixed <- missing(fixed)
+  missing.comb.fixed <- missing(comb.fixed)
+  ##
+  if (missing.fixed & missing.comb.fixed) {
     cfs <- logical(0)
     ##
-    for (i in n.i)
-      cfs[i] <- args[[i]]$comb.fixed
+    for (i in n.i) {
+      if (!is.null(args[[i]]$fixed))
+        cfs[i] <- args[[i]]$fixed
+      else
+        cfs[i] <- args[[i]]$comb.fixed
+    }
     ##
     cfs <- unique(cfs)
     ##
     if (length(cfs) != 1) {
-      comb.fixed <- TRUE
-      warning2 <- paste0("Argument 'comb.fixed' set to TRUE ",
+      fixed <- TRUE
+      warning2 <- paste0("Argument 'fixed' set to TRUE ",
                          "(as it is not unique in network meta-analyses).")
       print.warning2 <- TRUE
     }
     else
-      comb.fixed <- cfs
+      fixed <- cfs
   }
-  else
-    chklogical(comb.fixed)
+  else {
+    fixed <-
+      deprecated2(fixed, missing.fixed, comb.fixed, missing.comb.fixed,
+                  warn.deprecated)
+    chklogical(fixed)
+  }
   
   
   ##
-  ## (4) Determine comb.random
+  ## (4) Determine random
   ##
-  if (missing(comb.random)) {
+  missing.random <- missing(random)
+  missing.comb.random <- missing(comb.random)
+  ##
+  if (missing.random & missing.comb.random) {
     crs <- logical(0)
     ##
     for (i in n.i)
-      crs[i] <- args[[i]]$comb.random
+      if (!is.null(args[[i]]$random))
+        crs[i] <- args[[i]]$random
+      else
+        crs[i] <- args[[i]]$comb.random
     ##
     crs <- unique(crs)
     ##
     if (length(crs) != 1) {
-      comb.random <- TRUE
-      warning3 <- paste0("Argument 'comb.random' set to TRUE ",
+      random <- TRUE
+      warning3 <- paste0("Argument 'random' set to TRUE ",
                          "(as it is not unique in network meta-analyses).")
       print.warning3 <- TRUE
     }
     else
-      comb.random <- crs
+      random <- crs
   }
-  else
-    chklogical(comb.random)
+  else {
+    random <-
+      deprecated2(random, missing.random, comb.random, missing.comb.random,
+                  warn.deprecated)
+    chklogical(random)
+  }
   
   
   ##
@@ -364,6 +390,7 @@ netbind <- function(..., name,
   chklogical(baseline.reference)
   
   
+  fixed.nma <- fixed
   fixed <- data.frame(name = character(0),
                       treat = character(0),
                       TE = numeric(0), seTE = numeric(0),
@@ -439,6 +466,7 @@ netbind <- function(..., name,
   rownames(fixed) <- seq_len(nrow(fixed))
   
   
+  random.nma <- random
   random <- data.frame(name = character(0),
                        treat = character(0),
                        ##
@@ -518,12 +546,15 @@ netbind <- function(..., name,
   res <- list(fixed = fixed,
               random = random,
               sm = sms[1],
-              level.comb = levs[1],
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              ##
+              x = list(fixed = fixed.nma, random = random.nma,
+                       level.ma = levs[1]),
+              ##
               backtransf = backtransf,
               reference.group = reference.group,
-              baseline.reference = baseline.reference)
+              baseline.reference = baseline.reference,
+              ##
+              version = packageDescription("netmeta")$Version)
   ##
   class(res) <- "netbind"
 

@@ -37,8 +37,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE,
-                nchar.trts = 6)
+                sm = "OR", fixed = FALSE, nchar.trts = 6)
 #
 net1
 
@@ -47,8 +46,7 @@ net1
 #
 net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE,
-                nchar.trts = 6)
+                sm = "OR", fixed = FALSE, nchar.trts = 6)
 #
 net2
 }

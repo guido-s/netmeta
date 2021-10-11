@@ -17,8 +17,8 @@
 #' 
 #' @aliases netconnection print.netconnection
 #' 
-#' @param treat1 Label / number for first treatment or an object of
-#'   class \code{pairwise}.
+#' @param treat1 Label / number for first treatment or a data frame
+#'   created with \code{\link{pairwise}}.
 #' @param treat2 Label / number for second treatment.
 #' @param studlab An optional - but important! - vector with study
 #'   labels (see Details).
@@ -188,9 +188,9 @@ netconnection <- function(treat1, treat2, studlab,
                    data, enclos = sys.frame(sys.parent()))
   }
   ##
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  chknumeric(nchar.trts, min = 1, length = 1)
   ##
-  meta:::chklogical(warn)
+  chklogical(warn)
   
   
   ##
@@ -211,10 +211,10 @@ netconnection <- function(treat1, treat2, studlab,
   ##
   fun <- "netconnection"
   ##
-  meta:::chklength(treat2, k.All, fun,
+  chklength(treat2, k.All, fun,
                    text = paste0("Arguments 'treat1' and 'treat2' ",
                                  "must have the same length."))
-  meta:::chklength(studlab, k.All, fun,
+  chklength(studlab, k.All, fun,
                    text = paste0("Arguments 'treat1' and 'studlab' ",
                                  "must have the same length."))
   ##
@@ -250,9 +250,6 @@ netconnection <- function(treat1, treat2, studlab,
   ##
   ## Check for correct number of comparisons
   ##
-  is.wholenumber <-
-    function(x, tol = .Machine$double.eps^0.5)
-      abs(x - round(x)) < tol
   tabnarms <- table(studlab)
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
@@ -443,15 +440,15 @@ print.netconnection <- function(x,
                                 details = FALSE,
                                 ...) {
   
-  meta:::chkclass(x, "netconnection")
+  chkclass(x, "netconnection")
   ##
   if (is.null(nchar.trts))
     nchar.trts <- 666
   
   
-  meta:::chknumeric(digits, length = 1)
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
-  meta:::chklogical(details)
+  chknumeric(digits, length = 1)
+  chknumeric(nchar.trts, min = 1, length = 1)
+  chklogical(details)
   
   
   matitle(x)

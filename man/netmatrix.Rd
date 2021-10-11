@@ -61,7 +61,7 @@ p1 <- pairwise(list(treat1, treat2, treat3),
                n = list(n1, n2, n3),
                data = smokingcessation,
                sm = "OR")
-net1 <- netmeta(p1, comb.fixed = FALSE, ref = "A")
+net1 <- netmeta(p1, fixed = FALSE, ref = "A")
 
 # Generate network graph with information on risk of bias
 #

@@ -7,7 +7,7 @@
 \usage{
 \method{forest}{netbind}(
   x,
-  pooled = ifelse(x$comb.random, "random", "fixed"),
+  pooled = ifelse(x$x$random, "random", "fixed"),
   equal.size = TRUE,
   leftcols = "studlab",
   leftlabs = "Treatment",
@@ -98,7 +98,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive CNMA model with placebo as inactive component and
 # reference

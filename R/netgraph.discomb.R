@@ -52,7 +52,7 @@
 netgraph.discomb <- function(x, ...) {
   
   
-  meta:::chkclass(x, "discomb")
+  chkclass(x, "discomb")
   
   
   y <- netconnection(x$treat1, x$treat2, x$studlab)

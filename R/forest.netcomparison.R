@@ -68,7 +68,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, ref = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -92,7 +92,7 @@
 
 forest.netcomparison <- function(x,
                                  pooled =
-                                   ifelse(x$comb.random, "random", "fixed"),
+                                   ifelse(x$random, "random", "fixed"),
                                  leftcols = c("studlab", "treat1", "treat2"),
                                  leftlabs = c("Comparison", "Trt 1", "Trt 2"),
                                  rightcols =
@@ -114,22 +114,19 @@ forest.netcomparison <- function(x,
   ## (1) Check and set arguments
   ##
   ##
-  meta:::chkclass(x, "netcomparison")
+  chkclass(x, "netcomparison")
   ##
-  chklogical <- meta:::chklogical
-  formatN <- meta:::formatN
+  pooled <- setchar(pooled, c("fixed", "random"))
   ##
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  nchar.comps <- replaceNULL(nchar.comps, 666)
+  chknumeric(nchar.comps, min = 1, length = 1)
   ##
-  nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
-  meta:::chknumeric(nchar.comps, min = 1, length = 1)
-  ##
-  meta:::chknumeric(digits, min = 0, length = 1)
-  meta:::chknumeric(digits.stat, min = 0, length = 1)
-  meta:::chknumeric(digits.pval, min = 0, length = 1)
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.stat, min = 0, length = 1)
+  chknumeric(digits.pval, min = 0, length = 1)
   ##
   chklogical(backtransf)
-  meta:::chkchar(lab.NA)
+  chkchar(lab.NA)
   
   
   ##
@@ -157,8 +154,8 @@ forest.netcomparison <- function(x,
       smlab <- "Random Effects Model"
   }
   ##
-  statistic <- meta:::formatN(stat, digits = digits.stat, text.NA = lab.NA)
-  pval <- meta:::formatPT(pval, digits = digits.pval, lab.NA = lab.NA)
+  statistic <- formatN(stat, digits = digits.stat, text.NA = lab.NA)
+  pval <- formatPT(pval, digits = digits.pval, lab.NA = lab.NA)
   ##
   ## Abbreviated component and treatment labels
   ##
@@ -215,7 +212,7 @@ forest.netcomparison <- function(x,
   ##
   forest(m1,
          digits = digits,
-         comb.fixed = FALSE, comb.random = FALSE,
+         fixed = FALSE, random = FALSE,
          overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
          leftcols = leftcols,
          leftlabs = leftlabs,
