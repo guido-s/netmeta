@@ -46,7 +46,7 @@
 #'                n = list(n1, n2, n3),
 #'                data = smokingcessation,
 #'                sm = "OR")
-#' net1 <- netmeta(p1, comb.fixed = FALSE, ref = "A")
+#' net1 <- netmeta(p1, fixed = FALSE, ref = "A")
 #' 
 #' # Generate network graph with information on risk of bias
 #' #
@@ -73,9 +73,7 @@ netmatrix <- function(x, var, levels, labels = levels,
                       func = "mode", ties.method = "random") {
   
   
-  meta:::chkclass(x, "netmeta")
-  ##
-  setchar <- meta:::setchar
+  chkclass(x, "netmeta")
   ##
   func <- setchar(func,
                   c("mode", "min", "max", "mean", "median", "sum"))
@@ -146,6 +144,8 @@ netmatrix <- function(x, var, levels, labels = levels,
     res[dat$idx1[i], dat$idx2[i]] <- dat[[func]][i]
     res[dat$idx2[i], dat$idx1[i]] <- dat[[func]][i]
   }
+  ##
+  attr(res, "version") <- packageDescription("netmeta")$Version
   ##
   res
 }

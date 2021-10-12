@@ -10,9 +10,9 @@
 #'   (print function).
 #' @param complex A matrix, vector or single numeric defining the
 #'   complex intervention(s) (see Details).
-#' @param comb.fixed A logical indicating whether results for fixed
-#'   effect model should be conducted.
-#' @param comb.random A logical indicating whether results for random
+#' @param fixed A logical indicating whether results for fixed effects
+#'   / common effects model should be conducted.
+#' @param random A logical indicating whether results for random
 #'   effects model should be conducted.
 #' @param level The level used to calculate confidence intervals for
 #'   combinations of components.
@@ -96,7 +96,7 @@
 #' \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
 #'   the overall effect of combinations (fixed and random effects
 #'   model).}
-#' \item{comb.fixed, comb.random}{A defined above.}
+#' \item{fixed, random}{A defined above.}
 #' \item{level, nchar.comps, backtransf, x}{A defined above.}
 #' \item{C.matrix}{C matrix.}
 #' 
@@ -123,7 +123,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, ref = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -144,7 +144,7 @@
 #' TE <- c(0, 1, 0)
 #' seTE <- rep(1, 3)
 #' # Conduct (C)NMA
-#' net2 <- netmeta(TE, seTE, t1, t2, comb.random = FALSE)
+#' net2 <- netmeta(TE, seTE, t1, t2, random = FALSE)
 #' nc2 <- netcomb(net2)
 #'
 #' # Result for combination A + B + C
@@ -170,20 +170,21 @@
 
 
 netcomplex <- function(x, complex,
-                       comb.fixed = x$comb.fixed,
-                       comb.random = x$comb.random,
-                       level = x$level.comb,
+                       fixed = x$fixed,
+                       random = x$random,
+                       level = x$level.ma,
                        nchar.comps = x$nchar.trts) {
   
   
-  meta:::chkclass(x, "netcomb")
+  chkclass(x, "netcomb")
+  x <- updateversion(x)
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chklevel(level)
+  chklogical(fixed)
+  chklogical(random)
+  chklevel(level)
   ##
-  nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
-  meta:::chknumeric(nchar.comps, min = 1, length = 1)
+  nchar.comps <- replaceNULL(nchar.comps, 666)
+  chknumeric(nchar.comps, min = 1, length = 1)
   
 
   if (missing(complex)) {
@@ -204,7 +205,7 @@ netcomplex <- function(x, complex,
     complex <- rownames(complex)   
   }
   else if (is.numeric(complex)) {
-    meta:::chknumeric(complex, min = 1, max = n.comps, length = 1)
+    chknumeric(complex, min = 1, max = n.comps, length = 1)
     ##
     C.matrix <- createC(ncol = n.comps, ncomb = complex)
     colnames(C.matrix) <- nam.comps <- x$comps
@@ -285,8 +286,8 @@ netcomplex <- function(x, complex,
               statistic.Comb.random = ci.r$statistic,
               pval.Comb.random = ci.r$p,
               ##
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              fixed = fixed,
+              random = random,
               level = level,
               ##
               C.matrix = C.matrix,
@@ -301,7 +302,10 @@ netcomplex <- function(x, complex,
               ##
               add = add,
               ##
-              complex.orig = complex.orig)
+              complex.orig = complex.orig,
+              ##
+              version = packageDescription("netmeta")$Version
+              )
   ##
   class(res) <- c("netcomplex", class(res))
   
@@ -315,11 +319,10 @@ netcomplex <- function(x, complex,
 #' @rdname netcomplex
 #' @method print netcomplex
 #' @export
-#' @export print.netcomplex
 
 print.netcomplex <- function(x,
-                             comb.fixed = x$comb.fixed,
-                             comb.random = x$comb.random,
+                             fixed = x$fixed,
+                             random = x$random,
                              backtransf = x$backtransf,
                              nchar.comps = x$nchar.comps,
                              ##
@@ -337,16 +340,13 @@ print.netcomplex <- function(x,
                              ##
                              ...) {
   
-  meta:::chkclass(x, "netcomplex")
+  chkclass(x, "netcomplex")
   ##
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  ##
-  chklogical(comb.fixed)
-  chklogical(comb.random)
+  chklogical(fixed)
+  chklogical(random)
   chklogical(backtransf)
   ##
-  nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
+  nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
   ##
   chknumeric(digits, min = 0, length = 1)
@@ -366,7 +366,7 @@ print.netcomplex <- function(x,
   n.complex <- length(x$complex)
   complex <- rep("", n.complex)
   ##
-  if (comb.fixed | comb.random) {
+  if (fixed | random) {
     comps <- c(x$comps, x$inactive)
     comps.abbr <- treats(comps, nchar.comps)
     ##
@@ -376,7 +376,7 @@ print.netcomplex <- function(x,
   }
   
   
-  relative <- meta:::is.relative.effect(x$x$sm)
+  relative <- is.relative.effect(x$x$sm)
   ##
   sm.lab <- x$x$sm
   ##
@@ -386,7 +386,7 @@ print.netcomplex <- function(x,
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   
   
-  if (comb.fixed) {
+  if (fixed) {
     Comb.fixed <- x$Comb.fixed
     lower.Comb.fixed <- x$lower.Comb.fixed
     upper.Comb.fixed <- x$upper.Comb.fixed
@@ -398,7 +398,7 @@ print.netcomplex <- function(x,
     }
   }
   ##
-  if (comb.random) {
+  if (random) {
     Comb.random <- x$Comb.random
     lower.Comb.random <- x$lower.Comb.random
     upper.Comb.random <- x$upper.Comb.random
@@ -411,11 +411,7 @@ print.netcomplex <- function(x,
   }
   
   
-  formatN <- meta:::formatN
-  formatCI <- meta:::formatCI
-  formatPT <- meta:::formatPT
-  ##
-  if (comb.fixed | comb.random) {
+  if (fixed | random) {
     ##
     if (is.numeric(x$complex.orig) & !is.matrix(x$complex.orig))
       if (all(x$complex.orig == 1))
@@ -436,7 +432,7 @@ print.netcomplex <- function(x,
   }
   
   
-  if (comb.fixed) {
+  if (fixed) {
     pval.f <- formatPT(x$pval.Comb.fixed, digits = digits.pval,
                        scientific = scientific.pval,
                        zero = zero.pval, JAMA = JAMA.pval,
@@ -462,12 +458,12 @@ print.netcomplex <- function(x,
     cat("(additive CNMA model, fixed effects model):\n")
     prmatrix(res.f, quote = FALSE, right = TRUE, na.print = "--")
     ##
-    if (comb.random)
+    if (random)
       cat("\n")
   }
   
   
-  if (comb.random) {
+  if (random) {
     ##
     pval.r <- formatPT(x$pval.Comb.random, digits = digits.pval,
                        scientific = scientific.pval,
@@ -496,7 +492,7 @@ print.netcomplex <- function(x,
   }
   
   
-  if (legend && (comb.fixed | comb.random)) {
+  if (legend && (fixed | random)) {
     diff.comps <- comps != comps.abbr
     any.comps <- any()
     ##

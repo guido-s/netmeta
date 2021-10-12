@@ -90,11 +90,15 @@
 #' @examples
 #' data(Senn2013)
 #' 
-#' # Generation of an object of class 'netmeta' with reference
-#' # treatment 'plac', i.e. placebo
+#' # Only consider first five studies (to reduce runtime of example)
+#' #
+#' studies <- unique(Senn2013$studlab)
+#' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
+#' 
+#' # Conduct network meta-analysis with placebo as reference treatment
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD", reference = "plac")
+#'                 data = Senn2013.5, sm = "MD", reference = "plac")
 #'         
 #' # Generate a net heat plot based on a fixed effects model
 #' #
@@ -105,7 +109,7 @@
 #' #
 #' netheat(net1, random = TRUE)
 #' }
-#'  
+#'
 #' @export netheat
 
 
@@ -115,12 +119,27 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
                     ...) {
   
   
-  meta:::chkclass(x, "netmeta")
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   ##
-  meta:::chklogical(random)
+  if (x$d <= 2) {
+    warning("Net heat plot not available due to small number of designs: ",
+            x$d,
+            call. = FALSE)
+    return(invisible(NULL))
+  }
+  ##
+  if (inherits(x, "netmetabin")) {
+    warning("Net heat plot not available for objects created ",
+            "with netmetabin().",
+            call. = FALSE)
+    return(invisible(NULL))
+  }
+  ##
+  chklogical(random)
   missing.showall <- missing(showall)
-  meta:::chklogical(showall)
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  chklogical(showall)
+  chknumeric(nchar.trts, min = 1, length = 1)
   
   
   if (is.null(x$nchar.trts))
@@ -145,28 +164,14 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   if (random == FALSE & length(tau.preset) == 0) {
     nmak <- nma.krahn(x)
-    if (is.null(nmak)) {
-      warning("Only a single design in network meta-analysis.",
-              call. = FALSE)
-      return(invisible(NULL))
-    }
     decomp <- decomp.design(x)
-    if (!is.null(attributes(decomp)$netmetabin))
-      return(invisible(NULL))
     residuals <- decomp$residuals.inc.detach
     Q.inc.design <- decomp$Q.inc.design
   }
   ##
   if (length(tau.preset) == 1) {
     nmak <- nma.krahn(x, tau.preset = tau.preset)
-    if (is.null(nmak)) {
-      warning("Only a single design in network meta-analysis.",
-              call. = FALSE)
-      return(invisible(NULL))
-    }
     decomp <- decomp.design(x, tau.preset = tau.preset)
-    if (!is.null(attributes(decomp)$netmetabin))
-      return(invisible(NULL))
     residuals <- decomp$residuals.inc.detach.random.preset
     Q.inc.design <- decomp$Q.inc.design.random.preset
   }
@@ -174,22 +179,17 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   if (random == TRUE & length(tau.preset) == 0) {
     tau.within <- tau.within(x)
     nmak <- nma.krahn(x, tau.preset = tau.within)
-    if (is.null(nmak)) {
-      warning("Only a single design in network meta-analysis.",
-              call. = FALSE)
-      return(invisible(NULL))
-    }
     decomp <- decomp.design(x, tau.preset = tau.within)
-    if (!is.null(attributes(decomp)$netmetabin))
-      return(invisible(NULL))
     residuals <- decomp$residuals.inc.detach.random.preset
     Q.inc.design <- decomp$Q.inc.design.random.preset
   }
-  
-  
-  if (nmak$d <= 2) {
-    warning("Net heat plot not available due to small number of designs: ",
-            nmak$d,
+  ##
+  df.Q.between.designs <- decomp$Q.decomp["Between designs", "df"]
+  ##
+  if (df.Q.between.designs == 0) {
+    warning("Net heat plot not available because the network ",
+            "does not contain any loop",
+            if (any(x$narms > 2)) " along more than one design." else ".",
             call. = FALSE)
     return(invisible(NULL))
   }
@@ -213,16 +213,6 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
     design <- nmak$design
   
   
-  df.Q.between.designs <- decomp$Q.decomp["Between designs", "df"]
-  ##
-  if (df.Q.between.designs == 0) {
-    warning("Net heat plot not available because the network ",
-            "does not contain any loop",
-            if (any(x$narms > 2)) " along more than one design." else ".",
-            call. = FALSE)
-    return(invisible(NULL))
-  }
-  ##
   Q.inc.design.typ <- apply(residuals, 2, function(x) t(x) %*% solve(V) * x)
   inc <- matrix(Q.inc.design,
                 nrow = nrow(Q.inc.design.typ),

@@ -4,6 +4,8 @@
 #' @description
 #' Draws a forest plot in the active graphics window (using grid
 #' graphics system).
+#'
+#' @aliases forest.netcomplex plot.netcomplex
 #' 
 #' @param x An object of class \code{netcomplex}.
 #' @param pooled A character string indicating whether results for the
@@ -66,7 +68,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, ref = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -87,11 +89,10 @@
 #' 
 #' @method forest netcomplex
 #' @export
-#' @export forest.netcomplex
 
 
 forest.netcomplex <- function(x,
-                              pooled = ifelse(x$comb.random, "random", "fixed"),
+                              pooled = ifelse(x$random, "random", "fixed"),
                               leftcols = "studlab",
                               leftlabs = NULL,
                               rightcols =
@@ -113,22 +114,19 @@ forest.netcomplex <- function(x,
   ## (1) Check and set arguments
   ##
   ##
-  meta:::chkclass(x, "netcomplex")
+  chkclass(x, "netcomplex")
   ##
-  chklogical <- meta:::chklogical
-  formatN <- meta:::formatN
+  pooled <- setchar(pooled, c("fixed", "random"))
   ##
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  nchar.comps <- replaceNULL(nchar.comps, 666)
+  chknumeric(nchar.comps, min = 1, length = 1)
   ##
-  nchar.comps <- meta:::replaceNULL(nchar.comps, 666)
-  meta:::chknumeric(nchar.comps, min = 1, length = 1)
-  ##
-  meta:::chknumeric(digits, min = 0, length = 1)
-  meta:::chknumeric(digits.stat, min = 0, length = 1)
-  meta:::chknumeric(digits.pval, min = 0, length = 1)
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.stat, min = 0, length = 1)
+  chknumeric(digits.pval, min = 0, length = 1)
   ##
   chklogical(backtransf)
-  meta:::chkchar(lab.NA)
+  chkchar(lab.NA)
   
   
   ##
@@ -156,8 +154,8 @@ forest.netcomplex <- function(x,
       smlab <- "Random Effects Model"
   }
   ##
-  statistic <- meta:::formatN(stat, digits = digits.stat, text.NA = lab.NA)
-  pval <- meta:::formatPT(pval, digits = digits.pval, lab.NA = lab.NA)
+  statistic <- formatN(stat, digits = digits.stat, text.NA = lab.NA)
+  pval <- formatPT(pval, digits = digits.pval, lab.NA = lab.NA)
   ##
   ## Abbreviated component labels
   ##
@@ -194,7 +192,7 @@ forest.netcomplex <- function(x,
   ##
   forest(m1,
          digits = digits,
-         comb.fixed = FALSE, comb.random = FALSE,
+         fixed = FALSE, random = FALSE,
          overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
          leftcols = leftcols,
          leftlabs = leftlabs,
@@ -209,3 +207,15 @@ forest.netcomplex <- function(x,
   
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netcomplex
+#' @method plot netcomplex
+#' @export
+#'
+
+plot.netcomplex <- function(x, ...)
+  forest(x, ...)

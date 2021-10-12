@@ -33,10 +33,10 @@
 #' @param tol.direct A numeric defining the maximum deviation of the
 #'   direct evidence proportion from 0 or 1 to classify a comparison
 #'   as providing only indirect or direct evidence, respectively.
-#' @param comb.fixed A logical indicating whether results for the
-#'   fixed effects (common effects) network meta-analysis should be
+#' @param fixed A logical indicating whether results for the
+#'   fixed effects / common effects network meta-analysis should be
 #'   printed.
-#' @param comb.random A logical indicating whether results for the
+#' @param random A logical indicating whether results for the
 #'   random effects network meta-analysis should be printed.
 #' @param show A character string indicating which comparisons should
 #'   be printed (see Details).
@@ -77,7 +77,9 @@
 #'   printed.
 #' @param warn A logical indicating whether warnings should be
 #'   printed.
-#' @param ... Additional arguments (ignored at the moment)
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments.
 #' 
 #' @details
 #' A comparison of direct and indirect treatment estimates can serve
@@ -122,7 +124,7 @@
 #' An object of class \code{netsplit} with corresponding \code{print}
 #' and \code{forest} functions. The object is a list containing the
 #' following components:
-#' \item{comb.fixed, comb.random}{As defined above.}
+#' \item{fixed, random}{As defined above.}
 #' \item{comparison}{A vector with treatment comparisons.}
 #' \item{prop.fixed, prop.random}{A vector with direct evidence
 #'   proportions (fixed / random effects model).}
@@ -142,7 +144,7 @@
 #'   effects model), i.e., data frame with columns comparison, TE,
 #'   seTE, lower, upper, z, and p.}
 #' \item{sm}{A character string indicating underlying summary measure}
-#' \item{level.comb}{The level used to calculate confidence intervals
+#' \item{level.ma}{The level used to calculate confidence intervals
 #'   for pooled estimates.}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
@@ -186,8 +188,10 @@
 #' net1 <- netmeta(p1)
 #' #
 #' print(netsplit(net1), digits = 2)
+#' 
+#' \dontrun{
 #' print(netsplit(net1), digits = 2,
-#'       backtransf = FALSE, comb.fixed = FALSE)
+#'       backtransf = FALSE, fixed = FALSE)
 #' 
 #' data(Senn2013)
 #' #
@@ -198,7 +202,6 @@
 #' # Layout of Puhan et al. (2014), Table 1
 #' print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
 #' 
-#' \dontrun{
 #' data(Dong2013)
 #' p3 <- pairwise(treatment, death, randomized, studlab = id,
 #'                data = Dong2013, sm = "OR")
@@ -217,20 +220,30 @@ netsplit <- function(x, method,
                      order = NULL,
                      sep.trts = x$sep.trts, quote.trts = "",
                      tol.direct = 0.0005,
-                     comb.fixed = x$comb.fixed,
-                     comb.random = x$comb.random,
+                     fixed = x$fixed,
+                     random = x$random,
                      backtransf = x$backtransf,
-                     warn = FALSE) {
+                     warn = FALSE, warn.deprecated = gs("warn.deprecated"),
+                     ...) {
   
-  
-  meta:::chkclass(x, "netmeta")
   ##
-  x <- upgradenetmeta(x)
+  ##
+  ## (1) Check for netmeta object and upgrade object
+  ##
+  ##
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   ##
   is.bin <- inherits(x, "netmetabin")
+  
+  
+  ##
+  ##
+  ## (2) Check other arguments
+  ##
   ##
   if (!missing(method))
-    method <- meta:::setchar(method, c("Back-calculation", "SIDDE"))
+    method <- setchar(method, c("Back-calculation", "SIDDE"))
   else {
     if (is.bin)
       method <- "SIDDE"
@@ -238,8 +251,8 @@ netsplit <- function(x, method,
       method <- "Back-calculation"
   }
   ##
-  meta:::chklogical(upper)
-  meta:::chklogical(baseline.reference)
+  chklogical(upper)
+  chklogical(baseline.reference)
   ##
   if (!is.null(order)) {
     order <- setseq(order, x$trts)
@@ -247,14 +260,27 @@ netsplit <- function(x, method,
     reference.group <- ""
   }
   ##
-  meta:::chkchar(sep.trts)
-  meta:::chkchar(quote.trts)
-  meta:::chknumeric(tol.direct, min = 0, length = 1)
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
+  chkchar(sep.trts)
+  chkchar(quote.trts)
+  chknumeric(tol.direct, min = 0, length = 1)
   if (!is.null(backtransf))
-    meta:::chklogical(backtransf)
-  meta:::chklogical(warn)
+    chklogical(backtransf)
+  chklogical(warn)
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  fixed.logical <- fixed
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
+  random.logical <- random
   
   
   seq.comps <- rownames(x$Cov.fixed)
@@ -491,16 +517,16 @@ netsplit <- function(x, method,
                               dat.i$.studlab,
                               data = dat.i,
                               sm = x$sm, method = x$method,
-                              comb.fixed = comb.fixed,
-                              comb.random = comb.random,
+                              fixed = fixed.logical,
+                              random = random.logical,
                               warn = warn)
         else
           net.i <- netmeta(dat.i$.TE, dat.i$.seTE,
                            dat.i$.treat1, dat.i$.treat2,
                            dat.i$.studlab,
                            data = dat.i,
-                           comb.fixed = comb.fixed,
-                           comb.random = comb.random,
+                           fixed = fixed.logical,
+                           random = random.logical,
                            warn = warn)
         ##
         if (trts[idx1.i] %in% rownames(net.i$TE.fixed) &
@@ -531,7 +557,7 @@ netsplit <- function(x, method,
       }
     }
     ##
-    ci.if <- ci(TE.indirect.fixed, seTE.indirect.fixed, x$level.comb)
+    ci.if <- ci(TE.indirect.fixed, seTE.indirect.fixed, x$level.ma)
     ##
     lower.indirect.fixed <- ci.if$lower
     upper.indirect.fixed <- ci.if$upper
@@ -539,7 +565,7 @@ netsplit <- function(x, method,
     pval.indirect.fixed <- ci.if$p
     ##
     if (!is.bin) {
-      ci.ir <- ci(TE.indirect.random, seTE.indirect.random, x$level.comb)
+      ci.ir <- ci(TE.indirect.random, seTE.indirect.random, x$level.ma)
       ##
       lower.indirect.random <- ci.ir$lower
       upper.indirect.random <- ci.ir$upper
@@ -639,7 +665,7 @@ netsplit <- function(x, method,
     suppressWarnings(metagen(direct.fixed$TE - indirect.fixed$TE,
                              sqrt(direct.fixed$seTE^2 +
                                   indirect.fixed$seTE^2),
-                             level = x$level.comb))
+                             level = x$level.ma))
   ##
   compare.fixed <- data.frame(comparison,
                               TE = m.fixed$TE,
@@ -710,7 +736,7 @@ netsplit <- function(x, method,
       suppressWarnings(metagen(direct.random$TE - indirect.random$TE,
                                sqrt(direct.random$seTE^2 +
                                     indirect.random$seTE^2),
-                               level = x$level.comb))
+                               level = x$level.ma))
     ##
     compare.random <- data.frame(comparison,
                                  TE = m.random$TE,
@@ -733,7 +759,10 @@ netsplit <- function(x, method,
     predict <- random[, c("comparison", "lower", "upper")]
   }
   
-  
+
+  x$fixed <- fixed.logical
+  x$random <- random.logical
+  ##
   res <- list(comparison = comparison,
               ##
               k = k,
@@ -758,9 +787,7 @@ netsplit <- function(x, method,
               method = method,
               ##
               sm = x$sm,
-              level.comb = x$level.comb,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              level.ma = x$level.ma,
               ##
               prediction = x$prediction,
               level.predict = x$level.predict,
@@ -775,6 +802,8 @@ netsplit <- function(x, method,
               ##
               tol.direct = tol.direct,
               backtransf = backtransf,
+              ##
+              x = x,
               ##
               version = packageDescription("netmeta")$Version
               )
@@ -792,12 +821,11 @@ netsplit <- function(x, method,
 #' @rdname netsplit
 #' @method print netsplit
 #' @export
-#' @export print.netsplit
 
 
 print.netsplit <- function(x,
-                           comb.fixed = x$comb.fixed,
-                           comb.random = x$comb.random,
+                           fixed = x$x$fixed,
+                           random = x$x$random,
                            ##
                            show = "all",
                            overall = TRUE,
@@ -819,34 +847,32 @@ print.netsplit <- function(x,
                            scientific.pval = gs("scientific.pval"),
                            big.mark = gs("big.mark"),
                            legend = TRUE,
+                           ##
+                           warn.deprecated = gs("warn.deprecated"),
+                           ##
                            ...) {
-
-
-  meta:::chkclass(x, "netsplit")
-  ##
-  x <- upgradenetmeta(x)
-  ##
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  formatCI <- meta:::formatCI
-  formatN <- meta:::formatN
-  formatPT <- meta:::formatPT
-  is.relative.effect <- meta:::is.relative.effect
-  rmSpace <- meta:::rmSpace
-  setchar <- meta:::setchar
   
-  
+  ##
+  ##
+  ## (1) Check for netsplit object and upgrade object
+  ##
+  ##
+  chkclass(x, "netsplit")
+  x <- updateversion(x)
+  ##
   is.bin <- inherits(x, "netsplit.netmetabin")
-  
-  
+  ##  
   ## All individual results in a single row - be on the save side:
   ##
   oldopts <- options(width = 200)
   on.exit(options(oldopts))
-
-
-  chklogical(comb.fixed)
-  chklogical(comb.random)
+  
+  
+  ##
+  ##
+  ## (2) Check other arguments
+  ##
+  ##
   chklogical(overall)
   chklogical(ci)
   chklogical(test)
@@ -884,29 +910,28 @@ print.netsplit <- function(x,
   ##
   ## Check for deprecated arguments in '...'
   ##
+  fun <- "print.netmeta"
+  ##
   args  <- list(...)
-  ## Check whether first argument is a list. In this case only use
-  ## this list as input.
-  if (length(args) > 0 && is.list(args[[1]]))
-    args <- args[[1]]
+  chklogical(warn.deprecated)
   ##
-  additional.arguments <- names(args)
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  fixed.logical <- fixed
   ##
-  if (length(additional.arguments) > 0) {
-    if (!is.na(charmatch("showa", additional.arguments)))
-      if (!missing(show))
-        warning("Deprecated argument 'showall' ignored as ",
-                "argument 'show' is also provided.")
-      else {
-        warning("Deprecated argument 'showall' has been replaced by ",
-                "argument 'show'.")
-        show <- args[[charmatch("showa", additional.arguments)]]
-        if (show)
-          show <- "all"
-        else
-          show <- "both"
-      }
-  }
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
+  random.logical <- random
+  ##
+  show <-
+    deprecated(show, missing(show), args, "showall")
+  if (is.logical(show))
+    if (show)
+      show <- "all"
+    else
+      show <- "both"
   ##
   show <- setchar(show, c("all", "both", "with.direct",
                           "direct.only", "indirect.only",
@@ -922,6 +947,11 @@ print.netsplit <- function(x,
   }
   
   
+  ##
+  ##
+  ## (3) Some additional settings and checks
+  ##
+  ##
   sm <- x$sm
   sm.lab <- sm
   ##
@@ -934,20 +964,18 @@ print.netsplit <- function(x,
     sm.lab <- paste("(", sm.lab, ") ", sep = "")
   else
     sm.lab <- ""
-
-
-  level.comb <- x$level.comb
-  ci.lab <- paste(100 * level.comb, "%-CI", sep ="")
-  
-  
+  ##
+  level.ma <- x$level.ma
+  ci.lab <- paste(100 * level.ma, "%-CI", sep ="")
+  ##  
   random.available <- !is.null(x$random)
   ##
-  if (!random.available & comb.random) {
+  if (!random.available & random) {
     warning("No results for random effects model available. ",
-            "Argument 'comb.random' set to FALSE.",
+            "Argument 'random' set to FALSE.",
             call. = FALSE)
     ##
-    comb.random <- FALSE
+    random <- FALSE
   }
   
   
@@ -1124,6 +1152,7 @@ print.netsplit <- function(x,
   
   
   if (random.available) {
+    random.logical <- random
     random <- list(comp = comp,
                    k = k,
                    prop = formatPT(prop.random, digits = digits.prop))
@@ -1202,14 +1231,14 @@ print.netsplit <- function(x,
     ##
     o <- order(sortvar)
     ##
-    if (comb.fixed)
+    if (fixed.logical)
       fixed <- fixed[o, ]
-    if (comb.random)
+    if (random.logical)
       random <- random[o, ]
   }
   
   
-  if (comb.fixed | comb.random) {
+  if (fixed.logical | random.logical) {
     if (x$method == "SIDDE")
       cat("Separate indirect from direct design evidence (SIDDE)\n\n")
     else
@@ -1220,18 +1249,18 @@ print.netsplit <- function(x,
     legend <- FALSE
   
   
-  if (comb.fixed) {
+  if (fixed.logical) {
     cat("Fixed effects model: \n\n")
     fixed[is.na(fixed)] <- text.NA
     trts <- unique(sort(unlist(compsplit(fixed$comparison, x$sep.trts))))
     fixed$comparison <- comps(fixed$comparison, trts, x$sep.trts, nchar.trts)
     prmatrix(fixed, quote = FALSE, right = TRUE,
              rowlab = rep("", dim(fixed)[1]))
-    if (comb.random)
+    if (random.logical)
       cat("\n")
   }
   ##
-  if (comb.random) {
+  if (random.logical) {
     cat("Random effects model: \n\n")
     random[is.na(random)] <- text.NA
     trts <- unique(sort(unlist(compsplit(random$comparison, x$sep.trts))))

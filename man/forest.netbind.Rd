@@ -2,11 +2,12 @@
 % Please edit documentation in R/forest.netbind.R
 \name{forest.netbind}
 \alias{forest.netbind}
+\alias{plot.netbind}
 \title{Forest plot showing results of two or more network meta-analyses}
 \usage{
 \method{forest}{netbind}(
   x,
-  pooled = ifelse(x$comb.random, "random", "fixed"),
+  pooled = ifelse(x$x$random, "random", "fixed"),
   equal.size = TRUE,
   leftcols = "studlab",
   leftlabs = "Treatment",
@@ -20,6 +21,8 @@
   smlab,
   ...
 )
+
+\method{plot}{netbind}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netbind}.}
@@ -95,7 +98,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive CNMA model with placebo as inactive component and
 # reference

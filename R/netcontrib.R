@@ -15,19 +15,20 @@
 #' @param hatmatrix.F1000 A logical indicating whether hat matrix
 #'   given in F1000 article should be used for \code{method =
 #'   "shortestpath"}.
-#' @param comb.fixed A logical indicating whether a contribution
-#'   matrix should be printed for the fixed effect (common effect)
-#'   network meta-analysis.
-#' @param comb.random A logical indicating whether a contribution
-#'   matrix should be printed for the random effects network
+#' @param fixed A logical indicating whether a contribution matrix
+#'   should be printed for the fixed effect / common effect network
 #'   meta-analysis.
+#' @param random A logical indicating whether a contribution matrix
+#'   should be printed for the random effects network meta-analysis.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names (see Details).
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
-#' @param \dots Additional arguments (ignored at the moment).
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments.
 #' 
 #' @details
 #' In network meta-analysis (NMA), it is important to assess the
@@ -155,34 +156,69 @@
 netcontrib <- function(x,
                        method = "shortestpath",
                        hatmatrix.F1000 = FALSE,
-                       comb.fixed = x$comb.fixed,
-                       comb.random = x$comb.random,
-                       nchar.trts = x$nchar.trts) {
+                       fixed = x$fixed,
+                       random = x$random,
+                       nchar.trts = x$nchar.trts,
+                       warn.deprecated = gs("warn.deprecated"),
+                       ...) {
   
-  meta:::is.installed.package("igraph")
   ##
-  method <- meta:::setchar(method, c("randomwalk", "shortestpath"))
-  meta:::chklogical(hatmatrix.F1000)
+  ##
+  ## (1) Check for netmeta object and upgrade object
+  ##
+  ##
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
+  ##
+  is.installed.package("igraph")
+  
+  
+  ##
+  ##
+  ## (2) Check other arguments
+  ##
+  ##
+  method <- setchar(method, c("randomwalk", "shortestpath"))
+  chklogical(hatmatrix.F1000)
   if (method == "randomwalk" & hatmatrix.F1000) {
     warning("Argument 'hatmatrix.F1000' ignored for random walk method.",
             call. = FALSE)
     hatmatrix.F1000 <- FALSE
   }
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+  chknumeric(nchar.trts, min = 1, length = 1)
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
   
   
+  ##
+  ##
+  ## (3) Create netcontrib object
+  ##
+  ##
+  x$fixed <- fixed
+  x$random <- random
+  ##
   res <- list(fixed =
                 contribution.matrix(x, method, "fixed", hatmatrix.F1000),
               random =
                 contribution.matrix(x, method, "random", hatmatrix.F1000),
               method = method,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
               hatmatrix.F1000 = hatmatrix.F1000,
               nchar.trts = nchar.trts,
-              x = x)
+              x = x,
+              version = packageDescription("netmeta")$Version
+              )
   ##
   class(res) <- "netcontrib"
   ##
@@ -198,25 +234,53 @@ netcontrib <- function(x,
 #' @method print netcontrib
 #' 
 #' @export
-#' @export print.netcontrib
 
 
 print.netcontrib <- function(x,
-                             comb.fixed = x$comb.fixed,
-                             comb.random = x$comb.random,
+                             fixed = x$x$fixed,
+                             random = x$x$random,
                              digits = 4,
                              nchar.trts = x$nchar.trts,
                              legend = TRUE,
+                             warn.deprecated = gs("warn.deprecated"),
                              ...) {
   
-  meta:::chkclass(x, "netcontrib")
   ##
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  meta:::chknumeric(nchar.trts, length = 1)
-  meta:::chklogical(legend)
+  ##
+  ## (1) Check for netcontrib object and upgrade object
+  ##
+  ##
+  chkclass(x, "netcontrib")
+  x <- updateversion(x)
   
   
+  ##
+  ##
+  ## (2) Check other arguments
+  ##
+  ##
+  chknumeric(nchar.trts, length = 1)
+  chklogical(legend)
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
+  
+  
+  ##
+  ##
+  ## (3) Print results for contribution matrix
+  ##
+  ##
   matitle(x$x)
   ##
   cat(paste0("Contribution matrix (",
@@ -236,17 +300,17 @@ print.netcontrib <- function(x,
   trts <- x$x$trts
   trts.abbr <- treats(trts, nchar.trts)
   ##
-  if (comb.fixed) {
+  if (fixed) {
     rownames(x$fixed) <- comps(x$fixed, trts, x$x$sep.trts, nchar.trts)
     colnames(x$fixed) <- comps(x$fixed, trts, x$x$sep.trts, nchar.trts,
                                row = FALSE)
     ##
     cat("Fixed effects model:\n\n")
     prmatrix(round(x$fixed, digits))
-    if (comb.random)
+    if (random)
       cat("\n")
   }
-  if (comb.random) {
+  if (random) {
     rownames(x$random) <- comps(x$random, trts, x$x$sep.trts, nchar.trts)
     colnames(x$random) <- comps(x$random, trts, x$x$sep.trts, nchar.trts,
                                 row = FALSE)
@@ -257,7 +321,7 @@ print.netcontrib <- function(x,
   ##
   ## Add legend
   ##
-  if (legend & (comb.fixed | comb.random)) {
+  if (legend & (fixed | random)) {
     diff.trts <- trts != trts.abbr
     if (any(diff.trts)) {
       tmat <- data.frame(trts, trts.abbr)

@@ -4,7 +4,7 @@
 \alias{hasse}
 \title{Hasse diagram}
 \usage{
-hasse(x, pooled = ifelse(x$comb.random, "random", "fixed"), newpage = TRUE)
+hasse(x, pooled = ifelse(x$random, "random", "fixed"), newpage = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{netposet} (mandatory).}
@@ -55,7 +55,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, comb.fixed = FALSE,
+net1 <- netmeta(p1, fixed = FALSE,
                 seq = trts, ref = "Placebo", small.values = "bad")
 
 # (2) Early remission
@@ -65,7 +65,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, comb.fixed = FALSE,
+net2 <- netmeta(p2, fixed = FALSE,
                 seq = trts, ref = "Placebo", small.values = "bad")
 
 # Partial order of treatment rankings

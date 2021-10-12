@@ -67,38 +67,38 @@
 #' 
 #' @method plot rankogram
 #' @export
-#' @export plot.rankogram
 
 
 plot.rankogram <- function(x,
                            type = if (cumulative.rankprob) "step" else "bar",
-                           pooled = ifelse(x$comb.random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "fixed"),
                            sort = TRUE, trts,
                            cumulative.rankprob = x$cumulative.rankprob,
                            ylim, ylab,
-                           nchar.trts = x$nchar.trts, ...) {
+                           nchar.trts = x$nchar.trts, ...) {  
+  
+  chkclass(x, c("rankogram"))
+  x <- updateversion(x)
+  ##
+  is.installed.package("gridExtra")
   
   
-  meta:::is.installed.package("gridExtra")
+  type <- setchar(type, c("bar", "line", "step"))
   ##
-  meta:::chkclass(x, c("rankogram"))
+  pooled <- setchar(pooled, c("fixed", "random"))
   ##
-  type <- meta:::setchar(type, c("bar", "line", "step"))
-  ##
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
-  ##
-  meta:::chklogical(sort)
+  chklogical(sort)
   ##
   if (is.null(cumulative.rankprob))
     cumulative.rankprob <- FALSE
-  meta:::chklogical(cumulative.rankprob)
+  chklogical(cumulative.rankprob)
   ##
   missing.ylim <- missing(ylim)
   if (!missing.ylim)
-    meta:::chknumeric(ylim, min = 0, max = 1, length = 2)
+    chknumeric(ylim, min = 0, max = 1, length = 2)
   ##
   if (!missing(ylab))
-    meta:::chkchar(ylab, length = 1)
+    chkchar(ylab, length = 1)
   else {
     if (cumulative.rankprob)
       ylab <- "Cumulative\nprobability"
@@ -110,7 +110,7 @@ plot.rankogram <- function(x,
   ##
   if (is.null(nchar.trts))
     nchar.trts <- 666
-  meta:::chknumeric(nchar.trts, length = 1)
+  chknumeric(nchar.trts, length = 1)
   
   
   mytheme <-
@@ -144,24 +144,19 @@ plot.rankogram <- function(x,
     ##
     sucras <- "ranking.fixed"
   }
-  else
-    return(invisible(NULL))
   ##
-  if (is.null(x[[rankmatrix]])) {
-    warning("No results for ", pooled, " effect",
-            if (pooled == "random") "s", " model available. ",
-            "Rerun rankogram() with argument 'comb.",
-            pooled, " = TRUE'.",
-            call. = FALSE)
-    return(NULL)
-  }
+  if (is.null(x[[rankmatrix]]))
+    stop("No results for ", pooled, " effect",
+         if (pooled == "random") "s", " model available. ",
+         "Rerun rankogram() with argument '", pooled, " = TRUE'.",
+         call. = FALSE)
   
   
   plotranks <- function(treat) {
     df <- data.frame(pos = 1:nrow(x[[rankmatrix]]),
                      ranks = x[[rankmatrix]][treat, ])
     mymaxvalue <- max(x[[rankmatrix]])
-
+    ##
     if (type == "bar")
       p <- ggplot2::ggplot(mapping = aes(df$pos, df$ranks)) +
         ggplot2::geom_col()

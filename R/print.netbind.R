@@ -5,11 +5,13 @@
 #' 
 #' @param x An object of class \code{netbind} or
 #'   \code{summary.netbind}.
-#' @param comb.fixed A logical indicating whether results for the
-#'   fixed effects (common effects) model should be printed.
-#' @param comb.random A logical indicating whether results for the
-#'   random effects model should be printed.
-#' @param \dots Additional arguments (ignored).
+#' @param fixed A logical indicating whether results for the fixed
+#'   effects / common effects model should be printed.
+#' @param random A logical indicating whether results for the random
+#'   effects model should be printed.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
@@ -30,7 +32,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive CNMA model with placebo as inactive component and
 #' # reference
@@ -45,40 +47,64 @@
 #'                col.square = c("red", "black"))
 #' 
 #' nb1
-#' print(nb1, comb.fixed = TRUE)
+#' print(nb1, fixed = TRUE)
 #' 
 #' @method print netbind
 #' @export
-#' @export print.netbind
 
 
 print.netbind <- function(x,
-                          comb.fixed = x$comb.fixed,
-                          comb.random = x$comb.random,
+                          fixed = x$x$fixed,
+                          random = x$x$random,
+                          ##
+                          warn.deprecated = gs("warn.deprecated"),
+                          ##
                           ...) {
   
+  ##
+  ##
+  ## (1) Check for netbind object and upgrade object
+  ##
+  ##
+  chkclass(x, "netbind")
+  x <- updateversion(x)
   
-  meta:::chkclass(x, "netbind")
+  
+  ##
+  ##
+  ## (2) Check other arguments
+  ##
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <- deprecated(random, missing(random), args, "comb.random",
+                       warn.deprecated)
+  chklogical(random)
   
   
-  meta:::chklogical(comb.fixed)
-  meta:::chklogical(comb.random)
-  
-
-  if (comb.fixed) {
+  ##
+  ##
+  ## (3) Print results
+  ##
+  ##
+  if (fixed) {
     cat("Fixed effects model\n\n")
     print(x$fixed[, c("name", "treat",
                       "TE", "seTE", "lower", "upper", "statistic", "pval")])
-    if (comb.random)
+    if (random)
       cat("\n")
   }
   ##
-  if (comb.random) {
+  if (random) {
     cat("Random effects model\n\n")
     print(x$random[, c("name", "treat",
                        "TE", "seTE", "lower", "upper", "statistic", "pval")])
   }
-  
   
   invisible(NULL)
 }

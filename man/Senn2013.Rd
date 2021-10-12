@@ -57,7 +57,7 @@ data(Senn2013)
 #
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
                 data = Senn2013, sm = "MD",
-                comb.random = FALSE, nchar.trts = 4)
+                random = FALSE, nchar.trts = 4)
 net1
 net1$Q.decomp
 
@@ -75,7 +75,7 @@ netmeta(TE, seTE, treat1.long, treat2.long,
 # Random effects model
 #
 net2 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-                data = Senn2013, comb.fixed = FALSE)
+                data = Senn2013, fixed = FALSE)
 net2
 forest(net2, ref = "plac")
 }

@@ -5,7 +5,7 @@ createC <- function(x,
   
 
   if (!missing(x)) {
-    meta:::chkclass(x, c("netconnection", "netmeta"))
+    chkclass(x, c("netconnection", "netmeta"))
     ##
     ## Set of all treatments
     ##
@@ -25,7 +25,7 @@ createC <- function(x,
     inactive.given <- !is.null(inactive)
     ##
     if (inactive.given) {
-      inactive <- meta:::setchar(inactive, components)
+      inactive <- setchar(inactive, components)
       ##
       trts <- trts[trts != inactive]
       ##
@@ -47,8 +47,8 @@ createC <- function(x,
     ##
     ## Remove blanks (at start and end)
     ##
-    components.list <- lapply(components.list, meta:::rmSpace)
-    components.list <- lapply(components.list, meta:::rmSpace, end = TRUE)
+    components.list <- lapply(components.list, rmSpace)
+    components.list <- lapply(components.list, rmSpace, end = TRUE)
     
     
     ##
@@ -91,7 +91,7 @@ createC <- function(x,
       stop("Either argument 'x' or 'ncol' must be provided.",
            call. = TRUE)
     ##
-    meta:::chknumeric(ncomb, min = 1, max = ncol, length = 1)
+    chknumeric(ncomb, min = 1, max = ncol, length = 1)
     ##
     inactive <- NULL
     ##

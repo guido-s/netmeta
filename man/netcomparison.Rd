@@ -10,16 +10,16 @@ netcomparison(
   x,
   treat1,
   treat2,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
-  level = x$level.comb,
+  fixed = x$fixed,
+  random = x$random,
+  level = x$level.ma,
   nchar.comps = x$nchar.comps
 )
 
 \method{print}{netcomparison}(
   x,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$fixed,
+  random = x$random,
   backtransf = x$backtransf,
   nchar.comps = x$nchar.comps,
   digits = gs("digits"),
@@ -43,10 +43,10 @@ intervention(s).}
 \item{treat2}{A character vector defining the second complex
 intervention(s).}
 
-\item{comb.fixed}{A logical indicating whether results for fixed
-effect model should be conducted.}
+\item{fixed}{A logical indicating whether results for fixed effects
+/ common effects model should be conducted.}
 
-\item{comb.random}{A logical indicating whether results for random
+\item{random}{A logical indicating whether results for random
 effects model should be conducted.}
 
 \item{level}{The level used to calculate confidence intervals for
@@ -108,7 +108,7 @@ following elements:
 \item{trts}{Treatments included in comparisons.}
 \item{comps}{Components included in comparisons.}
 \item{treat1, treat2}{A defined above.}
-\item{comb.fixed, comb.random}{A defined above.}
+\item{fixed, random}{A defined above.}
 \item{level, nchar.comps, backtransf, x}{A defined above.}
 \item{B.matrix}{B matrix.}
 \item{C.matrix}{C matrix.}
@@ -170,7 +170,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, ref = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
@@ -191,7 +191,7 @@ t2 <- c("B+C", "A+C", "C+D")
 TE <- c(0, 1, 0)
 seTE <- rep(1, 3)
 # Conduct (C)NMA
-net2 <- netmeta(TE, seTE, t1, t2, comb.random = FALSE)
+net2 <- netmeta(TE, seTE, t1, t2, random = FALSE)
 nc2 <- netcomb(net2)
 
 # Result for comparison A vs B + D

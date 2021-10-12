@@ -6,38 +6,43 @@
 \usage{
 \method{print}{netimpact}(
   x,
-  comb.fixed = x$x$comb.fixed,
-  comb.random = x$x$comb.random,
+  fixed = x$x$fixed,
+  random = x$x$random,
   digits = gs("digits.prop"),
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
 \arguments{
 \item{x}{An object of class \code{netimpact}.}
 
-\item{comb.fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be printed.}
+\item{fixed}{A logical indicating whether results for the
+fixed effects / common effects model should be printed.}
 
-\item{comb.random}{A logical indicating whether results for the
+\item{random}{A logical indicating whether results for the
 random effects model should be printed.}
 
 \item{digits}{Minimal number of significant digits.}
 
-\item{\dots}{Additional arguments (ignored).}
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \description{
 Print method for objects of class \code{netimpact}.
 }
 \examples{
-data(parkinson)
+data(Franchini2012)
 
-# Only consider first four studies (to reduce runtime of example)
+# Only consider first two studies (to reduce runtime of example)
 #
+studies <- unique(Franchini2012$Study)
 p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
                n = list(n1, n2, n3),
                mean = list(y1, y2, y3),
                sd = list(sd1, sd2, sd3),
-               data = subset(parkinson, Study < 5),
+               data = subset(Franchini2012, Study \%in\% studies[1:2]),
                studlab = Study)
 
 net1 <- netmeta(p1)

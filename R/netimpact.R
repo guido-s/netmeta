@@ -39,15 +39,16 @@
 #'   \code{\link{netgraph.netimpact}}, \code{\link{print.netimpact}}
 #' 
 #' @examples
-#' data(parkinson)
+#' data(Franchini2012)
 #' 
-#' # Only consider first four studies (to reduce runtime of example)
+#' # Only consider first two studies (to reduce runtime of example)
 #' #
+#' studies <- unique(Franchini2012$Study)
 #' p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
 #'                n = list(n1, n2, n3),
 #'                mean = list(y1, y2, y3),
 #'                sd = list(sd1, sd2, sd3),
-#'                data = subset(parkinson, Study < 5),
+#'                data = subset(Franchini2012, Study %in% studies[1:2]),
 #'                studlab = Study)
 #' 
 #' net1 <- netmeta(p1)
@@ -65,12 +66,12 @@ netimpact <- function(x,
                       verbose = FALSE) {
   
   
-  meta:::chkclass(x, "netmeta")
+  chkclass(x, "netmeta")
   ##
-  x <- upgradenetmeta(x)
+  x <- updateversion(x)
   ##
-  meta:::chknumeric(seTE.ignore, min = 0, zero = TRUE, length = 1)
-  meta:::chknumeric(event.ignore, min = 0, zero = TRUE, length = 1)
+  chknumeric(seTE.ignore, min = 0, zero = TRUE, length = 1)
+  chknumeric(event.ignore, min = 0, zero = TRUE, length = 1)
   
   
   studlab <- x$studlab

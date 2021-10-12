@@ -344,13 +344,16 @@
 #' 
 #' @method netgraph netmeta
 #' @export
-#' @export netgraph.netmeta
 
 
 netgraph.netmeta <- function(x, seq = x$seq,
                              labels = x$trts,
                              cex = 1, adj = NULL, srt.labels = 0,
-                             offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
+                             offset =
+                               if (!is.null(adj) && all(unique(adj) == 0.5))
+                                 0
+                               else
+                                 0.0175,
                              scale = 1.10,
                              col = "slateblue", plastic, thickness,
                              lwd = 5, lwd.min = lwd / 2.5, lwd.max = lwd * 4,
@@ -373,7 +376,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              bg.number.of.studies = "black",
                              pos.number.of.studies = 0.5,
                              ##
-                             start.layout = ifelse(dim == "2d", "circle", "eigen"),
+                             start.layout =
+                               ifelse(dim == "2d", "circle", "eigen"),
                              eig1 = 2, eig2 = 3, eig3 = 4,
                              iterate,
                              tol = 0.0001, maxit = 500, allfigures = FALSE,
@@ -386,21 +390,17 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              ...) {
   
   
-  meta:::chkclass(x, "netmeta")
-  ##
-  x <- upgradenetmeta(x)
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   ##
   n.edges <- sum(x$A.matrix[upper.tri(x$A.matrix)] > 0)
   n.trts <- length(x$trts)
-
-
-  setchar <- meta:::setchar
-  chknumeric <- meta:::chknumeric
-  chklogical <- meta:::chklogical
-  ##
+  
+  
   if (length(srt.labels) == 1 && is.character(srt.labels)) {
-    srt.labels <- setchar(srt.labels, "orthogonal",
-                          "should be equal to 'orthogonal' or numeric (vector)")
+    srt.labels <-
+      setchar(srt.labels, "orthogonal",
+              "should be equal to 'orthogonal' or numeric (vector)")
     if (!missing(iterate) && iterate == TRUE) {
       warning("Orthogonal labels not supported if argument 'iterate = TRUE'")
       srt.labels <- 0
@@ -431,7 +431,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
   is_2d <- dim == "2d"
   is_3d <- !is_2d
   ##
-  if (is_3d & !meta:::is.installed.package("rgl", stop = FALSE)) {
+  if (is_3d & !is.installed.package("rgl", stop = FALSE)) {
     warning(paste0("2-D plot generated as package 'rgl' is missing.",
                    "\n  ",
                    "Please install package 'rgl' in order to ",
@@ -492,16 +492,16 @@ netgraph.netmeta <- function(x, seq = x$seq,
     col <- rep(col, n.edges)
   else if (n.col != n.edges)
     stop("Length of argument 'col' (",
-         n.col, ") is different from the number of direct pairwise comparisons (",
-         n.edges, ")")
+         n.col, ") is different from the number of ",
+         "direct pairwise comparisons (", n.edges, ")")
   ##
   n.pos <- length(pos.number.of.studies)
   if (n.pos == 1)
     pos.number.of.studies <- rep(pos.number.of.studies, n.edges)
   else if (n.pos != n.edges)
     stop("Length of argument 'pos.number.of.studies' (",
-         n.pos, ") is different from the number of direct pairwise comparisons (",
-         n.edges, ")")
+         n.pos, ") is different from the number of ",
+         "direct pairwise comparisons (", n.edges, ")")
   ##
   if (!missing(cex.points))
     cex.points <- eval(mf[[match("cex.points", names(mf))]],
@@ -510,29 +510,34 @@ netgraph.netmeta <- function(x, seq = x$seq,
   if (length(cex.points) == 1)
     cex.points <- rep(cex.points, n.trts)
   else if (length(cex.points) != n.trts)
-    stop("Length of argument 'cex.points' must be equal to the number of treatments.")
+    stop("Length of argument 'cex.points' must be equal to the ",
+         "number of treatments.")
   ##
   if (length(col.points) == 1)
     col.points <- rep(col.points, n.trts)
   else if (length(col.points) != n.trts)
-    stop("Length of argument 'col.points' must be equal to the number of treatments.")
+    stop("Length of argument 'col.points' must be equal to the ",
+         "number of treatments.")
   ##
   if (length(pch.points) == 1)
     pch.points <- rep(pch.points, n.trts)
   else if (length(pch.points) != n.trts)
-    stop("Length of argument 'pch.points' must be equal to number of treatments.")
+    stop("Length of argument 'pch.points' must be equal to ",
+         "number of treatments.")
   ##
   if (length(bg.points) == 1)
     bg.points <- rep(bg.points, n.trts)
   else if (length(bg.points) != n.trts)
-    stop("Length of argument 'bg.points' must be equal to the number of treatments.")
+    stop("Length of argument 'bg.points' must be equal to ",
+         "the number of treatments.")
   ##
   chklogical(figure)
   ##
   if (is.null(seq) | (length(seq) == 1 & x$d == 1))
     seq1 <- 1:length(labels)
   else if (length(seq) == 1 & x$d > 1) {
-    seq <- setchar(seq, "optimal", "should be equal to 'optimal' or a permutation of treatments")
+    seq <- setchar(seq, "optimal", "should be equal to ",
+                   "'optimal' or a permutation of treatments")
     ##
     if (missing.start.layout)
       start.layout <- "eigen"
@@ -541,11 +546,13 @@ netgraph.netmeta <- function(x, seq = x$seq,
     ##
     start.layout <- "circle"
   }
-  else if (!(start.layout == "circle" & (missing(iterate) || iterate == FALSE))) {
+  else if (!(start.layout == "circle" &
+             (missing(iterate) || iterate == FALSE))) {
     seq1 <- 1:length(labels)
     ##
     if (!missing(seq) & !is.null(seq) & (is.null(xpos) & is.null(ypos)))
-      warning("Argument 'seq' only considered if start.layout=\"circle\" and iterate=FALSE.")
+      warning("Argument 'seq' only considered if ",
+              "start.layout=\"circle\" and iterate=FALSE.")
   }
   else
     seq1 <- charmatch(setseq(seq, x$trts), x$trts)
@@ -554,12 +561,14 @@ netgraph.netmeta <- function(x, seq = x$seq,
   if (missing(iterate))
     iterate <- ifelse(start.layout == "circle", FALSE, TRUE)
   else if (length(seq) == 1 && seq == "optimal") {
-    warning("Argument 'iterate' ignored as argument 'seq' is equal to \"optimal\".")
+    warning("Argument 'iterate' ignored as argument 'seq' is ",
+            "equal to \"optimal\".")
     iterate <- FALSE
   }
   ##
   if (!missing(allfigures) && length(seq) == 1 && seq == "optimal") {
-    warning("Argument 'allfigures' ignored as argument 'seq' is equal to \"optimal\".")
+    warning("Argument 'allfigures' ignored as argument 'seq' is ",
+            "equal to \"optimal\".")
     allfigures <- FALSE
   }
   
@@ -604,7 +613,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
 
   if (missing(thickness)) {
     if (start.layout == "circle" & iterate == FALSE & plastic == TRUE) {
-      if (x$comb.random & !x$comb.fixed) {
+      if (x$random & !x$fixed) {
         thick <- "se.random"
         thickness <- "se.random"
       }
@@ -837,7 +846,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
     }
     else if (is.matrix(adj)) {
       if (nrow(adj) != length(labels))
-        stop("Number of rows of matrix 'adj' must be equal to number of treatments.")
+        stop("Number of rows of matrix 'adj' must be equal to ",
+             "number of treatments.")
       rownames(adj) <- x$trts
       dat.nodes$adj.x <- adj[seq1, 1]
       dat.nodes$adj.y <- adj[seq1, 2]
@@ -860,7 +870,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
     }
     else if (is.vector(offset)) {
       if (length(offset) != length(labels))
-        stop("Length of vector 'offset' must be equal to number of treatments.")
+        stop("Length of vector 'offset' must be equal to ",
+             "number of treatments.")
       ##
       names(offset) <- x$trts
       offset.x <- offset[seq1]
@@ -868,7 +879,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
     }
     else if (is.matrix(adj)) {
       if (nrow(offset) != length(labels))
-        stop("Number of rows of matrix 'offset' must be equal to number of treatments.")
+        stop("Number of rows of matrix 'offset' must be equal to ",
+             "number of treatments.")
       ##
       rownames(offset) <- x$trts
       offset.x <- offset[seq1, 1]
@@ -981,7 +993,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   }
   else if (thick == "matrix") {
     W.matrix[is.infinite(W.matrix)] <- NA
-    if (min(W.matrix[W.matrix != 0], na.rm = TRUE) == max(W.matrix[W.matrix != 0], na.rm = TRUE))
+    if (min(W.matrix[W.matrix != 0], na.rm = TRUE) ==
+        max(W.matrix[W.matrix != 0], na.rm = TRUE))
       W.matrix <- lwd * W.matrix
     else
       W.matrix <- lwd.max * W.matrix / max(W.matrix, na.rm = TRUE)
@@ -1066,8 +1079,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
           j <- j + 1
           lwd.multiply[j] <- sin(pi * i / 2 / n.plastic)
           cols[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
-          cols.highlight[, j] <- paste("gray", round(100 * (1 - i / n.plastic)),
-                                       sep = "")
+          cols.highlight[, j] <-
+            paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
         }
         ##
         for (h in seq_len(n.high)) {
@@ -1222,10 +1235,12 @@ netgraph.netmeta <- function(x, seq = x$seq,
         for (high in highlight) {
           highs <- unlist(compsplit(high, split = highlight.split))
           if (length(highs) != 2)
-            stop("Wrong format for argument 'highlight' (see helpfile of plotgraph command).")
+            stop("Wrong format for argument 'highlight' ",
+            "(see helpfile of plotgraph command).")
           ##
           if (sum(dat.nodes$trts %in% highs) != 2)
-            stop(paste("Argument 'highlight' must contain two of the following values (separated by \":\"):\n  ",
+            stop(paste("Argument 'highlight' must contain two of the ",
+                       "following values (separated by \":\"):\n  ",
                        paste(paste("'", dat.nodes$trts, "'", sep = ""),
                              collapse = " - "), sep = ""))
           ##
@@ -1264,7 +1279,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
           }
         }
         if (morethan3)
-          warning("Multi-arm studies with more than three treatments not shown in 3-D plot.")
+          warning("Multi-arm studies with more than three treatments ",
+                  "not shown in 3-D plot.")
       }
       ##
       ## Draw lines
@@ -1272,7 +1288,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
       for (i in 1:(n - 1)) {
         for (j in (i + 1):n) {
           if (A.sign[i, j] > 0) {
-            rgl::lines3d(c(xpos[i], xpos[j]), c(ypos[i], ypos[j]), c(zpos[i], zpos[j]),
+            rgl::lines3d(c(xpos[i], xpos[j]),
+                         c(ypos[i], ypos[j]),
+                         c(zpos[i], zpos[j]),
                          lwd = W.matrix[i, j],
                          col = col)
           }

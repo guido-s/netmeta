@@ -9,18 +9,21 @@ netcontrib(
   x,
   method = "shortestpath",
   hatmatrix.F1000 = FALSE,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
-  nchar.trts = x$nchar.trts
+  fixed = x$fixed,
+  random = x$random,
+  nchar.trts = x$nchar.trts,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
 )
 
 \method{print}{netcontrib}(
   x,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$x$fixed,
+  random = x$x$random,
   digits = 4,
   nchar.trts = x$nchar.trts,
   legend = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
@@ -35,24 +38,26 @@ calculate the contribution matrix. Either \code{"randomwalk"} or
 given in F1000 article should be used for \code{method =
 "shortestpath"}.}
 
-\item{comb.fixed}{A logical indicating whether a contribution
-matrix should be printed for the fixed effect (common effect)
-network meta-analysis.}
-
-\item{comb.random}{A logical indicating whether a contribution
-matrix should be printed for the random effects network
+\item{fixed}{A logical indicating whether a contribution matrix
+should be printed for the fixed effect / common effect network
 meta-analysis.}
+
+\item{random}{A logical indicating whether a contribution matrix
+should be printed for the random effects network meta-analysis.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names (see Details).}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}
-
-\item{\dots}{Additional arguments (ignored at the moment).}
 }
 \value{
 An object of class \code{netcontrib} with corresponding

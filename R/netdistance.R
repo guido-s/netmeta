@@ -71,7 +71,7 @@ netdistance <- function(x) {
         }
       }
     }
-  }
+  }  
   
   D
 }

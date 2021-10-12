@@ -51,7 +51,8 @@
 #'   characters used to create unique treatment names.
 #' 
 #' @return
-#' A list containing the following components:
+#' Network meta-analysis with a single design: \code{NULL}. Otherwise,
+#' a list containing the following components:
 #' \item{Q.decomp}{Data frame with Q statistics (variable \code{Q})
 #'   based on the fixed effects model to assess the
 #'   homogeneity/consistency in the whole network, within designs, and
@@ -121,11 +122,15 @@
 #' @examples
 #' data(Senn2013)
 #' 
-#' # Generation of an object of class 'netmeta' with reference
-#' # treatment 'plac', i.e. placebo
+#' # Only consider first five studies (to reduce runtime of example)
+#' #
+#' studies <- unique(Senn2013$studlab)
+#' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
+#' 
+#' # Conduct network meta-analysis with placebo as reference treatment
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD", reference = "plac")
+#'                 data = Senn2013.5, sm = "MD", reference = "plac")
 #' 
 #' # Decomposition of Cochran's Q
 #' #
@@ -138,14 +143,20 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE,
                           nchar.trts = x$nchar.trts) {
   
   
-  meta:::chkclass(x, "netmeta")
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
   ##
-  x <- upgradenetmeta(x)
+  if (x$n == 2) {
+    warning("No decomposition possible for network meta-analysis ",
+            "with only two treatments.",
+            call. = FALSE)
+    return(NULL)
+  }
   ##
   if (!is.null(tau.preset))
-    meta:::chknumeric(tau.preset, min = 0, length = 1)
-  meta:::chklogical(warn)
-  meta:::chknumeric(nchar.trts, min = 1, length = 1)
+    chknumeric(tau.preset, min = 0, length = 1)
+  chklogical(warn)
+  chknumeric(nchar.trts, min = 1, length = 1)
   ##
   if (inherits(x, "netmetabin")) {
     warning("Decomposition of designs not implemented for ",
@@ -172,8 +183,6 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE,
   
   
   tau.within <- tau.within(x)
-  if (is.null(tau.within))
-    return(invisible(NULL))
   ##
   decomp.random <- decomp.tau(x, tau.preset = tau.within, warn = warn)
   ##
@@ -183,10 +192,13 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE,
   
   
   if (length(tau.preset) == 1) {
-    decomp.random.preset <- decomp.tau(x, tau.preset = tau.preset, warn = warn)
-    Q.inc.random.preset <-  decomp.random.preset$Q.decomp["Between designs",]
+    decomp.random.preset <-
+      decomp.tau(x, tau.preset = tau.preset, warn = warn)
+    Q.inc.random.preset <-
+      decomp.random.preset$Q.decomp["Between designs",]
     Q.inc.design.random.preset <- decomp.random.preset$Q.inc.design
-    residuals.inc.detach.random.preset <- decomp.random.preset$residuals.inc.detach
+    residuals.inc.detach.random.preset <-
+      decomp.random.preset$residuals.inc.detach
   }
   else {
     tau.preset <- NULL

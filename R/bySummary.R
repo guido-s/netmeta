@@ -9,11 +9,6 @@ bySummary <- function(x, index1, index2,
   ## (1) Check arguments
   ##
   ##
-  chklength <- meta:::chklength
-  chklogical <- meta:::chklogical
-  chknull <- meta:::chknull
-  setchar <- meta:::setchar
-  ##
   chklogical(na.rm)
   ##
   ties.method <- setchar(ties.method, c("first", "last", "random"))

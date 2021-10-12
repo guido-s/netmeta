@@ -6,9 +6,11 @@
 \usage{
 netmeasures(
   x,
-  random = x$comb.random | !missing(tau.preset),
+  random = x$random | !missing(tau.preset),
   tau.preset = x$tau.preset,
-  warn = TRUE
+  warn = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
 )
 }
 \arguments{
@@ -22,6 +24,11 @@ between-study variance \eqn{\tau^2}.}
 
 \item{warn}{A logical indicating whether warnings should be
 printed.}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \value{
 A list containing the following components:
@@ -74,7 +81,7 @@ al. (2013) and is given in \code{H.tilde}.
 
 All measures are calculated based on the fixed effects
 meta-analysis by default. In the case that in function
-\code{netmeta} the argument \code{comb.random = TRUE}, all measures
+\code{netmeta} the argument \code{random = TRUE}, all measures
 are calculated for a random effects model. The value of the
 square-root of the between-study variance \eqn{\tau^2} can also be
 prespecified by argument \code{tau.preset} in function
@@ -88,7 +95,7 @@ data(Senn2013)
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD", reference = "plac",
-                comb.random = FALSE)
+                random = FALSE)
 
 # Calculate measures based on a fixed effects model
 #        
@@ -106,7 +113,7 @@ text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex = 0.8)
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
                 data = Senn2013, sm = "MD", reference = "plac",
-                comb.fixed = FALSE)
+                fixed = FALSE)
 
 # Calculate measures based on a random effects model
 #                          

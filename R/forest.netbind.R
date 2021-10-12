@@ -3,6 +3,8 @@
 #' @description
 #' Forest plot to show network estimates of two or more network
 #' meta-analyses.
+#'
+#' @aliases forest.netbind plot.netbind
 #' 
 #' @param x An object of class \code{netbind}.
 #' @param pooled A character string indicating whether results for the
@@ -67,7 +69,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", comb.fixed = FALSE)
+#'                 sm = "OR", fixed = FALSE)
 #' 
 #' # Additive CNMA model with placebo as inactive component and
 #' # reference
@@ -88,11 +90,10 @@
 #' 
 #' @method forest netbind
 #' @export
-#' @export forest.netbind
 
 
 forest.netbind <- function(x,
-                           pooled = ifelse(x$comb.random, "random", "fixed"),
+                           pooled = ifelse(x$x$random, "random", "fixed"),
                            ##
                            equal.size = TRUE,
                            ##
@@ -117,15 +118,8 @@ forest.netbind <- function(x,
   ## (1) Check and set arguments
   ##
   ##
-  meta:::chkclass(x, "netbind")
-  ##
-  x <- upgradenetmeta(x)
-  ##
-  chkchar <- meta:::chkchar
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  formatPT <- meta:::formatPT
-  setchar <- meta:::setchar
+  chkclass(x, "netbind")
+  x <- updateversion(x)
   ##
   pooled <- setchar(pooled, c("fixed", "random"))
   ##
@@ -155,7 +149,7 @@ forest.netbind <- function(x,
       suppressWarnings(metagen(x$fixed$TE, x$fixed$seTE,
                                studlab = x$fixed$name,
                                sm = x$sm,
-                               comb.fixed = FALSE, comb.random = FALSE,
+                               fixed = FALSE, random = FALSE,
                                byvar = x$fixed$treat, print.byvar = FALSE,
                                subset = sel))
     ##
@@ -187,7 +181,7 @@ forest.netbind <- function(x,
       suppressWarnings(metagen(x$random$TE, x$random$seTE,
                                studlab = x$random$name,
                                sm = x$sm,
-                               comb.fixed = FALSE, comb.random = FALSE,
+                               fixed = FALSE, random = FALSE,
                                byvar = x$random$treat, print.byvar = FALSE,
                                subset = sel))
     ##
@@ -228,7 +222,7 @@ forest.netbind <- function(x,
   ##
   forest(m,
          digits = digits,
-         comb.fixed = FALSE, comb.random = FALSE,
+         fixed = FALSE, random = FALSE,
          overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
          leftcols = leftcols,
          leftlabs = leftlabs,
@@ -252,3 +246,15 @@ forest.netbind <- function(x,
   
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netbind
+#' @method plot netbind
+#' @export
+#'
+
+plot.netbind <- function(x, ...)
+  forest(x, ...)

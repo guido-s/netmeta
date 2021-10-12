@@ -7,10 +7,10 @@
 #'
 #' @param x An object of class \code{\link{netmeta}}.
 #' @param nsim Number of simulations.
-#' @param comb.fixed A logical indicating to compute ranking
+#' @param fixed A logical indicating to compute ranking
 #'   probabilities and SUCRAs for the fixed effects (common effects)
 #'   model.
-#' @param comb.random A logical indicating to compute ranking
+#' @param random A logical indicating to compute ranking
 #'   probabilities and SUCRAs for the random effects model.
 #' @param small.values A character string specifying whether small
 #'   treatment effects indicate a beneficial (\code{"good"}) or
@@ -23,6 +23,8 @@
 #'   \code{\link{print.default}}.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments for printing.
 #'
 #' @details
@@ -51,7 +53,7 @@
 #' \item{cumrank.matrix.random}{Numeric matrix giving the cumulative
 #'   ranking probability of each treatment for the random effects
 #'   model.}
-#' \item{nsim, comb.fixed, comb.random}{As defined above},
+#' \item{nsim, fixed, random}{As defined above},
 #' \item{small.values, x}{As defined above},
 #'
 #' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Guido
@@ -82,54 +84,83 @@
 #' @export rankogram
 
 rankogram <- function(x, nsim = 1000,
-                      comb.fixed = x$comb.fixed, comb.random = x$comb.random,
+                      fixed = x$fixed, random = x$random,
                       small.values = x$small.values,
                       cumulative.rankprob = FALSE,
-                      nchar.trts = x$nchar.trts) {
+                      nchar.trts = x$nchar.trts,
+                      warn.deprecated = gs("warn.deprecated"),
+                      ...) {
+  
+  ##
+  ##
+  ## (1) Check for netmeta object and upgrade object
+  ##
+  ##
+  chkclass(x, "netmeta")
+  x <- updateversion(x)
+  ##
+  is.installed.package("mvtnorm")
   
   
-  meta:::is.installed.package("mvtnorm")
   ##
-  meta:::chkclass(x, "netmeta")
   ##
-  chklogical <- meta:::chklogical
-  meta:::chknumeric(nsim, min = 1, length = 1)
-  chklogical(comb.fixed)
-  chklogical(comb.random)
+  ## (2) Check other arguments
   ##
-  small.values <- meta:::setchar(small.values, c("good", "bad"))
+  ##
+  chknumeric(nsim, min = 1, length = 1)
+  ##
+  small.values <- setchar(small.values, c("good", "bad"))
   ##
   chklogical(cumulative.rankprob)
   ##
   if (is.null(nchar.trts))
     nchar.trts <- 666
-  meta:::chknumeric(nchar.trts, length = 1)
+  chknumeric(nchar.trts, length = 1)
+  ##
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  missing.fixed <- missing(fixed)
+  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <-
+    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+  chklogical(random)
   
   
-  resampling <- lapply(1:nsim,
-                       function(y) matrix(NA,
-                                          nrow = nrow(x$TE.random),
-                                          ncol = ncol(x$TE.random),
-                                          dimnames = list(rownames(x$TE.random),
-                                                          colnames(x$TE.random))))
-  
+  ##
+  ##
+  ## (3) Resampling to calculate ranking probabilites and SUCRAs
+  ##
+  ##
+  resampling <-
+    lapply(1:nsim,
+           function(y) matrix(NA,
+                              nrow = nrow(x$TE.random),
+                              ncol = ncol(x$TE.random),
+                              dimnames = list(rownames(x$TE.random),
+                                              colnames(x$TE.random))))
+  ##
   rearrange <- function(y, simul) {
     resampling[[y]][lower.tri(resampling[[y]])] <-  simul[y, ]
     resampling[[y]] <- t(resampling[[y]])
     resampling[[y]][lower.tri(resampling[[y]])] <- -simul[y, ]
     resampling
   }
-  
-  
-  if (comb.fixed) {
+  ##  
+  if (fixed) {
     simul.fixed <- mvtnorm::rmvnorm(nsim,
                                     t(x$TE.fixed)[lower.tri(x$TE.fixed)],
                                     x$Cov.fixed)
-    
+    ##
     resampling.fixed <- lapply(1:nsim,
                                function(y)
                                  rearrange(y, simul = simul.fixed)[[y]])
-    
+    ##
     if(small.values == "good") {
       rankings.fixed <- lapply(1:nsim,
                                 function(y)
@@ -145,11 +176,11 @@ rankogram <- function(x, nsim = 1000,
                                             na.rm = TRUE)))
       sortedtreats.fixed <- order(x$TE.fixed[1, ])
     }
-    
+    ##
     df.fixed <-
       data.frame(x = mapply(function(i){
         (rankings.fixed[[i]][sortedtreats.fixed])}, 1:nsim))
-    
+    ##
     ## Ranking matrix
     ##
     ranking.matrix.fixed <-
@@ -162,14 +193,14 @@ rankogram <- function(x, nsim = 1000,
     ##
     rownames(ranking.matrix.fixed) <- rownames(df.fixed)
     colnames(ranking.matrix.fixed) <- 1:x$n
-    
+    ##
     ## Cumulative ranking matrix
     ##
     rank.cum.fixed <- t(mapply(function(i)
       cumsum(ranking.matrix.fixed[i,]), 1:nrow(ranking.matrix.fixed)))
     ##
     dimnames(rank.cum.fixed) <- list(rownames(ranking.matrix.fixed), 1:x$n)
-    
+    ##
     ## SUCRAs
     ##
     ranking.fixed <- mapply(function(i)
@@ -181,17 +212,16 @@ rankogram <- function(x, nsim = 1000,
     ##
     ranking.fixed <- ranking.fixed[x$trts]
   }
-  
-  
-  if (comb.random) {
+  ##  
+  if (random) {
     simul.random <- mvtnorm::rmvnorm(nsim,
                                      t(x$TE.random)[lower.tri(x$TE.random)],
                                      x$Cov.random)
-    
+    ##
     resampling.random <- lapply(1:nsim,
                                 function(y)
                                   rearrange(y, simul = simul.random)[[y]])
-    
+    ##
     if(small.values == "good") {
       rankings.random <- lapply(1:nsim,
                                 function(y)
@@ -207,11 +237,11 @@ rankogram <- function(x, nsim = 1000,
                                              na.rm = TRUE)))
       sortedtreats.random <- order(x$TE.random[1, ])
     }
-    
+    ##
     df.random <-
       data.frame(x = mapply(function(i){
         (rankings.random[[i]][sortedtreats.random])}, 1:nsim))
-    
+    ##
     ## Ranking matrix
     ##
     ranking.matrix.random <-
@@ -224,14 +254,14 @@ rankogram <- function(x, nsim = 1000,
     ##
     rownames(ranking.matrix.random) <- rownames(df.random)
     colnames(ranking.matrix.random) <- 1:x$n
-    
+    ##
     ## Cumulative ranking matrix
     ##
     rank.cum.random <- t(mapply(function(i)
       cumsum(ranking.matrix.random[i,]), 1:nrow(ranking.matrix.random)))
     ##
     dimnames(rank.cum.random) <- list(rownames(ranking.matrix.random), 1:x$n)
-    
+    ##
     ## SUCRAs
     ##
     ranking.random <- mapply(function(i)
@@ -245,21 +275,25 @@ rankogram <- function(x, nsim = 1000,
     ##
     cumrank.matrix.random <- t(apply(ranking.matrix.random, 1, cumsum))
   }
-  
-
-  if (!comb.fixed) {
+  ##
+  if (!fixed) {
     ranking.matrix.fixed <- NULL
     ranking.fixed <- NULL
     rank.cum.fixed <- NULL
   }
   ##
-  if (!comb.random) {
+  if (!random) {
     ranking.matrix.random <- NULL
     ranking.random <- NULL
     rank.cum.random <- NULL
   }
   
   
+  ##
+  ##
+  ## (4) Create rankogram object
+  ##
+  ##
   res <- list(ranking.matrix.fixed = ranking.matrix.fixed,
               ranking.fixed = ranking.fixed,
               ranking.matrix.random = ranking.matrix.random,
@@ -269,16 +303,17 @@ rankogram <- function(x, nsim = 1000,
               cumrank.matrix.random = rank.cum.random,
               ##
               nsim = nsim,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              fixed = fixed,
+              random = random,
               small.values = small.values,
               cumulative.rankprob = cumulative.rankprob,
               nchar.trts = nchar.trts,
-              x = x)
-  
-  
+              x = x,
+              version = packageDescription("netmeta")$Version
+              )
+  ##  
   class(res) <- "rankogram"
-  ##
+  
   res
 }
 
@@ -289,76 +324,94 @@ rankogram <- function(x, nsim = 1000,
 #' @rdname rankogram
 #' @method print rankogram
 #' @export
-#' @export print.rankogram
 
 
 print.rankogram <- function(x,
-                            comb.fixed = x$comb.fixed,
-                            comb.random = x$comb.random,
+                            fixed = x$fixed,
+                            random = x$random,
                             cumulative.rankprob = x$cumulative.rankprob,
                             nchar.trts = x$nchar.trts,
                             digits = gs("digits.prop"),
                             legend = TRUE,
+                            warn.deprecated = gs("warn.deprecated"),
                             ...) {
   
-  
-  meta:::chkclass(x, "rankogram")
   ##
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  chklogical(comb.fixed)
-  chklogical(comb.random)
-  if (is.null(cumulative.rankprob))
-    cumulative.rankprob <- FALSE
+  ##
+  ## (1) Check for rankogram object and upgrade object
+  ##
+  ##
+  chkclass(x, "rankogram")
+  x <- updateversion(x)
+  
+  
+  ##
+  ##
+  ## (2) Check other arguments
+  ##
+  ##
   chklogical(cumulative.rankprob)
   ##
-  if (is.null(nchar.trts))
-    nchar.trts <- 666
   chknumeric(nchar.trts, length = 1)
   ##
   chknumeric(digits, length = 1)
   chklogical(legend)
-  
-  
-  if (!comb.fixed & !comb.random)
-    return(invisible(NULL))
-
-
-  cat(paste0(if (cumulative.rankprob)
-               "Cumulative ranking probabilities" else "Rankogram",
-             " (based on ", x$nsim, " simulation",
-             if (x$nsim > 1) "s", ")\n\n"))
   ##
-  if (comb.fixed) {
+  ## Check for deprecated arguments in '...'
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  ##
+  missing.fixed <- missing(fixed)
+  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
+                      warn.deprecated)
+  chklogical(fixed)
+  ##
+  random <-
+    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+  chklogical(random)
+  
+  
+  ##
+  ##
+  ## (3) Print results
+  ##
+  ##
+  if (fixed | random)
+    cat(paste0(if (cumulative.rankprob)
+                 "Cumulative ranking probabilities" else "Rankogram",
+               " (based on ", x$nsim, " simulation",
+               if (x$nsim > 1) "s", ")\n\n"))
+  ##
+  if (fixed) {
     if (cumulative.rankprob)
-      fixed <- x$cumrank.matrix.fixed
+      rank.fixed <- x$cumrank.matrix.fixed
     else
-      fixed <- x$ranking.matrix.fixed
-    rownames(fixed) <- treats(fixed, nchar.trts)
+      rank.fixed <- x$ranking.matrix.fixed
+    rownames(rank.fixed) <- treats(rank.fixed, nchar.trts)
     ##
     cat("Fixed effects model: \n\n")
-    prmatrix(meta:::formatN(fixed, digits), quote = FALSE, right = TRUE, ...)
-    if (comb.random)
+    prmatrix(formatN(rank.fixed, digits), quote = FALSE, right = TRUE, ...)
+    if (random)
       cat("\n")
   }
   ##
-  if (comb.random) {
+  if (random) {
     if (cumulative.rankprob)
-      random <- x$cumrank.matrix.random
+      rank.random <- x$cumrank.matrix.random
     else
-      random <- x$ranking.matrix.random
-    rownames(random) <-
-      treats(random, nchar.trts)
+      rank.random <- x$ranking.matrix.random
+    rownames(rank.random) <-
+      treats(rank.random, nchar.trts)
     ##
     cat("Random effects model: \n\n")
-    prmatrix(meta:::formatN(random, digits), quote = FALSE, right = TRUE, ...)
+    prmatrix(formatN(rank.random, digits), quote = FALSE, right = TRUE, ...)
   }
-  
-  
-  if (legend) {
-    if (comb.fixed)
+  ##  
+  if ((fixed | random) & legend) {
+    if (fixed)
       trts <- rownames(x$ranking.matrix.fixed)
-    else if (comb.random)
+    else if (random)
       trts <- rownames(x$ranking.matrix.random)
     ##
     trts.abbr <- treats(trts, nchar.trts)
@@ -375,6 +428,5 @@ print.rankogram <- function(x,
     }
   }
   
-  
-  invisible(NULL)
+  invisible()
 }

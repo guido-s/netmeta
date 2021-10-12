@@ -1,32 +1,44 @@
-## netmeta, version 1.6-0 (2021-10-05)
+## netmeta, version 2.0-0 (2021-10-12)
 
 ### Major changes
+
+* Behaviour of print and print.summary functions switched (to be in
+  line with other print and print.summary functions in R)
 
 * Annabel Davies <annabel.davies@manchester.ac.uk> is a new co-author
   of R package **netmeta**
 
 * Random walk algorithm implemented to estimate network contributions
-  (Davies et al., 2021, unpublished)
-
-* New R function hatmatrix() to derive hat matrices
-
-* New R function netpairwise() to conduct pairwise meta-analyses for
-  all comparisons with direct evidence
-
-* New R function netcomplex() to calculate effect of arbitrary complex
-  interventions in component network meta-analysis
-
-* New R function netcomparison() to calculate omparison effects of two
-  arbitrary complex interventions in component network meta-analysis
+  [(Davies et al., 2021)](https://arxiv.org/abs/2107.02886)
 
 * Calculation of standardised mean differences and corresponding
   standard errors in pairwise() is based on [Crippa & Orsini
   (2016)](https://doi.org/10.1186/s12874-016-0189-0), equations (4)
   and (5), providing consistent treatment estimates and standard
   errors for multi-arm studies
+  
+* By default, reference group is defined by first treatment in network
+  meta-analysis
 
-* I2 from pairwise comparisons shown in forest plot with direct and
-  indirect evidence
+* Renamed arguments:
+  - 'fixed' (instead of 'comb.fixed')
+  - 'random' (instead of 'comb.random')
+  - 'level.ma' (instead of 'level.comb')
+
+* New R function hatmatrix() to derive hat matrices
+
+* New R function netpairwise() to conduct pairwise meta-analyses for
+  comparisons with direct evidence
+
+* New R function netcomplex() to calculate effect of arbitrary complex
+  interventions in component network meta-analysis
+
+* New R function netcomparison() to calculate comparison effects of
+  two arbitrary complex interventions in component network
+  meta-analysis
+
+* I2 from pairwise comparisons shown in forest plot with direct
+  evidence
 
 * In component network meta-analysis, individual component names
   instead of full treatment names can be abbreviated for complex
@@ -35,6 +47,8 @@
 * Do not stop calculations if standard errors of multi-arm studies are
   inconsistent (instead only check for positive variance estimates of
   single treatment arms)
+
+* Generic functions are not exported
 
 ### Bug fixes
 
@@ -98,8 +112,8 @@
     probabilites
   
 * netrank():
-  - new arguments 'comb.fixed' and 'comb.random'
-  - new list elements 'comb.fixed' and 'comb.random'
+  - new arguments 'fixed' and 'random'
+  - new list elements 'fixed' and 'random'
 
 * netsplit():
   - new argument 'order' to specify order in comparisons; see help

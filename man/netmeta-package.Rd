@@ -170,7 +170,7 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \bold{64}, 163--71
 
 Schwarzer G, Carpenter JR and Rücker G (2015):
-\emph{Meta-Analysis with R (Use-R!)}.
+\emph{Meta-Analysis with R (Use R!)}.
 Springer International Publishing, Switzerland.
 }
 \author{

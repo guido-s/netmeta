@@ -72,7 +72,8 @@ events in two treatment arms are to be included in the
 meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
 or \code{"OR"}).}
 
-\item{reference.group}{Reference treatment.}
+\item{reference.group}{Reference treatment (first treatment is used
+if argument is missing).}
 
 \item{keep.all.comparisons}{A logical indicating whether all
 pairwise comparisons or only comparisons with the study-specific
@@ -248,15 +249,16 @@ comparisons with direct evidence in a network meta-analysis.
 # Example using continuous outcomes (internal call of function
 # metacont)
 #
-data(parkinson)
+data(Franchini2012)
 # Transform data from arm-based format to contrast-based format
 p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
                n = list(n1, n2, n3),
                mean = list(y1, y2, y3),
                sd = list(sd1, sd2, sd3),
-               data = parkinson, studlab = Study)
+               data = Franchini2012, studlab = Study)
 p1
 
+\dontrun{
 # Conduct network meta-analysis
 #
 net1 <- netmeta(p1)
@@ -277,9 +279,9 @@ netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
 # metagen)
 #
 # Calculate standard error for means y1, y2, y3
-parkinson$se1 <- with(parkinson, sqrt(sd1^2 / n1))
-parkinson$se2 <- with(parkinson, sqrt(sd2^2 / n2))
-parkinson$se3 <- with(parkinson, sqrt(sd3^2 / n3))
+Franchini2012$se1 <- with(Franchini2012, sqrt(sd1^2 / n1))
+Franchini2012$se2 <- with(Franchini2012, sqrt(sd2^2 / n2))
+Franchini2012$se3 <- with(Franchini2012, sqrt(sd3^2 / n3))
 # Transform data from arm-based format to contrast-based format
 # using means and standard errors (note, argument 'sm' has to be
 # used to specify that argument 'TE' is a mean difference)
@@ -287,7 +289,7 @@ p2 <- pairwise(list(Treatment1, Treatment2, Treatment3),
                TE = list(y1, y2, y3),
                seTE = list(se1, se2, se3),
                n = list(n1, n2, n3),
-               data = parkinson, studlab = Study,
+               data = Franchini2012, studlab = Study,
                sm = "MD")
 p2
 
@@ -297,12 +299,10 @@ p2
 all.equal(p1[, c("TE", "seTE", "studlab", "treat1", "treat2")],
           p2[, c("TE", "seTE", "studlab", "treat1", "treat2")])
 
-\dontrun{
 # Same result as network meta-analysis based on continuous outcomes
 # (object net1)
 net2 <- netmeta(p2)
 net2
-}
 
 # Example with binary data
 #
@@ -360,6 +360,7 @@ p5
 # Conduct network meta-analysis
 net5 <- netmeta(p5)
 net5
+}
 
 }
 \references{

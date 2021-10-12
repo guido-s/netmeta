@@ -9,11 +9,13 @@ netcomb(
   inactive = NULL,
   sep.comps = "+",
   C.matrix,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random | !is.null(tau.preset),
+  fixed = x$fixed,
+  random = x$random | !is.null(tau.preset),
   tau.preset = NULL,
   details.chkident = FALSE,
-  nchar.comps = x$nchar.trts
+  nchar.comps = x$nchar.trts,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
 )
 }
 \arguments{
@@ -27,11 +29,11 @@ treatment components.}
 
 \item{C.matrix}{C matrix (see Details).}
 
-\item{comb.fixed}{A logical indicating whether a fixed effects
-(common effects) network meta-analysis should be conducted.}
+\item{fixed}{A logical indicating whether a fixed effects / common
+effects network meta-analysis should be conducted.}
 
-\item{comb.random}{A logical indicating whether a random effects
-network meta-analysis should be conducted.}
+\item{random}{A logical indicating whether a random effects network
+meta-analysis should be conducted.}
 
 \item{tau.preset}{An optional value for the square-root of the
 between-study variance \eqn{\tau^2}.}
@@ -42,6 +44,11 @@ unidentifiable components should be printed.}
 \item{nchar.comps}{A numeric defining the minimum number of
 characters used to create unique names for components (see
 Details).}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \value{
 An object of class \code{netcomb} with corresponding \code{print},
@@ -190,8 +197,8 @@ containing the following components:
 \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
 \item{C.matrix}{As defined above.}
 \item{sm}{Summary measure.}
-\item{level.comb}{Level for confidence intervals.}
-\item{comb.fixed, comb.random, tau.preset}{As defined above.}
+\item{level.ma}{Level for confidence intervals.}
+\item{fixed, random, tau.preset}{As defined above.}
 \item{sep.trts}{A character used in comparison names as separator
   between treatment labels.}
 \item{nchar.comps}{A numeric defining the minimum number of
@@ -292,15 +299,15 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, ref = "placebo",
-                sm = "OR", comb.fixed = FALSE)
-summary(net1)
+                sm = "OR", fixed = FALSE)
+net1
 forest(net1, xlim = c(0.2, 50))
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
 #
 nc1 <- netcomb(net1, inactive = "placebo")
-summary(nc1)
+nc1
 forest(nc1, xlim = c(0.2, 50))
 
 \dontrun{
@@ -324,15 +331,15 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, ref = "placebo",
                 seq = trts,
-                sm = "OR", comb.fixed = FALSE)
-summary(net1)
+                sm = "OR", fixed = FALSE)
+net1
 forest(net1, xlim = c(0.2, 50))
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
 #
 nc1 <- netcomb(net1, inactive = "placebo")
-summary(nc1)
+nc1
 forest(nc1, xlim = c(0.2, 50))
 }
 

@@ -173,12 +173,12 @@
 #' \bold{64}, 163--71
 #' 
 #' Schwarzer G, Carpenter JR and Rücker G (2015):
-#' \emph{Meta-Analysis with R (Use-R!)}.
+#' \emph{Meta-Analysis with R (Use R!)}.
 #' Springer International Publishing, Switzerland.
 #'
 #' @keywords package
 #' 
-#' @importFrom meta forest forest.meta funnel funnel.meta metabias
+#' @importFrom meta forest funnel metabias
 #'   metabin metacont metagen metainc gs ci cilayout
 #'
 #' @importFrom magic adiag
@@ -192,6 +192,7 @@
 #'   prcomp reshape rnorm sd
 #'
 #' @importFrom utils installed.packages packageDescription
+#'   packageVersion
 #'
 #' @importFrom MASS ginv
 #'

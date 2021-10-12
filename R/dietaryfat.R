@@ -58,7 +58,7 @@
 #' # Conduct network meta-analysis
 #' #
 #' net1 <- netmeta(p1)
-#' summary(net1)
+#' net1
 #' 
 #' # Conduct network meta-analysis using incidence rate differences
 #' # (sm = "IRD")
@@ -69,7 +69,7 @@
 #'                studlab = ID,
 #'                data = dietaryfat, sm = "IRD")
 #' net2 <- netmeta(p2)
-#' summary(net2)
+#' net2
 #' 
 #' # Draw network graph
 #' #

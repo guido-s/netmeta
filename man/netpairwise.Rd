@@ -6,16 +6,17 @@
 \alias{summary.netpairwise}
 \alias{print.summary.netpairwise}
 \alias{forest.netpairwise}
+\alias{plot.netpairwise}
 \title{Conduct pairwise meta-analyses for all comparisons with direct
 evidence in a network meta-analysis}
 \usage{
 netpairwise(
   x,
   separate = FALSE,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$fixed,
+  random = x$random,
   level = x$level,
-  level.comb = x$level.comb,
+  level.ma = x$level.ma,
   prediction = x$prediction,
   level.predict = x$level.predict,
   reference.group = x$reference.group,
@@ -34,24 +35,26 @@ netpairwise(
 \method{print}{summary.netpairwise}(x, ...)
 
 \method{forest}{netpairwise}(x, ...)
+
+\method{plot}{netpairwise}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} or \code{netpairwise}.}
 
-\item{separate}{A logical indicating whether results for
-pairwise comparisons should be printed as separate meta-analyses
-or as subgroups which is more concise.}
+\item{separate}{A logical indicating whether results for pairwise
+comparisons should be printed as separate meta-analyses or as
+subgroups which is more concise.}
 
-\item{comb.fixed}{A logical indicating whether a fixed effects
-(common effects) network meta-analysis should be conducted.}
+\item{fixed}{A logical indicating whether a fixed effects / common
+effects network meta-analysis should be conducted.}
 
-\item{comb.random}{A logical indicating whether a random effects
-network meta-analysis should be conducted.}
+\item{random}{A logical indicating whether a random effects network
+meta-analysis should be conducted.}
 
 \item{level}{The level used to calculate confidence intervals for
 individual comparisons.}
 
-\item{level.comb}{The level used to calculate confidence intervals
+\item{level.ma}{The level used to calculate confidence intervals
 for pooled estimates.}
 
 \item{prediction}{A logical indicating whether prediction intervals
@@ -121,7 +124,7 @@ oldsets <- settings.meta(digits = 2, digits.tau2 = 2, digits.tau = 2)
 #
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
                 data = Senn2013, sm = "MD",
-                comb.fixed = FALSE)
+                fixed = FALSE)
 
 # Calculate and print consise results for all pairwise
 # meta-analyses

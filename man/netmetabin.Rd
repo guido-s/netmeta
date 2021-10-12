@@ -22,9 +22,9 @@ netmetabin(
   addincr = gs("addincr"),
   allstudies = gs("allstudies"),
   level = gs("level"),
-  level.comb = gs("level.comb"),
-  comb.fixed = gs("comb.fixed"),
-  comb.random = method == "Inverse" & (gs("comb.random") | !is.null(tau.preset)),
+  level.ma = gs("level.ma"),
+  fixed = gs("fixed"),
+  random = method == "Inverse" & (gs("random") | !is.null(tau.preset)),
   prediction = FALSE,
   level.predict = gs("level.predict"),
   reference.group = "",
@@ -41,7 +41,9 @@ netmetabin(
   backtransf = gs("backtransf"),
   title = "",
   keepdata = gs("keepdata"),
-  warn = TRUE
+  warn = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
 )
 }
 \arguments{
@@ -102,14 +104,14 @@ an inverse variance meta-analysis (applies only if \code{method =
 \item{level}{The level used to calculate confidence intervals for
 individual studies.}
 
-\item{level.comb}{The level used to calculate confidence intervals
-for pooled estimates.}
+\item{level.ma}{The level used to calculate confidence intervals
+for network estimates.}
 
-\item{comb.fixed}{A logical indicating whether a fixed effects
-(common effects) network meta-analysis should be conducted.}
+\item{fixed}{A logical indicating whether a fixed effects / common
+effects network meta-analysis should be conducted.}
 
-\item{comb.random}{A logical indicating whether a random effects
-network meta-analysis should be conducted.}
+\item{random}{A logical indicating whether a random effects network
+meta-analysis should be conducted.}
 
 \item{prediction}{A logical indicating whether a prediction
 interval should be printed (only considered if \code{method =
@@ -175,6 +177,11 @@ should be kept in netmeta object.}
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded from meta-analysis due to zero
 standard errors).}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \value{
 An object of class \code{netmetabin} and \code{netmeta} with
@@ -269,10 +276,10 @@ following components:
   observations in direct comparisons.}
 \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
   in direct comparisons.}
-\item{sm, method, level, level.comb}{As defined above.}
+\item{sm, method, level, level.ma}{As defined above.}
 \item{incr, allincr, addincr, allstudies, cc.pooled}{As defined
   above.}
-\item{comb.fixed, comb.random}{As defined above.}
+\item{fixed, random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
 \item{reference.group, baseline.reference, all.treatments}{As
   defined above.}
@@ -280,7 +287,7 @@ following components:
   above.}
 \item{details.chkmultiarm, details.chkdata}{As defined above.}
 \item{sep.trts, nchar.trts}{As defined above.}
-\item{backtransf, title, warn}{As defined above.}
+\item{backtransf, title, warn, warn.deprecated}{As defined above.}
 \item{data}{Data set (in contrast-based format).}
 \item{data.design}{List with data in arm-based format (each list
   element corresponds to a single design).}
@@ -333,15 +340,14 @@ comparisons for multi-arm studies.
 
 For \code{method = "Inverse"}, both fixed effects and random
 effects models are calculated regardless of values choosen for
-arguments \code{comb.fixed} and \code{comb.random}. Accordingly,
-the network estimates for the random effects model can be extracted
-from component \code{TE.random} of an object of class
-\code{"netmeta"} even if argument \code{comb.random = FALSE}.
-However, all functions in R package \bold{netmeta} will adequately
-consider the values for \code{comb.fixed} and
-\code{comb.random}. E.g. function
+arguments \code{fixed} and \code{random}. Accordingly, the network
+estimates for the random effects model can be extracted from
+component \code{TE.random} of an object of class \code{"netmeta"}
+even if argument \code{random = FALSE}.  However, all functions in
+R package \bold{netmeta} will adequately consider the values for
+\code{fixed} and \code{random}. E.g. function
 \code{\link{print.summary.netmeta}} will not print results for the
-random effects model if \code{comb.random = FALSE}.
+random effects model if \code{random = FALSE}.
 
 For the random-effects model, the direct treatment estimates are
 based on the common between-study variance \eqn{\tau^2} from the

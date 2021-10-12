@@ -7,10 +7,10 @@
 #' @param ... A single netrank object or a list of netrank objects.
 #' @param name An optional character vector providing descriptive
 #'   names for the network meta-analysis objects.
-#' @param comb.fixed A logical indicating whether results for the
-#'   fixed effects (common effects) model should be plotted.
-#' @param comb.random A logical indicating whether results for the
-#'   random effects model should be plotted.
+#' @param fixed A logical indicating whether results for the fixed
+#'   effects / common effects model should be plotted.
+#' @param random A logical indicating whether results for the random
+#'   effects model should be plotted.
 #' @param seq A character or numerical vector specifying the sequence
 #'   of treatments on the x-axis.
 #' @param low A character string defining the colour for a P-score of
@@ -55,6 +55,10 @@
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param comb.fixed Deprecated argument (replaced by 'fixed').
+#' @param comb.random Deprecated argument (replaced by 'random').
 #'
 #' @details
 #' This function produces an image plot of network rankings (Palpacuer
@@ -66,7 +70,7 @@
 #' to specify a differenct treatment order.
 #' 
 #' @return
-#' A ggplot2 object.
+#' A ggplot2 object or NULL if no ranking was conducted.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Clément
 #'   Palpacuer \email{clementpalpacuer@@gmail.com}
@@ -83,7 +87,6 @@
 #' acamprosate, baclofen and topiramate.
 #' \emph{Addiction},
 #' \bold{113}, 220--37
-
 #' 
 #' @keywords hplot
 #' 
@@ -110,7 +113,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, comb.fixed = FALSE,
+#' net1 <- netmeta(p1, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo")
 #' 
 #' # (2) Early remission
@@ -120,7 +123,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, comb.fixed = FALSE,
+#' net2 <- netmeta(p2, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo")
 #' 
 #' # Image plot of treatment rankings (two outcomes)
@@ -143,7 +146,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net3 <- netmeta(p3, comb.fixed = FALSE,
+#' net3 <- netmeta(p3, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo")
 #' 
 #' # (4) Loss to follow-up due to adverse events
@@ -154,7 +157,7 @@
 #'                studlab = id, data = subset(Linde2015, id != 55),
 #'                sm = "OR")
 #' #
-#' net4 <- netmeta(p4, comb.fixed = FALSE,
+#' net4 <- netmeta(p4, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo")
 #' 
 #' # (5) Adverse events
@@ -164,7 +167,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net5 <- netmeta(p5, comb.fixed = FALSE,
+#' net5 <- netmeta(p5, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo")
 #' 
 #' # Image plot of treatment rankings (two outcomes)
@@ -179,11 +182,11 @@
 #' 
 #' @method plot netrank
 #' @export
-#' @export plot.netrank
 
 
-plot.netrank <- function(..., name,
-                         comb.fixed, comb.random,
+plot.netrank <- function(...,
+                         name,
+                         fixed, random,
                          ##
                          seq,
                          ##
@@ -209,8 +212,11 @@ plot.netrank <- function(..., name,
                          ##
                          nchar.trts,
                          ##
-                         digits = 3) {
-  
+                         digits = 3,
+                         ##
+                         comb.fixed, comb.random,
+                         ##
+                         warn.deprecated = gs("warn.deprecated")) {
   
   ##
   ##
@@ -225,9 +231,8 @@ plot.netrank <- function(..., name,
   ##
   is.netrank <- rep_len(FALSE, n.args)
   ##
-  for (i in n.i) {
+  for (i in n.i)
     is.netrank[i] <- inherits(args[[i]], "netrank")
-  }
   ##
   n.netrank <- sum(is.netrank)
   ##
@@ -235,12 +240,18 @@ plot.netrank <- function(..., name,
     stop("At least one R object of class 'netrank' must be provided.",
          call. = FALSE)
   ##
+  for (i in n.i)
+    if (is.netrank[i])
+      args[[i]] <- updateversion(args[[i]])
+  ##
   missing.name <- missing(name)
-  missing.comb.fixed <- missing(comb.fixed)
-  missing.comb.random <- missing(comb.random)
+  missing.fixed <- missing(fixed)
+  missing.random <- missing(random)
   missing.seq <- missing(seq)
   missing.main <- missing(main)
   missing.nchar.trts <- missing(nchar.trts)
+  missing.comb.fixed <- missing(comb.fixed)
+  missing.comb.random <- missing(comb.random)
   
   
   ##
@@ -248,13 +259,14 @@ plot.netrank <- function(..., name,
   ## (2) Identify additional arguments
   ##
   ##
-  formal.args <- c("name", "comb.fixed", "comb.random",
+  formal.args <- c("name", "fixed", "random",
                    "seq", "low", "mid", "high", "col",
                    "main", "main.size", "main.col", "main.face",
                    "legend", "axis.size", "axis.col", "axis.face",
                    "na.value", "angle",
                    "hjust.x", "vjust.x", "hjust.y", "vjust.y",
-                   "nchar.trts", "digits")
+                   "nchar.trts", "digits",
+                   "comb.fixed", "comb.random", "warn.deprecated")
   ##
   for (i in n.i) {
     if (!is.netrank[i]) {
@@ -274,12 +286,12 @@ plot.netrank <- function(..., name,
           name <- args[[i]]
         }
         else if (cm == 2) {
-          missing.comb.fixed <- FALSE
-          comb.fixed <- args[[i]]
+          missing.fixed <- FALSE
+          fixed <- args[[i]]
         }
         else if (cm == 3) {
-          missing.comb.random <- FALSE
-          comb.random <- args[[i]]
+          missing.random <- FALSE
+          random <- args[[i]]
         }
         else if (cm == 4) {
           missing.seq <- FALSE
@@ -329,6 +341,16 @@ plot.netrank <- function(..., name,
         }
         else if (cm == 24)
           digits <- args[[i]]
+        else if (cm == 25) {
+          missing.comb.fixed <- FALSE
+          comb.fixed <- args[[i]]
+        }
+        else if (cm == 26) {
+          missing.comb.random <- FALSE
+          comb.random <- args[[i]]
+        }
+        else if (cm == 27)
+          warn.deprecated <- args[[i]]
       }
     }
   }
@@ -338,10 +360,6 @@ plot.netrank <- function(..., name,
   ##
   ## (3) Check arguments
   ##
-  ##
-  chklogical <- meta:::chklogical
-  chkchar <- meta:::chkchar
-  chknumeric <- meta:::chknumeric
   ##
   chkchar(low)
   chkchar(mid)
@@ -380,9 +398,10 @@ plot.netrank <- function(..., name,
            call. = FALSE)
     ##
     if (length(unique(name)) != length(name)) {
-      warning1 <- paste0("Network meta-analyses are labelled 'netmeta1' to 'netmeta",
-                         n.netrank,
-                         "' as values of argument 'name' are not all disparate.")
+      warning1 <-
+        paste0("Network meta-analyses are labelled 'netmeta1' to 'netmeta",
+               n.netrank,
+               "' as values of argument 'name' are not all disparate.")
       print.warning1 <- TRUE
       ##
       name <- paste0("netmeta", seq_len(n.netrank))
@@ -392,71 +411,93 @@ plot.netrank <- function(..., name,
   
   ##
   ##
-  ## (5) Determine comb.fixed
+  ## (5) Determine fixed
   ##
   ##
-  if (missing.comb.fixed) {
+  if (missing.fixed & !missing.comb.fixed) {
+    chklogical(warn.deprecated)
+    fixed <-
+      deprecated2(fixed, missing.fixed, comb.fixed, missing.comb.fixed,
+                  warn.deprecated)
+    missing.fixed <- FALSE
+  }
+  ##
+  if (missing.fixed & missing.comb.fixed) {
     cfs <- logical(0)
     ##
     for (i in n.i)
       if (is.netrank[i])
-        cfs[i] <- args[[i]]$x$comb.fixed
+        cfs[i] <- args[[i]]$x$fixed
       else
         cfs[i] <- FALSE
     ##
     cfs <- unique(cfs[is.netrank])
     ##
     if (length(cfs) != 1) {
-      comb.fixed <- TRUE
-      warning2 <- paste0("Argument 'comb.fixed' set to TRUE ",
+      fixed <- TRUE
+      warning2 <- paste0("Argument 'fixed' set to TRUE ",
                          "(as it is not unique in network meta-analyses).")
       print.warning2 <- TRUE
     }
     else
-      comb.fixed <- cfs
+      fixed <- cfs
   }
-  else
-    chklogical(comb.fixed)
+  else {
+    chklogical(warn.deprecated)
+    fixed <-
+      deprecated2(fixed, missing.fixed, comb.fixed, missing.comb.fixed,
+                  warn.deprecated)
+    missing.fixed <- FALSE
+  }
+  ##
+  chklogical(fixed)
   
   
   ##
   ##
-  ## (6) Determine comb.random
+  ## (6) Determine random
   ##
   ##
-  if (missing.comb.random) {
+  if (missing.random & missing.comb.random) {
     crs <- logical(0)
     ##
     for (i in n.i)
       if (is.netrank[i])
-        crs[i] <- args[[i]]$x$comb.random
+        crs[i] <- args[[i]]$x$random
       else
         crs[i] <- FALSE
     ##
     crs <- unique(crs[is.netrank])
     ##
     if (length(crs) != 1) {
-      comb.random <- TRUE
-      warning3 <- paste0("Argument 'comb.random' set to TRUE ",
+      random <- TRUE
+      warning3 <- paste0("Argument 'random' set to TRUE ",
                          "(as it is not unique in network meta-analyses).")
       print.warning3 <- TRUE
     }
     else
-      comb.random <- crs
+      random <- crs
   }
-  else
-    chklogical(comb.random)
+  else {
+    chklogical(warn.deprecated)
+    random <-
+      deprecated2(random, missing.random, comb.random, missing.comb.random,
+                  warn.deprecated)
+    missing.random <- FALSE
+  }
   ##
-  if (comb.fixed & comb.random) {
+  chklogical(random)
+  ##
+  if (fixed & random) {
     warning4 <- paste0("P-scores for random effects model displayed ",
                        "as both fixed and random effects ",
                        "network meta-analysis was conducted.")
     print.warning4 <- TRUE
-    comb.fixed <- FALSE
+    fixed <- FALSE
   }
-  else if (!comb.fixed & !comb.random) {
-    warning("No plot generated as either fixed nor ",
-            "random effects network meta-analysis was conducted.")
+  else if (!fixed & !random) {
+    warning("No plot generated as ranking was neither for fixed nor ",
+            "random effects network meta-analysis conducted.")
     return(invisible(NULL))
   }
   
@@ -512,7 +553,7 @@ plot.netrank <- function(..., name,
     first <- min(seq_along(is.netrank)[is.netrank])
     trts.first <- names(args[[first]]$ranking.fixed)
     ##
-    if (comb.random)
+    if (random)
       trts1[trts.first, "ranking"] <- args[[first]]$ranking.random
     else
       trts1[trts.first, "ranking"] <- args[[first]]$ranking.fixed
@@ -542,7 +583,7 @@ plot.netrank <- function(..., name,
       ##
       trts.i <- names(args[[i]]$ranking.fixed)
       ##
-      if (comb.random)
+      if (random)
         dat.i[trts.i, "ranking"] <- args[[i]]$ranking.random
       else 
         dat.i[trts.i, "ranking"] <- args[[i]]$ranking.fixed
@@ -553,8 +594,8 @@ plot.netrank <- function(..., name,
   ##
   row.names(dat) <- seq_len(nrow(dat))
   ##
-  dat$ranking <- as.character(meta:::formatN(round(dat$ranking, digits),
-                                             digits = digits, text.NA = ""))
+  dat$ranking <- as.character(formatN(round(dat$ranking, digits),
+                                      digits = digits, text.NA = ""))
   ##
   dat$name <- factor(dat$name, levels = rev(name))
   ##
@@ -572,9 +613,7 @@ plot.netrank <- function(..., name,
   ##
   plt <- ggplot(dat,
                 aes(x = treat, y = name, fill = as.numeric(ranking)))
-  ##
-  ## OPTIONS
-  ##
+  
   plt <- plt + theme_classic()
   
   plt <- plt + geom_tile() + xlab("") + ylab("") +
@@ -598,16 +637,16 @@ plot.netrank <- function(..., name,
   
   plt <- plt + geom_text(aes(x = treat, y = name, label = ranking),
                          colour = col)
-
+  
   if (!legend)
     plt <- plt + theme(legend.position = "none")
-
+  
   if (!missing.main)
     plt <- plt + ggtitle(main) +
       theme(plot.title = element_text(size = main.size, face = main.face,
                                       colour = main.col))
-
-
+  
+  
   ##
   ## Print warnings
   ##

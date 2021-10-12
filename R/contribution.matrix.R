@@ -13,9 +13,9 @@ contribution.matrix <- function(x, method, model, hatmatrix.F1000) {
 
 contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
   
-  meta:::chkclass(x, "netmeta")
-  model <- meta:::setchar(model, c("fixed", "random"))
-  meta:::chklogical(hatmatrix.F1000)
+  chkclass(x, "netmeta")
+  model <- setchar(model, c("fixed", "random"))
+  chklogical(hatmatrix.F1000)
   ##
   old <- hatmatrix.F1000
   
@@ -164,8 +164,8 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
 
 contribution.matrix.davies <- function(x, model) {
   
-  meta:::chkclass(x, "netmeta")
-  model <- meta:::setchar(model, c("fixed", "random"))
+  chkclass(x, "netmeta")
+  model <- setchar(model, c("fixed", "random"))
   
   
   ##

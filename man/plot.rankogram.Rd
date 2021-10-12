@@ -7,7 +7,7 @@
 \method{plot}{rankogram}(
   x,
   type = if (cumulative.rankprob) "step" else "bar",
-  pooled = ifelse(x$comb.random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "fixed"),
   sort = TRUE,
   trts,
   cumulative.rankprob = x$cumulative.rankprob,

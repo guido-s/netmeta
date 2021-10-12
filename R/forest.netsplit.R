@@ -4,6 +4,8 @@
 #' Forest plot to show direct and indirect evidence in network
 #' meta-analysis.  Furthermore, estimates from network meta-analysis
 #' as well as prediction intervals can be printed.
+#'
+#' @aliases forest.netsplit plot.netsplit
 #' 
 #' @param x An object of class \code{netsplit}.
 #' @param pooled A character string indicating whether results for the
@@ -122,10 +124,15 @@
 #' 
 #' @examples
 #' data(Senn2013)
+#' 
+#' # Only consider first five studies (to reduce runtime of example)
 #' #
+#' studies <- unique(Senn2013$studlab)
+#' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
+#' 
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-#'                 studlab, data = Senn2013,
-#'                 comb.fixed = FALSE)
+#'                 studlab, data = Senn2013.5,
+#'                 fixed = FALSE)
 #' #
 #' ns1 <- netsplit(net1)
 #' 
@@ -151,11 +158,10 @@
 #' 
 #' @method forest netsplit
 #' @export
-#' @export forest.netsplit
 
 
 forest.netsplit <- function(x,
-                            pooled = ifelse(x$comb.random, "random", "fixed"),
+                            pooled = ifelse(x$x$random, "random", "fixed"),
                             show = "both",
                             ##
                             subgroup = "comparison",
@@ -207,15 +213,8 @@ forest.netsplit <- function(x,
   ## (1) Check and set arguments
   ##
   ##
-  meta:::chkclass(x, "netsplit")
-  ##
-  x <- upgradenetmeta(x)
-  ##
-  chkchar <- meta:::chkchar
-  chklogical <- meta:::chklogical
-  chknumeric <- meta:::chknumeric
-  formatPT <- meta:::formatPT
-  setchar <- meta:::setchar
+  chkclass(x, "netsplit")
+  x <- updateversion(x)
   ##
   pooled <- setchar(pooled, c("fixed", "random"))
   ##
@@ -292,13 +291,15 @@ forest.netsplit <- function(x,
          "- direct estimates (argument 'direct')\n",
          "- indirect estimates (argument 'indirect')")
   ##
-  if (missing(leftcols))
+  missing.leftcols <- missing(leftcols)
+  if (missing.leftcols)
     if (direct)
       leftcols <- c("studlab", "k", "prop", "I2")
     else
       leftcols <- "studlab"
   ##
-  if (missing(leftlabs)) {
+  missing.leftlabs <- missing(leftlabs)
+  if (missing.leftlabs) {
     leftlabs <- rep(NA, length(leftcols))
     leftlabs[leftcols == "studlab"] <- "Comparison"
     leftlabs[leftcols == "k"] <- "Number of\nStudies"
@@ -317,7 +318,7 @@ forest.netsplit <- function(x,
   ##
   if (missing(text.predict))
     if (!(length(x$level.predict) == 0) &&
-        x$level.comb != x$level.predict)
+        x$level.ma != x$level.predict)
       text.predict <- paste(text.predict, " (",
                             round(x$level.predict * 100), "%-PI)", sep = "")
   ##
@@ -557,6 +558,11 @@ forest.netsplit <- function(x,
     dat.overall <- dat.overall[o, ]
     dat.predict <- dat.predict[o, ]
   }
+  ##
+  if (direct & all(is.na(dat.direct$I2)) & missing.leftcols) {
+    leftlabs <- leftlabs[leftcols != "I2"]
+    leftcols <- leftcols[leftcols != "I2"]
+  }
   
   
   ##
@@ -604,7 +610,7 @@ forest.netsplit <- function(x,
     ##
     forest(m,
            digits = digits,
-           comb.fixed = FALSE, comb.random = FALSE,
+           fixed = FALSE, random = FALSE,
            hetstat = FALSE, test.subgroup = FALSE,
            leftcols = leftcols,
            leftlabs = leftlabs,
@@ -659,7 +665,7 @@ forest.netsplit <- function(x,
     ##
     forest(m,
            digits = digits,
-           comb.fixed = FALSE, comb.random = FALSE,
+           fixed = FALSE, random = FALSE,
            overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
            leftcols = leftcols,
            leftlabs = leftlabs,
@@ -678,3 +684,15 @@ forest.netsplit <- function(x,
 
   invisible(NULL)
 }
+
+
+
+
+
+#' @rdname forest.netsplit
+#' @method plot netsplit
+#' @export
+#'
+
+plot.netsplit <- function(x, ...)
+  forest(x, ...)

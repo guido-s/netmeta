@@ -66,7 +66,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, comb.fixed = FALSE,
+#' net1 <- netmeta(p1, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # (2) Early remission
@@ -76,7 +76,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, comb.fixed = FALSE,
+#' net2 <- netmeta(p2, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # Partial order of treatment rankings
@@ -92,31 +92,27 @@
 
 
 hasse <- function(x,
-                  pooled = ifelse(x$comb.random, "random", "fixed"),
+                  pooled = ifelse(x$random, "random", "fixed"),
                   newpage = TRUE) {
   
-  meta:::chkclass(x, "netposet")
+  chkclass(x, "netposet")
+  x <- updateversion(x)
   ##
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("fixed", "random"))
   
-  
-  if (!meta:::is.installed.package("hasseDiagram", stop = FALSE)) {
-    warning(paste("Package 'hasseDiagram' missing.",
-                  "\n  ",
-                  "Please use the following R commands for installation:",
-                  "\n  ",
-                  "install.packages(\"BiocManager\")",
-                  "\n  ",
-                  "BiocManager::install()",
-                  "\n  ",
-                  "BiocManager::install(\"Rgraphviz\")",
-                  "\n  ",
-                  "install.packages(\"hasseDiagram\")",
-                  sep = ""),
-            call. = FALSE)
-    return(invisible(NULL))
-  }
-
+  if (!is.installed.package("hasseDiagram", stop = FALSE))
+    stop(paste0("Package 'hasseDiagram' missing.",
+                "\n  ",
+                "Please use the following R commands for installation:",
+                "\n  ",
+                "install.packages(\"BiocManager\")",
+                "\n  ",
+                "BiocManager::install()",
+                "\n  ",
+                "BiocManager::install(\"Rgraphviz\")",
+                "\n  ",
+                "install.packages(\"hasseDiagram\")"),
+         call. = FALSE)
   
   if (pooled == "fixed")
     M <- x$M.fixed
@@ -126,6 +122,5 @@ hasse <- function(x,
   hasseDiagram::hasse(matrix(as.logical(M), dim(M), dimnames = dimnames(M)),
                       parameters = list(newpage = newpage))
   
-  
-  invisible(NULL)
+  invisible()
 }

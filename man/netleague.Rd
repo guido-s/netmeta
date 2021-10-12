@@ -8,8 +8,8 @@
 netleague(
   x,
   y,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$fixed,
+  random = x$random,
   seq = x$seq,
   ci = TRUE,
   backtransf = TRUE,
@@ -18,10 +18,18 @@ netleague(
   bracket = gs("CIbracket"),
   separator = gs("CIseparator"),
   text.NA = ".",
-  big.mark = gs("big.mark")
+  big.mark = gs("big.mark"),
+  warn.deprecated = gs("warn.deprecated"),
+  ...
 )
 
-\method{print}{netleague}(x, comb.fixed = x$comb.fixed, comb.random = x$comb.random, ...)
+\method{print}{netleague}(
+  x,
+  fixed = x$x$fixed,
+  random = x$x$random,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} or \code{netleague}
@@ -29,12 +37,12 @@ netleague(
 
 \item{y}{An object of class \code{netmeta} (optional).}
 
-\item{comb.fixed}{A logical indicating whether a league table
-should be printed for the fixed effects (common effects) network
+\item{fixed}{A logical indicating whether a league table should be
+printed for the fixed effects / common effects network
 meta-analysis.}
 
-\item{comb.random}{A logical indicating whether a league table
-should be printed for the random effects network meta-analysis.}
+\item{random}{A logical indicating whether a league table should be
+printed for the random effects network meta-analysis.}
 
 \item{seq}{A character or numerical vector specifying the sequence
 of treatments in rows and columns of a league table.}
@@ -64,7 +72,10 @@ between lower and upper confidence interval.}
 
 \item{big.mark}{A character used as thousands separator.}
 
-\item{\dots}{Additional arguments (ignored at the moment).}
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments.}
 }
 \description{
 A league table is a square matrix showing all pairwise comparisons
@@ -131,15 +142,15 @@ netleague(net0, digits = 2, bracket = "(", separator = " - ")
 
 # League table for fixed effects model
 #
-netleague(net0, comb.random = FALSE, digits = 2)
+netleague(net0, random = FALSE, digits = 2)
 
 # Change order of treatments according to treatment ranking (random
 # effects model)
 #
-netleague(net0, comb.fixed = FALSE, digits = 2,
+netleague(net0, fixed = FALSE, digits = 2,
           seq = netrank(net0))
 #
-print(netrank(net0), comb.fixed = FALSE)
+print(netrank(net0), fixed = FALSE)
 
 \dontrun{
 # Create a CSV file with league table for random effects model
@@ -188,7 +199,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, comb.fixed = FALSE,
+net1 <- netmeta(p1, fixed = FALSE,
                 seq = trts, ref = "Placebo", small = "bad")
 
 # (2) Early remission
@@ -198,7 +209,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
                n = list(n1, n2, n3),
                studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, comb.fixed = FALSE,
+net2 <- netmeta(p2, fixed = FALSE,
                 seq = trts, ref = "Placebo", small = "bad")
 
 options(width = 200)

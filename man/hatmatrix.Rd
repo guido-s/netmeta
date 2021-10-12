@@ -5,18 +5,12 @@
 \alias{print.hatmatrix}
 \title{Derive hat matrix from network meta-analysis}
 \usage{
-hatmatrix(
-  x,
-  method = "Ruecker",
-  type,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random
-)
+hatmatrix(x, method = "Ruecker", type, fixed = x$fixed, random = x$random)
 
 \method{print}{hatmatrix}(
   x,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
+  fixed = x$x$fixed,
+  random = x$x$random,
   nchar.trts = x$x$nchar.trts,
   nchar.studlab = 666,
   digits = gs("digits"),
@@ -35,12 +29,12 @@ derive the hat matrix. Either \code{"Ruecker"}, \code{"Krahn"} or
 \item{type}{A character string indicating which specific hat matrix
 should be derived (can be abbreviated, see Details).}
 
-\item{comb.fixed}{A logical indicating whether a hat matrix should
-be printed for the fixed effects (common effects) network
+\item{fixed}{A logical indicating whether a hat matrix should be
+printed for the fixed effects / common effects network
 meta-analysis.}
 
-\item{comb.random}{A logical indicating whether a hat matrix should
-be printed for the random effects network meta-analysis.}
+\item{random}{A logical indicating whether a hat matrix should be
+printed for the random effects network meta-analysis.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
@@ -167,7 +161,7 @@ data(Dong2013)
 first10 <- subset(Dong2013, id <= 10)
 p1 <- pairwise(treatment, death, randomized, studlab = id,
                data = first10, sm = "OR")
-net1 <- netmeta(p1, comb.fixed = FALSE)
+net1 <- netmeta(p1, fixed = FALSE)
 
 hatmatrix(net1)
 hatmatrix(net1, method = "k")

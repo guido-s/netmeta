@@ -1,20 +1,17 @@
-.onAttach <-
-function (libname, pkgname) 
-{
-  msg <- paste("Loading 'netmeta' package (version ",
-               packageDescription("netmeta")$Version,
-               ").",
-               "\nType 'help(\"netmeta-package\")' for a brief overview.",
-               sep = "")
+.onAttach <- function (libname, pkgname) {
+  msg <-
+    paste0("Loading 'netmeta' package (version ",
+           packageDescription("netmeta")$Version,
+           ").",
+           "\nType 'help(\"netmeta-package\")' for a brief overview.",
+           "\nReaders of 'Meta-Analysis with R (Use R!)' should install",
+           "\nolder version of 'netmeta' package: ",
+           "https://tinyurl.com/kyz6wjbb")
   packageStartupMessage(msg)
 }
 
 
 .special.characters <- c("+", ".", "&", "$", "#", "|", "*", "^")
-
-
-is.zero <- function(x, n = 10)
-  abs(x) < n * .Machine$double.eps
 
 
 invmat <- function(X) {
@@ -61,9 +58,6 @@ calcV <- function(x, sm) {
   ##
   V
 }
-
-
-
 
 
 ##

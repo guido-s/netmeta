@@ -12,14 +12,18 @@
 #' @param outcomes A character vector with outcome names.
 #' @param treatments A character vector with treatment names.
 #' @param small.values See details.
-#' @param comb.fixed A logical indicating whether to show results for
-#'   the fixed effects (common effects) model.
-#' @param comb.random A logical indicating whether to show results for
-#'   the random effects model.
+#' @param fixed A logical indicating whether to show results for the
+#'   fixed effects / common effects model.
+#' @param random A logical indicating whether to show results for the
+#'   random effects model.
 #' @param x An object of class \code{netposet}.
 #' @param pooled A character string indicating whether Hasse diagram
 #'   should be drawn for fixed (\code{"fixed"}) or random effects
 #'   model (\code{"random"}). Can be abbreviated.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param comb.fixed Deprecated argument; replaced by \code{fixed}.
+#' @param comb.random Deprecated argument; replaced by \code{random}.
 #' 
 #' @details
 #' In network meta-analysis, frequently different outcomes are
@@ -71,13 +75,13 @@
 #' \code{\link{netrank}}. This argument is ignored for a ranking
 #' matrix and \code{netrank} objects.
 #' 
-#' Arguments \code{comb.fixed} and \code{comb.random} can be used to
+#' Arguments \code{fixed} and \code{random} can be used to
 #' define whether results should be printed and plotted for fixed and
 #' / or random effects model. If netmeta and netrank objects are
-#' provided in argument \code{\dots{}}, values for \code{comb.fixed}
-#' and \code{comb.random} within these objects are considered; if
-#' these values are not unique, argument \code{comb.fixed} and / or
-#' \code{comb.random} are set to \code{TRUE}.
+#' provided in argument \code{\dots{}}, values for \code{fixed}
+#' and \code{random} within these objects are considered; if
+#' these values are not unique, argument \code{fixed} and / or
+#' \code{random} are set to \code{TRUE}.
 #' 
 #' In function \code{print.netposet}, argument \code{\dots{}} is
 #' passed on to the printing function.
@@ -101,7 +105,7 @@
 #' \item{M.random}{"Full" Hasse matrix (random effects model).}
 #' \item{O.random}{Matrix with information about partial ordering
 #'   (random effects model).}
-#' \item{small.values, comb.fixed, comb.random}{As.defined above.}
+#' \item{small.values, fixed, random}{As.defined above.}
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
@@ -159,7 +163,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, comb.fixed = FALSE,
+#' net1 <- netmeta(p1, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # (2) Early remission
@@ -169,7 +173,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, comb.fixed = FALSE,
+#' net2 <- netmeta(p2, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # Partial order of treatment rankings (two outcomes)
@@ -195,7 +199,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net3 <- netmeta(p3, comb.fixed = FALSE,
+#' net3 <- netmeta(p3, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # (4) Loss to follow-up due to adverse events
@@ -206,7 +210,7 @@
 #'                studlab = id, data = subset(Linde2015, id != 55),
 #'                sm = "OR")
 #' #
-#' net4 <- netmeta(p4, comb.fixed = FALSE,
+#' net4 <- netmeta(p4, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # (5) Adverse events
@@ -216,7 +220,7 @@
 #'                n = list(n1, n2, n3),
 #'                studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net5 <- netmeta(p5, comb.fixed = FALSE,
+#' net5 <- netmeta(p5, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # Partial order of treatment rankings (all five outcomes)
@@ -293,16 +297,17 @@
 
 
 netposet <- function(..., outcomes, treatments, small.values,
-                     comb.fixed, comb.random) {
+                     fixed, random, comb.fixed, comb.random,
+                     warn.deprecated = gs("warn.deprecated")) {
   
   
   args <- list(...)
   
   
-  if (!missing(comb.fixed))
-    meta:::chklogical(comb.fixed)
-  if (!missing(comb.random))
-    meta:::chklogical(comb.random)
+  if (!missing(fixed))
+    chklogical(fixed)
+  if (!missing(random))
+    chklogical(random)
   
   
   any.netmeta <- any.netrank <- FALSE
@@ -381,10 +386,10 @@ netposet <- function(..., outcomes, treatments, small.values,
     ranking.matrix.fixed <- ranking.matrix
     ranking.matrix.random <- ranking.matrix
     ##
-    if (missing(comb.fixed))
-      comb.fixed <- FALSE
-    if (missing(comb.random))
-      comb.random <- FALSE
+    if (missing(fixed))
+      fixed <- FALSE
+    if (missing(random))
+      random <- FALSE
   }
   ##
   ## More than one element provided in '...' (netmeta or netrank objects)
@@ -433,7 +438,7 @@ netposet <- function(..., outcomes, treatments, small.values,
              call. = FALSE)
       ##
       if (!missing.small.values)
-        small.values[i] <- meta:::setchar(small.values[i], c("good", "bad"))
+        small.values[i] <- setchar(small.values[i], c("good", "bad"))
       else {
         small.values[i] <-
           ifelse(is.null(args[[i]]$small.values),
@@ -449,7 +454,7 @@ netposet <- function(..., outcomes, treatments, small.values,
     ## (2) Extract P-Scores
     ##
     ranking.list.fixed <- ranking.list.random <- list()
-    comb.fixeds <- comb.randoms <- rep_len(NA, length(args))
+    fixeds <- randoms <- rep_len(NA, length(args))
     ##
     for (i in seq_along(args)) {
       ##
@@ -462,14 +467,14 @@ netposet <- function(..., outcomes, treatments, small.values,
         ranking.list.random[[i]] <- netrank(args.i,
                                             small.values =
                                               small.values[i])$ranking.random
-        comb.fixeds[i]  <- args.i$comb.fixed
-        comb.randoms[i] <- args.i$comb.random
+        fixeds[i]  <- args.i$fixed
+        randoms[i] <- args.i$random
       }
       else if (inherits(args.i, "netrank")) {
         ranking.list.fixed[[i]] <- args.i$ranking.fixed
         ranking.list.random[[i]] <- args.i$ranking.random
-        comb.fixeds[i]  <- args.i$x$comb.fixed
-        comb.randoms[i] <- args.i$x$comb.random
+        fixeds[i]  <- args.i$x$fixed
+        randoms[i] <- args.i$x$random
       }
     }
     
@@ -544,23 +549,23 @@ netposet <- function(..., outcomes, treatments, small.values,
     text.netmeta.netrank <- if (!any.netmeta & any.netrank) "netrank"
     text.netmeta.netrank <- paste(text.netmeta.netrank, "objects.")
     ##
-    if (missing(comb.fixed)) {
-      comb.fixed <- unique(comb.fixeds)
-      if (length(comb.fixed) != 1) {
-        warning("Argument 'comb.fixed' set to TRUE as different values are ",
+    if (missing(fixed)) {
+      fixed <- unique(fixeds)
+      if (length(fixed) != 1) {
+        warning("Argument 'fixed' set to TRUE as different values are ",
                 "available in ", text.netmeta.netrank,
                 call. = FALSE)
-        comb.fixed <- TRUE
+        fixed <- TRUE
       }
     }
     ##
-    if (missing(comb.random)) {
-      comb.random <- unique(comb.randoms)
-      if (length(comb.random) != 1) {
-        warning("Argument 'comb.random' set to TRUE as different values are ",
+    if (missing(random)) {
+      random <- unique(randoms)
+      if (length(random) != 1) {
+        warning("Argument 'random' set to TRUE as different values are ",
                 "available in ", text.netmeta.netrank,
                 call. = FALSE)
-        comb.random <- TRUE
+        random <- TRUE
       }
     }
   } 
@@ -642,8 +647,8 @@ netposet <- function(..., outcomes, treatments, small.values,
               M.random = M.random,
               O.random = PO.random,
               small.values = small.values,
-              comb.fixed = comb.fixed,
-              comb.random = comb.random,
+              fixed = fixed,
+              random = random,
               call = match.call(),
               version = packageDescription("netmeta")$Version)
   ##
@@ -659,20 +664,23 @@ netposet <- function(..., outcomes, treatments, small.values,
 #' @rdname netposet
 #' @method print netposet
 #' @export
-#' @export print.netposet
 
 
 print.netposet <- function(x,
-                           pooled = ifelse(x$comb.random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "fixed"),
                            ...) {
   
-  pooled <- meta:::setchar(pooled, c("fixed", "random"))
+  chkclass(x, "netposet")
+  x <- updateversion(x)
+  
+  
+  pooled <- setchar(pooled, c("fixed", "random"))
   
   if (pooled == "fixed") {
-    if (!(!x$comb.fixed & !x$comb.random))
+    if (!(!x$fixed & !x$random))
       cat("Fixed effects model\n")
     print(x$M0.fixed, ...)
-    if (x$comb.random)
+    if (x$random)
       cat("\n")
   }
   ##
@@ -680,7 +688,6 @@ print.netposet <- function(x,
     cat("Random effects model\n")
     print(x$M0.random, ...)
   }
-  
   
   ## diag(M0) <- NA
   ## M0[is.na(M0)] <- "."

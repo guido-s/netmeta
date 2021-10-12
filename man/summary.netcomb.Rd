@@ -2,116 +2,29 @@
 % Please edit documentation in R/summary.netcomb.R
 \name{summary.netcomb}
 \alias{summary.netcomb}
-\alias{print.summary.netcomb}
 \title{Summary method for objects of class netcomb}
 \usage{
 \method{summary}{netcomb}(
   object,
-  comb.fixed = object$comb.fixed,
-  comb.random = object$comb.random,
-  ...
-)
-
-\method{print}{summary.netcomb}(
-  x,
-  comb.fixed = x$comb.fixed,
-  comb.random = x$comb.random,
-  backtransf = x$backtransf,
-  nchar.comps = x$nchar.comps,
-  digits = gs("digits"),
-  digits.stat = gs("digits.stat"),
-  digits.pval = gs("digits.pval"),
-  digits.pval.Q = max(gs("digits.pval.Q"), 2),
-  digits.Q = gs("digits.Q"),
-  digits.tau2 = gs("digits.tau2"),
-  digits.tau = gs("digits.tau"),
-  digits.I2 = gs("digits.I2"),
-  scientific.pval = gs("scientific.pval"),
-  zero.pval = gs("zero.pval"),
-  JAMA.pval = gs("JAMA.pval"),
-  big.mark = gs("big.mark"),
-  text.tau2 = gs("text.tau2"),
-  text.tau = gs("text.tau"),
-  text.I2 = gs("text.I2"),
-  legend = TRUE,
-  nchar.trts = nchar.comps,
+  fixed = object$fixed,
+  random = object$random,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
 \arguments{
 \item{object}{An object of class \code{netcomb}.}
 
-\item{comb.fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be printed.}
+\item{fixed}{A logical indicating whether results for the fixed
+effects / common effects model should be printed.}
 
-\item{comb.random}{A logical indicating whether results for the
-random effects model should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects model should be printed.}
 
-\item{\dots}{Additional arguments.}
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
 
-\item{x}{An object of class \code{netcomb} or
-\code{summary.netcomb}.}
-
-\item{backtransf}{A logical indicating whether results should be
-back transformed in printouts and forest plots. If
-\code{backtransf = TRUE}, results for \code{sm = "OR"} are
-presented as odds ratios rather than log odds ratios, for
-example.}
-
-\item{nchar.comps}{A numeric defining the minimum number of
-characters used to create unique names for components.}
-
-\item{digits}{Minimal number of significant digits, see
-\code{print.default}.}
-
-\item{digits.stat}{Minimal number of significant digits for z- or
-t-value, see \code{print.default}.}
-
-\item{digits.pval}{Minimal number of significant digits for p-value
-of overall treatment effect, see \code{print.default}.}
-
-\item{digits.pval.Q}{Minimal number of significant digits for
-p-value of heterogeneity tests, see \code{print.default}.}
-
-\item{digits.Q}{Minimal number of significant digits for
-heterogeneity statistics, see \code{print.default}.}
-
-\item{digits.tau2}{Minimal number of significant digits for
-between-study variance, see \code{print.default}.}
-
-\item{digits.tau}{Minimal number of significant digits for square
-root of between-study variance, see \code{print.default}.}
-
-\item{digits.I2}{Minimal number of significant digits for I-squared
-statistic, see \code{print.default}.}
-
-\item{scientific.pval}{A logical specifying whether p-values should
-be printed in scientific notation, e.g., 1.2345e-01 instead of
-0.12345.}
-
-\item{zero.pval}{A logical specifying whether p-values should be
-printed with a leading zero.}
-
-\item{JAMA.pval}{A logical specifying whether p-values for test of
-component or combination effect should be printed according to
-JAMA reporting standards.}
-
-\item{big.mark}{A character used as thousands separator.}
-
-\item{text.tau2}{Text printed to identify between-study variance
-\eqn{\tau^2}.}
-
-\item{text.tau}{Text printed to identify \eqn{\tau}, the square
-root of the between-study variance \eqn{\tau^2}.}
-
-\item{text.I2}{Text printed to identify heterogeneity statistic
-I\eqn{^2}.}
-
-\item{legend}{A logical indicating whether a legend should be
-printed.}
-
-\item{nchar.trts}{Deprecated argument (replaced by
-\code{nchar.comps}).}
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \value{
 A list is returned with the same elements as a
@@ -132,7 +45,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = face, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive model for treatment components
 #
@@ -145,7 +58,7 @@ print(summary(nc1), digits = 2, digits.stat = 3)
 #
 net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
                 data = Linde2016, reference.group = "placebo",
-                sm = "OR", comb.fixed = FALSE)
+                sm = "OR", fixed = FALSE)
 
 # Additive model for treatment components
 #
