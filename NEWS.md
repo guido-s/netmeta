@@ -1,6 +1,9 @@
-## netmeta, version 1.6-0 (2021-10-05)
+## netmeta, version 1.6-0 (2021-10-12)
 
 ### Major changes
+
+* New branch to support Use R!-Book Meta-Analysis with R, first
+   edition
 
 * Annabel Davies <annabel.davies@manchester.ac.uk> is a new co-author
   of R package **netmeta**
