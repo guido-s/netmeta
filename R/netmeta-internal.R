@@ -1,7 +1,7 @@
 .onAttach <- function(libname, pkgname) {
   msg <-
     paste0("Loading 'netmeta' package (version ",
-           utils::packageDescription("meta")$Version,
+           utils::packageDescription("netmeta")$Version,
            ").",
            "\nSupporting book 'Meta-Analysis with R (Use R!), first edition.",
            "\nType 'help(meta)' for a brief overview.")
