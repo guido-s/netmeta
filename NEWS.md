@@ -1,4 +1,4 @@
-## netmeta, version 2.0-0 (2021-mm-dd)
+## netmeta, version 2.0-0 (2021-10-12)
 
 ### Major changes
 
