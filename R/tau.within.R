@@ -5,8 +5,9 @@ tau.within <- function(x) {
   
   
   nmak <- nma.krahn(x)
-  if (is.null(nmak))
-    return(invisible(NULL))
+  ##
+  if (nmak$n == 2)
+    return(NA)
   
   
   t <- diag(rep(1, length(as.character(nmak$design$design))))
@@ -50,7 +51,8 @@ tau.within <- function(x) {
     b <- DiagonalBlocks(V)
     ##
     for (i in 1:length(b))
-      W[b[[i]], b[[i]]] <- solve(as.matrix(V)[b[[i]], b[[i]]] + tausq * V0(length(b[[i]])))
+      W[b[[i]], b[[i]]] <-
+        solve(as.matrix(V)[b[[i]], b[[i]]] + tausq * V0(length(b[[i]])))
     ##
     W
   }

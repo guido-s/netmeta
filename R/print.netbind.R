@@ -78,11 +78,11 @@ print.netbind <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "fixed",
+  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
                       warn.deprecated)
   chklogical(fixed)
   ##
-  random <- deprecated(random, missing(random), args, "random",
+  random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
   chklogical(random)
   

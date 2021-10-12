@@ -366,7 +366,7 @@ print.netrank <- function(x,
     if (is.character(sort)) {
       res.both <- data.frame(fixed = round(x$ranking.fixed, digits),
                              random = round(x$ranking.random, digits))
-      res.both <- res.both[order(-res.both[sort]), ]
+      res.both <- res.both[order(-res.both[, sort]), ]
     }
     else if (!sort) {
       res.both <- data.frame(fixed = round(x$ranking.fixed[x$x$seq], digits),

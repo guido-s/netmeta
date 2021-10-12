@@ -165,8 +165,13 @@ nma.krahn <- function(x, reference.group = x$reference.group,
   ##
   direct2 <- data.frame(direct2)
   
-  if (length(unique(studies$design)) == 1)
-    return(invisible(NULL))
+  if (length(unique(studies$comparison)) == 1) {
+    res <- list(n = 2)
+    ##
+    class(res) <- "nma.krahn"
+    ##
+    return(res)
+  }
   
   V.design <- diag(direct2$seTE.2arm^2,
                    nrow = length(direct2$seTE.2arm),

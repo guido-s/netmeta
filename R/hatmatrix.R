@@ -168,11 +168,17 @@ hatmatrix <- function(x, method = "Ruecker", type,
                       fixed = x$fixed,
                       random = x$random) {
   
-  
   chkclass(x, "netmeta")
   x <- updateversion(x)
   ##
   method <- setchar(method, c("Ruecker", "Krahn", "Davies"))
+  ##
+  if (x$n == 2 & method == "Krahn") {
+    warning("Hat matrix by Krahn et al. (2013) not available for ",
+            "network meta-analysis with only two treatments.",
+            call. = FALSE)
+    return(NULL)
+  }
   ##
   if (missing(type)) {
     if (method == "Ruecker")

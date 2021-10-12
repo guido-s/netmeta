@@ -72,8 +72,6 @@ netdistance <- function(x) {
       }
     }
   }  
-  ##
-  attr(D, "version") <- packageDescription("netmeta")$Version
   
   D
 }

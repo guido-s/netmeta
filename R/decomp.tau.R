@@ -2,10 +2,10 @@ decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
   
   
   nmak <- nma.krahn(x, tau.preset = tau.preset)
-  if (is.null(nmak)) {
-    if (warn)
-      warning("Only a single design in network meta-analysis.", call. = FALSE)
-    return(invisible(NULL))
+  ##
+  if (nmak$n == 2) {
+    res <- list(d = 1, n = 2)
+    return(res)
   }
   ##
   design <- nmak$design
@@ -149,7 +149,8 @@ decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
     Q.het.design = Q.het.design,
     Q.inc.detach = Q.inc.detach,
     Q.inc.design = Q.inc.design,
-    residuals.inc.detach = residuals
+    residuals.inc.detach = residuals,
+    d = nmak$d
   )
   
   res

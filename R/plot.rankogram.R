@@ -75,8 +75,7 @@ plot.rankogram <- function(x,
                            sort = TRUE, trts,
                            cumulative.rankprob = x$cumulative.rankprob,
                            ylim, ylab,
-                           nchar.trts = x$nchar.trts, ...) {
-  
+                           nchar.trts = x$nchar.trts, ...) {  
   
   chkclass(x, c("rankogram"))
   x <- updateversion(x)
@@ -145,24 +144,19 @@ plot.rankogram <- function(x,
     ##
     sucras <- "ranking.fixed"
   }
-  else
-    return(invisible(NULL))
   ##
-  if (is.null(x[[rankmatrix]])) {
-    warning("No results for ", pooled, " effect",
-            if (pooled == "random") "s", " model available. ",
-            "Rerun rankogram() with argument 'comb.",
-            pooled, " = TRUE'.",
-            call. = FALSE)
-    return(NULL)
-  }
+  if (is.null(x[[rankmatrix]]))
+    stop("No results for ", pooled, " effect",
+         if (pooled == "random") "s", " model available. ",
+         "Rerun rankogram() with argument '", pooled, " = TRUE'.",
+         call. = FALSE)
   
   
   plotranks <- function(treat) {
     df <- data.frame(pos = 1:nrow(x[[rankmatrix]]),
                      ranks = x[[rankmatrix]][treat, ])
     mymaxvalue <- max(x[[rankmatrix]])
-
+    ##
     if (type == "bar")
       p <- ggplot2::ggplot(mapping = aes(df$pos, df$ranks)) +
         ggplot2::geom_col()

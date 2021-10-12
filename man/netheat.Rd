@@ -104,7 +104,7 @@ netheat(net1)
 #
 netheat(net1, random = TRUE)
 }
- 
+
 }
 \references{
 Krahn U, Binder H, König J (2013):

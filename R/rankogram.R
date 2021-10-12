@@ -370,9 +370,6 @@ print.rankogram <- function(x,
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
-  ##  
-  if (!fixed & !random)
-    return(invisible(NULL))
   
   
   ##
@@ -380,10 +377,11 @@ print.rankogram <- function(x,
   ## (3) Print results
   ##
   ##
-  cat(paste0(if (cumulative.rankprob)
-               "Cumulative ranking probabilities" else "Rankogram",
-             " (based on ", x$nsim, " simulation",
-             if (x$nsim > 1) "s", ")\n\n"))
+  if (fixed | random)
+    cat(paste0(if (cumulative.rankprob)
+                 "Cumulative ranking probabilities" else "Rankogram",
+               " (based on ", x$nsim, " simulation",
+               if (x$nsim > 1) "s", ")\n\n"))
   ##
   if (fixed) {
     if (cumulative.rankprob)
@@ -410,7 +408,7 @@ print.rankogram <- function(x,
     prmatrix(formatN(rank.random, digits), quote = FALSE, right = TRUE, ...)
   }
   ##  
-  if (legend) {
+  if ((fixed | random) & legend) {
     if (fixed)
       trts <- rownames(x$ranking.matrix.fixed)
     else if (random)
@@ -430,5 +428,5 @@ print.rankogram <- function(x,
     }
   }
   
-  invisible(NULL)
+  invisible()
 }

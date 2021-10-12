@@ -120,7 +120,7 @@ characters used to create unique treatment names.}
 be printed if deprecated arguments are used.}
 }
 \value{
-A ggplot2 object.
+A ggplot2 object or NULL if no ranking was conducted.
 }
 \description{
 Produce an image plot of treatment ranking(s) generated with R

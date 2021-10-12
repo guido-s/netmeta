@@ -17,13 +17,18 @@
   and (5), providing consistent treatment estimates and standard
   errors for multi-arm studies
   
-* By default, reference group is defined by first treatment in
-  (component) network meta-analysis
+* By default, reference group is defined by first treatment in network
+  meta-analysis
+
+* Renamed arguments:
+  - 'fixed' (instead of 'comb.fixed')
+  - 'random' (instead of 'comb.random')
+  - 'level.ma' (instead of 'level.comb')
 
 * New R function hatmatrix() to derive hat matrices
 
 * New R function netpairwise() to conduct pairwise meta-analyses for
-  all comparisons with direct evidence
+  comparisons with direct evidence
 
 * New R function netcomplex() to calculate effect of arbitrary complex
   interventions in component network meta-analysis
@@ -32,8 +37,8 @@
   two arbitrary complex interventions in component network
   meta-analysis
 
-* I2 from pairwise comparisons shown in forest plot with direct and
-  indirect evidence
+* I2 from pairwise comparisons shown in forest plot with direct
+  evidence
 
 * In component network meta-analysis, individual component names
   instead of full treatment names can be abbreviated for complex
@@ -42,6 +47,8 @@
 * Do not stop calculations if standard errors of multi-arm studies are
   inconsistent (instead only check for positive variance estimates of
   single treatment arms)
+
+* Generic functions are not exported
 
 ### Bug fixes
 
@@ -105,8 +112,8 @@
     probabilites
   
 * netrank():
-  - new arguments 'comb.fixed' and 'comb.random'
-  - new list elements 'comb.fixed' and 'comb.random'
+  - new arguments 'fixed' and 'random'
+  - new list elements 'fixed' and 'random'
 
 * netsplit():
   - new argument 'order' to specify order in comparisons; see help

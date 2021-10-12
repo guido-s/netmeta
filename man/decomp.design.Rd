@@ -24,7 +24,8 @@ printed.}
 characters used to create unique treatment names.}
 }
 \value{
-A list containing the following components:
+Network meta-analysis with a single design: \code{NULL}. Otherwise,
+a list containing the following components:
 \item{Q.decomp}{Data frame with Q statistics (variable \code{Q})
   based on the fixed effects model to assess the
   homogeneity/consistency in the whole network, within designs, and

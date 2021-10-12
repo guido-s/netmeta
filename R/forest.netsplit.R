@@ -291,13 +291,15 @@ forest.netsplit <- function(x,
          "- direct estimates (argument 'direct')\n",
          "- indirect estimates (argument 'indirect')")
   ##
-  if (missing(leftcols))
+  missing.leftcols <- missing(leftcols)
+  if (missing.leftcols)
     if (direct)
       leftcols <- c("studlab", "k", "prop", "I2")
     else
       leftcols <- "studlab"
   ##
-  if (missing(leftlabs)) {
+  missing.leftlabs <- missing(leftlabs)
+  if (missing.leftlabs) {
     leftlabs <- rep(NA, length(leftcols))
     leftlabs[leftcols == "studlab"] <- "Comparison"
     leftlabs[leftcols == "k"] <- "Number of\nStudies"
@@ -555,6 +557,11 @@ forest.netsplit <- function(x,
     dat.indirect <- dat.indirect[o, ]
     dat.overall <- dat.overall[o, ]
     dat.predict <- dat.predict[o, ]
+  }
+  ##
+  if (direct & all(is.na(dat.direct$I2)) & missing.leftcols) {
+    leftlabs <- leftlabs[leftcols != "I2"]
+    leftcols <- leftcols[leftcols != "I2"]
   }
   
   

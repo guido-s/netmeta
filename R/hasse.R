@@ -100,24 +100,19 @@ hasse <- function(x,
   ##
   pooled <- setchar(pooled, c("fixed", "random"))
   
-  
-  if (!is.installed.package("hasseDiagram", stop = FALSE)) {
-    warning(paste("Package 'hasseDiagram' missing.",
-                  "\n  ",
-                  "Please use the following R commands for installation:",
-                  "\n  ",
-                  "install.packages(\"BiocManager\")",
-                  "\n  ",
-                  "BiocManager::install()",
-                  "\n  ",
-                  "BiocManager::install(\"Rgraphviz\")",
-                  "\n  ",
-                  "install.packages(\"hasseDiagram\")",
-                  sep = ""),
-            call. = FALSE)
-    return(invisible(NULL))
-  }
-
+  if (!is.installed.package("hasseDiagram", stop = FALSE))
+    stop(paste0("Package 'hasseDiagram' missing.",
+                "\n  ",
+                "Please use the following R commands for installation:",
+                "\n  ",
+                "install.packages(\"BiocManager\")",
+                "\n  ",
+                "BiocManager::install()",
+                "\n  ",
+                "BiocManager::install(\"Rgraphviz\")",
+                "\n  ",
+                "install.packages(\"hasseDiagram\")"),
+         call. = FALSE)
   
   if (pooled == "fixed")
     M <- x$M.fixed
@@ -127,6 +122,5 @@ hasse <- function(x,
   hasseDiagram::hasse(matrix(as.logical(M), dim(M), dimnames = dimnames(M)),
                       parameters = list(newpage = newpage))
   
-  
-  invisible(NULL)
+  invisible()
 }

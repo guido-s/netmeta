@@ -153,7 +153,7 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 # 'Comparison-adjusted' funnel plot not created as argument 'order'
 # is missing
 #
-funnel(net1)
+try(funnel(net1))
 
 # (Non-sensical) alphabetic order of treatments with placebo as
 # last treatment

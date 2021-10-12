@@ -1513,10 +1513,10 @@ netmeta <- function(TE, seTE,
               ##
               Q.matrix = res.f$Q.matrix,
               ##
-              G.matrix = res.f$G.matrix[o, o],
+              G.matrix = res.f$G.matrix[o, o, drop = FALSE],
               ##
-              H.matrix.fixed = res.f$H.matrix[o, o],
-              H.matrix.random = res.r$H.matrix[o, o],
+              H.matrix.fixed = res.f$H.matrix[o, o, drop = FALSE],
+              H.matrix.random = res.r$H.matrix[o, o, drop = FALSE],
               ##
               n.matrix = if (available.n) NA else NULL,
               events.matrix = if (available.events) NA else NULL,

@@ -51,7 +51,8 @@
 #'   characters used to create unique treatment names.
 #' 
 #' @return
-#' A list containing the following components:
+#' Network meta-analysis with a single design: \code{NULL}. Otherwise,
+#' a list containing the following components:
 #' \item{Q.decomp}{Data frame with Q statistics (variable \code{Q})
 #'   based on the fixed effects model to assess the
 #'   homogeneity/consistency in the whole network, within designs, and
@@ -143,8 +144,14 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE,
   
   
   chkclass(x, "netmeta")
-  ##
   x <- updateversion(x)
+  ##
+  if (x$n == 2) {
+    warning("No decomposition possible for network meta-analysis ",
+            "with only two treatments.",
+            call. = FALSE)
+    return(NULL)
+  }
   ##
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
@@ -176,8 +183,6 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE,
   
   
   tau.within <- tau.within(x)
-  if (is.null(tau.within))
-    return(invisible(NULL))
   ##
   decomp.random <- decomp.tau(x, tau.preset = tau.within, warn = warn)
   ##
@@ -187,10 +192,13 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE,
   
   
   if (length(tau.preset) == 1) {
-    decomp.random.preset <- decomp.tau(x, tau.preset = tau.preset, warn = warn)
-    Q.inc.random.preset <-  decomp.random.preset$Q.decomp["Between designs",]
+    decomp.random.preset <-
+      decomp.tau(x, tau.preset = tau.preset, warn = warn)
+    Q.inc.random.preset <-
+      decomp.random.preset$Q.decomp["Between designs",]
     Q.inc.design.random.preset <- decomp.random.preset$Q.inc.design
-    residuals.inc.detach.random.preset <- decomp.random.preset$residuals.inc.detach
+    residuals.inc.detach.random.preset <-
+      decomp.random.preset$residuals.inc.detach
   }
   else {
     tau.preset <- NULL

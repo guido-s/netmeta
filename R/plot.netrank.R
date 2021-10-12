@@ -70,7 +70,7 @@
 #' to specify a differenct treatment order.
 #' 
 #' @return
-#' A ggplot2 object.
+#' A ggplot2 object or NULL if no ranking was conducted.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Clément
 #'   Palpacuer \email{clementpalpacuer@@gmail.com}
@@ -87,7 +87,6 @@
 #' acamprosate, baclofen and topiramate.
 #' \emph{Addiction},
 #' \bold{113}, 220--37
-
 #' 
 #' @keywords hplot
 #' 
@@ -218,7 +217,6 @@ plot.netrank <- function(...,
                          comb.fixed, comb.random,
                          ##
                          warn.deprecated = gs("warn.deprecated")) {
-  
   
   ##
   ##
@@ -498,8 +496,8 @@ plot.netrank <- function(...,
     fixed <- FALSE
   }
   else if (!fixed & !random) {
-    warning("No plot generated as either fixed nor ",
-            "random effects network meta-analysis was conducted.")
+    warning("No plot generated as ranking was neither for fixed nor ",
+            "random effects network meta-analysis conducted.")
     return(invisible(NULL))
   }
   
@@ -597,7 +595,7 @@ plot.netrank <- function(...,
   row.names(dat) <- seq_len(nrow(dat))
   ##
   dat$ranking <- as.character(formatN(round(dat$ranking, digits),
-                                             digits = digits, text.NA = ""))
+                                      digits = digits, text.NA = ""))
   ##
   dat$name <- factor(dat$name, levels = rev(name))
   ##
@@ -615,9 +613,7 @@ plot.netrank <- function(...,
   ##
   plt <- ggplot(dat,
                 aes(x = treat, y = name, fill = as.numeric(ranking)))
-  ##
-  ## OPTIONS
-  ##
+  
   plt <- plt + theme_classic()
   
   plt <- plt + geom_tile() + xlab("") + ylab("") +
@@ -641,16 +637,16 @@ plot.netrank <- function(...,
   
   plt <- plt + geom_text(aes(x = treat, y = name, label = ranking),
                          colour = col)
-
+  
   if (!legend)
     plt <- plt + theme(legend.position = "none")
-
+  
   if (!missing.main)
     plt <- plt + ggtitle(main) +
       theme(plot.title = element_text(size = main.size, face = main.face,
                                       colour = main.col))
-
-
+  
+  
   ##
   ## Print warnings
   ##

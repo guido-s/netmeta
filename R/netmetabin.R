@@ -854,25 +854,16 @@ netmetabin <- function(event1, n1, event2, n2,
   }
   ##
   get.designs <- function(x) {
+    net1 <-
+      netmeta(pairwise(studlab = x$studlab, treat = x$treat,
+                       event = x$event, n = x$n,
+                       sm = "RD"),
+              warn = FALSE)
     ##
-    res <- nma.krahn(netmeta(pairwise(studlab = x$studlab,
-                                      treat = x$treat,
-                                      event = x$event,
-                                      n = x$n,
-                                      sm = "RD"),
-                             warn = FALSE)
-                     )$studies[, c("studlab", "design")]
-    ##
-    if (is.null(res)) {
-      net1 <- netmeta(pairwise(studlab = x$studlab,
-                               treat = x$treat,
-                               event = x$event,
-                               n = x$n,
-                               sm = "RD"),
-                      warn = FALSE)
-      ##
+    if (net1$n == 2)
       res <- data.frame(studlab = net1$studlab, design = net1$designs)
-    }
+    else
+      res <- nma.krahn(net1)$studies[, c("studlab", "design")]
     ##
     res$design <- as.character(res$design)
     res <- unique(res)

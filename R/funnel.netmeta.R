@@ -129,7 +129,7 @@
 #' # 'Comparison-adjusted' funnel plot not created as argument 'order'
 #' # is missing
 #' #
-#' funnel(net1)
+#' try(funnel(net1))
 #' 
 #' # (Non-sensical) alphabetic order of treatments with placebo as
 #' # last treatment
@@ -215,15 +215,10 @@ funnel.netmeta <- function(x,
   ##
   pooled <- setchar(pooled, c("fixed", "random"))
   ##
-  if (missing(order)) {
-    warning("In order to construct a 'comparison-adjusted' funnel plot",
-            ",\n  ",
-            "please provide a meaningful order of treatments ",
-            "using argument 'order'",
-            "\n  ",
-            "(see help page of funnel.netmeta for some examples).")
-    return(invisible(NULL))
-  }
+  if (missing(order))
+    stop("Argument 'order' with a meaningful order of treatments ",
+         "must be provided.\n  ",
+         "(see help page of funnel.netmeta for some examples).")
   else
     order <- setseq(order, x$trts)
   ##
