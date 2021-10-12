@@ -47,10 +47,15 @@ npn <- function(x) {
 }
 replaceNULL <- function(x, replace = NA) {
   if (is.null(x))
-    res <- replace
+    return(replace)
+  x
+}
+replaceNA <- function(x, replace = NA) {
+  if (is.null(x))
+    return(x)
   else
-    res <- x
-  res
+    x[is.na(x)] <- replace
+  x
 }
 warnarg <- function(x, y, fun, cl, otherarg) {
   if (x %in% y)

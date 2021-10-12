@@ -440,7 +440,7 @@
 #' \bold{33}, 4353--69
 #' 
 #' Schwarzer G, Carpenter JR, Rücker G (2015):
-#' \emph{Meta-Analysis with R (Use-R!)}.
+#' \emph{Meta-Analysis with R (Use R!)}.
 #' Springer International Publishing, Switzerland
 #' 
 #' Senn S, Gavini F, Magrez D, Scheen A (2013):
