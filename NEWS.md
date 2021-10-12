@@ -2,8 +2,7 @@
 
 ### Major changes
 
-* New branch to support Use R!-Book Meta-Analysis with R, first
-   edition
+* New branch to support 'Meta-Analysis with R (Use R!)', first edition
 
 * Annabel Davies <annabel.davies@manchester.ac.uk> is a new co-author
   of R package **netmeta**
