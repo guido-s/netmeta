@@ -1,3 +1,10 @@
+## netmeta, version 2.0-1 (2021-mm-dd)
+
+### Major changes
+  
+* By default, reference group is not defined in pairwise()
+
+
 ## netmeta, version 2.0-0 (2021-10-12)
 
 ### Major changes

@@ -682,9 +682,48 @@ forest.netsplit <- function(x,
   }
 
 
-  invisible(NULL)
-}
+  res <- list(dat = dat,
+              leftcols = leftcols,
+              leftlabs = leftlabs,
+              rightcols = rightcols,
+              rightlabs = rightlabs,
+              lab.NA = lab.NA,
+              backtransf = backtransf,
+              smlab = smlab,
+              weight.study = if (equal.size) "same" else "fixed",
+              ##
+              args = list(
+                pooled = pooled,
+                show = show,
+                subgroup = subgroup,
+                overall = overall,
+                direct = direct,
+                indirect = indirect,
+                prediction = prediction,
+                only.reference = only.reference,
+                sortvar = sortvar,
+                text.overall = text.overall,
+                text.direct = text.direct,
+                text.indirect = text.indirect,
+                text.predict = text.predict,
+                type.overall = type.overall,
+                type.direct = type.direct,
+                type.indirect = type.indirect,
+                col.square = col.square,
+                col.square.lines = col.square.lines,
+                col.inside = col.inside,
+                col.diamond = col.diamond,
+                col.diamond.lines = col.diamond.lines,
+                col.predict = col.predict,
+                col.predict.lines = col.predict.lines,
+                equal.size = equal.size,
+                digits = digits,
+                digits.prop = digits.prop)
+              )
 
+              
+  invisible(res)
+}
 
 
 

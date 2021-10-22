@@ -158,8 +158,8 @@
 #'              linreg = TRUE, rank = TRUE, mm = TRUE)
 #' #
 #' metabias(metagen(TE.adj, seTE, data = f1))
-#' metabias(metagen(TE.adj, seTE, data = f1), method = "rank")
-#' metabias(metagen(TE.adj, seTE, data = f1), method = "mm")
+#' metabias(metagen(TE.adj, seTE, data = f1), method = "Begg")
+#' metabias(metagen(TE.adj, seTE, data = f1), method = "Thompson")
 #'
 #' @method funnel netmeta
 #' @export
@@ -411,11 +411,11 @@ funnel.netmeta <- function(x,
   }
   ##
   if (linreg)
-    mb.linreg <- metabias(m.adj, method = "linreg")
+    mb.linreg <- metabias(m.adj, method = "Egger")
   if (rank)
-    mb.rank <- metabias(m.adj, method = "rank")
+    mb.rank <- metabias(m.adj, method = "Begg")
   if (mm)
-    mb.mm <- metabias(m.adj, method = "mm")
+    mb.mm <- metabias(m.adj, method = "Thompson")
   ##
   if (linreg | rank | mm)
     legend(pos.tests,
