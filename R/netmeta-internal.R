@@ -3,8 +3,8 @@
     paste0("Loading 'netmeta' package (version ",
            utils::packageDescription("netmeta")$Version,
            ").",
-           "\nSupporting book 'Meta-Analysis with R (Use R!), first edition.",
-           "\nType 'help(meta)' for a brief overview.")
+           "\nSupporting 'Meta-Analysis with R (Use R!)', ",
+           "first edition.")
   packageStartupMessage(msg)
 }
 
