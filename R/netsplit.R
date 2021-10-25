@@ -192,6 +192,20 @@
 #' \dontrun{
 #' print(netsplit(net1), digits = 2,
 #'       backtransf = FALSE, fixed = FALSE)
+#'
+#' # Sort by increasing number of studies in direct comparisons
+#' print(netsplit(net1), digits = 2, sortvar = k)
+#' # Sort by decreasing number of studies in direct comparisons
+#' print(netsplit(net1), digits = 2, sortvar = -k)
+#' 
+#' # Sort by increasing evidence proportion under fixed effects model
+#' print(netsplit(net1), digits = 2, sortvar = prop.fixed)
+#' # Sort by decreasing evidence proportion under fixed effects model
+#' print(netsplit(net1), digits = 2, sortvar = -prop.fixed)
+#' 
+#' # Sort by decreasing evidence proportion under fixed effects model
+#' # and number of studies
+#' print(netsplit(net1), digits = 2, sortvar = cbind(-prop.fixed, -k))
 #' 
 #' data(Senn2013)
 #' #
@@ -881,15 +895,38 @@ print.netsplit <- function(x,
   if (!missing.only.reference)
     chklogical(only.reference)
   ##
+  ## Catch sortvar from data:
+  ##
+  mf <- match.call()
+  error <- try(sortvar.x <- eval(mf[[match("sortvar", names(mf))]],
+                                 x,
+                                 enclos = sys.frame(sys.parent())),
+               silent = TRUE)
+  if (!any(class(error) == "try-error"))
+    sortvar <- sortvar.x
+  ##
   if (!is.null(sortvar)) {
-    if (length(sortvar) == 1)
-      if (tolower(sortvar) == "k")
-        sortvar <- x$k
-      else if (tolower(sortvar) == "-k")
-        sortvar <- -x$k
-      else
-        stop("Wrong value for argument 'sortvar'.", call. = FALSE)
+    if (length(dim(sortvar)) == 2) {
+      if (dim(sortvar)[1] != length(x$comparison))
+        stop("Argument 'sortvar' must be of length ",
+             length(x$comparison), ".",
+             call. = FALSE)
+      ##
+      ## Set proportions to 0 or 1
+      ##
+      if (is.numeric(sortvar)) {
+        sortvar[is.zero(abs(sortvar), n = 1000)] <- 0
+        sortvar[is.zero(1 - abs(sortvar), n = 1000)] <-
+          1 * sign(sortvar)[is.zero(1 - abs(sortvar), n = 1000)]
+      }
+      sortvar <- order(do.call(order, as.list(as.data.frame(sortvar))))
+    }
     else
+      chklength(sortvar, length(x$comparison),
+                text = paste0("Argument 'sortvar' must be of length ",
+                              length(x$comparison), "."))
+    ##
+    if (!is.numeric(sortvar))
       sortvar <- setchar(sortvar, x$comparison)
   }
   ##

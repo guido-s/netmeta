@@ -40,7 +40,8 @@
 #'   events in two treatment arms are to be included in the
 #'   meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
 #'   or \code{"OR"}).
-#' @param reference.group Reference treatment.
+#' @param reference.group Reference treatment (first treatment is used
+#'   if argument is missing).
 #' @param keep.all.comparisons A logical indicating whether all
 #'   pairwise comparisons or only comparisons with the study-specific
 #'   reference group should be kept ('basic parameters').
@@ -343,7 +344,7 @@ pairwise <- function(treat,
                      incr = 0.5, allincr = FALSE, addincr = FALSE,
                      allstudies = FALSE,
                      ##
-                     reference.group = "",
+                     reference.group,
                      keep.all.comparisons,
                      ##
                      warn = FALSE,
@@ -384,8 +385,10 @@ pairwise <- function(treat,
     res <- treat
     ##
     if (missing.reference.group)
-      if (!is.null(attributes(treat)$reference.group))
+      if (!is.null(attributes(treat)$reference.group)) {
         reference.group <- attributes(treat)$reference.group
+        missing.reference.group <- FALSE
+      }
     if (missing(keep.all.comparisons)) {
       if (!is.null(attributes(treat)$keep.all.comparisons))
         keep.all.comparisons <- attributes(treat)$keep.all.comparisons
@@ -1427,71 +1430,45 @@ pairwise <- function(treat,
     rownames(res) <- 1:nrow(res)
   }
   
-
+  
   ##
   ## Use first treatment as reference if argument is missing
   ##
   labels <- unique(sort(c(res$treat1, res$treat2)))
   ##
+  if (missing.reference.group)
+    reference.group <- labels[1]
   if (is.factor(reference.group))
     reference.group <- as.character(reference.group)
   if (is.numeric(reference.group))
     chknumeric(reference.group, length = 1)
   else
     chkchar(reference.group, length = 1)
+  reference.group <- setchar(reference.group, c(labels, ""))
   ##
-  if (reference.group != "" | !keep.all.comparisons) {
-    reference.group <-
-      setchar(reference.group, labels,
-              addtext = " as argument keep.all.comparisons = FALSE")
+  if (!keep.all.comparisons) {
     ##
     drop <- logical(0)
-    wo <- logical(0)
     ##
     for (i in unique(res$studlab)) {
       d.i <- res[res$studlab == i, , drop = FALSE]
       trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
+      ##
+      ## Keep comparisons with reference group or first treatment if
+      ## reference treament missing in study
+      ##
       if (reference.group %in% trts.i)
         ref.i <- reference.group
       else
         ref.i <- rev(trts.i)[1]
       ##
       drop.i <- d.i$treat1 != ref.i & d.i$treat2 != ref.i
-      wo.i <- d.i$treat1 == ref.i
       ##
       drop <- c(drop, drop.i)
-      wo <- c(wo, wo.i)
     }
     ##
-    if (!keep.all.comparisons) {
+    if (!keep.all.comparisons)
       res <- res[!drop, , drop = FALSE]
-      wo <- wo[!drop]
-    }
-    ##
-    if (sum(wo) > 0) {
-      res$TE[wo] <- -res$TE[wo]
-      ##
-      t2.i <- res$treat2
-      e2.i <- res$event2
-      n2.i <- res$n2
-      mean2.i <- res$mean2
-      sd2.i <- res$sd2
-      time2.i <- res$time2
-      ##
-      res$treat2[wo] <- res$treat1[wo]
-      res$event2[wo] <- res$event1[wo]
-      res$n2[wo] <- res$n1[wo]
-      res$mean2[wo] <- res$mean1[wo]
-      res$sd2[wo] <- res$sd1[wo]
-      res$time2[wo] <- res$time2[wo]
-      ##
-      res$treat1[wo] <- t2.i[wo]
-      res$event1[wo] <- e2.i[wo]
-      res$n1[wo] <- n2.i[wo]
-      res$mean1[wo] <- mean2.i[wo]
-      res$sd1[wo] <- sd2.i[wo]
-      res$time1[wo] <- time2.i[wo]
-    }
   }
   
   

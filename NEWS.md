@@ -1,8 +1,15 @@
 ## netmeta, version 2.0-1 (2021-mm-dd)
 
-### Major changes
-  
-* By default, reference group is not defined in pairwise()
+### User-visible changes
+
+* print.netsplit(), forest.netsplit():
+  - sorting by direct evidence proportion possible (argument
+    'sortvar')
+
+### Internal changes
+
+* pairwise():
+  - keep original order of treatments
 
 
 ## netmeta, version 2.0-0 (2021-10-12)

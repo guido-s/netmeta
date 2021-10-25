@@ -632,6 +632,8 @@ netmeta <- function(TE, seTE,
       reference.group <- attr(TE, "reference.group")
       if (is.null(reference.group))
         reference.group <- ""
+      else
+        missing.reference.group <- FALSE
     }
     ##
     keep.all.comparisons <- attr(TE, "keep.all.comparisons")
