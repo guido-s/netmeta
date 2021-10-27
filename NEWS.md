@@ -5,6 +5,9 @@
 * print.netsplit(), forest.netsplit():
   - sorting by direct evidence proportion possible (argument
     'sortvar')
+	
+* print.netmeta(), print.netcomb():
+  - print number of pairwise comparisons after number of studies
 
 ### Internal changes
 

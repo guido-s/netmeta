@@ -14,7 +14,7 @@
   baseline.reference = x$baseline.reference,
   all.treatments = x$all.treatments,
   details = TRUE,
-  ma = TRUE,
+  nma = TRUE,
   backtransf = x$backtransf,
   nchar.trts = x$nchar.trts,
   nchar.studlab = x$nchar.studlab,
@@ -62,8 +62,8 @@ be printed.}
 \item{details}{A logical indicating whether further details for
 individual studies should be printed.}
 
-\item{ma}{A logical indicating whether summary results of
-meta-analysis should be printed.}
+\item{nma}{A logical indicating whether summary results of
+network meta-analysis should be printed.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If

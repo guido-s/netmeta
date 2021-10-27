@@ -282,11 +282,11 @@ print.netmeta <- function(x,
   ##  
   if (fixed | random) {
     cat(paste("Number of studies: k = ", k, "\n", sep = ""))
+    cat(paste0("Number of pairwise comparisons: m = ", m, "\n"))
     if (!is.null(x$n.trts))
       cat(paste0("Number of observations: o = ", sum(x$n.trts, na.rm = TRUE),
                  "\n"))
     cat(paste0("Number of treatments: n = ", n, "\n"))
-    cat(paste0("Number of pairwise comparisons: m = ", m, "\n"))
     if (!oldversion)
       cat(paste0("Number of designs: d = ", x$d, "\n"))
     ##    
@@ -646,7 +646,7 @@ print.netmeta <- function(x,
     if (is.bin)
       hi.txt <- "inconsistency (between designs)"
     else if (x$d == 1)
-      hi.txt <- paste0("heterogeneity")
+      hi.txt <- "heterogeneity"
     else
       hi.txt <- "heterogeneity / inconsistency"
     ##
@@ -713,7 +713,9 @@ print.netmeta <- function(x,
         pval.Qs <- formatPT(pval.Qs, digits = digits.pval.Q,
                             scientific = scientific.pval)
         cat(paste0("\nTests of heterogeneity (within designs) and ",
-                   "inconsistency (between designs):\n"))
+                   "inconsistency",
+                   if (options()$width < 77) "\n" else " ",
+                   "(between designs):\n"))
         Qdata <- data.frame(Q = round(Qs, digits.Q),
                             df = df.Qs,
                             pval = pval.Qs)

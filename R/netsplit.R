@@ -679,7 +679,8 @@ netsplit <- function(x, method,
     suppressWarnings(metagen(direct.fixed$TE - indirect.fixed$TE,
                              sqrt(direct.fixed$seTE^2 +
                                   indirect.fixed$seTE^2),
-                             level = x$level.ma))
+                             level = x$level.ma,
+                             method.tau = "DL"))
   ##
   compare.fixed <- data.frame(comparison,
                               TE = m.fixed$TE,
@@ -750,7 +751,8 @@ netsplit <- function(x, method,
       suppressWarnings(metagen(direct.random$TE - indirect.random$TE,
                                sqrt(direct.random$seTE^2 +
                                     indirect.random$seTE^2),
-                               level = x$level.ma))
+                               level = x$level.ma,
+                               method.tau = "DL"))
     ##
     compare.random <- data.frame(comparison,
                                  TE = m.random$TE,

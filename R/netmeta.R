@@ -1307,10 +1307,14 @@ netmeta <- function(TE, seTE,
       else
         V <- dat.tau$seTE^2
       ##
-      rma1 <- rma.mv(TE, V, data = dat.tau,
-                     mods = formula.trts,
-                     random = ~ factor(id) | studlab, rho = 0.5,
-                     method = method.tau, control = control)
+      rma1 <-
+        runNN(rma.mv,
+              list(yi = TE, V = V,
+                   data = dat.tau,
+                   mods = formula.trts,
+                   random = as.call(~ factor(id) | studlab),
+                   rho = 0.5,
+                   method = method.tau, control = control))
       ##
       tau <- sqrt(rma1$tau2)
     }

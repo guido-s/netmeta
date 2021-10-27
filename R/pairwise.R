@@ -1182,7 +1182,8 @@ pairwise <- function(treat,
           if (nrow(dat) > 0) {
             m1 <- metagen(dat$TE1 - dat$TE2,
                           sqrt(dat$seTE1^2 + dat$seTE2^2),
-                          warn = warn, method.tau.ci = "", ...)
+                          method.tau = "DL", method.tau.ci = "",
+                          warn = warn, ...)
             ##
             dat$TE <- m1$TE
             dat$seTE <- m1$seTE

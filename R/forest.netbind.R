@@ -151,7 +151,8 @@ forest.netbind <- function(x,
                                sm = x$sm,
                                fixed = FALSE, random = FALSE,
                                byvar = x$fixed$treat, print.byvar = FALSE,
-                               subset = sel))
+                               subset = sel,
+                               method.tau = "DL"))
     ##
     m$studlab <- x$fixed$name[sel]
     m$TE <- x$fixed$TE[sel]
@@ -183,7 +184,8 @@ forest.netbind <- function(x,
                                sm = x$sm,
                                fixed = FALSE, random = FALSE,
                                byvar = x$random$treat, print.byvar = FALSE,
-                               subset = sel))
+                               subset = sel,
+                               method.tau = "DL"))
     ##
     m$studlab <- x$random$name[sel]
     m$TE <- x$random$TE[sel]

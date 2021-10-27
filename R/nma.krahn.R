@@ -76,7 +76,8 @@ nma.krahn <- function(x, reference.group = x$reference.group,
     seTE.i <- studies$seTE[studies$comparison == i]
     m1 <-
       suppressWarnings(metagen(TE.i, seTE.i, sm = x$sm,
-                               warn = FALSE, method.tau.ci = ""))
+                               method.tau = "DL", method.tau.ci = "",
+                               warn = FALSE))
     ##
     direct$comparison[j] <- i
     direct$TE[j] <- m1$TE.fixed
@@ -87,7 +88,8 @@ nma.krahn <- function(x, reference.group = x$reference.group,
       seTE.i <- studies$seTE[studies$comparison == i & studies$narms == 2]
       m2 <-
         suppressWarnings(metagen(TE.i, seTE.i, sm = x$sm,
-                                 warn = FALSE, method.tau.ci = ""))
+                                 method.tau = "DL", method.tau.ci = "",
+                                 warn = FALSE))
       ##
       direct$TE.2arm[j] <- m2$TE.fixed
       direct$seTE.2arm[j] <- m2$seTE.fixed

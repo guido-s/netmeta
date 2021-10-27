@@ -55,7 +55,7 @@
 #' @param drop.reference.group A logical indicating whether the
 #'   reference group should be printed in the forest plot.
 #' @param col.by The colour to print information on subgroups.
-#' @param print.byvar A logical indicating whether the name of the
+#' @param print.subgroup.name A logical indicating whether the name of the
 #'   grouping variable should be printed in front of the group labels.
 #' @param \dots Additional arguments for \code{\link{forest.meta}}
 #'   function.
@@ -202,7 +202,7 @@ forest.netmeta <- function(x,
                            drop.reference.group = FALSE,
                            ##
                            col.by = "black",
-                           print.byvar = FALSE,
+                           print.subgroup.name = FALSE,
                            ##
                            ...) {
   
@@ -251,7 +251,7 @@ forest.netmeta <- function(x,
   }
   ##
   chklogical(drop.reference.group)
-  chklogical(print.byvar)
+  chklogical(print.subgroup.name)
   ##
   chklogical(backtransf)
   chkchar(lab.NA)
@@ -547,12 +547,14 @@ forest.netmeta <- function(x,
     m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
                                    sm = x$sm,
                                    studlab = labels, backtransf = backtransf,
+                                   method.tau = "DL",
                                    warn = FALSE))
   else
     m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
                                    byvar = dat$comparison,
                                    sm = x$sm,
                                    studlab = labels, backtransf = backtransf,
+                                   method.tau = "DL",
                                    warn = FALSE))
   ##
   forest(m1,
@@ -567,7 +569,7 @@ forest.netmeta <- function(x,
          lab.NA = lab.NA,
          ##
          col.by = col.by,
-         print.byvar = print.byvar,
+         print.subgroup.name = print.subgroup.name,
          ##
          weight.study = if (equal.size) "same" else pooled,
          ##

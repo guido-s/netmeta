@@ -22,8 +22,8 @@
 #'   be printed.
 #' @param details A logical indicating whether further details for
 #'   individual studies should be printed.
-#' @param ma A logical indicating whether summary results of
-#'   meta-analysis should be printed.
+#' @param nma A logical indicating whether summary results of
+#'   network meta-analysis should be printed.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -117,7 +117,7 @@ print.summary.netmeta <- function(x,
                                   reference.group = x$reference.group,
                                   baseline.reference = x$baseline.reference,
                                   all.treatments = x$all.treatments,
-                                  details = TRUE, ma = TRUE,
+                                  details = TRUE, nma = TRUE,
                                   ##
                                   backtransf = x$backtransf,
                                   nchar.trts = x$nchar.trts,
@@ -173,6 +173,7 @@ print.summary.netmeta <- function(x,
   ##
   chklogical(scientific.pval)
   ##
+  chklogical(nma)
   chklogical(legend)
   ##
   mf <- match.call()
@@ -429,7 +430,7 @@ print.summary.netmeta <- function(x,
   if (reference.group != "")
     reference.group <- setref(reference.group, rownames(x$x$A.matrix))
   ##  
-  if (ma)
+  if (nma)
     print.netmeta(x$x,
                   fixed = fixed, random = random,
                   prediction = prediction,
