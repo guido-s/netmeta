@@ -333,6 +333,7 @@ forest.netcomb <- function(x,
     suppressWarnings(metagen(TE, seTE, data = dat,
                              sm = x$sm,
                              studlab = trts, backtransf = backtransf,
+                             method.tau = "DL",
                              warn = FALSE))
   ##
   forest(m1,

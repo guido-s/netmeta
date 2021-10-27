@@ -27,7 +27,7 @@
   add.data,
   drop.reference.group = FALSE,
   col.by = "black",
-  print.byvar = FALSE,
+  print.subgroup.name = FALSE,
   ...
 )
 
@@ -104,7 +104,7 @@ reference group should be printed in the forest plot.}
 
 \item{col.by}{The colour to print information on subgroups.}
 
-\item{print.byvar}{A logical indicating whether the name of the
+\item{print.subgroup.name}{A logical indicating whether the name of the
 grouping variable should be printed in front of the group labels.}
 
 \item{\dots}{Additional arguments for \code{\link{forest.meta}}

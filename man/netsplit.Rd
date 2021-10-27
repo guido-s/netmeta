@@ -237,6 +237,20 @@ print(netsplit(net1), digits = 2)
 print(netsplit(net1), digits = 2,
       backtransf = FALSE, fixed = FALSE)
 
+# Sort by increasing number of studies in direct comparisons
+print(netsplit(net1), digits = 2, sortvar = k)
+# Sort by decreasing number of studies in direct comparisons
+print(netsplit(net1), digits = 2, sortvar = -k)
+
+# Sort by increasing evidence proportion under fixed effects model
+print(netsplit(net1), digits = 2, sortvar = prop.fixed)
+# Sort by decreasing evidence proportion under fixed effects model
+print(netsplit(net1), digits = 2, sortvar = -prop.fixed)
+
+# Sort by decreasing evidence proportion under fixed effects model
+# and number of studies
+print(netsplit(net1), digits = 2, sortvar = cbind(-prop.fixed, -k))
+
 data(Senn2013)
 #
 net2 <- netmeta(TE, seTE, treat1.long, treat2.long,

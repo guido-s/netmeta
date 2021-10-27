@@ -121,10 +121,10 @@ install.packages("netmeta")
 ### Current development version on GitHub:
 
 Installation using R package
-[**devtools**](https://cran.r-project.org/package=devtools):
+[**remotes**](https://cran.r-project.org/package=remotes):
 ```r
-install.packages("devtools")
-devtools::install_github("guido-s/netmeta", ref = "develop")
+install.packages("remotes")
+remotes::install_github("guido-s/netmeta", ref = "develop")
 ```
 
 ### Bug Reports:

@@ -454,8 +454,8 @@ print.netconnection <- function(x,
   matitle(x)
   ##
   cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
-  cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
   cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
+  cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
   if (!is.null(x$d))
     cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
   ##

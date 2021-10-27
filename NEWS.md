@@ -1,3 +1,20 @@
+## netmeta, version 2.0-1 (2021-mm-dd)
+
+### User-visible changes
+
+* print.netsplit(), forest.netsplit():
+  - sorting by direct evidence proportion possible (argument
+    'sortvar')
+	
+* print.netmeta(), print.netcomb():
+  - print number of pairwise comparisons after number of studies
+
+### Internal changes
+
+* pairwise():
+  - keep original order of treatments
+
+
 ## netmeta, version 2.0-0 (2021-10-12)
 
 ### Major changes

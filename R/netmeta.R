@@ -632,6 +632,8 @@ netmeta <- function(TE, seTE,
       reference.group <- attr(TE, "reference.group")
       if (is.null(reference.group))
         reference.group <- ""
+      else
+        missing.reference.group <- FALSE
     }
     ##
     keep.all.comparisons <- attr(TE, "keep.all.comparisons")
@@ -1305,10 +1307,14 @@ netmeta <- function(TE, seTE,
       else
         V <- dat.tau$seTE^2
       ##
-      rma1 <- rma.mv(TE, V, data = dat.tau,
-                     mods = formula.trts,
-                     random = ~ factor(id) | studlab, rho = 0.5,
-                     method = method.tau, control = control)
+      rma1 <-
+        runNN(rma.mv,
+              list(yi = TE, V = V,
+                   data = dat.tau,
+                   mods = formula.trts,
+                   random = as.call(~ factor(id) | studlab),
+                   rho = 0.5,
+                   method = method.tau, control = control))
       ##
       tau <- sqrt(rma1$tau2)
     }

@@ -155,7 +155,7 @@ nma.ruecker <- function(TE, seTE,
         l <- nrow(sub)
         Q.matrix[i, j] <-
           suppressWarnings(metagen(TE = sub$TE, seTE = 1 / sqrt(sub$w.pooled),
-                                   warn = FALSE, method.tau.ci = "")$Q)
+                                   method.tau = "DL", method.tau.ci = "")$Q)
       }
     }
   }
@@ -266,7 +266,8 @@ nma.ruecker <- function(TE, seTE,
     ##
     m.i.tau.preset <-
       suppressWarnings(metagen(TE, seTE.orig, subset = selstud,
-                               tau.preset = tau.direct, method.tau.ci = ""))
+                               tau.preset = tau.direct,
+                               method.tau = "DL", method.tau.ci = ""))
     ##
     if (is.na(tau.direct) | tau.direct == 0) {
       TE.i   <- m.i.tau.preset$TE.fixed
@@ -285,8 +286,7 @@ nma.ruecker <- function(TE, seTE,
     ##
     m.i <-
       suppressWarnings(metagen(TE, seTE.orig, subset = selstud,
-                               method.tau = method.tau,
-                               method.tau.ci = ""))
+                               method.tau = method.tau, method.tau.ci = ""))
     ##
     Q.direct[sel.treat1, sel.treat2] <-
       Q.direct[sel.treat2, sel.treat1] <- m.i$Q

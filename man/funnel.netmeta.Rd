@@ -182,8 +182,8 @@ f1 <- funnel(net1, order = ord,
              linreg = TRUE, rank = TRUE, mm = TRUE)
 #
 metabias(metagen(TE.adj, seTE, data = f1))
-metabias(metagen(TE.adj, seTE, data = f1), method = "rank")
-metabias(metagen(TE.adj, seTE, data = f1), method = "mm")
+metabias(metagen(TE.adj, seTE, data = f1), method = "Begg")
+metabias(metagen(TE.adj, seTE, data = f1), method = "Thompson")
 
 }
 \references{

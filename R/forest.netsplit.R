@@ -229,15 +229,38 @@ forest.netsplit <- function(x,
   if (!missing.only.reference)
     chklogical(only.reference)
   ##
+  ## Catch sortvar from data:
+  ##
+  mf <- match.call()
+  error <- try(sortvar.x <- eval(mf[[match("sortvar", names(mf))]],
+                                 x,
+                                 enclos = sys.frame(sys.parent())),
+               silent = TRUE)
+  if (!any(class(error) == "try-error"))
+    sortvar <- sortvar.x
+  ##
   if (!is.null(sortvar)) {
-    if (length(sortvar) == 1)
-      if (tolower(sortvar) == "k")
-        sortvar <- x$k
-      else if (tolower(sortvar) == "-k")
-        sortvar <- -x$k
-      else
-        stop("Wrong value for argument 'sortvar'.", call. = FALSE)
+    if (length(dim(sortvar)) == 2) {
+      if (dim(sortvar)[1] != length(x$comparison))
+        stop("Argument 'sortvar' must be of length ",
+             length(x$comparison), ".",
+             call. = FALSE)
+      ##
+      ## Set proportions to 0 or 1
+      ##
+      if (is.numeric(sortvar)) {
+        sortvar[is.zero(abs(sortvar), n = 1000)] <- 0
+        sortvar[is.zero(1 - abs(sortvar), n = 1000)] <-
+          1 * sign(sortvar)[is.zero(1 - abs(sortvar), n = 1000)]
+      }
+      sortvar <- order(do.call(order, as.list(as.data.frame(sortvar))))
+    }
     else
+      chklength(sortvar, length(x$comparison),
+                text = paste0("Argument 'sortvar' must be of length ",
+                              length(x$comparison), "."))
+    ##
+    if (!is.numeric(sortvar))
       sortvar <- setchar(sortvar, x$comparison)
   }
   ##
@@ -589,11 +612,13 @@ forest.netsplit <- function(x,
         suppressWarnings(metagen(dat$TE, dat$seTE,
                                  studlab = dat$evidence, data = dat,
                                  sm = x$sm,
+                                 method.tau = "DL",
                                  byvar = dat$comps, print.byvar = FALSE))
     else
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
-                                 studlab = dat$comps, data = dat, sm = x$sm))
+                                 studlab = dat$comps, data = dat, sm = x$sm,
+                                 method.tau = "DL"))
     ##
     if (overall) {
       m$w.fixed[m$studlab == text.overall] <- max(m$w.fixed, na.rm = TRUE)
@@ -644,11 +669,13 @@ forest.netsplit <- function(x,
         suppressWarnings(metagen(dat$TE, dat$seTE,
                                  studlab = dat$comps, data = dat,
                                  sm = x$sm,
+                                 method.tau = "DL",
                                  byvar = dat$evidence, print.byvar = FALSE))
     else
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
-                                 studlab = dat$comps, data = dat, sm = x$sm))
+                                 studlab = dat$comps, data = dat, sm = x$sm,
+                                 method.tau = "DL"))
     ##
     if (overall) {
       m$w.fixed[m$byvar == text.overall] <- max(m$w.fixed, na.rm = TRUE)
@@ -682,9 +709,48 @@ forest.netsplit <- function(x,
   }
 
 
-  invisible(NULL)
-}
+  res <- list(dat = dat,
+              leftcols = leftcols,
+              leftlabs = leftlabs,
+              rightcols = rightcols,
+              rightlabs = rightlabs,
+              lab.NA = lab.NA,
+              backtransf = backtransf,
+              smlab = smlab,
+              weight.study = if (equal.size) "same" else "fixed",
+              ##
+              args = list(
+                pooled = pooled,
+                show = show,
+                subgroup = subgroup,
+                overall = overall,
+                direct = direct,
+                indirect = indirect,
+                prediction = prediction,
+                only.reference = only.reference,
+                sortvar = sortvar,
+                text.overall = text.overall,
+                text.direct = text.direct,
+                text.indirect = text.indirect,
+                text.predict = text.predict,
+                type.overall = type.overall,
+                type.direct = type.direct,
+                type.indirect = type.indirect,
+                col.square = col.square,
+                col.square.lines = col.square.lines,
+                col.inside = col.inside,
+                col.diamond = col.diamond,
+                col.diamond.lines = col.diamond.lines,
+                col.predict = col.predict,
+                col.predict.lines = col.predict.lines,
+                equal.size = equal.size,
+                digits = digits,
+                digits.prop = digits.prop)
+              )
 
+              
+  invisible(res)
+}
 
 
 

@@ -385,11 +385,16 @@ pairwise <- function(treat,
     res <- treat
     ##
     if (missing.reference.group)
-      if (!is.null(attributes(treat)$reference.group))
+      if (!is.null(attributes(treat)$reference.group)) {
         reference.group <- attributes(treat)$reference.group
-    if (missing(keep.all.comparisons))
+        missing.reference.group <- FALSE
+      }
+    if (missing(keep.all.comparisons)) {
       if (!is.null(attributes(treat)$keep.all.comparisons))
         keep.all.comparisons <- attributes(treat)$keep.all.comparisons
+      else
+        keep.all.comparisons <- TRUE
+    }
     ##
     if (!missing(event))
       warning("Argument 'event' ignored as ",
@@ -912,16 +917,20 @@ pairwise <- function(treat,
       for (i in 1:(narms - 1)) {
         ##
         if (i == 1 & (length(treat[[i]]) != length(event[[i]])))
-          stop("Different length of element ", i, " of lists 'treat' and 'event'.")
+          stop("Different length of element ", i, " of ",
+               "lists 'treat' and 'event'.")
         if (i == 1 & (length(event[[i]]) != length(n[[i]])))
-          stop("Different length of element ", i, " of lists 'event' and 'n'.")
+          stop("Different length of element ", i, " of ",
+               "lists 'event' and 'n'.")
         ##
         for (j in (i + 1):narms) {
           ##
           if (length(treat[[j]]) != length(event[[j]]))
-            stop("Different length of element ", j, " of lists 'treat' and 'event'.")
+            stop("Different length of element ", j, " of ",
+                 "lists 'treat' and 'event'.")
           if (length(event[[j]]) != length(n[[j]]))
-            stop("Different length of element ", j, " of lists 'event' and 'n'.")
+            stop("Different length of element ", j, " of ",
+                 "lists 'event' and 'n'.")
           ##
           dat <- data.frame(TE = NA, seTE = NA,
                             studlab,
@@ -969,7 +978,8 @@ pairwise <- function(treat,
           }
           else
             if (i == 1 & j == 2)
-              stop("No studies available for comparison of first and second treatment.")
+              stop("No studies available for comparison of ",
+                   "first and second treatment.")
         }
       }
     }
@@ -986,16 +996,20 @@ pairwise <- function(treat,
       for (i in seq_len(narms)) {
         ##
         if (length(treat[[i]]) != length(n[[i]]))
-          stop("Different length of element ", i, " of lists 'treat' and 'n'.",
+          stop("Different length of element ", i, " of ",
+               "lists 'treat' and 'n'.",
                call. = FALSE)
         if (length(treat[[i]]) != length(mean[[i]]))
-          stop("Different length of element ", i, " of lists 'treat' and 'mean'.",
+          stop("Different length of element ", i, " of ",
+               "lists 'treat' and 'mean'.",
                call. = FALSE)
         if (length(treat[[i]]) != length(sd[[i]]))
-          stop("Different length of element ", i, " of lists 'treat' and 'sd'.",
+          stop("Different length of element ", i, " of ",
+               "lists 'treat' and 'sd'.",
                call. = FALSE)
         if (length(treat[[i]]) != nstud)
-          stop("Different length of study labels and element ", i, " of list 'treat'.",
+          stop("Different length of study labels and ",
+               "element ", i, " of list 'treat'.",
                call. = FALSE)
       }
       ##
@@ -1102,19 +1116,23 @@ pairwise <- function(treat,
       for (i in 1:(narms - 1)) {
         ##
         if (i == 1 & (length(treat[[i]]) != length(TE[[i]])))
-          stop("Different length of element ", i, " of lists 'treat' and 'TE'.",
+          stop("Different length of element ", i, " of ",
+               "lists 'treat' and 'TE'.",
                call. = FALSE)
         if (i == 1 & (length(treat[[i]]) != length(seTE[[i]])))
-          stop("Different length of element ", i, " of lists 'treat' and 'seTE'.",
+          stop("Different length of element ", i, " of ",
+               "lists 'treat' and 'seTE'.",
                call. = FALSE)
         ##
         for (j in (i + 1):narms) {
           ##
           if (length(treat[[j]]) != length(TE[[j]]))
-            stop("Different length of element ", j, " of lists 'treat' and 'TE'.",
+            stop("Different length of element ", j, " of ",
+                 "lists 'treat' and 'TE'.",
                  call. = FALSE)
           if (length(treat[[j]]) != length(seTE[[j]]))
-            stop("Different length of element ", j, " of lists 'treat' and 'seTE'.",
+            stop("Different length of element ", j, " of ",
+                 "lists 'treat' and 'seTE'.",
                  call. = FALSE)
           ##
           dat <- data.frame(TE = NA, seTE = NA,
@@ -1164,7 +1182,8 @@ pairwise <- function(treat,
           if (nrow(dat) > 0) {
             m1 <- metagen(dat$TE1 - dat$TE2,
                           sqrt(dat$seTE1^2 + dat$seTE2^2),
-                          warn = warn, method.tau.ci = "", ...)
+                          method.tau = "DL", method.tau.ci = "",
+                          warn = warn, ...)
             ##
             dat$TE <- m1$TE
             dat$seTE <- m1$seTE
@@ -1223,19 +1242,23 @@ pairwise <- function(treat,
       for (i in 1:(narms - 1)) {
         ##
         if (i == 1 & (length(treat[[i]]) != length(event[[i]])))
-          stop("Different length of element ", i, " of lists 'treat' and 'event'.",
+          stop("Different length of element ", i, " of ",
+               "lists 'treat' and 'event'.",
                call. = FALSE)
         if (i == 1 & (length(treat[[i]]) != length(time[[i]])))
-          stop("Different length of element ", i, " of lists 'treat' and 'time'.",
+          stop("Different length of element ", i, " of ",
+               "lists 'treat' and 'time'.",
                call. = FALSE)
         ##
         for (j in (i + 1):narms) {
           ##
           if (length(treat[[j]]) != length(event[[j]]))
-            stop("Different length of element ", j, " of lists 'treat' and 'event'.",
+            stop("Different length of element ", j, " of ",
+                 "lists 'treat' and 'event'.",
                  call. = FALSE)
           if (length(treat[[j]]) != length(time[[j]]))
-            stop("Different length of element ", j, " of lists 'treat' and 'time'.",
+            stop("Different length of element ", j, " of ",
+                 "lists 'treat' and 'time'.",
                  call. = FALSE)
           ##
           dat <- data.frame(TE = NA, seTE = NA,
@@ -1408,7 +1431,7 @@ pairwise <- function(treat,
     rownames(res) <- 1:nrow(res)
   }
   
-
+  
   ##
   ## Use first treatment as reference if argument is missing
   ##
@@ -1416,62 +1439,37 @@ pairwise <- function(treat,
   ##
   if (missing.reference.group)
     reference.group <- labels[1]
+  if (is.factor(reference.group))
+    reference.group <- as.character(reference.group)
   if (is.numeric(reference.group))
     chknumeric(reference.group, length = 1)
   else
     chkchar(reference.group, length = 1)
+  reference.group <- setchar(reference.group, c(labels, ""))
   ##
-  if (reference.group != "" | !keep.all.comparisons) {
-    reference.group <-
-      setchar(reference.group, c(labels, ""))
+  if (!keep.all.comparisons) {
     ##
     drop <- logical(0)
-    wo <- logical(0)
     ##
     for (i in unique(res$studlab)) {
       d.i <- res[res$studlab == i, , drop = FALSE]
       trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
+      ##
+      ## Keep comparisons with reference group or first treatment if
+      ## reference treament missing in study
+      ##
       if (reference.group %in% trts.i)
         ref.i <- reference.group
       else
         ref.i <- rev(trts.i)[1]
       ##
       drop.i <- d.i$treat1 != ref.i & d.i$treat2 != ref.i
-      wo.i <- d.i$treat1 == ref.i
       ##
       drop <- c(drop, drop.i)
-      wo <- c(wo, wo.i)
     }
     ##
-    if (!keep.all.comparisons) {
+    if (!keep.all.comparisons)
       res <- res[!drop, , drop = FALSE]
-      wo <- wo[!drop]
-    }
-    ##
-    if (sum(wo) > 0) {
-      res$TE[wo] <- -res$TE[wo]
-      ##
-      t2.i <- res$treat2
-      e2.i <- res$event2
-      n2.i <- res$n2
-      mean2.i <- res$mean2
-      sd2.i <- res$sd2
-      time2.i <- res$time2
-      ##
-      res$treat2[wo] <- res$treat1[wo]
-      res$event2[wo] <- res$event1[wo]
-      res$n2[wo] <- res$n1[wo]
-      res$mean2[wo] <- res$mean1[wo]
-      res$sd2[wo] <- res$sd1[wo]
-      res$time2[wo] <- res$time2[wo]
-      ##
-      res$treat1[wo] <- t2.i[wo]
-      res$event1[wo] <- e2.i[wo]
-      res$n1[wo] <- n2.i[wo]
-      res$mean1[wo] <- mean2.i[wo]
-      res$sd1[wo] <- sd2.i[wo]
-      res$time1[wo] <- time2.i[wo]
-    }
   }
   
   

@@ -188,6 +188,7 @@ forest.netcomplex <- function(x,
     suppressWarnings(metagen(TE, seTE, data = dat, sm = x$x$sm,
                              studlab = complex, backtransf = backtransf,
                              level = x$level,
+                             method.tau = "DL",
                              warn = FALSE))
   ##
   forest(m1,
