@@ -72,7 +72,10 @@
 #' an active treatment versus placebo or sponsored versus
 #' non-sponsored intervention.}}
 #' 
-#' The treatments can be either in increasing or decreasing order.
+#' The treatments can be either in increasing or decreasing order. It
+#' is also possible to only provide a single treatment name in
+#' argument \code{order}. In this case only comparisons with this
+#' treatment will be considered.
 #' 
 #' In the funnel plot, if \code{yaxis} is \code{"se"}, the standard
 #' error of the treatment estimates is plotted on the y-axis which is
@@ -131,12 +134,22 @@
 #' #
 #' try(funnel(net1))
 #' 
+#' # Only show comparisons with placebo
+#' #
+#' funnel(net1, order = "pl")
+#' 
+#' # Add results for tests of funnel plot asymmetry
+#' #
+#' funnel(net1, order = "pl", linreg = TRUE, rank = TRUE, mm = TRUE,
+#'        digits.pval = 2)
+#' 
 #' # (Non-sensical) alphabetic order of treatments with placebo as
 #' # last treatment
 #' #
 #' ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
 #' funnel(net1, order = ord)
-#' 
+#'
+#' \dontrun{
 #' # Add results for tests of funnel plot asymmetry and use different
 #' # plotting symbols and colours
 #' #
@@ -160,6 +173,7 @@
 #' metabias(metagen(TE.adj, seTE, data = f1))
 #' metabias(metagen(TE.adj, seTE, data = f1), method = "Begg")
 #' metabias(metagen(TE.adj, seTE, data = f1), method = "Thompson")
+#' }
 #'
 #' @method funnel netmeta
 #' @export
@@ -219,8 +233,14 @@ funnel.netmeta <- function(x,
     stop("Argument 'order' with a meaningful order of treatments ",
          "must be provided.\n  ",
          "(see help page of funnel.netmeta for some examples).")
-  else
-    order <- setseq(order, x$trts)
+  else {
+    if (length(order) == 1) {
+      order <- setchar(order, x$trts)
+      order.all <- c(x$trts[x$trts != order], order)
+    }
+    else
+      order.all <- order <- setseq(order, x$trts)
+  }
   ##
   chklogical(legend)
   chklogical(linreg)
@@ -260,8 +280,8 @@ funnel.netmeta <- function(x,
   comparison <- paste(treat1, treat2, sep = sep.trts)
   comparison21 <- paste(treat2, treat1, sep = sep.trts)
   ##
-  treat1.pos <- as.numeric(factor(treat1, levels = order))
-  treat2.pos <- as.numeric(factor(treat2, levels = order))
+  treat1.pos <- as.numeric(factor(treat1, levels = order.all))
+  treat2.pos <- as.numeric(factor(treat2, levels = order.all))
   ##
   wo <- treat1.pos > treat2.pos
   ##
@@ -322,6 +342,9 @@ funnel.netmeta <- function(x,
       res$TE.direct[i] <- x$TE.direct.random[treat1[i], treat2[i]]
   ##
   res$TE.adj <- res$TE - res$TE.direct
+  ##
+  if (length(order) == 1)
+    res <- subset(res, treat1 == order | treat2 == order)
   
   
   ##

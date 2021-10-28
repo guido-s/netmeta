@@ -1,3 +1,17 @@
+## netmeta, version 2.0-2 (2021-mm-dd)
+
+### Major changes
+
+* Only comparisons with a reference treatment can be shown in
+  'comparison-adjusted' funnel plot
+
+### User-visible changes
+
+* funnel.netmeta():
+  - argument 'order' can be a single treatment which is used as
+    reference group
+
+
 ## netmeta, version 2.0-1 (2021-10-27)
 
 ### User-visible changes
@@ -505,7 +519,7 @@
   - export the design matrix (new list element 'X.matrix')
 
 * discomb():
-  - export the number of subnetworks
+  - export the number of subnetworks
 
 * forest.netsplit():
   - print an informative warning (instead of an obscure error

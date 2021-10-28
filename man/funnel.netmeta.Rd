@@ -135,7 +135,10 @@ possibilities include defining the comparisons so that all refer to
 an active treatment versus placebo or sponsored versus
 non-sponsored intervention.}}
 
-The treatments can be either in increasing or decreasing order.
+The treatments can be either in increasing or decreasing order. It
+is also possible to only provide a single treatment name in
+argument \code{order}. In this case only comparisons with this
+treatment will be considered.
 
 In the funnel plot, if \code{yaxis} is \code{"se"}, the standard
 error of the treatment estimates is plotted on the y-axis which is
@@ -155,12 +158,22 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #
 try(funnel(net1))
 
+# Only show comparisons with placebo
+#
+funnel(net1, order = "pl")
+
+# Add results for tests of funnel plot asymmetry
+#
+funnel(net1, order = "pl", linreg = TRUE, rank = TRUE, mm = TRUE,
+       digits.pval = 2)
+
 # (Non-sensical) alphabetic order of treatments with placebo as
 # last treatment
 #
 ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
 funnel(net1, order = ord)
 
+\dontrun{
 # Add results for tests of funnel plot asymmetry and use different
 # plotting symbols and colours
 #
@@ -184,6 +197,7 @@ f1 <- funnel(net1, order = ord,
 metabias(metagen(TE.adj, seTE, data = f1))
 metabias(metagen(TE.adj, seTE, data = f1), method = "Begg")
 metabias(metagen(TE.adj, seTE, data = f1), method = "Thompson")
+}
 
 }
 \references{
