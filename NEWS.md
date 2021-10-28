@@ -2,14 +2,19 @@
 
 ### Major changes
 
-* Only comparisons with a reference treatment can be shown in
-  'comparison-adjusted' funnel plot
+* Only comparisons with a single or multiple treatment(s) can be shown
+  in a 'comparison-adjusted' funnel plot
+  
+* Comparators in 'comparison-adjusted' funnel plot can be lumped
 
 ### User-visible changes
 
 * funnel.netmeta():
-  - argument 'order' can be a single treatment which is used as
-    reference group
+  - argument 'order' can be a single or multiple treatment(s) used as
+    comparator(s)
+  - new argument 'lump.comparator' to specify whether comparators
+    should be lumped
+  - new argument 'text.comparator' to mark comparators
 
 
 ## netmeta, version 2.0-1 (2021-10-27)
