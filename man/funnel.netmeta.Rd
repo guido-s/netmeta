@@ -135,10 +135,9 @@ possibilities include defining the comparisons so that all refer to
 an active treatment versus placebo or sponsored versus
 non-sponsored intervention.}}
 
-The treatments can be either in increasing or decreasing order. It
-is also possible to only provide a single treatment name in
-argument \code{order}. In this case only comparisons with this
-treatment will be considered.
+It is also possible to only provide a single or few treatment
+name(s) in argument \code{order}. In this case only comparisons
+with this / these treatment(s) will be considered.
 
 In the funnel plot, if \code{yaxis} is \code{"se"}, the standard
 error of the treatment estimates is plotted on the y-axis which is

@@ -72,10 +72,9 @@
 #' an active treatment versus placebo or sponsored versus
 #' non-sponsored intervention.}}
 #' 
-#' The treatments can be either in increasing or decreasing order. It
-#' is also possible to only provide a single treatment name in
-#' argument \code{order}. In this case only comparisons with this
-#' treatment will be considered.
+#' It is also possible to only provide a single or few treatment
+#' name(s) in argument \code{order}. In this case only comparisons
+#' with this / these treatment(s) will be considered.
 #' 
 #' In the funnel plot, if \code{yaxis} is \code{"se"}, the standard
 #' error of the treatment estimates is plotted on the y-axis which is
@@ -234,9 +233,9 @@ funnel.netmeta <- function(x,
          "must be provided.\n  ",
          "(see help page of funnel.netmeta for some examples).")
   else {
-    if (length(order) == 1) {
+    if (length(order) != length(x$trts)) {
       order <- setchar(order, x$trts)
-      order.all <- c(x$trts[x$trts != order], order)
+      order.all <- c(x$trts[!(x$trts %in% order)], order)
     }
     else
       order.all <- order <- setseq(order, x$trts)
@@ -343,8 +342,8 @@ funnel.netmeta <- function(x,
   ##
   res$TE.adj <- res$TE - res$TE.direct
   ##
-  if (length(order) == 1)
-    res <- subset(res, treat1 == order | treat2 == order)
+  if (length(order) != length(order.all))
+    res <- subset(res, treat1 %in% order | treat2 %in% order)
   
   
   ##
