@@ -7,6 +7,12 @@
   
 * Comparators in 'comparison-adjusted' funnel plot can be lumped
 
+### Bug fixes
+
+* plot.netrank():
+  - function ggplot2::xlab() instead of netmeta::xlab() must be used
+    to create image plot
+
 ### User-visible changes
 
 * funnel.netmeta():
