@@ -33,6 +33,7 @@ netmeta(
   sep.trts = ":",
   nchar.trts = 666,
   nchar.studlab = 666,
+  func.inverse = invmat,
   n1 = NULL,
   n2 = NULL,
   event1 = NULL,
@@ -173,6 +174,9 @@ characters used to create unique treatment names.}
 
 \item{nchar.studlab}{A numeric defining the minimum number of
 characters used to create unique study labels.}
+
+\item{func.inverse}{R function used to calculate the pseudoinverse
+of the Laplacian matrix L (see Details).}
 
 \item{n1}{Number of observations in first treatment group.}
 

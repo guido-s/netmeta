@@ -256,7 +256,7 @@ metabias.netmeta <- function(x,
   m.adj <-
     suppressWarnings(metagen(res$TE.adj, res$seTE,
                              studlab = res$studlab, sm = x$sm,
-                             method.tau = "DL"))
+                             method.tau = "DL", method.tau.ci = ""))
   
   
   ##

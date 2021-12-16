@@ -547,14 +547,14 @@ forest.netmeta <- function(x,
     m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
                                    sm = x$sm,
                                    studlab = labels, backtransf = backtransf,
-                                   method.tau = "DL",
+                                   method.tau = "DL", method.tau.ci = "",
                                    warn = FALSE))
   else
     m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
                                    byvar = dat$comparison,
                                    sm = x$sm,
                                    studlab = labels, backtransf = backtransf,
-                                   method.tau = "DL",
+                                   method.tau = "DL", method.tau.ci = "",
                                    warn = FALSE))
   ##
   forest(m1,

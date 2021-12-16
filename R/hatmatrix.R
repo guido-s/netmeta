@@ -454,7 +454,7 @@ hatmatrix.aggr <- function(x, model, type) {
   ## Pseudo-Inverse of L 
   L.plus <- invmat(L)
   L.plus[is.zero(L.plus)] <- 0
-    ##
+  ##
   ## Aggregate Hat matrix
   ##
   ## type = "short"

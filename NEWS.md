@@ -1,6 +1,16 @@
-## netmeta, version 2.0-2 (2021-mm-dd)
+## netmeta, version 2.1-0 (2021-mm-dd)
 
 ### Major changes
+
+* By default, reference group is defined by first treatment in network
+  meta-analysis *providing treatment estimate(s) and standard
+  error(s)*
+  
+* Function to calculate pseudoinverse of Laplacian matrix [(Rücker,
+  2012)](https://doi.org/10.1186/s12874-016-0189-0) can be specified
+  
+* Function invmat() to calculate pseudoinverse made directly
+  accessible (was an internal function)
 
 * Only comparisons with a single or multiple treatment(s) can be shown
   in a 'comparison-adjusted' funnel plot
@@ -9,11 +19,18 @@
 
 ### Bug fixes
 
+* rankogram():
+  - use multivariate sigma
+
 * plot.netrank():
   - function ggplot2::xlab() instead of netmeta::xlab() must be used
     to create image plot
 
 ### User-visible changes
+
+* netmeta(), netmetabin(), netcomb(), discomb():
+  - new argument 'func.inverse' to specify function to calculate
+    pseudoinverse
 
 * funnel.netmeta():
   - argument 'order' can be a single or multiple treatment(s) used as

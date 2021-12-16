@@ -31,6 +31,7 @@ discomb(
   details.chkident = FALSE,
   sep.trts = ":",
   nchar.comps = 666,
+  func.inverse = invmat,
   backtransf = gs("backtransf"),
   title = "",
   warn = TRUE,
@@ -121,6 +122,9 @@ between treatment labels.}
 \item{nchar.comps}{A numeric defining the minimum number of
 characters used to create unique names for components (see
 Details).}
+
+\item{func.inverse}{R function used to calculate the pseudoinverse
+of the Laplacian matrix L (see \code{\link{netmeta}}).}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If

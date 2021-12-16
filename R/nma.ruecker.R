@@ -5,7 +5,8 @@ nma.ruecker <- function(TE, seTE,
                         sm = "",
                         level, level.ma,
                         seTE.orig, tau.direct = 0, sep.trts = ":",
-                        method.tau = "DL") {
+                        method.tau = "DL",
+                        func.inverse) {
   
   
   w.pooled <- 1 / seTE^2
@@ -38,7 +39,7 @@ nma.ruecker <- function(TE, seTE,
   ## Lplus is its Moore-Penrose pseudoinverse
   ##
   L <- t(B) %*% W %*% B
-  Lplus <- invmat(L)
+  Lplus <- do.call(func.inverse, list(X = L))
   Lplus[is.zero(Lplus)] <- 0
   ##
   ## R resistance distance (variance) matrix (n x n)

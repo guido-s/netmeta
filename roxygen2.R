@@ -31,6 +31,16 @@ check("../netmeta")
 
 
 ##
-## (6) Check R package (with dontrun examples)
+## (6) Check examples
 ##
-check("../netmeta", run_dont_test = TRUE)
+setwd("..")
+run_examples("netmeta", fresh = TRUE,
+             run_dontrun = TRUE, run_donttest = TRUE)
+warnings()
+
+
+##
+## (6) Check R package (with donttest examples)
+##
+##setwd("netmeta")
+##check("../netmeta", run_dont_test = TRUE)

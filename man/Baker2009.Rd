@@ -18,7 +18,7 @@ A data frame with the following columns:
 }
 }
 \source{
-Baker WL, Baker EL, Coleman CI (2013):
+Baker WL, Baker EL, Coleman CI (2009):
 Pharmacologic Treatments for Chronic Obstructive Pulmonary Disease:
 A Mixed-Treatment Comparison Meta-analysis.
 \emph{Pharmacotherapy: The Journal of Human Pharmacology and Drug

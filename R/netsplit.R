@@ -680,7 +680,7 @@ netsplit <- function(x, method,
                              sqrt(direct.fixed$seTE^2 +
                                   indirect.fixed$seTE^2),
                              level = x$level.ma,
-                             method.tau = "DL"))
+                             method.tau = "DL", method.tau.ci = ""))
   ##
   compare.fixed <- data.frame(comparison,
                               TE = m.fixed$TE,
@@ -752,7 +752,7 @@ netsplit <- function(x, method,
                                sqrt(direct.random$seTE^2 +
                                     indirect.random$seTE^2),
                                level = x$level.ma,
-                               method.tau = "DL"))
+                               method.tau = "DL", method.tau.ci = ""))
     ##
     compare.random <- data.frame(comparison,
                                  TE = m.random$TE,

@@ -31,8 +31,8 @@
 #'   for network estimates.
 #' @param fixed A logical indicating whether a fixed effects / common
 #'   effects network meta-analysis should be conducted.
-#' @param random A logical indicating whether a random effects
-#'   network meta-analysis should be conducted.
+#' @param random A logical indicating whether a random effects network
+#'   meta-analysis should be conducted.
 #' @param prediction A logical indicating whether prediction intervals
 #'   should be printed.
 #' @param level.predict The level used to calculate prediction
@@ -80,6 +80,8 @@
 #'   characters used to create unique treatment names (see Details).
 #' @param nchar.studlab A numeric defining the minimum number of
 #'   characters used to create unique study labels.
+#' @param func.inverse R function used to calculate the pseudoinverse
+#'   of the Laplacian matrix L (see Details).
 #' @param n1 Number of observations in first treatment group.
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
@@ -519,6 +521,8 @@ netmeta <- function(TE, seTE,
                     nchar.trts = 666,
                     nchar.studlab = 666,
                     ##
+                    func.inverse = invmat,
+                    ##
                     n1 = NULL,
                     n2 = NULL,
                     event1 = NULL,
@@ -624,11 +628,14 @@ netmeta <- function(TE, seTE,
   TE <- eval(mf[[match("TE", names(mf))]],
              data, enclos = sys.frame(sys.parent()))
   ##
+  missing.reference.group.pairwise <- FALSE
+  ##
   if (is.data.frame(TE) & !is.null(attr(TE, "pairwise"))) {
     is.pairwise <- TRUE
     ##
     sm <- attr(TE, "sm")
     if (missing.reference.group) {
+      missing.reference.group.pairwise <- TRUE
       reference.group <- attr(TE, "reference.group")
       if (is.null(reference.group))
         reference.group <- ""
@@ -959,19 +966,6 @@ netmeta <- function(TE, seTE,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
-  ##
-  ## Check value for reference group
-  ##
-  if (missing.reference.group)
-    reference.group <- labels[1]
-  if (is.null(all.treatments))
-    if (reference.group == "")
-      all.treatments <- TRUE
-    else
-      all.treatments <- FALSE
-  ##
-  if (reference.group != "")
-    reference.group <- setref(reference.group, labels)
   
   
   ##
@@ -1156,6 +1150,36 @@ netmeta <- function(TE, seTE,
       time2[wo] <- ttime1[wo]
     }
   }
+  ##
+  ## Check value for reference group
+  ##
+  if (missing.reference.group | missing.reference.group.pairwise) {
+    go.on <- TRUE
+    i <- 0
+    while (go.on) {
+      i <- i + 1
+      sel.i <-
+        !is.na(TE) & !is.na(seTE) &
+        (treat1 == labels[i] | treat2 == labels[i])
+      if (sum(sel.i) > 0) {
+        go.on <- FALSE
+        reference.group <- labels[i]
+      }
+      else if (i == length(labels)) {
+        go.on <- FALSE
+        reference.group <- ""
+      }
+    }
+  }
+  ##
+  if (is.null(all.treatments))
+    if (reference.group == "")
+      all.treatments <- TRUE
+    else
+      all.treatments <- FALSE
+  ##
+  if (reference.group != "")
+    reference.group <- setref(reference.group, labels)
   
   
   ##
@@ -1166,7 +1190,8 @@ netmeta <- function(TE, seTE,
   ##
   ## Generate ordered data set, with added numbers of arms per study
   ##
-  p0 <- prepare(TE, seTE, treat1, treat2, studlab)
+  p0 <- prepare(TE, seTE, treat1, treat2, studlab,
+                func.inverse = func.inverse)
   ##
   ## Check consistency of treatment effects and standard errors in
   ## multi-arm studies
@@ -1200,7 +1225,8 @@ netmeta <- function(TE, seTE,
                        sm,
                        level, level.ma,
                        p0$seTE, 0, sep.trts,
-                       method.tau)
+                       method.tau,
+                       func.inverse)
   ##
   trts <- rownames(res.f$A.matrix)
   ##
@@ -1324,7 +1350,7 @@ netmeta <- function(TE, seTE,
   else
     tau <- tau.preset
   ##
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, func.inverse)
   ##
   res.r <- nma.ruecker(p1$TE, sqrt(1 / p1$weights),
                        p1$treat1, p1$treat2,
@@ -1333,7 +1359,8 @@ netmeta <- function(TE, seTE,
                        sm,
                        level, level.ma,
                        p1$seTE, tau, sep.trts,
-                       method.tau)
+                       method.tau,
+                       func.inverse)
   ##
   TE.random <- res.r$TE.pooled
   seTE.random <- res.r$seTE.pooled
@@ -1559,6 +1586,8 @@ netmeta <- function(TE, seTE,
               tol.multiarm = tol.multiarm,
               tol.multiarm.se = tol.multiarm.se,
               details.chkmultiarm = details.chkmultiarm,
+              ##
+              func.inverse = deparse(substitute(func.inverse)),
               ##
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,

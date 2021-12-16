@@ -25,6 +25,8 @@
 #' @param nchar.comps A numeric defining the minimum number of
 #'   characters used to create unique names for components (see
 #'   Details).
+#' @param func.inverse R function used to calculate the pseudoinverse
+#'   of the Laplacian matrix L (see \code{\link{netmeta}}).
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments (to catch deprecated arguments).
@@ -358,6 +360,8 @@ netcomb <- function(x,
                     details.chkident = FALSE,
                     nchar.comps = x$nchar.trts,
                     ##
+                    func.inverse = invmat,
+                    ##
                     warn.deprecated = gs("warn.deprecated"),
                     ...) {
   
@@ -477,7 +481,8 @@ netcomb <- function(x,
   c <- ncol(C.matrix) # number of components
   
   
-  p0 <- prepare(TE, seTE, treat1, treat2, studlab)
+  p0 <- prepare(TE, seTE, treat1, treat2, studlab,
+                func.inverse = func.inverse)
   ##
   o <- order(p0$order)
   ##
@@ -573,7 +578,8 @@ netcomb <- function(x,
   ##
   ## Random effects models
   ##
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, invmat)
+  ##
   res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], x$level.ma,
                         X.matrix, C.matrix, B.matrix,
@@ -747,6 +753,8 @@ netcomb <- function(x,
               nchar.comps = nchar.comps,
               ##
               inactive = inactive,
+              ##
+              func.inverse = deparse(substitute(func.inverse)),
               ##
               backtransf = x$backtransf,
               ##

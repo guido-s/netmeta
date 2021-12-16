@@ -274,7 +274,7 @@ print.netmeta <- function(x,
   if (header)
     matitle(x)
   ##  
-  if (reference.group != "" & missing(all.treatments))
+  if (reference.group != "" & is.null(all.treatments))
     all.treatments <- FALSE
   ##
   if (reference.group != "")
