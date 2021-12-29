@@ -1,4 +1,4 @@
-## netmeta, version 2.1-0 (2021-mm-dd)
+## netmeta, version 2.1-0 (2022-mm-dd)
 
 ### Major changes
 
@@ -18,6 +18,10 @@
 * Comparators in 'comparison-adjusted' funnel plot can be lumped
 
 ### Bug fixes
+
+* netmeta():
+  - use of REML or ML estimator for between-study variance resulted in
+    an error in networks with at least one multi-arm study
 
 * rankogram():
   - use multivariate sigma
