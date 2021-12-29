@@ -448,6 +448,8 @@ pairwise <- function(treat,
       warning("Argument 'allstudies' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    ##
+    type <- "pairwise"
   }
   else {
     is.pairwise <- FALSE
@@ -542,11 +544,8 @@ pairwise <- function(treat,
            "information:\n  - event, n (binary outcome)\n  - n, ",
            "mean, sd (continuous outcome)\n  - TE, seTE (generic outcome)\n",
            "  - event, time (incidence rates).")
-
-
-
-
-
+    
+    
     ##
     ## Determine whether data is in wide or long arm-based format
     ##
@@ -1498,6 +1497,7 @@ pairwise <- function(treat,
   attr(res, "pairwise") <- TRUE
   attr(res, "reference.group") <- reference.group
   attr(res, "keep.all.comparisons") <- keep.all.comparisons
+  attr(res, "type") <- type
   attr(res, "version") <- packageDescription("netmeta")$Version
   
   

@@ -1333,9 +1333,11 @@ netmeta <- function(TE, seTE,
       else
         V <- dat.tau$seTE^2
       ##
+      dat.tau.TE <- dat.tau$TE
+      ##
       rma1 <-
         runNN(rma.mv,
-              list(yi = TE, V = V,
+              list(yi = dat.tau.TE, V = V,
                    data = dat.tau,
                    mods = formula.trts,
                    random = as.call(~ factor(id) | studlab),

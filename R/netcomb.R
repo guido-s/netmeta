@@ -375,7 +375,7 @@ netcomb <- function(x,
   ##
   x <- updateversion(x)
   ##
-  chkchar(sep.comps, nchar = 1, length = 1)
+  chkchar(sep.comps, nchar = 0:1, length = 1)
   ##
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
@@ -427,7 +427,11 @@ netcomb <- function(x,
     ##
     ## Create C-matrix from netmeta object
     ##
-    C.matrix <- createC(x, sep.comps, inactive)
+    if (sep.comps == "")
+      C.matrix <- createC(x, "...this_is_not_a_separator...", inactive)
+    else
+      C.matrix <- createC(x, sep.comps, inactive)
+    ##
     inactive <- attr(C.matrix, "inactive")
     C.matrix <- as.matrix(C.matrix)[trts, , drop = FALSE]
   }
