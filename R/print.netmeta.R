@@ -284,7 +284,8 @@ print.netmeta <- function(x,
     cat(paste("Number of studies: k = ", k, "\n", sep = ""))
     cat(paste0("Number of pairwise comparisons: m = ", m, "\n"))
     if (!is.null(x$n.trts))
-      cat(paste0("Number of observations: o = ", sum(x$n.trts, na.rm = TRUE),
+      cat(paste0("Number of observations: o = ",
+                 round(sum(x$n.trts, na.rm = TRUE), 1),
                  "\n"))
     cat(paste0("Number of treatments: n = ", n, "\n"))
     if (!oldversion)

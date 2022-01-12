@@ -23,8 +23,10 @@
   - use of REML or ML estimator for between-study variance resulted in
     an error in networks with at least one multi-arm study
 
-* rankogram():
-  - use multivariate sigma
+* netmeta(), pairwise():
+  - first treatment with outcome data is used as reference group if
+    not specified by the user (to prevent an error if all studies
+    using first treatment do not provide outcome data)
 
 * plot.netrank():
   - function ggplot2::xlab() instead of netmeta::xlab() must be used
@@ -42,6 +44,13 @@
   - new argument 'lump.comparator' to specify whether comparators
     should be lumped
   - new argument 'text.comparator' to mark comparators
+
+* print.netconnection():
+  - print number of studies in subnetworks
+
+* Data set Linde2016:
+  - variables with first author, year, number of responders and sample
+    size added
 
 
 ## netmeta, version 2.0-1 (2021-10-27)
