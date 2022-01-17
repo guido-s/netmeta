@@ -28,6 +28,9 @@
     not specified by the user (to prevent an error if all studies
     using first treatment do not provide outcome data)
 
+* rankogram():
+  - use correct variances in resampling of treatment rankings
+
 * plot.netrank():
   - function ggplot2::xlab() instead of netmeta::xlab() must be used
     to create image plot
@@ -51,6 +54,11 @@
 * Data set Linde2016:
   - variables with first author, year, number of responders and sample
     size added
+
+### Internal changes
+
+* New internal function ranksampling() to conduct the resampling of
+  treatment rankings
 
 
 ## netmeta, version 2.0-1 (2021-10-27)

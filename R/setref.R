@@ -40,8 +40,14 @@ setref <- function(reference.group, levs, length = 1,
     ##
     if (length(unique(levs)) == length(unique(tolower(levs))))
       idx <- charmatch(tolower(reference.group), tolower(levs), nomatch = NA)
-    else
-      idx <- charmatch(reference.group, levs, nomatch=NA)
+    else {
+      idx1 <- charmatch(reference.group, levs, nomatch = NA)
+      idx2 <- charmatch(tolower(reference.group), tolower(levs), nomatch = NA)
+      if (anyNA(idx1) & !anyNA(idx2))
+        idx <- idx2
+      else
+        idx <- idx1
+    }
     ##
     if (anyNA(idx) || any(idx == 0))
       stop("Admissible values for ", text.within, ":\n  ",
