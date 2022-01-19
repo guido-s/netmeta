@@ -17,6 +17,8 @@
   
 * Comparators in 'comparison-adjusted' funnel plot can be lumped
 
+* R package **tictoc** added to suggested packages
+
 ### Bug fixes
 
 * netmeta():
@@ -48,6 +50,10 @@
     should be lumped
   - new argument 'text.comparator' to mark comparators
 
+* netcontrib(), netsplit():
+  - new logical argument 'verbose' to control printing of information
+    on estimation progress
+
 * print.netconnection():
   - print number of studies in subnetworks
 
@@ -56,6 +62,9 @@
     size added
 
 ### Internal changes
+
+* Internal function contribution.matrix() returns a list instead of a
+  single matrix with contributions
 
 * New internal function ranksampling() to conduct the resampling of
   treatment rankings

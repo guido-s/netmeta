@@ -20,6 +20,7 @@ netsplit(
   backtransf = x$backtransf,
   warn = FALSE,
   warn.deprecated = gs("warn.deprecated"),
+  verbose = FALSE,
   ...
 )
 
@@ -101,6 +102,9 @@ printed.}
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
 
+\item{verbose}{A logical indicating whether progress information
+should be printed.}
+
 \item{\dots}{Additional arguments.}
 
 \item{show}{A character string indicating which comparisons should
@@ -177,6 +181,8 @@ following components:
 \item{sm}{A character string indicating underlying summary measure}
 \item{level.ma}{The level used to calculate confidence intervals
   for pooled estimates.}
+\item{tictoc}{Computation times for SIDDE approach (if R package
+  \bold{tictoc} is installed).}
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
@@ -222,6 +228,12 @@ Argument \code{show} determines which comparisons are printed:
 \dQuote{indirect.only} \tab Comparisons providing only indirect
   evidence
 }
+
+The SIDDE approach can be compute-intensive in large
+networks. Crude information on the computation progress is printed
+for SIDDE if argument \code{verbose} is \code{TRUE}. In addition,
+computation times are printed if R package \bold{tictoc} is
+installed.
 }
 \examples{
 data(Woods2010)

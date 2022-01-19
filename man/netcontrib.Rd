@@ -13,6 +13,7 @@ netcontrib(
   random = x$random,
   nchar.trts = x$nchar.trts,
   warn.deprecated = gs("warn.deprecated"),
+  verbose = FALSE,
   ...
 )
 
@@ -51,6 +52,9 @@ characters used to create unique treatment names (see Details).}
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
 
+\item{verbose}{A logical indicating whether progress information
+should be printed.}
+
 \item{\dots}{Additional arguments.}
 
 \item{digits}{Minimal number of significant digits, see
@@ -70,6 +74,10 @@ following components:
   comparisons for each network comparison for the random effects
   model.}
 \item{x}{As defined above.}
+\item{tictoc.fixed}{Computation times under fixed effects model
+  (if R package \bold{tictoc} is installed).}
+\item{tictoc.random}{Computation times under random effects model
+  (if R package \bold{tictoc} is installed).}
 with the contribution matrices for fixed and random NMA. Each
 matrix has the percentage contributions of each direct comparison
 as columns for each network comparison, direct or indirect as rows.
@@ -151,6 +159,12 @@ of characters for abbreviated treatment names (see
 \code{\link{abbreviate}}, argument \code{minlength}). R function
 \code{\link{treats}} is utilised internally to create abbreviated
 treatment names.
+
+Calculation of network contributions can be compute-intensive for
+the random-walk approach in large networks. Crude information on
+the computation progress is printed if argument \code{verbose} is
+\code{TRUE}. In addition, computation times are printed if R
+package \bold{tictoc} is installed.
 }
 \examples{
 # Use the Woods dataset

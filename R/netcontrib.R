@@ -28,6 +28,8 @@
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
+#' @param verbose A logical indicating whether progress information
+#'   should be printed.
 #' @param \dots Additional arguments.
 #' 
 #' @details
@@ -101,6 +103,12 @@
 #' \code{\link{abbreviate}}, argument \code{minlength}). R function
 #' \code{\link{treats}} is utilised internally to create abbreviated
 #' treatment names.
+#'
+#' Calculation of network contributions can be compute-intensive for
+#' the random-walk approach in large networks. Crude information on
+#' the computation progress is printed if argument \code{verbose} is
+#' \code{TRUE}. In addition, computation times are printed if R
+#' package \bold{tictoc} is installed.
 #' 
 #' @return
 #' An object of class \code{netcontrib} with corresponding
@@ -113,6 +121,10 @@
 #'   comparisons for each network comparison for the random effects
 #'   model.}
 #' \item{x}{As defined above.}
+#' \item{tictoc.fixed}{Computation times under fixed effects model
+#'   (if R package \bold{tictoc} is installed).}
+#' \item{tictoc.random}{Computation times under random effects model
+#'   (if R package \bold{tictoc} is installed).}
 #' with the contribution matrices for fixed and random NMA. Each
 #' matrix has the percentage contributions of each direct comparison
 #' as columns for each network comparison, direct or indirect as rows.
@@ -160,6 +172,7 @@ netcontrib <- function(x,
                        random = x$random,
                        nchar.trts = x$nchar.trts,
                        warn.deprecated = gs("warn.deprecated"),
+                       verbose = FALSE,
                        ...) {
   
   ##
@@ -186,6 +199,7 @@ netcontrib <- function(x,
     hatmatrix.F1000 <- FALSE
   }
   chknumeric(nchar.trts, min = 1, length = 1)
+  chklogical(verbose)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -209,16 +223,22 @@ netcontrib <- function(x,
   x$fixed <- fixed
   x$random <- random
   ##
-  res <- list(fixed =
-                contribution.matrix(x, method, "fixed", hatmatrix.F1000),
-              random =
-                contribution.matrix(x, method, "random", hatmatrix.F1000),
+  cm.f <- contribution.matrix(x, method, "fixed", hatmatrix.F1000, verbose)
+  cm.r <- contribution.matrix(x, method, "random", hatmatrix.F1000, verbose)
+  ##
+  res <- list(fixed = cm.f$weights,
+              random = cm.r$weights,
               method = method,
               hatmatrix.F1000 = hatmatrix.F1000,
               nchar.trts = nchar.trts,
               x = x,
               version = packageDescription("netmeta")$Version
               )
+  ##
+  if (!is.null(cm.f$tictoc))
+    res$tictoc.fixed <- cm.f$tictoc
+  if (!is.null(cm.r$tictoc))
+    res$tictoc.random <- cm.r$tictoc
   ##
   class(res) <- "netcontrib"
   ##
