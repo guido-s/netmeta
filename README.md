@@ -72,7 +72,7 @@ network meta-analysis:
 
 Furthermore, R package **netmeta** provides functions and datasets to
 support Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
-https://www.springer.com/gp/book/9783319214153 .
+https://link.springer.com/book/10.1007/978-3-319-21416-0 .
 
 
 ### References
@@ -107,7 +107,7 @@ events. *Statistics in Medicine*, 1-21](https://scholar.google.com/scholar?q=Eft
 
 [Rücker G, Petropoulou M, Schwarzer G (2020): Network meta-analysis of multicomponent interventions. *Biometrical Journal*, **62**, 808-21](https://scholar.google.com/scholar?q=Rücker+Schwarzer+Petropoulou+2020+Network+meta-analysis+of+multicomponent+interventions)
 
-[Schwarzer G, Carpenter JR and Rücker G (2015): *Meta-Analysis with R (Use R!)*. Springer International Publishing, Switzerland](http://www.springer.com/gp/book/9783319214153)
+[Schwarzer G, Carpenter JR and Rücker G (2015): *Meta-Analysis with R (Use R!)*. Springer International Publishing, Switzerland](https://link.springer.com/book/10.1007/978-3-319-21416-0)
 
 
 
