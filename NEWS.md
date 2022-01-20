@@ -1,3 +1,12 @@
+## netmeta, version 2.1-1 (2022-mm-dd)
+
+### Bug fixes
+
+* netcomb(), discomb():
+  - calculate correct number of pairwise comparisons (instead of 1) if
+    component label contains character defined by argument 'sep.comps'
+
+
 ## netmeta, version 2.1-0 (2022-01-20)
 
 ### Major changes

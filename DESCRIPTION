@@ -1,6 +1,6 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
-Version: 2.1-0
+Version: 2.1-1
 Date: 2022-01-20
 Depends: R (>= 3.5.0), meta (>= 5.0-0)
 Imports: magic, MASS, ggplot2 (>= 3.0.0), metafor

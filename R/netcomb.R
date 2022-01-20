@@ -515,8 +515,8 @@ netcomb <- function(x,
     ##
     if (dim(M)[2] > 0) {
       sel.ident <- character(0)
-      for (m in 1:dim(M)[2])
-        sel.ident <- c(sel.ident, names(M[, m])[!is.zero(M[, m], n = 100)])
+      for (i in 1:dim(M)[2])
+        sel.ident <- c(sel.ident, names(M[, i])[!is.zero(M[, i], n = 100)])
       ##
       sel.ident <- unique(sort(sel.ident))
       warning(paste0("The following component",
