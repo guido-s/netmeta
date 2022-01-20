@@ -1,3 +1,75 @@
+## netmeta, version 2.1-0 (2022-mm-dd)
+
+### Major changes
+
+* By default, reference group is defined by first treatment in network
+  meta-analysis *providing treatment estimate(s) and standard
+  error(s)*
+  
+* Function to calculate pseudoinverse of Laplacian matrix [(Rücker,
+  2012)](https://doi.org/10.1186/s12874-016-0189-0) can be specified
+  
+* Function invmat() to calculate pseudoinverse made directly
+  accessible (was an internal function)
+
+* Only comparisons with a single or multiple treatment(s) can be shown
+  in a 'comparison-adjusted' funnel plot
+  
+* Comparators in 'comparison-adjusted' funnel plot can be lumped
+
+* R package **tictoc** added to suggested packages
+
+### Bug fixes
+
+* netmeta():
+  - use of REML or ML estimator for between-study variance resulted in
+    an error in networks with at least one multi-arm study
+
+* netmeta(), pairwise():
+  - first treatment with outcome data is used as reference group if
+    not specified by the user (to prevent an error if all studies
+    using first treatment do not provide outcome data)
+
+* rankogram():
+  - use correct variances in resampling of treatment rankings
+
+* plot.netrank():
+  - function ggplot2::xlab() instead of netmeta::xlab() must be used
+    to create image plot
+
+### User-visible changes
+
+* netmeta(), netmetabin(), netcomb(), discomb():
+  - new argument 'func.inverse' to specify function to calculate
+    pseudoinverse
+
+* funnel.netmeta():
+  - argument 'order' can be a single or multiple treatment(s) used as
+    comparator(s)
+  - new argument 'lump.comparator' to specify whether comparators
+    should be lumped
+  - new argument 'text.comparator' to mark comparators
+
+* netcontrib(), netsplit():
+  - new logical argument 'verbose' to control printing of information
+    on estimation progress
+
+* print.netconnection():
+  - print number of studies in subnetworks
+
+* Data set Linde2016:
+  - variables with first author, year, number of responders and sample
+    size added
+
+### Internal changes
+
+* Internal function contribution.matrix() returns a list instead of a
+  single matrix with contributions
+
+* New internal function ranksampling() to conduct the resampling of
+  treatment rankings
+
+
 ## netmeta, version 2.0-1 (2021-10-27)
 
 ### User-visible changes
@@ -505,7 +577,7 @@
   - export the design matrix (new list element 'X.matrix')
 
 * discomb():
-  - export the number of subnetworks
+  - export the number of subnetworks
 
 * forest.netsplit():
   - print an informative warning (instead of an obscure error

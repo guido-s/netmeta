@@ -14,16 +14,6 @@
 .special.characters <- c("+", ".", "&", "$", "#", "|", "*", "^")
 
 
-invmat <- function(X) {
-  n <- nrow(X)
-  J <- matrix(1, nrow = n, ncol = n)
-  ##
-  res <- solve(X - J / n) + J / n
-  ##
-  res
-}
-
-
 calcV <- function(x, sm) {
   p2 <- (x$event2[1] + x$incr[1]) / (x$n2[1] + 2 * x$incr[1])
   n2 <- x$n2[1] + 2 * x$incr[1]

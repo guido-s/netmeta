@@ -448,6 +448,8 @@ pairwise <- function(treat,
       warning("Argument 'allstudies' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    ##
+    type <- "pairwise"
   }
   else {
     is.pairwise <- FALSE
@@ -542,11 +544,8 @@ pairwise <- function(treat,
            "information:\n  - event, n (binary outcome)\n  - n, ",
            "mean, sd (continuous outcome)\n  - TE, seTE (generic outcome)\n",
            "  - event, time (incidence rates).")
-
-
-
-
-
+    
+    
     ##
     ## Determine whether data is in wide or long arm-based format
     ##
@@ -957,7 +956,8 @@ pairwise <- function(treat,
                           dat$event2, dat$n2,
                           incr = dat$incr, addincr = TRUE,
                           allstudies = allstudies,
-                          warn = warn, method.tau.ci = "", ...)
+                          method.tau = "DL", method.tau.ci = "",
+                          warn = warn, ...)
             ##
             dat$TE   <- m1$TE
             dat$seTE <- m1$seTE
@@ -1074,9 +1074,9 @@ pairwise <- function(treat,
           if (nrow(dat) > 0) {
             m1 <- metacont(dat$n1, dat$mean1, dat$sd1,
                            dat$n2, dat$mean2, dat$sd2,
-                           warn = warn,
-                           method.tau.ci = "",
-                           method.smd = "Cohen", ...)
+                           method.tau = "DL", method.tau.ci = "",
+                           method.smd = "Cohen",
+                           warn = warn, ...)
             ##
             dat$TE   <- m1$TE
             dat$seTE <- m1$seTE
@@ -1286,7 +1286,8 @@ pairwise <- function(treat,
                           dat$event2, dat$time2,
                           incr = dat$incr, addincr = TRUE,
                           allstudies = allstudies,
-                          warn = warn, method.tau.ci = "", ...)
+                          method.tau = "DL", method.tau.ci = "",
+                          warn = warn, ...)
             ##
             dat$TE <- m1$TE
             dat$seTE <- m1$seTE
@@ -1433,18 +1434,38 @@ pairwise <- function(treat,
   
   
   ##
-  ## Use first treatment as reference if argument is missing
+  ## Use first treatment with estimable effect as reference if
+  ## argument is missing
   ##
   labels <- unique(sort(c(res$treat1, res$treat2)))
   ##
-  if (missing.reference.group)
-    reference.group <- labels[1]
+  if (missing.reference.group) {
+    go.on <- TRUE
+    i <- 0
+    while (go.on) {
+      i <- i + 1
+      sel.i <-
+        !is.na(res$TE) & !is.na(res$seTE) &
+        (res$treat1 == labels[i] | res$treat2 == labels[i])
+      if (sum(sel.i) > 0) {
+        go.on <- FALSE
+        reference.group <- labels[i]
+      }
+      else if (i == length(labels)) {
+        go.on <- FALSE
+        reference.group <- ""
+      }
+    }
+  }
+  ##
   if (is.factor(reference.group))
     reference.group <- as.character(reference.group)
+  ##
   if (is.numeric(reference.group))
     chknumeric(reference.group, length = 1)
   else
     chkchar(reference.group, length = 1)
+  ##
   reference.group <- setchar(reference.group, c(labels, ""))
   ##
   if (!keep.all.comparisons) {
@@ -1456,7 +1477,7 @@ pairwise <- function(treat,
       trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
       ##
       ## Keep comparisons with reference group or first treatment if
-      ## reference treament missing in study
+      ## reference treatment is missing in study
       ##
       if (reference.group %in% trts.i)
         ref.i <- reference.group
@@ -1476,6 +1497,7 @@ pairwise <- function(treat,
   attr(res, "pairwise") <- TRUE
   attr(res, "reference.group") <- reference.group
   attr(res, "keep.all.comparisons") <- keep.all.comparisons
+  attr(res, "type") <- type
   attr(res, "version") <- packageDescription("netmeta")$Version
   
   

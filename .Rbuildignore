@@ -1,6 +1,6 @@
 README.md
 .travis.yml
 install-rgraphviz.sh
-^.*\.Rproj$
-^\.Rproj\.user$
-roxygen2.R
+.*[.]Rproj
+.Rproj.user
+roxygen2.*[.]R

@@ -6,7 +6,7 @@
 #' 
 #' @param x An object of class \code{netmeta}.
 #' @param order A mandatory character or numerical vector specifying
-#'   the order of treatments (see Details).
+#'   the order of treatments or list of comparators (see Details).
 #' @param pooled A character string indicating whether results for the
 #'   fixed effect (\code{"fixed"}) or random effects model
 #'   (\code{"random"}) should be plotted. Can be abbreviated.
@@ -20,25 +20,25 @@
 #'   comparisons.
 #' @param legend A logical indicating whether a legend with
 #'   information on direct comparisons should be added to the plot.
-#' @param linreg A logical indicating whether result of linear
-#'   regression test for funnel plot asymmetry should be added to
-#'   plot.
-#' @param rank A logical indicating whether result of rank test for
-#'   funnel plot asymmetry should be added to plot.
-#' @param mm A logical indicating whether result of linear regression
-#'   test for funnel plot asymmetry allowing for between-study
-#'   heterogeneity should be added to plot.
 #' @param pos.legend The position of the legend describing plotting
 #'   symbols and colours for direct comparisons.
 #' @param pos.tests The position of results for test(s) of funnel plot
 #'   asymmetry.
+#' @param lump.comparator A logical indicating whether comparators
+#'   should be lumped, e.g., to specify inactive treatments.
+#'   information on direct comparisons should be added to the plot.
+#' @param text.comparator A character string used in the plot to label
+#'   the comparator if \code{lump.comparator} is \code{TRUE}.
+#' @param method.bias A character vector indicating which test(s) for
+#'   funnel plot asymmatrx to use. Admissible values are
+#'   \code{"Begg"}, \code{"Egger"}, and \code{"Thompson"}, can be
+#'   abbreviated. See function \code{\link[meta]{metabias}}.
 #' @param text.linreg A character string used in the plot to label the
-#'   linear regression test for funnel plot asymmetry.
+#'   Egger test for funnel plot asymmetry.
 #' @param text.rank A character string used in the plot to label the
-#'   rank test for funnel plot asymmetry.
+#'   Begg test for funnel plot asymmetry.
 #' @param text.mm A character string used in the plot to label the
-#'   linear regression test for funnel plot asymmetry allowing for
-#'   between-study heterogeneity.
+#'   Thompson-Sharp test for funnel plot asymmetry.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
 #' @param nchar.trts A numeric defining the minimum number of
@@ -52,6 +52,11 @@
 #'   odds ratios, for example.
 #' @param digits.pval Minimal number of significant digits for p-value
 #'   of test(s) for funnel plot asymmetry.
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param linreg Deprecated argument (replaced by \code{method.bias}).
+#' @param rank Deprecated argument (replaced by \code{method.bias}).
+#' @param mm Deprecated argument (replaced by \code{method.bias}).
 #' @param \dots Additional graphical arguments passed as arguments to
 #'   \code{\link{funnel.meta}}.
 #' 
@@ -72,7 +77,13 @@
 #' an active treatment versus placebo or sponsored versus
 #' non-sponsored intervention.}}
 #' 
-#' The treatments can be either in increasing or decreasing order.
+#' Alternatively, it is possible to only provide a single or few
+#' treatment name(s) in argument \code{order} to define the
+#' comparator(s). In this case only comparisons with this / these
+#' treatment(s) will be considered. If argument \code{lump.comparator}
+#' is \code{TRUE}, all comparators will be lumped into a single
+#' group. The text for this group can be specified with argument
+#' \code{text.comparator}.
 #' 
 #' In the funnel plot, if \code{yaxis} is \code{"se"}, the standard
 #' error of the treatment estimates is plotted on the y-axis which is
@@ -131,35 +142,44 @@
 #' #
 #' try(funnel(net1))
 #' 
+#' # Only show comparisons with placebo
+#' #
+#' funnel(net1, order = "pl")
+#' 
+#' # Add result for Egger test of funnel plot asymmetry
+#' #
+#' funnel(net1, order = "pl", method.bias = "Egger",
+#'        digits.pval = 2)
+#' 
 #' # (Non-sensical) alphabetic order of treatments with placebo as
 #' # last treatment
 #' #
 #' ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
 #' funnel(net1, order = ord)
-#' 
+#'
+#' \dontrun{
 #' # Add results for tests of funnel plot asymmetry and use different
 #' # plotting symbols and colours
 #' #
 #' funnel(net1, order = ord,
 #'        pch = rep(c(15:18, 1), 3), col = 1:3,
-#'        linreg = TRUE, rank = TRUE, mm = TRUE, digits.pval = 2)
+#'        method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 #' 
 #' # Same results for tests of funnel plot asymmetry using reversed
 #' # order of treatments
 #' #
 #' funnel(net1, order = rev(ord),
 #'        pch = rep(c(15:18, 1), 3), col = 1:3,
-#'        linreg = TRUE, rank = TRUE, mm = TRUE, digits.pval = 2)
+#'        method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 #' 
 #' # Calculate tests for funnel plot asymmetry
 #' #
-#' f1 <- funnel(net1, order = ord,
-#'              pch = rep(c(15:18, 1), 3), col = 1:3,
-#'              linreg = TRUE, rank = TRUE, mm = TRUE)
+#' f1 <- funnel(net1, order = ord)
 #' #
 #' metabias(metagen(TE.adj, seTE, data = f1))
 #' metabias(metagen(TE.adj, seTE, data = f1), method = "Begg")
 #' metabias(metagen(TE.adj, seTE, data = f1), method = "Thompson")
+#' }
 #'
 #' @method funnel netmeta
 #' @export
@@ -176,13 +196,14 @@ funnel.netmeta <- function(x,
                            col = "black",
                            ##
                            legend = TRUE,
-                           linreg = FALSE,
-                           rank = FALSE,
-                           mm = FALSE,
                            ##
                            pos.legend = "topright",
                            pos.tests = "topleft",
                            ##
+                           lump.comparator = FALSE,
+                           text.comparator = "comparator",
+                           ##
+                           method.bias,
                            text.linreg = "(Egger)",
                            text.rank = "(Begg-Mazumdar)",
                            text.mm = "(Thompson-Sharp)",
@@ -192,6 +213,12 @@ funnel.netmeta <- function(x,
                            ##
                            backtransf = x$backtransf,
                            digits.pval = gs("digits.pval"),
+                           ##
+                           warn.deprecated = gs("warn.deprecated"),
+                           linreg = FALSE,
+                           rank = FALSE,
+                           mm = FALSE,
+                           ##
                            ...) {
   
   
@@ -214,19 +241,64 @@ funnel.netmeta <- function(x,
   x <- updateversion(x)
   ##
   pooled <- setchar(pooled, c("fixed", "random"))
+  chklogical(lump.comparator)
   ##
   if (missing(order))
     stop("Argument 'order' with a meaningful order of treatments ",
          "must be provided.\n  ",
          "(see help page of funnel.netmeta for some examples).")
-  else
-    order <- setseq(order, x$trts)
+  else {
+    if (length(order) != length(x$trts)) {
+      order <- setchar(order, x$trts)
+      order.all <- c(x$trts[!(x$trts %in% order)], order)
+    }
+    else
+      order.all <- order <- setseq(order, x$trts)
+  }
+  ##
+  if ((length(order) == length(order.all)) & lump.comparator) {
+    warning("Argument 'lump.comparator' ignored as full treatment order is ",
+            "provided.",
+            call. = FALSE)
+    lump.comparator <- FALSE
+  }
+  ##
+  chklogical(warn.deprecated)
+  ##
+  missing.method.bias <- missing(method.bias)
+  if (missing.method.bias)
+    method.bias <- character(0)
   ##
   chklogical(legend)
+  ##
+  deprecated2(method.bias, missing.method.bias,
+              linreg, missing(linreg), warn.deprecated)
+  deprecated2(method.bias, missing.method.bias,
+              rank, missing(rank), warn.deprecated)
+  deprecated2(method.bias, missing.method.bias,
+              mm, missing(mm), warn.deprecated)
+  ##
   chklogical(linreg)
   chklogical(rank)
   chklogical(mm)
   ##
+  if (missing.method.bias) {
+    if (linreg)
+      method.bias <- "Egger"
+    if (rank)
+      method.bias <- c(method.bias, "Begg")
+    if (mm)
+      method.bias <- c(method.bias, "Thompson")
+  }
+  else
+    method.bias <- setmethodbias(method.bias, 1:3)
+  ##
+  linreg <- "Egger" %in% method.bias
+  rank <- "Begg" %in% method.bias
+  mm <- "Thompson" %in% method.bias
+  
+  
+  chkchar(text.comparator)
   chkchar(text.linreg)
   chkchar(text.rank)
   chkchar(text.mm)
@@ -246,9 +318,16 @@ funnel.netmeta <- function(x,
   ##
   TE <- x$TE
   seTE <- x$seTE
+  studlab <- x$studlab
+  ##
   treat1 <- x$treat1
   treat2 <- x$treat2
-  studlab <- x$studlab
+  ##
+  comparison <- paste(treat1, treat2, sep = sep.trts)
+  comparison21 <- paste(treat2, treat1, sep = sep.trts)
+  ##
+  treat1.pos <- as.numeric(factor(treat1, levels = order.all))
+  treat2.pos <- as.numeric(factor(treat2, levels = order.all))
   ##
   trts.abbr <- treats(x$trts, nchar.trts)
   trt1 <- as.character(factor(treat1, levels = x$trts, labels = trts.abbr))
@@ -257,38 +336,42 @@ funnel.netmeta <- function(x,
   comp <- paste(trt1, trt2, sep = sep.trts)
   comp21 <- paste(trt2, trt1, sep = sep.trts)
   ##
-  comparison <- paste(treat1, treat2, sep = sep.trts)
-  comparison21 <- paste(treat2, treat1, sep = sep.trts)
-  ##
-  treat1.pos <- as.numeric(factor(treat1, levels = order))
-  treat2.pos <- as.numeric(factor(treat2, levels = order))
-  ##
   wo <- treat1.pos > treat2.pos
   ##
   if (any(wo)) {
+    ttreat1.pos <- treat1.pos
+    treat1.pos[wo] <- treat2.pos[wo]
+    treat2.pos[wo] <- ttreat1.pos[wo]
+    ##
     TE[wo] <- -TE[wo]
     ##
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]
     treat2[wo] <- ttreat1[wo]
     ##
-    ttreat1.pos <- treat1.pos
-    treat1.pos[wo] <- treat2.pos[wo]
-    treat2.pos[wo] <- ttreat1.pos[wo]
+    comparison[wo] <- comparison21[wo]
+    ##
+    ttrt1 <- trt1
+    trt1[wo] <- trt2[wo]
+    trt2[wo] <- ttrt1[wo]
     ##
     comp[wo] <- comp21[wo]
-    comparison[wo] <- comparison21[wo]
   }
   ##
   o <- order(treat1.pos, treat2.pos)
   ##
   TE <- TE[o]
   seTE <- seTE[o]
+  ##
+  studlab <- studlab[o]
+  ##
   treat1 <- treat1[o]
   treat2 <- treat2[o]
-  studlab <- studlab[o]
-  comp <- comp[o]
   comparison <- comparison[o]
+  ##
+  trt1 <- trt1[o]
+  trt2 <- trt2[o]
+  comp <- comp[o]
   ##
   res <- data.frame(studlab,
                     treat1, treat2, comparison,
@@ -322,6 +405,19 @@ funnel.netmeta <- function(x,
       res$TE.direct[i] <- x$TE.direct.random[treat1[i], treat2[i]]
   ##
   res$TE.adj <- res$TE - res$TE.direct
+  ##
+  if (length(order) != length(order.all))
+    res <- subset(res, treat1 %in% order | treat2 %in% order)
+  ##
+  if (lump.comparator) {
+    res <- subset(res, !(treat1 %in% order & treat2 %in% order))
+    ##
+    res$trt2[res$treat2 %in% order] <- text.comparator
+    res$treat2[res$treat2 %in% order] <- text.comparator
+    ##
+    res$comp <- paste(res$trt1, res$trt2, sep = sep.trts)
+    res$comparison <- paste(res$treat1, res$treat2, sep = sep.trts)
+  }
   
   
   ##
@@ -332,7 +428,7 @@ funnel.netmeta <- function(x,
   m.adj <-
     suppressWarnings(metagen(res$TE.adj, res$seTE,
                              studlab = res$studlab, sm = x$sm,
-                             method.tau = "DL"))
+                             method.tau = "DL", method.tau.ci = ""))
   ##
   n.comps <- length(unique(res$comparison))
   ##
@@ -438,6 +534,7 @@ funnel.netmeta <- function(x,
   ##
   attr(res, "pooled") <- pooled
   attr(res, "order") <- order
+  attr(res, "lump.comparator") <- lump.comparator
   
   
   invisible(res)

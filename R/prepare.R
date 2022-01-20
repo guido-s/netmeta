@@ -1,4 +1,5 @@
-prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0) {
+prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
+                    func.inverse) {
   
   if (is.na(tau))
     tau <- 0
@@ -32,8 +33,10 @@ prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0) {
   for (s in sl) {
     subgraph <- data[data$studlab == s, ]
     subgraph$narms <- (1 + sqrt(8 * dim(subgraph)[1] + 1)) / 2
+    ## Reciprocal new weights
     if (dim(subgraph)[1] > 1)
-      subgraph$weights <- 1 / multiarm(1 / subgraph$weights)$v # Reciprocal new weights
+      subgraph$weights <-
+        1 / multiarm(1 / subgraph$weights, s, func.inverse)$v
     ##
     newdata <- rbind(newdata, subgraph)
   }

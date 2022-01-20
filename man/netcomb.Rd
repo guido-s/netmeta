@@ -14,6 +14,7 @@ netcomb(
   tau.preset = NULL,
   details.chkident = FALSE,
   nchar.comps = x$nchar.trts,
+  func.inverse = invmat,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -44,6 +45,9 @@ unidentifiable components should be printed.}
 \item{nchar.comps}{A numeric defining the minimum number of
 characters used to create unique names for components (see
 Details).}
+
+\item{func.inverse}{R function used to calculate the pseudoinverse
+of the Laplacian matrix L (see \code{\link{netmeta}}).}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}

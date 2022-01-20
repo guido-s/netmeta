@@ -34,12 +34,11 @@ rankogram(
 
 \item{nsim}{Number of simulations.}
 
-\item{fixed}{A logical indicating to compute ranking
-probabilities and SUCRAs for the fixed effects (common effects)
-model.}
+\item{fixed}{A logical indicating to compute ranking probabilities
+and SUCRAs for the fixed effects (common effects) model.}
 
-\item{random}{A logical indicating to compute ranking
-probabilities and SUCRAs for the random effects model.}
+\item{random}{A logical indicating to compute ranking probabilities
+and SUCRAs for the random effects model.}
 
 \item{small.values}{A character string specifying whether small
 treatment effects indicate a beneficial (\code{"good"}) or

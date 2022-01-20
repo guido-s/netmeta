@@ -460,7 +460,20 @@ print.netconnection <- function(x,
     cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
   ##
   cat("Number of subnetworks: ", x$n.subnets, "\n", sep = "")
-
+  ##
+  if (x$n.subnets > 1) {
+    f <- function(x) length(unique(x))
+    d <- as.data.frame(x)
+    b <- tapply(d$studlab, d$subnet, f)
+    m <- as.matrix(data.frame(subnet = names(b),
+                              k = as.vector(b)))
+    rownames(m) <- rep("", nrow(m))
+    ##
+    cat("Number of studies in subnetworks: \n")
+    prmatrix(m, quote = FALSE, right = TRUE)
+  }
+  
+  
   if (details) {
     cat("\nDistance matrix:\n")
     

@@ -79,6 +79,8 @@
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
+#' @param verbose A logical indicating whether progress information
+#'   should be printed.
 #' @param \dots Additional arguments.
 #' 
 #' @details
@@ -120,6 +122,12 @@
 #'   evidence
 #' }
 #'
+#' The SIDDE approach can be compute-intensive in large
+#' networks. Crude information on the computation progress is printed
+#' for SIDDE if argument \code{verbose} is \code{TRUE}. In addition,
+#' computation times are printed if R package \bold{tictoc} is
+#' installed.
+#'
 #' @return
 #' An object of class \code{netsplit} with corresponding \code{print}
 #' and \code{forest} functions. The object is a list containing the
@@ -146,6 +154,8 @@
 #' \item{sm}{A character string indicating underlying summary measure}
 #' \item{level.ma}{The level used to calculate confidence intervals
 #'   for pooled estimates.}
+#' \item{tictoc}{Computation times for SIDDE approach (if R package
+#'   \bold{tictoc} is installed).}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Gerta
@@ -238,6 +248,7 @@ netsplit <- function(x, method,
                      random = x$random,
                      backtransf = x$backtransf,
                      warn = FALSE, warn.deprecated = gs("warn.deprecated"),
+                     verbose = FALSE,
                      ...) {
   
   ##
@@ -280,6 +291,7 @@ netsplit <- function(x, method,
   if (!is.null(backtransf))
     chklogical(backtransf)
   chklogical(warn)
+  chklogical(verbose)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -459,11 +471,18 @@ netsplit <- function(x, method,
   ## Separate Indirect from Direct Design Evidence (SIDDE)
   ##
   ##
+  is.tictoc <- FALSE
+  ##
   if (method == "SIDDE") {
     ##
     if (is.null(x$data))
       stop("SIDDE method only available for network meta-analysis objects ",
            "created with argument 'keepdata' equal to TRUE.")
+    ##
+    if (verbose)
+      cat("Start computations for SIDDE approach\n")
+    ##
+    is.tictoc <- is.installed.package("tictoc", stop = FALSE)
     ##
     dat <- x$data
     dat <- dat[order(dat$.studlab, dat$.treat1, dat$.treat2), ]
@@ -498,10 +517,23 @@ netsplit <- function(x, method,
     TE.indirect.random[!is.na(TE.indirect.random)] <- NA
     seTE.indirect.random <- TE.indirect.random
     ##
+    if (is.tictoc) {
+      tictoc <- rep(NA, n.comps)
+      names.tictoc <- ""
+    }
+    ##
     for (i in seq_len(n.comps)) {
       ##
       idx1.i <- idx1[i]
       idx2.i <- idx2[i]
+      ##
+      if (is.tictoc)
+        tictoc::tic()
+      ##
+      if (verbose)
+        cat(paste0("- ",
+                   paste(trts[idx1.i], trts[idx2.i], sep = sep.trts),
+                   " (", i, "/", n.comps, ")\n"))
       ##
       drop.i <-
         (dat$.treat1 == trts[idx1.i] & dat$.treat2 == trts[idx2.i]) |
@@ -568,6 +600,15 @@ netsplit <- function(x, method,
               net.i$seTE.random[trts[idx1.i], trts[idx2.i]]
           }
         }
+      }
+      ##
+      if (is.tictoc) {
+        tictoc.i <- tictoc::toc(func.toc = NULL)
+        tictoc[i] <- as.numeric(tictoc.i$toc) - as.numeric(tictoc.i$tic)
+        names.tictoc[i] <- paste(trts[idx1.i], trts[idx2.i], sep = sep.trts)
+        ##
+        if (verbose)
+          cat(paste(round(tictoc[i], 3), "sec elapsed\n"))
       }
     }
     ##
@@ -680,7 +721,7 @@ netsplit <- function(x, method,
                              sqrt(direct.fixed$seTE^2 +
                                   indirect.fixed$seTE^2),
                              level = x$level.ma,
-                             method.tau = "DL"))
+                             method.tau = "DL", method.tau.ci = ""))
   ##
   compare.fixed <- data.frame(comparison,
                               TE = m.fixed$TE,
@@ -752,7 +793,7 @@ netsplit <- function(x, method,
                                sqrt(direct.random$seTE^2 +
                                     indirect.random$seTE^2),
                                level = x$level.ma,
-                               method.tau = "DL"))
+                               method.tau = "DL", method.tau.ci = ""))
     ##
     compare.random <- data.frame(comparison,
                                  TE = m.random$TE,
@@ -823,6 +864,11 @@ netsplit <- function(x, method,
               ##
               version = packageDescription("netmeta")$Version
               )
+  ##
+  if (is.tictoc) {
+    res$tictoc <- tictoc
+    names(res$tictoc) <- names.tictoc
+  }
   ##
   class(res) <- c("netsplit",
                   if (is.bin & method == "SIDDE") "netsplit.netmetabin")

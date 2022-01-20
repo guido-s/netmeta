@@ -8,10 +8,18 @@
 A data frame with the following columns:
 \tabular{rl}{
 \bold{\emph{id}}\tab Study ID \cr
+\bold{\emph{author}}\tab First author \cr
+\bold{\emph{year}}\tab Year of publication \cr
+\bold{\emph{treat1}}\tab First treatment (abbreviated) \cr
+\bold{\emph{treat2}}\tab Second treatment (abbreviated) \cr
+\bold{\emph{treat1.long}}\tab First treatment \cr
+\bold{\emph{treat2.long}}\tab Second treatment \cr
 \bold{\emph{lnOR}}\tab Response after treatment (log odds ratio) \cr
 \bold{\emph{selnOR}}\tab Standard error of log odds ratio \cr
-\bold{\emph{treat1}}\tab First treatment \cr
-\bold{\emph{treat2}}\tab Second treatment
+\bold{\emph{resp1}}\tab Responder (first treatment) \cr
+\bold{\emph{n1}}\tab Sample size (first treatment) \cr
+\bold{\emph{resp2}}\tab Responder (second treatment) \cr
+\bold{\emph{n2}}\tab Sample size (second treatment) \cr
 }
 }
 \source{

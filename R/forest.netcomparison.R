@@ -208,7 +208,7 @@ forest.netcomparison <- function(x,
     suppressWarnings(metagen(TE, seTE, data = dat, sm = x$x$sm,
                              studlab = comparison, backtransf = backtransf,
                              level = x$level,
-                             method.tau = "DL",
+                             method.tau = "DL", method.tau.ci = "",
                              warn = FALSE))
   ##
   forest(m1,

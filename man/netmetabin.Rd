@@ -38,6 +38,7 @@ netmetabin(
   details.chkdata = TRUE,
   sep.trts = ":",
   nchar.trts = 666,
+  func.inverse = invmat,
   backtransf = gs("backtransf"),
   title = "",
   keepdata = gs("keepdata"),
@@ -162,6 +163,9 @@ between treatment labels.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names (see Details).}
+
+\item{func.inverse}{R function used to calculate the pseudoinverse
+of the Laplacian matrix L (see \code{\link{netmeta}}).}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If

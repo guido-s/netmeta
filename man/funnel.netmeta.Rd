@@ -13,11 +13,11 @@
   pch,
   col = "black",
   legend = TRUE,
-  linreg = FALSE,
-  rank = FALSE,
-  mm = FALSE,
   pos.legend = "topright",
   pos.tests = "topleft",
+  lump.comparator = FALSE,
+  text.comparator = "comparator",
+  method.bias,
   text.linreg = "(Egger)",
   text.rank = "(Begg-Mazumdar)",
   text.mm = "(Thompson-Sharp)",
@@ -25,6 +25,10 @@
   nchar.trts = x$nchar.trts,
   backtransf = x$backtransf,
   digits.pval = gs("digits.pval"),
+  warn.deprecated = gs("warn.deprecated"),
+  linreg = FALSE,
+  rank = FALSE,
+  mm = FALSE,
   ...
 )
 }
@@ -32,7 +36,7 @@
 \item{x}{An object of class \code{netmeta}.}
 
 \item{order}{A mandatory character or numerical vector specifying
-the order of treatments (see Details).}
+the order of treatments or list of comparators (see Details).}
 
 \item{pooled}{A character string indicating whether results for the
 fixed effect (\code{"fixed"}) or random effects model
@@ -53,32 +57,32 @@ comparisons.}
 \item{legend}{A logical indicating whether a legend with
 information on direct comparisons should be added to the plot.}
 
-\item{linreg}{A logical indicating whether result of linear
-regression test for funnel plot asymmetry should be added to
-plot.}
-
-\item{rank}{A logical indicating whether result of rank test for
-funnel plot asymmetry should be added to plot.}
-
-\item{mm}{A logical indicating whether result of linear regression
-test for funnel plot asymmetry allowing for between-study
-heterogeneity should be added to plot.}
-
 \item{pos.legend}{The position of the legend describing plotting
 symbols and colours for direct comparisons.}
 
 \item{pos.tests}{The position of results for test(s) of funnel plot
 asymmetry.}
 
+\item{lump.comparator}{A logical indicating whether comparators
+should be lumped, e.g., to specify inactive treatments.
+information on direct comparisons should be added to the plot.}
+
+\item{text.comparator}{A character string used in the plot to label
+the comparator if \code{lump.comparator} is \code{TRUE}.}
+
+\item{method.bias}{A character vector indicating which test(s) for
+funnel plot asymmatrx to use. Admissible values are
+\code{"Begg"}, \code{"Egger"}, and \code{"Thompson"}, can be
+abbreviated. See function \code{\link[meta]{metabias}}.}
+
 \item{text.linreg}{A character string used in the plot to label the
-linear regression test for funnel plot asymmetry.}
+Egger test for funnel plot asymmetry.}
 
 \item{text.rank}{A character string used in the plot to label the
-rank test for funnel plot asymmetry.}
+Begg test for funnel plot asymmetry.}
 
 \item{text.mm}{A character string used in the plot to label the
-linear regression test for funnel plot asymmetry allowing for
-between-study heterogeneity.}
+Thompson-Sharp test for funnel plot asymmetry.}
 
 \item{sep.trts}{A character used in comparison names as separator
 between treatment labels.}
@@ -96,6 +100,15 @@ odds ratios, for example.}
 
 \item{digits.pval}{Minimal number of significant digits for p-value
 of test(s) for funnel plot asymmetry.}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{linreg}{Deprecated argument (replaced by \code{method.bias}).}
+
+\item{rank}{Deprecated argument (replaced by \code{method.bias}).}
+
+\item{mm}{Deprecated argument (replaced by \code{method.bias}).}
 
 \item{\dots}{Additional graphical arguments passed as arguments to
 \code{\link{funnel.meta}}.}
@@ -135,7 +148,13 @@ possibilities include defining the comparisons so that all refer to
 an active treatment versus placebo or sponsored versus
 non-sponsored intervention.}}
 
-The treatments can be either in increasing or decreasing order.
+Alternatively, it is possible to only provide a single or few
+treatment name(s) in argument \code{order} to define the
+comparator(s). In this case only comparisons with this / these
+treatment(s) will be considered. If argument \code{lump.comparator}
+is \code{TRUE}, all comparators will be lumped into a single
+group. The text for this group can be specified with argument
+\code{text.comparator}.
 
 In the funnel plot, if \code{yaxis} is \code{"se"}, the standard
 error of the treatment estimates is plotted on the y-axis which is
@@ -155,35 +174,44 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #
 try(funnel(net1))
 
+# Only show comparisons with placebo
+#
+funnel(net1, order = "pl")
+
+# Add result for Egger test of funnel plot asymmetry
+#
+funnel(net1, order = "pl", method.bias = "Egger",
+       digits.pval = 2)
+
 # (Non-sensical) alphabetic order of treatments with placebo as
 # last treatment
 #
 ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
 funnel(net1, order = ord)
 
+\dontrun{
 # Add results for tests of funnel plot asymmetry and use different
 # plotting symbols and colours
 #
 funnel(net1, order = ord,
        pch = rep(c(15:18, 1), 3), col = 1:3,
-       linreg = TRUE, rank = TRUE, mm = TRUE, digits.pval = 2)
+       method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 
 # Same results for tests of funnel plot asymmetry using reversed
 # order of treatments
 #
 funnel(net1, order = rev(ord),
        pch = rep(c(15:18, 1), 3), col = 1:3,
-       linreg = TRUE, rank = TRUE, mm = TRUE, digits.pval = 2)
+       method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 
 # Calculate tests for funnel plot asymmetry
 #
-f1 <- funnel(net1, order = ord,
-             pch = rep(c(15:18, 1), 3), col = 1:3,
-             linreg = TRUE, rank = TRUE, mm = TRUE)
+f1 <- funnel(net1, order = ord)
 #
 metabias(metagen(TE.adj, seTE, data = f1))
 metabias(metagen(TE.adj, seTE, data = f1), method = "Begg")
 metabias(metagen(TE.adj, seTE, data = f1), method = "Thompson")
+}
 
 }
 \references{

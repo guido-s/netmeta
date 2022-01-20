@@ -1,8 +1,14 @@
-contribution.matrix <- function(x, method, model, hatmatrix.F1000) {
+contribution.matrix <- function(x, method, model, hatmatrix.F1000,
+                                verbose = FALSE) {
+  if (verbose)
+    cat(paste0("Calculate network contributions (",
+               model, " effects model):\n"))
+  ##
   if (method == "randomwalk")
-    return(contribution.matrix.davies(x, model))
+    return(contribution.matrix.davies(x, model, verbose = verbose))
   else if (method == "shortestpath")
-    return(contribution.matrix.tpapak(x, model, hatmatrix.F1000))
+    return(contribution.matrix.tpapak(x, model, hatmatrix.F1000,
+                                      verbose = verbose))
   else
     return(NULL)
 }
@@ -11,11 +17,13 @@ contribution.matrix <- function(x, method, model, hatmatrix.F1000) {
 
 
 
-contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
+contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
+                                       verbose = FALSE) {
   
   chkclass(x, "netmeta")
   model <- setchar(model, c("fixed", "random"))
   chklogical(hatmatrix.F1000)
+  chklogical(verbose)
   ##
   old <- hatmatrix.F1000
   
@@ -89,7 +97,13 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
     igraph::delete_edges(gg, emptyEdges)
   }
   ##
-  reduceGraph <- function (g, comparison) {
+  reduceGraph <- function(g, comparison, verbose, is.tictoc) {
+    if (verbose)
+      cat(paste0("- ", comparison, "\n"))
+    ##
+    if (verbose & is.tictoc)
+      tictoc::tic()
+    ##
     getshortest <- function (g, comparison) {
       getShortest <- function() {
         return(igraph::get.shortest.paths(g,
@@ -108,6 +122,9 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
       g <- reducePath(g, comparison, spath)
       spath <- getshortest(g, comparison)
     }
+    ##
+    if (verbose & is.tictoc)
+      tictoc::toc()
     ##
     g
   }
@@ -140,12 +157,13 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
   colnames(weights) <- seq_len(dims[2])
   
   
+  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
   ## rows of comparison matrix
   comparisons <- unlist(lapply(rownames(H), unlist))
   ##
   lapply(comparisons,
          function (comp)
-           reduceGraph(initRowGraph(H, comp), comp))
+           reduceGraph(initRowGraph(H, comp), comp, verbose, is.tictoc))
   
   
   colnames(weights) <- directs
@@ -155,34 +173,46 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000) {
   attr(weights, "model") <- model
   attr(weights, "hatmatrix.F1000") <- old
   ##
-  weights
+  res <- list(weights = weights)
+  res
 }
 
 
 
 
 
-contribution.matrix.davies <- function(x, model) {
+contribution.matrix.davies <- function(x, model, verbose = FALSE) {
   
   chkclass(x, "netmeta")
   model <- setchar(model, c("fixed", "random"))
-  
-  
+  chklogical(verbose)
   ##
-  ## Hat matrix
+  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
+  
+  
   ##
   ## 'Full' aggregated hat matrix
   ##
   H.full <- hatmatrix.aggr(x, model, type = "full")
   ## Total number of possible pairwise comparisons
-  n.comps <- nrow(H.full)
+  comps <- rownames(H.full)
+  n.comps <- length(comps)
   
   
   ##
   ## Create prop contribution matrix (square matrix)
   ##
   weights <- matrix(0, nrow = n.comps, ncol = n.comps)
-  rownames(weights) <- colnames(weights) <- rownames(H.full)
+  rownames(weights) <- colnames(weights) <- comps
+  
+  
+  ##
+  ## Measure times
+  ##
+  if (is.tictoc) {
+    tictoc <- rep(NA, n.comps)
+    names(tictoc) <- comps
+  }
   
   
   ##
@@ -190,14 +220,23 @@ contribution.matrix.davies <- function(x, model) {
   ##
   n <- x$n
   r <- 0
+  ##
   for (t1 in seq_len(n - 1)) {
     for (t2 in (t1 + 1):n) {
       r <- r + 1
       ##
+      if (is.tictoc)
+        tictoc::tic()
+      ##
+      if (verbose)
+        cat(paste0("- ",
+                   paste(x$trts[t1], x$trts[t2], sep = x$sep.trts),
+                   " (", r, "/", n.comps, ")\n"))
+      ##
       ## For each row, t1 is the source and t2 is the sink
       ##
-      ## Create a transition matrix (P, n x n) from t1 (source) to t2 (sink)
-      ## using H.full
+      ## Create a transition matrix (P, n x n) from t1 (source) to t2
+      ## (sink) using H.full
       ##
       ## Create a dummy n x n matrix Q (this is a step in getting P)
       ##
@@ -279,15 +318,28 @@ contribution.matrix.davies <- function(x, model) {
       }
       ##
       weights[r, ] <- uppertri(R)
+      ##
+      if (is.tictoc) {
+        tictoc.r <- tictoc::toc(func.toc = NULL)
+        tictoc[r] <- as.numeric(tictoc.r$toc) - as.numeric(tictoc.r$tic)
+        ##
+        if (verbose)
+          cat(paste(round(tictoc[r], 3), "sec elapsed\n"))
+      }
     }
   }
-  
-  
+  ##
   weights[is.zero(weights)] <- 0
   ##
   weights <- weights[, apply(weights, 2, sum) > 0, drop = FALSE]
   ##
   attr(weights, "model") <- model
+  
+  
+  res <- list(weights = weights)
   ##
-  weights
+  if (is.tictoc)
+    res$tictoc <- tictoc
+  ##
+  res
 }

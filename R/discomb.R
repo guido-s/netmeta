@@ -72,6 +72,8 @@
 #' @param nchar.comps A numeric defining the minimum number of
 #'   characters used to create unique names for components (see
 #'   Details).
+#' @param func.inverse R function used to calculate the pseudoinverse
+#'   of the Laplacian matrix L (see \code{\link{netmeta}}).
 #' @param title Title of meta-analysis / systematic review.
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
@@ -399,6 +401,8 @@ discomb <- function(TE, seTE,
                     sep.trts = ":",
                     nchar.comps = 666,
                     ##
+                    func.inverse = invmat,
+                    ##
                     backtransf = gs("backtransf"),
                     ##
                     title = "",
@@ -480,14 +484,19 @@ discomb <- function(TE, seTE,
   TE <- eval(mf[[match("TE", names(mf))]],
              data, enclos = sys.frame(sys.parent()))
   ##
+  missing.reference.group.pairwise <- FALSE
+  ##
   if (is.data.frame(TE) & !is.null(attr(TE, "pairwise"))) {
     is.pairwise <- TRUE
     ##
     sm <- attr(TE, "sm")
     if (missing.reference.group) {
+      missing.reference.group.pairwise <- TRUE
       reference.group <- attr(TE, "reference.group")
       if (is.null(reference.group))
         reference.group <- ""
+      else
+        missing.reference.group <- FALSE
     }
     ##
     keep.all.comparisons <- attr(TE, "keep.all.comparisons")
@@ -607,14 +616,6 @@ discomb <- function(TE, seTE,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
-  ##
-  ## Check value for reference group
-  ##
-  if (missing.reference.group)
-    reference.group <- labels[1]
-  ##
-  if (reference.group != "")
-    reference.group <- setref(reference.group, labels)
   
   
   ##
@@ -723,11 +724,19 @@ discomb <- function(TE, seTE,
     treat1[wo] <- treat2[wo]
     treat2[wo] <- ttreat1[wo]
   }
+  ##
+  ## Check value for reference group
+  ##
+  if (missing.reference.group | missing.reference.group.pairwise)
+    reference.group <- sort(labels)[1]
+  ##
+  if (reference.group != "")
+    reference.group <- setref(reference.group, labels)
   
   
   ##
   ##
-  ## (5) Create C.matrix
+  ## (5) Create C.matrix, B.matrix and Design matrix
   ##
   ##
   netc <- netconnection(treat1, treat2, studlab)
@@ -772,9 +781,11 @@ discomb <- function(TE, seTE,
     C.matrix <- as.matrix(C.matrix)
   ##
   c <- ncol(C.matrix) # number of components
-  
-  
-  p0 <- prepare(TE, seTE, treat1, treat2, studlab)
+  ##
+  ## Create B.matrix
+  ##
+  p0 <- prepare(TE, seTE, treat1, treat2, studlab,
+                func.inverse = func.inverse)
   ##
   o <- order(p0$order)
   ##
@@ -782,8 +793,6 @@ discomb <- function(TE, seTE,
   ##
   colnames(B.matrix) <- labels
   rownames(B.matrix) <- studlab
-  
-  
   ##
   ## Design matrix based on treatment components
   ##
@@ -832,6 +841,11 @@ discomb <- function(TE, seTE,
   }
   
   
+  ##
+  ##
+  ## (6) Conduct network meta-analyses
+  ##
+  ##
   tdata <- data.frame(studies = p0$studlab[o], narms = p0$narms[o])
   tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
   ##
@@ -844,8 +858,6 @@ discomb <- function(TE, seTE,
   n <- length(labels)
   m <- length(TE)
   k <- length(unique(studlab))
-  
-  
   ##
   ## Fixed effects models
   ##
@@ -867,34 +879,21 @@ discomb <- function(TE, seTE,
     Q <- df.Q <- pval.Q <- NA
     df.Q.diff <- NA
   }
-  
-  
+  ##  
   res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], level.ma,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
-  
-  
   ##
-  ## Calculate heterogeneity statistics (additive model)
-  ##
-  Q.additive <- res.f$Q.additive
+  ## Random effects models
   ##
   if (!is.null(tau.preset))
     tau <- tau.preset
   else
     tau <- res.f$tau
   ##
-  I2 <- res.f$I2
-  lower.I2 <- res.f$lower.I2
-  upper.I2 <- res.f$upper.I2
-  
-  
-  ##
-  ## Random effects models
-  ##
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau)
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, invmat)
   ##
   res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], level.ma,
@@ -902,19 +901,18 @@ discomb <- function(TE, seTE,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
   
-
-  NAs <- rep(NA, length(res.f$comparisons$TE))
   
-  
+  ##
+  ##
+  ## (7) Generate CNMA object
+  ##
+  ##
   n.comps <- table(p0$studlab)
-  studies <- names(n.comps)
-  narms <- (1 + sqrt(8 * as.vector(n.comps)  + 1)) / 2
-  
-  
   designs <- designs(p0$treat1, p0$treat2, p0$studlab,
                      sep.trts = sep.trts)
-  
-  
+  ##  
+  NAs <- rep(NA, length(res.f$comparisons$TE))
+  ##
   res <- list(studlab = p0$studlab[o],
               treat1 = p0$treat1[o],
               treat2 = p0$treat2[o],
@@ -947,8 +945,8 @@ discomb <- function(TE, seTE,
               n.arms = NA,
               multiarm = NA,
               ##
-              studies = studies,
-              narms = narms,
+              studies = names(n.comps),
+              narms = (1 + sqrt(8 * as.vector(n.comps)  + 1)) / 2,
               ##
               designs = unique(sort(designs$design)),
               ##
@@ -1027,11 +1025,12 @@ discomb <- function(TE, seTE,
               statistic.Comb.random = unname(res.r$combinations$statistic),
               pval.Comb.random = unname(res.r$combinations$p),
               ##
-              Q.additive = Q.additive, 
+              Q.additive = res.f$Q.additive, 
               df.Q.additive = df.Q.additive, 
               pval.Q.additive = res.f$pval.Q.additive,
               tau = tau,
-              I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2,
+              I2 = res.f$I2,
+              lower.I2 = res.f$lower.I2, upper.I2 = res.f$upper.I2,
               ##
               Q.standard = Q,
               df.Q.standard = df.Q,
@@ -1071,10 +1070,12 @@ discomb <- function(TE, seTE,
               tau.preset = tau.preset,
               ##
               sep.trts = sep.trts,
+              sep.comps = sep.comps,
               nchar.comps = nchar.comps,
               ##
+              func.inverse = deparse(substitute(func.inverse)),
+              ##
               inactive = inactive,
-              sep.comps = sep.comps,
               ##
               backtransf = backtransf, 
               ##
@@ -1083,10 +1084,6 @@ discomb <- function(TE, seTE,
               call = match.call(),
               version = packageDescription("netmeta")$Version
               )
-  ##
-  class(res) <- c("discomb", "netcomb")
-  
-  
   ##
   ## Add information on multi-arm studies
   ##
@@ -1106,8 +1103,6 @@ discomb <- function(TE, seTE,
     res$n.arms <- rep(2, length(res$studlab))
     res$multiarm <- rep(FALSE, length(res$studlab))
   }
-  
-  
   ##
   ## Remove estimates for inestimable combinations and components
   ##
@@ -1189,6 +1184,9 @@ discomb <- function(TE, seTE,
     res$statistic.Comp.random[sel2] <- NA
     res$pval.Comp.random[sel2] <- NA
   }
+  ##
+  class(res) <- c("discomb", "netcomb")
+  
   
   res
 }

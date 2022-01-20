@@ -164,20 +164,20 @@ write.table(league0$random, file = "league0-random.csv",
 # Create Excel files with league tables
 # (if R package writexl is available)
 #
-if (requireNamespace("writexl", quietly = TRUE)) {
-  library(writexl)
-  #
-  # League table from random effects model
-  #
-  write_xlsx(league0$random,
-             path = "league0-random.xlsx", col_names = FALSE)
-  #
-  # League tables from fixed and random effects models
-  #
-  write_xlsx(list(fixed = league0$fixed, random = league0$random),
-             path = "league0-both.xlsx", col_names = FALSE)
+library(writexl)
+#
+# League table from random effects model
+#
+write_xlsx(league0$random,
+           path = "league0-random.xlsx", col_names = FALSE)
+#
+# League tables from fixed and random effects models
+#
+write_xlsx(list(fixed = league0$fixed, random = league0$random),
+           path = "league0-both.xlsx", col_names = FALSE)
 }
 
+\donttest{
 # Use depression dataset
 #
 data(Linde2015)
@@ -245,6 +245,9 @@ options(oldopts)
 # Generate a partial order of treatment rankings 
 #
 np <- netposet(net1, net2, outcomes = outcomes)
+
+# Requires R package 'hasse'
+#
 hasse(np)
 plot(np)
 }
