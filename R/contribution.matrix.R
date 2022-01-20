@@ -191,8 +191,6 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
   
   
   ##
-  ## Hat matrix
-  ##
   ## 'Full' aggregated hat matrix
   ##
   H.full <- hatmatrix.aggr(x, model, type = "full")
@@ -205,7 +203,7 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
   ## Create prop contribution matrix (square matrix)
   ##
   weights <- matrix(0, nrow = n.comps, ncol = n.comps)
-  rownames(weights) <- colnames(weights) <- 
+  rownames(weights) <- colnames(weights) <- comps
   
   
   ##
@@ -222,6 +220,7 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
   ##
   n <- x$n
   r <- 0
+  ##
   for (t1 in seq_len(n - 1)) {
     for (t2 in (t1 + 1):n) {
       r <- r + 1
@@ -329,15 +328,16 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
       }
     }
   }
-  
-  
+  ##
   weights[is.zero(weights)] <- 0
   ##
   weights <- weights[, apply(weights, 2, sum) > 0, drop = FALSE]
   ##
   attr(weights, "model") <- model
-  ##
+  
+  
   res <- list(weights = weights)
+  ##
   if (is.tictoc)
     res$tictoc <- tictoc
   ##
