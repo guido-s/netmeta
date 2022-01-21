@@ -401,26 +401,7 @@ netcomb <- function(x,
   
   ##
   ##
-  ## (2) Get data
-  ##
-  ##
-  n <- x$n # number of treatments / combinations
-  m <- x$m # number of comparisons
-  ##
-  trts <- x$trts
-  ##
-  TE <- x$TE
-  seTE <- x$seTE
-  treat1 <- x$treat1
-  treat2 <- x$treat2
-  studlab <- x$studlab
-  ##
-  B.matrix <- x$B.matrix
-  
-  
-  ##
-  ##
-  ## (3) Create C.matrix
+  ## (2) Create C.matrix
   ##
   ##
   if (missing(C.matrix)) {
@@ -433,7 +414,7 @@ netcomb <- function(x,
       C.matrix <- createC(x, sep.comps, inactive)
     ##
     inactive <- attr(C.matrix, "inactive")
-    C.matrix <- as.matrix(C.matrix)[trts, , drop = FALSE]
+    C.matrix <- as.matrix(C.matrix)[x$trts, , drop = FALSE]
   }
   else {
     ##
@@ -443,7 +424,7 @@ netcomb <- function(x,
       stop("Argument 'C.matrix' must be a matrix or data frame.",
            call. = FALSE)
     ##
-    if (nrow(C.matrix) != n)
+    if (nrow(C.matrix) != x$n)
       stop("Argument 'C.matrix' has wrong number of rows",
            " (must be equal to number of treatments).",
            call. = FALSE)
@@ -455,15 +436,15 @@ netcomb <- function(x,
     if (is.null(rownames(C.matrix)))
       wrong.labels <- TRUE
     else {
-      if (length(unique(trts)) ==
-          length(unique(tolower(trts))) &&
+      if (length(unique(x$trts)) ==
+          length(unique(tolower(x$trts))) &&
           length(unique(rownames(C.matrix))) ==
           length(unique(tolower(rownames(C.matrix))))
           )
         idx <- charmatch(tolower(rownames(C.matrix)),
-                         tolower(trts), nomatch = NA)
+                         tolower(x$trts), nomatch = NA)
       else
-        idx <- charmatch(rownames(C.matrix), trts, nomatch = NA)
+        idx <- charmatch(rownames(C.matrix), x$trts, nomatch = NA)
       ##
       if (any(is.na(idx)) || any(idx == 0))
         wrong.labels <- TRUE
@@ -472,11 +453,11 @@ netcomb <- function(x,
     if (wrong.labels)
       stop(paste("Row names of argument 'C.matrix' must be a ",
                  "permutation of treatment names:\n  ",
-                 paste(paste("'", trts, "'", sep = ""),
+                 paste(paste("'", x$trts, "'", sep = ""),
                        collapse = " - "), sep = ""),
            call. = FALSE)
     ##
-    C.matrix <- C.matrix[trts, , drop = FALSE]
+    C.matrix <- C.matrix[x$trts, , drop = FALSE]
     ##
     if (is.data.frame(C.matrix))
       C.matrix <- as.matrix(C.matrix)
@@ -485,24 +466,16 @@ netcomb <- function(x,
   c <- ncol(C.matrix) # number of components
   
   
-  p0 <- prepare(TE, seTE, treat1, treat2, studlab,
-                func.inverse = func.inverse)
   ##
-  o <- order(p0$order)
   ##
-  B.matrix <- createB(p0$treat1.pos[o], p0$treat2.pos[o])
+  ## (3) Create design matrix based on treatment components
   ##
-  colnames(B.matrix) <- trts
-  rownames(B.matrix) <- studlab
-  
-  
   ##
-  ## Design matrix based on treatment components
-  ##
-  X.matrix <- B.matrix %*% C.matrix
-  ##
+  X.matrix <- x$B.matrix %*% C.matrix
   colnames(X.matrix) <- colnames(C.matrix)
-  rownames(X.matrix) <- studlab
+  rownames(X.matrix) <- x$studlab
+  ##
+  ## Check for and warn about not uniquely identifiable components
   ##
   if (qr(X.matrix)$rank < c) {
     Xplus <- ginv(X.matrix)
@@ -539,29 +512,25 @@ netcomb <- function(x,
   
   
   ##
-  ## Fixed effects models
+  ##
+  ## (4) Conduct CNMA
+  ##
   ##
   df.Q.additive <- x$df.Q + x$n - 1 - qr(X.matrix)$rank
-  ##
-  net <- netmeta(TE, seTE, treat1, treat2, studlab,
-                 tol.multiarm = x$tol.multiarm,
-                 tol.multiarm.se = x$tol.multiarm.se,
-                 details.chkmultiarm = x$details.chkmultiarm)
-  ##
-  Q <- net$Q
-  df.Q <- net$df.Q
-  pval.Q <- net$pval.Q
-  ##
   df.Q.diff <- x$n - 1 - qr(X.matrix)$rank
-  
-  
+  ##
+  p0 <- prepare(x$TE, x$seTE, x$treat1, x$treat2, x$studlab,
+                func.inverse = func.inverse)
+  ##
+  o <- order(p0$order)
+  ##
+  ## Fixed effects models
+  ##
   res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], x$level.ma,
-                        X.matrix, C.matrix, B.matrix,
-                        Q, df.Q.additive, df.Q.diff,
+                        X.matrix, C.matrix, x$B.matrix,
+                        x$Q, df.Q.additive, df.Q.diff,
                         x$n, x$sep.trts)
-  
-  
   ##
   ## Calculate heterogeneity statistics (additive model)
   ##
@@ -576,21 +545,23 @@ netcomb <- function(x,
   lower.I2 <- res.f$lower.I2
   upper.I2 <- res.f$upper.I2
   ##
-  tau2.calc <- if (is.na(tau)) 0 else tau^2
-  
-  
-  ##
   ## Random effects models
   ##
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, invmat)
+  p1 <- prepare(x$TE, x$seTE, x$treat1, x$treat2, x$studlab,
+                if (is.na(tau)) 0 else tau, invmat)
   ##
   res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], x$level.ma,
-                        X.matrix, C.matrix, B.matrix,
-                        Q, df.Q.additive, df.Q.diff,
+                        X.matrix, C.matrix, x$B.matrix,
+                        x$Q, df.Q.additive, df.Q.diff,
                         x$n, x$sep.trts)
   
   
+  ##
+  ##
+  ## (5) Generate CNMA object
+  ##
+  ##
   res <- list(studlab = x$studlab,
               treat1 = x$treat1,
               treat2 = x$treat2,
@@ -609,12 +580,12 @@ netcomb <- function(x,
               n2 = x$n2,
               ##
               k = x$k,
-              m = m,
-              n = n,
+              m = x$m,
+              n = x$n,
               d = x$d,
               c = c,
               ##
-              trts = trts,
+              trts = x$trts,
               k.trts = x$k.trts,
               n.trts = x$n.trts,
               events.trts = x$events.trts,
@@ -718,7 +689,7 @@ netcomb <- function(x,
               ##
               A.matrix = x$A.matrix,
               X.matrix = X.matrix,
-              B.matrix = B.matrix,
+              B.matrix = x$B.matrix,
               C.matrix = C.matrix,
               ##
               L.matrix.fixed = res.f$L.matrix,
