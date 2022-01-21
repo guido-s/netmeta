@@ -3,8 +3,8 @@
 ### Bug fixes
 
 * netcomb():
-  - report correct number of pairwise comparisons (instead of 1) in
-    case of not uniquely identifiable components
+  - report correct number of pairwise comparisons in case of not
+    uniquely identifiable components
 
 
 ## netmeta, version 2.1-0 (2022-01-20)
