@@ -3,8 +3,8 @@
 ### Bug fixes
 
 * netcomb():
-  - calculate correct number of pairwise comparisons (instead of 1) if
-    component label contains character defined by argument 'sep.comps'
+  - report correct number of pairwise comparisons (instead of 1) in
+    case of not uniquely identifiable components
 
 
 ## netmeta, version 2.1-0 (2022-01-20)
