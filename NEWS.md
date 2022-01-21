@@ -2,7 +2,7 @@
 
 ### Bug fixes
 
-* netcomb(), discomb():
+* netcomb():
   - calculate correct number of pairwise comparisons (instead of 1) if
     component label contains character defined by argument 'sep.comps'
 
