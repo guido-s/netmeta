@@ -11,17 +11,25 @@ bylevs <- function(x) {
     res <- unique(x)
   res
 }
-byvarname <- function(x) {
+byvarname <- function(argname, matchcall) {
   ##
   ## Determine name of subgroup variable
   ##
-  res <- as.character(x)
+  res <- as.character(matchcall[[match(argname, names(matchcall))]])
+  ##
   if (length(res) > 1 & res[1] == "$")
     res <- res[length(res)]
+  ##
   if (length(res) == 0 || length(res) > 1)
     res <- "subgroup"
   ##
   res
+}
+catch <- function(argname, matchcall, data, encl) {
+  ##
+  ## Catch value for argument
+  ##
+  eval(matchcall[[match(argname, names(matchcall))]], data, enclos = encl)
 }
 int2num <- function(x) {
   ##
@@ -152,7 +160,10 @@ deprecated2 <- function(newvar, newmiss, oldvar, oldmiss, warn = TRUE) {
     return(oldvar)
   }
 }
-runNN <- function(func, args) {
+runNN <- function(func, args, warn = TRUE) {
   args <- args[!sapply(args, is.null)]
-  do.call(func, args)
+  if (warn)
+    do.call(func, args)
+  else
+    suppressWarnings(do.call(func, args))
 }

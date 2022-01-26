@@ -277,26 +277,18 @@ print.rankogram <- function(x,
     cat("Random effects model: \n\n")
     prmatrix(formatN(rank.random, digits), quote = FALSE, right = TRUE, ...)
   }
-  ##  
+  ##
+  ## Add legend with abbreviated treatment labels
+  ##
   if ((fixed | random) & legend) {
     if (fixed)
       trts <- rownames(x$ranking.matrix.fixed)
     else if (random)
       trts <- rownames(x$ranking.matrix.random)
     ##
-    trts.abbr <- treats(trts, nchar.trts)
-    diff.trts <- trts != trts.abbr
-    if (any(diff.trts)) {
-      cat("\nLegend:\n")
-      tmat <- data.frame(trts.abbr, trts)
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[diff.trts, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      prmatrix(tmat, quote = FALSE, right = TRUE,
-               rowlab = rep("", length(trts.abbr)))
-    }
+    legendabbr(trts, treats(trts, nchar.trts), TRUE)
   }
+  
   
   invisible()
 }

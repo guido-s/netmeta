@@ -150,7 +150,8 @@ forest.netbind <- function(x,
                                studlab = x$fixed$name,
                                sm = x$sm,
                                fixed = FALSE, random = FALSE,
-                               byvar = x$fixed$treat, print.byvar = FALSE,
+                               subgroup = x$fixed$treat,
+                               print.subgroup.name = FALSE,
                                subset = sel,
                                method.tau = "DL"))
     ##
@@ -183,7 +184,8 @@ forest.netbind <- function(x,
                                studlab = x$random$name,
                                sm = x$sm,
                                fixed = FALSE, random = FALSE,
-                               byvar = x$random$treat, print.byvar = FALSE,
+                               subgroup = x$random$treat,
+                               print.subgroup.name = FALSE,
                                subset = sel,
                                method.tau = "DL"))
     ##
@@ -224,12 +226,19 @@ forest.netbind <- function(x,
   ##
   forest(m,
          digits = digits,
+         ##
          fixed = FALSE, random = FALSE,
          overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
+         ##
+         subgroup.hetstat = FALSE,
+         prediction.subgroup = FALSE,
+         calcwidth.subgroup = TRUE,
+         ##
          leftcols = leftcols,
          leftlabs = leftlabs,
          rightcols = rightcols,
          rightlabs = rightlabs,
+         ##
          lab.NA = lab.NA,
          smlab = smlab,
          backtransf = backtransf,
@@ -242,11 +251,16 @@ forest.netbind <- function(x,
          col.inside.random = "black",
          ##
          weight.study = if (equal.size) "same" else pooled,
-         calcwidth.subgroup = TRUE,
          ...)
   
-  
-  invisible(NULL)
+  ret <- m
+  ##
+  ret$leftcols <- leftcols
+  ret$rightcols <- rightcols
+  ret$leftlabs <- leftlabs
+  ret$rightlabs <- rightlabs
+  ##
+  invisible(ret)
 }
 
 

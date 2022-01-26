@@ -740,22 +740,12 @@ print.netmeta <- function(x,
                 tau2, "\n", sep = ""))
     }
   }
-  ##  
-  if (any(rownames(TE.fixed) != treats(TE.fixed, nchar.trts))) {
-    abbr <- unique(treats(TE.fixed, nchar.trts))
-    full <- unique(rownames(TE.fixed))
-    ##
-    tmat <- data.frame(abbr, full)
-    names(tmat) <- c("Abbreviation", "Treatment name")
-    tmat <- tmat[abbr != full, ]
-    tmat <- tmat[order(tmat$Abbreviation), ]
-    ##
-    if (legend) {
-      cat("\nLegend:\n")
-      prmatrix(tmat, quote = FALSE, right = TRUE,
-               rowlab = rep("", length(abbr)))
-    }
-  }
+  ##
+  ## Add legend with abbreviated treatment labels
+  ##
+  legendabbr(unique(rownames(TE.fixed)),
+             treats(TE.fixed, nchar.trts),
+             legend)
   
   
   invisible(NULL)

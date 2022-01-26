@@ -186,26 +186,11 @@ print.decomp.design <- function(x,
   print(Q.inc.random)
   
   
-  if (legend) {
-    trts1.abbr <- treats(trts1, nchar.trts)
-    trts2.abbr <- treats(trts2, nchar.trts)
-    ##
-    diff.trts1 <- trts1 != trts1.abbr
-    diff.trts2 <- trts2 != trts2.abbr
-    if (any(diff.trts1) | any(diff.trts2)) {
-      cat("\nLegend:\n")
-      ##
-      trts <- c(trts1, trts2)
-      trts.abbr <- c(trts1.abbr, trts2.abbr)
-      tmat <- data.frame(trts.abbr, trts)
-      tmat <- tmat[diff.trts1 | diff.trts2, ]
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      prmatrix(unique(tmat), quote = FALSE, right = TRUE,
-               rowlab = rep("", nrow(unique(tmat))))
-    }
-  }
+  ##
+  ## Add legend with abbreviated treatment labels
+  ##
+  trts <- unique(c(trts1, trts2))
+  legendabbr(trts, treats(trts, nchar.trts), legend)
   
   
   invisible(NULL)

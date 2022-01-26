@@ -260,17 +260,13 @@ print.summary.netmeta <- function(x,
       sm.lab <- paste("log", sm, sep = "")
     ##    
     trts <- x$x$trts
-    trts.abbr <- treats(trts, nchar.trts)
     ##
     treat1 <-
-      as.character(factor(x$x$treat1, levels = trts, labels = trts.abbr))
+      as.character(factor(x$x$treat1, levels = trts,
+                          labels = treats(trts, nchar.trts)))
     treat2 <-
-      as.character(factor(x$x$treat2, levels = trts, labels = trts.abbr))
-    ##
-    if (any(treat1 != x$x$treat1) | any(treat2 != x$x$treat2))
-      abbr <- c(treat1, treat2)
-    else
-      abbr <- NULL
+      as.character(factor(x$x$treat2, levels = trts,
+                          labels = treats(trts, nchar.trts)))
     
     
     ##
@@ -430,7 +426,7 @@ print.summary.netmeta <- function(x,
   if (reference.group != "")
     reference.group <- setref(reference.group, rownames(x$x$A.matrix))
   ##  
-  if (nma)
+  if (nma) {
     print.netmeta(x$x,
                   fixed = fixed, random = random,
                   prediction = prediction,
@@ -449,22 +445,14 @@ print.summary.netmeta <- function(x,
                   big.mark = big.mark,
                   ##
                   legend = legend)
-  else
-    if (!is.null(abbr)) {
-      abbr <- unique(abbr)
-      full <- unique(c(x$x$treat1, x$x$treat2))
-      ##
-      tmat <- data.frame(abbr, full)
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[abbr != full, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      if (legend) {
-        cat("Legend:\n")
-        prmatrix(tmat, quote = FALSE, right = TRUE,
-                 rowlab = rep("", length(abbr)))
-      }
-    }
+  }
+  else {
+    ##
+    ## Add legend with abbreviated treatment labels
+    ##
+    legendabbr(trts, treats(trts, nchar.trts), legend)
+  }
+  
   
   invisible(NULL)
 }

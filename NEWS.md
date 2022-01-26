@@ -6,6 +6,21 @@
   - report correct number of pairwise comparisons in case of not
     uniquely identifiable components
 
+### User-visible changes
+
+* hatmatrix():
+  - new arguments 'nchar.trts' and 'nchar.studlab'
+
+* print.netimpact():
+  - new argument 'legend'
+
+### Internal changes
+
+* New internal function legendabbr() to print legend with abbreviated
+  and full treatment labels
+
+* New internal function catch() to catch value for an argument
+
 
 ## netmeta, version 2.1-0 (2022-01-20)
 

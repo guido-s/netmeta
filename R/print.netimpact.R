@@ -9,6 +9,8 @@
 #' @param random A logical indicating whether results for the
 #'   random effects model should be printed.
 #' @param digits Minimal number of significant digits.
+#' @param legend A logical indicating whether a legend should be
+#'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments (to catch deprecated arguments).
@@ -45,6 +47,7 @@ print.netimpact <- function(x,
                             random = x$x$random,
                             digits = gs("digits.prop"),
                             ##
+                            legend = TRUE,
                             warn.deprecated = gs("warn.deprecated"),
                             ##
                             ...) {
@@ -64,6 +67,7 @@ print.netimpact <- function(x,
   ##
   ##
   chknumeric(digits, min = 0, length = 1)
+  chklogical(legend)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -93,15 +97,11 @@ print.netimpact <- function(x,
   treat2.long <- mat[, 2]
   ##
   trts <- x$x$trts
-  trts.abbr <- treats(trts, x$x$nchar.trts)
   ##
-  treat1 <- as.character(factor(treat1.long, levels = trts, labels = trts.abbr))
-  treat2 <- as.character(factor(treat2.long, levels = trts, labels = trts.abbr))
-  ##
-  if (any(treat1 != treat1.long) | any(treat2 != treat2.long))
-    abbr <- c(treat1, treat2)
-  else
-    abbr <- NULL
+  treat1 <- as.character(factor(treat1.long, levels = trts,
+                                labels = treats(trts, x$x$nchar.trts)))
+  treat2 <- as.character(factor(treat2.long, levels = trts,
+                                labels = treats(trts, x$x$nchar.trts)))
   
   
   ##
@@ -128,21 +128,12 @@ print.netimpact <- function(x,
     ##
     prmatrix(impact.random, quote = FALSE, right = TRUE)
   }
-  ##  
-  if (fixed || random)
-    if (!is.null(abbr)) {
-      abbr <- unique(abbr)
-      full <- unique(c(treat1.long, treat2.long))
-      ##
-      tmat <- data.frame(abbr, full)
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[abbr != full, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      cat("\nLegend:\n")
-      prmatrix(tmat, quote = FALSE, right = TRUE,
-               rowlab = rep("", length(abbr)))
-    }
+  ##
+  ## Add legend with abbreviated treatment labels
+  ##
+  if (fixed | random)
+    legendabbr(trts, treats(trts, x$x$nchar.trts), legend)
+  
   
   invisible(NULL)
 }

@@ -298,7 +298,7 @@ print.netrank <- function(x,
                           fixed = x$fixed,
                           random = x$random,
                           sort = TRUE,
-                          digits = max(4, .Options$digits - 3),
+                          digits = gs("digits.prop"),
                           warn.deprecated = gs("warn.deprecated"),
                           ...) {
   

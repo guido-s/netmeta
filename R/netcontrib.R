@@ -318,7 +318,6 @@ print.netcontrib <- function(x,
   
   ##
   trts <- x$x$trts
-  trts.abbr <- treats(trts, nchar.trts)
   ##
   if (fixed) {
     rownames(x$fixed) <- comps(x$fixed, trts, x$x$sep.trts, nchar.trts)
@@ -339,21 +338,9 @@ print.netcontrib <- function(x,
     prmatrix(round(x$random, digits))
   }
   ##
-  ## Add legend
+  ## Add legend with abbreviated treatment labels
   ##
-  if (legend & (fixed | random)) {
-    diff.trts <- trts != trts.abbr
-    if (any(diff.trts)) {
-      tmat <- data.frame(trts, trts.abbr)
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[diff.trts, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      cat("\nLegend:\n")
-      prmatrix(tmat, quote = FALSE, right = TRUE,
-               rowlab = rep("", length(trts.abbr)))
-    }
-  }
+  legendabbr(trts, treats(trts, nchar.trts), legend & (fixed | random))
   ##
   invisible(NULL)
 }

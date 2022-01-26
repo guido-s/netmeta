@@ -9,6 +9,7 @@
   fixed = x$x$fixed,
   random = x$x$random,
   digits = gs("digits.prop"),
+  legend = TRUE,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -23,6 +24,9 @@ fixed effects / common effects model should be printed.}
 random effects model should be printed.}
 
 \item{digits}{Minimal number of significant digits.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}

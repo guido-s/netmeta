@@ -5,14 +5,22 @@
 \alias{print.hatmatrix}
 \title{Derive hat matrix from network meta-analysis}
 \usage{
-hatmatrix(x, method = "Ruecker", type, fixed = x$fixed, random = x$random)
+hatmatrix(
+  x,
+  method = "Ruecker",
+  type,
+  fixed = x$fixed,
+  random = x$random,
+  nchar.trts = x$nchar.trts,
+  nchar.studlab = x$nchar.studlab
+)
 
 \method{print}{hatmatrix}(
   x,
   fixed = x$x$fixed,
   random = x$x$random,
   nchar.trts = x$x$nchar.trts,
-  nchar.studlab = 666,
+  nchar.studlab = x$x$nchar.studlab,
   digits = gs("digits"),
   legend = TRUE,
   legend.studlab = TRUE,

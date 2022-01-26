@@ -69,3 +69,24 @@ compos <- function(x, lev, abbr, split, add) {
 
 charfac <- function(x, ...)
   as.character(factor(x, ...))
+
+
+legendabbr <- function(full, abbr, condition,
+                       text = "Treatment name",
+                       header = "\nLegend:\n") {
+  diff <- full != abbr
+  if (condition) {
+    if (any(diff)) {
+      tmat <- data.frame(abbr, full)
+      names(tmat) <- c("Abbreviation", text)
+      tmat <- tmat[diff, ]
+      tmat <- tmat[order(tmat$Abbreviation), ]
+      ##
+      cat(header)
+      ##
+      prmatrix(unique(tmat), quote = FALSE, right = TRUE,
+               rowlab = rep("", nrow(unique(tmat))))
+    }
+  }
+  invisible(condition & any(diff))
+}

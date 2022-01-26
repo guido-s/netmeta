@@ -1369,26 +1369,21 @@ print.netsplit <- function(x,
               "derived from indirect evidence\n", sep = ""))
     if (test) {
       if (backtransf & relative)
-        cat(" RoR        - Ratio of Ratios (direct versus indirect)\n")
+        cat(paste(" RoR        - Ratio of Ratios",
+                  "(direct versus indirect)\n"))
       else
-        cat(" Diff       - Difference between direct and indirect treatment estimates\n")
-      cat(" z          - z-value of test for disagreement (direct versus indirect)\n")
-      cat(" p-value    - p-value of test for disagreement (direct versus indirect)\n")
+        cat(paste(" Diff       - Difference between direct and",
+                  "indirect treatment estimates\n"))
+      ##
+      cat(paste(" z          - z-value of test for disagreement",
+                "(direct versus indirect)\n"))
+      cat(paste(" p-value    - p-value of test for disagreement",
+                "(direct versus indirect)\n"))
     }
     ##
-    trts.abbr <- treats(trts, nchar.trts)
-    diff.trts <- trts != trts.abbr
-    if (any(diff.trts)) {
-      cat("\n")
-      ##
-      tmat <- data.frame(trts.abbr, trts)
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[diff.trts, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      prmatrix(tmat, quote = FALSE, right = TRUE,
-               rowlab = rep("", length(trts.abbr)))
-    }
+    ## Add legend with abbreviated treatment labels
+    ##
+    legendabbr(trts, treats(trts, nchar.trts), TRUE, header = "\n")
   }
   
   

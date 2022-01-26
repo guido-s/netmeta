@@ -166,7 +166,9 @@
 
 hatmatrix <- function(x, method = "Ruecker", type,
                       fixed = x$fixed,
-                      random = x$random) {
+                      random = x$random,
+                      nchar.trts = x$nchar.trts,
+                      nchar.studlab = x$nchar.studlab) {
   
   chkclass(x, "netmeta")
   x <- updateversion(x)
@@ -199,8 +201,20 @@ hatmatrix <- function(x, method = "Ruecker", type,
     else if (method == "Davies")
       type <- setchar(type, c("short", "long", "full"))
   }
+  ##
+  fixed <- replaceNULL(x$fixed, x$comb.fixed)
+  chklogical(fixed)
+  ##
+  random <- replaceNULL(x$random, x$comb.random)
+  chklogical(random)
+  ##
+  nchar.trts <- replaceNULL(nchar.trts, 666)
+  chknumeric(nchar.trts, min = 1, length = 1)
+  ##
+  nchar.studlab <- replaceNULL(nchar.studlab, 666)
+  chknumeric(nchar.studlab, min = 1, length = 1)
   
-
+  
   res <- list()
   ##
   if (method == "Ruecker") {
@@ -228,6 +242,8 @@ hatmatrix <- function(x, method = "Ruecker", type,
   res$x <- x
   res$x$fixed <- fixed
   res$x$random <- random
+  res$x$nchar.trts <- nchar.trts
+  res$x$nchar.studlab <- nchar.studlab
   ##
   res$version <- packageDescription("netmeta")$Version
   ##
@@ -249,7 +265,7 @@ print.hatmatrix <- function(x,
                             fixed = x$x$fixed,
                             random = x$x$random,
                             nchar.trts = x$x$nchar.trts,
-                            nchar.studlab = 666,
+                            nchar.studlab = x$x$nchar.studlab,
                             digits = gs("digits"),
                             legend = TRUE,
                             legend.studlab = TRUE,
@@ -264,6 +280,7 @@ print.hatmatrix <- function(x,
   random.logical <- random
   ##
   chknumeric(nchar.trts, length = 1)
+  nchar.studlab <- replaceNULL(nchar.studlab, 666)
   chknumeric(nchar.studlab, length = 1)
   chknumeric(digits, length = 1)
   chklogical(legend)
@@ -281,7 +298,6 @@ print.hatmatrix <- function(x,
              ")\n\n"))
   ##
   trts <- x$x$trts
-  trts.abbr <- treats(trts, nchar.trts)
   sep.trts <- x$x$sep.trts
   anystudy.r <- anystudy.c <- FALSE
   anycomp.r <- anycomp.c <- FALSE
@@ -341,26 +357,12 @@ print.hatmatrix <- function(x,
     prmatrix(round(random, digits))
   }
   ##
-  ## Add legend
+  ## Add legend with abbreviated treatment labels
   ##
-  if (legend && (anycomp.r | anycomp.c)) {
-    diff.trts <- trts != trts.abbr
-    if (any(diff.trts)) {
-      tmat <- data.frame(trts.abbr, trts)
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[diff.trts, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      cat("\nLegend:\n")
-      prmatrix(tmat, quote = FALSE, right = TRUE,
-               rowlab = rep("", length(trts.abbr)))
-      ##
-      if (legend.studlab && (anystudy.r | anystudy.c))
-        cat("\n")
-    }
-    else
-      legend <- FALSE
-  }
+  legend <- legendabbr(trts, treats(trts, nchar.trts),
+                       legend && (anycomp.r | anycomp.c))
+  ##
+  ## Add legend with abbreviated study labels
   ##
   if (legend.studlab && (anystudy.r | anystudy.c)) {
     if (anystudy.r) {
@@ -385,18 +387,10 @@ print.hatmatrix <- function(x,
       }
     }
     ##
-    diff.studlab <- studlab != studlab.abbr
-    if (any(diff.studlab)) {
-      tmat <- data.frame(studlab.abbr, studlab)
-      names(tmat) <- c("Abbreviation", "Study label")
-      tmat <- tmat[diff.studlab, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      if (!(legend && (anycomp.r | anycomp.c)))
-        cat("\nLegend:\n")
-      prmatrix(unique(tmat), quote = FALSE, right = TRUE,
-               rowlab = rep("", nrow(unique(tmat))))
-    }
+    if (legend)
+      legendabbr(studlab, studlab.abbr, TRUE, "Study label", "\n")
+    else
+      legendabbr(studlab, studlab.abbr, TRUE, "Study label")
   }
   ##
   invisible(NULL)
