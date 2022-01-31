@@ -647,6 +647,7 @@ netmetabin <- function(event1, n1, event2, n2,
                     sm = sm, method = "Inverse",
                     incr = incr, allincr = allincr,
                     addincr = addincr, allstudies = allstudies,
+                    method.tau = "DL", method.tau.ci = "",
                     warn = FALSE)
   ##
   data$.TE <- m.data$TE
@@ -1792,6 +1793,7 @@ netmetabin <- function(event1, n1, event2, n2,
                    method = "MH", sm = "OR",
                    incr = incr, allincr = allincr, addincr = addincr,
                    allstudies = allstudies, MH.exact = !cc.pooled,
+                   method.tau = "DL", method.tau.ci = "",
                    Q.Cochrane = FALSE)
     ##
     TE.i   <- m.i$TE.fixed

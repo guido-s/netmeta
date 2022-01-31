@@ -612,13 +612,13 @@ forest.netsplit <- function(x,
         suppressWarnings(metagen(dat$TE, dat$seTE,
                                  studlab = dat$evidence, data = dat,
                                  sm = x$sm,
-                                 method.tau = "DL",
+                                 method.tau = "DL", method.tau.ci = "",
                                  byvar = dat$comps, print.byvar = FALSE))
     else
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
                                  studlab = dat$comps, data = dat, sm = x$sm,
-                                 method.tau = "DL"))
+                                 method.tau = "DL", method.tau.ci = ""))
     ##
     if (overall) {
       m$w.fixed[m$studlab == text.overall] <- max(m$w.fixed, na.rm = TRUE)
@@ -669,13 +669,13 @@ forest.netsplit <- function(x,
         suppressWarnings(metagen(dat$TE, dat$seTE,
                                  studlab = dat$comps, data = dat,
                                  sm = x$sm,
-                                 method.tau = "DL",
+                                 method.tau = "DL", method.tau.ci = "",
                                  byvar = dat$evidence, print.byvar = FALSE))
     else
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
                                  studlab = dat$comps, data = dat, sm = x$sm,
-                                 method.tau = "DL"))
+                                 method.tau = "DL", method.tau.ci = ""))
     ##
     if (overall) {
       m$w.fixed[m$byvar == text.overall] <- max(m$w.fixed, na.rm = TRUE)

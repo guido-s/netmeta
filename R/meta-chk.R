@@ -55,10 +55,19 @@ chkclass <- function(x, class, name = NULL) {
   if (is.null(name))
     name <- deparse(substitute(x))
   ##
+  n.class <- length(class)
+  if (n.class == 1)
+    text.class <- paste0('"', class, '"')
+  else if (n.class == 2)
+    text.class <- paste0('"', class, '"', collapse = " or ")
+  else
+    text.class <- paste0(paste0('"', class[-n.class], '"', collapse = ", "),
+                    ', or ', '"', class[n.class], '"')
+  ##
   if (!inherits(x, class))
     stop("Argument '", name,
          "' must be an object of class \"",
-         class, "\".", call. = FALSE)
+         text.class, "\".", call. = FALSE)
   ##
   invisible(NULL)
 }
@@ -234,10 +243,11 @@ argid <- function(x, value) {
     res <- NA
   res
 }
-chkdeprecated <- function(x, new, old) {
-  if (!is.na(argid(x, old)))
+chkdeprecated <- function(x, new, old, warn = TRUE) {
+  depr <- !is.na(argid(x, old))
+  if (depr & warn)
     warning("Deprecated argument '", old, "' ignored. ",
             "Use argument '", new, "' instead.",
             call. = FALSE)
-  invisible(NULL)
+  invisible(depr)
 }
