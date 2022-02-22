@@ -48,8 +48,8 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", fixed = FALSE, nchar.trts = 6)
+#'   data = face, reference.group = "placebo",
+#'   sm = "OR", fixed = FALSE, nchar.trts = 6)
 #' #
 #' net1
 #' 
@@ -57,8 +57,8 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = Linde2016, reference.group = "placebo",
-#'                 sm = "OR", fixed = FALSE, nchar.trts = 6)
+#'   data = Linde2016, reference.group = "placebo",
+#'   sm = "OR", fixed = FALSE, nchar.trts = 6)
 #' #
 #' net2
 #' }

@@ -146,8 +146,7 @@ data(Linde2015)
 # Define order of treatments
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
-          "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
-          "Placebo")
+  "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 
 # Outcome labels
 #
@@ -156,22 +155,20 @@ outcomes <- c("Early response", "Early remission")
 # (1) Early response
 #
 p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(resp1, resp2, resp3),
-               n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 #
 net1 <- netmeta(p1, fixed = FALSE,
-                seq = trts, ref = "Placebo", small.values = "bad")
+  seq = trts, ref = "Placebo", small.values = "bad")
 
 # (2) Early remission
 #
 p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(remi1, remi2, remi3),
-               n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, fixed = FALSE,
-                seq = trts, ref = "Placebo", small.values = "bad")
+  seq = trts, ref = "Placebo", small.values = "bad")
 
 # Partial order of treatment rankings (two outcomes)
 #
@@ -186,50 +183,45 @@ hasse(po)
 # Outcome labels
 #
 outcomes <- c("Early response", "Early remission",
-              "Lost to follow-up", "Lost to follow-up due to AEs",
-              "Adverse events (AEs)")
+  "Lost to follow-up", "Lost to follow-up due to AEs",
+  "Adverse events (AEs)")
 
 # (3) Loss to follow-up
 #
 p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(loss1, loss2, loss3),
-               n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 #
 net3 <- netmeta(p3, fixed = FALSE,
-                seq = trts, ref = "Placebo", small.values = "good")
+  seq = trts, ref = "Placebo", small.values = "good")
 
 # (4) Loss to follow-up due to adverse events
 #
 p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(loss.ae1, loss.ae2, loss.ae3),
-               n = list(n1, n2, n3),
-               studlab = id, data = subset(Linde2015, id != 55),
-               sm = "OR")
+  event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
+  studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
 #
 net4 <- netmeta(p4, fixed = FALSE,
-                seq = trts, ref = "Placebo", small.values = "good")
+  seq = trts, ref = "Placebo", small.values = "good")
 
 # (5) Adverse events
 #
 p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(ae1, ae2, ae3),
-               n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 #
 net5 <- netmeta(p5, fixed = FALSE,
-                seq = trts, ref = "Placebo", small.values = "good")
+  seq = trts, ref = "Placebo", small.values = "good")
 
 # Partial order of treatment rankings (all five outcomes)
 #
 po.ranks <- netposet(netrank(net1), netrank(net2),
-                     netrank(net3), netrank(net4), netrank(net5),
-                     outcomes = outcomes)
+  netrank(net3), netrank(net4), netrank(net5), outcomes = outcomes)
 
 # Same result
 #
 po.nets <- netposet(net1, net2, net3, net4, net5,
-                    outcomes = outcomes)
+  outcomes = outcomes)
 #
 all.equal(po.ranks, po.nets)
 
@@ -244,7 +236,7 @@ hasse(po.ranks)
 # Hasse diagram for outcomes early response and early remission
 #
 po12 <- netposet(netrank(net1), netrank(net2),
-                 outcomes = outcomes[1:2])
+  outcomes = outcomes[1:2])
 hasse(po12)
 
 # Scatter plot
@@ -263,7 +255,7 @@ par(oldpar)
 #
 outcomes <- c("OS", "PFS", "LC", "DC")
 treatments <- c("RT", "IC-RT", "IC-CRT", "CRT",
-                "CRT-AC", "RT-AC", "IC-RT-AC")
+  "CRT-AC", "RT-AC", "IC-RT-AC")
 #
 # P-scores (from Table 1)
 #

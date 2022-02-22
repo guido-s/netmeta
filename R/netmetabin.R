@@ -331,7 +331,7 @@
 #' # function called internally.
 #' #
 #' p1 <- pairwise(treatment, death, randomized, studlab = id,
-#'                data = first10, sm = "OR")
+#'   data = first10, sm = "OR")
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis (without continuity
 #' # correction)
@@ -348,7 +348,7 @@
 #' # dataset
 #' #
 #' p2 <- pairwise(treatment, death, randomized, studlab = id,
-#'                data = Dong2013, sm = "OR")
+#'   data = Dong2013, sm = "OR")
 #' netmetabin(p2, ref = "plac")
 #'   
 #' # Conduct network meta-analysis using the non-central
@@ -364,7 +364,7 @@
 #' data(Gurusamy2011)
 #' 
 #' p3 <- pairwise(treatment, death, n, studlab = study,
-#'                data = Gurusamy2011, sm = "OR")
+#'   data = Gurusamy2011, sm = "OR")
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis (without continuity
 #' # correction)
@@ -381,9 +381,7 @@ netmetabin <- function(event1, n1, event2, n2,
                        sm,
                        method = "MH",
                        cc.pooled = FALSE,
-                       incr = gs("incr"),
-                       allincr = gs("allincr"), addincr = gs("addincr"),
-                       allstudies = gs("allstudies"),
+                       incr, allincr, addincr, allstudies,
                        level = gs("level"),
                        level.ma = gs("level.ma"),
                        fixed = gs("fixed"),
@@ -428,10 +426,6 @@ netmetabin <- function(event1, n1, event2, n2,
            "'MH' (Mantel-Haenszel, the default) or ",
            "'NCH' (common-effects non-central hypergeometric).")
   method <- setchar(method, c("Inverse", "MH", "NCH"), modtext)
-  ##
-  chklogical(allincr)
-  chklogical(addincr)
-  chklogical(allstudies)
   chklogical(cc.pooled)
   ##
   chklevel(level)
@@ -511,6 +505,8 @@ netmetabin <- function(event1, n1, event2, n2,
       all.treatments <- FALSE
   ##
   chklogical(baseline.reference)
+  ##
+  missing.incr <- missing(incr)
   
   
   ##
@@ -519,20 +515,28 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ##
   nulldata <- is.null(data)
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
   ##
   if (nulldata)
-    data <- sys.frame(sys.parent())
-  ##
-  mf <- match.call()
+    data <- sfsp
   ##
   ## Catch 'event1', 'event2', 'n1', 'n2', 'treat1', 'treat2', and
   ## 'studlab' from data:
   ##
-  event1 <- eval(mf[[match("event1", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+  event1 <- catch("event1", mc, data, sfsp)
   ##
   if (is.data.frame(event1) & !is.null(attr(event1, "pairwise"))) {
     is.pairwise <- TRUE
+    ##
+    if (missing.incr)
+      incr <- attr(event1, "incr")
+    if (missing(allincr))
+      allincr <- attr(event1, "allincr")
+    if (missing(addincr))
+      addincr <- attr(event1, "addincr")
+    if (missing(allstudies))
+      allstudies <- attr(event1, "allstudies")
     ##
     if (missing(sm) & method == "Inverse")
       sm <- attr(event1, "sm")
@@ -557,6 +561,15 @@ netmetabin <- function(event1, n1, event2, n2,
   else {
     is.pairwise <- FALSE
     ##
+    if (missing.incr)
+      incr <- gs("incr")
+    if (missing(allincr))
+      allincr <- gs("allincr")
+    if (missing(addincr))
+      addincr <- gs("addincr")
+    if (missing(allstudies))
+      allstudies <- gs("allstudies")
+    ##
     if (missing(sm) & method == "Inverse") {
       if (!nulldata && !is.null(attr(data, "sm")))
         sm <- attr(data, "sm")
@@ -569,23 +582,15 @@ netmetabin <- function(event1, n1, event2, n2,
       sm <- "OR"
     }
     ##
-    n1 <- eval(mf[[match("n1", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
+    event2 <- catch("event2", mc, data, sfsp)
     ##
-    event2 <- eval(mf[[match("event2", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    n1 <- catch("n1", mc, data, sfsp)
+    n2 <- catch("n2", mc, data, sfsp)
     ##
-    n2 <- eval(mf[[match("n2", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
+    treat1 <- catch("treat1", mc, data, sfsp)
+    treat2 <- catch("treat2", mc, data, sfsp)
     ##
-    treat1 <- eval(mf[[match("treat1", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
-    ##
-    treat2 <- eval(mf[[match("treat2", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
-    ##
-    studlab <- eval(mf[[match("studlab", names(mf))]],
-                    data, enclos = sys.frame(sys.parent()))
+    studlab <- catch("studlab", mc, data, sfsp)
   }
   ##
   chknumeric(event1)
@@ -606,8 +611,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   .order <- seq_along(studlab)
   ##
-  subset <- eval(mf[[match("subset", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+  subset <- catch("subset", mc, data, sfsp)
   missing.subset <- is.null(subset)
   
   
@@ -642,6 +646,11 @@ netmetabin <- function(event1, n1, event2, n2,
       data$.subset[subset] <- TRUE
     }
   }
+  ##
+  chklogical(incr)
+  chklogical(allincr)
+  chklogical(addincr)
+  chklogical(allstudies)
   ##
   m.data <- metabin(event1, n1, event2, n2,
                     sm = sm, method = "Inverse",
@@ -783,9 +792,8 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ## Catch 'incr' from data:
   ##
-  if (!missing(incr))
-    incr <- eval(mf[[match("incr", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+  if (!missing.incr)
+    incr <- catch("incr", mc, data, sfsp)
   chknumeric(incr, min = 0)
   ##
   if (method != "Inverse" & length(incr) > 1) {

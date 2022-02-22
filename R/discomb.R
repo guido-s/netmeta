@@ -330,10 +330,10 @@
 #' study <- paste("study", c(1:4, 5, 5, 5))
 #' #
 #' dat <- data.frame(mean, se.mean, t1, t2, study,
-#'                   stringsAsFactors = FALSE)
+#'   stringsAsFactors = FALSE)
 #' #
 #' trts <- c("A", "A + B", "A + C", "A + D",
-#'           "B", "B + C", "C", "D", "E", "F")
+#'   "B", "B + C", "C", "D", "E", "F")
 #' #
 #' comps <- LETTERS[1:6]
 #' 
@@ -349,21 +349,21 @@
 #' # Define C matrix manually (which will produce the same results)
 #' #
 #' C <- rbind(c(1, 0, 0, 0, 0, 0),  # A
-#'            c(1, 1, 0, 0, 0, 0),  # A + B
-#'            c(1, 0, 1, 0, 0, 0),  # A + C
-#'            c(1, 0, 0, 1, 0, 0),  # A + D
-#'            c(0, 1, 0, 0, 0, 0),  # B
-#'            c(0, 1, 1, 0, 0, 0),  # B + C
-#'            c(0, 0, 1, 0, 0, 0),  # C
-#'            c(0, 0, 0, 1, 0, 0),  # D
-#'            c(0, 0, 0, 0, 1, 0),  # E
-#'            c(0, 0, 0, 0, 0, 1))  # F
+#'   c(1, 1, 0, 0, 0, 0),  # A + B
+#'   c(1, 0, 1, 0, 0, 0),  # A + C
+#'   c(1, 0, 0, 1, 0, 0),  # A + D
+#'   c(0, 1, 0, 0, 0, 0),  # B
+#'   c(0, 1, 1, 0, 0, 0),  # B + C
+#'   c(0, 0, 1, 0, 0, 0),  # C
+#'   c(0, 0, 0, 1, 0, 0),  # D
+#'   c(0, 0, 0, 0, 1, 0),  # E
+#'   c(0, 0, 0, 0, 0, 1))  # F
 #' #                  
 #' colnames(C) <- comps
 #' rownames(C) <- trts
 #' #
 #' dc2 <- discomb(mean, se.mean, t1, t2, study, seq = trts,
-#'                C.matrix = C)
+#'   C.matrix = C)
 #' #
 #' # Compare C matrices
 #' #
@@ -473,16 +473,15 @@ discomb <- function(TE, seTE,
   ##
   ##
   nulldata <- is.null(data)
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
   ##
   if (nulldata)
-    data <- sys.frame(sys.parent())
-  ##
-  mf <- match.call()
+    data <- sfsp
   ##
   ## Catch TE, treat1, treat2, seTE, studlab from data:
   ##
-  TE <- eval(mf[[match("TE", names(mf))]],
-             data, enclos = sys.frame(sys.parent()))
+  TE <- catch("TE", mc, data, sfsp)
   ##
   missing.reference.group.pairwise <- FALSE
   ##
@@ -523,17 +522,10 @@ discomb <- function(TE, seTE,
     else
       sm <- ""
     ##
-    seTE <- eval(mf[[match("seTE", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
-    ##
-    treat1 <- eval(mf[[match("treat1", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
-    ##
-    treat2 <- eval(mf[[match("treat2", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
-    ##
-    studlab <- eval(mf[[match("studlab", names(mf))]],
-                    data, enclos = sys.frame(sys.parent()))
+    seTE <- catch("seTE", mc, data, sfsp)
+    treat1 <- catch("treat1", mc, data, sfsp)
+    treat2 <- catch("treat2", mc, data, sfsp)
+    studlab <- catch("studlab", mc, data, sfsp)
   }
   ##
   chknumeric(TE)
@@ -560,8 +552,7 @@ discomb <- function(TE, seTE,
   ## (3) Use subset for analysis
   ##
   ##
-  subset <- eval(mf[[match("subset", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+  subset <- catch("subset", mc, data, sfsp)
   ##
   if (!is.null(subset)) {
     if ((is.logical(subset) & (sum(subset) > k.Comp)) ||

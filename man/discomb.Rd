@@ -369,10 +369,10 @@ se.mean <- rep(0.1, 7)
 study <- paste("study", c(1:4, 5, 5, 5))
 #
 dat <- data.frame(mean, se.mean, t1, t2, study,
-                  stringsAsFactors = FALSE)
+  stringsAsFactors = FALSE)
 #
 trts <- c("A", "A + B", "A + C", "A + D",
-          "B", "B + C", "C", "D", "E", "F")
+  "B", "B + C", "C", "D", "E", "F")
 #
 comps <- LETTERS[1:6]
 
@@ -388,21 +388,21 @@ forest(dc1, ref = "F")
 # Define C matrix manually (which will produce the same results)
 #
 C <- rbind(c(1, 0, 0, 0, 0, 0),  # A
-           c(1, 1, 0, 0, 0, 0),  # A + B
-           c(1, 0, 1, 0, 0, 0),  # A + C
-           c(1, 0, 0, 1, 0, 0),  # A + D
-           c(0, 1, 0, 0, 0, 0),  # B
-           c(0, 1, 1, 0, 0, 0),  # B + C
-           c(0, 0, 1, 0, 0, 0),  # C
-           c(0, 0, 0, 1, 0, 0),  # D
-           c(0, 0, 0, 0, 1, 0),  # E
-           c(0, 0, 0, 0, 0, 1))  # F
+  c(1, 1, 0, 0, 0, 0),  # A + B
+  c(1, 0, 1, 0, 0, 0),  # A + C
+  c(1, 0, 0, 1, 0, 0),  # A + D
+  c(0, 1, 0, 0, 0, 0),  # B
+  c(0, 1, 1, 0, 0, 0),  # B + C
+  c(0, 0, 1, 0, 0, 0),  # C
+  c(0, 0, 0, 1, 0, 0),  # D
+  c(0, 0, 0, 0, 1, 0),  # E
+  c(0, 0, 0, 0, 0, 1))  # F
 #                  
 colnames(C) <- comps
 rownames(C) <- trts
 #
 dc2 <- discomb(mean, se.mean, t1, t2, study, seq = trts,
-               C.matrix = C)
+  C.matrix = C)
 #
 # Compare C matrices
 #

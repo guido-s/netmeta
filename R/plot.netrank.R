@@ -99,8 +99,7 @@
 #' # Define order of treatments
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
-#'           "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
-#'           "Placebo")
+#'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 #'
 #' # Outcome labels
 #' #
@@ -109,75 +108,66 @@
 #' # (1) Early response
 #' #
 #' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(resp1, resp2, resp3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'   seq = trts, ref = "Placebo")
 #' 
 #' # (2) Early remission
 #' #
 #' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(remi1, remi2, remi3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#'   seq = trts, ref = "Placebo")
 #' 
 #' # Image plot of treatment rankings (two outcomes)
 #' #
 #' plot(netrank(net1, small.values = "bad"),
-#'      netrank(net2, small.values = "bad"),
-#'      name = outcomes, digits = 2)
+#'   netrank(net2, small.values = "bad"),
+#'   name = outcomes, digits = 2)
 #'
 #' 
 #' # Outcome labels
 #' #
 #' outcomes <- c("Early response", "Early remission",
-#'               "Lost to follow-up", "Lost to follow-up due to AEs",
-#'               "Adverse events (AEs)")
+#'   "Lost to follow-up", "Lost to follow-up due to AEs",
+#'   "Adverse events (AEs)")
 #' 
 #' # (3) Loss to follow-up
 #' #
 #' p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(loss1, loss2, loss3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net3 <- netmeta(p3, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#' net3 <- netmeta(p3, fixed = FALSE, seq = trts, ref = "Placebo")
 #' 
 #' # (4) Loss to follow-up due to adverse events
 #' #
 #' p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(loss.ae1, loss.ae2, loss.ae3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = subset(Linde2015, id != 55),
-#'                sm = "OR")
+#'   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
+#'   studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
 #' #
-#' net4 <- netmeta(p4, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#' net4 <- netmeta(p4, fixed = FALSE, seq = trts, ref = "Placebo")
 #' 
 #' # (5) Adverse events
 #' #
 #' p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(ae1, ae2, ae3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net5 <- netmeta(p5, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#' net5 <- netmeta(p5, fixed = FALSE, seq = trts, ref = "Placebo")
 #' 
 #' # Image plot of treatment rankings (two outcomes)
 #' #
 #' plot(netrank(net1, small.values = "bad"),
-#'      netrank(net2, small.values = "bad"),
-#'      netrank(net3, small.values = "good"),
-#'      netrank(net4, small.values = "good"),
-#'      netrank(net5, small.values = "good"),
-#'      name = outcomes, digits = 2)
+#'   netrank(net2, small.values = "bad"),
+#'   netrank(net3, small.values = "good"),
+#'   netrank(net4, small.values = "good"),
+#'   netrank(net5, small.values = "good"),
+#'   name = outcomes, digits = 2)
 #' }
 #' 
 #' @method plot netrank

@@ -264,7 +264,7 @@
 #' # treatment 'plac'
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD", reference = "plac")
+#'   data = Senn2013, sm = "MD", reference = "plac")
 #' 
 #' # Network graph with default settings
 #' #
@@ -275,46 +275,45 @@
 #' # highlighted comparison
 #' #
 #' trts <- c("plac", "benf", "migl", "acar", "sulf",
-#'           "metf", "rosi", "piog", "sita", "vild")
+#'   "metf", "rosi", "piog", "sita", "vild")
 #' netgraph(net1, highlight = "rosi:plac", seq = trts)
 #' 
 #' # Same network graph using argument 'seq' in netmeta function
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD", reference = "plac",
-#'                 seq = trts)
+#'   data = Senn2013, sm = "MD", reference = "plac", seq = trts)
 #' netgraph(net2, highlight = "rosi:plac")
 #' 
 #' # Network graph optimized, starting from a circle, with multi-arm
 #' # study colored
 #' #
 #' netgraph(net1, start = "circle", iterate = TRUE,
-#'          multiarm = TRUE, col.multiarm = "purple")
+#'   multiarm = TRUE, col.multiarm = "purple")
 #'
 #' # Network graph optimized, starting from a circle, with multi-arm
 #' # study colored and all intermediate iteration steps visible
 #' #
 #' netgraph(net1, start = "circle", iterate = TRUE,
-#'          multiarm = TRUE, col.multiarm = "purple",
-#'          allfigures = TRUE)
+#'   multiarm = TRUE, col.multiarm = "purple",
+#'   allfigures = TRUE)
 #' 
 #' # Network graph optimized, starting from Laplacian eigenvectors,
 #' # with multi-arm study colored
 #' #
 #' netgraph(net1, start = "eigen",
-#'          multiarm = TRUE, col.multiarm = "purple")
+#'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph optimized, starting from different Laplacian
 #' # eigenvectors, with multi-arm study colored
 #' #
 #' netgraph(net1, start = "prcomp",
-#'          multiarm = TRUE, col.multiarm = "purple")
+#'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph optimized, starting from random initial layout,
 #' # with multi-arm study colored
 #' #
 #' netgraph(net1, start = "random",
-#'          multiarm = TRUE, col.multiarm = "purple")
+#'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph without plastic look and one highlighted comparison
 #' #
@@ -329,7 +328,7 @@
 #' # treatments
 #' #
 #' netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
-#'          labels = LETTERS[1:10])
+#'   labels = LETTERS[1:10])
 #' 
 #' # Rotate treatment labels (orthogonal to circle)
 #' #
@@ -450,15 +449,15 @@ netgraph.netmeta <- function(x, seq = x$seq,
   start.layout <-
     setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
   ##
-  mf <- match.call()
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
   ##
   if (!missing(seq) & is.null(seq))
     stop("Argument 'seq' must be not NULL.")
   ##
   if (!missing(labels)) {
     ##
-    labels <- eval(mf[[match("labels", names(mf))]],
-                   x, enclos = sys.frame(sys.parent()))
+    labels <- catch("labels", mc, x, sfsp)
     ##
     if (is.null(labels))
       stop("Argument 'labels' must be not NULL.")
@@ -504,8 +503,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
          "direct pairwise comparisons (", n.edges, ")")
   ##
   if (!missing(cex.points))
-    cex.points <- eval(mf[[match("cex.points", names(mf))]],
-                       x, enclos = sys.frame(sys.parent()))
+    cex.points <- catch("cex.points", mc, x, sfsp)
   ##
   if (length(cex.points) == 1)
     cex.points <- rep(cex.points, n.trts)

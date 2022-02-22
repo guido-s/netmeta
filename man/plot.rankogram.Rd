@@ -70,7 +70,7 @@ shown for cumulative ranking probabilites.
 \examples{
 data(Woods2010)
 p1 <- pairwise(treatment, event = r, n = N, studlab = author,
-               data = Woods2010, sm = "OR")
+  data = Woods2010, sm = "OR")
 net1 <- netmeta(p1, small.values = "good")
 
 ran1 <- rankogram(net1, nsim = 100)

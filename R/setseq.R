@@ -1,9 +1,9 @@
-setseq <- function(seq, levs, text) {
+setseq <- function(seq, levs, text, equal.length = TRUE) {
   name <- deparse(substitute(seq))
   if (missing(text))
       text <- paste0("Argument '", name, "'")
   ##
-  if (length(levs) != length(seq))
+  if (length(levs) != length(seq) & equal.length)
     stop("Length of argument '", name,
          "' different from number of treatments.", call. = FALSE)
   ##
@@ -27,12 +27,14 @@ setseq <- function(seq, levs, text) {
     else
       idx <- charmatch(seq, levs, nomatch = NA)
     ##
-    if (anyNA(idx) || any(idx == 0))
+    if (equal.length && (anyNA(idx) || any(idx == 0)))
       stop(paste(text,
                  " must be a permutation of the following values:\n  ",
                  paste(paste("'", levs, "'", sep = ""),
                        collapse = " - "), sep = ""), call. = FALSE)
     res <- levs[idx]
+    if (!equal.length)
+      res <- res[!is.na(res)]
   }
   else
     stop("Argument '", name, "' must be either a numeric or character vector.",

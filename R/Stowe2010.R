@@ -58,10 +58,9 @@
 #' # Transform data from arm-based format to contrast-based format
 #' #
 #' p1 <- pairwise(list(t1, t2, t3),
-#'                n = list(n1, n2, n3),
-#'                mean = list(y1, y2, y3),
-#'                sd = list(sd1, sd2, sd3),
-#'                data = Stowe2010, studlab = study)
+#'   n = list(n1, n2, n3),
+#'   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
+#'   data = Stowe2010, studlab = study)
 #' p1
 #' 
 #' # Conduct network meta-analysis

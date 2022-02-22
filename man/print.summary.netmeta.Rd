@@ -126,8 +126,7 @@ data(Senn2013)
 # Conduct fixed effects network meta-analysis
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                random = FALSE, ref = "plac")
+  data = Senn2013, sm = "MD", random = FALSE, ref = "plac")
 snet1 <- summary(net1)
 print(snet1, digits = 3)
 
@@ -147,14 +146,13 @@ print(snet1, digits = 3, truncate = c("Kim2007", "Willms1999"))
 # letter "W"
 #
 print(snet1, ref = "plac", digits = 3,
-      truncate = substring(studlab, 1, 1) == "W")
+  truncate = substring(studlab, 1, 1) == "W")
 
 \dontrun{
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                fixed = FALSE, ref = "plac")
+  data = Senn2013, sm = "MD", fixed = FALSE, ref = "plac")
 print(summary(net2), digits = 3)
 }
 

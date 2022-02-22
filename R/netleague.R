@@ -1,4 +1,4 @@
-#' Create and print league table for network meta-analysis results
+#' Create league table with network meta-analysis results
 #' 
 #' @description
 #' A league table is a square matrix showing all pairwise comparisons
@@ -28,15 +28,26 @@
 #'   should be generated if argument \code{y} is not missing.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
+#' @param big.mark A character used as thousands separator.
+#' @param text.NA A character string to label missing values.
 #' @param bracket A character with bracket symbol to print lower
 #'   confidence interval: "[", "(", "\{", "".
 #' @param separator A character string with information on separator
 #'   between lower and upper confidence interval.
-#' @param text.NA A character string to label missing values.
-#' @param big.mark A character used as thousands separator.
+#' @param lower.blank A logical indicating whether blanks between left
+#'   bracket and lower confidence limit should be printed.
+#' @param upper.blank A logical indicating whether blanks between
+#'   separator and upper confidence limit should be printed.
+#' @param writexl A logical indicating whether an Excel file should be
+#'   created (R package \bold{writexl} must be available).
+#' @param path A character string specifying the filename of the Excel
+#'   file.
+#' @param overwrite A logical indicating whether an existing Excel
+#'   file should be overwritten.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
-#' @param \dots Additional arguments.
+#' @param \dots Additional arguments (passed on to \code{write_xlsx}
+#'   to create Excel file).
 #' 
 #' @details
 #' A league table is a square matrix showing all pairwise comparisons
@@ -57,6 +68,10 @@
 #' meta-analysis object \code{y} in the upper triangle. This is, for
 #' example, useful to print information on efficacy and safety in the
 #' same league table.
+#'
+#' By default, an R object with the league tables is
+#' generated. Alternatively, an Excel file is created if argument
+#' \code{writexl = TRUE}.
 #' 
 #' This implementation reports pairwise comparisons of the treatment
 #' in the row versus the treatment in the column in the lower triangle
@@ -78,6 +93,13 @@
 #' 
 #' R function \code{\link{netrank}} can be used to change the order of
 #' rows and columns in the league table (see examples).
+#'
+#' @return
+#' An object of class \code{netleague} with corresponding \code{print}
+#' function if \code{writexl = FALSE}. The object is a list containing
+#' the league tables in list elements 'fixed' and 'random'. An Excel
+#' file is created if \code{writexl = TRUE}. In this case, \code{NULL}
+#' is returned in R.
 #'
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Gerta
 #'   Rücker \email{ruecker@@imbi.uni-freiburg.de}
@@ -102,7 +124,7 @@
 #' data(Woods2010)
 #' 
 #' p0 <- pairwise(treatment, event = r, n = N,
-#'                studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = Woods2010, sm = "OR")
 #' net0 <- netmeta(p0)
 #' 
 #' oldopts <- options(width = 100)
@@ -120,8 +142,7 @@
 #' # Change order of treatments according to treatment ranking (random
 #' # effects model)
 #' #
-#' netleague(net0, fixed = FALSE, digits = 2,
-#'           seq = netrank(net0))
+#' netleague(net0, fixed = FALSE, digits = 2, seq = netrank(net0))
 #' #
 #' print(netrank(net0), fixed = FALSE)
 #' 
@@ -131,23 +152,13 @@
 #' league0 <- netleague(net0, digits = 2, bracket = "(", separator = " to ")
 #' #
 #' write.table(league0$random, file = "league0-random.csv",
-#'             row.names = FALSE, col.names = FALSE,
-#'             sep = ",")
+#'   row.names = FALSE, col.names = FALSE, sep = ",")
 #' #
 #' # Create Excel files with league tables
 #' # (if R package writexl is available)
 #' #
-#' library(writexl)
-#' #
-#' # League table from random effects model
-#' #
-#' write_xlsx(league0$random,
-#'            path = "league0-random.xlsx", col_names = FALSE)
-#' #
-#' # League tables from fixed and random effects models
-#' #
-#' write_xlsx(list(fixed = league0$fixed, random = league0$random),
-#'            path = "league0-both.xlsx", col_names = FALSE)
+#' netleague(net0, digits = 2, bracket = "(", separator = " to ",
+#'           writexl = TRUE, path = tempfile(fileext = ".xlsx"))
 #' }
 #' 
 #' \donttest{
@@ -158,8 +169,7 @@
 #' # Define order of treatments
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
-#'           "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
-#'           "Placebo")
+#'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 #' 
 #' # Outcome labels
 #' #
@@ -168,9 +178,8 @@
 #' # (1) Early response
 #' #
 #' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(resp1, resp2, resp3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small = "bad")
@@ -178,9 +187,8 @@
 #' # (2) Early remission
 #' #
 #' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(remi1, remi2, remi3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, fixed = FALSE,
 #'                 seq = trts, ref = "Placebo", small = "bad")
@@ -207,9 +215,9 @@
 #' # Report results for network meta-analysis twice
 #' #
 #' netleague(net1, net1, seq = netrank(net1), ci = FALSE,
-#'           backtransf = FALSE)
+#'   backtransf = FALSE)
 #' netleague(net1, net1, seq = netrank(net1), ci = FALSE,
-#'           backtransf = FALSE, direct = TRUE)
+#'   backtransf = FALSE, direct = TRUE)
 #' }
 #' 
 #' options(oldopts)
@@ -233,11 +241,21 @@ netleague <- function(x, y,
                       fixed = x$fixed, random = x$random,
                       seq = x$seq, ci = TRUE, backtransf = TRUE,
                       direct = FALSE,
+                      ##
                       digits = gs("digits"),
+                      ##
+                      big.mark = gs("big.mark"),
+                      text.NA = ".",
+                      ##
                       bracket = gs("CIbracket"),
                       separator = gs("CIseparator"),
-                      text.NA = ".",
-                      big.mark = gs("big.mark"),
+                      lower.blank = gs("CIlower.blank"),
+                      upper.blank = gs("CIupper.blank"),
+                      ##
+                      writexl = FALSE,
+                      path = "leaguetable.xlsx",
+                      overwrite = FALSE,
+                      ##
                       warn.deprecated = gs("warn.deprecated"),
                       ...) {
   
@@ -284,13 +302,21 @@ netleague <- function(x, y,
   chklogical(direct)
   chknumeric(digits, min = 0, length = 1)
   ##
-  bracket.old <- gs("CIbracket")
-  separator.old <- gs("CIseparator")
-  cilayout(bracket, separator)
-  on.exit(cilayout(bracket.old, separator.old))
-  ##
   chkchar(text.NA)
   chkchar(big.mark)
+  ##
+  bracket.old <- gs("CIbracket")
+  separator.old <- gs("CIseparator")
+  lower.blank.old <- gs("CIlower.blank")
+  upper.blank.old <- gs("CIupper.blank")
+  ##
+  cilayout(bracket, separator, lower.blank, upper.blank)
+  on.exit(cilayout(bracket.old, separator.old,
+                   lower.blank.old, upper.blank.old))
+  ##
+  chklogical(writexl)
+  chkchar(path, length = 1)
+  chklogical(overwrite)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -444,7 +470,7 @@ netleague <- function(x, y,
   
   ##
   ##
-  ## (3) Print league table for fixed effects model
+  ## (3) Create league table for fixed effects model
   ##
   ##
   TE.fixed.x    <- round(   TE.fixed.x[seq.f, seq.f], digits)
@@ -492,7 +518,7 @@ netleague <- function(x, y,
   
   ##
   ##
-  ## (4) Print league table for random effects model
+  ## (4) Create league table for random effects model
   ##
   ##
   if (random) {
@@ -536,8 +562,53 @@ netleague <- function(x, y,
     ##
     nl.r <- as.data.frame(nl.r, stringsAsFactors = FALSE)
   }
+
+
+  ##
+  ##
+  ## (5) Save Excel file
+  ##
+  ##
+  if (writexl) {
+    if (!(fixed | random)) {
+      warning("Excel file not generated as neither ",
+              "argument 'fixed' nor 'random' is TRUE.")
+      return(invisible(NULL))
+    }
+    ##
+    if (!is.installed.package("writexl", stop = FALSE))
+      stop(paste0("Package 'writexl' missing.",
+                  "\n  ",
+                  "Please use the following R command for installation:",
+                  "\n  install.packages(\"writexl\")"),
+           call. = FALSE)
+    ##
+    if (file.exists(path) & !overwrite)
+      warning("File '", path, "' exists. ",
+              "Use argument 'overwrite = TRUE' to overwrite file.",
+              call. = FALSE)
+    else {
+      if (fixed & random)
+        xlsx <- list(fixed = nl.f, random = nl.r)
+      else if (fixed)
+        xlsx <- list(fixed = nl.f)
+      else
+        xlsx <- list(random = nl.r)
+      ##
+      writexl::write_xlsx(xlsx, path = path, col_names = FALSE, ...)
+      message(paste0("League table", if (fixed & random) "s",
+                     " saved in file '", path, "'."))
+    }
+    ##
+    return(invisible(NULL))
+  }
   
   
+  ##
+  ##
+  ## (6) Return league tables
+  ##
+  ##
   res <- list(fixed = nl.f,
               random = if (random) nl.r else NA,
               seq = seq, ci = ci, backtransf = backtransf,

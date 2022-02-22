@@ -135,7 +135,7 @@
 #' data(Senn2013)
 #' 
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD")
+#'   data = Senn2013, sm = "MD")
 #' 
 #' # 'Comparison-adjusted' funnel plot not created as argument 'order'
 #' # is missing
@@ -149,7 +149,7 @@
 #' # Add result for Egger test of funnel plot asymmetry
 #' #
 #' funnel(net1, order = "pl", method.bias = "Egger",
-#'        digits.pval = 2)
+#'   digits.pval = 2)
 #' 
 #' # (Non-sensical) alphabetic order of treatments with placebo as
 #' # last treatment
@@ -162,15 +162,15 @@
 #' # plotting symbols and colours
 #' #
 #' funnel(net1, order = ord,
-#'        pch = rep(c(15:18, 1), 3), col = 1:3,
-#'        method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
+#'   pch = rep(c(15:18, 1), 3), col = 1:3,
+#'   method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 #' 
 #' # Same results for tests of funnel plot asymmetry using reversed
 #' # order of treatments
 #' #
 #' funnel(net1, order = rev(ord),
-#'        pch = rep(c(15:18, 1), 3), col = 1:3,
-#'        method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
+#'   pch = rep(c(15:18, 1), 3), col = 1:3,
+#'   method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 #' 
 #' # Calculate tests for funnel plot asymmetry
 #' #

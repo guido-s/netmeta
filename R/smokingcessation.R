@@ -48,10 +48,8 @@
 #' # internally.
 #' #
 #' p1 <- pairwise(list(treat1, treat2, treat3),
-#'                event = list(event1, event2, event3),
-#'                n = list(n1, n2, n3),
-#'                data = smokingcessation,
-#'                sm = "OR")
+#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
+#'   data = smokingcessation, sm = "OR")
 #' p1
 #' 
 #' # Conduct network meta-analysis
@@ -63,7 +61,7 @@
 #' #
 #' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25)
 #' tname <- c("No intervention", "Self-help",
-#'            "Individual counselling", "Group counselling")
+#'   "Individual counselling", "Group counselling")
 #' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25, labels = tname)
 
 

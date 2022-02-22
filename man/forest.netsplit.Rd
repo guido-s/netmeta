@@ -203,8 +203,7 @@ studies <- unique(Senn2013$studlab)
 Senn2013.5 <- subset(Senn2013, studlab \%in\% studies[1:5])
 
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-                studlab, data = Senn2013.5,
-                fixed = FALSE)
+  studlab, data = Senn2013.5, fixed = FALSE)
 #
 ns1 <- netsplit(net1)
 
@@ -217,15 +216,14 @@ forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
 # Forest plot showing comparisons contributing direct evidence
 #
 forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
-       show = "with.direct")
+  show = "with.direct")
 
 
 # Forest plot only showing network estimates compared to reference
 # group and prediction intervals
 #
 forest(ns1, fontsize = 8, spacing = 0.75,
-       show = "ref", prediction = TRUE,
-       direct = FALSE, indirect = FALSE)
+  show = "ref", prediction = TRUE, direct = FALSE, indirect = FALSE)
 }
 
 }

@@ -131,8 +131,7 @@
 #' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
 #' 
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-#'                 studlab, data = Senn2013.5,
-#'                 fixed = FALSE)
+#'   studlab, data = Senn2013.5, fixed = FALSE)
 #' #
 #' ns1 <- netsplit(net1)
 #' 
@@ -145,15 +144,14 @@
 #' # Forest plot showing comparisons contributing direct evidence
 #' #
 #' forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
-#'        show = "with.direct")
+#'   show = "with.direct")
 #'
 #' 
 #' # Forest plot only showing network estimates compared to reference
 #' # group and prediction intervals
 #' #
 #' forest(ns1, fontsize = 8, spacing = 0.75,
-#'        show = "ref", prediction = TRUE,
-#'        direct = FALSE, indirect = FALSE)
+#'   show = "ref", prediction = TRUE, direct = FALSE, indirect = FALSE)
 #' }
 #' 
 #' @method forest netsplit
@@ -231,11 +229,10 @@ forest.netsplit <- function(x,
   ##
   ## Catch sortvar from data:
   ##
-  mf <- match.call()
-  error <- try(sortvar.x <- eval(mf[[match("sortvar", names(mf))]],
-                                 x,
-                                 enclos = sys.frame(sys.parent())),
-               silent = TRUE)
+  error <-
+    try(sortvar.x <-
+          catch("sortvar", match.call(), x, sys.frame(sys.parent())),
+        silent = TRUE)
   if (!any(class(error) == "try-error"))
     sortvar <- sortvar.x
   ##

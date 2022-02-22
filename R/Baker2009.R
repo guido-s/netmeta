@@ -54,9 +54,8 @@
 #' # measure; by default the risk ratio is used in the metabin
 #' # function called internally.
 #' #
-#' p1 <- pairwise(treatment, exac, total,
-#'                studlab = paste(study, year),
-#'                data = Baker2009, sm = "OR")
+#' p1 <- pairwise(treatment, exac, total, studlab = paste(study, year),
+#'   data = Baker2009, sm = "OR")
 #' 
 #' # Conduct network meta-analysis
 #' #

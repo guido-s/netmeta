@@ -123,8 +123,7 @@ oldsets <- settings.meta(digits = 2, digits.tau2 = 2, digits.tau = 2)
 # Random effects model
 #
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-                data = Senn2013, sm = "MD",
-                fixed = FALSE)
+  data = Senn2013, sm = "MD", fixed = FALSE)
 
 # Calculate and print consise results for all pairwise
 # meta-analyses

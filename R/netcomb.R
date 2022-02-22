@@ -302,8 +302,7 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = face, ref = "placebo",
-#'                 sm = "OR", fixed = FALSE)
+#'   data = face, ref = "placebo", sm = "OR", fixed = FALSE)
 #' net1
 #' forest(net1, xlim = c(0.2, 50))
 #' 
@@ -318,11 +317,11 @@
 #' # Specify, order of treatments
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
-#'           "rMAO-A", "Ind drug", "Hypericum", "Face-to-face CBT",
-#'           "Face-to-face PST", "Face-to-face interpsy", "Face-to-face psychodyn",
-#'           "Other face-to-face", "Remote CBT", "Self-help CBT", "No contact CBT",
-#'           "Face-to-face CBT + SSRI", "Face-to-face interpsy + SSRI",
-#'           "Face-to-face PST + SSRI", "UC", "Placebo")
+#'   "rMAO-A", "Ind drug", "Hypericum", "Face-to-face CBT",
+#'   "Face-to-face PST", "Face-to-face interpsy", "Face-to-face psychodyn",
+#'   "Other face-to-face", "Remote CBT", "Self-help CBT", "No contact CBT",
+#'   "Face-to-face CBT + SSRI", "Face-to-face interpsy + SSRI",
+#'   "Face-to-face PST + SSRI", "UC", "Placebo")
 #' #
 #' # Note, three treatments are actually combinations of 'SSRI' with
 #' # other components:
@@ -333,9 +332,8 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = Linde2016, ref = "placebo",
-#'                 seq = trts,
-#'                 sm = "OR", fixed = FALSE)
+#'   data = Linde2016, ref = "placebo",
+#'   seq = trts, sm = "OR", fixed = FALSE)
 #' net1
 #' forest(net1, xlim = c(0.2, 50))
 #' 

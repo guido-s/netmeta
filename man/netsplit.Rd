@@ -44,6 +44,7 @@ netsplit(
   scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
   legend = TRUE,
+  indent = TRUE,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -84,12 +85,11 @@ labels.}
 direct evidence proportion from 0 or 1 to classify a comparison
 as providing only indirect or direct evidence, respectively.}
 
-\item{fixed}{A logical indicating whether results for the
-fixed effects / common effects network meta-analysis should be
-printed.}
+\item{fixed}{A logical indicating whether results for the fixed
+effects / common effects network meta-analysis should be printed.}
 
-\item{random}{A logical indicating whether results for the
-random effects network meta-analysis should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects network meta-analysis should be printed.}
 
 \item{backtransf}{A logical indicating whether printed results
 should be back transformed. For example, if \code{backtransf =
@@ -154,6 +154,9 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}
+
+\item{indent}{A logical indicating whether items in the legend
+should be indented.}
 }
 \value{
 An object of class \code{netsplit} with corresponding \code{print}
@@ -239,7 +242,7 @@ installed.
 data(Woods2010)
 #
 p1 <- pairwise(treatment, event = r, n = N,
-               studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = Woods2010, sm = "OR")
 #
 net1 <- netmeta(p1)
 #
@@ -247,7 +250,7 @@ print(netsplit(net1), digits = 2)
 
 \dontrun{
 print(netsplit(net1), digits = 2,
-      backtransf = FALSE, fixed = FALSE)
+  backtransf = FALSE, fixed = FALSE)
 
 # Sort by increasing number of studies in direct comparisons
 print(netsplit(net1), digits = 2, sortvar = k)
@@ -266,7 +269,7 @@ print(netsplit(net1), digits = 2, sortvar = cbind(-prop.fixed, -k))
 data(Senn2013)
 #
 net2 <- netmeta(TE, seTE, treat1.long, treat2.long,
-                studlab, data = Senn2013)
+  studlab, data = Senn2013)
 #
 print(netsplit(net2), digits = 2)
 # Layout of Puhan et al. (2014), Table 1
@@ -274,8 +277,8 @@ print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
 
 data(Dong2013)
 p3 <- pairwise(treatment, death, randomized, studlab = id,
-               data = Dong2013, sm = "OR")
-net3  <- netmetabin(p3)
+  data = Dong2013, sm = "OR")
+net3 <- netmetabin(p3)
 netsplit(net3)
 }
 

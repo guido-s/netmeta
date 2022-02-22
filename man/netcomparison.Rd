@@ -169,8 +169,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 # Conduct random effects network meta-analysis
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = face, ref = "placebo",
-                sm = "OR", fixed = FALSE)
+  data = face, ref = "placebo", sm = "OR", fixed = FALSE)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)

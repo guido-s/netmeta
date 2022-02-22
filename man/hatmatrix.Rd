@@ -168,7 +168,7 @@ data(Dong2013)
 # Only consider first ten studies for concise output
 first10 <- subset(Dong2013, id <= 10)
 p1 <- pairwise(treatment, death, randomized, studlab = id,
-               data = first10, sm = "OR")
+  data = first10, sm = "OR")
 net1 <- netmeta(p1, fixed = FALSE)
 
 hatmatrix(net1)

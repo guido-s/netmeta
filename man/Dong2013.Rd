@@ -38,7 +38,7 @@ first10 <- subset(Dong2013, id <= 10)
 # function called internally.
 #
 p1 <- pairwise(treatment, death, randomized, studlab = id,
-               data = first10, sm = "OR")
+  data = first10, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis
 #
@@ -49,7 +49,7 @@ netmetabin(p1, ref = "plac")
 # dataset
 #
 p2 <- pairwise(treatment, death, randomized, studlab = id,
-               data = Dong2013, sm = "OR")
+  data = Dong2013, sm = "OR")
 netmetabin(p2, ref = "plac")
 }
 }

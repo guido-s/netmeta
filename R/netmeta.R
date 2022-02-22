@@ -461,8 +461,7 @@
 #' # Conduct fixed effects network meta-analysis
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 random = FALSE)
+#'   data = Senn2013, sm = "MD", random = FALSE)
 #' net1
 #' net1$Q.decomp
 #' 
@@ -474,18 +473,17 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 fixed = FALSE)
+#'   data = Senn2013, sm = "MD", fixed = FALSE)
 #' net2
 #' 
 #' # Change printing order of treatments with placebo last and use
 #' # long treatment names
 #' #
 #' trts <- c("acar", "benf", "metf", "migl", "piog",
-#'           "rosi", "sita", "sulf", "vild", "plac")
+#'   "rosi", "sita", "sulf", "vild", "plac")
 #' net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'                 data = Senn2013, sm = "MD", fixed = FALSE,
-#'                 seq = trts, reference = "Placebo")
+#'   data = Senn2013, sm = "MD", fixed = FALSE,
+#'   seq = trts, reference = "Placebo")
 #' print(net3, digits = 2)
 #' }
 #' 
@@ -617,16 +615,15 @@ netmeta <- function(TE, seTE,
   ##
   ##
   nulldata <- is.null(data)
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
   ##
   if (nulldata)
-    data <- sys.frame(sys.parent())
-  ##
-  mf <- match.call()
+    data <- sfsp
   ##
   ## Catch TE, treat1, treat2, seTE, studlab from data:
   ##
-  TE <- eval(mf[[match("TE", names(mf))]],
-             data, enclos = sys.frame(sys.parent()))
+  TE <- catch("TE", mc, data, sfsp)
   ##
   missing.reference.group.pairwise <- FALSE
   ##
@@ -690,50 +687,30 @@ netmeta <- function(TE, seTE,
       else
         sm <- ""
     ##
-    seTE <- eval(mf[[match("seTE", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+    seTE <- catch("seTE", mc, data, sfsp)
     ##
-    treat1 <- eval(mf[[match("treat1", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    treat1 <- catch("treat1", mc, data, sfsp)
+    treat2 <- catch("treat2", mc, data, sfsp)
     ##
-    treat2 <- eval(mf[[match("treat2", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    studlab <- catch("studlab", mc, data, sfsp)
     ##
-    studlab <- eval(mf[[match("studlab", names(mf))]],
-                    data, enclos = sys.frame(sys.parent()))
+    n1 <- catch("n1", mc, data, sfsp)
+    n2 <- catch("n2", mc, data, sfsp)
     ##
-    n1 <- eval(mf[[match("n1", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
+    event1 <- catch("event1", mc, data, sfsp)
+    event2 <- catch("event2", mc, data, sfsp)
     ##
-    n2 <- eval(mf[[match("n2", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
+    incr <- catch("incr", mc, data, sfsp)
     ##
-    event1 <- eval(mf[[match("event1", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    ##mean1 <- catch("mean1", mc, data, sfsp)
     ##
-    event2 <- eval(mf[[match("event2", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    ##mean2 <- catch("mean2", mc, data, sfsp)
     ##
-    incr <- eval(mf[[match("incr", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+    sd1 <- catch("sd1", mc, data, sfsp)
+    sd2 <- catch("sd2", mc, data, sfsp)
     ##
-    ##mean1 <- eval(mf[[match("mean1", names(mf))]],
-    ##              data, enclos = sys.frame(sys.parent()))
-    ##
-    ##mean2 <- eval(mf[[match("mean2", names(mf))]],
-    ##              data, enclos = sys.frame(sys.parent()))
-    ##
-    sd1 <- eval(mf[[match("sd1", names(mf))]],
-                data, enclos = sys.frame(sys.parent()))
-    ##
-    sd2 <- eval(mf[[match("sd2", names(mf))]],
-                data, enclos = sys.frame(sys.parent()))
-    ##
-    time1 <- eval(mf[[match("time1", names(mf))]],
-                  data, enclos = sys.frame(sys.parent()))
-    ##
-    time2 <- eval(mf[[match("time2", names(mf))]],
-                  data, enclos = sys.frame(sys.parent()))
+    time1 <- catch("time1", mc, data, sfsp)
+    time2 <- catch("time2", mc, data, sfsp)
   }
   ##
   chknumeric(TE)
@@ -761,8 +738,7 @@ netmeta <- function(TE, seTE,
   }
   studlab <- as.character(studlab)
   ##
-  subset <- eval(mf[[match("subset", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+  subset <- catch("subset", mc, data, sfsp)
   missing.subset <- is.null(subset)
   ##
   if (!is.null(event1) & !is.null(event2))

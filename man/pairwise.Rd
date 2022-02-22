@@ -16,10 +16,10 @@ pairwise(
   time,
   data = NULL,
   studlab,
-  incr = 0.5,
-  allincr = FALSE,
-  addincr = FALSE,
-  allstudies = FALSE,
+  incr = gs("incr"),
+  allincr = gs("allincr"),
+  addincr = gs("addincr"),
+  allstudies = gs("allstudies"),
   reference.group,
   keep.all.comparisons,
   warn = FALSE,
@@ -252,10 +252,9 @@ comparisons with direct evidence in a network meta-analysis.
 data(Franchini2012)
 # Transform data from arm-based format to contrast-based format
 p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
-               n = list(n1, n2, n3),
-               mean = list(y1, y2, y3),
-               sd = list(sd1, sd2, sd3),
-               data = Franchini2012, studlab = Study)
+  n = list(n1, n2, n3),
+  mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
+  data = Franchini2012, studlab = Study)
 p1
 
 \dontrun{
@@ -267,13 +266,13 @@ net1
 # Draw network graphs
 #
 netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-         thickness = "se.fixed")
+  thickness = "se.fixed")
 netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-         plastic = TRUE, thickness = "se.fixed",
-         iterate = TRUE)
+  plastic = TRUE, thickness = "se.fixed",
+  iterate = TRUE)
 netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-         plastic = TRUE, thickness = "se.fixed",
-         iterate = TRUE, start = "eigen")
+  plastic = TRUE, thickness = "se.fixed",
+  iterate = TRUE, start = "eigen")
 
 # Example using generic outcomes (internal call of function
 # metagen)
@@ -286,18 +285,17 @@ Franchini2012$se3 <- with(Franchini2012, sqrt(sd3^2 / n3))
 # using means and standard errors (note, argument 'sm' has to be
 # used to specify that argument 'TE' is a mean difference)
 p2 <- pairwise(list(Treatment1, Treatment2, Treatment3),
-               TE = list(y1, y2, y3),
-               seTE = list(se1, se2, se3),
-               n = list(n1, n2, n3),
-               data = Franchini2012, studlab = Study,
-               sm = "MD")
+  TE = list(y1, y2, y3), seTE = list(se1, se2, se3),
+  n = list(n1, n2, n3),
+  data = Franchini2012, studlab = Study,
+  sm = "MD")
 p2
 
 # Compare pairwise objects p1 (based on continuous outcomes) and p2
 # (based on generic outcomes)
 #
 all.equal(p1[, c("TE", "seTE", "studlab", "treat1", "treat2")],
-          p2[, c("TE", "seTE", "studlab", "treat1", "treat2")])
+  p2[, c("TE", "seTE", "studlab", "treat1", "treat2")])
 
 # Same result as network meta-analysis based on continuous outcomes
 # (object net1)
@@ -313,10 +311,9 @@ data(smokingcessation)
 # function.
 #
 p3 <- pairwise(list(treat1, treat2, treat3),
-               list(event1, event2, event3),
-               list(n1, n2, n3),
-               data = smokingcessation,
-               sm = "OR")
+  list(event1, event2, event3), list(n1, n2, n3),
+  data = smokingcessation,
+  sm = "OR")
 p3
 
 # Conduct network meta-analysis
@@ -331,10 +328,9 @@ data(dietaryfat)
 # Transform data from arm-based format to contrast-based format
 #
 p4 <- pairwise(list(treat1, treat2, treat3),
-               list(d1, d2, d3),
-               time = list(years1, years2, years3),
-               studlab = ID,
-               data = dietaryfat)
+  list(d1, d2, d3), time = list(years1, years2, years3),
+  studlab = ID,
+  data = dietaryfat)
 p4
 
 # Conduct network meta-analysis using incidence rate ratios (sm =
@@ -354,7 +350,7 @@ data(Woods2010)
 # function called internally.
 #
 p5 <- pairwise(treatment, event = r, n = N,
-               studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = Woods2010, sm = "OR")
 p5
 
 # Conduct network meta-analysis

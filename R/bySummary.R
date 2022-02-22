@@ -29,33 +29,30 @@ bySummary <- function(x, index1, index2,
   ## (2) Read data
   ##
   ##
-  if (nulldata)
-    data <- sys.frame(sys.parent())
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
   ##
-  mf <- match.call()
+  if (nulldata)
+    data <- sfsp
   ##
   ## Catch 'x', 'index1', and 'index2' from data:
   ##
-  x <- eval(mf[[match("x", names(mf))]],
-            data, enclos = sys.frame(sys.parent()))
+  x <- catch("x", mc, data, sfsp)
   chknull(x)
   k.All <- length(x)
   ##
-  index1 <- eval(mf[[match("index1", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
+  index1 <- catch("index1", mc, data, sfsp)
   chknull(index1)
   ##
   missing.index2 <- missing(index2)
   if (!missing.index2) {
-    index2 <- eval(mf[[match("index2", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    index2 <- catch("index2", mc, data, sfsp)
     chknull(index2)
   }
   ##
   ## Catch 'subset' from data:
   ##
-  subset <- eval(mf[[match("subset", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+  subset <- catch("subset", mc, data, sfsp)
   missing.subset <- is.null(subset)
   ##
   if (missing(sep))

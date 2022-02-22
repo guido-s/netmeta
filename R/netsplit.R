@@ -33,11 +33,10 @@
 #' @param tol.direct A numeric defining the maximum deviation of the
 #'   direct evidence proportion from 0 or 1 to classify a comparison
 #'   as providing only indirect or direct evidence, respectively.
-#' @param fixed A logical indicating whether results for the
-#'   fixed effects / common effects network meta-analysis should be
-#'   printed.
-#' @param random A logical indicating whether results for the
-#'   random effects network meta-analysis should be printed.
+#' @param fixed A logical indicating whether results for the fixed
+#'   effects / common effects network meta-analysis should be printed.
+#' @param random A logical indicating whether results for the random
+#'   effects network meta-analysis should be printed.
 #' @param show A character string indicating which comparisons should
 #'   be printed (see Details).
 #' @param overall A logical indicating whether estimates from network
@@ -75,6 +74,8 @@
 #' @param big.mark A character used as thousands separator.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
+#' @param indent A logical indicating whether items in the legend
+#'   should be indented.
 #' @param warn A logical indicating whether warnings should be
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -193,7 +194,7 @@
 #' data(Woods2010)
 #' #
 #' p1 <- pairwise(treatment, event = r, n = N,
-#'                studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = Woods2010, sm = "OR")
 #' #
 #' net1 <- netmeta(p1)
 #' #
@@ -201,7 +202,7 @@
 #' 
 #' \dontrun{
 #' print(netsplit(net1), digits = 2,
-#'       backtransf = FALSE, fixed = FALSE)
+#'   backtransf = FALSE, fixed = FALSE)
 #'
 #' # Sort by increasing number of studies in direct comparisons
 #' print(netsplit(net1), digits = 2, sortvar = k)
@@ -220,7 +221,7 @@
 #' data(Senn2013)
 #' #
 #' net2 <- netmeta(TE, seTE, treat1.long, treat2.long,
-#'                 studlab, data = Senn2013)
+#'   studlab, data = Senn2013)
 #' #
 #' print(netsplit(net2), digits = 2)
 #' # Layout of Puhan et al. (2014), Table 1
@@ -228,8 +229,8 @@
 #' 
 #' data(Dong2013)
 #' p3 <- pairwise(treatment, death, randomized, studlab = id,
-#'                data = Dong2013, sm = "OR")
-#' net3  <- netmetabin(p3)
+#'   data = Dong2013, sm = "OR")
+#' net3 <- netmetabin(p3)
 #' netsplit(net3)
 #' }
 #' 
@@ -260,6 +261,8 @@ netsplit <- function(x, method,
   x <- updateversion(x)
   ##
   is.bin <- inherits(x, "netmetabin")
+  ##
+  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
   
   
   ##
@@ -301,545 +304,92 @@ netsplit <- function(x, method,
   fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
                       warn.deprecated)
   chklogical(fixed)
-  fixed.logical <- fixed
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
   chklogical(random)
-  random.logical <- random
-  
-  
-  seq.comps <- rownames(x$Cov.fixed)
   ##
-  dat.trts <- matrix(unlist(compsplit(seq.comps, x$sep.trts)),
-                 ncol = 2, byrow = TRUE)
-  dat.trts <- as.data.frame(dat.trts, stringsAsFactors = FALSE)
-  names(dat.trts) <- c("treat1", "treat2")
-  ##
-  if (!upper) {
-    ##
-    ## Comparison names are column:row (and must be switched)
-    ##
-    t1 <- dat.trts$treat1
-    dat.trts$treat1 <- dat.trts$treat2
-    dat.trts$treat2 <- t1
-  }
+  x$fixed <- fixed
+  x$random <- random
   
   
-  if (is.null(order)) {
-    ##
-    ## Change treatment order if
-    ## - reference group is specified, i.e., unequal to ""
-    ## - reference group is first treatment
-    ##   (argument 'baseline.reference' is TRUE)
-    ## - reference group is second treatment
-    ##   (argument 'baseline.reference' is FALSE)
-    ##
-    wo <- rep_len(FALSE, length(seq.comps))
-    ##
-    if (reference.group != "") {
-      reference.group <- setref(reference.group, colnames(x$TE.fixed))
-      ##
-      if (baseline.reference)
-        wo <- dat.trts$treat1 == reference.group
-      else
-        wo <- dat.trts$treat2 == reference.group
-    }
-    else
-      if (!missing(baseline.reference))
-        warning("Argument 'baseline.reference' ignored as ",
-                "reference group is not defined ",
-                "(argument 'reference.group').")
-    ##
-    if (any(wo)) {
-      t1.wo <- dat.trts$treat1[wo]
-      dat.trts$treat1[wo] <- dat.trts$treat2[wo]
-      dat.trts$treat2[wo] <- t1.wo
-    }
-  }
-  else {
-    treat1.pos <- as.numeric(factor(dat.trts$treat1, levels = order))
-    treat2.pos <- as.numeric(factor(dat.trts$treat2, levels = order))
-    ##
-    wo <- treat1.pos > treat2.pos
-    ##
-    if (any(wo)) {
-      ttreat1 <- dat.trts$treat1
-      dat.trts$treat1[wo] <- dat.trts$treat2[wo]
-      dat.trts$treat2[wo] <- ttreat1[wo]
-      ##
-      ttreat1.pos <- treat1.pos
-      treat1.pos[wo] <- treat2.pos[wo]
-      treat2.pos[wo] <- ttreat1.pos[wo]
-    }
-    ##
-    o <- order(treat1.pos, treat2.pos)
-    dat.trts <- dat.trts[o, ]
-  }
   ##
-  comparison <- as.character(interaction(paste(quote.trts, dat.trts$treat1,
-                                               quote.trts, sep = ""),
-                                         paste(quote.trts, dat.trts$treat2,
-                                               quote.trts, sep = ""),
-                                         sep = sep.trts))
+  ##
+  ## (3) Create dat.trts
+  ##
+  ##
+  dat.trts <- comptrts(x, upper, reference.group, baseline.reference,
+                       order, sep.trts, quote.trts)
+  
+  
+  ##
+  ##
+  ## (4) Change order of prop.direct.fixed and prop.direct.random
+  ##
   ##
   if (!(is.bin & method == "SIDDE")) {
-    prop.direct.fixed <- rep_len(NA, length(x$prop.direct.fixed))
-    seq.comps.fixed <- names(x$prop.direct.fixed)
-    trts.fixed <-
-      matrix(unlist(compsplit(seq.comps.fixed, x$sep.trts)),
-             ncol = 2, byrow = TRUE)
-    trts.fixed <- as.data.frame(trts.fixed, stringsAsFactors = FALSE)
-    names(trts.fixed) <- c("treat1", "treat2")
-    ##
-    for (i in seq_along(comparison)) {
-      sel.i <-
-        (trts.fixed$treat1 == dat.trts$treat1[i] &
-         trts.fixed$treat2 == dat.trts$treat2[i]) |
-        (trts.fixed$treat1 == dat.trts$treat2[i] &
-         trts.fixed$treat2 == dat.trts$treat1[i])
-      ##
-      prop.direct.fixed[i] <- x$prop.direct.fixed[sel.i]
-    }
-    ##
-    prop.direct.random <- rep_len(NA, length(x$prop.direct.random))
-    seq.comps.random <- names(x$prop.direct.random)
-    trts.random <-
-      matrix(unlist(compsplit(seq.comps.random, x$sep.trts)),
-             ncol = 2, byrow = TRUE)
-    trts.random <- as.data.frame(trts.random, stringsAsFactors = FALSE)
-    names(trts.random) <- c("treat1", "treat2")
-    ##
-    for (i in seq_along(comparison)) {
-      sel.i <-
-        (trts.random$treat1 == dat.trts$treat1[i] &
-         trts.random$treat2 == dat.trts$treat2[i]) |
-        (trts.random$treat1 == dat.trts$treat2[i] &
-         trts.random$treat2 == dat.trts$treat1[i])
-      ##
-      prop.direct.random[i] <- x$prop.direct.random[sel.i]
-    }
+    prop.fixed <- sortprop(x$prop.direct.fixed, dat.trts, x$sep.trts)
+    prop.random <- sortprop(x$prop.direct.random, dat.trts, x$sep.trts)
   }
+  else
+    prop.fixed <- prop.random <- NULL
   
   
   ##
   ##
-  ## Back-calculation method
-  ## - based on direct evidence proportion (König et al. (2013)
+  ## (5) Calculate / extract indirect estimates
   ##
   ##
-  if (method == "Back-calculation") {
-    ##
-    ## Indirect estimate is NA if only direct evidence is available
-    ##
-    sel.one.fixed <- abs(x$P.fixed - 1) < tol.direct
-    ##
-    TE.indirect.fixed <- x$TE.indirect.fixed
-    seTE.indirect.fixed <- x$seTE.indirect.fixed
-    lower.indirect.fixed <- x$lower.indirect.fixed
-    upper.indirect.fixed <- x$upper.indirect.fixed
-    statistic.indirect.fixed <- x$statistic.indirect.fixed
-    pval.indirect.fixed <- x$pval.indirect.fixed
-    ##
-    TE.indirect.fixed[sel.one.fixed] <- NA
-    seTE.indirect.fixed[sel.one.fixed] <- NA
-    lower.indirect.fixed[sel.one.fixed] <- NA
-    upper.indirect.fixed[sel.one.fixed] <- NA
-    statistic.indirect.fixed[sel.one.fixed] <- NA
-    pval.indirect.fixed[sel.one.fixed] <- NA
-    ##
-    sel.one.random <- abs(x$P.random - 1) < tol.direct
-    ##
-    TE.indirect.random <- x$TE.indirect.random
-    seTE.indirect.random <- x$seTE.indirect.random
-    lower.indirect.random <- x$lower.indirect.random
-    upper.indirect.random <- x$upper.indirect.random
-    statistic.indirect.random <- x$statistic.indirect.random
-    pval.indirect.random <- x$pval.indirect.random
-    ##
-    TE.indirect.random[sel.one.random] <- NA
-    seTE.indirect.random[sel.one.random] <- NA
-    lower.indirect.random[sel.one.random] <- NA
-    upper.indirect.random[sel.one.random] <- NA
-    statistic.indirect.random[sel.one.random] <- NA
-    pval.indirect.random[sel.one.random] <- NA
-  }
-  
-  
-  ##
-  ##
-  ## Separate Indirect from Direct Design Evidence (SIDDE)
-  ##
-  ##
-  is.tictoc <- FALSE
+  x.direct.indirect <- x
   ##
   if (method == "SIDDE") {
-    ##
-    if (is.null(x$data))
-      stop("SIDDE method only available for network meta-analysis objects ",
-           "created with argument 'keepdata' equal to TRUE.")
-    ##
-    if (verbose)
-      cat("Start computations for SIDDE approach\n")
-    ##
-    is.tictoc <- is.installed.package("tictoc", stop = FALSE)
-    ##
-    dat <- x$data
-    dat <- dat[order(dat$.studlab, dat$.treat1, dat$.treat2), ]
-    ##
-    if (!is.null(dat$.subset))
-      dat <- dat[dat$.subset, , drop = FALSE]
-    ##
-    if (!is.null(dat$.drop))
-      dat <- dat[!dat$.drop, , drop = FALSE]
-    ##
-    ## Determine comparisons with direct evidence
-    ##
-    idx.d <- which(!is.na(x$TE.direct.fixed), arr.ind = TRUE)
-    idx.d <- idx.d[idx.d[, 1] < idx.d[, 2], , drop = FALSE]
-    ##
-    rownames(idx.d) <- seq_len(nrow(idx.d))
-    idx1 <- idx.d[, 1]
-    idx2 <- idx.d[, 2]
-    ##
-    n.comps <- nrow(idx.d)
-    ##
-    trts <- x$trts
-    ##
-    ## Perform network meta-analyses for indirect evidence
-    ## (by dropping one direct comparison at a time)
-    ##
-    TE.indirect.fixed <- x$TE.direct.fixed
-    TE.indirect.fixed[!is.na(TE.indirect.fixed)] <- NA
-    seTE.indirect.fixed <- TE.indirect.fixed
-    ##
-    TE.indirect.random <- x$TE.direct.random
-    TE.indirect.random[!is.na(TE.indirect.random)] <- NA
-    seTE.indirect.random <- TE.indirect.random
-    ##
-    if (is.tictoc) {
-      tictoc <- rep(NA, n.comps)
-      names.tictoc <- ""
-    }
-    ##
-    for (i in seq_len(n.comps)) {
-      ##
-      idx1.i <- idx1[i]
-      idx2.i <- idx2[i]
-      ##
-      if (is.tictoc)
-        tictoc::tic()
-      ##
-      if (verbose)
-        cat(paste0("- ",
-                   paste(trts[idx1.i], trts[idx2.i], sep = sep.trts),
-                   " (", i, "/", n.comps, ")\n"))
-      ##
-      drop.i <-
-        (dat$.treat1 == trts[idx1.i] & dat$.treat2 == trts[idx2.i]) |
-        (dat$.treat2 == trts[idx1.i] & dat$.treat1 == trts[idx2.i])
-      ##
-      ## Studies (potentially with multi-arm studies) to drop from
-      ## calculation of indirect estimate
-      ##
-      drop.studies <- unique(dat$.studlab[drop.i])
-      ##
-      ## Drop studies
-      ##
-      dat.i <- dat[!(dat$.studlab %in% drop.studies), , drop = FALSE]
-      dat.i$.design <- NULL
-      ##
-      if (nrow(dat.i) > 0)
-        con <- netconnection(dat.i$.treat1, dat.i$.treat2, dat.i$.studlab)
-      else
-        con <- list(n.subnets = 0)
-      ##
-      if (con$n.subnets == 1) {
-        ##
-        if (is.bin)
-          net.i <- netmetabin(dat.i$.event1, dat.i$.n1,
-                              dat.i$.event2, dat.i$.n2,
-                              dat.i$.treat1, dat.i$.treat2,
-                              dat.i$.studlab,
-                              data = dat.i,
-                              sm = x$sm, method = x$method,
-                              fixed = fixed.logical,
-                              random = random.logical,
-                              warn = warn)
-        else
-          net.i <- netmeta(dat.i$.TE, dat.i$.seTE,
-                           dat.i$.treat1, dat.i$.treat2,
-                           dat.i$.studlab,
-                           data = dat.i,
-                           fixed = fixed.logical,
-                           random = random.logical,
-                           warn = warn)
-        ##
-        if (trts[idx1.i] %in% rownames(net.i$TE.fixed) &
-            trts[idx2.i] %in% colnames(net.i$TE.fixed)) {
-          TE.indirect.fixed[idx1.i, idx2.i] <-
-            net.i$TE.fixed[trts[idx1.i], trts[idx2.i]]
-          TE.indirect.fixed[idx2.i, idx1.i] <-
-            net.i$TE.fixed[trts[idx2.i], trts[idx1.i]]
-          ##
-          seTE.indirect.fixed[idx1.i, idx2.i] <-
-            seTE.indirect.fixed[idx2.i, idx1.i] <-
-            net.i$seTE.fixed[trts[idx1.i], trts[idx2.i]]
-        }
-        ##
-        if (!is.bin) {
-          if (trts[idx1.i] %in% rownames(net.i$TE.random) &
-              trts[idx2.i] %in% colnames(net.i$TE.random)) {
-            TE.indirect.random[idx1.i, idx2.i] <-
-              net.i$TE.random[trts[idx1.i], trts[idx2.i]]
-            TE.indirect.random[idx2.i, idx1.i] <-
-              net.i$TE.random[trts[idx2.i], trts[idx1.i]]
-            ##
-            seTE.indirect.random[idx1.i, idx2.i] <-
-              seTE.indirect.random[idx2.i, idx1.i] <-
-              net.i$seTE.random[trts[idx1.i], trts[idx2.i]]
-          }
-        }
-      }
-      ##
-      if (is.tictoc) {
-        tictoc.i <- tictoc::toc(func.toc = NULL)
-        tictoc[i] <- as.numeric(tictoc.i$toc) - as.numeric(tictoc.i$tic)
-        names.tictoc[i] <- paste(trts[idx1.i], trts[idx2.i], sep = sep.trts)
-        ##
-        if (verbose)
-          cat(paste(round(tictoc[i], 3), "sec elapsed\n"))
-      }
-    }
-    ##
-    ci.if <- ci(TE.indirect.fixed, seTE.indirect.fixed, x$level.ma)
-    ##
-    lower.indirect.fixed <- ci.if$lower
-    upper.indirect.fixed <- ci.if$upper
-    statistic.indirect.fixed <- ci.if$statistic
-    pval.indirect.fixed <- ci.if$p
+    sid <- sidde(x.direct.indirect, sep.trts, verbose, warn, is.tictoc)
+    ##    
+    x.direct.indirect$TE.indirect.fixed <- sid$TE.indirect.fixed
+    x.direct.indirect$seTE.indirect.fixed <- sid$seTE.indirect.fixed
     ##
     if (!is.bin) {
-      ci.ir <- ci(TE.indirect.random, seTE.indirect.random, x$level.ma)
-      ##
-      lower.indirect.random <- ci.ir$lower
-      upper.indirect.random <- ci.ir$upper
-      statistic.indirect.random <- ci.ir$statistic
-      pval.indirect.random <- ci.ir$p
-    }
-  }
-  
-  
-  ##
-  ## Set direct evidence estimates to NA if only indirect evidence is
-  ## available
-  ##
-  TE.direct.fixed <- x$TE.direct.fixed
-  seTE.direct.fixed <- x$seTE.direct.fixed
-  lower.direct.fixed <- x$lower.direct.fixed
-  upper.direct.fixed <- x$upper.direct.fixed
-  statistic.direct.fixed <- x$statistic.direct.fixed
-  pval.direct.fixed <- x$pval.direct.fixed
-  ##
-  if (!is.null(x$P.fixed)) {
-    sel.zero.fixed <- abs(x$P.fixed) < tol.direct
-    ##
-    TE.direct.fixed[sel.zero.fixed] <- NA
-    seTE.direct.fixed[sel.zero.fixed] <- NA
-    lower.direct.fixed[sel.zero.fixed] <- NA
-    upper.direct.fixed[sel.zero.fixed] <- NA
-    statistic.direct.fixed[sel.zero.fixed] <- NA
-    pval.direct.fixed[sel.zero.fixed] <- NA
+      x.direct.indirect$TE.indirect.random <- sid$TE.indirect.random
+      x.direct.indirect$seTE.indirect.random <- sid$seTE.indirect.random
+    } 
   }
   ##
-  TE.direct.random <- x$TE.direct.random
-  seTE.direct.random <- x$seTE.direct.random
-  lower.direct.random <- x$lower.direct.random
-  upper.direct.random <- x$upper.direct.random
-  statistic.direct.random <- x$statistic.direct.random
-  pval.direct.random <- x$pval.direct.random
-  ##
-  if (!is.null(x$P.random)) {
-    sel.zero.random <- abs(x$P.random) < tol.direct
-    ##
-    TE.direct.random[sel.zero.random] <- NA
-    seTE.direct.random[sel.zero.random] <- NA
-    lower.direct.random[sel.zero.random] <- NA
-    upper.direct.random[sel.zero.random] <- NA
-    statistic.direct.random[sel.zero.random] <- NA
-    pval.direct.random[sel.zero.random] <- NA
-  }
+  direct.indirect <- direct.indirect(x.direct.indirect, tol.direct)
   
   
   ##
-  ## Fixed effects model
   ##
-  fixed <- direct.fixed <- indirect.fixed <-
-    data.frame(comparison,
-               TE = NA, seTE = NA, lower = NA, upper = NA,
-               statistic = NA, p = NA,
-               stringsAsFactors = FALSE)
+  ## (6) Transform matrices to data frames
   ##
-  direct.fixed$I2 <- direct.fixed$tau <- direct.fixed$tau2 <-
-    direct.fixed$Q <- NA
   ##
-  k <- rep_len(NA, length(comparison))
-  ##
-  for (i in seq_along(comparison)) {
-    t1.i <- dat.trts$treat1[i]
-    t2.i <- dat.trts$treat2[i]
-    ##
-    fixed$TE[i] <- x$TE.fixed[t1.i, t2.i]
-    fixed$seTE[i] <- x$seTE.fixed[t1.i, t2.i]
-    fixed$lower[i] <- x$lower.fixed[t1.i, t2.i]
-    fixed$upper[i] <- x$upper.fixed[t1.i, t2.i]
-    fixed$statistic[i] <- x$statistic.fixed[t1.i, t2.i]
-    fixed$p[i] <- x$pval.fixed[t1.i, t2.i]
-    ##
-    k[i] <- x$A.matrix[t1.i, t2.i]
-    direct.fixed$TE[i] <- TE.direct.fixed[t1.i, t2.i]
-    direct.fixed$seTE[i] <- seTE.direct.fixed[t1.i, t2.i]
-    direct.fixed$lower[i] <- lower.direct.fixed[t1.i, t2.i]
-    direct.fixed$upper[i] <- upper.direct.fixed[t1.i, t2.i]
-    direct.fixed$statistic[i] <- statistic.direct.fixed[t1.i, t2.i]
-    direct.fixed$p[i] <- pval.direct.fixed[t1.i, t2.i]
-    direct.fixed$Q[i] <- x$Q.direct[t1.i, t2.i]
-    direct.fixed$tau2[i] <- x$tau2.direct[t1.i, t2.i]
-    direct.fixed$tau[i] <- x$tau.direct[t1.i, t2.i]
-    direct.fixed$I2[i] <- x$I2.direct[t1.i, t2.i]
-    ##
-    indirect.fixed$TE[i] <- TE.indirect.fixed[t1.i, t2.i]
-    indirect.fixed$seTE[i] <- seTE.indirect.fixed[t1.i, t2.i]
-    indirect.fixed$lower[i] <- lower.indirect.fixed[t1.i, t2.i]
-    indirect.fixed$upper[i] <- upper.indirect.fixed[t1.i, t2.i]
-    indirect.fixed$statistic[i] <- statistic.indirect.fixed[t1.i, t2.i]
-    indirect.fixed$p[i] <- pval.indirect.fixed[t1.i, t2.i]
-  }
-  ##
-  m.fixed <-
-    suppressWarnings(metagen(direct.fixed$TE - indirect.fixed$TE,
-                             sqrt(direct.fixed$seTE^2 +
-                                  indirect.fixed$seTE^2),
-                             level = x$level.ma,
-                             method.tau = "DL", method.tau.ci = ""))
-  ##
-  compare.fixed <- data.frame(comparison,
-                              TE = m.fixed$TE,
-                              seTE = m.fixed$seTE,
-                              lower = m.fixed$lower,
-                              upper = m.fixed$upper,
-                              statistic = m.fixed$statistic,
-                              p = m.fixed$pval,
-                              z = m.fixed$statistic,
-                              stringsAsFactors = FALSE)
-  ##
-  sel.k0 <- k == 0
-  vars <- c("TE", "seTE", "lower", "upper", "statistic", "p")
-  ##
-  indirect.fixed[sel.k0, vars] <- fixed[sel.k0, vars]
+  m2d.f <- mat2dat.split(direct.indirect, "fixed", dat.trts)
+  m2d.r <- mat2dat.split(direct.indirect, "random", dat.trts)
   
   
-  if (!is.bin) {
-    ##
-    ## Random effects model
-    ##
-    random <- direct.random <- indirect.random <-
-      data.frame(comparison,
-                 TE = NA, seTE = NA, lower = NA, upper = NA,
-                 statistic = NA, p = NA,
-                 stringsAsFactors = FALSE)
-    ##
-    predict <- data.frame(comparison, lower = NA, upper = NA,
-                          stringsAsFactors = FALSE)
-    ##
-    direct.random$I2 <- direct.random$tau <- direct.random$tau2 <-
-      direct.random$Q <- NA
-    ##
-    for (i in seq_along(comparison)) {
-      t1.i <- dat.trts$treat1[i]
-      t2.i <- dat.trts$treat2[i]
-      ##
-      random$TE[i] <- x$TE.random[t1.i, t2.i]
-      random$seTE[i] <- x$seTE.random[t1.i, t2.i]
-      random$lower[i] <- x$lower.random[t1.i, t2.i]
-      random$upper[i] <- x$upper.random[t1.i, t2.i]
-      random$statistic[i] <- x$statistic.random[t1.i, t2.i]
-      random$p[i] <- x$pval.random[t1.i, t2.i]
-      ##
-      direct.random$TE[i] <- TE.direct.random[t1.i, t2.i]
-      direct.random$seTE[i] <- seTE.direct.random[t1.i, t2.i]
-      direct.random$lower[i] <- lower.direct.random[t1.i, t2.i]
-      direct.random$upper[i] <- upper.direct.random[t1.i, t2.i]
-      direct.random$statistic[i] <- statistic.direct.random[t1.i, t2.i]
-      direct.random$p[i] <- pval.direct.random[t1.i, t2.i]
-      direct.random$Q[i] <- x$Q.direct[t1.i, t2.i]
-      direct.random$tau2[i] <- x$tau2.direct[t1.i, t2.i]
-      direct.random$tau[i] <- x$tau.direct[t1.i, t2.i]
-      direct.random$I2[i] <- x$I2.direct[t1.i, t2.i]
-      ##
-      indirect.random$TE[i] <- TE.indirect.random[t1.i, t2.i]
-      indirect.random$seTE[i] <- seTE.indirect.random[t1.i, t2.i]
-      indirect.random$lower[i] <- lower.indirect.random[t1.i, t2.i]
-      indirect.random$upper[i] <- upper.indirect.random[t1.i, t2.i]
-      indirect.random$statistic[i] <- statistic.indirect.random[t1.i, t2.i]
-      indirect.random$p[i] <- pval.indirect.random[t1.i, t2.i]
-      ##
-      predict$lower[i] <- x$lower.predict[t1.i, t2.i]
-      predict$upper[i] <- x$upper.predict[t1.i, t2.i]
-    }
-    ##
-    m.random <-
-      suppressWarnings(metagen(direct.random$TE - indirect.random$TE,
-                               sqrt(direct.random$seTE^2 +
-                                    indirect.random$seTE^2),
-                               level = x$level.ma,
-                               method.tau = "DL", method.tau.ci = ""))
-    ##
-    compare.random <- data.frame(comparison,
-                                 TE = m.random$TE,
-                                 seTE = m.random$seTE,
-                                 lower = m.random$lower,
-                                 upper = m.random$upper,
-                                 statistic = m.random$statistic,
-                                 p = m.random$pval,
-                                 z = m.random$statistic,
-                                 stringsAsFactors = FALSE)
-    ##
-    indirect.random[sel.k0, vars] <- random[sel.k0, vars]
-  }
-  else {
-    random <- fixed
-    ##
-    random[!is.na(random)] <- NA
-    random$comparison <- comparison
-    direct.random <- indirect.random <- compare.random <- random
-    predict <- random[, c("comparison", "lower", "upper")]
-  }
-  
-
-  x$fixed <- fixed.logical
-  x$random <- random.logical
   ##
-  res <- list(comparison = comparison,
+  ##
+  ## (7) Return results
+  ##
+  ##
+  res <- list(comparison = dat.trts$comparison,
               ##
-              k = k,
+              k = m2d.f$k,
               ##
-              prop.fixed =
-                if (is.bin & method == "SIDDE") NULL
-                else prop.direct.fixed,
-              fixed = fixed,
-              direct.fixed = direct.fixed,
-              indirect.fixed = indirect.fixed,
-              compare.fixed = compare.fixed,
+              prop.fixed = prop.fixed,
               ##
-              prop.random =
-                if (is.bin & method == "SIDDE") NULL
-                else prop.direct.random,
-              random = random,
-              direct.random = direct.random,
-              indirect.random = indirect.random,
-              compare.random = compare.random,
-              predict = predict,
+              fixed = m2d.f$nma,
+              direct.fixed = m2d.f$direct,
+              indirect.fixed = m2d.f$indirect,
+              compare.fixed = m2d.f$compare,
+              ##
+              prop.random = prop.random,
+              ##
+              random = m2d.r$nma,
+              direct.random = m2d.r$direct,
+              indirect.random = m2d.r$indirect,
+              compare.random = m2d.r$compare,
+              ##
+              predict = m2d.r$predict,
               ##
               method = method,
               ##
@@ -865,10 +415,8 @@ netsplit <- function(x, method,
               version = packageDescription("netmeta")$Version
               )
   ##
-  if (is.tictoc) {
-    res$tictoc <- tictoc
-    names(res$tictoc) <- names.tictoc
-  }
+  if (method == "SIDDE" & is.tictoc)
+    res$tictoc <- sid$tictoc
   ##
   class(res) <- c("netsplit",
                   if (is.bin & method == "SIDDE") "netsplit.netmetabin")
@@ -910,6 +458,7 @@ print.netsplit <- function(x,
                            big.mark = gs("big.mark"),
                            legend = TRUE,
                            ##
+                           indent = TRUE,
                            warn.deprecated = gs("warn.deprecated"),
                            ##
                            ...) {
@@ -945,11 +494,10 @@ print.netsplit <- function(x,
   ##
   ## Catch sortvar from data:
   ##
-  mf <- match.call()
-  error <- try(sortvar.x <- eval(mf[[match("sortvar", names(mf))]],
-                                 x,
-                                 enclos = sys.frame(sys.parent())),
-               silent = TRUE)
+  error <-
+    try(sortvar.x <-
+          catch("sortvar", match.call(), x, sys.frame(sys.parent())),
+        silent = TRUE)
   if (!any(class(error) == "try-error"))
     sortvar <- sortvar.x
   ##
@@ -992,6 +540,7 @@ print.netsplit <- function(x,
   chklogical(backtransf)
   chklogical(scientific.pval)
   chklogical(legend)
+  chklogical(indent)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -1237,7 +786,6 @@ print.netsplit <- function(x,
   
   
   if (random.available) {
-    random.logical <- random
     random <- list(comp = comp,
                    k = k,
                    prop = formatPT(prop.random, digits = digits.prop))
@@ -1357,28 +905,37 @@ print.netsplit <- function(x,
   if (legend) {
     cat("\nLegend:\n")
     cat(" comparison - Treatment comparison\n")
-    cat(" k          - Number of studies providing direct evidence\n")
+    cat(paste0(" k", if (indent) "          " else " ",
+               "- Number of studies providing direct evidence\n"))
     if (!noprop)
-      cat(" prop       - Direct evidence proportion\n")
+      cat(paste0(" prop", if (indent) "       " else " ",
+                 "- Direct evidence proportion\n"))
     if (overall)
-      cat(paste(" nma        - Estimated treatment effect ", sm.lab,
-                "in network meta-analysis\n", sep = ""))
-    cat(paste(" direct     - Estimated treatment effect ", sm.lab,
-              "derived from direct evidence\n", sep = ""))
-    cat(paste(" indir.     - Estimated treatment effect ", sm.lab,
-              "derived from indirect evidence\n", sep = ""))
+      cat(paste0(" nma", if (indent) "        " else " ",
+                 "- Estimated treatment effect ", sm.lab,
+                 "in network meta-analysis\n", sep = ""))
+    cat(paste0(" direct", if (indent) "     " else " ",
+               "- Estimated treatment effect ", sm.lab,
+               "derived from direct evidence\n", sep = ""))
+    cat(paste0(" indir.", if (indent) "     " else " ",
+               "- Estimated treatment effect ", sm.lab,
+               "derived from indirect evidence\n", sep = ""))
     if (test) {
       if (backtransf & relative)
-        cat(paste(" RoR        - Ratio of Ratios",
-                  "(direct versus indirect)\n"))
+        cat(paste0(" RoR", if (indent) "        " else " ",
+                   "- Ratio of Ratios ",
+                   "(direct versus indirect)\n"))
       else
-        cat(paste(" Diff       - Difference between direct and",
-                  "indirect treatment estimates\n"))
+        cat(paste0(" Diff", if (indent) "       " else " ",
+                   "- Difference between direct and ",
+                   "indirect treatment estimates\n"))
       ##
-      cat(paste(" z          - z-value of test for disagreement",
-                "(direct versus indirect)\n"))
-      cat(paste(" p-value    - p-value of test for disagreement",
-                "(direct versus indirect)\n"))
+      cat(paste0(" z", if (indent) "          " else " ",
+                 "- z-value of test for disagreement ",
+                 "(direct versus indirect)\n"))
+      cat(paste0(" p-value", if (indent) "    " else " ",
+                 "- p-value of test for disagreement ",
+                 "(direct versus indirect)\n"))
     }
     ##
     ## Add legend with abbreviated treatment labels

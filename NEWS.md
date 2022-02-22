@@ -1,5 +1,15 @@
 ## netmeta, version 2.1-1 (2022-mm-dd)
 
+### Major changes
+
+* New function nettable() to create tables with network, direct and
+  indirect estimates from one or more network meta-analyses
+
+* Excel file with league tables can be created directly with
+  netleague()
+  
+* R package **writexl** added to suggested packages
+
 ### Bug fixes
 
 * netcomb():
@@ -7,6 +17,12 @@
     uniquely identifiable components
 
 ### User-visible changes
+
+* netsplit():
+  - new arguments 'writexl', 'path' and 'overwrite' to save Excel
+    files
+
+* New function subset.pairwise() to select subset of a pairwise object
 
 * hatmatrix():
   - new arguments 'nchar.trts' and 'nchar.studlab'
@@ -16,10 +32,20 @@
 
 ### Internal changes
 
+* Use DerSimonian-Laird estimator of between-study variance to
+  calculate 'tau2.direct' and 'tau.direct' in netmetabin() as REML
+  method did not converge in some network meta-analyses
+
 * New internal function legendabbr() to print legend with abbreviated
   and full treatment labels
 
 * New internal function catch() to catch value for an argument
+
+* New internal functions comptrts(), direct.indirect(),
+  mat2dat.split(), mat2dat.table(), nettable_internal(), sidde() and
+  sortprop() for netsplit() and nettable()
+
+* New argument 'equal.length' in setseq()
 
 
 ## netmeta, version 2.1-0 (2022-01-20)

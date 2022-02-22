@@ -113,8 +113,7 @@
 #' # Define order of treatments
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
-#'           "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
-#'           "Placebo")
+#'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 #' #
 #' # Outcome labels
 #' #
@@ -123,22 +122,20 @@
 #' # (1) Early response
 #' #
 #' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(resp1, resp2, resp3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo", small.values = "bad")
+#'   seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # (2) Early remission
 #' #
 #' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(remi1, remi2, remi3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo", small.values = "bad")
+#'   seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # Partial order of treatment rankings
 #' #
@@ -162,17 +159,16 @@
 #' # (3) Loss to follow-up
 #' #
 #' p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(loss1, loss2, loss3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net3 <- netmeta(p3, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo", small.values = "good")
+#'   seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # Partial order of treatment rankings (with three outcomes) 
 #' #
 #' po3 <- netposet(netrank(net1), netrank(net2), netrank(net3),
-#'                 outcomes = outcomes)
+#'   outcomes = outcomes)
 #' 
 #' # Hasse diagram
 #' #

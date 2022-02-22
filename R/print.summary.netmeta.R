@@ -73,8 +73,7 @@
 #' # Conduct fixed effects network meta-analysis
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 random = FALSE, ref = "plac")
+#'   data = Senn2013, sm = "MD", random = FALSE, ref = "plac")
 #' snet1 <- summary(net1)
 #' print(snet1, digits = 3)
 #' 
@@ -94,14 +93,13 @@
 #' # letter "W"
 #' #
 #' print(snet1, ref = "plac", digits = 3,
-#'       truncate = substring(studlab, 1, 1) == "W")
+#'   truncate = substring(studlab, 1, 1) == "W")
 #' 
 #' \dontrun{
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 fixed = FALSE, ref = "plac")
+#'   data = Senn2013, sm = "MD", fixed = FALSE, ref = "plac")
 #' print(summary(net2), digits = 3)
 #' }
 #' 
@@ -176,18 +174,17 @@ print.summary.netmeta <- function(x,
   chklogical(nma)
   chklogical(legend)
   ##
-  mf <- match.call()
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
   ##
   ## Catch 'truncate' from network meta-analysis object:
   ##
   missing.truncate <- missing(truncate)
   if (!missing.truncate) {
-    truncate <- eval(mf[[match("truncate", names(mf))]],
-                     x$x, enclos = sys.frame(sys.parent()))
+    truncate <- catch("truncate", mc, x$x, sfsp)
     ##
     if (is.null(truncate))
-      truncate <- eval(mf[[match("truncate", names(mf))]],
-                       x$x$data, enclos = sys.frame(sys.parent()))
+      truncate <- catch("truncate", mc, x$x$data, sfsp)
     ##
     if (length(truncate) > k.all)
       stop("Length of argument 'truncate' is too long.",

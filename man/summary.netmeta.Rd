@@ -118,8 +118,7 @@ data(Senn2013)
 # Conduct fixed effects network meta-analysis
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                random = FALSE)
+  data = Senn2013, sm = "MD", random = FALSE)
 print(net1, ref = "plac", digits = 3)
 summary(net1)
 
@@ -127,8 +126,7 @@ summary(net1)
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                fixed = FALSE)
+  data = Senn2013, sm = "MD", fixed = FALSE)
 print(net2, ref = "plac", digits = 3)
 summary(net2)
 }

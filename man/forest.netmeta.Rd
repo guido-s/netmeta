@@ -174,54 +174,54 @@ data(Senn2013)
 # Conduct network meta-analysis
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD")
+  data = Senn2013, sm = "MD")
 
 forest(net1, ref = "plac")
 forest(net1, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference", rightcols = FALSE)
+  xlab = "HbA1c difference", rightcols = FALSE)
 }
 
 # Random effects effect model
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD", fixed = FALSE)
+  data = Senn2013, sm = "MD", fixed = FALSE)
 
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference")
+  xlab = "HbA1c difference")
 
 \dontrun{
 # Add column with P-Scores on right side of forest plot
 #
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference",
-       rightcols = c("effect", "ci", "Pscore"),
-       just.addcols = "right")
+  xlab = "HbA1c difference",
+  rightcols = c("effect", "ci", "Pscore"),
+  just.addcols = "right")
 
 # Add column with P-Scores on left side of forest plot
 #
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference",
-       leftcols = c("studlab", "Pscore"),
-       just.addcols = "right")
+  xlab = "HbA1c difference",
+  leftcols = c("studlab", "Pscore"),
+  just.addcols = "right")
 
 # Sort forest plot by descending P-Score
 #
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference",
-       rightcols = c("effect", "ci", "Pscore"),
-       just.addcols = "right",
-       sortvar = -Pscore)
+  xlab = "HbA1c difference",
+  rightcols = c("effect", "ci", "Pscore"),
+  just.addcols = "right",
+  sortvar = -Pscore)
 
 # Drop reference group and sort by and print number of studies with
 # direct treatment comparisons
 #
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference",
-       leftcols = c("studlab", "k"),
-       leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
-       sortvar = -k,
-       drop = TRUE,
-       smlab = "Random Effects Model")
+  xlab = "HbA1c difference",
+  leftcols = c("studlab", "k"),
+  leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
+  sortvar = -k,
+  drop = TRUE,
+  smlab = "Random Effects Model")
 }
 
 }

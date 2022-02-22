@@ -94,8 +94,7 @@ data(Senn2013)
 # treatment 'plac', i.e. placebo
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD", reference = "plac",
-                random = FALSE)
+  data = Senn2013, sm = "MD", reference = "plac", random = FALSE)
 
 # Calculate measures based on a fixed effects model
 #        
@@ -104,7 +103,7 @@ nm1 <- netmeasures(net1)
 # Plot of minimal parallelism versus mean path length
 #
 plot(nm1$meanpath, nm1$minpar, pch = "",
-     xlab = "Mean path length", ylab = "Minimal parallelism")
+  xlab = "Mean path length", ylab = "Minimal parallelism")
 text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex = 0.8)
 
 \dontrun{
@@ -112,8 +111,7 @@ text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex = 0.8)
 # treatment 'plac', i.e. placebo
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD", reference = "plac",
-                fixed = FALSE)
+  data = Senn2013, sm = "MD", reference = "plac", fixed = FALSE)
 
 # Calculate measures based on a random effects model
 #                          

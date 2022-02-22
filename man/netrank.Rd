@@ -110,8 +110,7 @@ treatment.
 data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                random = FALSE)
+  data = Senn2013, sm = "MD", random = FALSE)
 
 nr1 <- netrank(net1)
 nr1
@@ -119,7 +118,7 @@ print(nr1, sort = FALSE)
 
 \dontrun{
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD")
+  data = Senn2013, sm = "MD")
 
 nr2 <- netrank(net2)
 nr2
@@ -129,7 +128,7 @@ print(nr2, sort = FALSE)
 
 \dontrun{
 net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD")
+  data = Senn2013, sm = "MD")
 
 nr3 <- netrank(net3, method = "SUCRA", nsim = 100)
 nr3

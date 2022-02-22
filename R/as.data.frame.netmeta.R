@@ -23,7 +23,8 @@
 #' 
 #' # Conduct network meta-analysis
 #' #
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data = Senn2013, sm = "MD")
+#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#'   data = Senn2013, sm = "MD")
 #' 
 #' as.data.frame(net1)
 #' as.data.frame(net1, details = TRUE)

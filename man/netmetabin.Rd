@@ -17,10 +17,10 @@ netmetabin(
   sm,
   method = "MH",
   cc.pooled = FALSE,
-  incr = gs("incr"),
-  allincr = gs("allincr"),
-  addincr = gs("addincr"),
-  allstudies = gs("allstudies"),
+  incr,
+  allincr,
+  addincr,
+  allstudies,
   level = gs("level"),
   level.ma = gs("level.ma"),
   fixed = gs("fixed"),
@@ -394,7 +394,7 @@ first10 <- subset(Dong2013, id <= 10)
 # function called internally.
 #
 p1 <- pairwise(treatment, death, randomized, studlab = id,
-               data = first10, sm = "OR")
+  data = first10, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis (without continuity
 # correction)
@@ -411,7 +411,7 @@ netleague(nb1)
 # dataset
 #
 p2 <- pairwise(treatment, death, randomized, studlab = id,
-               data = Dong2013, sm = "OR")
+  data = Dong2013, sm = "OR")
 netmetabin(p2, ref = "plac")
   
 # Conduct network meta-analysis using the non-central
@@ -427,7 +427,7 @@ netmetabin(p2, ref = "plac", cc.pooled = TRUE)
 data(Gurusamy2011)
 
 p3 <- pairwise(treatment, death, n, studlab = study,
-               data = Gurusamy2011, sm = "OR")
+  data = Gurusamy2011, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis (without continuity
 # correction)

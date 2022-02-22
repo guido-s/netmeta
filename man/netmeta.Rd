@@ -598,8 +598,7 @@ data(Senn2013)
 # Conduct fixed effects network meta-analysis
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                random = FALSE)
+  data = Senn2013, sm = "MD", random = FALSE)
 net1
 net1$Q.decomp
 
@@ -611,18 +610,17 @@ print(net1, reference = "plac")
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                fixed = FALSE)
+  data = Senn2013, sm = "MD", fixed = FALSE)
 net2
 
 # Change printing order of treatments with placebo last and use
 # long treatment names
 #
 trts <- c("acar", "benf", "metf", "migl", "piog",
-          "rosi", "sita", "sulf", "vild", "plac")
+  "rosi", "sita", "sulf", "vild", "plac")
 net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-                data = Senn2013, sm = "MD", fixed = FALSE,
-                seq = trts, reference = "Placebo")
+  data = Senn2013, sm = "MD", fixed = FALSE,
+  seq = trts, reference = "Placebo")
 print(net3, digits = 2)
 }
 
