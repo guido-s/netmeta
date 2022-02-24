@@ -460,9 +460,15 @@ print.netconnection <- function(x,
   if (x$n.subnets > 1) {
     f <- function(x) length(unique(x))
     d <- as.data.frame(x)
-    b <- tapply(d$studlab, d$subnet, f)
-    m <- as.matrix(data.frame(subnet = names(b),
-                              k = as.vector(b)))
+    k.subset <- tapply(d$studlab, d$subnet, f)
+    ##
+    m <- as.matrix(
+      data.frame(subnet = names(k.subset),
+                 k = as.vector(k.subset),
+                 m = as.vector(tapply(d$studlab, d$subnet, length)),
+                 n = as.vector(tapply(c(d$treat1, d$treat2),
+                                      c(d$subnet, d$subnet), f)))
+    )
     rownames(m) <- rep("", nrow(m))
     ##
     cat("Number of studies in subnetworks: \n")

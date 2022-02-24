@@ -24,6 +24,9 @@
 
 * New function subset.pairwise() to select subset of a pairwise object
 
+* print.netconnection():
+  - show number of pairwise comparisons and interventions for subnetworks
+
 * hatmatrix():
   - new arguments 'nchar.trts' and 'nchar.studlab'
 
