@@ -38,7 +38,9 @@
 #'   \code{\link{print.default}}.
 #' @param details A logical indicating whether to print the distance
 #'   matrix.
-#' @param ... Additional arguments (ignored at the moment)
+#' @param details.disconnected A logical indicating whether to print
+#'   more details for disconnected networks.
+#' @param \dots Additional arguments (ignored at the moment)
 #' 
 #' @return
 #' An object of class \code{netconnection} with corresponding
@@ -124,7 +126,8 @@ netconnection <- function(treat1, treat2, studlab,
                           data = NULL, subset = NULL,
                           sep.trts = ":",
                           nchar.trts = 666,
-                          title = "", warn = FALSE) {
+                          title = "", details.disconnected = FALSE,
+                          warn = FALSE) {
   
   ##
   ##
@@ -145,7 +148,8 @@ netconnection <- function(treat1, treat2, studlab,
   ##
   treat1 <- catch("treat1", mc, data, sfsp)
   ##
-  if (is.data.frame(treat1) & !is.null(attr(treat1, "pairwise"))) {
+  if (is.data.frame(treat1) &
+      (inherits(treat1, "pairwise") | !is.null(attr(treat1, "pairwise")))) {
     if (!missing(treat2))
       warning("Argument 'treat2' ignored as first argument is an ",
               "object created with pairwise().", call. = FALSE)
@@ -186,6 +190,7 @@ netconnection <- function(treat1, treat2, studlab,
   ##
   chknumeric(nchar.trts, min = 1, length = 1)
   ##
+  chklogical(details.disconnected)
   chklogical(warn)
   
   
@@ -411,6 +416,8 @@ netconnection <- function(treat1, treat2, studlab,
               ##
               title = title,
               ##
+              details.disconnected = details.disconnected,
+              ##
               warn = warn,
               call = match.call(),
               version = packageDescription("netmeta")$Version
@@ -434,6 +441,7 @@ print.netconnection <- function(x,
                                 digits = max(4, .Options$digits - 3),
                                 nchar.trts = x$nchar.trts,
                                 details = FALSE,
+                                details.disconnected = x$details.disconnected,
                                 ...) {
   
   chkclass(x, "netconnection")
@@ -445,6 +453,8 @@ print.netconnection <- function(x,
   chknumeric(digits, length = 1)
   chknumeric(nchar.trts, min = 1, length = 1)
   chklogical(details)
+  details.disconnected <- replaceNULL(details.disconnected, FALSE)
+  chklogical(details.disconnected)
   
   
   matitle(x)
@@ -463,7 +473,7 @@ print.netconnection <- function(x,
     k.subset <- tapply(d$studlab, d$subnet, f)
     ##
     m <- as.matrix(
-      data.frame(subnet = names(k.subset),
+      data.frame(subnetwork = names(k.subset),
                  k = as.vector(k.subset),
                  m = as.vector(tapply(d$studlab, d$subnet, length)),
                  n = as.vector(tapply(c(d$treat1, d$treat2),
@@ -471,8 +481,17 @@ print.netconnection <- function(x,
     )
     rownames(m) <- rep("", nrow(m))
     ##
-    cat("Number of studies in subnetworks: \n")
+    cat("\nDetails on subnetworks: \n")
     prmatrix(m, quote = FALSE, right = TRUE)
+    ##
+    if (details.disconnected) {
+      cat("\n")
+      for (i in seq_len(x$n.subnets)) {
+        d.i <- subset(d, subnet == i)
+        cat(paste0("Subnetwork ", i, ":\n"))
+        print(sort(unique(c(d.i$treat1, d.i$treat2))))
+      }
+    }
   }
   
   

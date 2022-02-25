@@ -27,6 +27,9 @@
 * print.netconnection():
   - show number of pairwise comparisons and interventions for subnetworks
 
+* netconnection(), print.netconnection():
+  - new argument 'details.disconnected'
+
 * hatmatrix():
   - new arguments 'nchar.trts' and 'nchar.studlab'
 
