@@ -169,7 +169,7 @@
 #' # (if R package writexl is available)
 #' #
 #' nettable(net1, digits = 2, bracket = "(", separator = " to ",
-#'           writexl = TRUE, path = tempfile(fileext = ".xlsx"))
+#'          path = tempfile(fileext = ".xlsx"))
 #' }
 #' 
 #' @rdname nettable
@@ -206,7 +206,7 @@ nettable <- function(...,
                      ##
                      tol.direct = 0.0005,
                      ##
-                     writexl = FALSE,
+                     writexl = !missing(path),
                      path = "nettable.xlsx",
                      overwrite = FALSE,
                      ##

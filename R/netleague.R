@@ -158,7 +158,7 @@
 #' # (if R package writexl is available)
 #' #
 #' netleague(net0, digits = 2, bracket = "(", separator = " to ",
-#'           writexl = TRUE, path = tempfile(fileext = ".xlsx"))
+#'           path = tempfile(fileext = ".xlsx"))
 #' }
 #' 
 #' \donttest{
@@ -252,7 +252,7 @@ netleague <- function(x, y,
                       lower.blank = gs("CIlower.blank"),
                       upper.blank = gs("CIupper.blank"),
                       ##
-                      writexl = FALSE,
+                      writexl = !missing(path),
                       path = "leaguetable.xlsx",
                       overwrite = FALSE,
                       ##

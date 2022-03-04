@@ -29,7 +29,7 @@ nettable(
   lower.blank = gs("CIlower.blank"),
   upper.blank = gs("CIupper.blank"),
   tol.direct = 5e-04,
-  writexl = FALSE,
+  writexl = !missing(path),
   path = "nettable.xlsx",
   overwrite = FALSE,
   warn = FALSE,
@@ -210,7 +210,7 @@ write.table(table1$random, file = "table1-random.csv",
 # (if R package writexl is available)
 #
 nettable(net1, digits = 2, bracket = "(", separator = " to ",
-          writexl = TRUE, path = tempfile(fileext = ".xlsx"))
+         path = tempfile(fileext = ".xlsx"))
 }
 
 }
