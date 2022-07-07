@@ -6,8 +6,8 @@
 #' @param x An object of class \code{summary.netmeta}.
 #' @param sortvar An optional vector used to sort individual studies
 #'   (must be of same length as \code{x$TE}).
-#' @param fixed A logical indicating whether results for the fixed
-#'   effects / common effects model should be printed.
+#' @param fixed A logical indicating whether results for the common
+#'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
 #' @param prediction A logical indicating whether prediction intervals
@@ -22,8 +22,8 @@
 #'   be printed.
 #' @param details A logical indicating whether further details for
 #'   individual studies should be printed.
-#' @param nma A logical indicating whether summary results of
-#'   network meta-analysis should be printed.
+#' @param nma A logical indicating whether summary results of network
+#'   meta-analysis should be printed.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -51,8 +51,8 @@
 #' @param big.mark A character used as thousands separator.
 #' @param truncate An optional vector used to truncate the printout of
 #'   results for individual studies (must be a logical vector of
-#'   length corresponding to the number of pairwise
-#'   comparisons \code{x$TE} or contain numerical values).
+#'   length corresponding to the number of pairwise comparisons
+#'   \code{x$TE} or contain numerical values).
 #' @param text.truncate A character string printed if study results
 #'   were truncated from the printout.
 #' @param legend A logical indicating whether a legend should be
@@ -70,7 +70,7 @@
 #' @examples
 #' data(Senn2013)
 #' 
-#' # Conduct fixed effects network meta-analysis
+#' # Conduct common effects network meta-analysis
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD", random = FALSE, ref = "plac")
@@ -391,7 +391,7 @@ print.summary.netmeta <- function(x,
            c("treat1", "treat2", sm.lab, ci.lab))
     ##
     if (fixed) {
-      cat("Results (fixed effects model):\n\n")
+      cat("Results (common effects model):\n\n")
       ##
       if (!missing.truncate)
         res.f <- res.f[truncate, , drop = FALSE]

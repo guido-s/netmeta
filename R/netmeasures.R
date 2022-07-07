@@ -44,7 +44,7 @@
 #' evidence can be made explicit for each design as shown in König et
 #' al. (2013) and is given in \code{H.tilde}.
 #' 
-#' All measures are calculated based on the fixed effects
+#' All measures are calculated based on the common effects
 #' meta-analysis by default. In the case that in function
 #' \code{netmeta} the argument \code{random = TRUE}, all measures
 #' are calculated for a random effects model. The value of the
@@ -83,13 +83,13 @@
 #' @examples
 #' data(Senn2013)
 #' 
-#' # Conduct fixed effects network meta-analysis with reference
+#' # Conduct common effects network meta-analysis with reference
 #' # treatment 'plac', i.e. placebo
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD", reference = "plac", random = FALSE)
 #' 
-#' # Calculate measures based on a fixed effects model
+#' # Calculate measures based on a common effects model
 #' #        
 #' nm1 <- netmeasures(net1)
 #' 

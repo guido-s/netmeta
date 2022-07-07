@@ -39,8 +39,8 @@
 the order of treatments or list of comparators (see Details).}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effect (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"fixed"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{xlab}{A label for the x-axis.}
 

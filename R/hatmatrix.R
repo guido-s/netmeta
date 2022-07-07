@@ -10,8 +10,7 @@
 #' @param type A character string indicating which specific hat matrix
 #'   should be derived (can be abbreviated, see Details).
 #' @param fixed A logical indicating whether a hat matrix should be
-#'   printed for the fixed effects / common effects network
-#'   meta-analysis.
+#'   printed for the common effects network meta-analysis.
 #' @param random A logical indicating whether a hat matrix should be
 #'   printed for the random effects network meta-analysis.
 #' @param nchar.trts A numeric defining the minimum number of
@@ -39,10 +38,10 @@
 #' comparisons (edges) between the treatments. If there are only
 #' two-arm studies, \emph{m} is equal to the number of studies,
 #' \emph{k}. Let seTE.adj.fixed and seTE.adj.random be the vectors of
-#' adjusted standard errors under the fixed effect and random effects
-#' model (see \code{\link{netmeta}}). Let \strong{W} be the
-#' \emph{m} x \emph{m} diagonal matrix that contains the inverse
-#' variance 1 / seTE.adj.fixed\eqn{^2} or 1 / seTE.adj.random\eqn{^2}.
+#' adjusted standard errors under the common and random effects model
+#' (see \code{\link{netmeta}}). Let \strong{W} be the \emph{m} x
+#' \emph{m} diagonal matrix that contains the inverse variance 1 /
+#' seTE.adj.fixed\eqn{^2} or 1 / seTE.adj.random\eqn{^2}.
 #'
 #' The given comparisons define the network structure. Therefrom an
 #' \emph{m} x \emph{n} design matrix X (edge-vertex incidence matrix) is
@@ -122,8 +121,8 @@
 #' }
 #'
 #' @return
-#' A list with two hat matrices: \code{fixed} (fixed effect model) and
-#' \code{random} (random effects model).
+#' A list with two hat matrices: \code{fixed} (common effects model)
+#' and \code{random} (random effects model).
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
@@ -328,7 +327,7 @@ print.hatmatrix <- function(x,
     else
       colnames(fixed) <- treats(fixed, nchar.studlab, row = FALSE)
     ##
-    cat("Fixed effects model:\n\n")
+    cat("Common effects model:\n\n")
     prmatrix(round(fixed, digits))
     if (random.logical)
       cat("\n")

@@ -4,7 +4,14 @@
 \alias{netgraph.netconnection}
 \title{Network graph for objects of class netconnection}
 \usage{
-\method{netgraph}{netconnection}(x, seq, col = x$subnet.comparisons, plastic = FALSE, ...)
+\method{netgraph}{netconnection}(
+  x,
+  seq,
+  col = seq_len(x$n.subnets),
+  reference.group = NULL,
+  plastic = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{netconnection}.}
@@ -14,7 +21,11 @@ of treatments arrangement (anticlockwise if \code{start.layout =
 "circle"}).}
 
 \item{col}{A single color (or vector of colors) for lines
-connecting treatments (edges) if argument \code{plastic = FALSE}.}
+connecting treatments (edges) if argument \code{plastic = FALSE}
+(see Details).}
+
+\item{reference.group}{Reference treatment (only relevant for
+disconnected networks).}
 
 \item{plastic}{A logical indicating whether the appearance of the
 comparisons should be in '3D look'.}
@@ -26,8 +37,18 @@ comparisons should be in '3D look'.}
 This function generates a graph of the evidence network.
 }
 \details{
-The following arguments are used internally and cannot be specified
-by the user: \code{thickness}, \code{seq}, \code{iterate}.
+Argument \code{col} can be a single color for all edges, a vector
+of length equal to the number of edges, or a vector of length equal
+to the number of subnetworks. Argument \code{reference.group} is
+only considered in disconnected networks, i.e., if more than one
+(sub)network exists, and if argument \code{col} provides colors for
+subnetworks. In this case, the first color provided in argument
+\code{col} defines the color for the subnetwork with the reference
+treatment.
+
+The following arguments for network graphs are used internally and
+cannot be specified by the user: \code{thickness}, \code{seq},
+\code{iterate}.
 }
 \examples{
 # Artificial example with two subnetworks
@@ -38,7 +59,7 @@ t2 <- c("B", "C", "E", "E", "H", "A")
 nc1 <- netconnection(t1, t2)
 print(nc1, details = TRUE)
 
-netgraph(nc1, plastic = FALSE)
+netgraph(nc1, plastic = TRUE)
 
 }
 \seealso{

@@ -40,8 +40,7 @@ given in F1000 article should be used for \code{method =
 "shortestpath"}.}
 
 \item{fixed}{A logical indicating whether a contribution matrix
-should be printed for the fixed effect / common effect network
-meta-analysis.}
+should be printed for the common effects network meta-analysis.}
 
 \item{random}{A logical indicating whether a contribution matrix
 should be printed for the random effects network meta-analysis.}
@@ -68,17 +67,17 @@ An object of class \code{netcontrib} with corresponding
 \code{print} function. The object is a list containing the
 following components:
 \item{fixed}{Numeric matrix of percentage contributions of direct
-  comparisons for each network comparison for the fixed effects
+  comparisons for each network comparison for the common effects
   model.}
 \item{random}{Numeric matrix of percentage contributions of direct
   comparisons for each network comparison for the random effects
   model.}
 \item{x}{As defined above.}
-\item{tictoc.fixed}{Computation times under fixed effects model
+\item{tictoc.fixed}{Computation times under common effects model
   (if R package \bold{tictoc} is installed).}
 \item{tictoc.random}{Computation times under random effects model
   (if R package \bold{tictoc} is installed).}
-with the contribution matrices for fixed and random NMA. Each
+with the contribution matrices for common and random NMA. Each
 matrix has the percentage contributions of each direct comparison
 as columns for each network comparison, direct or indirect as rows.
 }

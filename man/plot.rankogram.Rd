@@ -25,8 +25,8 @@
 abbreviated.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effects (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"fixed"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{sort}{A logical indicating whether treatments should be
 sorted by decreasing SUCRAs.}
@@ -57,7 +57,7 @@ step functions (argument \code{type}).
 
 By default (argument \code{pooled}), results for the random effects
 model are shown if a network meta-analysis was conducted for both
-the fixed effect and random effects model.
+the common and random effects model.
 
 Treatments are sorted according to their mean effects if argument
 \code{sort = TRUE} (default).  A subset of treatments can be

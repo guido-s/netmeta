@@ -5,8 +5,8 @@
 #' 
 #' @param x An object of class \code{netbind} or
 #'   \code{summary.netbind}.
-#' @param fixed A logical indicating whether results for the fixed
-#'   effects / common effects model should be printed.
+#' @param fixed A logical indicating whether results for the common
+#'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -92,7 +92,7 @@ print.netbind <- function(x,
   ##
   ##
   if (fixed) {
-    cat("Fixed effects model\n\n")
+    cat("Common effects model\n\n")
     print(x$fixed[, c("name", "treat",
                       "TE", "seTE", "lower", "upper", "statistic", "pval")])
     if (random)

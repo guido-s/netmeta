@@ -53,7 +53,7 @@ and \code{treat2.long}.
 \examples{
 data(Senn2013)
 
-# Fixed effects model
+# Common effects model
 #
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
   data = Senn2013, sm = "MD", random = FALSE, nchar.trts = 4)

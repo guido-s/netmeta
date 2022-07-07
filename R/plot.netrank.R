@@ -7,8 +7,8 @@
 #' @param ... A single netrank object or a list of netrank objects.
 #' @param name An optional character vector providing descriptive
 #'   names for the network meta-analysis objects.
-#' @param fixed A logical indicating whether results for the fixed
-#'   effects / common effects model should be plotted.
+#' @param fixed A logical indicating whether results for the common
+#'   effects model should be plotted.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be plotted.
 #' @param seq A character or numerical vector specifying the sequence
@@ -480,13 +480,13 @@ plot.netrank <- function(...,
   ##
   if (fixed & random) {
     warning4 <- paste0("P-scores for random effects model displayed ",
-                       "as both fixed and random effects ",
+                       "as both common and random effects ",
                        "network meta-analysis was conducted.")
     print.warning4 <- TRUE
     fixed <- FALSE
   }
   else if (!fixed & !random) {
-    warning("No plot generated as ranking was neither for fixed nor ",
+    warning("No plot generated as ranking was neither for common nor ",
             "random effects network meta-analysis conducted.")
     return(invisible(NULL))
   }

@@ -39,8 +39,8 @@ netcomplex(
 \item{complex}{A matrix, vector or single numeric defining the
 complex intervention(s) (see Details).}
 
-\item{fixed}{A logical indicating whether results for fixed effects
-/ common effects model should be conducted.}
+\item{fixed}{A logical indicating whether results for common
+effects model should be conducted.}
 
 \item{random}{A logical indicating whether results for random
 effects model should be conducted.}
@@ -89,20 +89,20 @@ A list is returned by the function \code{netcomplex} with the
 following elements:
 \item{complex}{Complex intervention(s).}
 \item{Comb.fixed, Comb.random}{A vector of combination effects
-  (fixed and random effects model).}
+  (common and random effects model).}
 \item{seComb.fixed, seComb.random}{A vector with corresponding
-  standard errors (fixed and random effects model).}
+  standard errors (common and random effects model).}
 \item{lower.Comb.fixed, lower.Comb.random}{A vector with lower
-  confidence limits for combinations (fixed and random effects
+  confidence limits for combinations (common and random effects
   model).}
 \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
-  confidence limits for combinations (fixed and random effects
+  confidence limits for combinations (common and random effects
   model).}
 \item{statistic.Comb.fixed, statistic.Comb.random}{A vector with
-  z-values for the overall effect of combinations (fixed and random
+  z-values for the overall effect of combinations (common and random
   effects model).}
 \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
-  the overall effect of combinations (fixed and random effects
+  the overall effect of combinations (common and random effects
   model).}
 \item{fixed, random}{A defined above.}
 \item{level, nchar.comps, backtransf, x}{A defined above.}

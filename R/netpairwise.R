@@ -10,8 +10,8 @@
 #' @param separate A logical indicating whether results for pairwise
 #'   comparisons should be printed as separate meta-analyses or as
 #'   subgroups which is more concise.
-#' @param fixed A logical indicating whether a fixed effects / common
-#'   effects network meta-analysis should be conducted.
+#' @param fixed A logical indicating whether a common effects network
+#'   meta-analysis should be conducted.
 #' @param random A logical indicating whether a random effects network
 #'   meta-analysis should be conducted.
 #' @param level The level used to calculate confidence intervals for

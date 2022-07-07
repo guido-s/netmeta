@@ -29,7 +29,7 @@ netposet(
 \item{small.values}{See details.}
 
 \item{fixed}{A logical indicating whether to show results for the
-fixed effects / common effects model.}
+common effects model.}
 
 \item{random}{A logical indicating whether to show results for the
 random effects model.}
@@ -44,7 +44,7 @@ be printed if deprecated arguments are used.}
 \item{x}{An object of class \code{netposet}.}
 
 \item{pooled}{A character string indicating whether Hasse diagram
-should be drawn for fixed (\code{"fixed"}) or random effects
+should be drawn for common (\code{"fixed"}) or random effects
 model (\code{"random"}). Can be abbreviated.}
 }
 \value{
@@ -52,12 +52,12 @@ An object of class \code{netposet} with corresponding \code{print},
 \code{plot}, and \code{hasse} functions. The object is a list
 containing the following components:
 \item{P.fixed}{Ranking matrix with rows corresponding to treatments
-  and columns corresponding to outcomes (fixed effects model).}
-\item{M0.fixed}{Hasse matrix skipping unnecessary paths (fixed
+  and columns corresponding to outcomes (common effects model).}
+\item{M0.fixed}{Hasse matrix skipping unnecessary paths (common
   effects model).}
-\item{M.fixed}{"Full" Hasse matrix (fixed effects model).}
+\item{M.fixed}{"Full" Hasse matrix (common effects model).}
 \item{O.fixed}{Matrix with information about partial ordering
-  (fixed effects model).}
+  (common effects model).}
 \item{P.random}{Ranking matrix with rows corresponding to
   treatments and columns corresponding to outcomes (random effects
   model).}
@@ -126,13 +126,13 @@ outcome whether small values are good or bad; see
 \code{\link{netrank}}. This argument is ignored for a ranking
 matrix and \code{netrank} objects.
 
-Arguments \code{fixed} and \code{random} can be used to
-define whether results should be printed and plotted for fixed and
-/ or random effects model. If netmeta and netrank objects are
-provided in argument \code{\dots{}}, values for \code{fixed}
-and \code{random} within these objects are considered; if
-these values are not unique, argument \code{fixed} and / or
-\code{random} are set to \code{TRUE}.
+Arguments \code{fixed} and \code{random} can be used to define
+whether results should be printed and plotted for common and random
+effects model. If netmeta and netrank objects are provided in
+argument \code{\dots{}}, values for \code{fixed} and \code{random}
+within these objects are considered; if these values are not
+unique, argument \code{fixed} or \code{random} are set to
+\code{TRUE}.
 
 In function \code{print.netposet}, argument \code{\dots{}} is
 passed on to the printing function.

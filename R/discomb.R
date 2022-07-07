@@ -35,7 +35,7 @@
 #'   individual comparisons.
 #' @param level.ma The level used to calculate confidence intervals
 #'   for network estimates.
-#' @param fixed A logical indicating whether a fixed effects / common
+#' @param fixed A logical indicating whether a common effects / common
 #'   effects network meta-analysis should be conducted.
 #' @param random A logical indicating whether a random effects
 #'   network meta-analysis should be conducted.
@@ -182,70 +182,70 @@
 #' \item{trts}{Treatments included in network meta-analysis.}
 #' \item{comps}{Unique list of components present in the network.}
 #' \item{TE.cnma.fixed, TE.cnma.random}{A vector of length \emph{m} of
-#'   consistent treatment effects estimated by the additive (fixed and
+#'   consistent treatment effects estimated by the additive (common and
 #'   random effects) model.}
 #' \item{seTE.cnma.fixed, seTE.cnma.random}{A vector of length
-#'   \emph{m} with standard errors estimated by the additive (fixed
+#'   \emph{m} with standard errors estimated by the additive (common
 #'   and random effects) model.}
 #' \item{lower.cnma.fixed, lower.cnma.random}{A vector of length
 #'   \emph{m} of lower confidence interval limits for consistent
-#'   treatment effects estimated by the additive (fixed and random
+#'   treatment effects estimated by the additive (common and random
 #'   effects) model.}
 #' \item{upper.cnma.fixed, upper.cnma.random}{A vector of length
 #'   \emph{m} of upper confidence interval limits for consistent
-#'   treatment effects estimated by the additive (fixed and random
+#'   treatment effects estimated by the additive (common and random
 #'   effects) model.}
 #' \item{statistic.cnma.fixed, statistic.cnma.random}{A vector of
 #'   length \emph{m} of z-values for the test of an overall effect
-#'   estimated by the additive (fixed and random effects) model.}
+#'   estimated by the additive (common and random effects) model.}
 #' \item{pval.cnma.fixed, pval.cnma.random}{A vector of length
 #'   \emph{m} of p-values for the test of an overall effect estimated
-#'   by the additive (fixed and random effects) model.}
+#'   by the additive (common and random effects) model.}
 #' \item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with overall
-#'   treatment effects estimated by the additive (fixed and random
+#'   treatment effects estimated by the additive (common and random
 #'   effects) model.}
 #' \item{seTE.fixed, seTE.random}{\emph{n}x\emph{n} matrix with
-#'   standard errors estimated by the additive (fixed and random
+#'   standard errors estimated by the additive (common and random
 #'   effects) model.}
 #' \item{lower.fixed, upper.fixed, lower.random,
 #'   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
-#'   confidence interval limits estimated by the additive (fixed and
+#'   confidence interval limits estimated by the additive (common and
 #'   random effects) model.}
 #' \item{statistic.fixed, pval.fixed, statistic.random,
 #'   pval.random}{\emph{n}x\emph{n} matrices with z-values and
 #'   p-values for test of overall effect estimated by the additive
-#'   (fixed and random effects) model.}
-#' \item{Comp.fixed, Comp.random}{A vector of component effects (fixed
+#'   (common and random effects) model.}
+#' \item{Comp.fixed, Comp.random}{A vector of component effects (common
 #'   and random effects model).}
 #' \item{seComp.fixed, seComp.random}{A vector with corresponding
-#'   standard errors (fixed and random effects model).}
+#'   standard errors (common and random effects model).}
 #' \item{lower.Comp.fixed, lower.Comp.random}{A vector with lower
-#'   confidence limits for components (fixed and random effects
+#'   confidence limits for components (common and random effects
 #'   model).}
 #' \item{upper.Comp.fixed, upper.Comp.random}{A vector with upper
-#'   confidence limits for components (fixed and random effects
+#'   confidence limits for components (common and random effects
 #'   model).}
 #' \item{statistic.Comp.fixed, statistic.Comp.random}{A vector with
-#'   z-values for the overall effect of components (fixed and random
+#'   z-values for the overall effect of components (common and random
 #'   effects model).}
 #' \item{pval.Comp.fixed, pval.Comp.random}{A vector with p-values for
-#'   the overall effect of components (fixed and random effects
+#'   the overall effect of components (common and random effects
 #'   model).}
-#' \item{Comb.fixed, Comb.random}{A vector of combination effects (fixed
+#' \item{Comb.fixed, Comb.random}{A vector of combination effects (common
 #'   and random effects model).}
 #' \item{seComb.fixed, seComb.random}{A vector with corresponding
-#'   standard errors (fixed and random effects model).}
+#'   standard errors (common and random effects model).}
 #' \item{lower.Comb.fixed, lower.Comb.random}{A vector with lower
-#'   confidence limits for combinations (fixed and random effects
+#'   confidence limits for combinations (common and random effects
 #'   model).}
 #' \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
-#'   confidence limits for combinations (fixed and random effects
+#'   confidence limits for combinations (common and random effects
 #'   model).}
 #' \item{statistic.Comb.fixed, statistic.Comb.random}{A vector with
-#'   z-values for the overall effect of combinations (fixed and random
+#'   z-values for the overall effect of combinations (common and random
 #'   effects model).}
 #' \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
-#'   the overall effect of combinations (fixed and random effects
+#'   the overall effect of combinations (common and random effects
 #'   model).}
 #' \item{Q.additive}{Overall heterogeneity / inconsistency statistic
 #'   (additive model).}

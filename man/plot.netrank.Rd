@@ -41,8 +41,8 @@
 \item{name}{An optional character vector providing descriptive
 names for the network meta-analysis objects.}
 
-\item{fixed}{A logical indicating whether results for the fixed
-effects / common effects model should be plotted.}
+\item{fixed}{A logical indicating whether results for the common
+effects model should be plotted.}
 
 \item{random}{A logical indicating whether results for the random
 effects model should be plotted.}

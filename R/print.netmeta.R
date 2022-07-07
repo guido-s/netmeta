@@ -4,8 +4,8 @@
 #' Print method for objects of class \code{netmeta}.
 #' 
 #' @param x An object of class \code{netmeta}.
-#' @param fixed A logical indicating whether results for the fixed
-#'   effects / common effects model should be printed.
+#' @param fixed A logical indicating whether results for the common
+#'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
 #' @param prediction A logical indicating whether prediction intervals
@@ -324,7 +324,7 @@ print.netmeta <- function(x,
     ##    
     if (fixed) {
       if (all.treatments | reference.group != "") {
-        text.fixed <- "Fixed effects model"
+        text.fixed <- "Common effects model"
         ##
         if (x$method == "MH")
           text.fixed <-

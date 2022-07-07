@@ -8,7 +8,7 @@
 #' @param x An object of class \code{\link{netmeta}}.
 #' @param nsim Number of simulations.
 #' @param fixed A logical indicating to compute ranking probabilities
-#'   and SUCRAs for the fixed effects (common effects) model.
+#'   and SUCRAs for the common effects model.
 #' @param random A logical indicating to compute ranking probabilities
 #'   and SUCRAs for the random effects model.
 #' @param small.values A character string specifying whether small
@@ -39,16 +39,16 @@
 #' and \code{plot} function. The object is a list containing the
 #' following components:
 #' \item{ranking.matrix.fixed}{Numeric matrix giving the probability
-#'   of each treatment being at each possible rank for the fixed
+#'   of each treatment being at each possible rank for the common
 #'   effects model.}
-#' \item{ranking.fixed}{SUCRA values for the fixed effects model.}
+#' \item{ranking.fixed}{SUCRA values for the common effects model.}
 #' \item{ranking.matrix.random}{Numeric matrix giving the probability
 #'   of each treatment being at each possible rank for the random
 #'   effects model.}
 #' \item{ranking.random}{SUCRA values for the random effects model.}
 #' \item{cumrank.matrix.fixed}{Numeric matrix giving the cumulative
 #'   ranking probability of each treatment for the
-#'   fixed effects model.}
+#'   common effects model.}
 #' \item{cumrank.matrix.random}{Numeric matrix giving the cumulative
 #'   ranking probability of each treatment for the random effects
 #'   model.}
@@ -260,7 +260,7 @@ print.rankogram <- function(x,
       rank.fixed <- x$ranking.matrix.fixed
     rownames(rank.fixed) <- treats(rank.fixed, nchar.trts)
     ##
-    cat("Fixed effects model: \n\n")
+    cat("Common effects model: \n\n")
     prmatrix(formatN(rank.fixed, digits), quote = FALSE, right = TRUE, ...)
     if (random)
       cat("\n")

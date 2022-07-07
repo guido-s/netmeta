@@ -6,8 +6,8 @@
 #' 
 #' @param x An object of class \code{netposet} (mandatory).
 #' @param pooled A character string indicating whether Hasse diagram
-#'   show be drawn for fixed effect (\code{"fixed"}) or random effects
-#'   model (\code{"random"}). Can be abbreviated.
+#'   show be drawn for common (\code{"fixed"}) or random effects model
+#'   (\code{"random"}). Can be abbreviated.
 #' @param newpage A logical value indicating whether a new figure
 #'   should be printed in an existing graphics window. Otherwise, the
 #'   Hasse diagram is added to the existing figure.

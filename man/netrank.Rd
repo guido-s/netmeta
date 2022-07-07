@@ -40,10 +40,10 @@ calculated.}
 \item{nsim}{Number of simulations to calculate SUCRAs.}
 
 \item{fixed}{A logical indicating whether to print P-scores or
-SUCRAs for the fixed effects (common effects) model.}
+SUCRAs for the common effects model.}
 
-\item{random}{A logical indicating whether to print P-scores
-or SUCRAs for the random effects model.}
+\item{random}{A logical indicating whether to print P-scores or
+SUCRAs for the random effects model.}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
@@ -61,9 +61,9 @@ by decreasing P-score.}
 An object of class \code{netrank} with corresponding \code{print}
 function. The object is a list containing the following components:
 \item{ranking.fixed}{A named numeric vector with P-scores or SUCRAs
-  for the fixed effects model.}
+  for the common effects model.}
 \item{Pmatrix.fixed}{Numeric matrix based on pairwise one-sided
-  p-values for the fixed effects model.}
+  p-values for the common effects model.}
 \item{ranking.random}{A named numeric vector with P-scores or
   SUCRAs for the random effects model.}
 \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided

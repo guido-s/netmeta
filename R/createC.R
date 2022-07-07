@@ -9,7 +9,7 @@ createC <- function(x,
     ##
     ## Set of all treatments
     ##
-    if (class(x) == "netconnection")
+    if (inherits(x, "netconnection"))
       trts <- rownames(x$D.matrix)
     else
       trts <- x$trts

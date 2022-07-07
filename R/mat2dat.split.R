@@ -12,7 +12,8 @@ mat2dat.split <- function(x, pooled = "fixed", dat.trts) {
                TE = NA, seTE = NA, lower = NA, upper = NA,
                statistic = NA, p = NA)
   ##
-  direct$I2 <- direct$tau <- direct$tau2 <- direct$Q <- NA
+  direct$I2 <- direct$tau <- direct$tau2 <- direct$Q <-
+    direct$n <- NA
   ##
   predict <- data.frame(comparison = dat.trts$comparison,
                         lower = NA, upper = NA)
@@ -40,6 +41,8 @@ mat2dat.split <- function(x, pooled = "fixed", dat.trts) {
     direct$statistic[i] <- x[[name.d]]$statistic[t1.i, t2.i]
     direct$p[i] <- x[[name.d]]$p[t1.i, t2.i]
     ##
+    if (!is.null(x$x$n.matrix))
+      direct$n[i] <- x$x$n.matrix[t1.i, t2.i]
     direct$Q[i] <- x$x$Q.direct[t1.i, t2.i]
     direct$tau2[i] <- x$x$tau2.direct[t1.i, t2.i]
     direct$tau[i] <- x$x$tau.direct[t1.i, t2.i]

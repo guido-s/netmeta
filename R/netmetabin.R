@@ -47,8 +47,8 @@
 #'   individual studies.
 #' @param level.ma The level used to calculate confidence intervals
 #'   for network estimates.
-#' @param fixed A logical indicating whether a fixed effects / common
-#'   effects network meta-analysis should be conducted.
+#' @param fixed A logical indicating whether a common effects network
+#'   meta-analysis should be conducted.
 #' @param random A logical indicating whether a random effects network
 #'   meta-analysis should be conducted.
 #' @param prediction A logical indicating whether a prediction
@@ -144,13 +144,13 @@
 #' \code{\link{pairwise}} automatically calculates all pairwise
 #' comparisons for multi-arm studies.
 #' 
-#' For \code{method = "Inverse"}, both fixed effects and random
-#' effects models are calculated regardless of values choosen for
-#' arguments \code{fixed} and \code{random}. Accordingly, the network
-#' estimates for the random effects model can be extracted from
-#' component \code{TE.random} of an object of class \code{"netmeta"}
-#' even if argument \code{random = FALSE}.  However, all functions in
-#' R package \bold{netmeta} will adequately consider the values for
+#' For \code{method = "Inverse"}, both common and random effects
+#' models are calculated regardless of values choosen for arguments
+#' \code{fixed} and \code{random}. Accordingly, the network estimates
+#' for the random effects model can be extracted from component
+#' \code{TE.random} of an object of class \code{"netmeta"} even if
+#' argument \code{random = FALSE}.  However, all functions in R
+#' package \bold{netmeta} will adequately consider the values for
 #' \code{fixed} and \code{random}. E.g. function
 #' \code{\link{print.summary.netmeta}} will not print results for the
 #' random effects model if \code{random = FALSE}.
@@ -159,7 +159,7 @@
 #' based on the common between-study variance \eqn{\tau^2} from the
 #' network meta-analysis.
 #'
-#' For \code{method = "MH"} and \code{method = "NCH"}, only a fixed
+#' For \code{method = "MH"} and \code{method = "NCH"}, only a common
 #' effects model is available.
 #' 
 #' By default, treatment names are not abbreviated in
@@ -209,14 +209,14 @@
 #'   design corresponds to the set of treatments compared within a
 #'   study.}
 #' \item{TE.fixed, seTE.fixed}{\emph{n}x\emph{n} matrix with estimated
-#'   overall treatment effects and standard errors for fixed effects
+#'   overall treatment effects and standard errors for common effects
 #'   model.}
 #' \item{lower.fixed, upper.fixed}{\emph{n}x\emph{n} matrices with
-#'   lower and upper confidence interval limits for fixed effects
+#'   lower and upper confidence interval limits for common effects
 #'   model.}
 #' \item{statistic.fixed, pval.fixed}{\emph{n}x\emph{n} matrices with
 #'   z-value and p-value for test of overall treatment effect under
-#'   fixed effects model.}
+#'   common effects model.}
 #' \item{TE.random, seTE.random}{\emph{n}x\emph{n} matrix with
 #'   estimated overall treatment effects and standard errors for
 #'   random effects model (only available if \code{method =
@@ -230,13 +230,13 @@
 #'   "Inverse"}).}
 #' \item{TE.direct.fixed, seTE.direct.fixed}{\emph{n}x\emph{n} matrix
 #'   with estimated treatment effects and standard errors from direct
-#'   evidence under fixed effects model.}
+#'   evidence under common effects model.}
 #' \item{lower.direct.fixed, upper.direct.fixed}{\emph{n}x\emph{n}
 #'   matrices with lower and upper confidence interval limits from
-#'   direct evidence under fixed effects model.}
+#'   direct evidence under common effects model.}
 #' \item{statistic.direct.fixed, pval.direct.fixed}{\emph{n}x\emph{n}
 #'   matrices with z-value and p-value for test of overall treatment
-#'   effect from direct evidence under fixed effects model.}
+#'   effect from direct evidence under common effects model.}
 #' \item{TE.direct.random, seTE.direct.random}{\emph{n}x\emph{n}
 #'   matrix with estimated treatment effects and standard errors from
 #'   direct evidence under random effects model (only available if
@@ -1743,7 +1743,7 @@ netmetabin <- function(event1, n1, event2, n2,
         H[i + n.treat - 1, j] <- -(h1[i, 1] == j + 1) + (h1[i, 2] == j + 1)
   }
   ##
-  ## Fixed effects matrix
+  ## Common effects matrix
   ##
   d.hat <- H %*% TE.basic
   ##
@@ -2047,7 +2047,7 @@ netmetabin <- function(event1, n1, event2, n2,
   P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
   P.fixed[P.fixed > 1] <- NA
   ##
-  ## Fixed effects model
+  ## Common effects model
   ##
   ci.if <- ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
               sqrt(res$seTE.fixed^2 / (1 - P.fixed)),

@@ -87,7 +87,7 @@ catchvar <- function(varname, x, mf) {
                     enclos = sys.frame(sys.parent())),
         silent = TRUE)
   ##
-  if (class(error) == "try-error") {
+  if (inherits(error, "try-error")) {
     res <- eval(mf[[match(varname, names(mf))]],
                 x$data, enclos = NULL)
   }
@@ -103,9 +103,9 @@ augment <- function(x, len, fun) {
 }
 stoponly <- function(arg, val, func)
   stop("Argument ", arg, " =\"", val, "\"",
-               " only defined for meta-analysis conducted with ",
-               func, ".",
-               call. = FALSE)
+       " only defined for meta-analysis conducted with ",
+       func, ".",
+       call. = FALSE)
 deprecated <- function(newvar, newmiss, args, old, warn = TRUE) {
   ##
   new <- deparse(substitute(newvar))

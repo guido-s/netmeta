@@ -8,8 +8,8 @@
 #' 
 #' @param x An object of class \code{netmeta}.
 #' @param pooled A character string indicating whether results for the
-#'   fixed effect (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#'   common (\code{"fixed"}) or random effects model (\code{"random"})
+#'   should be plotted. Can be abbreviated.
 #' @param reference.group Reference treatment(s).
 #' @param baseline.reference A logical indicating whether results
 #'   should be expressed as comparisons of other treatments versus the
@@ -41,8 +41,7 @@
 #'   P-scores, SUCRAs and direct evidence proportions, see
 #'   \code{\link{print.default}} and \code{\link{netrank}}.
 #' @param smlab A label printed at top of figure. By default, text
-#'   indicating either fixed effect or random effects model is
-#'   printed.
+#'   indicating either common or random effects model is printed.
 #' @param sortvar An optional vector used to sort treatments (must be
 #'   of same length as the total number of treatments).
 #' @param backtransf A logical indicating whether results should be
@@ -55,8 +54,9 @@
 #' @param drop.reference.group A logical indicating whether the
 #'   reference group should be printed in the forest plot.
 #' @param col.by The colour to print information on subgroups.
-#' @param print.subgroup.name A logical indicating whether the name of the
-#'   grouping variable should be printed in front of the group labels.
+#' @param print.subgroup.name A logical indicating whether the name of
+#'   the grouping variable should be printed in front of the group
+#'   labels.
 #' @param \dots Additional arguments for \code{\link{forest.meta}}
 #'   function.
 #' 
@@ -86,11 +86,12 @@
 #' \tabular{ll}{
 #' \bold{Name} \tab \bold{Definition} \cr
 #' \code{"studlab"} \tab Treatments \cr
-#' \code{"TE"} \tab Network estimates (either from fixed or random
+#' \code{"TE"} \tab Network estimates (either from common or random
 #'   effects model) \cr
 #' \code{"seTE"} \tab Corresponding standard errors \cr
 #' \code{"Pscore"} \tab P-scores (see \code{\link{netrank}}) \cr
 #' \code{"SUCRA"} \tab SUCRAs (see \code{\link{netrank}}) \cr
+#' \code{"n.trts"} \tab Number of participants per treatment arm \cr
 #' \code{"k"} \tab Number of studies in pairwise comparisons \cr
 #' \code{"prop.direct"} \tab Direct evidence proportions (see
 #'   \code{\link{netmeasures}}) \cr
@@ -293,8 +294,8 @@ forest.netmeta <- function(x,
   
   ##
   ##
-  ## (2) Extract results for fixed effect and random effects model
-  ##     and calculate P-scores and SUCRAs if calcSUCRA == TRUE
+  ## (2) Extract results for common and random effects model and
+  ##     calculate P-scores and SUCRAs if calcSUCRA == TRUE
   ##
   ##
   one.rg <- length(reference.group) == 1
@@ -335,7 +336,7 @@ forest.netmeta <- function(x,
                        method = "SUCRA", nsim = nsim)$ranking.fixed
     }
     ##
-    text.pooled <- "Fixed Effect Model"
+    text.pooled <- "Common Effects Model"
     ##
     if (x$method == "MH")
       text.pooled <- "Mantel-Haenszel Method"
@@ -387,6 +388,10 @@ forest.netmeta <- function(x,
   rightcols <- setCol(rightcols, "SUCRA")
   rightlabs <- setLab(rightlabs, rightcols, "SUCRA", "SUCRA")
   ##
+  rightcols <- setCol(rightcols, "n.trts")
+  rightlabs <- setLab(rightlabs, rightcols, "n.trts",
+                      "Number of\nParticipants")
+  ##
   rightcols <- setCol(rightcols, "k")
   rightlabs <- setLab(rightlabs, rightcols, "k", "Direct\nComparisons")
   ##
@@ -399,6 +404,9 @@ forest.netmeta <- function(x,
   ##
   leftcols <- setCol(leftcols, "SUCRA")
   leftlabs <- setLab(leftlabs, leftcols, "SUCRA", "SUCRA")
+  ##
+  leftcols <- setCol(leftcols, "n.trts")
+  leftlabs <- setLab(leftlabs, leftcols, "n.trts", "Number of\nParticipants")
   ##
   leftcols <- setCol(leftcols, "k")
   leftlabs <- setLab(leftlabs, leftcols, "k", "Direct\nComparisons")
@@ -452,6 +460,9 @@ forest.netmeta <- function(x,
                             else prop.direct[rownames(TE) == rg.i, ],
                           stringsAsFactors = FALSE)
     ##
+    if (!is.null(x$n.trts))
+      dat.i$n.trts <- x$n.trts
+    ##
     if (!missing(add.data)) {
       if (!is.data.frame(add.data))
         stop("Argument 'add.data' must be a data frame.",
@@ -490,6 +501,10 @@ forest.netmeta <- function(x,
       sortvar <- dat.i$k
     else if (any(matchVar(sortvar.c, "-k")))
       sortvar <- -dat.i$k
+    else if (any(matchVar(sortvar.c, "n.trts")))
+      sortvar <- dat.i$n.trts
+    else if (any(matchVar(sortvar.c, "-n.trts")))
+      sortvar <- -dat.i$n.trts
     else if (any(matchVar(sortvar.c, "prop.direct")))
       sortvar <- dat.i$prop.direct
     else if (any(matchVar(sortvar.c, "-prop.direct")))

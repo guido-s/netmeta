@@ -193,7 +193,7 @@
 #'   text strheight strwidth title
 #'
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
-#'   prcomp reshape rnorm sd
+#'   prcomp relevel reshape rnorm sd
 #'
 #' @importFrom utils installed.packages packageDescription
 #'   packageVersion

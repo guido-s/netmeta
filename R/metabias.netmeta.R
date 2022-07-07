@@ -7,9 +7,9 @@
 #' @param order A mandatory character or numerical vector specifying
 #'   the order of treatments or list of comparators (see Details).
 #' @param pooled A character string indicating whether results for the
-#'   fixed effect (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be used in test of funnel plot
-#'   asymmetry. Can be abbreviated.
+#'   common (\code{"fixed"}) or random effects model (\code{"random"})
+#'   should be used in test of funnel plot asymmetry. Can be
+#'   abbreviated.
 #' @param method.bias A character vector indicating which test(s) for
 #'   funnel plot asymmatrx to use. Admissible values are
 #'   \code{"Begg"}, \code{"Egger"}, and \code{"Thompson"}, can be

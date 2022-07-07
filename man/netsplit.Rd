@@ -85,8 +85,8 @@ labels.}
 direct evidence proportion from 0 or 1 to classify a comparison
 as providing only indirect or direct evidence, respectively.}
 
-\item{fixed}{A logical indicating whether results for the fixed
-effects / common effects network meta-analysis should be printed.}
+\item{fixed}{A logical indicating whether results for the common
+effects network meta-analysis should be printed.}
 
 \item{random}{A logical indicating whether results for the random
 effects network meta-analysis should be printed.}
@@ -165,20 +165,20 @@ following components:
 \item{fixed, random}{As defined above.}
 \item{comparison}{A vector with treatment comparisons.}
 \item{prop.fixed, prop.random}{A vector with direct evidence
-  proportions (fixed / random effects model).}
-\item{fixed, random}{Results of network meta-analysis (fixed /
+  proportions (common / random effects model).}
+\item{fixed, random}{Results of network meta-analysis (common /
   random effects model), i.e., data frame with columns comparison,
   TE, seTE, lower, upper, z, and p.}
 \item{direct.fixed, direct.random}{Network meta-analysis results
-  based on direct evidence (fixed / random effects model), i.e.,
+  based on direct evidence (common / random effects model), i.e.,
   data frame with columns comparison, TE, seTE, lower, upper, z,
   and p.}
 \item{indirect.fixed, indirect.random}{Network meta-analysis
-  results based on indirect evidence (fixed / random effects
+  results based on indirect evidence (common / random effects
   model), i.e., data frame with columns comparison, TE, seTE,
   lower, upper, z, and p.}
 \item{compare.fixed, compare.random}{Comparison of direct and
-  indirect evidence in network meta-analysis (fixed / random
+  indirect evidence in network meta-analysis (common / random
   effects model), i.e., data frame with columns comparison, TE,
   seTE, lower, upper, z, and p.}
 \item{sm}{A character string indicating underlying summary measure}
@@ -257,12 +257,12 @@ print(netsplit(net1), digits = 2, sortvar = k)
 # Sort by decreasing number of studies in direct comparisons
 print(netsplit(net1), digits = 2, sortvar = -k)
 
-# Sort by increasing evidence proportion under fixed effects model
+# Sort by increasing evidence proportion under common effects model
 print(netsplit(net1), digits = 2, sortvar = prop.fixed)
-# Sort by decreasing evidence proportion under fixed effects model
+# Sort by decreasing evidence proportion under common effects model
 print(netsplit(net1), digits = 2, sortvar = -prop.fixed)
 
-# Sort by decreasing evidence proportion under fixed effects model
+# Sort by decreasing evidence proportion under common effects model
 # and number of studies
 print(netsplit(net1), digits = 2, sortvar = cbind(-prop.fixed, -k))
 

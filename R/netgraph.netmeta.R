@@ -44,6 +44,8 @@
 #' @param dim A character string indicating whether a 2- or
 #'   3-dimensional plot should be produced, either \code{"2d"} or
 #'   \code{"3d"}.
+#' @param rotate A single numeric with value between -180 and 180
+#'   specifying the angle to rotate nodes in a circular network.
 #' @param highlight A character vector identifying comparisons that
 #'   should be marked in the network graph, e.g. \code{highlight =
 #'   "treat1:treat2"}.
@@ -158,11 +160,11 @@
 #'   (\code{thickness = "equal"})
 #' \item Proportional to number of studies comparing two treatments
 #'   (\code{thickness = "number.of.studies"})
-#' \item Proportional to inverse standard error of fixed effects model
+#' \item Proportional to inverse standard error of common effects model
 #'   comparing two treatments (\code{thickness = "se.fixed"})
 #' \item Proportional to inverse standard error of random effects
 #'   model comparing two treatments (\code{thickness = "se.random"})
-#' \item Weight from fixed effects model comparing two treatments
+#' \item Weight from common effects model comparing two treatments
 #'   (\code{thickness = "w.fixed"})
 #' \item Weight from random effects model comparing two treatments
 #'   (\code{thickness = "w.random"})
@@ -357,6 +359,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              col = "slateblue", plastic, thickness,
                              lwd = 5, lwd.min = lwd / 2.5, lwd.max = lwd * 4,
                              dim = "2d",
+                             rotate = 0,
                              ##
                              highlight = NULL, col.highlight = "red2",
                              scale.highlight = 1,
@@ -444,6 +447,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
     is_2d <- TRUE
     is_3d <- FALSE
   }
+  ##
+  chknumeric(rotate, min = -180, max = 180)
   ##
   missing.start.layout <- missing(start.layout)
   start.layout <-
@@ -569,6 +574,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
             "equal to \"optimal\".")
     allfigures <- FALSE
   }
+  ##
+  if (iterate | is_3d)
+    rotate <- 0
   
   
   addargs <- names(list(...))
@@ -756,6 +764,14 @@ netgraph.netmeta <- function(x, seq = x$seq,
     ##
     xpos <- stressdata$x
     ypos <- stressdata$y
+    ##
+    if (rotate != 0) {
+      val <- pi * rotate / 180
+      xpos.old <- xpos
+      xpos <-  xpos * cos(val) + ypos * sin(val)
+      ypos <- -xpos.old * sin(val) + ypos * cos(val)
+    }
+    ##
     if (is_3d)
       zpos <- stressdata$z
   }

@@ -15,9 +15,9 @@
 #'   calculated.
 #' @param nsim Number of simulations to calculate SUCRAs.
 #' @param fixed A logical indicating whether to print P-scores or
-#'   SUCRAs for the fixed effects (common effects) model.
-#' @param random A logical indicating whether to print P-scores
-#'   or SUCRAs for the random effects model.
+#'   SUCRAs for the common effects model.
+#' @param random A logical indicating whether to print P-scores or
+#'   SUCRAs for the random effects model.
 #' @param sort A logical indicating whether printout should be sorted
 #'   by decreasing P-score.
 #' @param digits Minimal number of significant digits, see
@@ -63,9 +63,9 @@
 #' An object of class \code{netrank} with corresponding \code{print}
 #' function. The object is a list containing the following components:
 #' \item{ranking.fixed}{A named numeric vector with P-scores or SUCRAs
-#'   for the fixed effects model.}
+#'   for the common effects model.}
 #' \item{Pmatrix.fixed}{Numeric matrix based on pairwise one-sided
-#'   p-values for the fixed effects model.}
+#'   p-values for the common effects model.}
 #' \item{ranking.random}{A named numeric vector with P-scores or
 #'   SUCRAs for the random effects model.}
 #' \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided
@@ -340,7 +340,7 @@ print.netrank <- function(x,
   ##
   if (!both & is.character(sort)) {
     if (fixed & sort == "random") {
-      warning("Argument 'sort=\"random\"' ignored for fixed effects model.",
+      warning("Argument 'sort=\"random\"' ignored for common effects model.",
               call. = FALSE)
       sort <- TRUE
     }
@@ -372,7 +372,7 @@ print.netrank <- function(x,
                              random = round(x$ranking.random[x$x$seq], digits))
     }
     ##
-    colnames(res.both)  <- paste(x$method, c("(fixed)", "(random)"))
+    colnames(res.both)  <- paste(x$method, c("(common)", "(random)"))
   }
   else {
     if (sort) {

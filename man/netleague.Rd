@@ -43,8 +43,7 @@ netleague(
 \item{y}{An object of class \code{netmeta} (optional).}
 
 \item{fixed}{A logical indicating whether a league table should be
-printed for the fixed effects / common effects network
-meta-analysis.}
+printed for the common effects network meta-analysis.}
 
 \item{random}{A logical indicating whether a league table should be
 printed for the random effects network meta-analysis.}
@@ -166,13 +165,13 @@ net0 <- netmeta(p0)
 
 oldopts <- options(width = 100)
 
-# League table for fixed and random effects model with
+# League table for common and random effects model with
 # - network estimates in lower triangle
 # - direct estimates in upper triangle
 #
 netleague(net0, digits = 2, bracket = "(", separator = " - ")
 
-# League table for fixed effects model
+# League table for common effects model
 #
 netleague(net0, random = FALSE, digits = 2)
 

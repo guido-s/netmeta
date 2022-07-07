@@ -4,10 +4,10 @@
 #' Print method for objects of class \code{netimpact}.
 #' 
 #' @param x An object of class \code{netimpact}.
-#' @param fixed A logical indicating whether results for the
-#'   fixed effects / common effects model should be printed.
-#' @param random A logical indicating whether results for the
-#'   random effects model should be printed.
+#' @param fixed A logical indicating whether results for the common
+#'   effects model should be printed.
+#' @param random A logical indicating whether results for the random
+#'   effects model should be printed.
 #' @param digits Minimal number of significant digits.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
@@ -109,7 +109,7 @@ print.netimpact <- function(x,
   ##
   ##
   if (fixed) {
-    cat("Fixed effects model: \n\n")
+    cat("Common effects model: \n\n")
     impact.fixed <- formatN(x$impact.fixed, digits = digits)
     colnames(impact.fixed) <- paste(treat1, treat2, sep = sep.trts)
     ##

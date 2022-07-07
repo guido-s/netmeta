@@ -45,8 +45,8 @@ netpairwise(
 comparisons should be printed as separate meta-analyses or as
 subgroups which is more concise.}
 
-\item{fixed}{A logical indicating whether a fixed effects / common
-effects network meta-analysis should be conducted.}
+\item{fixed}{A logical indicating whether a common effects network
+meta-analysis should be conducted.}
 
 \item{random}{A logical indicating whether a random effects network
 meta-analysis should be conducted.}

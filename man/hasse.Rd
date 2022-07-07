@@ -10,8 +10,8 @@ hasse(x, pooled = ifelse(x$random, "random", "fixed"), newpage = TRUE)
 \item{x}{An object of class \code{netposet} (mandatory).}
 
 \item{pooled}{A character string indicating whether Hasse diagram
-show be drawn for fixed effect (\code{"fixed"}) or random effects
-model (\code{"random"}). Can be abbreviated.}
+show be drawn for common (\code{"fixed"}) or random effects model
+(\code{"random"}). Can be abbreviated.}
 
 \item{newpage}{A logical value indicating whether a new figure
 should be printed in an existing graphics window. Otherwise, the

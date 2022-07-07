@@ -8,8 +8,8 @@
 #' @param order A mandatory character or numerical vector specifying
 #'   the order of treatments or list of comparators (see Details).
 #' @param pooled A character string indicating whether results for the
-#'   fixed effect (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#'   common (\code{"fixed"}) or random effects model (\code{"random"})
+#'   should be plotted. Can be abbreviated.
 #' @param xlab A label for the x-axis.
 #' @param level The confidence level utilised in the plot. For the
 #'   funnel plot, confidence limits are not drawn if \code{yaxis =

@@ -9,7 +9,7 @@
 #'   plot or biplot should be produced, either \code{"scatter"} or
 #'   \code{"biplot"}. Can be abbreviated.
 #' @param pooled A character string indicating whether scatter plot
-#'   should be drawn for fixed (\code{"fixed"}) or random effects
+#'   should be drawn for common (\code{"fixed"}) or random effects
 #'   model (\code{"random"}). Can be abbreviated.
 #' @param dim A character string indicating whether a 2- or
 #'   3-dimensional plot should be produced, either \code{"2d"} or

@@ -9,8 +9,8 @@
 #' 
 #' @param x An object of class \code{netsplit}.
 #' @param pooled A character string indicating whether results for the
-#'   fixed effect (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#'   common (\code{"fixed"}) or random effects model (\code{"random"})
+#'   should be plotted. Can be abbreviated.
 #' @param show A character string indicating which comparisons should
 #'   be printed (see Details).
 #' @param overall A logical indicating whether network meta-analysis
@@ -76,8 +76,7 @@
 #'   than log odds ratios, for example.
 #' @param lab.NA A character string to label missing values.
 #' @param smlab A label printed at top of figure. By default, text
-#'   indicating either fixed effect or random effects model is
-#'   printed.
+#'   indicating either common or random effects model is printed.
 #' @param \dots Additional arguments for \code{\link{forest.meta}}
 #'   function.
 #' 
@@ -300,7 +299,7 @@ forest.netsplit <- function(x,
   if (pooled == "fixed") {
     if (!(missing(prediction)) & prediction)
       warning("Prediction intervals not shown for estimates ",
-              "from fixed effect model.")
+              "from common effects model.")
     prediction <- FALSE
   }
   ##
@@ -323,6 +322,7 @@ forest.netsplit <- function(x,
     leftlabs <- rep(NA, length(leftcols))
     leftlabs[leftcols == "studlab"] <- "Comparison"
     leftlabs[leftcols == "k"] <- "Number of\nStudies"
+    leftlabs[leftcols == "n"] <- "Number of\nParticipants"
     leftlabs[leftcols == "prop"] <- "Direct\nEvidence"
     leftlabs[leftcols == "I2"] <- "I2"
     leftlabs[leftcols == "tau2"] <- "tau2"
@@ -408,7 +408,7 @@ forest.netsplit <- function(x,
   
   ##
   ##
-  ## (2) Extract results for fixed effect and random effects model
+  ## (2) Extract results for common and random effects model
   ##
   ##
   if (pooled == "fixed") {
@@ -427,7 +427,7 @@ forest.netsplit <- function(x,
     dat.overall$prop <- NA
     ##
     if (missing.smlab)
-      smlab <- "Fixed effect model"
+      smlab <- "Common effects model"
   }
   else {
     dat.direct <- x$direct.random
@@ -482,6 +482,8 @@ forest.netsplit <- function(x,
   ##
   dat.direct$k <- x$k
   dat.indirect$k <- dat.overall$k <- dat.predict$k <- NA
+  ##
+  dat.indirect$n <- dat.overall$n <- dat.predict$n <- NA
   ##
   dat.direct$evidence   <- text.direct
   dat.indirect$evidence <- text.indirect

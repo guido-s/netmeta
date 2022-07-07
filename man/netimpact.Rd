@@ -31,7 +31,7 @@ An object of class \code{"netimpact"} with corresponding
 \code{netgraph} and \code{print} function. The object is a list
 containing the following components:
 \item{impact.fixed}{A matrix with contributions of individual
-  studies (columns) to comparisons (rows) under the fixed effects
+  studies (columns) to comparisons (rows) under the common effects
   model.}
 \item{impact.random}{A matrix with contributions of individual
   studies (columns) to comparisons (rows) under the random effects

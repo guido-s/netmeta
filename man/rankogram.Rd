@@ -35,7 +35,7 @@ rankogram(
 \item{nsim}{Number of simulations.}
 
 \item{fixed}{A logical indicating to compute ranking probabilities
-and SUCRAs for the fixed effects (common effects) model.}
+and SUCRAs for the common effects model.}
 
 \item{random}{A logical indicating to compute ranking probabilities
 and SUCRAs for the random effects model.}
@@ -66,16 +66,16 @@ An object of class \code{rankogram} with corresponding \code{print}
 and \code{plot} function. The object is a list containing the
 following components:
 \item{ranking.matrix.fixed}{Numeric matrix giving the probability
-  of each treatment being at each possible rank for the fixed
+  of each treatment being at each possible rank for the common
   effects model.}
-\item{ranking.fixed}{SUCRA values for the fixed effects model.}
+\item{ranking.fixed}{SUCRA values for the common effects model.}
 \item{ranking.matrix.random}{Numeric matrix giving the probability
   of each treatment being at each possible rank for the random
   effects model.}
 \item{ranking.random}{SUCRA values for the random effects model.}
 \item{cumrank.matrix.fixed}{Numeric matrix giving the cumulative
   ranking probability of each treatment for the
-  fixed effects model.}
+  common effects model.}
 \item{cumrank.matrix.random}{Numeric matrix giving the cumulative
   ranking probability of each treatment for the random effects
   model.}

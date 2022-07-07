@@ -1,4 +1,4 @@
-## netmeta, version 2.1-1 (2022-mm-dd)
+## netmeta, version 2.2-0 (2022-mm-dd)
 
 ### Major changes
 
@@ -8,7 +8,12 @@
 * Excel file with league tables can be created directly with
   netleague()
   
+* Nodes in circular network graphs can be rotated
+  
 * R package **writexl** added to suggested packages
+  
+* Use term "common effects model" instead of "fixed effects model" in
+  printouts and figures
 
 ### Bug fixes
 
@@ -16,13 +21,24 @@
   - report correct number of pairwise comparisons in case of not
     uniquely identifiable components
 
+* netmeta():
+  - return correct design for multi-arm studies in list element
+    'data$.design'
+
 ### User-visible changes
+
+* New function subset.pairwise() to select subset of a pairwise object
 
 * netsplit():
   - new arguments 'writexl', 'path' and 'overwrite' to save Excel
     files
 
-* New function subset.pairwise() to select subset of a pairwise object
+* netgraph():
+  - new argument 'rotate' to rotate nodes in circular network graphs
+
+* netgraph.netconnection():
+  - new argument 'reference.group' to determine coloring of subnetwork
+    containing the reference group
 
 * print.netconnection():
   - show number of pairwise comparisons and interventions for subnetworks

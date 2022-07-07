@@ -60,4 +60,3 @@
 
 netgraph <- function(x, ...)
   UseMethod("netgraph")
-

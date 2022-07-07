@@ -20,6 +20,7 @@
   lwd.min = lwd/2.5,
   lwd.max = lwd * 4,
   dim = "2d",
+  rotate = 0,
   highlight = NULL,
   col.highlight = "red2",
   scale.highlight = 1,
@@ -110,6 +111,9 @@ will be set to this value.}
 \item{dim}{A character string indicating whether a 2- or
 3-dimensional plot should be produced, either \code{"2d"} or
 \code{"3d"}.}
+
+\item{rotate}{A single numeric with value between -180 and 180
+specifying the angle to rotate nodes in a circular network.}
 
 \item{highlight}{A character vector identifying comparisons that
 should be marked in the network graph, e.g. \code{highlight =
@@ -273,11 +277,11 @@ Argument \code{thickness} providing the line width of the nodes
   (\code{thickness = "equal"})
 \item Proportional to number of studies comparing two treatments
   (\code{thickness = "number.of.studies"})
-\item Proportional to inverse standard error of fixed effects model
+\item Proportional to inverse standard error of common effects model
   comparing two treatments (\code{thickness = "se.fixed"})
 \item Proportional to inverse standard error of random effects
   model comparing two treatments (\code{thickness = "se.random"})
-\item Weight from fixed effects model comparing two treatments
+\item Weight from common effects model comparing two treatments
   (\code{thickness = "w.fixed"})
 \item Weight from random effects model comparing two treatments
   (\code{thickness = "w.random"})

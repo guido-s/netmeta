@@ -32,8 +32,8 @@
 \item{x}{An object of class \code{netcomb}.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effect (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"fixed"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{reference.group}{Reference treatment(s).}
 
@@ -61,8 +61,7 @@ value (see \code{\link{forest.meta}} help page for details).}
 effects and confidence intervals, see \code{print.default}.}
 
 \item{smlab}{A label printed at top of figure. By default, text
-indicating either fixed effect or random effects model is
-printed.}
+indicating either common or random effects model is printed.}
 
 \item{sortvar}{An optional vector used to sort the individual
 studies (must be of same length as the total number of

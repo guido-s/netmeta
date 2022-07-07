@@ -4,8 +4,8 @@
 #' Summary method for objects of class \code{netcomb}.
 #' 
 #' @param object An object of class \code{netcomb}.
-#' @param fixed A logical indicating whether results for the fixed
-#'   effects / common effects model should be printed.
+#' @param fixed A logical indicating whether results for the common
+#'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
 #' @param warn.deprecated A logical indicating whether warnings should

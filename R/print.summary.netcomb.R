@@ -4,10 +4,10 @@
 #' Print detailed information  for component network meta-analysis.
 #' 
 #' @param x An object of class \code{summary.netcomb}
-#' @param fixed A logical indicating whether results for the
-#'   fixed effects (common effects) model should be printed.
-#' @param random A logical indicating whether results for the
-#'   random effects model should be printed.
+#' @param fixed A logical indicating whether results for the common
+#'   effects model should be printed.
+#' @param random A logical indicating whether results for the random
+#'   effects model should be printed.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
@@ -168,7 +168,7 @@ print.summary.netcomb <- function(x,
                       big.mark)
   ##
   if (fixed) {
-    cat("Additive model (fixed effects model):\n")
+    cat("Additive model (common effects model):\n")
     prmatrix(dat.f, quote = FALSE, right = TRUE, ...)
     cat("\n")
   }

@@ -49,8 +49,8 @@
 \item{x}{An object of class \code{netsplit}.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effect (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"fixed"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{show}{A character string indicating which comparisons should
 be printed (see Details).}
@@ -148,8 +148,7 @@ than log odds ratios, for example.}
 \item{lab.NA}{A character string to label missing values.}
 
 \item{smlab}{A label printed at top of figure. By default, text
-indicating either fixed effect or random effects model is
-printed.}
+indicating either common or random effects model is printed.}
 
 \item{\dots}{Additional arguments for \code{\link{forest.meta}}
 function.}

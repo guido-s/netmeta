@@ -53,8 +53,8 @@ abbreviated. See Details.}
 \item{order}{A optional character or numerical vector specifying
 the order of treatments in comparisons.}
 
-\item{fixed}{A logical indicating whether table for the fixed
-effects / common effects network meta-analysis should be printed.}
+\item{fixed}{A logical indicating whether table for the common
+effects network meta-analysis should be printed.}
 
 \item{random}{A logical indicating whether table for the random
 effects network meta-analysis should be printed.}

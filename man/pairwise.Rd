@@ -56,16 +56,16 @@ information.}
 
 \item{studlab}{A vector with study labels (optional).}
 
-\item{incr}{A numerical value which is added to each cell frequency
-for studies with a zero cell count.}
+\item{incr}{A numerical value which is added to cell frequencies
+for studies with a zero cell count, see Details.}
 
-\item{allincr}{A logical indicating if \code{incr} is added to each
-cell frequency of all studies if at least one study has a zero
-cell count. If FALSE (default), \code{incr} is added only to each
-cell frequency of studies with a zero cell count.}
+\item{allincr}{A logical indicating if \code{incr} is added to cell
+frequencies of all studies if at least one study has a zero cell
+count. If FALSE (default), \code{incr} is added only to cell
+frequencies of studies with a zero cell count.}
 
-\item{addincr}{A logical indicating if \code{incr} is added to each
-cell frequency of all studies irrespective of zero cell counts.}
+\item{addincr}{A logical indicating if \code{incr} is added to cell
+frequencies of all studies irrespective of zero cell counts.}
 
 \item{allstudies}{A logical indicating if studies with zero or all
 events in two treatment arms are to be included in the
@@ -213,6 +213,21 @@ calculated SMDs and standard errors. These equations guarantee
 consistent SMDs and standard errors for multi-arm studies. Note,
 the summary measure is actually Cohen's d as Hedges' g is not
 consistent in multi-arm studies.
+
+For binary outcomes, 0.5 is added to all cell frequencies (odds
+ratio) or only the number of events (risk ratio) for studies with a
+zero cell count. For odds ratio and risk ratio, treatment estimates
+and standard errors are only calculated for studies with zero or
+all events in both groups if \code{allstudies} is \code{TRUE}. This
+continuity correction is used both to calculate individual study
+results with confidence limits and to conduct meta-analysis based
+on the inverse variance method. For the risk difference, 0.5 is
+only added to all cell frequencies to calculate the standard error.
+
+For incidence rates, 0.5 is added to all cell frequencies for the
+incidence rate ratio as summary measure. For the incidence risk
+difference, 0.5 is only added to all cell frequencies to calculate
+the standard error.
 
 The value of pairwise is a data frame with as many rows as there
 are pairwise comparisons. For each study with \emph{p} treatments,

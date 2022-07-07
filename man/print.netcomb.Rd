@@ -34,11 +34,11 @@
 \item{x}{An object of class \code{netcomb} or
 \code{summary.netcomb}.}
 
-\item{fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be printed.}
+\item{fixed}{A logical indicating whether results for the common
+effects model should be printed.}
 
-\item{random}{A logical indicating whether results for the
-random effects model should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects model should be printed.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If

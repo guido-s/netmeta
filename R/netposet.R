@@ -13,12 +13,12 @@
 #' @param treatments A character vector with treatment names.
 #' @param small.values See details.
 #' @param fixed A logical indicating whether to show results for the
-#'   fixed effects / common effects model.
+#'   common effects model.
 #' @param random A logical indicating whether to show results for the
 #'   random effects model.
 #' @param x An object of class \code{netposet}.
 #' @param pooled A character string indicating whether Hasse diagram
-#'   should be drawn for fixed (\code{"fixed"}) or random effects
+#'   should be drawn for common (\code{"fixed"}) or random effects
 #'   model (\code{"random"}). Can be abbreviated.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
@@ -75,13 +75,13 @@
 #' \code{\link{netrank}}. This argument is ignored for a ranking
 #' matrix and \code{netrank} objects.
 #' 
-#' Arguments \code{fixed} and \code{random} can be used to
-#' define whether results should be printed and plotted for fixed and
-#' / or random effects model. If netmeta and netrank objects are
-#' provided in argument \code{\dots{}}, values for \code{fixed}
-#' and \code{random} within these objects are considered; if
-#' these values are not unique, argument \code{fixed} and / or
-#' \code{random} are set to \code{TRUE}.
+#' Arguments \code{fixed} and \code{random} can be used to define
+#' whether results should be printed and plotted for common and random
+#' effects model. If netmeta and netrank objects are provided in
+#' argument \code{\dots{}}, values for \code{fixed} and \code{random}
+#' within these objects are considered; if these values are not
+#' unique, argument \code{fixed} or \code{random} are set to
+#' \code{TRUE}.
 #' 
 #' In function \code{print.netposet}, argument \code{\dots{}} is
 #' passed on to the printing function.
@@ -91,12 +91,12 @@
 #' \code{plot}, and \code{hasse} functions. The object is a list
 #' containing the following components:
 #' \item{P.fixed}{Ranking matrix with rows corresponding to treatments
-#'   and columns corresponding to outcomes (fixed effects model).}
-#' \item{M0.fixed}{Hasse matrix skipping unnecessary paths (fixed
+#'   and columns corresponding to outcomes (common effects model).}
+#' \item{M0.fixed}{Hasse matrix skipping unnecessary paths (common
 #'   effects model).}
-#' \item{M.fixed}{"Full" Hasse matrix (fixed effects model).}
+#' \item{M.fixed}{"Full" Hasse matrix (common effects model).}
 #' \item{O.fixed}{Matrix with information about partial ordering
-#'   (fixed effects model).}
+#'   (common effects model).}
 #' \item{P.random}{Ranking matrix with rows corresponding to
 #'   treatments and columns corresponding to outcomes (random effects
 #'   model).}
@@ -670,7 +670,7 @@ print.netposet <- function(x,
   
   if (pooled == "fixed") {
     if (!(!x$fixed & !x$random))
-      cat("Fixed effects model\n")
+      cat("Common effects model\n")
     print(x$M0.fixed, ...)
     if (x$random)
       cat("\n")

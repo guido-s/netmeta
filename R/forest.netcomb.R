@@ -12,8 +12,8 @@
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa.
 #' @param pooled A character string indicating whether results for the
-#'   fixed effect (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#'   common (\code{"fixed"}) or random effects model (\code{"random"})
+#'   should be plotted. Can be abbreviated.
 #' @param leftcols A character vector specifying (additional) columns
 #'   to be plotted on the left side of the forest plot or a logical
 #'   value (see \code{\link{forest.meta}} help page for details).
@@ -29,8 +29,7 @@
 #' @param digits Minimal number of significant digits for treatment
 #'   effects and confidence intervals, see \code{print.default}.
 #' @param smlab A label printed at top of figure. By default, text
-#'   indicating either fixed effect or random effects model is
-#'   printed.
+#'   indicating either common or random effects model is printed.
 #' @param sortvar An optional vector used to sort the individual
 #'   studies (must be of same length as the total number of
 #'   treatments).
@@ -174,7 +173,7 @@ forest.netcomb <- function(x,
   
   ##
   ##
-  ## (2) Extract results for fixed effect and random effects model
+  ## (2) Extract results for common and random effects model
   ##     and calculate P-scores
   ##
   ##
@@ -192,7 +191,7 @@ forest.netcomb <- function(x,
     TE   <- x$TE.fixed
     seTE <- x$seTE.fixed
     ##
-    text.fixed <- "(Fixed Effects Model)"
+    text.fixed <- "(Common Effects Model)"
     ##
     if (is.null(smlab))
       if (baseline.reference)

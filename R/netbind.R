@@ -9,8 +9,8 @@
 #'   single list with network meta-analyses.
 #' @param name An optional character vector providing descriptive
 #'   names for network meta-analysis objects.
-#' @param fixed A logical indicating whether results for the fixed
-#'   effects (common effects) model should be reported.
+#' @param fixed A logical indicating whether results for the common
+#'   effects model should be reported.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be reported.
 #' @param col.study The colour for network estimates and confidence
@@ -37,7 +37,7 @@
 #' An object of class \code{"netbind"} with corresponding
 #' \code{forest} function. The object is a list containing the
 #' following components:
-#' \item{fixed}{A data frame with results for the fixed effects
+#' \item{fixed}{A data frame with results for the common effects
 #'   model.}
 #' \item{random}{A data frame with results for the random effects
 #'   model.}

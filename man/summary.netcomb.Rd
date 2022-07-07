@@ -15,8 +15,8 @@
 \arguments{
 \item{object}{An object of class \code{netcomb}.}
 
-\item{fixed}{A logical indicating whether results for the fixed
-effects / common effects model should be printed.}
+\item{fixed}{A logical indicating whether results for the common
+effects model should be printed.}
 
 \item{random}{A logical indicating whether results for the random
 effects model should be printed.}

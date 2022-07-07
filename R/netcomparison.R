@@ -12,8 +12,8 @@
 #'   intervention(s).
 #' @param treat2 A character vector defining the second complex
 #'   intervention(s).
-#' @param fixed A logical indicating whether results for fixed effects
-#'   / common effects model should be conducted.
+#' @param fixed A logical indicating whether results for common
+#'   effects model should be conducted.
 #' @param random A logical indicating whether results for random
 #'   effects model should be conducted.
 #' @param level The level used to calculate confidence intervals for
@@ -88,19 +88,19 @@
 #' A list is returned by the function \code{netcomparison} with the
 #' following elements:
 #' \item{comparison}{Comparison.}
-#' \item{TE.fixed, TE.random}{A vector of comparison effects (fixed
+#' \item{TE.fixed, TE.random}{A vector of comparison effects (common
 #'   and random effects model).}
 #' \item{seTE.fixed, seTE.random}{A vector with corresponding standard
-#'   errors (fixed and random effects model).}
+#'   errors (common and random effects model).}
 #' \item{lower.fixed, lower.random}{A vector with lower confidence
-#'   limits for comparisons (fixed and random effects model).}
+#'   limits for comparisons (common and random effects model).}
 #' \item{upper.fixed, upper.random}{A vector with upper confidence
-#'   limits for comparisons (fixed and random effects model).}
+#'   limits for comparisons (common and random effects model).}
 #' \item{statistic.fixed, statistic.random}{A vector with z-values for
-#'   the overall effect of comparisons (fixed and random effects
+#'   the overall effect of comparisons (common and random effects
 #'   model).}
 #' \item{pval.fixed, pval.random}{A vector with p-values for the
-#'   overall effect of comparisons (fixed and random effects model).}
+#'   overall effect of comparisons (common and random effects model).}
 #' \item{trts}{Treatments included in comparisons.}
 #' \item{comps}{Components included in comparisons.}
 #' \item{treat1, treat2}{A defined above.}
@@ -527,7 +527,7 @@ print.netcomparison <- function(x,
     res.f[res.f[, "treat1"] == res.f[, "treat2"], 4:7] <- "."
     ##
     cat(paste0("Results for comparisons (additive CNMA model, ",
-               "fixed effects model):\n\n"))
+               "common effects model):\n\n"))
     ##
     prmatrix(res.f, quote = FALSE, right = TRUE, na.print = "--")
     ##

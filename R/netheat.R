@@ -100,7 +100,7 @@
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013.5, sm = "MD", reference = "plac")
 #'         
-#' # Generate a net heat plot based on a fixed effects model
+#' # Generate a net heat plot based on a common effects model
 #' #
 #' netheat(net1) 
 #' 

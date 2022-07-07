@@ -11,8 +11,7 @@
 #'   (mandatory).
 #' @param y An object of class \code{netmeta} (optional).
 #' @param fixed A logical indicating whether a league table should be
-#'   printed for the fixed effects / common effects network
-#'   meta-analysis.
+#'   printed for the common effects network meta-analysis.
 #' @param random A logical indicating whether a league table should be
 #'   printed for the random effects network meta-analysis.
 #' @param seq A character or numerical vector specifying the sequence
@@ -129,13 +128,13 @@
 #' 
 #' oldopts <- options(width = 100)
 #' 
-#' # League table for fixed and random effects model with
+#' # League table for common and random effects model with
 #' # - network estimates in lower triangle
 #' # - direct estimates in upper triangle
 #' #
 #' netleague(net0, digits = 2, bracket = "(", separator = " - ")
 #' 
-#' # League table for fixed effects model
+#' # League table for common effects model
 #' #
 #' netleague(net0, random = FALSE, digits = 2)
 #' 
@@ -470,7 +469,7 @@ netleague <- function(x, y,
   
   ##
   ##
-  ## (3) Create league table for fixed effects model
+  ## (3) Create league table for common effects model
   ##
   ##
   TE.fixed.x    <- round(   TE.fixed.x[seq.f, seq.f], digits)
@@ -662,11 +661,11 @@ print.netleague <- function(x,
   
   ##
   ##
-  ## (2) Print league table for fixed effects model
+  ## (2) Print league table for common effects model
   ##
   ##
   if (fixed) {
-    cat("League table (fixed effects model):\n")
+    cat("League table (common effects model):\n")
     ##
     prmatrix(x$fixed, quote = FALSE, right = TRUE,
              rowlab = rep("", nrow(x$fixed)),

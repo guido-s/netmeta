@@ -17,8 +17,8 @@
 #'   abbreviated. See Details.
 #' @param order A optional character or numerical vector specifying
 #'   the order of treatments in comparisons.
-#' @param fixed A logical indicating whether table for the fixed
-#'   effects / common effects network meta-analysis should be printed.
+#' @param fixed A logical indicating whether table for the common
+#'   effects network meta-analysis should be printed.
 #' @param random A logical indicating whether table for the random
 #'   effects network meta-analysis should be printed.
 #' @param upper A logical indicating whether treatment comparisons
@@ -526,7 +526,7 @@ print.nettable <- function(x, fixed = x$x$fixed, random = x$x$random, ...) {
   ##
   ##
   if (fixed) {
-    cat("Network table (fixed effects model):\n")
+    cat("Network table (common effects model):\n")
     ##
     if (isCol(x$fixed, "Outcome")) {
       outcomes <- unique(x$fixed$Outcome)

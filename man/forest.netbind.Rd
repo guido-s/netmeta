@@ -28,7 +28,7 @@
 \item{x}{An object of class \code{netbind}.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed (\code{"fixed"}) or random effects model (\code{"random"})
+common (\code{"fixed"}) or random effects model (\code{"random"})
 should be plotted. Can be abbreviated.}
 
 \item{equal.size}{A logical indicating whether all squares should
@@ -64,7 +64,7 @@ than log odds ratios, for example.}
 \item{lab.NA}{A character string to label missing values.}
 
 \item{smlab}{A label printed at top of figure. By default, text
-indicating either fixed or random effects model is printed.}
+indicating either common or random effects model is printed.}
 
 \item{\dots}{Additional arguments for \code{\link{forest.meta}}
 function.}

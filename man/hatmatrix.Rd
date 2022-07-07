@@ -38,8 +38,7 @@ derive the hat matrix. Either \code{"Ruecker"}, \code{"Krahn"} or
 should be derived (can be abbreviated, see Details).}
 
 \item{fixed}{A logical indicating whether a hat matrix should be
-printed for the fixed effects / common effects network
-meta-analysis.}
+printed for the common effects network meta-analysis.}
 
 \item{random}{A logical indicating whether a hat matrix should be
 printed for the random effects network meta-analysis.}
@@ -62,8 +61,8 @@ be printed for abbreviated study labels.}
 \item{\dots}{Additional arguments (ignored).}
 }
 \value{
-A list with two hat matrices: \code{fixed} (fixed effect model) and
-\code{random} (random effects model).
+A list with two hat matrices: \code{fixed} (common effects model)
+and \code{random} (random effects model).
 }
 \description{
 Auxiliary function to derive hat matrix from network meta-analysis
@@ -81,10 +80,10 @@ vertices) in a network and let \emph{m} be the number of existing
 comparisons (edges) between the treatments. If there are only
 two-arm studies, \emph{m} is equal to the number of studies,
 \emph{k}. Let seTE.adj.fixed and seTE.adj.random be the vectors of
-adjusted standard errors under the fixed effect and random effects
-model (see \code{\link{netmeta}}). Let \strong{W} be the
-\emph{m} x \emph{m} diagonal matrix that contains the inverse
-variance 1 / seTE.adj.fixed\eqn{^2} or 1 / seTE.adj.random\eqn{^2}.
+adjusted standard errors under the common and random effects model
+(see \code{\link{netmeta}}). Let \strong{W} be the \emph{m} x
+\emph{m} diagonal matrix that contains the inverse variance 1 /
+seTE.adj.fixed\eqn{^2} or 1 / seTE.adj.random\eqn{^2}.
 
 The given comparisons define the network structure. Therefrom an
 \emph{m} x \emph{n} design matrix X (edge-vertex incidence matrix) is

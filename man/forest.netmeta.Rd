@@ -37,8 +37,8 @@
 \item{x}{An object of class \code{netmeta}.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effect (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"fixed"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{reference.group}{Reference treatment(s).}
 
@@ -83,8 +83,7 @@ P-scores, SUCRAs and direct evidence proportions, see
 \code{\link{print.default}} and \code{\link{netrank}}.}
 
 \item{smlab}{A label printed at top of figure. By default, text
-indicating either fixed effect or random effects model is
-printed.}
+indicating either common or random effects model is printed.}
 
 \item{sortvar}{An optional vector used to sort treatments (must be
 of same length as the total number of treatments).}
@@ -104,8 +103,9 @@ reference group should be printed in the forest plot.}
 
 \item{col.by}{The colour to print information on subgroups.}
 
-\item{print.subgroup.name}{A logical indicating whether the name of the
-grouping variable should be printed in front of the group labels.}
+\item{print.subgroup.name}{A logical indicating whether the name of
+the grouping variable should be printed in front of the group
+labels.}
 
 \item{\dots}{Additional arguments for \code{\link{forest.meta}}
 function.}
@@ -140,11 +140,12 @@ forest plot, respectively. The following columns are available:
 \tabular{ll}{
 \bold{Name} \tab \bold{Definition} \cr
 \code{"studlab"} \tab Treatments \cr
-\code{"TE"} \tab Network estimates (either from fixed or random
+\code{"TE"} \tab Network estimates (either from common or random
   effects model) \cr
 \code{"seTE"} \tab Corresponding standard errors \cr
 \code{"Pscore"} \tab P-scores (see \code{\link{netrank}}) \cr
 \code{"SUCRA"} \tab SUCRAs (see \code{\link{netrank}}) \cr
+\code{"n.trts"} \tab Number of participants per treatment arm \cr
 \code{"k"} \tab Number of studies in pairwise comparisons \cr
 \code{"prop.direct"} \tab Direct evidence proportions (see
   \code{\link{netmeasures}}) \cr

@@ -10,8 +10,8 @@
 #'   (print function).
 #' @param complex A matrix, vector or single numeric defining the
 #'   complex intervention(s) (see Details).
-#' @param fixed A logical indicating whether results for fixed effects
-#'   / common effects model should be conducted.
+#' @param fixed A logical indicating whether results for common
+#'   effects model should be conducted.
 #' @param random A logical indicating whether results for random
 #'   effects model should be conducted.
 #' @param level The level used to calculate confidence intervals for
@@ -81,20 +81,20 @@
 #' following elements:
 #' \item{complex}{Complex intervention(s).}
 #' \item{Comb.fixed, Comb.random}{A vector of combination effects
-#'   (fixed and random effects model).}
+#'   (common and random effects model).}
 #' \item{seComb.fixed, seComb.random}{A vector with corresponding
-#'   standard errors (fixed and random effects model).}
+#'   standard errors (common and random effects model).}
 #' \item{lower.Comb.fixed, lower.Comb.random}{A vector with lower
-#'   confidence limits for combinations (fixed and random effects
+#'   confidence limits for combinations (common and random effects
 #'   model).}
 #' \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
-#'   confidence limits for combinations (fixed and random effects
+#'   confidence limits for combinations (common and random effects
 #'   model).}
 #' \item{statistic.Comb.fixed, statistic.Comb.random}{A vector with
-#'   z-values for the overall effect of combinations (fixed and random
+#'   z-values for the overall effect of combinations (common and random
 #'   effects model).}
 #' \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
-#'   the overall effect of combinations (fixed and random effects
+#'   the overall effect of combinations (common and random effects
 #'   model).}
 #' \item{fixed, random}{A defined above.}
 #' \item{level, nchar.comps, backtransf, x}{A defined above.}
@@ -454,7 +454,7 @@ print.netcomplex <- function(x,
     ##
     dimnames(res.f)[[2]] <- c(sm.lab, ci.lab, "z", "p-value")
     ##
-    cat("(additive CNMA model, fixed effects model):\n")
+    cat("(additive CNMA model, common effects model):\n")
     prmatrix(res.f, quote = FALSE, right = TRUE, na.print = "--")
     ##
     if (random)
