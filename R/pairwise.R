@@ -961,7 +961,8 @@ pairwise <- function(treat,
                           incr = dat$incr, addincr = TRUE,
                           allstudies = allstudies,
                           method.tau = "DL", method.tau.ci = "",
-                          warn = warn, ...)
+                          warn = warn,
+                          warn.deprecated = FALSE, ...)
             ##
             dat$TE   <- m1$TE
             dat$seTE <- m1$seTE
@@ -1080,7 +1081,8 @@ pairwise <- function(treat,
                            dat$n2, dat$mean2, dat$sd2,
                            method.tau = "DL", method.tau.ci = "",
                            method.smd = "Cohen",
-                           warn = warn, ...)
+                           warn = warn,
+                           warn.deprecated = FALSE, ...)
             ##
             dat$TE   <- m1$TE
             dat$seTE <- m1$seTE
@@ -1187,7 +1189,8 @@ pairwise <- function(treat,
             m1 <- metagen(dat$TE1 - dat$TE2,
                           sqrt(dat$seTE1^2 + dat$seTE2^2),
                           method.tau = "DL", method.tau.ci = "",
-                          warn = warn, ...)
+                          warn = warn,
+                          warn.deprecated = FALSE, ...)
             ##
             dat$TE <- m1$TE
             dat$seTE <- m1$seTE
@@ -1291,7 +1294,8 @@ pairwise <- function(treat,
                           incr = dat$incr, addincr = TRUE,
                           allstudies = allstudies,
                           method.tau = "DL", method.tau.ci = "",
-                          warn = warn, ...)
+                          warn = warn,
+                          warn.deprecated = FALSE, ...)
             ##
             dat$TE <- m1$TE
             dat$seTE <- m1$seTE

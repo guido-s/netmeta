@@ -214,6 +214,7 @@ netpairwise <- function(x,
                    method.tau = method.tau,
                    overall = FALSE, overall.hetstat = FALSE,
                    test.subgroup = FALSE,
+                   warn.deprecated = FALSE,
                    ...)
     ##
     res$k.study <- x$k
@@ -245,6 +246,7 @@ netpairwise <- function(x,
                 prediction = prediction,
                 level.predict = level.predict,
                 method.tau = method.tau,
+                warn.deprecated = FALSE,
                 ...)
       attr(res[[i]], "comparison") <- comp.i
     }

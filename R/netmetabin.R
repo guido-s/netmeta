@@ -657,7 +657,8 @@ netmetabin <- function(event1, n1, event2, n2,
                     incr = incr, allincr = allincr,
                     addincr = addincr, allstudies = allstudies,
                     method.tau = "DL", method.tau.ci = "",
-                    warn = FALSE)
+                    warn = FALSE,
+                    warn.deprecated = FALSE)
   ##
   data$.TE <- m.data$TE
   data$.seTE <- m.data$seTE
@@ -1802,7 +1803,8 @@ netmetabin <- function(event1, n1, event2, n2,
                    incr = incr, allincr = allincr, addincr = addincr,
                    allstudies = allstudies, MH.exact = !cc.pooled,
                    method.tau = "DL", method.tau.ci = "",
-                   Q.Cochrane = FALSE)
+                   Q.Cochrane = FALSE,
+                   warn.deprecated = FALSE)
     ##
     TE.i   <- m.i$TE.fixed
     seTE.i <- m.i$seTE.fixed

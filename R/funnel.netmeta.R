@@ -508,11 +508,11 @@ funnel.netmeta <- function(x,
   }
   ##
   if (linreg)
-    mb.linreg <- metabias(m.adj, method = "Egger")
+    mb.linreg <- suppressWarnings(metabias(m.adj, method = "Egger"))
   if (rank)
-    mb.rank <- metabias(m.adj, method = "Begg")
+    mb.rank <- suppressWarnings(metabias(m.adj, method = "Begg"))
   if (mm)
-    mb.mm <- metabias(m.adj, method = "Thompson")
+    mb.mm <- suppressWarnings(metabias(m.adj, method = "Thompson"))
   ##
   if (linreg | rank | mm)
     legend(pos.tests,
