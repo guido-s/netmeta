@@ -7,7 +7,7 @@
 \method{funnel}{netmeta}(
   x,
   order,
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   xlab = NULL,
   level = x$level,
   pch,
@@ -39,8 +39,8 @@
 the order of treatments or list of comparators (see Details).}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effect (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"common"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{xlab}{A label for the x-axis.}
 
@@ -167,7 +167,7 @@ variance), \code{"invse"} (inverse of the standard error), and
 data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD")
+  data = Senn2013, sm = "MD")
 
 # 'Comparison-adjusted' funnel plot not created as argument 'order'
 # is missing
@@ -181,7 +181,7 @@ funnel(net1, order = "pl")
 # Add result for Egger test of funnel plot asymmetry
 #
 funnel(net1, order = "pl", method.bias = "Egger",
-       digits.pval = 2)
+  digits.pval = 2)
 
 # (Non-sensical) alphabetic order of treatments with placebo as
 # last treatment
@@ -194,15 +194,15 @@ funnel(net1, order = ord)
 # plotting symbols and colours
 #
 funnel(net1, order = ord,
-       pch = rep(c(15:18, 1), 3), col = 1:3,
-       method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
+  pch = rep(c(15:18, 1), 3), col = 1:3,
+  method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 
 # Same results for tests of funnel plot asymmetry using reversed
 # order of treatments
 #
 funnel(net1, order = rev(ord),
-       pch = rep(c(15:18, 1), 3), col = 1:3,
-       method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
+  pch = rep(c(15:18, 1), 3), col = 1:3,
+  method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 
 # Calculate tests for funnel plot asymmetry
 #

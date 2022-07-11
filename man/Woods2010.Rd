@@ -35,7 +35,7 @@ data(Woods2010)
 # function called internally.
 #
 p1 <- pairwise(treatment, event = r, n = N,
-               studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = Woods2010, sm = "OR")
 p1
 
 # Conduct network meta-analysis
@@ -47,7 +47,7 @@ net1
 # Show forest plot
 #
 forest(net1, ref = "Placebo", drop = TRUE,
-       leftlabs = "Contrast to Placebo")
+  leftlabs = "Contrast to Placebo")
 }
 }
 \seealso{

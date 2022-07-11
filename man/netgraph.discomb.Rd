@@ -25,7 +25,7 @@ by the user: \code{thickness}, \code{seq}, \code{iterate}.
 t1 <- c("A + B", "A + C", "A"    , "A"    , "D", "D", "E")
 t2 <- c("C"    , "B"    , "B + C", "A + D", "E", "F", "F")
 #
-mean    <- c(4.1, 2.05, 0, 0, 0.1, 0.1, 0.05)
+mean <- c(4.1, 2.05, 0, 0, 0.1, 0.1, 0.05)
 se.mean <- rep(0.1, 7)
 #
 study <- paste("study", c(1:4, 5, 5, 5))
@@ -34,7 +34,7 @@ dat <- data.frame(mean, se.mean, t1, t2, study,
                   stringsAsFactors = FALSE)
 #
 trts <- c("A", "A + B", "A + C", "A + D",
-          "B", "B + C", "C", "D", "E", "F")
+  "B", "B + C", "C", "D", "E", "F")
 #
 comps <- LETTERS[1:6]
 

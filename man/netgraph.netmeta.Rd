@@ -20,6 +20,7 @@
   lwd.min = lwd/2.5,
   lwd.max = lwd * 4,
   dim = "2d",
+  rotate = 0,
   highlight = NULL,
   col.highlight = "red2",
   scale.highlight = 1,
@@ -110,6 +111,9 @@ will be set to this value.}
 \item{dim}{A character string indicating whether a 2- or
 3-dimensional plot should be produced, either \code{"2d"} or
 \code{"3d"}.}
+
+\item{rotate}{A single numeric with value between -180 and 180
+specifying the angle to rotate nodes in a circular network.}
 
 \item{highlight}{A character vector identifying comparisons that
 should be marked in the network graph, e.g. \code{highlight =
@@ -273,19 +277,19 @@ Argument \code{thickness} providing the line width of the nodes
   (\code{thickness = "equal"})
 \item Proportional to number of studies comparing two treatments
   (\code{thickness = "number.of.studies"})
-\item Proportional to inverse standard error of fixed effects model
-  comparing two treatments (\code{thickness = "se.fixed"})
+\item Proportional to inverse standard error of common effects model
+  comparing two treatments (\code{thickness = "se.common"})
 \item Proportional to inverse standard error of random effects
   model comparing two treatments (\code{thickness = "se.random"})
-\item Weight from fixed effects model comparing two treatments
-  (\code{thickness = "w.fixed"})
+\item Weight from common effects model comparing two treatments
+  (\code{thickness = "w.common"})
 \item Weight from random effects model comparing two treatments
   (\code{thickness = "w.random"})
 }
 
 Only evidence from direct treatment comparisons is considered to
 determine the line width if argument \code{thickness} is equal to
-any but the first method. By default, \code{thickness = "se.fixed"}
+any but the first method. By default, \code{thickness = "se.common"}
 is used if \code{start.layout = "circle"}, \code{iterate = FALSE},
 and \code{plastic = TRUE}. Otherwise, the same line width is used.
 
@@ -322,7 +326,7 @@ data(Senn2013)
 # treatment 'plac'
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD", reference = "plac")
+  data = Senn2013, sm = "MD", reference = "plac")
 
 # Network graph with default settings
 #
@@ -333,46 +337,45 @@ netgraph(net1)
 # highlighted comparison
 #
 trts <- c("plac", "benf", "migl", "acar", "sulf",
-          "metf", "rosi", "piog", "sita", "vild")
+  "metf", "rosi", "piog", "sita", "vild")
 netgraph(net1, highlight = "rosi:plac", seq = trts)
 
 # Same network graph using argument 'seq' in netmeta function
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD", reference = "plac",
-                seq = trts)
+  data = Senn2013, sm = "MD", reference = "plac", seq = trts)
 netgraph(net2, highlight = "rosi:plac")
 
 # Network graph optimized, starting from a circle, with multi-arm
 # study colored
 #
 netgraph(net1, start = "circle", iterate = TRUE,
-         multiarm = TRUE, col.multiarm = "purple")
+  multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph optimized, starting from a circle, with multi-arm
 # study colored and all intermediate iteration steps visible
 #
 netgraph(net1, start = "circle", iterate = TRUE,
-         multiarm = TRUE, col.multiarm = "purple",
-         allfigures = TRUE)
+  multiarm = TRUE, col.multiarm = "purple",
+  allfigures = TRUE)
 
 # Network graph optimized, starting from Laplacian eigenvectors,
 # with multi-arm study colored
 #
 netgraph(net1, start = "eigen",
-         multiarm = TRUE, col.multiarm = "purple")
+  multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph optimized, starting from different Laplacian
 # eigenvectors, with multi-arm study colored
 #
 netgraph(net1, start = "prcomp",
-         multiarm = TRUE, col.multiarm = "purple")
+  multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph optimized, starting from random initial layout,
 # with multi-arm study colored
 #
 netgraph(net1, start = "random",
-         multiarm = TRUE, col.multiarm = "purple")
+  multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph without plastic look and one highlighted comparison
 #
@@ -387,7 +390,7 @@ netgraph(net1, plastic = FALSE, thickness = FALSE)
 # treatments
 #
 netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
-         labels = LETTERS[1:10])
+  labels = LETTERS[1:10])
 
 # Rotate treatment labels (orthogonal to circle)
 #

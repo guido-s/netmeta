@@ -41,7 +41,7 @@ Dogliotti2014
 # function called internally.
 #
 p1 <- pairwise(treatment, stroke, total, studlab = study,
-               data = Dogliotti2014, sm = "OR")
+  data = Dogliotti2014, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis
 #

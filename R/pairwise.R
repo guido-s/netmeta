@@ -28,14 +28,14 @@
 #' @param data An optional data frame containing the study
 #'   information.
 #' @param studlab A vector with study labels (optional).
-#' @param incr A numerical value which is added to each cell frequency
-#'   for studies with a zero cell count.
-#' @param allincr A logical indicating if \code{incr} is added to each
-#'   cell frequency of all studies if at least one study has a zero
-#'   cell count. If FALSE (default), \code{incr} is added only to each
-#'   cell frequency of studies with a zero cell count.
-#' @param addincr A logical indicating if \code{incr} is added to each
-#'   cell frequency of all studies irrespective of zero cell counts.
+#' @param incr A numerical value which is added to cell frequencies
+#'   for studies with a zero cell count, see Details.
+#' @param allincr A logical indicating if \code{incr} is added to cell
+#'   frequencies of all studies if at least one study has a zero cell
+#'   count. If FALSE (default), \code{incr} is added only to cell
+#'   frequencies of studies with a zero cell count.
+#' @param addincr A logical indicating if \code{incr} is added to cell
+#'   frequencies of all studies irrespective of zero cell counts.
 #' @param allstudies A logical indicating if studies with zero or all
 #'   events in two treatment arms are to be included in the
 #'   meta-analysis (applies only if \code{sm} is equal to \code{"RR"}
@@ -131,6 +131,21 @@
 #' the summary measure is actually Cohen's d as Hedges' g is not
 #' consistent in multi-arm studies.
 #' 
+#' For binary outcomes, 0.5 is added to all cell frequencies (odds
+#' ratio) or only the number of events (risk ratio) for studies with a
+#' zero cell count. For odds ratio and risk ratio, treatment estimates
+#' and standard errors are only calculated for studies with zero or
+#' all events in both groups if \code{allstudies} is \code{TRUE}. This
+#' continuity correction is used both to calculate individual study
+#' results with confidence limits and to conduct meta-analysis based
+#' on the inverse variance method. For the risk difference, 0.5 is
+#' only added to all cell frequencies to calculate the standard error.
+#' 
+#' For incidence rates, 0.5 is added to all cell frequencies for the
+#' incidence rate ratio as summary measure. For the incidence risk
+#' difference, 0.5 is only added to all cell frequencies to calculate
+#' the standard error.
+#' 
 #' The value of pairwise is a data frame with as many rows as there
 #' are pairwise comparisons. For each study with \emph{p} treatments,
 #' \emph{p*(p-1) / 2} contrasts are generated. Each row contains the
@@ -225,10 +240,9 @@
 #' data(Franchini2012)
 #' # Transform data from arm-based format to contrast-based format
 #' p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
-#'                n = list(n1, n2, n3),
-#'                mean = list(y1, y2, y3),
-#'                sd = list(sd1, sd2, sd3),
-#'                data = Franchini2012, studlab = Study)
+#'   n = list(n1, n2, n3),
+#'   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
+#'   data = Franchini2012, studlab = Study)
 #' p1
 #' 
 #' \dontrun{
@@ -240,13 +254,13 @@
 #' # Draw network graphs
 #' #
 #' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-#'          thickness = "se.fixed")
+#'   thickness = "se.common")
 #' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-#'          plastic = TRUE, thickness = "se.fixed",
-#'          iterate = TRUE)
+#'   plastic = TRUE, thickness = "se.common",
+#'   iterate = TRUE)
 #' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-#'          plastic = TRUE, thickness = "se.fixed",
-#'          iterate = TRUE, start = "eigen")
+#'   plastic = TRUE, thickness = "se.common",
+#'   iterate = TRUE, start = "eigen")
 #' 
 #' # Example using generic outcomes (internal call of function
 #' # metagen)
@@ -259,18 +273,17 @@
 #' # using means and standard errors (note, argument 'sm' has to be
 #' # used to specify that argument 'TE' is a mean difference)
 #' p2 <- pairwise(list(Treatment1, Treatment2, Treatment3),
-#'                TE = list(y1, y2, y3),
-#'                seTE = list(se1, se2, se3),
-#'                n = list(n1, n2, n3),
-#'                data = Franchini2012, studlab = Study,
-#'                sm = "MD")
+#'   TE = list(y1, y2, y3), seTE = list(se1, se2, se3),
+#'   n = list(n1, n2, n3),
+#'   data = Franchini2012, studlab = Study,
+#'   sm = "MD")
 #' p2
 #' 
 #' # Compare pairwise objects p1 (based on continuous outcomes) and p2
 #' # (based on generic outcomes)
 #' #
 #' all.equal(p1[, c("TE", "seTE", "studlab", "treat1", "treat2")],
-#'           p2[, c("TE", "seTE", "studlab", "treat1", "treat2")])
+#'   p2[, c("TE", "seTE", "studlab", "treat1", "treat2")])
 #' 
 #' # Same result as network meta-analysis based on continuous outcomes
 #' # (object net1)
@@ -286,10 +299,9 @@
 #' # function.
 #' #
 #' p3 <- pairwise(list(treat1, treat2, treat3),
-#'                list(event1, event2, event3),
-#'                list(n1, n2, n3),
-#'                data = smokingcessation,
-#'                sm = "OR")
+#'   list(event1, event2, event3), list(n1, n2, n3),
+#'   data = smokingcessation,
+#'   sm = "OR")
 #' p3
 #' 
 #' # Conduct network meta-analysis
@@ -304,10 +316,9 @@
 #' # Transform data from arm-based format to contrast-based format
 #' #
 #' p4 <- pairwise(list(treat1, treat2, treat3),
-#'                list(d1, d2, d3),
-#'                time = list(years1, years2, years3),
-#'                studlab = ID,
-#'                data = dietaryfat)
+#'   list(d1, d2, d3), time = list(years1, years2, years3),
+#'   studlab = ID,
+#'   data = dietaryfat)
 #' p4
 #' 
 #' # Conduct network meta-analysis using incidence rate ratios (sm =
@@ -327,7 +338,7 @@
 #' # function called internally.
 #' #
 #' p5 <- pairwise(treatment, event = r, n = N,
-#'                studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = Woods2010, sm = "OR")
 #' p5
 #' 
 #' # Conduct network meta-analysis
@@ -341,8 +352,8 @@
 pairwise <- function(treat,
                      event, n, mean, sd, TE, seTE, time,
                      data = NULL, studlab,
-                     incr = 0.5, allincr = FALSE, addincr = FALSE,
-                     allstudies = FALSE,
+                     incr = gs("incr"), allincr = gs("allincr"),
+                     addincr = gs("addincr"), allstudies = gs("allstudies"),
                      ##
                      reference.group,
                      keep.all.comparisons,
@@ -369,16 +380,17 @@ pairwise <- function(treat,
   ##
   ##
   nulldata <- is.null(data)
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
+  ##
   if (nulldata)
-    data <- sys.frame(sys.parent())
-  mf <- match.call()
+    data <- sfsp
   ##
   missing.reference.group <- missing(reference.group)
   ##
   ## Catch studlab, treat, event, n, mean, sd, time from data:
   ##
-  treat <- eval(mf[[match("treat", names(mf))]],
-                data, enclos = sys.frame(sys.parent()))
+  treat <- catch("treat", mc, data, sfsp)
   ##
   if (is.data.frame(treat) & !is.null(attr(treat, "pairwise"))) {
     is.pairwise <- TRUE
@@ -458,22 +470,14 @@ pairwise <- function(treat,
       keep.all.comparisons <- TRUE
     chklogical(keep.all.comparisons)
     ##
-    studlab <- eval(mf[[match("studlab", names(mf))]],
-                    data, enclos = sys.frame(sys.parent()))
-    event <- eval(mf[[match("event", names(mf))]],
-                  data, enclos = sys.frame(sys.parent()))
-    n <- eval(mf[[match("n", names(mf))]],
-              data, enclos = sys.frame(sys.parent()))
-    mean <- eval(mf[[match("mean", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
-    sd <- eval(mf[[match("sd", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
-    TE <- eval(mf[[match("TE", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
-    seTE <- eval(mf[[match("seTE", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
-    time <- eval(mf[[match("time", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+    studlab <- catch("studlab", mc, data, sfsp)
+    event <- catch("event", mc, data, sfsp)
+    n <- catch("n", mc, data, sfsp)
+    mean <- catch("mean", mc, data, sfsp)
+    sd <- catch("sd", mc, data, sfsp)
+    TE <- catch("TE", mc, data, sfsp)
+    seTE <- catch("seTE", mc, data, sfsp)
+    time <- catch("time", mc, data, sfsp)
     
     
     args <- list(...)
@@ -957,7 +961,8 @@ pairwise <- function(treat,
                           incr = dat$incr, addincr = TRUE,
                           allstudies = allstudies,
                           method.tau = "DL", method.tau.ci = "",
-                          warn = warn, ...)
+                          warn = warn,
+                          warn.deprecated = FALSE, ...)
             ##
             dat$TE   <- m1$TE
             dat$seTE <- m1$seTE
@@ -1076,7 +1081,8 @@ pairwise <- function(treat,
                            dat$n2, dat$mean2, dat$sd2,
                            method.tau = "DL", method.tau.ci = "",
                            method.smd = "Cohen",
-                           warn = warn, ...)
+                           warn = warn,
+                           warn.deprecated = FALSE, ...)
             ##
             dat$TE   <- m1$TE
             dat$seTE <- m1$seTE
@@ -1183,7 +1189,8 @@ pairwise <- function(treat,
             m1 <- metagen(dat$TE1 - dat$TE2,
                           sqrt(dat$seTE1^2 + dat$seTE2^2),
                           method.tau = "DL", method.tau.ci = "",
-                          warn = warn, ...)
+                          warn = warn,
+                          warn.deprecated = FALSE, ...)
             ##
             dat$TE <- m1$TE
             dat$seTE <- m1$seTE
@@ -1287,7 +1294,8 @@ pairwise <- function(treat,
                           incr = dat$incr, addincr = TRUE,
                           allstudies = allstudies,
                           method.tau = "DL", method.tau.ci = "",
-                          warn = warn, ...)
+                          warn = warn,
+                          warn.deprecated = FALSE, ...)
             ##
             dat$TE <- m1$TE
             dat$seTE <- m1$seTE
@@ -1500,6 +1508,7 @@ pairwise <- function(treat,
   attr(res, "type") <- type
   attr(res, "version") <- packageDescription("netmeta")$Version
   
+  class(res) <- c("pairwise", class(res))
   
   res
 }

@@ -8,8 +8,8 @@
 #' 
 #' @param x An object of class \code{netmeta}.
 #' @param pooled A character string indicating whether results for the
-#'   fixed effect (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#'   common (\code{"common"}) or random effects model (\code{"random"})
+#'   should be plotted. Can be abbreviated.
 #' @param reference.group Reference treatment(s).
 #' @param baseline.reference A logical indicating whether results
 #'   should be expressed as comparisons of other treatments versus the
@@ -41,8 +41,7 @@
 #'   P-scores, SUCRAs and direct evidence proportions, see
 #'   \code{\link{print.default}} and \code{\link{netrank}}.
 #' @param smlab A label printed at top of figure. By default, text
-#'   indicating either fixed effect or random effects model is
-#'   printed.
+#'   indicating either common or random effects model is printed.
 #' @param sortvar An optional vector used to sort treatments (must be
 #'   of same length as the total number of treatments).
 #' @param backtransf A logical indicating whether results should be
@@ -55,8 +54,9 @@
 #' @param drop.reference.group A logical indicating whether the
 #'   reference group should be printed in the forest plot.
 #' @param col.by The colour to print information on subgroups.
-#' @param print.subgroup.name A logical indicating whether the name of the
-#'   grouping variable should be printed in front of the group labels.
+#' @param print.subgroup.name A logical indicating whether the name of
+#'   the grouping variable should be printed in front of the group
+#'   labels.
 #' @param \dots Additional arguments for \code{\link{forest.meta}}
 #'   function.
 #' 
@@ -86,11 +86,12 @@
 #' \tabular{ll}{
 #' \bold{Name} \tab \bold{Definition} \cr
 #' \code{"studlab"} \tab Treatments \cr
-#' \code{"TE"} \tab Network estimates (either from fixed or random
+#' \code{"TE"} \tab Network estimates (either from common or random
 #'   effects model) \cr
 #' \code{"seTE"} \tab Corresponding standard errors \cr
 #' \code{"Pscore"} \tab P-scores (see \code{\link{netrank}}) \cr
 #' \code{"SUCRA"} \tab SUCRAs (see \code{\link{netrank}}) \cr
+#' \code{"n.trts"} \tab Number of participants per treatment arm \cr
 #' \code{"k"} \tab Number of studies in pairwise comparisons \cr
 #' \code{"prop.direct"} \tab Direct evidence proportions (see
 #'   \code{\link{netmeasures}}) \cr
@@ -126,54 +127,54 @@
 #' # Conduct network meta-analysis
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD")
+#'   data = Senn2013, sm = "MD")
 #' 
 #' forest(net1, ref = "plac")
 #' forest(net1, xlim = c(-1.5, 1), ref = "plac",
-#'        xlab = "HbA1c difference", rightcols = FALSE)
+#'   xlab = "HbA1c difference", rightcols = FALSE)
 #' }
 #' 
 #' # Random effects effect model
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD", fixed = FALSE)
+#'   data = Senn2013, sm = "MD", common = FALSE)
 #' 
 #' forest(net2, xlim = c(-1.5, 1), ref = "plac",
-#'        xlab = "HbA1c difference")
+#'   xlab = "HbA1c difference")
 #' 
 #' \dontrun{
 #' # Add column with P-Scores on right side of forest plot
 #' #
 #' forest(net2, xlim = c(-1.5, 1), ref = "plac",
-#'        xlab = "HbA1c difference",
-#'        rightcols = c("effect", "ci", "Pscore"),
-#'        just.addcols = "right")
+#'   xlab = "HbA1c difference",
+#'   rightcols = c("effect", "ci", "Pscore"),
+#'   just.addcols = "right")
 #' 
 #' # Add column with P-Scores on left side of forest plot
 #' #
 #' forest(net2, xlim = c(-1.5, 1), ref = "plac",
-#'        xlab = "HbA1c difference",
-#'        leftcols = c("studlab", "Pscore"),
-#'        just.addcols = "right")
+#'   xlab = "HbA1c difference",
+#'   leftcols = c("studlab", "Pscore"),
+#'   just.addcols = "right")
 #' 
 #' # Sort forest plot by descending P-Score
 #' #
 #' forest(net2, xlim = c(-1.5, 1), ref = "plac",
-#'        xlab = "HbA1c difference",
-#'        rightcols = c("effect", "ci", "Pscore"),
-#'        just.addcols = "right",
-#'        sortvar = -Pscore)
+#'   xlab = "HbA1c difference",
+#'   rightcols = c("effect", "ci", "Pscore"),
+#'   just.addcols = "right",
+#'   sortvar = -Pscore)
 #' 
 #' # Drop reference group and sort by and print number of studies with
 #' # direct treatment comparisons
 #' #
 #' forest(net2, xlim = c(-1.5, 1), ref = "plac",
-#'        xlab = "HbA1c difference",
-#'        leftcols = c("studlab", "k"),
-#'        leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
-#'        sortvar = -k,
-#'        drop = TRUE,
-#'        smlab = "Random Effects Model")
+#'   xlab = "HbA1c difference",
+#'   leftcols = c("studlab", "k"),
+#'   leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
+#'   sortvar = -k,
+#'   drop = TRUE,
+#'   smlab = "Random Effects Model")
 #' }
 #' 
 #' @method forest netmeta
@@ -181,7 +182,7 @@
 
 
 forest.netmeta <- function(x,
-                           pooled = ifelse(x$random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "common"),
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
                            labels = x$trts,
@@ -217,7 +218,8 @@ forest.netmeta <- function(x,
   ##
   is.bin <- inherits(x, "netmetabin")
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   ##
   chklogical(equal.size)
   ##
@@ -232,14 +234,11 @@ forest.netmeta <- function(x,
   ##
   chklogical(baseline.reference)
   ##
-  mf <- match.call()
-  ##
   trts <- x$trts
   ##
   if (!missing(labels)) {
     ##
-    labels <- eval(mf[[match("labels", names(mf))]],
-                   x, enclos = sys.frame(sys.parent()))
+    labels <- catch("labels", match.call(), x, sys.frame(sys.parent()))
     ##
     if (is.null(labels))
       stop("Argument 'labels' must be not NULL.")
@@ -262,7 +261,7 @@ forest.netmeta <- function(x,
                "TE", "seTE",
                "time.e", "time.c",
                "effect", "ci", "effect.ci",
-               "w.fixed", "w.random")
+               "w.common", "w.random")
   ##
   if (missing(leftlabs)) {
     leftlabs <- leftcols
@@ -296,8 +295,8 @@ forest.netmeta <- function(x,
   
   ##
   ##
-  ## (2) Extract results for fixed effect and random effects model
-  ##     and calculate P-scores and SUCRAs if calcSUCRA == TRUE
+  ## (2) Extract results for common and random effects model and
+  ##     calculate P-scores and SUCRAs if calcSUCRA == TRUE
   ##
   ##
   one.rg <- length(reference.group) == 1
@@ -322,23 +321,23 @@ forest.netmeta <- function(x,
   ##
   reference.group <- setref(reference.group, trts, length = 0)
   ##
-  if (pooled == "fixed") {
-    TE   <- x$TE.fixed
-    seTE <- x$seTE.fixed
+  if (pooled == "common") {
+    TE   <- x$TE.common
+    seTE <- x$seTE.common
     ##
-    prop.direct <- x$P.fixed
+    prop.direct <- x$P.common
     ##
     if (calcPscore)
       Pscore <- netrank(x, small.values = small.values,
-                        method = "P-score")$ranking.fixed
+                        method = "P-score")$ranking.common
     if (calcSUCRA) {
-      x$fixed <- TRUE
+      x$common <- TRUE
       x$random <- FALSE
       SUCRA <- netrank(x, small.values = small.values,
-                       method = "SUCRA", nsim = nsim)$ranking.fixed
+                       method = "SUCRA", nsim = nsim)$ranking.common
     }
     ##
-    text.pooled <- "Fixed Effect Model"
+    text.pooled <- "Common Effects Model"
     ##
     if (x$method == "MH")
       text.pooled <- "Mantel-Haenszel Method"
@@ -357,7 +356,7 @@ forest.netmeta <- function(x,
       Pscore <- netrank(x, small.values = small.values,
                         method = "P-score")$ranking.random
     if (calcSUCRA) {
-      x$fixed <- FALSE
+      x$common <- FALSE
       x$random <- TRUE
       SUCRA <- netrank(x, small.values = small.values,
                        method = "SUCRA", nsim = nsim)$ranking.random
@@ -390,6 +389,10 @@ forest.netmeta <- function(x,
   rightcols <- setCol(rightcols, "SUCRA")
   rightlabs <- setLab(rightlabs, rightcols, "SUCRA", "SUCRA")
   ##
+  rightcols <- setCol(rightcols, "n.trts")
+  rightlabs <- setLab(rightlabs, rightcols, "n.trts",
+                      "Number of\nParticipants")
+  ##
   rightcols <- setCol(rightcols, "k")
   rightlabs <- setLab(rightlabs, rightcols, "k", "Direct\nComparisons")
   ##
@@ -402,6 +405,9 @@ forest.netmeta <- function(x,
   ##
   leftcols <- setCol(leftcols, "SUCRA")
   leftlabs <- setLab(leftlabs, leftcols, "SUCRA", "SUCRA")
+  ##
+  leftcols <- setCol(leftcols, "n.trts")
+  leftlabs <- setLab(leftlabs, leftcols, "n.trts", "Number of\nParticipants")
   ##
   leftcols <- setCol(leftcols, "k")
   leftlabs <- setLab(leftlabs, leftcols, "k", "Direct\nComparisons")
@@ -455,6 +461,9 @@ forest.netmeta <- function(x,
                             else prop.direct[rownames(TE) == rg.i, ],
                           stringsAsFactors = FALSE)
     ##
+    if (!is.null(x$n.trts))
+      dat.i$n.trts <- x$n.trts
+    ##
     if (!missing(add.data)) {
       if (!is.data.frame(add.data))
         stop("Argument 'add.data' must be a data frame.",
@@ -493,6 +502,10 @@ forest.netmeta <- function(x,
       sortvar <- dat.i$k
     else if (any(matchVar(sortvar.c, "-k")))
       sortvar <- -dat.i$k
+    else if (any(matchVar(sortvar.c, "n.trts")))
+      sortvar <- dat.i$n.trts
+    else if (any(matchVar(sortvar.c, "-n.trts")))
+      sortvar <- -dat.i$n.trts
     else if (any(matchVar(sortvar.c, "prop.direct")))
       sortvar <- dat.i$prop.direct
     else if (any(matchVar(sortvar.c, "-prop.direct")))
@@ -551,7 +564,7 @@ forest.netmeta <- function(x,
                                    warn = FALSE))
   else
     m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
-                                   byvar = dat$comparison,
+                                   subgroup = dat$comparison,
                                    sm = x$sm,
                                    studlab = labels, backtransf = backtransf,
                                    method.tau = "DL", method.tau.ci = "",
@@ -559,7 +572,7 @@ forest.netmeta <- function(x,
   ##
   forest(m1,
          digits = digits,
-         overall = FALSE, fixed = FALSE, random = FALSE,
+         overall = FALSE, common = FALSE, random = FALSE,
          hetstat = FALSE, test.subgroup = FALSE,
          leftcols = leftcols,
          leftlabs = leftlabs,

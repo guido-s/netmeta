@@ -29,8 +29,8 @@
 #'   individual comparisons.
 #' @param level.ma The level used to calculate confidence intervals
 #'   for network estimates.
-#' @param fixed A logical indicating whether a fixed effects / common
-#'   effects network meta-analysis should be conducted.
+#' @param common A logical indicating whether a common effects network
+#'   meta-analysis should be conducted.
 #' @param random A logical indicating whether a random effects network
 #'   meta-analysis should be conducted.
 #' @param prediction A logical indicating whether prediction intervals
@@ -86,7 +86,8 @@
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
 #' @param event2 Number of events in second treatment group.
-#' @param incr Numerical value added to each cell frequency.
+#' @param incr Numerical value added to cell frequencies (for details,
+#'   see \code{\link{pairwise}}).
 #' @param sd1 Standard deviation in first treatment group.
 #' @param sd2 Standard deviation in second treatment group.
 #' @param time1 Person time at risk in first treatment group.
@@ -168,9 +169,8 @@
 #' \bold{meta}), continuous outcomes (\code{\link{metacont}}
 #' function), incidence rates (\code{\link{metainc}} function), and
 #' generic outcomes (\code{\link{metagen}} function). Additional
-#' arguments of these functions can be provided, e.g., to calculate
-#' Hedges' \emph{g} or Cohen's \emph{d} for continuous outcomes (see
-#' help page of function \code{\link{pairwise}}).
+#' arguments of these functions can be provided (see help page of
+#' function \code{\link{pairwise}}).
 #' 
 #' Note, all pairwise comparisons must be provided for a multi-arm
 #' study. Consider a multi-arm study of \emph{p} treatments with known
@@ -195,16 +195,16 @@
 #' based on the common between-study variance \eqn{\tau^2} from the
 #' network meta-analysis.
 #' 
-#' Internally, both fixed effects and random effects models are
-#' calculated regardless of values choosen for arguments \code{fixed}
-#' and \code{random}. Accordingly, the network estimates for the
-#' random effects model can be extracted from component
-#' \code{TE.random} of an object of class \code{"netmeta"} even if
-#' argument \code{random = FALSE}. However, all functions in R package
-#' \bold{netmeta} will adequately consider the values for \code{fixed}
-#' and \code{random}. E.g. function
-#' \code{\link{print.summary.netmeta}} will not print results for the
-#' random effects model if \code{random = FALSE}.
+#' Internally, both common and random effects models are calculated
+#' regardless of values choosen for arguments \code{common} and
+#' \code{random}. Accordingly, the network estimates for the random
+#' effects model can be extracted from component \code{TE.random} of
+#' an object of class \code{"netmeta"} even if argument \code{random =
+#' FALSE}. However, all functions in R package \bold{netmeta} will
+#' adequately consider the values for \code{common} and
+#' \code{random}. E.g. function \code{\link{print.summary.netmeta}}
+#' will not print results for the random effects model if \code{random
+#' = FALSE}.
 #' 
 #' By default, treatment names are not abbreviated in
 #' printouts. However, in order to get more concise printouts,
@@ -217,7 +217,7 @@
 #' Names of treatment comparisons are created by concatenating
 #' treatment labels of pairwise comparisons using \code{sep.trts} as
 #' separator (see \code{\link{paste}}). These comparison names are
-#' used in the covariance matrices \code{Cov.fixed} and
+#' used in the covariance matrices \code{Cov.common} and
 #' \code{Cov.random} and in some R functions, e.g,
 #' \code{\link{decomp.design}}. By default, a colon is used as the
 #' separator. If any treatment label contains a colon the following
@@ -245,11 +245,11 @@
 #' \code{summary}, \code{forest}, and \code{netrank} functions. The
 #' object is a list containing the following components:
 #' \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
-#' \item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+#' \item{seTE.adj.common, seTE.adj.random}{Standard error of treatment
 #'   estimate, adjusted for multi-arm studies.}
 #' \item{design}{Design of study providing pairwise comparison.}
 #' \item{n1, n2, event1, event2, incr}{As defined above.}
-## \item{mean1, mean2, sd1, sd2, time1, time2}{As defined above.}
+#' \item{mean1, mean2, sd1, sd2, time1, time2}{As defined above.}
 #' \item{sd1, sd2, time1, time2}{As defined above.}
 #' \item{k}{Total number of studies.}
 #' \item{m}{Total number of pairwise comparisons.}
@@ -273,92 +273,92 @@
 #'   study.}
 #' \item{designs}{Vector with unique direct comparisons present in the
 #'   network.}
-#' \item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
+#' \item{TE.nma.common, TE.nma.random}{A vector of length \emph{m} of
 #'   consistent treatment effects estimated by network meta-analysis
-#'   (nma) (fixed effects / random effects model).}
-#' \item{seTE.nma.fixed, seTE.nma.random}{A vector of length \emph{m}
+#'   (nma) (common / random effects model).}
+#' \item{seTE.nma.common, seTE.nma.random}{A vector of length \emph{m}
 #'   of effective standard errors estimated by network meta-analysis
-#'   (fixed effects / random effects model).}
-#' \item{lower.nma.fixed, lower.nma.random}{A vector of length
+#'   (common / random effects model).}
+#' \item{lower.nma.common, lower.nma.random}{A vector of length
 #'   \emph{m} of lower confidence interval limits for consistent
-#'   treatment effects estimated by network meta-analysis (fixed
+#'   treatment effects estimated by network meta-analysis (common
 #'   effects / random effects model).}
-#' \item{upper.nma.fixed, upper.nma.random}{A vector of length
+#' \item{upper.nma.common, upper.nma.random}{A vector of length
 #'   \emph{m} of upper confidence interval limits for the consistent
-#'   treatment effects estimated by network meta-analysis (fixed
+#'   treatment effects estimated by network meta-analysis (common
 #'   effects / random effects model).}
-#' \item{statistic.nma.fixed, statistic.nma.random}{A vector of length
+#' \item{statistic.nma.common, statistic.nma.random}{A vector of length
 #'   \emph{m} of z-values for test of treatment effect for individual
-#'   comparisons (fixed effects / random effects model).}
-#' \item{pval.nma.fixed, pval.nma.random}{A vector of length \emph{m}
+#'   comparisons (common / random effects model).}
+#' \item{pval.nma.common, pval.nma.random}{A vector of length \emph{m}
 #'   of p-values for test of treatment effect for individual
-#'   comparisons (fixed effects / random effects model).}
-#' \item{leverage.fixed}{A vector of length \emph{m} of leverages,
+#'   comparisons (common / random effects model).}
+#' \item{leverage.common}{A vector of length \emph{m} of leverages,
 #'   interpretable as factors by which variances are reduced using
 #'   information from the whole network.}
-#' \item{w.fixed, w.random}{A vector of length \emph{m} of weights of
-#'   individual studies (fixed effects / random effects model).}
-#' \item{Q.fixed}{A vector of length \emph{m} of contributions to
+#' \item{w.common, w.random}{A vector of length \emph{m} of weights of
+#'   individual studies (common / random effects model).}
+#' \item{Q.common}{A vector of length \emph{m} of contributions to
 #'   total heterogeneity / inconsistency statistic.}
-#' \item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with estimated
-#'   overall treatment effects (fixed effects / random effects model).}
-#' \item{seTE.fixed, seTE.random}{\emph{n}x\emph{n} matrix with
-#'   standard errors (fixed effects / random effects model).}
-#' \item{lower.fixed, upper.fixed, lower.random,
+#' \item{TE.common, TE.random}{\emph{n}x\emph{n} matrix with estimated
+#'   overall treatment effects (common / random effects model).}
+#' \item{seTE.common, seTE.random}{\emph{n}x\emph{n} matrix with
+#'   standard errors (common / random effects model).}
+#' \item{lower.common, upper.common, lower.random,
 #'   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
-#'   confidence interval limits (fixed effects / random effects
+#'   confidence interval limits (common / random effects
 #'   model).}
-#' \item{statistic.fixed, pval.fixed, statistic.random,
+#' \item{statistic.common, pval.common, statistic.random,
 #'   pval.random}{\emph{n}x\emph{n} matrices with z-value and p-value
-#'   for test of overall treatment effect (fixed effects / random
+#'   for test of overall treatment effect (common / random
 #'   effects model).}
 #' \item{seTE.predict}{\emph{n}x\emph{n} matrix with standard errors
 #'   for prediction intervals.}
 #' \item{lower.predict, upper.predict}{\emph{n}x\emph{n} matrices with
 #'   lower and upper prediction interval limits.}
-#' \item{prop.direct.fixed, prop.direct.random}{A named vector of the
-#'   direct evidence proportion of each network estimate. (fixed
+#' \item{prop.direct.common, prop.direct.random}{A named vector of the
+#'   direct evidence proportion of each network estimate. (common
 #'   effects / random effects model).}
-#' \item{TE.direct.fixed, TE.direct.random}{\emph{n}x\emph{n} matrix
-#'   with estimated treatment effects from direct evidence (fixed
+#' \item{TE.direct.common, TE.direct.random}{\emph{n}x\emph{n} matrix
+#'   with estimated treatment effects from direct evidence (common
 #'   effects / random effects model).}
-#' \item{seTE.direct.fixed, seTE.direct.random}{\emph{n}x\emph{n}
-#'   matrix with estimated standard errors from direct evidence (fixed
+#' \item{seTE.direct.common, seTE.direct.random}{\emph{n}x\emph{n}
+#'   matrix with estimated standard errors from direct evidence (common
 #'   effects / random effects model).}
-#' \item{lower.direct.fixed, upper.direct.fixed, lower.direct.random,
+#' \item{lower.direct.common, upper.direct.common, lower.direct.random,
 #'   }{\emph{n}x\emph{n} matrices with lower and upper confidence
-#'   interval limits from direct evidence (fixed effects / random
+#'   interval limits from direct evidence (common / random
 #'   effects model).}
 #' \item{upper.direct.random}{\emph{n}x\emph{n} matrices with lower
-#'   and upper confidence interval limits from direct evidence (fixed
+#'   and upper confidence interval limits from direct evidence (common
 #'   effects / random effects model).}
-#' \item{statistic.direct.fixed, pval.direct.fixed,
+#' \item{statistic.direct.common, pval.direct.common,
 #'   statistic.direct.random, }{\emph{n}x\emph{n} matrices with
 #'   z-value and p-value for test of overall treatment effect from
-#'   direct evidence (fixed effects / random effects model).}
+#'   direct evidence (common / random effects model).}
 #' \item{pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
 #'   and p-value for test of overall treatment effect from direct
-#'   evidence (fixed effects / random effects model).}
-#' \item{TE.indirect.fixed, TE.indirect.random}{\emph{n}x\emph{n}
+#'   evidence (common / random effects model).}
+#' \item{TE.indirect.common, TE.indirect.random}{\emph{n}x\emph{n}
 #'   matrix with estimated treatment effects from indirect evidence
-#'   (fixed effects / random effects model).}
-#' \item{seTE.indirect.fixed, seTE.indirect.random}{\emph{n}x\emph{n}
+#'   (common / random effects model).}
+#' \item{seTE.indirect.common, seTE.indirect.random}{\emph{n}x\emph{n}
 #'   matrix with estimated standard errors from indirect evidence
-#'   (fixed effects / random effects model).}
-#' \item{lower.indirect.fixed, upper.indirect.fixed,
+#'   (common / random effects model).}
+#' \item{lower.indirect.common, upper.indirect.common,
 #'   lower.indirect.random, }{\emph{n}x\emph{n} matrices with lower
 #'   and upper confidence interval limits from indirect evidence
-#'   (fixed effects / random effects model).}
+#'   (common / random effects model).}
 #' \item{upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
 #'   and upper confidence interval limits from indirect evidence
-#'   (fixed effects / random effects model).}
-#' \item{statistic.indirect.fixed, pval.indirect.fixed,
+#'   (common / random effects model).}
+#' \item{statistic.indirect.common, pval.indirect.common,
 #'   statistic.indirect.random, }{\emph{n}x\emph{n} matrices with
 #'   z-value and p-value for test of overall treatment effect from
-#'   indirect evidence (fixed effects / random effects model).}
+#'   indirect evidence (common / random effects model).}
 #' \item{pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value
 #'   and p-value for test of overall treatment effect from indirect
-#'   evidence (fixed effects / random effects model).}
+#'   evidence (common / random effects model).}
 #' \item{Q}{Overall heterogeneity / inconsistency statistic.}
 #' \item{df.Q}{Degrees of freedom for test of heterogeneity /
 #'   inconsistency.}
@@ -382,9 +382,9 @@
 #' \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
 #' \item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 #' \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
-#' \item{L.matrix.fixed, L.matrix.random}{Laplacian matrix
+#' \item{L.matrix.common, L.matrix.random}{Laplacian matrix
 #'   (\emph{n}x\emph{n}).}
-#' \item{Lplus.matrix.fixed, Lplus.matrix.random}{Moore-Penrose
+#' \item{Lplus.matrix.common, Lplus.matrix.random}{Moore-Penrose
 #'   pseudoinverse of the Laplacian matrix (\emph{n}x\emph{n}).}
 #' \item{Q.matrix}{Matrix of heterogeneity statistics for pairwise
 #'   meta-analyses, where direct comparisons exist
@@ -392,7 +392,7 @@
 #' \item{G.matrix}{Matrix with variances and covariances of
 #'   comparisons (\emph{m}x\emph{m}). G is defined as
 #'   \strong{BL+B^t}.}
-#' \item{H.matrix.fixed, H.matrix.random}{Hat matrix
+#' \item{H.matrix.common, H.matrix.random}{Hat matrix
 #'   (\emph{m}x\emph{m}), defined as \strong{H = GW = BL+B^tW}.}
 #' \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
 #'   observations in direct comparisons (if arguments \code{n1} and
@@ -400,13 +400,13 @@
 #' \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
 #'   in direct comparisons (if arguments \code{event1} and
 #'   \code{event2} are provided).}
-#' \item{P.fixed, P.random}{\emph{n}x\emph{n} matrix with direct
-#'   evidence proportions (fixed effects / random effects model).}
-#' \item{Cov.fixed}{Variance-covariance matrix (fixed effects model)}
+#' \item{P.common, P.random}{\emph{n}x\emph{n} matrix with direct
+#'   evidence proportions (common / random effects model).}
+#' \item{Cov.common}{Variance-covariance matrix (common effects model)}
 #' \item{Cov.random}{Variance-covariance matrix (random effects
 #'   model)}
 #' \item{sm, level, level.ma}{As defined above.}
-#' \item{fixed, random}{As defined above.}
+#' \item{common, random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
 #' \item{reference.group, baseline.reference, small.values,
 #'   all.treatments}{As defined above.}
@@ -458,11 +458,10 @@
 #' @examples
 #' data(Senn2013)
 #' 
-#' # Conduct fixed effects network meta-analysis
+#' # Conduct common effects network meta-analysis
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 random = FALSE)
+#'   data = Senn2013, sm = "MD", random = FALSE)
 #' net1
 #' net1$Q.decomp
 #' 
@@ -474,18 +473,17 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 fixed = FALSE)
+#'   data = Senn2013, sm = "MD", common = FALSE)
 #' net2
 #' 
 #' # Change printing order of treatments with placebo last and use
 #' # long treatment names
 #' #
 #' trts <- c("acar", "benf", "metf", "migl", "piog",
-#'           "rosi", "sita", "sulf", "vild", "plac")
+#'   "rosi", "sita", "sulf", "vild", "plac")
 #' net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'                 data = Senn2013, sm = "MD", fixed = FALSE,
-#'                 seq = trts, reference = "Placebo")
+#'   data = Senn2013, sm = "MD", common = FALSE,
+#'   seq = trts, reference = "Placebo")
 #' print(net3, digits = 2)
 #' }
 #' 
@@ -498,7 +496,7 @@ netmeta <- function(TE, seTE,
                     sm,
                     level = gs("level"),
                     level.ma = gs("level.ma"),
-                    fixed = gs("fixed"),
+                    common = gs("common"),
                     random = gs("random") | !is.null(tau.preset),
                     ##
                     prediction = FALSE,
@@ -589,17 +587,19 @@ netmeta <- function(TE, seTE,
   ##
   ## Check for deprecated arguments in '...'
   ##
-  args  <- list(...)
+  args <- list(...)
   chklogical(warn.deprecated)
   ##
   level.ma <- deprecated(level.ma, missing(level.ma), args, "level.comb",
                          warn.deprecated)
   chklevel(level.ma)
   ##
-  missing.fixed <- missing(fixed)
-  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
@@ -617,16 +617,15 @@ netmeta <- function(TE, seTE,
   ##
   ##
   nulldata <- is.null(data)
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
   ##
   if (nulldata)
-    data <- sys.frame(sys.parent())
-  ##
-  mf <- match.call()
+    data <- sfsp
   ##
   ## Catch TE, treat1, treat2, seTE, studlab from data:
   ##
-  TE <- eval(mf[[match("TE", names(mf))]],
-             data, enclos = sys.frame(sys.parent()))
+  TE <- catch("TE", mc, data, sfsp)
   ##
   missing.reference.group.pairwise <- FALSE
   ##
@@ -690,50 +689,30 @@ netmeta <- function(TE, seTE,
       else
         sm <- ""
     ##
-    seTE <- eval(mf[[match("seTE", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+    seTE <- catch("seTE", mc, data, sfsp)
     ##
-    treat1 <- eval(mf[[match("treat1", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    treat1 <- catch("treat1", mc, data, sfsp)
+    treat2 <- catch("treat2", mc, data, sfsp)
     ##
-    treat2 <- eval(mf[[match("treat2", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    studlab <- catch("studlab", mc, data, sfsp)
     ##
-    studlab <- eval(mf[[match("studlab", names(mf))]],
-                    data, enclos = sys.frame(sys.parent()))
+    n1 <- catch("n1", mc, data, sfsp)
+    n2 <- catch("n2", mc, data, sfsp)
     ##
-    n1 <- eval(mf[[match("n1", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
+    event1 <- catch("event1", mc, data, sfsp)
+    event2 <- catch("event2", mc, data, sfsp)
     ##
-    n2 <- eval(mf[[match("n2", names(mf))]],
-               data, enclos = sys.frame(sys.parent()))
+    incr <- catch("incr", mc, data, sfsp)
     ##
-    event1 <- eval(mf[[match("event1", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    ##mean1 <- catch("mean1", mc, data, sfsp)
     ##
-    event2 <- eval(mf[[match("event2", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    ##mean2 <- catch("mean2", mc, data, sfsp)
     ##
-    incr <- eval(mf[[match("incr", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+    sd1 <- catch("sd1", mc, data, sfsp)
+    sd2 <- catch("sd2", mc, data, sfsp)
     ##
-    ##mean1 <- eval(mf[[match("mean1", names(mf))]],
-    ##              data, enclos = sys.frame(sys.parent()))
-    ##
-    ##mean2 <- eval(mf[[match("mean2", names(mf))]],
-    ##              data, enclos = sys.frame(sys.parent()))
-    ##
-    sd1 <- eval(mf[[match("sd1", names(mf))]],
-                data, enclos = sys.frame(sys.parent()))
-    ##
-    sd2 <- eval(mf[[match("sd2", names(mf))]],
-                data, enclos = sys.frame(sys.parent()))
-    ##
-    time1 <- eval(mf[[match("time1", names(mf))]],
-                  data, enclos = sys.frame(sys.parent()))
-    ##
-    time2 <- eval(mf[[match("time2", names(mf))]],
-                  data, enclos = sys.frame(sys.parent()))
+    time1 <- catch("time1", mc, data, sfsp)
+    time2 <- catch("time2", mc, data, sfsp)
   }
   ##
   chknumeric(TE)
@@ -761,8 +740,7 @@ netmeta <- function(TE, seTE,
   }
   studlab <- as.character(studlab)
   ##
-  subset <- eval(mf[[match("subset", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+  subset <- catch("subset", mc, data, sfsp)
   missing.subset <- is.null(subset)
   ##
   if (!is.null(event1) & !is.null(event2))
@@ -1216,7 +1194,7 @@ netmeta <- function(TE, seTE,
   ## (6) Conduct network meta-analysis
   ##
   ##
-  ## Fixed effects model
+  ## Common effects model
   ##
   res.f <- nma.ruecker(p0$TE, sqrt(1 / p0$weights),
                        p0$treat1, p0$treat2,
@@ -1406,7 +1384,7 @@ netmeta <- function(TE, seTE,
               TE = res.f$TE[o],
               seTE = res.f$seTE.orig[o],
               seTE.adj = res.f$seTE[o],
-              seTE.adj.fixed = res.f$seTE[o],
+              seTE.adj.common = res.f$seTE[o],
               seTE.adj.random = res.r$seTE[o],
               ##
               design = designs$design[o],
@@ -1444,23 +1422,23 @@ netmeta <- function(TE, seTE,
               designs = unique(sort(designs$design)),
               comparisons = "",
               ##
-              TE.nma.fixed = res.f$TE.nma[o],
-              seTE.nma.fixed = res.f$seTE.nma[o],
-              lower.nma.fixed = res.f$lower.nma[o],
-              upper.nma.fixed = res.f$upper.nma[o],
-              statistic.nma.fixed = res.f$statistic.nma[o],
-              pval.nma.fixed = res.f$pval.nma[o],
+              TE.nma.common = res.f$TE.nma[o],
+              seTE.nma.common = res.f$seTE.nma[o],
+              lower.nma.common = res.f$lower.nma[o],
+              upper.nma.common = res.f$upper.nma[o],
+              statistic.nma.common = res.f$statistic.nma[o],
+              pval.nma.common = res.f$pval.nma[o],
               ##
-              leverage.fixed = res.f$leverage[o],
-              w.fixed = res.f$w.pooled[o],
-              Q.fixed = res.f$Q.pooled[o],
+              leverage.common = res.f$leverage[o],
+              w.common = res.f$w.pooled[o],
+              Q.common = res.f$Q.pooled[o],
               ##
-              TE.fixed = res.f$TE.pooled,
-              seTE.fixed = res.f$seTE.pooled,
-              lower.fixed = res.f$lower.pooled,
-              upper.fixed = res.f$upper.pooled,
-              statistic.fixed = res.f$statistic.pooled,
-              pval.fixed = res.f$pval.pooled,
+              TE.common = res.f$TE.pooled,
+              seTE.common = res.f$seTE.pooled,
+              lower.common = res.f$lower.pooled,
+              upper.common = res.f$upper.pooled,
+              statistic.common = res.f$statistic.pooled,
+              pval.common = res.f$pval.pooled,
               ##
               TE.nma.random = res.r$TE.nma[o],
               seTE.nma.random = res.r$seTE.nma[o],
@@ -1482,15 +1460,15 @@ netmeta <- function(TE, seTE,
               lower.predict = p.lower,
               upper.predict = p.upper,
               ##
-              prop.direct.fixed = NA,
+              prop.direct.common = NA,
               prop.direct.random = NA,
               ##
-              TE.direct.fixed = res.f$TE.direct,
-              seTE.direct.fixed = res.f$seTE.direct,
-              lower.direct.fixed = res.f$lower.direct,
-              upper.direct.fixed = res.f$upper.direct,
-              statistic.direct.fixed = res.f$statistic.direct,
-              pval.direct.fixed = res.f$pval.direct,
+              TE.direct.common = res.f$TE.direct,
+              seTE.direct.common = res.f$seTE.direct,
+              lower.direct.common = res.f$lower.direct,
+              upper.direct.common = res.f$upper.direct,
+              statistic.direct.common = res.f$statistic.direct,
+              pval.direct.common = res.f$pval.direct,
               ##
               TE.direct.random = res.r$TE.direct,
               seTE.direct.random = res.r$seTE.direct,
@@ -1504,12 +1482,12 @@ netmeta <- function(TE, seTE,
               tau2.direct = res.r$tau2.direct,
               I2.direct = res.r$I2.direct,
               ##
-              TE.indirect.fixed = NA,
-              seTE.indirect.fixed = NA,
-              lower.indirect.fixed = NA,
-              upper.indirect.fixed = NA,
-              statistic.indirect.fixed = NA,
-              pval.indirect.fixed = NA,
+              TE.indirect.common = NA,
+              seTE.indirect.common = NA,
+              lower.indirect.common = NA,
+              upper.indirect.common = NA,
+              statistic.indirect.common = NA,
+              pval.indirect.common = NA,
               ##
               TE.indirect.random = NA,
               seTE.indirect.random = NA,
@@ -1541,8 +1519,8 @@ netmeta <- function(TE, seTE,
               X.matrix = res.f$B.matrix[o, ],
               B.matrix = res.f$B.matrix[o, ],
               ##
-              L.matrix.fixed = res.f$L.matrix,
-              Lplus.matrix.fixed = res.f$Lplus.matrix,
+              L.matrix.common = res.f$L.matrix,
+              Lplus.matrix.common = res.f$Lplus.matrix,
               L.matrix.random = res.r$L.matrix,
               Lplus.matrix.random = res.r$Lplus.matrix,
               ##
@@ -1550,16 +1528,16 @@ netmeta <- function(TE, seTE,
               ##
               G.matrix = res.f$G.matrix[o, o, drop = FALSE],
               ##
-              H.matrix.fixed = res.f$H.matrix[o, o, drop = FALSE],
+              H.matrix.common = res.f$H.matrix[o, o, drop = FALSE],
               H.matrix.random = res.r$H.matrix[o, o, drop = FALSE],
               ##
               n.matrix = if (available.n) NA else NULL,
               events.matrix = if (available.events) NA else NULL,
               ##
-              P.fixed = NA,
+              P.common = NA,
               P.random = NA,
               ##
-              Cov.fixed = res.f$Cov,
+              Cov.common = res.f$Cov,
               Cov.random = res.r$Cov,
               ##
               treat1.pos = res.f$treat1.pos[o],
@@ -1569,10 +1547,8 @@ netmeta <- function(TE, seTE,
               method = "Inverse",
               level = level,
               level.ma = level.ma,
-              fixed = fixed,
+              common = common,
               random = random,
-              comb.fixed = fixed,
-              comb.random = random,
               ##
               prediction = prediction,
               level.predict = level.predict,
@@ -1610,38 +1586,38 @@ netmeta <- function(TE, seTE,
   ##
   n <- res$n
   ##
-  res$prop.direct.fixed <-
+  res$prop.direct.common <-
     netmeasures(res, random = FALSE, warn = warn)$proportion
   ## Print warning(s) in call of netmeasures() once
   res$prop.direct.random <-
     suppressWarnings(netmeasures(res, random = TRUE,
                                  tau.preset = res$tau,
                                  warn = FALSE)$proportion)
-  if (is.logical(res$prop.direct.fixed))
-    res$prop.direct.fixed <- as.numeric(res$prop.direct.fixed)
+  if (is.logical(res$prop.direct.common))
+    res$prop.direct.common <- as.numeric(res$prop.direct.common)
   if (is.logical(res$prop.direct.random))
     res$prop.direct.random <- as.numeric(res$prop.direct.random)
   ##
   res$comparisons <-
     names(res$prop.direct.random)[!is.zero(res$prop.direct.random)]
   ##
-  ## Add P.fixed and P.random
+  ## Add P.common and P.random
   ##
-  P.fixed <- P.random <- matrix(NA, n, n)
-  colnames(P.fixed) <- rownames(P.fixed) <-
+  P.common <- P.random <- matrix(NA, n, n)
+  colnames(P.common) <- rownames(P.common) <-
     colnames(P.random) <- rownames(P.random) <- trts
   ##
   if (n == 2) {
     ##
     ## For two treatments only direct evidence is available
     ##
-    res$prop.direct.fixed <- 1
+    res$prop.direct.common <- 1
     res$prop.direct.random <- 1
-    names(res$prop.direct.fixed) <-
+    names(res$prop.direct.common) <-
       names(res$prop.direct.random) <- paste(labels, collapse = sep.trts)
     ##
-    sel <- row(P.fixed) != col(P.fixed)
-    P.fixed[sel] <- 1
+    sel <- row(P.common) != col(P.common)
+    P.common[sel] <- 1
     P.random[sel] <- 1
   }
   else {
@@ -1649,7 +1625,7 @@ netmeta <- function(TE, seTE,
     for (i in 1:(n - 1)) {
       for (j in (i + 1):n) {
         k <- k + 1
-        P.fixed[i, j] <- P.fixed[j, i] <- res$prop.direct.fixed[k]
+        P.common[i, j] <- P.common[j, i] <- res$prop.direct.common[k]
         P.random[i, j] <- P.random[j, i] <- res$prop.direct.random[k]
       }
     }
@@ -1658,36 +1634,36 @@ netmeta <- function(TE, seTE,
   ## Set direct evidence estimates to 0 if only indirect evidence is available
   ## (otherwise indirect estimates would be NA as direct estimates are NA)
   ##
-  TE.direct.fixed <- res$TE.direct.fixed
+  TE.direct.common <- res$TE.direct.common
   TE.direct.random <- res$TE.direct.random
   ##
-  TE.direct.fixed[abs(P.fixed) < .Machine$double.eps^0.5] <- 0
+  TE.direct.common[abs(P.common) < .Machine$double.eps^0.5] <- 0
   TE.direct.random[abs(P.random) < .Machine$double.eps^0.5] <- 0
   ##
   ## Indirect estimate is NA if only direct evidence is available
   ##
-  res$P.fixed <- P.fixed
+  res$P.common <- P.common
   res$P.random <- P.random
   ##
-  P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
-  P.fixed[P.fixed > 1] <- NA
+  P.common[abs(P.common - 1) < .Machine$double.eps^0.5] <- NA
+  P.common[P.common > 1] <- NA
   P.random[abs(P.random - 1) < .Machine$double.eps^0.5] <- NA
   P.random[P.random > 1] <- NA
   ##
-  ## Fixed effects model
+  ## Common effects model
   ##
-  ci.if <- ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
-              sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
+  ci.if <- ci((res$TE.common - P.common * TE.direct.common) / (1 - P.common),
+              sqrt(res$seTE.common^2 / (1 - P.common)),
               level = level)
   ##
-  res$TE.indirect.fixed   <- ci.if$TE
-  res$seTE.indirect.fixed <- ci.if$seTE
+  res$TE.indirect.common   <- ci.if$TE
+  res$seTE.indirect.common <- ci.if$seTE
   ##
-  res$lower.indirect.fixed <- ci.if$lower
-  res$upper.indirect.fixed <- ci.if$upper
+  res$lower.indirect.common <- ci.if$lower
+  res$upper.indirect.common <- ci.if$upper
   ##
-  res$statistic.indirect.fixed <- ci.if$statistic
-  res$pval.indirect.fixed <- ci.if$p
+  res$statistic.indirect.common <- ci.if$statistic
+  res$pval.indirect.common <- ci.if$p
   ##
   ## Random effects model
   ##
@@ -1727,7 +1703,7 @@ netmeta <- function(TE, seTE,
   ## Set leverage of multi-arm studies to NA
   ##
   if (any(res$multiarm))
-    res$leverage.fixed[res$multiarm] <- NA
+    res$leverage.common[res$multiarm] <- NA
   
   
   ##
@@ -1795,6 +1771,54 @@ netmeta <- function(TE, seTE,
     res$.formula.trts <- formula.trts
     res$version.metafor <- packageDescription("metafor")$Version
   }
+  
+  
+  ##
+  ## Backward compatibility
+  ##
+  res$fixed <- res$common
+  res$comb.fixed <- res$common
+  res$comb.random <- res$random
+  ##
+  res$seTE.adj.fixed <- res$seTE.adj.common
+  res$TE.nma.fixed <- res$TE.nma.common
+  res$seTE.nma.fixed <- res$seTE.nma.common
+  res$lower.nma.fixed <- res$lower.nma.common
+  res$upper.nma.fixed <- res$upper.nma.common
+  res$statistic.nma.fixed <- res$statistic.nma.common
+  res$pval.nma.fixed <- res$pval.nma.common
+  res$leverage.fixed <- res$leverage.common
+  res$w.fixed <- res$w.common
+  res$Q.fixed <- res$Q.common
+  ##
+  res$TE.fixed <- res$TE.common
+  res$seTE.fixed <- res$seTE.common
+  res$lower.fixed <- res$lower.common
+  res$upper.fixed <- res$upper.common
+  res$statistic.fixed <- res$statistic.common
+  res$pval.fixed <- res$pval.common
+  ##
+  res$prop.direct.fixed <- res$prop.direct.common
+  ##
+  res$TE.direct.fixed <- res$TE.direct.common
+  res$seTE.direct.fixed <- res$seTE.direct.common
+  res$lower.direct.fixed <- res$lower.direct.common
+  res$upper.direct.fixed <- res$upper.direct.common
+  res$statistic.direct.fixed <- res$statistic.direct.common
+  res$pval.direct.fixed <- res$pval.direct.common
+  ##
+  res$TE.indirect.fixed <- res$TE.indirect.common
+  res$seTE.indirect.fixed <- res$seTE.indirect.common
+  res$lower.indirect.fixed <- res$lower.indirect.common
+  res$upper.indirect.fixed <- res$upper.indirect.common
+  res$statistic.indirect.fixed <- res$statistic.indirect.common
+  res$pval.indirect.fixed <- res$pval.indirect.common
+  ##
+  res$L.matrix.fixed <- res$L.matrix.common
+  res$Lplus.matrix.fixed <- res$Lplus.matrix.common
+  res$H.matrix.fixed <- res$H.matrix.common
+  res$P.fixed <- res$P.common
+  res$Cov.fixed <- res$Cov.common               
   
   
   res

@@ -10,15 +10,17 @@ netcomparison(
   x,
   treat1,
   treat2,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   level = x$level.ma,
-  nchar.comps = x$nchar.comps
+  nchar.comps = x$nchar.comps,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
 )
 
 \method{print}{netcomparison}(
   x,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   backtransf = x$backtransf,
   nchar.comps = x$nchar.comps,
@@ -30,6 +32,7 @@ netcomparison(
   JAMA.pval = gs("JAMA.pval"),
   big.mark = gs("big.mark"),
   legend = TRUE,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 }
@@ -43,8 +46,8 @@ intervention(s).}
 \item{treat2}{A character vector defining the second complex
 intervention(s).}
 
-\item{fixed}{A logical indicating whether results for fixed effects
-/ common effects model should be conducted.}
+\item{common}{A logical indicating whether results for common
+effects model should be conducted.}
 
 \item{random}{A logical indicating whether results for random
 effects model should be conducted.}
@@ -55,6 +58,11 @@ combinations of components.}
 \item{nchar.comps}{A numeric defining the minimum number of
 characters used to create unique names for components (see
 Details).}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 
 \item{backtransf}{A logical indicating whether printed results
 should be back transformed. If \code{backtransf=TRUE}, results
@@ -85,30 +93,28 @@ standards.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}
-
-\item{\dots}{Additional arguments (ignored).}
 }
 \value{
 A list is returned by the function \code{netcomparison} with the
 following elements:
 \item{comparison}{Comparison.}
-\item{TE.fixed, TE.random}{A vector of comparison effects (fixed
+\item{TE.common, TE.random}{A vector of comparison effects (common
   and random effects model).}
-\item{seTE.fixed, seTE.random}{A vector with corresponding standard
-  errors (fixed and random effects model).}
-\item{lower.fixed, lower.random}{A vector with lower confidence
-  limits for comparisons (fixed and random effects model).}
-\item{upper.fixed, upper.random}{A vector with upper confidence
-  limits for comparisons (fixed and random effects model).}
-\item{statistic.fixed, statistic.random}{A vector with z-values for
-  the overall effect of comparisons (fixed and random effects
+\item{seTE.common, seTE.random}{A vector with corresponding standard
+  errors (common and random effects model).}
+\item{lower.common, lower.random}{A vector with lower confidence
+  limits for comparisons (common and random effects model).}
+\item{upper.common, upper.random}{A vector with upper confidence
+  limits for comparisons (common and random effects model).}
+\item{statistic.common, statistic.random}{A vector with z-values for
+  the overall effect of comparisons (common and random effects
   model).}
-\item{pval.fixed, pval.random}{A vector with p-values for the
-  overall effect of comparisons (fixed and random effects model).}
+\item{pval.common, pval.random}{A vector with p-values for the
+  overall effect of comparisons (common and random effects model).}
 \item{trts}{Treatments included in comparisons.}
 \item{comps}{Components included in comparisons.}
 \item{treat1, treat2}{A defined above.}
-\item{fixed, random}{A defined above.}
+\item{common, random}{A defined above.}
 \item{level, nchar.comps, backtransf, x}{A defined above.}
 \item{B.matrix}{B matrix.}
 \item{C.matrix}{C matrix.}
@@ -169,8 +175,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 # Conduct random effects network meta-analysis
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = face, ref = "placebo",
-                sm = "OR", fixed = FALSE)
+  data = face, ref = "placebo", sm = "OR", common = FALSE)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)

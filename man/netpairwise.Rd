@@ -13,7 +13,7 @@ evidence in a network meta-analysis}
 netpairwise(
   x,
   separate = FALSE,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   level = x$level,
   level.ma = x$level.ma,
@@ -25,6 +25,7 @@ netpairwise(
   sep.trts = x$sep.trts,
   nchar.trts = x$nchar.trts,
   backtransf = x$backtransf,
+  warn.deprecated = gs("warn.deprecated"),
   ...
 )
 
@@ -45,8 +46,8 @@ netpairwise(
 comparisons should be printed as separate meta-analyses or as
 subgroups which is more concise.}
 
-\item{fixed}{A logical indicating whether a fixed effects / common
-effects network meta-analysis should be conducted.}
+\item{common}{A logical indicating whether a common effects network
+meta-analysis should be conducted.}
 
 \item{random}{A logical indicating whether a random effects network
 meta-analysis should be conducted.}
@@ -87,8 +88,11 @@ back transformed in printouts and forest plots. If
 presented as odds ratios rather than log odds ratios, for
 example.}
 
-\item{...}{Additional arguments (passed on to \code{metagen} or
-print functions).}
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (passed on to \code{metagen} or
+print functions and to catch deprecated arguments).}
 
 \item{object}{An object of class \code{netpairwise}.}
 }
@@ -123,8 +127,7 @@ oldsets <- settings.meta(digits = 2, digits.tau2 = 2, digits.tau = 2)
 # Random effects model
 #
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-                data = Senn2013, sm = "MD",
-                fixed = FALSE)
+  data = Senn2013, sm = "MD", common = FALSE)
 
 # Calculate and print consise results for all pairwise
 # meta-analyses

@@ -10,8 +10,8 @@
 #'   (print function).
 #' @param complex A matrix, vector or single numeric defining the
 #'   complex intervention(s) (see Details).
-#' @param fixed A logical indicating whether results for fixed effects
-#'   / common effects model should be conducted.
+#' @param common A logical indicating whether results for common
+#'   effects model should be conducted.
 #' @param random A logical indicating whether results for random
 #'   effects model should be conducted.
 #' @param level The level used to calculate confidence intervals for
@@ -40,7 +40,9 @@
 #' @param big.mark A character used as thousands separator.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
-#' @param \dots Additional arguments (ignored).
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #'
 #' @details
 #' R functions \code{\link{netcomb}} and \code{\link{discomb}} only
@@ -80,23 +82,23 @@
 #' A list is returned by the function \code{netcomplex} with the
 #' following elements:
 #' \item{complex}{Complex intervention(s).}
-#' \item{Comb.fixed, Comb.random}{A vector of combination effects
-#'   (fixed and random effects model).}
-#' \item{seComb.fixed, seComb.random}{A vector with corresponding
-#'   standard errors (fixed and random effects model).}
-#' \item{lower.Comb.fixed, lower.Comb.random}{A vector with lower
-#'   confidence limits for combinations (fixed and random effects
+#' \item{Comb.common, Comb.random}{A vector of combination effects
+#'   (common and random effects model).}
+#' \item{seComb.common, seComb.random}{A vector with corresponding
+#'   standard errors (common and random effects model).}
+#' \item{lower.Comb.common, lower.Comb.random}{A vector with lower
+#'   confidence limits for combinations (common and random effects
 #'   model).}
-#' \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
-#'   confidence limits for combinations (fixed and random effects
+#' \item{upper.Comb.common, upper.Comb.random}{A vector with upper
+#'   confidence limits for combinations (common and random effects
 #'   model).}
-#' \item{statistic.Comb.fixed, statistic.Comb.random}{A vector with
-#'   z-values for the overall effect of combinations (fixed and random
+#' \item{statistic.Comb.common, statistic.Comb.random}{A vector with
+#'   z-values for the overall effect of combinations (common and random
 #'   effects model).}
-#' \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
-#'   the overall effect of combinations (fixed and random effects
+#' \item{pval.Comb.common, pval.Comb.random}{A vector with p-values for
+#'   the overall effect of combinations (common and random effects
 #'   model).}
-#' \item{fixed, random}{A defined above.}
+#' \item{common, random}{A defined above.}
 #' \item{level, nchar.comps, backtransf, x}{A defined above.}
 #' \item{C.matrix}{C matrix.}
 #' 
@@ -122,8 +124,7 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = face, ref = "placebo",
-#'                 sm = "OR", fixed = FALSE)
+#'   data = face, ref = "placebo", sm = "OR", common = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -170,16 +171,23 @@
 
 
 netcomplex <- function(x, complex,
-                       fixed = x$fixed,
+                       common = x$common,
                        random = x$random,
                        level = x$level.ma,
-                       nchar.comps = x$nchar.trts) {
+                       nchar.comps = x$nchar.trts,
+                       warn.deprecated = gs("warn.deprecated"),
+                       ...) {
   
   
   chkclass(x, "netcomb")
   x <- updateversion(x)
   ##
-  chklogical(fixed)
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  common <- deprecated(common, missing(common), args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
+  ##
   chklogical(random)
   chklevel(level)
   ##
@@ -258,26 +266,26 @@ netcomplex <- function(x, complex,
   ##
   ## Calculate estimates for combinations
   ##
-  Comb.fixed <- as.vector(C.matrix %*% x$Comp.fixed)
-  seComb.fixed <-
-    sqrt(diag(C.matrix %*% x$Lplus.matrix.fixed %*% t(C.matrix)))
+  Comb.common <- as.vector(C.matrix %*% x$Comp.common)
+  seComb.common <-
+    sqrt(diag(C.matrix %*% x$Lplus.matrix.common %*% t(C.matrix)))
   ##
   Comb.random <- as.vector(C.matrix %*% x$Comp.random)
   seComb.random <-
     sqrt(diag(C.matrix %*% x$Lplus.matrix.random %*% t(C.matrix)))
   ##
-  ci.f <- ci(Comb.fixed, seComb.fixed, level = level)
+  ci.f <- ci(Comb.common, seComb.common, level = level)
   ci.r <- ci(Comb.random, seComb.random, level = level)
   
   
   res <- list(complex = complex,
               ##
-              Comb.fixed = ci.f$TE,
-              seComb.fixed = ci.f$seTE,
-              lower.Comb.fixed = ci.f$lower,
-              upper.Comb.fixed = ci.f$upper,
-              statistic.Comb.fixed = ci.f$statistic,
-              pval.Comb.fixed = ci.f$p,
+              Comb.common = ci.f$TE,
+              seComb.common = ci.f$seTE,
+              lower.Comb.common = ci.f$lower,
+              upper.Comb.common = ci.f$upper,
+              statistic.Comb.common = ci.f$statistic,
+              pval.Comb.common = ci.f$p,
               ##
               Comb.random = ci.r$TE,
               seComb.random = ci.r$seTE,
@@ -286,7 +294,7 @@ netcomplex <- function(x, complex,
               statistic.Comb.random = ci.r$statistic,
               pval.Comb.random = ci.r$p,
               ##
-              fixed = fixed,
+              common = common,
               random = random,
               level = level,
               ##
@@ -307,6 +315,17 @@ netcomplex <- function(x, complex,
               version = packageDescription("netmeta")$Version
               )
   ##
+  ## Backward compatibility
+  ##
+  res$fixed <- res$common
+  ##
+  res$Comb.fixed <- res$Comb.common
+  res$seComb.fixed <- res$seComb.common
+  res$lower.Comb.fixed <- res$lower.Comb.common
+  res$upper.Comb.fixed <- res$upper.Comb.common
+  res$statistic.Comb.fixed <- res$statistic.Comb.common
+  res$pval.Comb.fixed <- res$pval.Comb.common
+  ##
   class(res) <- c("netcomplex", class(res))
   
   res
@@ -321,7 +340,7 @@ netcomplex <- function(x, complex,
 #' @export
 
 print.netcomplex <- function(x,
-                             fixed = x$fixed,
+                             common = x$common,
                              random = x$random,
                              backtransf = x$backtransf,
                              nchar.comps = x$nchar.comps,
@@ -337,12 +356,19 @@ print.netcomplex <- function(x,
                              big.mark = gs("big.mark"),
                              ##
                              legend = TRUE,
+                             warn.deprecated = gs("warn.deprecated"),
                              ##
                              ...) {
   
   chkclass(x, "netcomplex")
+  x <- updateversion(x)
   ##
-  chklogical(fixed)
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  common <- deprecated(common, missing(common), args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
+  ##
   chklogical(random)
   chklogical(backtransf)
   ##
@@ -366,7 +392,7 @@ print.netcomplex <- function(x,
   n.complex <- length(x$complex)
   complex <- rep("", n.complex)
   ##
-  if (fixed | random) {
+  if (common | random) {
     comps <- c(x$comps, x$inactive)
     comps.abbr <- treats(comps, nchar.comps)
     ##
@@ -386,15 +412,15 @@ print.netcomplex <- function(x,
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   
   
-  if (fixed) {
-    Comb.fixed <- x$Comb.fixed
-    lower.Comb.fixed <- x$lower.Comb.fixed
-    upper.Comb.fixed <- x$upper.Comb.fixed
+  if (common) {
+    Comb.common <- x$Comb.common
+    lower.Comb.common <- x$lower.Comb.common
+    upper.Comb.common <- x$upper.Comb.common
     ##
     if (backtransf & relative) {
-      Comb.fixed <- exp(Comb.fixed)
-      lower.Comb.fixed <- exp(lower.Comb.fixed)
-      upper.Comb.fixed <- exp(upper.Comb.fixed)
+      Comb.common <- exp(Comb.common)
+      lower.Comb.common <- exp(lower.Comb.common)
+      upper.Comb.common <- exp(upper.Comb.common)
     }
   }
   ##
@@ -411,7 +437,7 @@ print.netcomplex <- function(x,
   }
   
   
-  if (fixed | random) {
+  if (common | random) {
     ##
     if (is.numeric(x$complex.orig) & !is.matrix(x$complex.orig))
       if (all(x$complex.orig == 1))
@@ -432,22 +458,22 @@ print.netcomplex <- function(x,
   }
   
   
-  if (fixed) {
-    pval.f <- formatPT(x$pval.Comb.fixed, digits = digits.pval,
+  if (common) {
+    pval.f <- formatPT(x$pval.Comb.common, digits = digits.pval,
                        scientific = scientific.pval,
                        zero = zero.pval, JAMA = JAMA.pval,
                        lab.NA = "")
     ##
     res.f <-
-      cbind(Comb = formatN(Comb.fixed, digits = digits,
+      cbind(Comb = formatN(Comb.common, digits = digits,
                            "NA", big.mark = big.mark),
-            CI = formatCI(formatN(round(lower.Comb.fixed, digits),
+            CI = formatCI(formatN(round(lower.Comb.common, digits),
                                   digits, "NA",
                                   big.mark = big.mark),
-                          formatN(round(upper.Comb.fixed, digits),
+                          formatN(round(upper.Comb.common, digits),
                                   digits, "NA",
                                   big.mark = big.mark)),
-            zval = formatN(x$statistic.Comb.fixed, digits = digits.stat,
+            zval = formatN(x$statistic.Comb.common, digits = digits.stat,
                            "NA", big.mark = big.mark),
             pval = pval.f)
     ##
@@ -455,7 +481,7 @@ print.netcomplex <- function(x,
     ##
     dimnames(res.f)[[2]] <- c(sm.lab, ci.lab, "z", "p-value")
     ##
-    cat("(additive CNMA model, fixed effects model):\n")
+    cat("(additive CNMA model, common effects model):\n")
     prmatrix(res.f, quote = FALSE, right = TRUE, na.print = "--")
     ##
     if (random)
@@ -492,7 +518,7 @@ print.netcomplex <- function(x,
   }
   
   
-  if (legend && (fixed | random)) {
+  if (legend && (common | random)) {
     diff.comps <- comps != comps.abbr
     any.comps <- any()
     ##

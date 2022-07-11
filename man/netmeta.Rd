@@ -16,7 +16,7 @@ netmeta(
   sm,
   level = gs("level"),
   level.ma = gs("level.ma"),
-  fixed = gs("fixed"),
+  common = gs("common"),
   random = gs("random") | !is.null(tau.preset),
   prediction = FALSE,
   level.predict = gs("level.predict"),
@@ -55,7 +55,7 @@ netmeta(
 
 \method{print}{netmeta}(
   x,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   prediction = x$prediction,
   reference.group = x$reference.group,
@@ -113,8 +113,8 @@ individual comparisons.}
 \item{level.ma}{The level used to calculate confidence intervals
 for network estimates.}
 
-\item{fixed}{A logical indicating whether results for the fixed
-effects / common effects model should be printed.}
+\item{common}{A logical indicating whether results for the common
+effects model should be printed.}
 
 \item{random}{A logical indicating whether results for the random
 effects model should be printed.}
@@ -186,7 +186,8 @@ of the Laplacian matrix L (see Details).}
 
 \item{event2}{Number of events in second treatment group.}
 
-\item{incr}{Numerical value added to each cell frequency.}
+\item{incr}{Numerical value added to cell frequencies (for details,
+see \code{\link{pairwise}}).}
 
 \item{sd1}{Standard deviation in first treatment group.}
 
@@ -275,10 +276,11 @@ An object of class \code{netmeta} with corresponding \code{print},
 \code{summary}, \code{forest}, and \code{netrank} functions. The
 object is a list containing the following components:
 \item{studlab, treat1, treat2, TE, seTE}{As defined above.}
-\item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+\item{seTE.adj.common, seTE.adj.random}{Standard error of treatment
   estimate, adjusted for multi-arm studies.}
 \item{design}{Design of study providing pairwise comparison.}
 \item{n1, n2, event1, event2, incr}{As defined above.}
+\item{mean1, mean2, sd1, sd2, time1, time2}{As defined above.}
 \item{sd1, sd2, time1, time2}{As defined above.}
 \item{k}{Total number of studies.}
 \item{m}{Total number of pairwise comparisons.}
@@ -302,92 +304,92 @@ object is a list containing the following components:
   study.}
 \item{designs}{Vector with unique direct comparisons present in the
   network.}
-\item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
+\item{TE.nma.common, TE.nma.random}{A vector of length \emph{m} of
   consistent treatment effects estimated by network meta-analysis
-  (nma) (fixed effects / random effects model).}
-\item{seTE.nma.fixed, seTE.nma.random}{A vector of length \emph{m}
+  (nma) (common / random effects model).}
+\item{seTE.nma.common, seTE.nma.random}{A vector of length \emph{m}
   of effective standard errors estimated by network meta-analysis
-  (fixed effects / random effects model).}
-\item{lower.nma.fixed, lower.nma.random}{A vector of length
+  (common / random effects model).}
+\item{lower.nma.common, lower.nma.random}{A vector of length
   \emph{m} of lower confidence interval limits for consistent
-  treatment effects estimated by network meta-analysis (fixed
+  treatment effects estimated by network meta-analysis (common
   effects / random effects model).}
-\item{upper.nma.fixed, upper.nma.random}{A vector of length
+\item{upper.nma.common, upper.nma.random}{A vector of length
   \emph{m} of upper confidence interval limits for the consistent
-  treatment effects estimated by network meta-analysis (fixed
+  treatment effects estimated by network meta-analysis (common
   effects / random effects model).}
-\item{statistic.nma.fixed, statistic.nma.random}{A vector of length
+\item{statistic.nma.common, statistic.nma.random}{A vector of length
   \emph{m} of z-values for test of treatment effect for individual
-  comparisons (fixed effects / random effects model).}
-\item{pval.nma.fixed, pval.nma.random}{A vector of length \emph{m}
+  comparisons (common / random effects model).}
+\item{pval.nma.common, pval.nma.random}{A vector of length \emph{m}
   of p-values for test of treatment effect for individual
-  comparisons (fixed effects / random effects model).}
-\item{leverage.fixed}{A vector of length \emph{m} of leverages,
+  comparisons (common / random effects model).}
+\item{leverage.common}{A vector of length \emph{m} of leverages,
   interpretable as factors by which variances are reduced using
   information from the whole network.}
-\item{w.fixed, w.random}{A vector of length \emph{m} of weights of
-  individual studies (fixed effects / random effects model).}
-\item{Q.fixed}{A vector of length \emph{m} of contributions to
+\item{w.common, w.random}{A vector of length \emph{m} of weights of
+  individual studies (common / random effects model).}
+\item{Q.common}{A vector of length \emph{m} of contributions to
   total heterogeneity / inconsistency statistic.}
-\item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with estimated
-  overall treatment effects (fixed effects / random effects model).}
-\item{seTE.fixed, seTE.random}{\emph{n}x\emph{n} matrix with
-  standard errors (fixed effects / random effects model).}
-\item{lower.fixed, upper.fixed, lower.random,
+\item{TE.common, TE.random}{\emph{n}x\emph{n} matrix with estimated
+  overall treatment effects (common / random effects model).}
+\item{seTE.common, seTE.random}{\emph{n}x\emph{n} matrix with
+  standard errors (common / random effects model).}
+\item{lower.common, upper.common, lower.random,
   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
-  confidence interval limits (fixed effects / random effects
+  confidence interval limits (common / random effects
   model).}
-\item{statistic.fixed, pval.fixed, statistic.random,
+\item{statistic.common, pval.common, statistic.random,
   pval.random}{\emph{n}x\emph{n} matrices with z-value and p-value
-  for test of overall treatment effect (fixed effects / random
+  for test of overall treatment effect (common / random
   effects model).}
 \item{seTE.predict}{\emph{n}x\emph{n} matrix with standard errors
   for prediction intervals.}
 \item{lower.predict, upper.predict}{\emph{n}x\emph{n} matrices with
   lower and upper prediction interval limits.}
-\item{prop.direct.fixed, prop.direct.random}{A named vector of the
-  direct evidence proportion of each network estimate. (fixed
+\item{prop.direct.common, prop.direct.random}{A named vector of the
+  direct evidence proportion of each network estimate. (common
   effects / random effects model).}
-\item{TE.direct.fixed, TE.direct.random}{\emph{n}x\emph{n} matrix
-  with estimated treatment effects from direct evidence (fixed
+\item{TE.direct.common, TE.direct.random}{\emph{n}x\emph{n} matrix
+  with estimated treatment effects from direct evidence (common
   effects / random effects model).}
-\item{seTE.direct.fixed, seTE.direct.random}{\emph{n}x\emph{n}
-  matrix with estimated standard errors from direct evidence (fixed
+\item{seTE.direct.common, seTE.direct.random}{\emph{n}x\emph{n}
+  matrix with estimated standard errors from direct evidence (common
   effects / random effects model).}
-\item{lower.direct.fixed, upper.direct.fixed, lower.direct.random,
+\item{lower.direct.common, upper.direct.common, lower.direct.random,
   }{\emph{n}x\emph{n} matrices with lower and upper confidence
-  interval limits from direct evidence (fixed effects / random
+  interval limits from direct evidence (common / random
   effects model).}
 \item{upper.direct.random}{\emph{n}x\emph{n} matrices with lower
-  and upper confidence interval limits from direct evidence (fixed
+  and upper confidence interval limits from direct evidence (common
   effects / random effects model).}
-\item{statistic.direct.fixed, pval.direct.fixed,
+\item{statistic.direct.common, pval.direct.common,
   statistic.direct.random, }{\emph{n}x\emph{n} matrices with
   z-value and p-value for test of overall treatment effect from
-  direct evidence (fixed effects / random effects model).}
+  direct evidence (common / random effects model).}
 \item{pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
   and p-value for test of overall treatment effect from direct
-  evidence (fixed effects / random effects model).}
-\item{TE.indirect.fixed, TE.indirect.random}{\emph{n}x\emph{n}
+  evidence (common / random effects model).}
+\item{TE.indirect.common, TE.indirect.random}{\emph{n}x\emph{n}
   matrix with estimated treatment effects from indirect evidence
-  (fixed effects / random effects model).}
-\item{seTE.indirect.fixed, seTE.indirect.random}{\emph{n}x\emph{n}
+  (common / random effects model).}
+\item{seTE.indirect.common, seTE.indirect.random}{\emph{n}x\emph{n}
   matrix with estimated standard errors from indirect evidence
-  (fixed effects / random effects model).}
-\item{lower.indirect.fixed, upper.indirect.fixed,
+  (common / random effects model).}
+\item{lower.indirect.common, upper.indirect.common,
   lower.indirect.random, }{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from indirect evidence
-  (fixed effects / random effects model).}
+  (common / random effects model).}
 \item{upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
   and upper confidence interval limits from indirect evidence
-  (fixed effects / random effects model).}
-\item{statistic.indirect.fixed, pval.indirect.fixed,
+  (common / random effects model).}
+\item{statistic.indirect.common, pval.indirect.common,
   statistic.indirect.random, }{\emph{n}x\emph{n} matrices with
   z-value and p-value for test of overall treatment effect from
-  indirect evidence (fixed effects / random effects model).}
+  indirect evidence (common / random effects model).}
 \item{pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value
   and p-value for test of overall treatment effect from indirect
-  evidence (fixed effects / random effects model).}
+  evidence (common / random effects model).}
 \item{Q}{Overall heterogeneity / inconsistency statistic.}
 \item{df.Q}{Degrees of freedom for test of heterogeneity /
   inconsistency.}
@@ -411,9 +413,9 @@ object is a list containing the following components:
 \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
 \item{X.matrix}{Design matrix (\emph{m}x\emph{n}).}
 \item{B.matrix}{Edge-vertex incidence matrix (\emph{m}x\emph{n}).}
-\item{L.matrix.fixed, L.matrix.random}{Laplacian matrix
+\item{L.matrix.common, L.matrix.random}{Laplacian matrix
   (\emph{n}x\emph{n}).}
-\item{Lplus.matrix.fixed, Lplus.matrix.random}{Moore-Penrose
+\item{Lplus.matrix.common, Lplus.matrix.random}{Moore-Penrose
   pseudoinverse of the Laplacian matrix (\emph{n}x\emph{n}).}
 \item{Q.matrix}{Matrix of heterogeneity statistics for pairwise
   meta-analyses, where direct comparisons exist
@@ -421,7 +423,7 @@ object is a list containing the following components:
 \item{G.matrix}{Matrix with variances and covariances of
   comparisons (\emph{m}x\emph{m}). G is defined as
   \strong{BL+B^t}.}
-\item{H.matrix.fixed, H.matrix.random}{Hat matrix
+\item{H.matrix.common, H.matrix.random}{Hat matrix
   (\emph{m}x\emph{m}), defined as \strong{H = GW = BL+B^tW}.}
 \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
   observations in direct comparisons (if arguments \code{n1} and
@@ -429,13 +431,13 @@ object is a list containing the following components:
 \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
   in direct comparisons (if arguments \code{event1} and
   \code{event2} are provided).}
-\item{P.fixed, P.random}{\emph{n}x\emph{n} matrix with direct
-  evidence proportions (fixed effects / random effects model).}
-\item{Cov.fixed}{Variance-covariance matrix (fixed effects model)}
+\item{P.common, P.random}{\emph{n}x\emph{n} matrix with direct
+  evidence proportions (common / random effects model).}
+\item{Cov.common}{Variance-covariance matrix (common effects model)}
 \item{Cov.random}{Variance-covariance matrix (random effects
   model)}
 \item{sm, level, level.ma}{As defined above.}
-\item{fixed, random}{As defined above.}
+\item{common, random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
 \item{reference.group, baseline.reference, small.values,
   all.treatments}{As defined above.}
@@ -520,9 +522,8 @@ outcomes (using the \code{\link{metabin}} function from R package
 \bold{meta}), continuous outcomes (\code{\link{metacont}}
 function), incidence rates (\code{\link{metainc}} function), and
 generic outcomes (\code{\link{metagen}} function). Additional
-arguments of these functions can be provided, e.g., to calculate
-Hedges' \emph{g} or Cohen's \emph{d} for continuous outcomes (see
-help page of function \code{\link{pairwise}}).
+arguments of these functions can be provided (see help page of
+function \code{\link{pairwise}}).
 
 Note, all pairwise comparisons must be provided for a multi-arm
 study. Consider a multi-arm study of \emph{p} treatments with known
@@ -547,16 +548,16 @@ For the random-effects model, the direct treatment estimates are
 based on the common between-study variance \eqn{\tau^2} from the
 network meta-analysis.
 
-Internally, both fixed effects and random effects models are
-calculated regardless of values choosen for arguments \code{fixed}
-and \code{random}. Accordingly, the network estimates for the
-random effects model can be extracted from component
-\code{TE.random} of an object of class \code{"netmeta"} even if
-argument \code{random = FALSE}. However, all functions in R package
-\bold{netmeta} will adequately consider the values for \code{fixed}
-and \code{random}. E.g. function
-\code{\link{print.summary.netmeta}} will not print results for the
-random effects model if \code{random = FALSE}.
+Internally, both common and random effects models are calculated
+regardless of values choosen for arguments \code{common} and
+\code{random}. Accordingly, the network estimates for the random
+effects model can be extracted from component \code{TE.random} of
+an object of class \code{"netmeta"} even if argument \code{random =
+FALSE}. However, all functions in R package \bold{netmeta} will
+adequately consider the values for \code{common} and
+\code{random}. E.g. function \code{\link{print.summary.netmeta}}
+will not print results for the random effects model if \code{random
+= FALSE}.
 
 By default, treatment names are not abbreviated in
 printouts. However, in order to get more concise printouts,
@@ -569,7 +570,7 @@ treatment names.
 Names of treatment comparisons are created by concatenating
 treatment labels of pairwise comparisons using \code{sep.trts} as
 separator (see \code{\link{paste}}). These comparison names are
-used in the covariance matrices \code{Cov.fixed} and
+used in the covariance matrices \code{Cov.common} and
 \code{Cov.random} and in some R functions, e.g,
 \code{\link{decomp.design}}. By default, a colon is used as the
 separator. If any treatment label contains a colon the following
@@ -595,11 +596,10 @@ the respective variables are selected automatically.
 \examples{
 data(Senn2013)
 
-# Conduct fixed effects network meta-analysis
+# Conduct common effects network meta-analysis
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                random = FALSE)
+  data = Senn2013, sm = "MD", random = FALSE)
 net1
 net1$Q.decomp
 
@@ -611,18 +611,17 @@ print(net1, reference = "plac")
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                fixed = FALSE)
+  data = Senn2013, sm = "MD", common = FALSE)
 net2
 
 # Change printing order of treatments with placebo last and use
 # long treatment names
 #
 trts <- c("acar", "benf", "metf", "migl", "piog",
-          "rosi", "sita", "sulf", "vild", "plac")
+  "rosi", "sita", "sulf", "vild", "plac")
 net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-                data = Senn2013, sm = "MD", fixed = FALSE,
-                seq = trts, reference = "Placebo")
+  data = Senn2013, sm = "MD", common = FALSE,
+  seq = trts, reference = "Placebo")
 print(net3, digits = 2)
 }
 

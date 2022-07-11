@@ -17,13 +17,13 @@ netmetabin(
   sm,
   method = "MH",
   cc.pooled = FALSE,
-  incr = gs("incr"),
-  allincr = gs("allincr"),
-  addincr = gs("addincr"),
-  allstudies = gs("allstudies"),
+  incr,
+  allincr,
+  addincr,
+  allstudies,
   level = gs("level"),
   level.ma = gs("level.ma"),
-  fixed = gs("fixed"),
+  common = gs("common"),
   random = method == "Inverse" & (gs("random") | !is.null(tau.preset)),
   prediction = FALSE,
   level.predict = gs("level.predict"),
@@ -108,8 +108,8 @@ individual studies.}
 \item{level.ma}{The level used to calculate confidence intervals
 for network estimates.}
 
-\item{fixed}{A logical indicating whether a fixed effects / common
-effects network meta-analysis should be conducted.}
+\item{common}{A logical indicating whether a common effects network
+meta-analysis should be conducted.}
 
 \item{random}{A logical indicating whether a random effects network
 meta-analysis should be conducted.}
@@ -212,15 +212,15 @@ following components:
 \item{designs}{Unique list of designs present in the network. A
   design corresponds to the set of treatments compared within a
   study.}
-\item{TE.fixed, seTE.fixed}{\emph{n}x\emph{n} matrix with estimated
-  overall treatment effects and standard errors for fixed effects
+\item{TE.common, seTE.common}{\emph{n}x\emph{n} matrix with estimated
+  overall treatment effects and standard errors for common effects
   model.}
-\item{lower.fixed, upper.fixed}{\emph{n}x\emph{n} matrices with
-  lower and upper confidence interval limits for fixed effects
+\item{lower.common, upper.common}{\emph{n}x\emph{n} matrices with
+  lower and upper confidence interval limits for common effects
   model.}
-\item{statistic.fixed, pval.fixed}{\emph{n}x\emph{n} matrices with
+\item{statistic.common, pval.common}{\emph{n}x\emph{n} matrices with
   z-value and p-value for test of overall treatment effect under
-  fixed effects model.}
+  common effects model.}
 \item{TE.random, seTE.random}{\emph{n}x\emph{n} matrix with
   estimated overall treatment effects and standard errors for
   random effects model (only available if \code{method =
@@ -232,15 +232,15 @@ following components:
   with z-value and p-value for test of overall treatment effect
   under random effects model (only available if \code{method =
   "Inverse"}).}
-\item{TE.direct.fixed, seTE.direct.fixed}{\emph{n}x\emph{n} matrix
+\item{TE.direct.common, seTE.direct.common}{\emph{n}x\emph{n} matrix
   with estimated treatment effects and standard errors from direct
-  evidence under fixed effects model.}
-\item{lower.direct.fixed, upper.direct.fixed}{\emph{n}x\emph{n}
+  evidence under common effects model.}
+\item{lower.direct.common, upper.direct.common}{\emph{n}x\emph{n}
   matrices with lower and upper confidence interval limits from
-  direct evidence under fixed effects model.}
-\item{statistic.direct.fixed, pval.direct.fixed}{\emph{n}x\emph{n}
+  direct evidence under common effects model.}
+\item{statistic.direct.common, pval.direct.common}{\emph{n}x\emph{n}
   matrices with z-value and p-value for test of overall treatment
-  effect from direct evidence under fixed effects model.}
+  effect from direct evidence under common effects model.}
 \item{TE.direct.random, seTE.direct.random}{\emph{n}x\emph{n}
   matrix with estimated treatment effects and standard errors from
   direct evidence under random effects model (only available if
@@ -283,7 +283,7 @@ following components:
 \item{sm, method, level, level.ma}{As defined above.}
 \item{incr, allincr, addincr, allstudies, cc.pooled}{As defined
   above.}
-\item{fixed, random}{As defined above.}
+\item{common, random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
 \item{reference.group, baseline.reference, all.treatments}{As
   defined above.}
@@ -342,14 +342,14 @@ a four-arm study even six pairwise comparisons. Function
 \code{\link{pairwise}} automatically calculates all pairwise
 comparisons for multi-arm studies.
 
-For \code{method = "Inverse"}, both fixed effects and random
-effects models are calculated regardless of values choosen for
-arguments \code{fixed} and \code{random}. Accordingly, the network
-estimates for the random effects model can be extracted from
-component \code{TE.random} of an object of class \code{"netmeta"}
-even if argument \code{random = FALSE}.  However, all functions in
-R package \bold{netmeta} will adequately consider the values for
-\code{fixed} and \code{random}. E.g. function
+For \code{method = "Inverse"}, both common and random effects
+models are calculated regardless of values choosen for arguments
+\code{common} and \code{random}. Accordingly, the network estimates
+for the random effects model can be extracted from component
+\code{TE.random} of an object of class \code{"netmeta"} even if
+argument \code{random = FALSE}.  However, all functions in R
+package \bold{netmeta} will adequately consider the values for
+\code{common} and \code{random}. E.g. function
 \code{\link{print.summary.netmeta}} will not print results for the
 random effects model if \code{random = FALSE}.
 
@@ -357,7 +357,7 @@ For the random-effects model, the direct treatment estimates are
 based on the common between-study variance \eqn{\tau^2} from the
 network meta-analysis.
 
-For \code{method = "MH"} and \code{method = "NCH"}, only a fixed
+For \code{method = "MH"} and \code{method = "NCH"}, only a common
 effects model is available.
 
 By default, treatment names are not abbreviated in
@@ -371,7 +371,7 @@ treatment names.
 Names of treatment comparisons are created by concatenating
 treatment labels of pairwise comparisons using \code{sep.trts} as
 separator (see \code{\link{paste}}). These comparison names are
-used in the covariance matrices \code{Cov.fixed} and
+used in the covariance matrices \code{Cov.common} and
 \code{Cov.random} and in some R functions, e.g,
 \code{\link{decomp.design}}. By default, a colon is used as the
 separator. If any treatment label contains a colon the following
@@ -394,7 +394,7 @@ first10 <- subset(Dong2013, id <= 10)
 # function called internally.
 #
 p1 <- pairwise(treatment, death, randomized, studlab = id,
-               data = first10, sm = "OR")
+  data = first10, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis (without continuity
 # correction)
@@ -411,7 +411,7 @@ netleague(nb1)
 # dataset
 #
 p2 <- pairwise(treatment, death, randomized, studlab = id,
-               data = Dong2013, sm = "OR")
+  data = Dong2013, sm = "OR")
 netmetabin(p2, ref = "plac")
   
 # Conduct network meta-analysis using the non-central
@@ -427,7 +427,7 @@ netmetabin(p2, ref = "plac", cc.pooled = TRUE)
 data(Gurusamy2011)
 
 p3 <- pairwise(treatment, death, n, studlab = study,
-               data = Gurusamy2011, sm = "OR")
+  data = Gurusamy2011, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis (without continuity
 # correction)

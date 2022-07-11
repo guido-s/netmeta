@@ -1,4 +1,4 @@
-updateversion <- function(x) {
+updateversion <- function(x, verbose = FALSE) {
   
   if (is.null(x$version)) {
     major <- 0
@@ -12,8 +12,6 @@ updateversion <- function(x) {
   ##
   update.0.9.6 <- FALSE
   update.0.9.7 <- FALSE
-  update.1.3.0 <- FALSE
-  update.2.0.0 <- FALSE
   ##
   if (!((major == 0.9 & minor > 5) | major > 0.9)) {
     update.0.9.6 <- TRUE
@@ -22,11 +20,16 @@ updateversion <- function(x) {
   if (!((major == 0.9 & minor > 6) | major > 0.9))
     update.0.9.7 <- TRUE
   ##
-  if (major < 1.3)
-    update.1.3.0 <- TRUE
+  if (verbose) {
+    if (update.0.9.6)
+      message("Update to netmeta, version 0.9-6")
+    if (update.0.9.7)
+      message("Update to netmeta, version 0.9-7")
+  }
   ##
-  if (major < 2.0)
-    update.2.0.0 <- TRUE
+  update.1.3.0 <- update_needed(x$version, 1, 3, verbose)
+  update.2.0.0 <- update_needed(x$version, 2, 0, verbose)
+  update.2.5.0 <- update_needed(x$version, 2, 5, verbose)
   
   
   ##
@@ -117,6 +120,55 @@ updateversion <- function(x) {
       x$comb.fixed <- x$comb.random <- x$level.comb <- NULL
     }
     ##
+    if (update.2.5.0) {
+      x$common <- x$fixed
+      ##
+      x$seTE.adj.common <- x$seTE.adj.fixed
+      ##
+      if (!inherits(x, "netmetabin")) {
+        x$TE.nma.common <- x$TE.nma.fixed
+        x$seTE.nma.common <- x$seTE.nma.fixed
+        x$lower.nma.common <- x$lower.nma.fixed
+        x$upper.nma.common <- x$upper.nma.fixed
+        x$statistic.nma.common <- x$statistic.nma.fixed
+        x$pval.nma.common <- x$pval.nma.fixed
+        x$leverage.common <- x$leverage.fixed
+        x$w.common <- x$w.fixed
+        x$Q.common <- x$Q.fixed
+      }
+      ##
+      x$TE.common <- x$TE.fixed
+      x$seTE.common <- x$seTE.fixed
+      x$lower.common <- x$lower.fixed
+      x$upper.common <- x$upper.fixed
+      x$statistic.common <- x$statistic.fixed
+      x$pval.common <- x$pval.fixed
+      ##
+      x$prop.direct.common <- x$prop.direct.fixed
+      ##
+      x$TE.direct.common <- x$TE.direct.fixed
+      x$seTE.direct.common <- x$seTE.direct.fixed
+      x$lower.direct.common <- x$lower.direct.fixed
+      x$upper.direct.common <- x$upper.direct.fixed
+      x$statistic.direct.common <- x$statistic.direct.fixed
+      x$pval.direct.common <- x$pval.direct.fixed
+      ##
+      x$TE.indirect.common <- x$TE.indirect.fixed
+      x$seTE.indirect.common <- x$seTE.indirect.fixed
+      x$lower.indirect.common <- x$lower.indirect.fixed
+      x$upper.indirect.common <- x$upper.indirect.fixed
+      x$statistic.indirect.common <- x$statistic.indirect.fixed
+      x$pval.indirect.common <- x$pval.indirect.fixed
+      ##
+      if (!inherits(x, "netmetabin")) {
+        x$L.matrix.common <- x$L.matrix.fixed
+        x$Lplus.matrix.common <- x$Lplus.matrix.fixed
+        x$H.matrix.common <- x$H.matrix.fixed
+      }
+      x$P.common <- x$P.fixed
+      x$Cov.common <- x$Cov.fixed               
+    }
+    ##
     return(x)
   }
   
@@ -134,6 +186,9 @@ updateversion <- function(x) {
       ##
       x$version <- packageDescription("netmeta")$Version
     }
+    ##
+    if (update.2.5.0)
+      x$x$common <- x$x$fixed
     ##
     return(x)
   }
@@ -170,6 +225,49 @@ updateversion <- function(x) {
       x$level.ma <- x$level.comb
       ##
       x$comb.fixed <- x$comb.random <- x$level.comb <- NULL
+    }
+    ##
+    if (update.2.5.0) {
+      x$common <- x$fixed
+      ##
+      x$seTE.adj.common <- x$seTE.adj.fixed
+      x$TE.nma.common <- x$TE.nma.fixed
+      x$seTE.nma.common <- x$seTE.nma.fixed
+      x$lower.nma.common <- x$lower.nma.fixed
+      x$upper.nma.common <- x$upper.nma.fixed
+      x$statistic.nma.common <- x$statistic.nma.fixed
+      x$pval.nma.common <- x$pval.nma.fixed
+      x$TE.cnma.common <- x$TE.cnma.fixed
+      x$seTE.cnma.common <- x$seTE.cnma.fixed
+      x$lower.cnma.common <- x$lower.cnma.fixed
+      x$upper.cnma.common <- x$upper.cnma.fixed
+      x$statistic.cnma.common <- x$statistic.cnma.fixed
+      x$pval.cnma.common <- x$pval.cnma.fixed
+      ##
+      x$TE.common <- x$TE.fixed
+      x$seTE.common <- x$seTE.fixed
+      x$lower.common <- x$lower.fixed
+      x$upper.common <- x$upper.fixed
+      x$statistic.common <- x$statistic.fixed
+      x$pval.common <- x$pval.fixed
+      ##
+      x$Comp.common <- x$Comp.fixed
+      x$seComp.common <- x$seComp.fixed
+      x$lower.Comp.common <- x$lower.Comp.fixed
+      x$upper.Comp.common <- x$upper.Comp.fixed
+      x$statistic.Comp.common <- x$statistic.Comp.fixed
+      x$pval.Comp.common <- x$pval.Comp.fixed
+      ##
+      x$Comb.common <- x$Comb.fixed
+      x$seComb.common <- x$seComb.fixed
+      x$lower.Comb.common <- x$lower.Comb.fixed
+      x$upper.Comb.common <- x$upper.Comb.fixed
+      x$statistic.Comb.common <- x$statistic.Comb.fixed
+      x$pval.Comb.common <- x$pval.Comb.fixed
+      ##
+      x$L.matrix.common <- x$L.matrix.fixed
+      x$Lplus.matrix.common <- x$Lplus.matrix.fixed
+      x$H.matrix.common <- x$H.matrix.fixed        
     }
     ##
     return(x)
@@ -209,6 +307,49 @@ updateversion <- function(x) {
       x$comb.fixed <- x$comb.random <- x$level.comb <- NULL
     }
     ##
+    if (update.2.5.0) {
+      x$common <- x$fixed
+      ##
+      x$seTE.adj.common <- x$seTE.adj.fixed
+      x$TE.nma.common <- x$TE.nma.fixed
+      x$seTE.nma.common <- x$seTE.nma.fixed
+      x$lower.nma.common <- x$lower.nma.fixed
+      x$upper.nma.common <- x$upper.nma.fixed
+      x$statistic.nma.common <- x$statistic.nma.fixed
+      x$pval.nma.common <- x$pval.nma.fixed
+      x$TE.cnma.common <- x$TE.cnma.fixed
+      x$seTE.cnma.common <- x$seTE.cnma.fixed
+      x$lower.cnma.common <- x$lower.cnma.fixed
+      x$upper.cnma.common <- x$upper.cnma.fixed
+      x$statistic.cnma.common <- x$statistic.cnma.fixed
+      x$pval.cnma.common <- x$pval.cnma.fixed
+      ##
+      x$TE.common <- x$TE.fixed
+      x$seTE.common <- x$seTE.fixed
+      x$lower.common <- x$lower.fixed
+      x$upper.common <- x$upper.fixed
+      x$statistic.common <- x$statistic.fixed
+      x$pval.common <- x$pval.fixed
+      ##
+      x$Comp.common <- x$Comp.fixed
+      x$seComp.common <- x$seComp.fixed
+      x$lower.Comp.common <- x$lower.Comp.fixed
+      x$upper.Comp.common <- x$upper.Comp.fixed
+      x$statistic.Comp.common <- x$statistic.Comp.fixed
+      x$pval.Comp.common <- x$pval.Comp.fixed
+      ##
+      x$Comb.common <- x$Comb.fixed
+      x$seComb.common <- x$seComb.fixed
+      x$lower.Comb.common <- x$lower.Comb.fixed
+      x$upper.Comb.common <- x$upper.Comb.fixed
+      x$statistic.Comb.common <- x$statistic.Comb.fixed
+      x$pval.Comb.common <- x$pval.Comb.fixed
+      ##
+      x$L.matrix.common <- x$L.matrix.fixed
+      x$Lplus.matrix.common <- x$Lplus.matrix.fixed
+      x$H.matrix.common <- x$H.matrix.fixed        
+    }
+    ##
     return(x)
   }
   
@@ -246,6 +387,15 @@ updateversion <- function(x) {
       x$comb.fixed <- x$comb.random <- x$level.comb <- NULL
     }
     ##
+    if (update.2.5.0) {
+      x$common <- x$fixed
+      ##
+      x$prop.common <- x$prop.fixed
+      x$direct.common <- x$direct.fixed
+      x$indirect.common <- x$indirect.fixed
+      x$compare.common <- x$compare.fixed
+    }
+    ##
     return(x)
   }
   
@@ -258,6 +408,13 @@ updateversion <- function(x) {
       x$x <- updateversion(x$x)
       ##
       x$version <- packageDescription("netmeta")$Version
+    }
+    ##
+    if (update.2.5.0) {
+      x$common <- x$fixed
+      ##
+      x$ranking.common <- x$ranking.fixed
+      x$Pmatrix.common <- x$Pmatrix.fixed
     }
     ##
     return(x)
@@ -282,6 +439,14 @@ updateversion <- function(x) {
       x$version <- packageDescription("netmeta")$Version
     }
     ##
+    if (update.2.5.0) {
+      x$common <- x$fixed
+      ##
+      x$ranking.common <- x$ranking.fixed
+      x$ranking.matrix.common <- x$ranking.matrix.fixed
+      x$cumrank.matrix.common <- x$cumrank.matrix.fixed
+    }
+    ##
     return(x)
   }
   
@@ -295,6 +460,13 @@ updateversion <- function(x) {
       ##
       x$version <- packageDescription("netmeta")$Version
     }
+    ##
+    if (update.2.5.0) {
+      x$common <- x$fixed
+      x$impact.common <- x$impact.fixed
+      ##
+      x$version <- packageDescription("netmeta")$Version
+    }              
     ##
     return(x)
   }
@@ -314,6 +486,13 @@ updateversion <- function(x) {
       x$version <- packageDescription("netmeta")$Version
     }
     ##
+    if (update.2.5.0) {
+      x$common <- x$fixed
+      x$x$common <- x$x$fixed
+      ##
+      x$version <- packageDescription("netmeta")$Version
+    }              
+    ##
     return(x)
   }
   
@@ -330,6 +509,17 @@ updateversion <- function(x) {
       ##
       x$version <- packageDescription("netmeta")$Version
     }
+    ##
+    if (update.2.5.0) {
+      x$common <- x$fixed
+      ##
+      x$P.common <- x$P.fixed
+      x$M0.common <- x$M0.fixed
+      x$M.common <- x$M.fixed
+      x$O.common <- x$O.fixed
+      ##
+      x$version <- packageDescription("netmeta")$Version
+    }              
     ##
     return(x)
   }
@@ -348,8 +538,98 @@ updateversion <- function(x) {
       x$version <- packageDescription("netmeta")$Version
     }
     ##
+    if (update.2.5.0) {
+      res$common <- res$fixed
+      ##
+      if (!is.null(res$tictoc.fixed))
+        res$tictoc.common <- res$tictoc.fixed
+    }
+    ##
     return(x)
   }
-
+  
+  
+  ##
+  ##  (12) Update netcomparison object
+  ##
+  if (inherits(x, "netcomparison")) {
+    if (update.2.5.0) {
+      res$common <- res$fixed
+      ##
+      res$TE.common <- res$TE.fixed
+      res$seTE.common <- res$seTE.fixed
+      res$lower.common <- res$lower.fixed
+      res$upper.common <- res$upper.fixed
+      res$statistic.common <- res$statistic.fixed
+      res$pval.common <- res$pval.fixed
+      ##
+      x$version <- packageDescription("netmeta")$Version
+    }
+    ##
+    return(x)
+  }
+  
+  
+  ##
+  ##  (13) Update netcomplex object
+  ##
+  if (inherits(x, "netcomplex")) {
+    if (update.2.5.0) {
+      res$common <- res$fixed
+      ##
+      res$Comb.common <- res$Comb.fixed
+      res$seComb.common <- res$seComb.fixed
+      res$lower.Comb.common <- res$lower.Comb.fixed
+      res$upper.Comb.common <- res$upper.Comb.fixed
+      res$statistic.Comb.common <- res$statistic.Comb.fixed
+      res$pval.Comb.common <- res$pval.Comb.fixed
+      ##
+      x$version <- packageDescription("netmeta")$Version
+    }
+    ##
+    return(x)
+  }
+  
+  
+  ##
+  ##  (14) Update nettable object
+  ##
+  if (inherits(x, "nettable")) {
+    if (update.2.5.0) {
+      res$common <- res$fixed
+      res$x$common <- res$x$fixed
+      ##
+      x$version <- packageDescription("netmeta")$Version
+    }
+    ##
+    return(x)
+  }
+  
   x
+}
+
+
+update_needed <- function(version, major = 0, minor = 0,
+                          verbose = FALSE) {
+  if (is.null(version)) {
+    version <- 0.1
+    major.cur <- 0
+    minor.cur <- 1
+  }
+  else {
+    version <- unlist(strsplit(version, "-")[1])
+    major.cur <-
+      as.numeric(unlist(strsplit(version, ".", fixed = TRUE))[1])
+    minor.cur <-
+      as.numeric(unlist(strsplit(version, ".", fixed = TRUE))[2])
+  }
+  ##
+  res <-
+    ifelse(major.cur < major,
+           TRUE, ifelse(major.cur > major,
+                        FALSE, minor.cur < minor))
+  if (res & verbose)
+    message(paste0("Update to netmeta, version ", major, ".", minor))
+  ##
+  res
 }

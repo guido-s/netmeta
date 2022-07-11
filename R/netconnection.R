@@ -38,7 +38,9 @@
 #'   \code{\link{print.default}}.
 #' @param details A logical indicating whether to print the distance
 #'   matrix.
-#' @param ... Additional arguments (ignored at the moment)
+#' @param details.disconnected A logical indicating whether to print
+#'   more details for disconnected networks.
+#' @param \dots Additional arguments (ignored at the moment)
 #' 
 #' @return
 #' An object of class \code{netconnection} with corresponding
@@ -104,15 +106,11 @@
 #' 
 #' # Conduct network meta-analysis on first subnetwork
 #' #
-#' net2.1 <- netmeta(1:6, 1:6, t1, t2, 1:6,
-#'                   subset = (t1 %in% c("A", "F", "H") &
-#'                             t2 %in% c("A", "F", "H")))
+#' net2.1 <- netmeta(1:6, 1:6, t1, t2, 1:6, subset = nc2$subnet == 1)
 #' 
 #' # Conduct network meta-analysis on second subnetwork
 #' #
-#' net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6,
-#'                   subset = !(t1 %in% c("A", "F", "H") &
-#'                              t2 %in% c("A", "F", "H")))
+#' net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6, subset = nc2$subnet == 2)
 #' 
 #' net2.1
 #' net2.2
@@ -126,7 +124,8 @@ netconnection <- function(treat1, treat2, studlab,
                           data = NULL, subset = NULL,
                           sep.trts = ":",
                           nchar.trts = 666,
-                          title = "", warn = FALSE) {
+                          title = "", details.disconnected = FALSE,
+                          warn = FALSE) {
   
   ##
   ##
@@ -136,17 +135,19 @@ netconnection <- function(treat1, treat2, studlab,
   if (missing(treat1))
     stop("Argument 'treat1' is mandatory.")
   ##
-  if (is.null(data))
-    data <- sys.frame(sys.parent())
+  nulldata <- is.null(data)
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
   ##
-  mf <- match.call()
+  if (nulldata)
+    data <- sfsp
   ##
   ## Catch treat1
   ##
-  treat1 <- eval(mf[[match("treat1", names(mf))]],
-                 data, enclos = sys.frame(sys.parent()))
+  treat1 <- catch("treat1", mc, data, sfsp)
   ##
-  if (is.data.frame(treat1) & !is.null(attr(treat1, "pairwise"))) {
+  if (is.data.frame(treat1) &
+      (inherits(treat1, "pairwise") | !is.null(attr(treat1, "pairwise")))) {
     if (!missing(treat2))
       warning("Argument 'treat2' ignored as first argument is an ",
               "object created with pairwise().", call. = FALSE)
@@ -168,11 +169,9 @@ netconnection <- function(treat1, treat2, studlab,
     if (missing(treat2))
       stop("Argument 'treat2' is mandatory.")
     ##
-    treat2 <- eval(mf[[match("treat2", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    treat2 <- catch("treat2", mc, data, sfsp)
     ##
-    studlab <- eval(mf[[match("studlab", names(mf))]],
-                    data, enclos = sys.frame(sys.parent()))
+    studlab <- catch("studlab", mc, data, sfsp)
     if (length(studlab) != 0)
       studlab <- as.character(studlab)
     else {
@@ -184,12 +183,12 @@ netconnection <- function(treat1, treat2, studlab,
     ##
     ## Catch subset from data:
     ##
-    subset <- eval(mf[[match("subset", names(mf))]],
-                   data, enclos = sys.frame(sys.parent()))
+    subset <- catch("subset", mc, data, sfsp)
   }
   ##
   chknumeric(nchar.trts, min = 1, length = 1)
   ##
+  chklogical(details.disconnected)
   chklogical(warn)
   
   
@@ -415,6 +414,8 @@ netconnection <- function(treat1, treat2, studlab,
               ##
               title = title,
               ##
+              details.disconnected = details.disconnected,
+              ##
               warn = warn,
               call = match.call(),
               version = packageDescription("netmeta")$Version
@@ -438,6 +439,7 @@ print.netconnection <- function(x,
                                 digits = max(4, .Options$digits - 3),
                                 nchar.trts = x$nchar.trts,
                                 details = FALSE,
+                                details.disconnected = x$details.disconnected,
                                 ...) {
   
   chkclass(x, "netconnection")
@@ -449,6 +451,8 @@ print.netconnection <- function(x,
   chknumeric(digits, length = 1)
   chknumeric(nchar.trts, min = 1, length = 1)
   chklogical(details)
+  details.disconnected <- replaceNULL(details.disconnected, FALSE)
+  chklogical(details.disconnected)
   
   
   matitle(x)
@@ -464,13 +468,28 @@ print.netconnection <- function(x,
   if (x$n.subnets > 1) {
     f <- function(x) length(unique(x))
     d <- as.data.frame(x)
-    b <- tapply(d$studlab, d$subnet, f)
-    m <- as.matrix(data.frame(subnet = names(b),
-                              k = as.vector(b)))
+    k.subset <- tapply(d$studlab, d$subnet, f)
+    ##
+    m <- as.matrix(
+      data.frame(subnetwork = names(k.subset),
+                 k = as.vector(k.subset),
+                 m = as.vector(tapply(d$studlab, d$subnet, length)),
+                 n = as.vector(tapply(c(d$treat1, d$treat2),
+                                      c(d$subnet, d$subnet), f)))
+    )
     rownames(m) <- rep("", nrow(m))
     ##
-    cat("Number of studies in subnetworks: \n")
+    cat("\nDetails on subnetworks: \n")
     prmatrix(m, quote = FALSE, right = TRUE)
+    ##
+    if (details.disconnected) {
+      cat("\n")
+      for (i in seq_len(x$n.subnets)) {
+        d.i <- subset(d, d$subnet == i)
+        cat(paste0("Subnetwork ", i, ":\n"))
+        print(sort(unique(c(d.i$treat1, d.i$treat2))))
+      }
+    }
   }
   
   

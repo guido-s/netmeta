@@ -55,10 +55,9 @@ data(Franchini2012)
 # Transform data from arm-based format to contrast-based format
 #
 p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
-               n = list(n1, n2, n3),
-               mean = list(y1, y2, y3),
-               sd = list(sd1, sd2, sd3),
-               data = Franchini2012, studlab = Study)
+  n = list(n1, n2, n3),
+  mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
+  data = Franchini2012, studlab = Study)
 p1
 
 # Conduct network meta-analysis
@@ -67,13 +66,13 @@ net1
 
 # Draw network graphs
 netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-         thickness = "se.fixed")
-netgraph(net1, points = TRUE, cex.points = 3, cex  =  1.5,
-         plastic = TRUE, thickness = "se.fixed",
-         iterate = TRUE)
+  thickness = "se.common")
 netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-         plastic = TRUE, thickness = "se.fixed",
-         iterate = TRUE, start = "eigen")
+  thickness = "se.common",
+  iterate = TRUE, plastic = TRUE)
+netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
+  thickness = "se.common",
+  iterate = TRUE, plastic = TRUE, start = "eigen")
 }
 \seealso{
 \code{\link{pairwise}}, \code{\link{metacont}},

@@ -12,8 +12,8 @@
 #'   intervention(s).
 #' @param treat2 A character vector defining the second complex
 #'   intervention(s).
-#' @param fixed A logical indicating whether results for fixed effects
-#'   / common effects model should be conducted.
+#' @param common A logical indicating whether results for common
+#'   effects model should be conducted.
 #' @param random A logical indicating whether results for random
 #'   effects model should be conducted.
 #' @param level The level used to calculate confidence intervals for
@@ -42,7 +42,9 @@
 #' @param big.mark A character used as thousands separator.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
-#' @param \dots Additional arguments (ignored).
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments (to catch deprecated arguments).
 #'
 #' @details
 #' R functions \code{\link{netcomb}} and \code{\link{discomb}}
@@ -88,23 +90,23 @@
 #' A list is returned by the function \code{netcomparison} with the
 #' following elements:
 #' \item{comparison}{Comparison.}
-#' \item{TE.fixed, TE.random}{A vector of comparison effects (fixed
+#' \item{TE.common, TE.random}{A vector of comparison effects (common
 #'   and random effects model).}
-#' \item{seTE.fixed, seTE.random}{A vector with corresponding standard
-#'   errors (fixed and random effects model).}
-#' \item{lower.fixed, lower.random}{A vector with lower confidence
-#'   limits for comparisons (fixed and random effects model).}
-#' \item{upper.fixed, upper.random}{A vector with upper confidence
-#'   limits for comparisons (fixed and random effects model).}
-#' \item{statistic.fixed, statistic.random}{A vector with z-values for
-#'   the overall effect of comparisons (fixed and random effects
+#' \item{seTE.common, seTE.random}{A vector with corresponding standard
+#'   errors (common and random effects model).}
+#' \item{lower.common, lower.random}{A vector with lower confidence
+#'   limits for comparisons (common and random effects model).}
+#' \item{upper.common, upper.random}{A vector with upper confidence
+#'   limits for comparisons (common and random effects model).}
+#' \item{statistic.common, statistic.random}{A vector with z-values for
+#'   the overall effect of comparisons (common and random effects
 #'   model).}
-#' \item{pval.fixed, pval.random}{A vector with p-values for the
-#'   overall effect of comparisons (fixed and random effects model).}
+#' \item{pval.common, pval.random}{A vector with p-values for the
+#'   overall effect of comparisons (common and random effects model).}
 #' \item{trts}{Treatments included in comparisons.}
 #' \item{comps}{Components included in comparisons.}
 #' \item{treat1, treat2}{A defined above.}
-#' \item{fixed, random}{A defined above.}
+#' \item{common, random}{A defined above.}
 #' \item{level, nchar.comps, backtransf, x}{A defined above.}
 #' \item{B.matrix}{B matrix.}
 #' \item{C.matrix}{C matrix.}
@@ -131,8 +133,7 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = face, ref = "placebo",
-#'                 sm = "OR", fixed = FALSE)
+#'   data = face, ref = "placebo", sm = "OR", common = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -175,22 +176,29 @@
 
 
 netcomparison <- function(x, treat1, treat2,
-                          fixed = x$fixed,
+                          common = x$common,
                           random = x$random,
                           level = x$level.ma,
-                          nchar.comps = x$nchar.comps) {
+                          nchar.comps = x$nchar.comps,
+                          warn.deprecated = gs("warn.deprecated"),
+                          ...) {
   
   
   chkclass(x, "netcomb")
   x <- updateversion(x)
   ##
-  chklogical(fixed)
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  common <- deprecated(common, missing(common), args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
+  ##
   chklogical(random)
   chklevel(level)
   ##
   chknumeric(nchar.comps, min = 1, length = 1)
   
-
+  
   missing.treat1 <- missing(treat1)
   missing.treat2 <- missing(treat2)
   ##
@@ -304,7 +312,7 @@ netcomparison <- function(x, treat1, treat2,
   for (i in seq_len(n.comparisons)) {
     ##
     B.matrix[i, ] <-
-       1L * colnames(B.matrix) %in% treat1[i] +
+      1L * colnames(B.matrix) %in% treat1[i] +
       -1L * colnames(B.matrix) %in% treat2[i]
   }
   
@@ -314,27 +322,27 @@ netcomparison <- function(x, treat1, treat2,
   ##
   X.matrix <- B.matrix %*% C.matrix
   ##
-  TE.fixed <- as.vector(X.matrix %*% x$Comp.fixed)
-  seTE.fixed <-
-    sqrt(diag(X.matrix %*% x$Lplus.matrix.fixed %*% t(X.matrix)))
+  TE.common <- as.vector(X.matrix %*% x$Comp.common)
+  seTE.common <-
+    sqrt(diag(X.matrix %*% x$Lplus.matrix.common %*% t(X.matrix)))
   ##
   TE.random <- as.vector(X.matrix %*% x$Comp.random)
   seTE.random <-
     sqrt(diag(X.matrix %*% x$Lplus.matrix.random %*% t(X.matrix)))
   ##
-  ci.f <- ci(TE.fixed, seTE.fixed, level = level)
+  ci.f <- ci(TE.common, seTE.common, level = level)
   ci.r <- ci(TE.random, seTE.random, level = level)
   
   
   res <- list(comparison = comparison,
               treat1 = treat1, treat2 = treat2,
               ##
-              TE.fixed = ci.f$TE,
-              seTE.fixed = ci.f$seTE,
-              lower.fixed = ci.f$lower,
-              upper.fixed = ci.f$upper,
-              statistic.fixed = ci.f$statistic,
-              pval.fixed = ci.f$p,
+              TE.common = ci.f$TE,
+              seTE.common = ci.f$seTE,
+              lower.common = ci.f$lower,
+              upper.common = ci.f$upper,
+              statistic.common = ci.f$statistic,
+              pval.common = ci.f$p,
               ##
               TE.random = ci.r$TE,
               seTE.random = ci.r$seTE,
@@ -343,7 +351,7 @@ netcomparison <- function(x, treat1, treat2,
               statistic.random = ci.r$statistic,
               pval.random = ci.r$p,
               ##
-              fixed = fixed,
+              common = common,
               random = random,
               level = level,
               ##
@@ -367,7 +375,17 @@ netcomparison <- function(x, treat1, treat2,
               ##
               version = packageDescription("netmeta")$Version
               )
-
+  ##
+  ## Backward compatibility
+  ##
+  res$fixed <- res$common
+  ##
+  res$TE.fixed <- res$TE.common
+  res$seTE.fixed <- res$seTE.common
+  res$lower.fixed <- res$lower.common
+  res$upper.fixed <- res$upper.common
+  res$statistic.fixed <- res$statistic.common
+  res$pval.fixed <- res$pval.common
   ##
   class(res) <- c("netcomparison", class(res))
   
@@ -384,7 +402,7 @@ netcomparison <- function(x, treat1, treat2,
 
 print.netcomparison <- function(x,
                                 ##
-                                fixed = x$fixed,
+                                common = x$common,
                                 random = x$random,
                                 backtransf = x$backtransf,
                                 ##
@@ -396,15 +414,21 @@ print.netcomparison <- function(x,
                                 ##
                                 scientific.pval = gs("scientific.pval"),
                                 zero.pval = gs("zero.pval"),
-                                 JAMA.pval = gs("JAMA.pval"),
+                                JAMA.pval = gs("JAMA.pval"),
                                 big.mark = gs("big.mark"),
                                 ##
                                 legend = TRUE,
+                                warn.deprecated = gs("warn.deprecated"),
                                 ...) {
   
   chkclass(x, "netcomparison")
   ##
-  chklogical(fixed)
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  common <- deprecated(common, missing(common), args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
+  ##
   chklogical(random)
   chklogical(backtransf)
   ##
@@ -428,7 +452,7 @@ print.netcomparison <- function(x,
   treat1 <- rep("", n.comparisons)
   treat2 <- rep("", n.comparisons)
   ##
-  if (fixed | random) {
+  if (common | random) {
     comps <- c(x$comps, x$inactive)
     comps.abbr <- treats(comps, nchar.comps)
     ##
@@ -474,15 +498,15 @@ print.netcomparison <- function(x,
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   
   
-  if (fixed) {
-    TE.fixed <- x$TE.fixed
-    lower.fixed <- x$lower.fixed
-    upper.fixed <- x$upper.fixed
+  if (common) {
+    TE.common <- x$TE.common
+    lower.common <- x$lower.common
+    upper.common <- x$upper.common
     ##
     if (backtransf & relative) {
-      TE.fixed <- exp(TE.fixed)
-      lower.fixed <- exp(lower.fixed)
-      upper.fixed <- exp(upper.fixed)
+      TE.common <- exp(TE.common)
+      lower.common <- exp(lower.common)
+      upper.common <- exp(upper.common)
     }
   }
   ##
@@ -499,38 +523,38 @@ print.netcomparison <- function(x,
   }
   
   
-  if (fixed) {
-    pval.f <- formatPT(x$pval.fixed, digits = digits.pval,
+  if (common) {
+    pval.f <- formatPT(x$pval.common, digits = digits.pval,
                        scientific = scientific.pval,
                        zero = zero.pval, JAMA = JAMA.pval,
                        lab.NA = "")
     ##
-    res.f <-
+    res.c <-
       cbind(comparison = comparison,
             treat1 = treat1,
             treat2 = treat2,
-            Comb = formatN(TE.fixed, digits = digits,
+            Comb = formatN(TE.common, digits = digits,
                            "NA", big.mark = big.mark),
-            CI = formatCI(formatN(round(lower.fixed, digits),
+            CI = formatCI(formatN(round(lower.common, digits),
                                   digits, "NA",
                                   big.mark = big.mark),
-                          formatN(round(upper.fixed, digits),
+                          formatN(round(upper.common, digits),
                                   digits, "NA",
                                   big.mark = big.mark)),
-            zval = formatN(x$statistic.fixed, digits = digits.stat,
+            zval = formatN(x$statistic.common, digits = digits.stat,
                            "NA", big.mark = big.mark),
             pval = pval.f)
     ##
-    dimnames(res.f) <- list(rep("", nrow(res.f)),
+    dimnames(res.c) <- list(rep("", nrow(res.c)),
                             c("comparison", "treat1", "treat2",
                               sm.lab, ci.lab, "z", "p-value"))
     ##
-    res.f[res.f[, "treat1"] == res.f[, "treat2"], 4:7] <- "."
+    res.c[res.c[, "treat1"] == res.c[, "treat2"], 4:7] <- "."
     ##
     cat(paste0("Results for comparisons (additive CNMA model, ",
-               "fixed effects model):\n\n"))
+               "common effects model):\n\n"))
     ##
-    prmatrix(res.f, quote = FALSE, right = TRUE, na.print = "--")
+    prmatrix(res.c, quote = FALSE, right = TRUE, na.print = "--")
     ##
     if (random)
       cat("\n")
@@ -573,7 +597,7 @@ print.netcomparison <- function(x,
   }
   
   
-  if (legend && (fixed | random)) {
+  if (legend && (common | random)) {
     diff.comps <- comps != comps.abbr
     any.comps <- any()
     ##

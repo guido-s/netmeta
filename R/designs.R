@@ -27,12 +27,13 @@ designs <- function(treat1, treat2, studlab, sep.trts = ":") {
   }
   
   
-  dat <- data.frame(studlab, treat1, treat2)
+  dat <- data.frame(studlab, treat1, treat2, o)
   ##
   res <- merge(dat, designs, by = "studlab")
-  res <- res[id, ]
+  res <- res[order(res$o), ]
   res$treat1 <- NULL
   res$treat2 <- NULL
+  res$o <- NULL
   ##
   res
 }

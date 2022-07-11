@@ -10,8 +10,8 @@
 #' @param separate A logical indicating whether results for pairwise
 #'   comparisons should be printed as separate meta-analyses or as
 #'   subgroups which is more concise.
-#' @param fixed A logical indicating whether a fixed effects / common
-#'   effects network meta-analysis should be conducted.
+#' @param common A logical indicating whether a common effects network
+#'   meta-analysis should be conducted.
 #' @param random A logical indicating whether a random effects network
 #'   meta-analysis should be conducted.
 #' @param level The level used to calculate confidence intervals for
@@ -40,8 +40,10 @@
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
 #'   presented as odds ratios rather than log odds ratios, for
 #'   example.
-#' @param ... Additional arguments (passed on to \code{metagen} or
-#'   print functions).
+#' @param warn.deprecated A logical indicating whether warnings should
+#'   be printed if deprecated arguments are used.
+#' @param \dots Additional arguments (passed on to \code{metagen} or
+#'   print functions and to catch deprecated arguments).
 #' 
 #' @details
 #' Conduct pairwise meta-analyses for all comparisons with direct
@@ -75,8 +77,7 @@
 #' # Random effects model
 #' #
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 fixed = FALSE)
+#'   data = Senn2013, sm = "MD", common = FALSE)
 #' 
 #' # Calculate and print consise results for all pairwise
 #' # meta-analyses
@@ -103,7 +104,7 @@
 
 netpairwise <- function(x,
                         separate = FALSE,
-                        fixed = x$fixed,
+                        common = x$common,
                         random = x$random,
                         level = x$level,
                         level.ma = x$level.ma,
@@ -115,6 +116,7 @@ netpairwise <- function(x,
                         sep.trts = x$sep.trts,
                         nchar.trts = x$nchar.trts,
                         backtransf = x$backtransf,
+                        warn.deprecated = gs("warn.deprecated"),
                         ...) {
   
   
@@ -129,7 +131,13 @@ netpairwise <- function(x,
   ## Check other arguments
   ##
   chklogical(separate)
-  chklogical(fixed)
+  ##
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  common <- deprecated(common, missing(common), args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
+  ##
   chklogical(random)
   chklogical(prediction)
   ##
@@ -206,7 +214,7 @@ netpairwise <- function(x,
                    subgroup = paste0(trt1, sep.trts, trt2),
                    subgroup.name = "comparison",
                    print.subgroup.name = FALSE,
-                   fixed = fixed,
+                   common = common,
                    random = random,
                    level = level,
                    level.ma = level.ma,
@@ -215,11 +223,12 @@ netpairwise <- function(x,
                    method.tau = method.tau,
                    overall = FALSE, overall.hetstat = FALSE,
                    test.subgroup = FALSE,
+                   warn.deprecated = FALSE,
                    ...)
     ##
     res$k.study <- x$k
     res$k <- x$m
-    res$w.fixed[!is.na(res$w.fixed)] <- NA
+    res$w.common[!is.na(res$w.common)] <- NA
     res$w.random[!is.na(res$w.random)] <- NA
     ##
     class(res) <- c(class(res), "netpairwise")
@@ -239,13 +248,14 @@ netpairwise <- function(x,
                 sm = x$sm,
                 subset = trt1 == comps$trt1[i] & trt2 == comps$trt2[i],
                 complab = comp.i,
-                fixed = fixed,
+                common = common,
                 random = random,
                 level = level,
                 level.ma = level.ma,
                 prediction = prediction,
                 level.predict = level.predict,
                 method.tau = method.tau,
+                warn.deprecated = FALSE,
                 ...)
       attr(res[[i]], "comparison") <- comp.i
     }

@@ -67,19 +67,18 @@ data(Linde2015)
 # Transform data from arm-based format to contrast-based format
 # Outcome: early response
 p1 <- pairwise(list(treatment1, treatment2, treatment3),
-               event = list(resp1, resp2, resp3),
-	          n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(resp1, resp2, resp3),
+  n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 p1
 
 \dontrun{
 # Define order of treatments
-trts <- c("TCA", "SSRI", "SNRI", "NRI",
-          "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
-          "Placebo")
+trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI",
+  "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 
 # Conduct random effects network meta-analysis
-net1 <- netmeta(p1, fixed = FALSE, reference = "Placebo", seq = trts)
+net1 <- netmeta(p1, common = FALSE, reference = "Placebo", seq = trts)
 print(net1, digits = 2)
 }
 }

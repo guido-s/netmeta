@@ -8,7 +8,7 @@
 #' 
 #' @param x An object of class \code{netbind}.
 #' @param pooled A character string indicating whether results for the
-#'   fixed (\code{"fixed"}) or random effects model (\code{"random"})
+#'   common (\code{"common"}) or random effects model (\code{"random"})
 #'   should be plotted. Can be abbreviated.
 #' @param equal.size A logical indicating whether all squares should
 #'   be of equal size. Otherwise, the square size is proportional to
@@ -33,7 +33,7 @@
 #'   than log odds ratios, for example.
 #' @param lab.NA A character string to label missing values.
 #' @param smlab A label printed at top of figure. By default, text
-#'   indicating either fixed or random effects model is printed.
+#'   indicating either common or random effects model is printed.
 #' @param \dots Additional arguments for \code{\link{forest.meta}}
 #'   function.
 #' 
@@ -68,8 +68,8 @@
 #' # treatment)
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", fixed = FALSE)
+#'   data = face, reference.group = "placebo",
+#'   sm = "OR", common = FALSE)
 #' 
 #' # Additive CNMA model with placebo as inactive component and
 #' # reference
@@ -79,21 +79,21 @@
 #' # Combine results of standard NMA and CNMA
 #' #
 #' nb1 <- netbind(nc1, net1,
-#'                name = c("Additive CNMA", "Standard NMA"),
-#'                col.study = c("red", "black"),
-#'                col.square = c("red", "black"))
+#'   name = c("Additive CNMA", "Standard NMA"),
+#'   col.study = c("red", "black"),
+#'   col.square = c("red", "black"))
 #' forest(nb1,
-#'        col.by = "black", addrow.subgroups = FALSE,
-#'        fontsize = 10, spacing = 0.7, squaresize = 0.9,
-#'        label.left = "Favours Placebo",
-#'        label.right = "Favours other")
+#'   col.by = "black", addrow.subgroups = FALSE,
+#'   fontsize = 10, spacing = 0.7, squaresize = 0.9,
+#'   label.left = "Favours Placebo",
+#'   label.right = "Favours other")
 #' 
 #' @method forest netbind
 #' @export
 
 
 forest.netbind <- function(x,
-                           pooled = ifelse(x$x$random, "random", "fixed"),
+                           pooled = ifelse(x$x$random, "random", "common"),
                            ##
                            equal.size = TRUE,
                            ##
@@ -121,7 +121,8 @@ forest.netbind <- function(x,
   chkclass(x, "netbind")
   x <- updateversion(x)
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   ##
   chklogical(equal.size)
   ##
@@ -134,41 +135,42 @@ forest.netbind <- function(x,
   
   ##
   ##
-  ## (2) Extract results for fixed and random effects model
+  ## (2) Extract results for common and random effects model
   ##
   ##
-  if (pooled == "fixed") {
+  if (pooled == "common") {
     if (!missing(subset.treatments)) {
-      subset.treatments <- setchar(subset.treatments, unique(x$fixed$treat))
-      sel <- x$fixed$treat %in% subset.treatments
+      subset.treatments <- setchar(subset.treatments, unique(x$common$treat))
+      sel <- x$common$treat %in% subset.treatments
     }
     else
-      sel <- x$fixed$treat != x$reference.group
+      sel <- x$common$treat != x$reference.group
     ##
     m <-
-      suppressWarnings(metagen(x$fixed$TE, x$fixed$seTE,
-                               studlab = x$fixed$name,
+      suppressWarnings(metagen(x$common$TE, x$common$seTE,
+                               studlab = x$common$name,
                                sm = x$sm,
-                               fixed = FALSE, random = FALSE,
-                               byvar = x$fixed$treat, print.byvar = FALSE,
+                               common = FALSE, random = FALSE,
+                               subgroup = x$common$treat,
+                               print.subgroup.name = FALSE,
                                subset = sel,
-                               method.tau = "DL"))
+                               method.tau = "DL", method.tau.ci = ""))
     ##
-    m$studlab <- x$fixed$name[sel]
-    m$TE <- x$fixed$TE[sel]
-    m$seTE <- x$fixed$seTE[sel]
-    m$lower <- x$fixed$lower[sel]
-    m$upper <- x$fixed$upper[sel]
-    m$statistic <- x$fixed$statistic[sel]
-    m$pval <- x$fixed$pval[sel]
-    m$zval <- x$fixed$statistic[sel]
+    m$studlab <- x$common$name[sel]
+    m$TE <- x$common$TE[sel]
+    m$seTE <- x$common$seTE[sel]
+    m$lower <- x$common$lower[sel]
+    m$upper <- x$common$upper[sel]
+    m$statistic <- x$common$statistic[sel]
+    m$pval <- x$common$pval[sel]
+    m$zval <- x$common$statistic[sel]
     ##
-    m$col.study <- x$fixed$col.study[sel]
-    m$col.square <- x$fixed$col.square[sel]
-    m$col.square.lines <- x$fixed$col.square.lines[sel]
-    m$col.inside <- x$fixed$col.inside[sel]
+    m$col.study <- x$common$col.study[sel]
+    m$col.square <- x$common$col.square[sel]
+    m$col.square.lines <- x$common$col.square.lines[sel]
+    m$col.inside <- x$common$col.inside[sel]
     ##
-    text.pooled <- "Fixed Effects Model"
+    text.pooled <- "Common Effects Model"
   }
   else {
     if (!missing(subset.treatments)) {
@@ -182,10 +184,11 @@ forest.netbind <- function(x,
       suppressWarnings(metagen(x$random$TE, x$random$seTE,
                                studlab = x$random$name,
                                sm = x$sm,
-                               fixed = FALSE, random = FALSE,
-                               byvar = x$random$treat, print.byvar = FALSE,
+                               common = FALSE, random = FALSE,
+                               subgroup = x$random$treat,
+                               print.subgroup.name = FALSE,
                                subset = sel,
-                               method.tau = "DL"))
+                               method.tau = "DL", method.tau.ci = ""))
     ##
     m$studlab <- x$random$name[sel]
     m$TE <- x$random$TE[sel]
@@ -224,12 +227,19 @@ forest.netbind <- function(x,
   ##
   forest(m,
          digits = digits,
-         fixed = FALSE, random = FALSE,
+         ##
+         common = FALSE, random = FALSE,
          overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
+         ##
+         subgroup.hetstat = FALSE,
+         prediction.subgroup = FALSE,
+         calcwidth.subgroup = TRUE,
+         ##
          leftcols = leftcols,
          leftlabs = leftlabs,
          rightcols = rightcols,
          rightlabs = rightlabs,
+         ##
          lab.NA = lab.NA,
          smlab = smlab,
          backtransf = backtransf,
@@ -238,15 +248,20 @@ forest.netbind <- function(x,
          col.square = m$col.square,
          col.square.lines = m$col.square.lines,
          col.inside = m$col.inside,
-         col.inside.fixed = "black",
+         col.inside.common = "black",
          col.inside.random = "black",
          ##
          weight.study = if (equal.size) "same" else pooled,
-         calcwidth.subgroup = TRUE,
          ...)
   
-  
-  invisible(NULL)
+  ret <- m
+  ##
+  ret$leftcols <- leftcols
+  ret$rightcols <- rightcols
+  ret$leftlabs <- leftlabs
+  ret$rightlabs <- rightlabs
+  ##
+  invisible(ret)
 }
 
 

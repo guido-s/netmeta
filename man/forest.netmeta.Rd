@@ -7,7 +7,7 @@
 \usage{
 \method{forest}{netmeta}(
   x,
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
   labels = x$trts,
@@ -37,8 +37,8 @@
 \item{x}{An object of class \code{netmeta}.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effect (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"common"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{reference.group}{Reference treatment(s).}
 
@@ -83,8 +83,7 @@ P-scores, SUCRAs and direct evidence proportions, see
 \code{\link{print.default}} and \code{\link{netrank}}.}
 
 \item{smlab}{A label printed at top of figure. By default, text
-indicating either fixed effect or random effects model is
-printed.}
+indicating either common or random effects model is printed.}
 
 \item{sortvar}{An optional vector used to sort treatments (must be
 of same length as the total number of treatments).}
@@ -104,8 +103,9 @@ reference group should be printed in the forest plot.}
 
 \item{col.by}{The colour to print information on subgroups.}
 
-\item{print.subgroup.name}{A logical indicating whether the name of the
-grouping variable should be printed in front of the group labels.}
+\item{print.subgroup.name}{A logical indicating whether the name of
+the grouping variable should be printed in front of the group
+labels.}
 
 \item{\dots}{Additional arguments for \code{\link{forest.meta}}
 function.}
@@ -140,11 +140,12 @@ forest plot, respectively. The following columns are available:
 \tabular{ll}{
 \bold{Name} \tab \bold{Definition} \cr
 \code{"studlab"} \tab Treatments \cr
-\code{"TE"} \tab Network estimates (either from fixed or random
+\code{"TE"} \tab Network estimates (either from common or random
   effects model) \cr
 \code{"seTE"} \tab Corresponding standard errors \cr
 \code{"Pscore"} \tab P-scores (see \code{\link{netrank}}) \cr
 \code{"SUCRA"} \tab SUCRAs (see \code{\link{netrank}}) \cr
+\code{"n.trts"} \tab Number of participants per treatment arm \cr
 \code{"k"} \tab Number of studies in pairwise comparisons \cr
 \code{"prop.direct"} \tab Direct evidence proportions (see
   \code{\link{netmeasures}}) \cr
@@ -174,54 +175,54 @@ data(Senn2013)
 # Conduct network meta-analysis
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD")
+  data = Senn2013, sm = "MD")
 
 forest(net1, ref = "plac")
 forest(net1, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference", rightcols = FALSE)
+  xlab = "HbA1c difference", rightcols = FALSE)
 }
 
 # Random effects effect model
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD", fixed = FALSE)
+  data = Senn2013, sm = "MD", common = FALSE)
 
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference")
+  xlab = "HbA1c difference")
 
 \dontrun{
 # Add column with P-Scores on right side of forest plot
 #
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference",
-       rightcols = c("effect", "ci", "Pscore"),
-       just.addcols = "right")
+  xlab = "HbA1c difference",
+  rightcols = c("effect", "ci", "Pscore"),
+  just.addcols = "right")
 
 # Add column with P-Scores on left side of forest plot
 #
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference",
-       leftcols = c("studlab", "Pscore"),
-       just.addcols = "right")
+  xlab = "HbA1c difference",
+  leftcols = c("studlab", "Pscore"),
+  just.addcols = "right")
 
 # Sort forest plot by descending P-Score
 #
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference",
-       rightcols = c("effect", "ci", "Pscore"),
-       just.addcols = "right",
-       sortvar = -Pscore)
+  xlab = "HbA1c difference",
+  rightcols = c("effect", "ci", "Pscore"),
+  just.addcols = "right",
+  sortvar = -Pscore)
 
 # Drop reference group and sort by and print number of studies with
 # direct treatment comparisons
 #
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
-       xlab = "HbA1c difference",
-       leftcols = c("studlab", "k"),
-       leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
-       sortvar = -k,
-       drop = TRUE,
-       smlab = "Random Effects Model")
+  xlab = "HbA1c difference",
+  leftcols = c("studlab", "k"),
+  leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
+  sortvar = -k,
+  drop = TRUE,
+  smlab = "Random Effects Model")
 }
 
 }

@@ -15,6 +15,7 @@ netconnection(
   sep.trts = ":",
   nchar.trts = 666,
   title = "",
+  details.disconnected = FALSE,
   warn = FALSE
 )
 
@@ -23,6 +24,7 @@ netconnection(
   digits = max(4, .Options$digits - 3),
   nchar.trts = x$nchar.trts,
   details = FALSE,
+  details.disconnected = x$details.disconnected,
   ...
 )
 }
@@ -49,6 +51,9 @@ characters used to create unique treatment names.}
 
 \item{title}{Title of meta-analysis / systematic review.}
 
+\item{details.disconnected}{A logical indicating whether to print
+more details for disconnected networks.}
+
 \item{warn}{A logical indicating whether warnings should be
 printed.}
 
@@ -60,7 +65,7 @@ printed.}
 \item{details}{A logical indicating whether to print the distance
 matrix.}
 
-\item{...}{Additional arguments (ignored at the moment)}
+\item{\dots}{Additional arguments (ignored at the moment)}
 }
 \value{
 An object of class \code{netconnection} with corresponding
@@ -134,15 +139,11 @@ try(net2 <- netmeta(1:6, 1:6, t1, t2, 1:6))
 
 # Conduct network meta-analysis on first subnetwork
 #
-net2.1 <- netmeta(1:6, 1:6, t1, t2, 1:6,
-                  subset = (t1 \%in\% c("A", "F", "H") &
-                            t2 \%in\% c("A", "F", "H")))
+net2.1 <- netmeta(1:6, 1:6, t1, t2, 1:6, subset = nc2$subnet == 1)
 
 # Conduct network meta-analysis on second subnetwork
 #
-net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6,
-                  subset = !(t1 \%in\% c("A", "F", "H") &
-                             t2 \%in\% c("A", "F", "H")))
+net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6, subset = nc2$subnet == 2)
 
 net2.1
 net2.2

@@ -7,7 +7,7 @@
 \usage{
 \method{forest}{netbind}(
   x,
-  pooled = ifelse(x$x$random, "random", "fixed"),
+  pooled = ifelse(x$x$random, "random", "common"),
   equal.size = TRUE,
   leftcols = "studlab",
   leftlabs = "Treatment",
@@ -28,7 +28,7 @@
 \item{x}{An object of class \code{netbind}.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed (\code{"fixed"}) or random effects model (\code{"random"})
+common (\code{"common"}) or random effects model (\code{"random"})
 should be plotted. Can be abbreviated.}
 
 \item{equal.size}{A logical indicating whether all squares should
@@ -64,7 +64,7 @@ than log odds ratios, for example.}
 \item{lab.NA}{A character string to label missing values.}
 
 \item{smlab}{A label printed at top of figure. By default, text
-indicating either fixed or random effects model is printed.}
+indicating either common or random effects model is printed.}
 
 \item{\dots}{Additional arguments for \code{\link{forest.meta}}
 function.}
@@ -97,8 +97,8 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 # treatment)
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = face, reference.group = "placebo",
-                sm = "OR", fixed = FALSE)
+  data = face, reference.group = "placebo",
+  sm = "OR", common = FALSE)
 
 # Additive CNMA model with placebo as inactive component and
 # reference
@@ -108,14 +108,14 @@ nc1 <- netcomb(net1, inactive = "placebo")
 # Combine results of standard NMA and CNMA
 #
 nb1 <- netbind(nc1, net1,
-               name = c("Additive CNMA", "Standard NMA"),
-               col.study = c("red", "black"),
-               col.square = c("red", "black"))
+  name = c("Additive CNMA", "Standard NMA"),
+  col.study = c("red", "black"),
+  col.square = c("red", "black"))
 forest(nb1,
-       col.by = "black", addrow.subgroups = FALSE,
-       fontsize = 10, spacing = 0.7, squaresize = 0.9,
-       label.left = "Favours Placebo",
-       label.right = "Favours other")
+  col.by = "black", addrow.subgroups = FALSE,
+  fontsize = 10, spacing = 0.7, squaresize = 0.9,
+  label.left = "Favours Placebo",
+  label.right = "Favours other")
 
 }
 \seealso{

@@ -10,14 +10,14 @@ netposet(
   outcomes,
   treatments,
   small.values,
-  fixed,
+  common,
   random,
+  fixed,
   comb.fixed,
-  comb.random,
-  warn.deprecated = gs("warn.deprecated")
+  comb.random
 )
 
-\method{print}{netposet}(x, pooled = ifelse(x$random, "random", "fixed"), ...)
+\method{print}{netposet}(x, pooled = ifelse(x$random, "random", "common"), ...)
 }
 \arguments{
 \item{\dots}{See details.}
@@ -28,36 +28,38 @@ netposet(
 
 \item{small.values}{See details.}
 
-\item{fixed}{A logical indicating whether to show results for the
-fixed effects / common effects model.}
+\item{common}{A logical indicating whether to show results for the
+common effects model.}
 
 \item{random}{A logical indicating whether to show results for the
 random effects model.}
 
-\item{comb.fixed}{Deprecated argument; replaced by \code{fixed}.}
+\item{fixed}{Ignored deprecated argument (replaced by
+\code{common}).}
 
-\item{comb.random}{Deprecated argument; replaced by \code{random}.}
+\item{comb.fixed}{Ignored deprecated argument (replaced by
+\code{common}).}
 
-\item{warn.deprecated}{A logical indicating whether warnings should
-be printed if deprecated arguments are used.}
+\item{comb.random}{Ignored deprecated argument (replaced by
+\code{random}).}
 
 \item{x}{An object of class \code{netposet}.}
 
 \item{pooled}{A character string indicating whether Hasse diagram
-should be drawn for fixed (\code{"fixed"}) or random effects
+should be drawn for common (\code{"common"}) or random effects
 model (\code{"random"}). Can be abbreviated.}
 }
 \value{
 An object of class \code{netposet} with corresponding \code{print},
 \code{plot}, and \code{hasse} functions. The object is a list
 containing the following components:
-\item{P.fixed}{Ranking matrix with rows corresponding to treatments
-  and columns corresponding to outcomes (fixed effects model).}
-\item{M0.fixed}{Hasse matrix skipping unnecessary paths (fixed
+\item{P.common}{Ranking matrix with rows corresponding to treatments
+  and columns corresponding to outcomes (common effects model).}
+\item{M0.common}{Hasse matrix skipping unnecessary paths (common
   effects model).}
-\item{M.fixed}{"Full" Hasse matrix (fixed effects model).}
-\item{O.fixed}{Matrix with information about partial ordering
-  (fixed effects model).}
+\item{M.common}{"Full" Hasse matrix (common effects model).}
+\item{O.common}{Matrix with information about partial ordering
+  (common effects model).}
 \item{P.random}{Ranking matrix with rows corresponding to
   treatments and columns corresponding to outcomes (random effects
   model).}
@@ -66,7 +68,7 @@ containing the following components:
 \item{M.random}{"Full" Hasse matrix (random effects model).}
 \item{O.random}{Matrix with information about partial ordering
   (random effects model).}
-\item{small.values, fixed, random}{As.defined above.}
+\item{small.values, common, random}{As.defined above.}
 \item{call}{Function call.}
 \item{version}{Version of R package netmeta used to create object.}
 }
@@ -126,13 +128,13 @@ outcome whether small values are good or bad; see
 \code{\link{netrank}}. This argument is ignored for a ranking
 matrix and \code{netrank} objects.
 
-Arguments \code{fixed} and \code{random} can be used to
-define whether results should be printed and plotted for fixed and
-/ or random effects model. If netmeta and netrank objects are
-provided in argument \code{\dots{}}, values for \code{fixed}
-and \code{random} within these objects are considered; if
-these values are not unique, argument \code{fixed} and / or
-\code{random} are set to \code{TRUE}.
+Arguments \code{common} and \code{random} can be used to define
+whether results should be printed and plotted for common and random
+effects model. If netmeta and netrank objects are provided in
+argument \code{\dots{}}, values for \code{common} and \code{random}
+within these objects are considered; if these values are not
+unique, argument \code{common} or \code{random} are set to
+\code{TRUE}.
 
 In function \code{print.netposet}, argument \code{\dots{}} is
 passed on to the printing function.
@@ -146,8 +148,7 @@ data(Linde2015)
 # Define order of treatments
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
-          "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
-          "Placebo")
+  "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 
 # Outcome labels
 #
@@ -156,22 +157,20 @@ outcomes <- c("Early response", "Early remission")
 # (1) Early response
 #
 p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(resp1, resp2, resp3),
-               n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, fixed = FALSE,
-                seq = trts, ref = "Placebo", small.values = "bad")
+net1 <- netmeta(p1, common = FALSE,
+  seq = trts, ref = "Placebo", small.values = "bad")
 
 # (2) Early remission
 #
 p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(remi1, remi2, remi3),
-               n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, fixed = FALSE,
-                seq = trts, ref = "Placebo", small.values = "bad")
+net2 <- netmeta(p2, common = FALSE,
+  seq = trts, ref = "Placebo", small.values = "bad")
 
 # Partial order of treatment rankings (two outcomes)
 #
@@ -186,50 +185,45 @@ hasse(po)
 # Outcome labels
 #
 outcomes <- c("Early response", "Early remission",
-              "Lost to follow-up", "Lost to follow-up due to AEs",
-              "Adverse events (AEs)")
+  "Lost to follow-up", "Lost to follow-up due to AEs",
+  "Adverse events (AEs)")
 
 # (3) Loss to follow-up
 #
 p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(loss1, loss2, loss3),
-               n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net3 <- netmeta(p3, fixed = FALSE,
-                seq = trts, ref = "Placebo", small.values = "good")
+net3 <- netmeta(p3, common = FALSE,
+  seq = trts, ref = "Placebo", small.values = "good")
 
 # (4) Loss to follow-up due to adverse events
 #
 p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(loss.ae1, loss.ae2, loss.ae3),
-               n = list(n1, n2, n3),
-               studlab = id, data = subset(Linde2015, id != 55),
-               sm = "OR")
+  event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
+  studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
 #
-net4 <- netmeta(p4, fixed = FALSE,
-                seq = trts, ref = "Placebo", small.values = "good")
+net4 <- netmeta(p4, common = FALSE,
+  seq = trts, ref = "Placebo", small.values = "good")
 
 # (5) Adverse events
 #
 p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(ae1, ae2, ae3),
-               n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net5 <- netmeta(p5, fixed = FALSE,
-                seq = trts, ref = "Placebo", small.values = "good")
+net5 <- netmeta(p5, common = FALSE,
+  seq = trts, ref = "Placebo", small.values = "good")
 
 # Partial order of treatment rankings (all five outcomes)
 #
 po.ranks <- netposet(netrank(net1), netrank(net2),
-                     netrank(net3), netrank(net4), netrank(net5),
-                     outcomes = outcomes)
+  netrank(net3), netrank(net4), netrank(net5), outcomes = outcomes)
 
 # Same result
 #
 po.nets <- netposet(net1, net2, net3, net4, net5,
-                    outcomes = outcomes)
+  outcomes = outcomes)
 #
 all.equal(po.ranks, po.nets)
 
@@ -244,7 +238,7 @@ hasse(po.ranks)
 # Hasse diagram for outcomes early response and early remission
 #
 po12 <- netposet(netrank(net1), netrank(net2),
-                 outcomes = outcomes[1:2])
+  outcomes = outcomes[1:2])
 hasse(po12)
 
 # Scatter plot
@@ -263,7 +257,7 @@ par(oldpar)
 #
 outcomes <- c("OS", "PFS", "LC", "DC")
 treatments <- c("RT", "IC-RT", "IC-CRT", "CRT",
-                "CRT-AC", "RT-AC", "IC-RT-AC")
+  "CRT-AC", "RT-AC", "IC-RT-AC")
 #
 # P-scores (from Table 1)
 #

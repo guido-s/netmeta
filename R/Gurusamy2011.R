@@ -46,7 +46,7 @@
 #' # function called internally.
 #' #
 #' p1 <- pairwise(treatment, death, n, studlab = study,
-#'                data = three, sm = "OR")
+#'   data = three, sm = "OR")
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis
 #' #
@@ -54,7 +54,7 @@
 #' 
 #' \dontrun{
 #' p2 <- pairwise(treatment, death, n, studlab = study,
-#'                data = Gurusamy2011, sm = "OR")
+#'   data = Gurusamy2011, sm = "OR")
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis
 #' netmetabin(p2, ref = "cont")

@@ -1,3 +1,76 @@
+## netmeta, version 2.5-0 (2022-mm-dd)
+
+### Major changes
+
+* Use term 'common effects model' instead of 'fixed effects model' in
+  the documentation and argument 'common' instead of 'fixed' to (not)
+  show results for common effects model
+
+* New function nettable() to create tables with network, direct and
+  indirect estimates from one or more network meta-analyses
+
+* Excel file with league tables can be created directly with
+  netleague()
+  
+* Nodes in circular network graphs can be rotated
+  
+* R package **writexl** added to suggested packages
+
+### Bug fixes
+
+* netcomb():
+  - report correct number of pairwise comparisons in case of not
+    uniquely identifiable components
+
+* netmeta():
+  - return correct design for multi-arm studies in list element
+    'data$.design'
+
+### User-visible changes
+
+* New function subset.pairwise() to select subset of a pairwise object
+
+* netsplit():
+  - new arguments 'writexl', 'path' and 'overwrite' to save Excel
+    files
+
+* netgraph():
+  - new argument 'rotate' to rotate nodes in circular network graphs
+
+* netgraph.netconnection():
+  - new argument 'reference.group' to determine coloring of subnetwork
+    containing the reference group
+
+* print.netconnection():
+  - show number of pairwise comparisons and interventions for subnetworks
+
+* netconnection(), print.netconnection():
+  - new argument 'details.disconnected'
+
+* hatmatrix():
+  - new arguments 'nchar.trts' and 'nchar.studlab'
+
+* print.netimpact():
+  - new argument 'legend'
+
+### Internal changes
+
+* Use DerSimonian-Laird estimator of between-study variance to
+  calculate 'tau2.direct' and 'tau.direct' in netmetabin() as REML
+  method did not converge in some network meta-analyses
+
+* New internal function legendabbr() to print legend with abbreviated
+  and full treatment labels
+
+* New internal function catch() to catch value for an argument
+
+* New internal functions comptrts(), direct.indirect(),
+  mat2dat.split(), mat2dat.table(), nettable_internal(), sidde() and
+  sortprop() for netsplit() and nettable()
+
+* New argument 'equal.length' in setseq()
+
+
 ## netmeta, version 2.1-0 (2022-01-20)
 
 ### Major changes

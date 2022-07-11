@@ -5,12 +5,12 @@
 #' which is especially useful to generate a forest plot with results
 #' of several network meta-analyses.
 #' 
-#' @param ... Any number of meta-analysis objects or a single list
-#'   with network meta-analyses.
+#' @param \dots Any number of network meta-analysis objects or a
+#'   single list with network meta-analyses.
 #' @param name An optional character vector providing descriptive
-#'   names for the network meta-analysis objects.
-#' @param fixed A logical indicating whether results for the fixed
-#'   effects (common effects) model should be reported.
+#'   names for network meta-analysis objects.
+#' @param common A logical indicating whether results for the common
+#'   effects model should be reported.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be reported.
 #' @param col.study The colour for network estimates and confidence
@@ -30,14 +30,15 @@
 #'   only considered if \code{reference.group} has been specified.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
-#' @param comb.fixed Deprecated argument; replaced by \code{fixed}.
+#' @param fixed Deprecated argument; replaced by \code{common}.
+#' @param comb.fixed Deprecated argument; replaced by \code{common}.
 #' @param comb.random Deprecated argument; replaced by \code{random}.
 #' 
 #' @return
 #' An object of class \code{"netbind"} with corresponding
 #' \code{forest} function. The object is a list containing the
 #' following components:
-#' \item{fixed}{A data frame with results for the fixed effects
+#' \item{common}{A data frame with results for the common effects
 #'   model.}
 #' \item{random}{A data frame with results for the random effects
 #'   model.}
@@ -62,8 +63,8 @@
 #' # treatment)
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", fixed = FALSE)
+#'   data = face, reference.group = "placebo",
+#'   sm = "OR", common = FALSE)
 #' 
 #' # Additive CNMA model with placebo as inactive component and
 #' # reference
@@ -73,20 +74,19 @@
 #' # Combine results of standard NMA and CNMA
 #' #
 #' nb1 <- netbind(nc1, net1,
-#'                name = c("Additive CNMA", "Standard NMA"),
-#'                col.study = c("red", "black"),
-#'                col.square = c("red", "black"))
+#'   name = c("Additive CNMA", "Standard NMA"),
+#'   col.study = c("red", "black"), col.square = c("red", "black"))
 #' forest(nb1,
-#'        col.by = "black", addrow.subgroups = FALSE,
-#'        fontsize = 10, spacing = 0.7, squaresize = 0.9,
-#'        label.left = "Favours Placebo",
-#'        label.right = "Favours other")
+#'   col.by = "black", addrow.subgroups = FALSE,
+#'   fontsize = 10, spacing = 0.7, squaresize = 0.9,
+#'   label.left = "Favours Placebo",
+#'   label.right = "Favours other")
 #' 
 #' @export netbind
 
 
 netbind <- function(..., name,
-                    fixed, random,
+                    common, random,
                     ##
                     col.study = "black",
                     col.inside = "white",
@@ -96,7 +96,7 @@ netbind <- function(..., name,
                     backtransf,
                     reference.group, baseline.reference,
                     warn.deprecated = gs("warn.deprecated"),
-                    comb.fixed, comb.random
+                    fixed, comb.fixed, comb.random
                     ) {
   
   
@@ -227,16 +227,19 @@ netbind <- function(..., name,
   
   
   ##
-  ## (3) Determine fixed
+  ## (3) Determine common
   ##
+  missing.common <- missing(common)
   missing.fixed <- missing(fixed)
   missing.comb.fixed <- missing(comb.fixed)
   ##
-  if (missing.fixed & missing.comb.fixed) {
+  if (missing.common & missing.fixed & missing.comb.fixed) {
     cfs <- logical(0)
     ##
     for (i in n.i) {
-      if (!is.null(args[[i]]$fixed))
+      if (!is.null(args[[i]]$common))
+        cfs[i] <- args[[i]]$common
+      else if (!is.null(args[[i]]$fixed))
         cfs[i] <- args[[i]]$fixed
       else
         cfs[i] <- args[[i]]$comb.fixed
@@ -245,19 +248,22 @@ netbind <- function(..., name,
     cfs <- unique(cfs)
     ##
     if (length(cfs) != 1) {
-      fixed <- TRUE
-      warning2 <- paste0("Argument 'fixed' set to TRUE ",
+      common <- TRUE
+      warning2 <- paste0("Argument 'common' set to TRUE ",
                          "(as it is not unique in network meta-analyses).")
       print.warning2 <- TRUE
     }
     else
-      fixed <- cfs
+      common <- cfs
   }
   else {
-    fixed <-
-      deprecated2(fixed, missing.fixed, comb.fixed, missing.comb.fixed,
+    common <-
+      deprecated2(common, missing.common, comb.fixed, missing.comb.fixed,
                   warn.deprecated)
-    chklogical(fixed)
+    common <-
+      deprecated2(common, missing.common, fixed, missing.fixed,
+                  warn.deprecated)
+    chklogical(common)
   }
   
   
@@ -390,31 +396,31 @@ netbind <- function(..., name,
   chklogical(baseline.reference)
   
   
-  fixed.nma <- fixed
-  fixed <- data.frame(name = character(0),
-                      treat = character(0),
-                      TE = numeric(0), seTE = numeric(0),
-                      lower = numeric(0), upper = numeric(0),
-                      statistic = numeric(0), pval = numeric(0),
-                      ##
-                      col.study = character(0),
-                      col.square = character(0),
-                      col.square.lines = character(0),
-                      col.inside = character(0),
-                      ##
-                      stringsAsFactors = FALSE)
+  common.nma <- common
+  common <- data.frame(name = character(0),
+                       treat = character(0),
+                       TE = numeric(0), seTE = numeric(0),
+                       lower = numeric(0), upper = numeric(0),
+                       statistic = numeric(0), pval = numeric(0),
+                       ##
+                       col.study = character(0),
+                       col.square = character(0),
+                       col.square.lines = character(0),
+                       col.inside = character(0),
+                       ##
+                       stringsAsFactors = FALSE)
   ##
   for (i in n.i) {
     ##
-    rn <- rownames(args[[i]]$TE.fixed)
+    rn <- rownames(args[[i]]$TE.common)
     seq1 <- charmatch(setseq(args[[i]]$seq, rn), rn)
     ##
-    TE.i <- args[[i]]$TE.fixed[seq1, seq1]
-    seTE.i <- args[[i]]$seTE.fixed[seq1, seq1]
-    lower.i <- args[[i]]$lower.fixed[seq1, seq1]
-    upper.i <- args[[i]]$upper.fixed[seq1, seq1]
-    statistic.i <- args[[i]]$statistic.fixed[seq1, seq1]
-    pval.i <- args[[i]]$pval.fixed[seq1, seq1]
+    TE.i <- args[[i]]$TE.common[seq1, seq1]
+    seTE.i <- args[[i]]$seTE.common[seq1, seq1]
+    lower.i <- args[[i]]$lower.common[seq1, seq1]
+    upper.i <- args[[i]]$upper.common[seq1, seq1]
+    statistic.i <- args[[i]]$statistic.common[seq1, seq1]
+    pval.i <- args[[i]]$pval.common[seq1, seq1]
     ##
     cnam <- colnames(TE.i)
     rnam <- rownames(TE.i)
@@ -422,48 +428,48 @@ netbind <- function(..., name,
     selr <- rnam == reference.group
     ##
     if (baseline.reference) {
-      fixed <- rbind(fixed,
-                     data.frame(name = name[i],
-                                treat = cnam,
-                                ##
-                                TE = TE.i[, selc],
-                                seTE = seTE.i[, selc],
-                                lower = lower.i[, selc],
-                                upper = upper.i[, selc],
-                                statistic = statistic.i[, selc],
-                                pval = pval.i[, selc],
-                                ##
-                                col.study = col.study[i],
-                                col.square = col.square[i],
-                                col.square.lines = col.square.lines[i],
-                                col.inside = col.inside[i],
-                                ##
-                                stringsAsFactors = FALSE)
-                     )
+      common <- rbind(common,
+                      data.frame(name = name[i],
+                                 treat = cnam,
+                                 ##
+                                 TE = TE.i[, selc],
+                                 seTE = seTE.i[, selc],
+                                 lower = lower.i[, selc],
+                                 upper = upper.i[, selc],
+                                 statistic = statistic.i[, selc],
+                                 pval = pval.i[, selc],
+                                 ##
+                                 col.study = col.study[i],
+                                 col.square = col.square[i],
+                                 col.square.lines = col.square.lines[i],
+                                 col.inside = col.inside[i],
+                                 ##
+                                 stringsAsFactors = FALSE)
+                      )
     }
     else {
-      fixed <- rbind(fixed,
-                     data.frame(name = name[i],
-                                treat = cnam,
-                                ##
-                                TE = TE.i[selr, ],
-                                seTE = seTE.i[selr, ],
-                                lower = lower.i[selr, ],
-                                upper = upper.i[selr, ],
-                                statistic = statistic.i[selr, ],
-                                pval = pval.i[selr, ],
-                                ##
-                                col.study = col.study[i],
-                                col.square = col.square[i],
-                                col.square.lines = col.square.lines[i],
-                                col.inside = col.inside[i],
-                                ##
-                                stringsAsFactors = FALSE)
-                     )
+      common <- rbind(common,
+                      data.frame(name = name[i],
+                                 treat = cnam,
+                                 ##
+                                 TE = TE.i[selr, ],
+                                 seTE = seTE.i[selr, ],
+                                 lower = lower.i[selr, ],
+                                 upper = upper.i[selr, ],
+                                 statistic = statistic.i[selr, ],
+                                 pval = pval.i[selr, ],
+                                 ##
+                                 col.study = col.study[i],
+                                 col.square = col.square[i],
+                                 col.square.lines = col.square.lines[i],
+                                 col.inside = col.inside[i],
+                                 ##
+                                 stringsAsFactors = FALSE)
+                      )
     }
   }
   ##
-  rownames(fixed) <- seq_len(nrow(fixed))
+  rownames(common) <- seq_len(nrow(common))
   
   
   random.nma <- random
@@ -543,11 +549,11 @@ netbind <- function(..., name,
   rownames(random) <- seq_len(nrow(random))
   
   
-  res <- list(fixed = fixed,
+  res <- list(common = common,
               random = random,
               sm = sms[1],
               ##
-              x = list(fixed = fixed.nma, random = random.nma,
+              x = list(common = common.nma, random = random.nma,
                        level.ma = levs[1]),
               ##
               backtransf = backtransf,
@@ -556,9 +562,14 @@ netbind <- function(..., name,
               ##
               version = packageDescription("netmeta")$Version)
   ##
+  ## Backward compatibility
+  ##
+  res$fixed <- res$common
+  res$x$fixed <- res$x$common
+  ##
   class(res) <- "netbind"
-
-
+  
+  
   ##
   ## Print warnings
   ##

@@ -7,8 +7,8 @@
 #'
 #' @param x An object of class \code{\link{netmeta}}.
 #' @param nsim Number of simulations.
-#' @param fixed A logical indicating to compute ranking probabilities
-#'   and SUCRAs for the fixed effects (common effects) model.
+#' @param common A logical indicating to compute ranking probabilities
+#'   and SUCRAs for the common effects model.
 #' @param random A logical indicating to compute ranking probabilities
 #'   and SUCRAs for the random effects model.
 #' @param small.values A character string specifying whether small
@@ -38,21 +38,21 @@
 #' An object of class \code{rankogram} with corresponding \code{print}
 #' and \code{plot} function. The object is a list containing the
 #' following components:
-#' \item{ranking.matrix.fixed}{Numeric matrix giving the probability
-#'   of each treatment being at each possible rank for the fixed
+#' \item{ranking.matrix.common}{Numeric matrix giving the probability
+#'   of each treatment being at each possible rank for the common
 #'   effects model.}
-#' \item{ranking.fixed}{SUCRA values for the fixed effects model.}
+#' \item{ranking.common}{SUCRA values for the common effects model.}
 #' \item{ranking.matrix.random}{Numeric matrix giving the probability
 #'   of each treatment being at each possible rank for the random
 #'   effects model.}
 #' \item{ranking.random}{SUCRA values for the random effects model.}
-#' \item{cumrank.matrix.fixed}{Numeric matrix giving the cumulative
+#' \item{cumrank.matrix.common}{Numeric matrix giving the cumulative
 #'   ranking probability of each treatment for the
-#'   fixed effects model.}
+#'   common effects model.}
 #' \item{cumrank.matrix.random}{Numeric matrix giving the cumulative
 #'   ranking probability of each treatment for the random effects
 #'   model.}
-#' \item{nsim, fixed, random}{As defined above},
+#' \item{nsim, common, random}{As defined above},
 #' \item{small.values, x}{As defined above},
 #'
 #' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Guido
@@ -84,7 +84,7 @@
 
 
 rankogram <- function(x, nsim = 1000,
-                      fixed = x$fixed, random = x$random,
+                      common = x$common, random = x$random,
                       small.values = x$small.values,
                       cumulative.rankprob = FALSE,
                       nchar.trts = x$nchar.trts,
@@ -122,10 +122,12 @@ rankogram <- function(x, nsim = 1000,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  missing.fixed <- missing(fixed)
-  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
                       warn.deprecated)
-  chklogical(fixed)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
@@ -137,15 +139,15 @@ rankogram <- function(x, nsim = 1000,
   ## (3) Resampling to calculate ranking probabilites and SUCRAs
   ##
   ##
-  ranking.fixed  <- ranking.matrix.fixed  <- cumrank.matrix.fixed  <- NULL
+  ranking.common  <- ranking.matrix.common  <- cumrank.matrix.common  <- NULL
   ranking.random <- ranking.matrix.random <- rank.cum.random <- NULL
   ##
-  if (fixed) {
-    res.f <- ranksampling(x, nsim, "fixed", small.values)
+  if (common) {
+    res.f <- ranksampling(x, nsim, "common", small.values)
     ##
-    ranking.fixed <- res.f$ranking
-    ranking.matrix.fixed <- res.f$rankogram
-    cumrank.matrix.fixed <- res.f$cumrank
+    ranking.common <- res.f$ranking
+    ranking.matrix.common <- res.f$rankogram
+    cumrank.matrix.common <- res.f$cumrank
   }
   ##
   if (random) {
@@ -162,9 +164,9 @@ rankogram <- function(x, nsim = 1000,
   ## (4) Create rankogram object
   ##
   ##
-  res <- list(ranking.fixed = ranking.fixed,
-              ranking.matrix.fixed = ranking.matrix.fixed,
-              cumrank.matrix.fixed = cumrank.matrix.fixed,
+  res <- list(ranking.common = ranking.common,
+              ranking.matrix.common = ranking.matrix.common,
+              cumrank.matrix.common = cumrank.matrix.common,
               ##
               ranking.random = ranking.random,
               ranking.matrix.random = ranking.matrix.random,
@@ -172,7 +174,7 @@ rankogram <- function(x, nsim = 1000,
               ##
               nsim = nsim,
               ##
-              fixed = fixed,
+              common = common,
               random = random,
               small.values = small.values,
               cumulative.rankprob = cumulative.rankprob,
@@ -181,7 +183,15 @@ rankogram <- function(x, nsim = 1000,
               x = x,
               version = packageDescription("netmeta")$Version
               )
-  ##  
+  ##
+  ## Backward compatibility
+  ##
+  x$fixed <- common
+  ##
+  x$ranking.fixed <- ranking.common
+  x$ranking.matrix.fixed <- ranking.matrix.common
+  x$cumrank.matrix.fixed <- cumrank.matrix.common
+  ##
   class(res) <- "rankogram"
   
   res
@@ -197,7 +207,7 @@ rankogram <- function(x, nsim = 1000,
 
 
 print.rankogram <- function(x,
-                            fixed = x$fixed,
+                            common = x$common,
                             random = x$random,
                             cumulative.rankprob = x$cumulative.rankprob,
                             nchar.trts = x$nchar.trts,
@@ -232,10 +242,12 @@ print.rankogram <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  missing.fixed <- missing(fixed)
-  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
                       warn.deprecated)
-  chklogical(fixed)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
@@ -247,21 +259,21 @@ print.rankogram <- function(x,
   ## (3) Print results
   ##
   ##
-  if (fixed | random)
+  if (common | random)
     cat(paste0(if (cumulative.rankprob)
                  "Cumulative ranking probabilities" else "Rankogram",
                " (based on ", x$nsim, " simulation",
                if (x$nsim > 1) "s", ")\n\n"))
   ##
-  if (fixed) {
+  if (common) {
     if (cumulative.rankprob)
-      rank.fixed <- x$cumrank.matrix.fixed
+      rank.common <- x$cumrank.matrix.common
     else
-      rank.fixed <- x$ranking.matrix.fixed
-    rownames(rank.fixed) <- treats(rank.fixed, nchar.trts)
+      rank.common <- x$ranking.matrix.common
+    rownames(rank.common) <- treats(rank.common, nchar.trts)
     ##
-    cat("Fixed effects model: \n\n")
-    prmatrix(formatN(rank.fixed, digits), quote = FALSE, right = TRUE, ...)
+    cat("Common effects model: \n\n")
+    prmatrix(formatN(rank.common, digits), quote = FALSE, right = TRUE, ...)
     if (random)
       cat("\n")
   }
@@ -277,26 +289,18 @@ print.rankogram <- function(x,
     cat("Random effects model: \n\n")
     prmatrix(formatN(rank.random, digits), quote = FALSE, right = TRUE, ...)
   }
-  ##  
-  if ((fixed | random) & legend) {
-    if (fixed)
-      trts <- rownames(x$ranking.matrix.fixed)
+  ##
+  ## Add legend with abbreviated treatment labels
+  ##
+  if ((common | random) & legend) {
+    if (common)
+      trts <- rownames(x$ranking.matrix.common)
     else if (random)
       trts <- rownames(x$ranking.matrix.random)
     ##
-    trts.abbr <- treats(trts, nchar.trts)
-    diff.trts <- trts != trts.abbr
-    if (any(diff.trts)) {
-      cat("\nLegend:\n")
-      tmat <- data.frame(trts.abbr, trts)
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[diff.trts, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      prmatrix(tmat, quote = FALSE, right = TRUE,
-               rowlab = rep("", length(trts.abbr)))
-    }
+    legendabbr(trts, treats(trts, nchar.trts), TRUE)
   }
+  
   
   invisible()
 }

@@ -9,9 +9,8 @@
 #'   \code{"Davies"} (can be abbreviated, see Details).
 #' @param type A character string indicating which specific hat matrix
 #'   should be derived (can be abbreviated, see Details).
-#' @param fixed A logical indicating whether a hat matrix should be
-#'   printed for the fixed effects / common effects network
-#'   meta-analysis.
+#' @param common A logical indicating whether a hat matrix should be
+#'   printed for the common effects network meta-analysis.
 #' @param random A logical indicating whether a hat matrix should be
 #'   printed for the random effects network meta-analysis.
 #' @param nchar.trts A numeric defining the minimum number of
@@ -38,11 +37,11 @@
 #' vertices) in a network and let \emph{m} be the number of existing
 #' comparisons (edges) between the treatments. If there are only
 #' two-arm studies, \emph{m} is equal to the number of studies,
-#' \emph{k}. Let seTE.adj.fixed and seTE.adj.random be the vectors of
-#' adjusted standard errors under the fixed effect and random effects
-#' model (see \code{\link{netmeta}}). Let \strong{W} be the
-#' \emph{m} x \emph{m} diagonal matrix that contains the inverse
-#' variance 1 / seTE.adj.fixed\eqn{^2} or 1 / seTE.adj.random\eqn{^2}.
+#' \emph{k}. Let seTE.adj.common and seTE.adj.random be the vectors of
+#' adjusted standard errors under the common and random effects model
+#' (see \code{\link{netmeta}}). Let \strong{W} be the \emph{m} x
+#' \emph{m} diagonal matrix that contains the inverse variance 1 /
+#' seTE.adj.common\eqn{^2} or 1 / seTE.adj.random\eqn{^2}.
 #'
 #' The given comparisons define the network structure. Therefrom an
 #' \emph{m} x \emph{n} design matrix X (edge-vertex incidence matrix) is
@@ -122,8 +121,8 @@
 #' }
 #'
 #' @return
-#' A list with two hat matrices: \code{fixed} (fixed effect model) and
-#' \code{random} (random effects model).
+#' A list with two hat matrices: \code{common} (common effects model)
+#' and \code{random} (random effects model).
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
 #' 
@@ -151,8 +150,8 @@
 #' # Only consider first ten studies for concise output
 #' first10 <- subset(Dong2013, id <= 10)
 #' p1 <- pairwise(treatment, death, randomized, studlab = id,
-#'                data = first10, sm = "OR")
-#' net1 <- netmeta(p1, fixed = FALSE)
+#'   data = first10, sm = "OR")
+#' net1 <- netmeta(p1, common = FALSE)
 #' 
 #' hatmatrix(net1)
 #' hatmatrix(net1, method = "k")
@@ -165,8 +164,10 @@
 
 
 hatmatrix <- function(x, method = "Ruecker", type,
-                      fixed = x$fixed,
-                      random = x$random) {
+                      common = x$common,
+                      random = x$random,
+                      nchar.trts = x$nchar.trts,
+                      nchar.studlab = x$nchar.studlab) {
   
   chkclass(x, "netmeta")
   x <- updateversion(x)
@@ -199,26 +200,39 @@ hatmatrix <- function(x, method = "Ruecker", type,
     else if (method == "Davies")
       type <- setchar(type, c("short", "long", "full"))
   }
+  ##
+  common <- replaceNULL(x$common, x$comb.fixed)
+  common <- replaceNULL(x$common, x$fixed)
+  chklogical(common)
+  ##
+  random <- replaceNULL(x$random, x$comb.random)
+  chklogical(random)
+  ##
+  nchar.trts <- replaceNULL(nchar.trts, 666)
+  chknumeric(nchar.trts, min = 1, length = 1)
+  ##
+  nchar.studlab <- replaceNULL(nchar.studlab, 666)
+  chknumeric(nchar.studlab, min = 1, length = 1)
   
-
+  
   res <- list()
   ##
   if (method == "Ruecker") {
-    res$fixed <- x$H.matrix.fixed
+    res$common <- x$H.matrix.common
     res$random <- x$H.matrix.random
   }
   else if (method == "Krahn") {
     if (type == "design") {
-      res$fixed <- nma.krahn(x)$H
+      res$common <- nma.krahn(x)$H
       res$random <- nma.krahn(x, tau.preset = x$tau)$H
     }
     else if (type == "studies") {
-      res$fixed <- nma.krahn(x)$H.studies
+      res$common <- nma.krahn(x)$H.studies
       res$random <- nma.krahn(x, tau.preset = x$tau)$H.studies
     }
   }
   else if (method == "Davies") {
-    res$fixed <- hatmatrix.aggr(x, "fixed", type)
+    res$common <- hatmatrix.aggr(x, "common", type)
     res$random <- hatmatrix.aggr(x, "random", type)
   }
   ##
@@ -226,8 +240,10 @@ hatmatrix <- function(x, method = "Ruecker", type,
   res$type <- type
   ##
   res$x <- x
-  res$x$fixed <- fixed
+  res$x$common <- common
   res$x$random <- random
+  res$x$nchar.trts <- nchar.trts
+  res$x$nchar.studlab <- nchar.studlab
   ##
   res$version <- packageDescription("netmeta")$Version
   ##
@@ -246,10 +262,10 @@ hatmatrix <- function(x, method = "Ruecker", type,
 
 
 print.hatmatrix <- function(x,
-                            fixed = x$x$fixed,
+                            common = x$x$common,
                             random = x$x$random,
                             nchar.trts = x$x$nchar.trts,
-                            nchar.studlab = 666,
+                            nchar.studlab = x$x$nchar.studlab,
                             digits = gs("digits"),
                             legend = TRUE,
                             legend.studlab = TRUE,
@@ -258,12 +274,13 @@ print.hatmatrix <- function(x,
   chkclass(x, "hatmatrix")
   x <- updateversion(x)
   ##
-  chklogical(fixed)
-  fixed.logical <- fixed
+  chklogical(common)
+  common.logical <- common
   chklogical(random)
   random.logical <- random
   ##
   chknumeric(nchar.trts, length = 1)
+  nchar.studlab <- replaceNULL(nchar.studlab, 666)
   chknumeric(nchar.studlab, length = 1)
   chknumeric(digits, length = 1)
   chklogical(legend)
@@ -281,39 +298,38 @@ print.hatmatrix <- function(x,
              ")\n\n"))
   ##
   trts <- x$x$trts
-  trts.abbr <- treats(trts, nchar.trts)
   sep.trts <- x$x$sep.trts
   anystudy.r <- anystudy.c <- FALSE
   anycomp.r <- anycomp.c <- FALSE
   ##
-  fixed <- x$fixed
+  common <- x$common
   random <- x$random
   ##
-  legend <- legend & (fixed.logical | random.logical)
-  legend.studlab <- legend.studlab & (fixed.logical | random.logical)
+  legend <- legend & (common.logical | random.logical)
+  legend.studlab <- legend.studlab & (common.logical | random.logical)
   ##
-  if (fixed.logical) {
-    compnames <- any(grepl(sep.trts, rownames(fixed), fixed = TRUE))
+  if (common.logical) {
+    compnames <- any(grepl(sep.trts, rownames(common), fixed = TRUE))
     anystudy.r <- anystudy.r | !compnames
     anycomp.r  <- anycomp.r  | compnames
     ##
     if (compnames)
-      rownames(fixed) <- comps(fixed, trts, sep.trts, nchar.trts)
+      rownames(common) <- comps(common, trts, sep.trts, nchar.trts)
     else
-      rownames(fixed) <- treats(fixed, nchar.studlab)
+      rownames(common) <- treats(common, nchar.studlab)
     ##
-    compnames <- any(grepl(sep.trts, colnames(fixed), fixed = TRUE))
+    compnames <- any(grepl(sep.trts, colnames(common), fixed = TRUE))
     anystudy.c <- anystudy.c | !compnames
     anycomp.c  <- anycomp.c  | compnames
     ##
     if (compnames)
-      colnames(fixed) <- comps(fixed, trts, sep.trts, nchar.trts,
-                               row = FALSE)
+      colnames(common) <- comps(common, trts, sep.trts, nchar.trts,
+                                row = FALSE)
     else
-      colnames(fixed) <- treats(fixed, nchar.studlab, row = FALSE)
+      colnames(common) <- treats(common, nchar.studlab, row = FALSE)
     ##
-    cat("Fixed effects model:\n\n")
-    prmatrix(round(fixed, digits))
+    cat("Common effects model:\n\n")
+    prmatrix(round(common, digits))
     if (random.logical)
       cat("\n")
   }
@@ -341,32 +357,18 @@ print.hatmatrix <- function(x,
     prmatrix(round(random, digits))
   }
   ##
-  ## Add legend
+  ## Add legend with abbreviated treatment labels
   ##
-  if (legend && (anycomp.r | anycomp.c)) {
-    diff.trts <- trts != trts.abbr
-    if (any(diff.trts)) {
-      tmat <- data.frame(trts.abbr, trts)
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[diff.trts, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      cat("\nLegend:\n")
-      prmatrix(tmat, quote = FALSE, right = TRUE,
-               rowlab = rep("", length(trts.abbr)))
-      ##
-      if (legend.studlab && (anystudy.r | anystudy.c))
-        cat("\n")
-    }
-    else
-      legend <- FALSE
-  }
+  legend <- legendabbr(trts, treats(trts, nchar.trts),
+                       legend && (anycomp.r | anycomp.c))
+  ##
+  ## Add legend with abbreviated study labels
   ##
   if (legend.studlab && (anystudy.r | anystudy.c)) {
     if (anystudy.r) {
-      if (fixed.logical) {
-        studlab <- rownames(x$fixed)
-        studlab.abbr <- rownames(fixed)
+      if (common.logical) {
+        studlab <- rownames(x$common)
+        studlab.abbr <- rownames(common)
       }
       else {
         studlab <- rownames(x$random)
@@ -375,9 +377,9 @@ print.hatmatrix <- function(x,
     }
     ##
     if (anystudy.c) {
-      if (fixed.logical) {
-        studlab <- colnames(x$fixed)
-        studlab.abbr <- colnames(fixed)
+      if (common.logical) {
+        studlab <- colnames(x$common)
+        studlab.abbr <- colnames(common)
       }
       else {
         studlab <- colnames(x$random)
@@ -385,18 +387,10 @@ print.hatmatrix <- function(x,
       }
     }
     ##
-    diff.studlab <- studlab != studlab.abbr
-    if (any(diff.studlab)) {
-      tmat <- data.frame(studlab.abbr, studlab)
-      names(tmat) <- c("Abbreviation", "Study label")
-      tmat <- tmat[diff.studlab, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      if (!(legend && (anycomp.r | anycomp.c)))
-        cat("\nLegend:\n")
-      prmatrix(unique(tmat), quote = FALSE, right = TRUE,
-               rowlab = rep("", nrow(unique(tmat))))
-    }
+    if (legend)
+      legendabbr(studlab, studlab.abbr, TRUE, "Study label", "\n")
+    else
+      legendabbr(studlab, studlab.abbr, TRUE, "Study label")
   }
   ##
   invisible(NULL)
@@ -408,7 +402,7 @@ print.hatmatrix <- function(x,
 
 hatmatrix.aggr <- function(x, model, type) {
   
-  model <- setchar(model, c("fixed", "random"))
+  model <- setchar(model, c("common", "random"))
   type <- setchar(type, c("full", "long", "short"))
   
   ## Create aggregate B matrix
@@ -437,12 +431,12 @@ hatmatrix.aggr <- function(x, model, type) {
     ## of the weighted mean
     WAB <- 0.0
     for (k in seq_len(x$m)) {
-        if (x$B.matrix[k, idxA] == 1 & x$B.matrix[k, idxB] == -1) {
-          if (model == "fixed")
-            WAB <- WAB + 1.0 / (x$seTE.adj.fixed[k])^2
-          else if (model == "random")
-            WAB <- WAB + 1.0 / (x$seTE.adj.random[k])^2
-        }
+      if (x$B.matrix[k, idxA] == 1 & x$B.matrix[k, idxB] == -1) {
+        if (model == "common")
+          WAB <- WAB + 1.0 / (x$seTE.adj.common[k])^2
+        else if (model == "random")
+          WAB <- WAB + 1.0 / (x$seTE.adj.random[k])^2
+      }
     }
     ##
     W[i, i] = WAB
@@ -532,7 +526,7 @@ hatmatrix.F1000 <- function(x, model) {
   ##
   ## H matrix
   ##
-  if (model == "fixed")
+  if (model == "common")
     krahn <- nma.krahn(x)
   else if (model == "random")
     krahn <- nma.krahn(x, tau.preset = x$tau)

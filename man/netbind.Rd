@@ -7,7 +7,7 @@
 netbind(
   ...,
   name,
-  fixed,
+  common,
   random,
   col.study = "black",
   col.inside = "white",
@@ -17,19 +17,20 @@ netbind(
   reference.group,
   baseline.reference,
   warn.deprecated = gs("warn.deprecated"),
+  fixed,
   comb.fixed,
   comb.random
 )
 }
 \arguments{
-\item{...}{Any number of meta-analysis objects or a single list
-with network meta-analyses.}
+\item{\dots}{Any number of network meta-analysis objects or a
+single list with network meta-analyses.}
 
 \item{name}{An optional character vector providing descriptive
-names for the network meta-analysis objects.}
+names for network meta-analysis objects.}
 
-\item{fixed}{A logical indicating whether results for the fixed
-effects (common effects) model should be reported.}
+\item{common}{A logical indicating whether results for the common
+effects model should be reported.}
 
 \item{random}{A logical indicating whether results for the random
 effects model should be reported.}
@@ -59,7 +60,9 @@ only considered if \code{reference.group} has been specified.}
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
 
-\item{comb.fixed}{Deprecated argument; replaced by \code{fixed}.}
+\item{fixed}{Deprecated argument; replaced by \code{common}.}
+
+\item{comb.fixed}{Deprecated argument; replaced by \code{common}.}
 
 \item{comb.random}{Deprecated argument; replaced by \code{random}.}
 }
@@ -67,7 +70,7 @@ be printed if deprecated arguments are used.}
 An object of class \code{"netbind"} with corresponding
 \code{forest} function. The object is a list containing the
 following components:
-\item{fixed}{A data frame with results for the fixed effects
+\item{common}{A data frame with results for the common effects
   model.}
 \item{random}{A data frame with results for the random effects
   model.}
@@ -92,8 +95,8 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 # treatment)
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = face, reference.group = "placebo",
-                sm = "OR", fixed = FALSE)
+  data = face, reference.group = "placebo",
+  sm = "OR", common = FALSE)
 
 # Additive CNMA model with placebo as inactive component and
 # reference
@@ -103,14 +106,13 @@ nc1 <- netcomb(net1, inactive = "placebo")
 # Combine results of standard NMA and CNMA
 #
 nb1 <- netbind(nc1, net1,
-               name = c("Additive CNMA", "Standard NMA"),
-               col.study = c("red", "black"),
-               col.square = c("red", "black"))
+  name = c("Additive CNMA", "Standard NMA"),
+  col.study = c("red", "black"), col.square = c("red", "black"))
 forest(nb1,
-       col.by = "black", addrow.subgroups = FALSE,
-       fontsize = 10, spacing = 0.7, squaresize = 0.9,
-       label.left = "Favours Placebo",
-       label.right = "Favours other")
+  col.by = "black", addrow.subgroups = FALSE,
+  fontsize = 10, spacing = 0.7, squaresize = 0.9,
+  label.left = "Favours Placebo",
+  label.right = "Favours other")
 
 }
 \seealso{

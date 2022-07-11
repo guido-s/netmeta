@@ -35,6 +35,8 @@
 #'   et al., 2021);
 #' \item league table with network meta-analysis results
 #'   (\code{\link{netleague}});
+#' \item table with network, direct and indirect estimates from one or
+#'   more network meta-analyses (\code{\link{nettable}});
 #' \item additive network meta-analysis for combinations of treatments
 #'   (\code{\link{netcomb}}, \code{\link{discomb}} for disconnected
 #'   networks) (Rücker et al., 2020);
@@ -191,7 +193,7 @@
 #'   text strheight strwidth title
 #'
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
-#'   prcomp reshape rnorm sd
+#'   prcomp relevel reshape rnorm sd
 #'
 #' @importFrom utils installed.packages packageDescription
 #'   packageVersion

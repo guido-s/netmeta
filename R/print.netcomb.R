@@ -5,10 +5,10 @@
 #' 
 #' @param x An object of class \code{netcomb} or
 #'   \code{summary.netcomb}.
-#' @param fixed A logical indicating whether results for the
-#'   fixed effects (common effects) model should be printed.
-#' @param random A logical indicating whether results for the
-#'   random effects model should be printed.
+#' @param common A logical indicating whether results for the common
+#'   effects model should be printed.
+#' @param random A logical indicating whether results for the random
+#'   effects model should be printed.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -70,8 +70,8 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", fixed = FALSE)
+#'   data = face, reference.group = "placebo",
+#'   sm = "OR", common = FALSE)
 #' 
 #' # Additive model for treatment components
 #' #
@@ -83,8 +83,8 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = Linde2016, reference.group = "placebo",
-#'                 sm = "OR", fixed = FALSE)
+#'   data = Linde2016, reference.group = "placebo",
+#'   sm = "OR", common = FALSE)
 #' 
 #' # Additive model for treatment components
 #' #
@@ -98,7 +98,7 @@
 
 
 print.netcomb <- function(x,
-                          fixed = x$fixed,
+                          common = x$common,
                           random = x$random,
                           backtransf = x$backtransf,
                           nchar.comps = x$nchar.comps,
@@ -169,9 +169,12 @@ print.netcomb <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
                       warn.deprecated)
-  chklogical(fixed)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -190,7 +193,7 @@ print.netcomb <- function(x,
   lower.I2 <- round(100 * x$lower.I2, digits.I2)
   upper.I2 <- round(100 * x$upper.I2, digits.I2)
   ##  
-  if (fixed | random) {
+  if (common | random) {
     cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
     cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
     cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
@@ -206,12 +209,12 @@ print.netcomb <- function(x,
   comps <- sort(c(x$comps, x$inactive))
   comps.abbr <- treats(comps, nchar.comps)
   ##  
-  ci.comb.f <- data.frame(TE = x$Comb.fixed,
-                          seTE = x$seComb.fixed,
-                          lower = x$lower.Comb.fixed,
-                          upper = x$upper.Comb.fixed,
-                          statistic = x$statistic.Comb.fixed,
-                          p = x$pval.Comb.fixed,
+  ci.comb.f <- data.frame(TE = x$Comb.common,
+                          seTE = x$seComb.common,
+                          lower = x$lower.Comb.common,
+                          upper = x$upper.Comb.common,
+                          statistic = x$statistic.Comb.common,
+                          p = x$pval.Comb.common,
                           stringsAsFactors = FALSE)
   rownames(ci.comb.f) <- x$trts
   ##
@@ -240,8 +243,8 @@ print.netcomb <- function(x,
                      big.mark,
                      x$seq)
   ##
-  if (fixed) {
-    cat("Results for combinations (additive model, fixed effects model):\n")
+  if (common) {
+    cat("Results for combinations (additive model, common effects model):\n")
     print(dat1.f)
     cat("\n")
   }
@@ -252,12 +255,12 @@ print.netcomb <- function(x,
     cat("\n")
   }
   ##  
-  ci.comp.f <- data.frame(TE = x$Comp.fixed,
-                          seTE = x$seComp.fixed,
-                          lower = x$lower.Comp.fixed,
-                          upper = x$upper.Comp.fixed,
-                          statistic = x$statistic.Comp.fixed,
-                          p = x$pval.Comp.fixed,
+  ci.comp.f <- data.frame(TE = x$Comp.common,
+                          seTE = x$seComp.common,
+                          lower = x$lower.Comp.common,
+                          upper = x$upper.Comp.common,
+                          statistic = x$statistic.Comp.common,
+                          p = x$pval.Comp.common,
                           stringsAsFactors = FALSE)
   rownames(ci.comp.f) <- x$comps
   ##
@@ -284,8 +287,8 @@ print.netcomb <- function(x,
                      scientific.pval, zero.pval, JAMA.pval,
                      big.mark)
   ##
-  if (fixed) {
-    cat("Results for components (fixed effects model):\n")
+  if (common) {
+    cat("Results for components (common effects model):\n")
     print(dat2.f)
     cat("\n")
   }
@@ -334,7 +337,7 @@ print.netcomb <- function(x,
   ##
   print(hetdat)
   ##  
-  if (legend && (fixed | random)) {
+  if (legend && (common | random)) {
     diff.comps <- comps != comps.abbr
     if (any(diff.comps)) {
       tmat <- data.frame(comps.abbr, comps)

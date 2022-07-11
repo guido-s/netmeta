@@ -6,7 +6,7 @@
 \usage{
 \method{summary}{netmeta}(
   object,
-  fixed = object$fixed,
+  common = object$common,
   random = object$random,
   prediction = object$prediction,
   reference.group = object$reference.group,
@@ -19,11 +19,11 @@
 \arguments{
 \item{object}{An object of class \code{netmeta}.}
 
-\item{fixed}{A logical indicating whether results for the
-fixed effects / common effects model should be printed.}
+\item{common}{A logical indicating whether results for the common
+effects model should be printed.}
 
-\item{random}{A logical indicating whether results for the
-random effects model should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects model should be printed.}
 
 \item{prediction}{A logical indicating whether prediction intervals
 should be printed.}
@@ -48,13 +48,13 @@ be printed if deprecated arguments are used.}
 A list is returned with the following elements:
 \item{comparison}{Results for pairwise comparisons (data frame with
   columns studlab, treat1, treat2, TE, seTE, lower, upper, z, p).}
-\item{comparison.nma.fixed}{Results for pairwise comparisons based
-  on fixed effects model (data frame with columns studlab, treat1,
+\item{comparison.nma.common}{Results for pairwise comparisons based
+  on common effects model (data frame with columns studlab, treat1,
   treat2, TE, seTE, lower, upper, z, p, leverage).}
 \item{comparison.nma.random}{Results for pairwise comparisons based
   on random effects model (data frame with columns studlab, treat1,
   treat2, TE, seTE, lower, upper, z, p).}
-\item{fixed}{Results for fixed effects model (a list with elements
+\item{common}{Results for common effects model (a list with elements
   TE, seTE, lower, upper, z, p).}
 \item{random}{Results for random effects model (a list with
   elements TE, seTE, lower, upper, z, p).}
@@ -93,7 +93,7 @@ A list is returned with the following elements:
   individual studies.}
 \item{level.ma}{The level used to calculate confidence intervals
   for pooled estimates.}
-\item{fixed, random}{As defined above.}
+\item{common, random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
 \item{reference.group, baseline.reference}{As defined above.}
 \item{all.treatments, backtransf}{As defined above.}
@@ -115,11 +115,10 @@ Summary method for objects of class \code{netmeta}.
 \examples{
 data(Senn2013)
 
-# Conduct fixed effects network meta-analysis
+# Conduct common effects network meta-analysis
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                random = FALSE)
+  data = Senn2013, sm = "MD", random = FALSE)
 print(net1, ref = "plac", digits = 3)
 summary(net1)
 
@@ -127,8 +126,7 @@ summary(net1)
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                fixed = FALSE)
+  data = Senn2013, sm = "MD", common = FALSE)
 print(net2, ref = "plac", digits = 3)
 summary(net2)
 }

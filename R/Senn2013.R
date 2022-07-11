@@ -57,11 +57,10 @@
 #' @examples
 #' data(Senn2013)
 #' 
-#' # Fixed effects model
+#' # Common effects model
 #' #
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 random = FALSE, nchar.trts = 4)
+#'   data = Senn2013, sm = "MD", random = FALSE, nchar.trts = 4)
 #' net1
 #' net1$Q.decomp
 #' 
@@ -73,13 +72,12 @@
 #' # Comparison with reference group
 #' #
 #' netmeta(TE, seTE, treat1.long, treat2.long,
-#'         studlab, data = Senn2013, 
-#'         reference = "plac")
+#'   studlab, data = Senn2013, reference = "plac")
 #' 
 #' # Random effects model
 #' #
 #' net2 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'                 data = Senn2013, fixed = FALSE)
+#'   data = Senn2013, common = FALSE)
 #' net2
 #' forest(net2, ref = "plac")
 #' }

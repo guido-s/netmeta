@@ -1,4 +1,4 @@
-#' Create and print league table for network meta-analysis results
+#' Create league table with network meta-analysis results
 #' 
 #' @description
 #' A league table is a square matrix showing all pairwise comparisons
@@ -10,9 +10,8 @@
 #' @param x An object of class \code{netmeta} or \code{netleague}
 #'   (mandatory).
 #' @param y An object of class \code{netmeta} (optional).
-#' @param fixed A logical indicating whether a league table should be
-#'   printed for the fixed effects / common effects network
-#'   meta-analysis.
+#' @param common A logical indicating whether a league table should be
+#'   printed for the common effects network meta-analysis.
 #' @param random A logical indicating whether a league table should be
 #'   printed for the random effects network meta-analysis.
 #' @param seq A character or numerical vector specifying the sequence
@@ -28,15 +27,26 @@
 #'   should be generated if argument \code{y} is not missing.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
+#' @param big.mark A character used as thousands separator.
+#' @param text.NA A character string to label missing values.
 #' @param bracket A character with bracket symbol to print lower
 #'   confidence interval: "[", "(", "\{", "".
 #' @param separator A character string with information on separator
 #'   between lower and upper confidence interval.
-#' @param text.NA A character string to label missing values.
-#' @param big.mark A character used as thousands separator.
+#' @param lower.blank A logical indicating whether blanks between left
+#'   bracket and lower confidence limit should be printed.
+#' @param upper.blank A logical indicating whether blanks between
+#'   separator and upper confidence limit should be printed.
+#' @param writexl A logical indicating whether an Excel file should be
+#'   created (R package \bold{writexl} must be available).
+#' @param path A character string specifying the filename of the Excel
+#'   file.
+#' @param overwrite A logical indicating whether an existing Excel
+#'   file should be overwritten.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
-#' @param \dots Additional arguments.
+#' @param \dots Additional arguments (passed on to \code{write_xlsx}
+#'   to create Excel file).
 #' 
 #' @details
 #' A league table is a square matrix showing all pairwise comparisons
@@ -57,6 +67,10 @@
 #' meta-analysis object \code{y} in the upper triangle. This is, for
 #' example, useful to print information on efficacy and safety in the
 #' same league table.
+#'
+#' By default, an R object with the league tables is
+#' generated. Alternatively, an Excel file is created if argument
+#' \code{writexl = TRUE}.
 #' 
 #' This implementation reports pairwise comparisons of the treatment
 #' in the row versus the treatment in the column in the lower triangle
@@ -78,6 +92,13 @@
 #' 
 #' R function \code{\link{netrank}} can be used to change the order of
 #' rows and columns in the league table (see examples).
+#'
+#' @return
+#' An object of class \code{netleague} with corresponding \code{print}
+#' function if \code{writexl = FALSE}. The object is a list containing
+#' the league tables in list elements 'common' and 'random'. An Excel
+#' file is created if \code{writexl = TRUE}. In this case, \code{NULL}
+#' is returned in R.
 #'
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Gerta
 #'   Rücker \email{ruecker@@imbi.uni-freiburg.de}
@@ -102,28 +123,27 @@
 #' data(Woods2010)
 #' 
 #' p0 <- pairwise(treatment, event = r, n = N,
-#'                studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = Woods2010, sm = "OR")
 #' net0 <- netmeta(p0)
 #' 
 #' oldopts <- options(width = 100)
 #' 
-#' # League table for fixed and random effects model with
+#' # League table for common and random effects model with
 #' # - network estimates in lower triangle
 #' # - direct estimates in upper triangle
 #' #
 #' netleague(net0, digits = 2, bracket = "(", separator = " - ")
 #' 
-#' # League table for fixed effects model
+#' # League table for common effects model
 #' #
 #' netleague(net0, random = FALSE, digits = 2)
 #' 
 #' # Change order of treatments according to treatment ranking (random
 #' # effects model)
 #' #
-#' netleague(net0, fixed = FALSE, digits = 2,
-#'           seq = netrank(net0))
+#' netleague(net0, common = FALSE, digits = 2, seq = netrank(net0))
 #' #
-#' print(netrank(net0), fixed = FALSE)
+#' print(netrank(net0), common = FALSE)
 #' 
 #' \dontrun{
 #' # Create a CSV file with league table for random effects model
@@ -131,23 +151,13 @@
 #' league0 <- netleague(net0, digits = 2, bracket = "(", separator = " to ")
 #' #
 #' write.table(league0$random, file = "league0-random.csv",
-#'             row.names = FALSE, col.names = FALSE,
-#'             sep = ",")
+#'   row.names = FALSE, col.names = FALSE, sep = ",")
 #' #
 #' # Create Excel files with league tables
 #' # (if R package writexl is available)
 #' #
-#' library(writexl)
-#' #
-#' # League table from random effects model
-#' #
-#' write_xlsx(league0$random,
-#'            path = "league0-random.xlsx", col_names = FALSE)
-#' #
-#' # League tables from fixed and random effects models
-#' #
-#' write_xlsx(list(fixed = league0$fixed, random = league0$random),
-#'            path = "league0-both.xlsx", col_names = FALSE)
+#' netleague(net0, digits = 2, bracket = "(", separator = " to ",
+#'           path = tempfile(fileext = ".xlsx"))
 #' }
 #' 
 #' \donttest{
@@ -158,8 +168,7 @@
 #' # Define order of treatments
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
-#'           "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
-#'           "Placebo")
+#'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 #' 
 #' # Outcome labels
 #' #
@@ -168,21 +177,19 @@
 #' # (1) Early response
 #' #
 #' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(resp1, resp2, resp3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, fixed = FALSE,
+#' net1 <- netmeta(p1, common = FALSE,
 #'                 seq = trts, ref = "Placebo", small = "bad")
 #' 
 #' # (2) Early remission
 #' #
 #' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(remi1, remi2, remi3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, fixed = FALSE,
+#' net2 <- netmeta(p2, common = FALSE,
 #'                 seq = trts, ref = "Placebo", small = "bad")
 #' 
 #' options(width = 200)
@@ -207,9 +214,9 @@
 #' # Report results for network meta-analysis twice
 #' #
 #' netleague(net1, net1, seq = netrank(net1), ci = FALSE,
-#'           backtransf = FALSE)
+#'   backtransf = FALSE)
 #' netleague(net1, net1, seq = netrank(net1), ci = FALSE,
-#'           backtransf = FALSE, direct = TRUE)
+#'   backtransf = FALSE, direct = TRUE)
 #' }
 #' 
 #' options(oldopts)
@@ -230,14 +237,24 @@
 
 
 netleague <- function(x, y,
-                      fixed = x$fixed, random = x$random,
+                      common = x$common, random = x$random,
                       seq = x$seq, ci = TRUE, backtransf = TRUE,
                       direct = FALSE,
+                      ##
                       digits = gs("digits"),
+                      ##
+                      big.mark = gs("big.mark"),
+                      text.NA = ".",
+                      ##
                       bracket = gs("CIbracket"),
                       separator = gs("CIseparator"),
-                      text.NA = ".",
-                      big.mark = gs("big.mark"),
+                      lower.blank = gs("CIlower.blank"),
+                      upper.blank = gs("CIupper.blank"),
+                      ##
+                      writexl = !missing(path),
+                      path = "leaguetable.xlsx",
+                      overwrite = FALSE,
+                      ##
                       warn.deprecated = gs("warn.deprecated"),
                       ...) {
   
@@ -269,7 +286,7 @@ netleague <- function(x, y,
     if (is.null(seq))
       stop("Argument 'seq' must be not NULL.")
     else if (inherits(seq, "netrank")) {
-      ranking.f <- seq$ranking.fixed
+      ranking.f <- seq$ranking.common
       ranking.r <- seq$ranking.random
       ##
       seq.f <- setseq(names(ranking.f)[rev(order(ranking.f))], x$seq)
@@ -284,22 +301,33 @@ netleague <- function(x, y,
   chklogical(direct)
   chknumeric(digits, min = 0, length = 1)
   ##
-  bracket.old <- gs("CIbracket")
-  separator.old <- gs("CIseparator")
-  cilayout(bracket, separator)
-  on.exit(cilayout(bracket.old, separator.old))
-  ##
   chkchar(text.NA)
   chkchar(big.mark)
+  ##
+  bracket.old <- gs("CIbracket")
+  separator.old <- gs("CIseparator")
+  lower.blank.old <- gs("CIlower.blank")
+  upper.blank.old <- gs("CIupper.blank")
+  ##
+  cilayout(bracket, separator, lower.blank, upper.blank)
+  on.exit(cilayout(bracket.old, separator.old,
+                   lower.blank.old, upper.blank.old))
+  ##
+  chklogical(writexl)
+  chkchar(path, length = 1)
+  chklogical(overwrite)
   ##
   ## Check for deprecated arguments in '...'
   ##
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -312,9 +340,9 @@ netleague <- function(x, y,
   ##
   ##
   if (!missing(y) & direct) {
-    TE.fixed.x    <- x$TE.direct.fixed
-    lower.fixed.x <- x$lower.direct.fixed
-    upper.fixed.x <- x$upper.direct.fixed
+    TE.common.x    <- x$TE.direct.common
+    lower.common.x <- x$lower.direct.common
+    upper.common.x <- x$upper.direct.common
     ##
     if (random) {
       TE.random.x    <- x$TE.direct.random
@@ -323,9 +351,9 @@ netleague <- function(x, y,
     }
   }
   else {
-    TE.fixed.x    <- x$TE.fixed
-    lower.fixed.x <- x$lower.fixed
-    upper.fixed.x <- x$upper.fixed
+    TE.common.x    <- x$TE.common
+    lower.common.x <- x$lower.common
+    upper.common.x <- x$upper.common
     ##
     if (random) {
       TE.random.x    <- x$TE.random
@@ -335,9 +363,9 @@ netleague <- function(x, y,
   }
   ##
   if (backtransf & is.relative.effect(x$sm)) {
-    TE.fixed.x    <- exp(TE.fixed.x)
-    lower.fixed.x <- exp(lower.fixed.x)
-    upper.fixed.x <- exp(upper.fixed.x)
+    TE.common.x    <- exp(TE.common.x)
+    lower.common.x <- exp(lower.common.x)
+    upper.common.x <- exp(upper.common.x)
     ##
     if (random) {
       TE.random.x    <- exp(TE.random.x)
@@ -348,9 +376,9 @@ netleague <- function(x, y,
   ##
   if (!missing(y)) {
     if (direct) {
-      TE.fixed.y    <- y$TE.direct.fixed
-      lower.fixed.y <- y$lower.direct.fixed
-      upper.fixed.y <- y$upper.direct.fixed
+      TE.common.y    <- y$TE.direct.common
+      lower.common.y <- y$lower.direct.common
+      upper.common.y <- y$upper.direct.common
       ##
       if (random) {
         TE.random.y    <- y$TE.direct.random
@@ -359,9 +387,9 @@ netleague <- function(x, y,
       }
     }
     else {
-      TE.fixed.y    <- y$TE.fixed
-      lower.fixed.y <- y$lower.fixed
-      upper.fixed.y <- y$upper.fixed
+      TE.common.y    <- y$TE.common
+      lower.common.y <- y$lower.common
+      upper.common.y <- y$upper.common
       ##
       if (random) {
         TE.random.y    <- y$TE.random
@@ -371,9 +399,9 @@ netleague <- function(x, y,
     }
     ##
     if (backtransf & is.relative.effect(y$sm)) {
-      TE.fixed.y    <- exp(TE.fixed.y)
-      lower.fixed.y <- exp(lower.fixed.y)
-      upper.fixed.y <- exp(upper.fixed.y)
+      TE.common.y    <- exp(TE.common.y)
+      lower.common.y <- exp(lower.common.y)
+      upper.common.y <- exp(upper.common.y)
       ##
       if (random) {
         TE.random.y    <- exp(TE.random.y)
@@ -383,9 +411,9 @@ netleague <- function(x, y,
     }
     ##
     if (x.is.y) {
-      TE.fixed.y    <- t(TE.fixed.y)
-      lower.fixed.y <- t(lower.fixed.y)
-      upper.fixed.y <- t(upper.fixed.y)
+      TE.common.y    <- t(TE.common.y)
+      lower.common.y <- t(lower.common.y)
+      upper.common.y <- t(upper.common.y)
       ##
       if (random) {
         TE.random.y    <- t(TE.random.y)
@@ -396,9 +424,9 @@ netleague <- function(x, y,
   }
   else {
     if (backtransf & is.relative.effect(x$sm)) {
-      TE.fixed.y    <- exp(x$TE.direct.fixed)
-      lower.fixed.y <- exp(x$lower.direct.fixed)
-      upper.fixed.y <- exp(x$upper.direct.fixed)
+      TE.common.y    <- exp(x$TE.direct.common)
+      lower.common.y <- exp(x$lower.direct.common)
+      upper.common.y <- exp(x$upper.direct.common)
       ##
       if (random) {
         TE.random.y    <- exp(x$TE.direct.random)
@@ -407,9 +435,9 @@ netleague <- function(x, y,
       }
     }
     else {
-      TE.fixed.y    <- x$TE.direct.fixed
-      lower.fixed.y <- x$lower.direct.fixed
-      upper.fixed.y <- x$upper.direct.fixed
+      TE.common.y    <- x$TE.direct.common
+      lower.common.y <- x$lower.direct.common
+      upper.common.y <- x$upper.direct.common
       ##
       if (random) {
         TE.random.y    <- x$TE.direct.random
@@ -421,9 +449,9 @@ netleague <- function(x, y,
   ##
   ## Comparisons are column versus row
   ##
-  TE.fixed.x <- t(TE.fixed.x)
-  lower.fixed.x <- t(lower.fixed.x)
-  upper.fixed.x <- t(upper.fixed.x)
+  TE.common.x <- t(TE.common.x)
+  lower.common.x <- t(lower.common.x)
+  upper.common.x <- t(upper.common.x)
   ##
   if (random) {
     TE.random.x <- t(TE.random.x)
@@ -431,9 +459,9 @@ netleague <- function(x, y,
     upper.random.x <- t(upper.random.x)
   }
   ##
-  TE.fixed.y <- t(TE.fixed.y)
-  lower.fixed.y <- t(lower.fixed.y)
-  upper.fixed.y <- t(upper.fixed.y)
+  TE.common.y <- t(TE.common.y)
+  lower.common.y <- t(lower.common.y)
+  upper.common.y <- t(upper.common.y)
   ##
   if (random) {
     TE.random.y <- t(TE.random.y)
@@ -444,55 +472,55 @@ netleague <- function(x, y,
   
   ##
   ##
-  ## (3) Print league table for fixed effects model
+  ## (3) Create league table for common effects model
   ##
   ##
-  TE.fixed.x    <- round(   TE.fixed.x[seq.f, seq.f], digits)
-  lower.fixed.x <- round(lower.fixed.x[seq.f, seq.f], digits)
-  upper.fixed.x <- round(upper.fixed.x[seq.f, seq.f], digits)
+  TE.common.x    <- round(   TE.common.x[seq.f, seq.f], digits)
+  lower.common.x <- round(lower.common.x[seq.f, seq.f], digits)
+  upper.common.x <- round(upper.common.x[seq.f, seq.f], digits)
   ##
   if (ci) {
-    nl.NA <- is.na(TE.fixed.x)
-    nl.f <- paste(formatN(TE.fixed.x, digits = digits,
+    nl.NA <- is.na(TE.common.x)
+    nl.c <- paste(formatN(TE.common.x, digits = digits,
                           text.NA = text.NA, big.mark = big.mark),
-                  formatCI(lower.fixed.x, upper.fixed.x, lab.NA = text.NA,
+                  formatCI(lower.common.x, upper.common.x, lab.NA = text.NA,
                            big.mark = big.mark))
-    nl.f[nl.NA] <- text.NA
+    nl.c[nl.NA] <- text.NA
   }
   else
-    nl.f <- formatN(TE.fixed.x, digits = digits,
+    nl.c <- formatN(TE.common.x, digits = digits,
                     text.NA = text.NA, big.mark = big.mark)
   ##
-  nl.f <- matrix(nl.f, nrow = nrow(TE.fixed.x), ncol = ncol(TE.fixed.x))
-  diag(nl.f) <- rownames(TE.fixed.x)
+  nl.c <- matrix(nl.c, nrow = nrow(TE.common.x), ncol = ncol(TE.common.x))
+  diag(nl.c) <- rownames(TE.common.x)
   ##
-  TE.fixed.y    <- round(   TE.fixed.y[seq.f, seq.f], digits)
-  lower.fixed.y <- round(lower.fixed.y[seq.f, seq.f], digits)
-  upper.fixed.y <- round(upper.fixed.y[seq.f, seq.f], digits)
+  TE.common.y    <- round(   TE.common.y[seq.f, seq.f], digits)
+  lower.common.y <- round(lower.common.y[seq.f, seq.f], digits)
+  upper.common.y <- round(upper.common.y[seq.f, seq.f], digits)
   ##
   if (ci) {
-    nl.NA <- is.na(TE.fixed.y)
-    nl.f.y <- paste(formatN(TE.fixed.y,
+    nl.NA <- is.na(TE.common.y)
+    nl.c.y <- paste(formatN(TE.common.y,
                             digits = digits, text.NA = text.NA,
                             big.mark = big.mark),
-                    formatCI(lower.fixed.y, upper.fixed.y, lab.NA = text.NA,
+                    formatCI(lower.common.y, upper.common.y, lab.NA = text.NA,
                              big.mark = big.mark))
-    nl.f.y[nl.NA] <- text.NA
+    nl.c.y[nl.NA] <- text.NA
   }
   else
-    nl.f.y <- formatN(TE.fixed.y, digits = digits,
+    nl.c.y <- formatN(TE.common.y, digits = digits,
                       text.NA = text.NA, big.mark = big.mark)
   ##
-  nl.f.y <- matrix(nl.f.y, nrow = nrow(TE.fixed.y), ncol = ncol(TE.fixed.y))
+  nl.c.y <- matrix(nl.c.y, nrow = nrow(TE.common.y), ncol = ncol(TE.common.y))
   ##
-  nl.f[upper.tri(nl.f)] <- t(nl.f.y)[upper.tri(nl.f)]
+  nl.c[upper.tri(nl.c)] <- t(nl.c.y)[upper.tri(nl.c)]
   ##
-  nl.f <- as.data.frame(nl.f, stringsAsFactors = FALSE)
+  nl.c <- as.data.frame(nl.c, stringsAsFactors = FALSE)
   
   
   ##
   ##
-  ## (4) Print league table for random effects model
+  ## (4) Create league table for random effects model
   ##
   ##
   if (random) {
@@ -532,18 +560,69 @@ netleague <- function(x, y,
     ##
     nl.r.y <- matrix(nl.r.y, nrow = nrow(TE.random.y), ncol = ncol(TE.random.y))
     ##
-    nl.r[upper.tri(nl.r)] <- t(nl.r.y)[upper.tri(nl.f)]
+    nl.r[upper.tri(nl.r)] <- t(nl.r.y)[upper.tri(nl.c)]
     ##
     nl.r <- as.data.frame(nl.r, stringsAsFactors = FALSE)
   }
+
+
+  ##
+  ##
+  ## (5) Save Excel file
+  ##
+  ##
+  if (writexl) {
+    if (!(common | random)) {
+      warning("Excel file not generated as neither ",
+              "argument 'common' nor 'random' is TRUE.")
+      return(invisible(NULL))
+    }
+    ##
+    if (!is.installed.package("writexl", stop = FALSE))
+      stop(paste0("Package 'writexl' missing.",
+                  "\n  ",
+                  "Please use the following R command for installation:",
+                  "\n  install.packages(\"writexl\")"),
+           call. = FALSE)
+    ##
+    if (file.exists(path) & !overwrite)
+      warning("File '", path, "' exists. ",
+              "Use argument 'overwrite = TRUE' to overwrite file.",
+              call. = FALSE)
+    else {
+      if (common & random)
+        xlsx <- list(common = nl.c, random = nl.r)
+      else if (common)
+        xlsx <- list(common = nl.c)
+      else
+        xlsx <- list(random = nl.r)
+      ##
+      writexl::write_xlsx(xlsx, path = path, col_names = FALSE, ...)
+      message(paste0("League table", if (common & random) "s",
+                     " saved in file '", path, "'."))
+    }
+    ##
+    return(invisible(NULL))
+  }
   
   
-  res <- list(fixed = nl.f,
+  ##
+  ##
+  ## (6) Return league tables
+  ##
+  ##
+  res <- list(common = nl.c,
               random = if (random) nl.r else NA,
               seq = seq, ci = ci, backtransf = backtransf,
-              x = list(fixed = fixed, random = random),
+              x = list(common = common, random = random),
               digits = digits,
               version = packageDescription("netmeta")$Version)
+  ##
+  ##
+  ## Backward compatibility
+  ##
+  res$fixed <- res$common
+  res$x$fixed <- res$x$common
   ##
   class(res) <- "netleague"
   
@@ -561,7 +640,7 @@ netleague <- function(x, y,
 
 
 print.netleague <- function(x,
-                            fixed = x$x$fixed,
+                            common = x$x$common,
                             random = x$x$random,
                             warn.deprecated = gs("warn.deprecated"),
                             ...) {
@@ -580,9 +659,12 @@ print.netleague <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -591,15 +673,15 @@ print.netleague <- function(x,
   
   ##
   ##
-  ## (2) Print league table for fixed effects model
+  ## (2) Print league table for common effects model
   ##
   ##
-  if (fixed) {
-    cat("League table (fixed effects model):\n")
+  if (common) {
+    cat("League table (common effects model):\n")
     ##
-    prmatrix(x$fixed, quote = FALSE, right = TRUE,
-             rowlab = rep("", nrow(x$fixed)),
-             collab = rep("", ncol(x$fixed)))
+    prmatrix(x$common, quote = FALSE, right = TRUE,
+             rowlab = rep("", nrow(x$common)),
+             collab = rep("", ncol(x$common)))
     if (random)
       cat("\n")
   }

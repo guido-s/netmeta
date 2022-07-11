@@ -2,13 +2,13 @@ ranksampling <- function(x, nsim,
                          pooled = "random", small.values = "good",
                          keep.sample = FALSE) {
   chkclass(x, "netmeta")
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random"))
   small.values <- setchar(small.values, c("good", "bad"))
   chklogical(keep.sample)
   ##
-  if (pooled == "fixed") {
-    TE.pooled <- x$TE.fixed
-    Cov.pooled <- x$Cov.fixed
+  if (pooled == "common") {
+    TE.pooled <- x$TE.common
+    Cov.pooled <- x$Cov.common
   }
   else {
     TE.pooled <- x$TE.random

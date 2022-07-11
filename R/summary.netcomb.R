@@ -4,8 +4,8 @@
 #' Summary method for objects of class \code{netcomb}.
 #' 
 #' @param object An object of class \code{netcomb}.
-#' @param fixed A logical indicating whether results for the fixed
-#'   effects / common effects model should be printed.
+#' @param common A logical indicating whether results for the common
+#'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -33,8 +33,8 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = face, reference.group = "placebo",
-#'                 sm = "OR", fixed = FALSE)
+#'   data = face, reference.group = "placebo",
+#'   sm = "OR", common = FALSE)
 #' 
 #' # Additive model for treatment components
 #' #
@@ -46,8 +46,8 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = Linde2016, reference.group = "placebo",
-#'                 sm = "OR", fixed = FALSE)
+#'   data = Linde2016, reference.group = "placebo",
+#'   sm = "OR", common = FALSE)
 #' 
 #' # Additive model for treatment components
 #' #
@@ -61,7 +61,7 @@
 
 
 summary.netcomb <- function(object,
-                            fixed = object$fixed,
+                            common = object$common,
                             random = object$random,
                             warn.deprecated = gs("warn.deprecated"),
                             ...) {
@@ -83,10 +83,12 @@ summary.netcomb <- function(object,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  missing.fixed <- missing(fixed)
-  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
@@ -106,27 +108,27 @@ summary.netcomb <- function(object,
                         ci(object$TE, object$seTE, object$level)[keepvars],
                         stringsAsFactors = FALSE)
   ##
-  ci.nma.fixed <- data.frame(studlab = object$studlab,
-                             treat1 = object$treat1,
-                             treat2 = object$treat2,
-                             TE = object$TE.nma.fixed,
-                             seTE = object$seTE.nma.fixed,
-                             lower = object$lower.nma.fixed,
-                             upper = object$upper.nma.fixed,
-                             statistic = object$statistic.nma.fixed,
-                             p = object$pval.nma.fixed,
-                             stringsAsFactors = FALSE)
-  ##
-  ci.cnma.fixed <- data.frame(studlab = object$studlab,
+  ci.nma.common <- data.frame(studlab = object$studlab,
                               treat1 = object$treat1,
                               treat2 = object$treat2,
-                              TE = object$TE.cnma.fixed,
-                              seTE = object$seTE.cnma.fixed,
-                              lower = object$lower.cnma.fixed,
-                              upper = object$upper.cnma.fixed,
-                              statistic = object$statistic.cnma.fixed,
-                              p = object$pval.cnma.fixed,
+                              TE = object$TE.nma.common,
+                              seTE = object$seTE.nma.common,
+                              lower = object$lower.nma.common,
+                              upper = object$upper.nma.common,
+                              statistic = object$statistic.nma.common,
+                              p = object$pval.nma.common,
                               stringsAsFactors = FALSE)
+  ##
+  ci.cnma.common <- data.frame(studlab = object$studlab,
+                               treat1 = object$treat1,
+                               treat2 = object$treat2,
+                               TE = object$TE.cnma.common,
+                               seTE = object$seTE.cnma.common,
+                               lower = object$lower.cnma.common,
+                               upper = object$upper.cnma.common,
+                               statistic = object$statistic.cnma.common,
+                               p = object$pval.cnma.common,
+                               stringsAsFactors = FALSE)
   ##
   ci.nma.random <- data.frame(studlab = object$studlab,
                               treat1 = object$treat1,
@@ -150,12 +152,12 @@ summary.netcomb <- function(object,
                                p = object$pval.cnma.random,
                                stringsAsFactors = FALSE)
   ##
-  ci.f <- list(TE = object$TE.fixed,
-               seTE = object$seTE.fixed,
-               lower = object$lower.fixed,
-               upper = object$upper.fixed,
-               statistic = object$statistic.fixed,
-               p = object$pval.fixed)
+  ci.f <- list(TE = object$TE.common,
+               seTE = object$seTE.common,
+               lower = object$lower.common,
+               upper = object$upper.common,
+               statistic = object$statistic.common,
+               p = object$pval.common)
   ##
   ci.r <- list(TE = object$TE.random,
                seTE = object$seTE.random,
@@ -164,12 +166,12 @@ summary.netcomb <- function(object,
                statistic = object$statistic.random,
                p = object$pval.random)
   ##
-  ci.comp.f <- data.frame(TE = object$Comp.fixed,
-                          seTE = object$seComp.fixed,
-                          lower = object$lower.Comp.fixed,
-                          upper = object$upper.Comp.fixed,
-                          statistic = object$statistic.Comp.fixed,
-                          p = object$pval.Comp.fixed,
+  ci.comp.f <- data.frame(TE = object$Comp.common,
+                          seTE = object$seComp.common,
+                          lower = object$lower.Comp.common,
+                          upper = object$upper.Comp.common,
+                          statistic = object$statistic.Comp.common,
+                          p = object$pval.Comp.common,
                           stringsAsFactors = FALSE)
   rownames(ci.comp.f) <- object$comps
   ##
@@ -182,12 +184,12 @@ summary.netcomb <- function(object,
                           stringsAsFactors = FALSE)
   rownames(ci.comp.r) <- object$comps
   ##
-  ci.comb.f <- data.frame(TE = object$Comb.fixed,
-                          seTE = object$seComb.fixed,
-                          lower = object$lower.Comb.fixed,
-                          upper = object$upper.Comb.fixed,
-                          statistic = object$statistic.Comb.fixed,
-                          p = object$pval.Comb.fixed,
+  ci.comb.f <- data.frame(TE = object$Comb.common,
+                          seTE = object$seComb.common,
+                          lower = object$lower.Comb.common,
+                          upper = object$upper.Comb.common,
+                          statistic = object$statistic.Comb.common,
+                          p = object$pval.Comb.common,
                           stringsAsFactors = FALSE)
   rownames(ci.comb.f) <- object$trts
   ##
@@ -229,18 +231,18 @@ summary.netcomb <- function(object,
               events.comps = object$events.comps,
               ##
               comparison = ci.comp,
-              comparison.nma.fixed = ci.nma.fixed,
+              comparison.nma.common = ci.nma.common,
               comparison.nma.random = ci.nma.random,
-              comparison.cnma.fixed = ci.cnma.fixed,
+              comparison.cnma.common = ci.cnma.common,
               comparison.cnma.random = ci.cnma.random,
               ##
-              components.fixed = ci.comp.f,
+              components.common = ci.comp.f,
               components.random = ci.comp.r,
               ##
-              combinations.fixed = ci.comb.f,
+              combinations.common = ci.comb.f,
               combinations.random = ci.comb.r,
               ##
-              fixed = ci.f, random = ci.r,
+              common = ci.f, random = ci.r,
               ##
               Q.additive = object$Q.additive,
               df.Q.additive = object$df.Q.additive,
@@ -261,8 +263,6 @@ summary.netcomb <- function(object,
               method = object$method,
               level = object$level,
               level.ma = object$level.ma,
-              fixed = fixed,
-              random = random,
               ##
               ci.lab = paste0(round(100 * object$level.ma, 1),"%-CI"),
               ##
@@ -288,6 +288,9 @@ summary.netcomb <- function(object,
               call = match.call(),
               version = packageDescription("netmeta")$Version
               )
+  ##
+  res$x$common <- common
+  res$x$random <- random
   ##
   class(res) <- c(if (inherits(object, "discomb")) "summary.discomb",
                   "summary.netcomb")

@@ -42,29 +42,24 @@
 #' smokingcessation$rob <- rep(1:2, 12)
 #' 
 #' p1 <- pairwise(list(treat1, treat2, treat3),
-#'                event = list(event1, event2, event3),
-#'                n = list(n1, n2, n3),
-#'                data = smokingcessation,
-#'                sm = "OR")
-#' net1 <- netmeta(p1, fixed = FALSE, ref = "A")
+#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
+#'   data = smokingcessation, sm = "OR")
+#' net1 <- netmeta(p1, common = FALSE, ref = "A")
 #' 
 #' # Generate network graph with information on risk of bias
 #' #
 #' col.rob <- netmatrix(net1, rob, ties.method = "last",
-#'                      levels = 1:2,
-#'                      labels = c("green", "yellow"))
+#'   levels = 1:2, labels = c("green", "yellow"))
 #' #
 #' netgraph(net1, col = col.rob,
-#'          plastic = FALSE, thickness = "number.of.studies", multi = FALSE)
+#'   plastic = FALSE, thickness = "number.of.studies", multi = FALSE)
 #' 
-#' n.trts <- net1$n.trts
-#' labs <- paste(net1$trts, " (n=", n.trts, ")", sep = "")
-#' #
 #' netgraph(net1, col = col.rob,
-#'          plastic = FALSE, thickness = "number.of.studies", multi = FALSE,
-#'          points = TRUE, col.points = "blue",
-#'          cex.points = 6 * sqrt(n.trts / max(n.trts)),
-#'          labels = labs)
+#'   plastic = FALSE, thickness = "number.of.studies", multi = FALSE,
+#'   points = TRUE, col.points = "blue",
+#'   cex.points = 6 * sqrt(n.trts / max(n.trts)),
+#'   labels = paste0(trts, " (n=", n.trts, ")"),
+#'   offset = 0.025)
 #' 
 #' @export netmatrix
 
@@ -83,11 +78,9 @@ netmatrix <- function(x, var, levels, labels = levels,
   ##
   ## Catch var, treat1, treat2 from data:
   ##
-  mf <- match.call()
   data <- x$data
   ##
-  var <- eval(mf[[match("var", names(mf))]],
-              data, enclos = sys.frame(sys.parent()))
+  var <- catch("var", match.call(), data, sys.frame(sys.parent()))
   ##
   treat1 <- data[[".treat1"]]
   treat2 <- data[[".treat2"]]

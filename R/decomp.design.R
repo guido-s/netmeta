@@ -54,16 +54,16 @@
 #' Network meta-analysis with a single design: \code{NULL}. Otherwise,
 #' a list containing the following components:
 #' \item{Q.decomp}{Data frame with Q statistics (variable \code{Q})
-#'   based on the fixed effects model to assess the
+#'   based on the common effects model to assess the
 #'   homogeneity/consistency in the whole network, within designs, and
 #'   between designs. Corresponding degrees of freedom (\code{df}) and
 #'   p-values (\code{p.val}) are also given.}
 #' \item{Q.het.design}{Data frame with design-specific decomposition
-#'   of the within-designs Q statistic (\code{Q}) of the fixed effects
+#'   of the within-designs Q statistic (\code{Q}) of the common effects
 #'   model, corresponding degrees of freedom (\code{df}) and p-values
 #'   (\code{p.val}) are given.}
 #' \item{Q.inc.detach}{Data frame with between-designs Q statistics
-#'   (\code{Q}) of the fixed effects model after detaching of single
+#'   (\code{Q}) of the common effects model after detaching of single
 #'   designs, corresponding degrees of freedom (\code{df}) and
 #'   p-values (\code{p.val}) are given.}
 #' \item{Q.inc.design}{A named vector with contributions of single
@@ -130,7 +130,7 @@
 #' # Conduct network meta-analysis with placebo as reference treatment
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013.5, sm = "MD", reference = "plac")
+#'   data = Senn2013.5, sm = "MD", reference = "plac")
 #' 
 #' # Decomposition of Cochran's Q
 #' #
@@ -144,7 +144,6 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE,
   
   
   chkclass(x, "netmeta")
-  x <- updateversion(x)
   ##
   if (x$n == 2) {
     warning("No decomposition possible for network meta-analysis ",

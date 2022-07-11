@@ -8,7 +8,7 @@
 \usage{
 \method{forest}{netcomb}(
   x,
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
   leftcols = "studlab",
@@ -32,8 +32,8 @@
 \item{x}{An object of class \code{netcomb}.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effect (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"common"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{reference.group}{Reference treatment(s).}
 
@@ -61,8 +61,7 @@ value (see \code{\link{forest.meta}} help page for details).}
 effects and confidence intervals, see \code{print.default}.}
 
 \item{smlab}{A label printed at top of figure. By default, text
-indicating either fixed effect or random effects model is
-printed.}
+indicating either common or random effects model is printed.}
 
 \item{sortvar}{An optional vector used to sort the individual
 studies (must be of same length as the total number of
@@ -107,7 +106,7 @@ direct treatment comparisons (\code{sortvar = k}).
 Argument \code{add.data} can be used to add additional columns to
 the forest plot. This argument must be a data frame with the same
 row names as the treatment effects matrices in R object \code{x},
-i.e., \code{x$TE.fixed} or \code{x$TE.random}.
+i.e., \code{x$TE.common} or \code{x$TE.random}.
 
 For more information see help page of \code{\link{forest.meta}}
 function.
@@ -123,8 +122,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 # Conduct random effects network meta-analysis
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = face, ref = "placebo",
-                sm = "OR", fixed = FALSE)
+  data = face, ref = "placebo", sm = "OR", common = FALSE)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
@@ -137,11 +135,11 @@ forest(nc1)
 # Specify, order of treatments
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
-          "rMAO-A", "Ind drug", "Hypericum", "Face-to-face CBT",
-          "Face-to-face PST", "Face-to-face interpsy", "Face-to-face psychodyn",
-          "Other face-to-face", "Remote CBT", "Self-help CBT", "No contact CBT",
-          "Face-to-face CBT + SSRI", "Face-to-face interpsy + SSRI",
-          "Face-to-face PST + SSRI", "UC", "Placebo")
+  "rMAO-A", "Ind drug", "Hypericum", "Face-to-face CBT",
+  "Face-to-face PST", "Face-to-face interpsy", "Face-to-face psychodyn",
+  "Other face-to-face", "Remote CBT", "Self-help CBT", "No contact CBT",
+  "Face-to-face CBT + SSRI", "Face-to-face interpsy + SSRI",
+  "Face-to-face PST + SSRI", "UC", "Placebo")
 #
 # Note, three treatments are actually combinations of 'SSRI' with
 # other components:
@@ -152,9 +150,8 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = Linde2016, ref = "placebo",
-                seq = trts,
-                sm = "OR", fixed = FALSE)
+  data = Linde2016, ref = "placebo",
+  seq = trts, sm = "OR", common = FALSE)
 #
 net2
 

@@ -7,7 +7,7 @@
 \method{metabias}{netmeta}(
   x,
   order,
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   method.bias = "Egger",
   lump.comparator = FALSE,
   ...
@@ -20,9 +20,9 @@
 the order of treatments or list of comparators (see Details).}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effect (\code{"fixed"}) or random effects model
-(\code{"random"}) should be used in test of funnel plot
-asymmetry. Can be abbreviated.}
+common (\code{"common"}) or random effects model (\code{"random"})
+should be used in test of funnel plot asymmetry. Can be
+abbreviated.}
 
 \item{method.bias}{A character vector indicating which test(s) for
 funnel plot asymmatrx to use. Admissible values are
@@ -99,7 +99,7 @@ group.
 data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD")
+  data = Senn2013, sm = "MD")
 
 # Test for asymmetry in 'comparison-adjusted' funnel plot not
 # conducted as argument 'order' is missing

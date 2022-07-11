@@ -9,7 +9,7 @@ netcontrib(
   x,
   method = "shortestpath",
   hatmatrix.F1000 = FALSE,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   nchar.trts = x$nchar.trts,
   warn.deprecated = gs("warn.deprecated"),
@@ -19,7 +19,7 @@ netcontrib(
 
 \method{print}{netcontrib}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   digits = 4,
   nchar.trts = x$nchar.trts,
@@ -39,9 +39,8 @@ calculate the contribution matrix. Either \code{"randomwalk"} or
 given in F1000 article should be used for \code{method =
 "shortestpath"}.}
 
-\item{fixed}{A logical indicating whether a contribution matrix
-should be printed for the fixed effect / common effect network
-meta-analysis.}
+\item{common}{A logical indicating whether a contribution matrix
+should be printed for the common effects network meta-analysis.}
 
 \item{random}{A logical indicating whether a contribution matrix
 should be printed for the random effects network meta-analysis.}
@@ -67,18 +66,18 @@ printed.}
 An object of class \code{netcontrib} with corresponding
 \code{print} function. The object is a list containing the
 following components:
-\item{fixed}{Numeric matrix of percentage contributions of direct
-  comparisons for each network comparison for the fixed effects
+\item{common}{Numeric matrix of percentage contributions of direct
+  comparisons for each network comparison for the common effects
   model.}
 \item{random}{Numeric matrix of percentage contributions of direct
   comparisons for each network comparison for the random effects
   model.}
 \item{x}{As defined above.}
-\item{tictoc.fixed}{Computation times under fixed effects model
+\item{tictoc.common}{Computation times under common effects model
   (if R package \bold{tictoc} is installed).}
 \item{tictoc.random}{Computation times under random effects model
   (if R package \bold{tictoc} is installed).}
-with the contribution matrices for fixed and random NMA. Each
+with the contribution matrices for common and random NMA. Each
 matrix has the percentage contributions of each direct comparison
 as columns for each network comparison, direct or indirect as rows.
 }
@@ -171,7 +170,7 @@ package \bold{tictoc} is installed.
 #
 data("Woods2010")
 p1 <- pairwise(treatment, event = r, n = N,
-               studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = Woods2010, sm = "OR")
 
 net1 <- netmeta(p1)
 cm <- netcontrib(net1)

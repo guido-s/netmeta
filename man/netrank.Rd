@@ -10,7 +10,7 @@ netrank(
   small.values = x$small.values,
   method,
   nsim,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   warn.deprecated = gs("warn.deprecated"),
   ...
@@ -18,10 +18,10 @@ netrank(
 
 \method{print}{netrank}(
   x,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   sort = TRUE,
-  digits = max(4, .Options$digits - 3),
+  digits = gs("digits.prop"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -39,11 +39,11 @@ calculated.}
 
 \item{nsim}{Number of simulations to calculate SUCRAs.}
 
-\item{fixed}{A logical indicating whether to print P-scores or
-SUCRAs for the fixed effects (common effects) model.}
+\item{common}{A logical indicating whether to print P-scores or
+SUCRAs for the common effects model.}
 
-\item{random}{A logical indicating whether to print P-scores
-or SUCRAs for the random effects model.}
+\item{random}{A logical indicating whether to print P-scores or
+SUCRAs for the random effects model.}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
@@ -60,10 +60,10 @@ by decreasing P-score.}
 \value{
 An object of class \code{netrank} with corresponding \code{print}
 function. The object is a list containing the following components:
-\item{ranking.fixed}{A named numeric vector with P-scores or SUCRAs
-  for the fixed effects model.}
-\item{Pmatrix.fixed}{Numeric matrix based on pairwise one-sided
-  p-values for the fixed effects model.}
+\item{ranking.common}{A named numeric vector with P-scores or SUCRAs
+  for the common effects model.}
+\item{Pmatrix.common}{Numeric matrix based on pairwise one-sided
+  p-values for the common effects model.}
 \item{ranking.random}{A named numeric vector with P-scores or
   SUCRAs for the random effects model.}
 \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided
@@ -110,8 +110,7 @@ treatment.
 data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                random = FALSE)
+  data = Senn2013, sm = "MD", random = FALSE)
 
 nr1 <- netrank(net1)
 nr1
@@ -119,21 +118,21 @@ print(nr1, sort = FALSE)
 
 \dontrun{
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD")
+  data = Senn2013, sm = "MD")
 
 nr2 <- netrank(net2)
 nr2
-print(nr2, sort = "fixed")
+print(nr2, sort = "common")
 print(nr2, sort = FALSE)
 }
 
 \dontrun{
 net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD")
+  data = Senn2013, sm = "MD")
 
 nr3 <- netrank(net3, method = "SUCRA", nsim = 100)
 nr3
-print(nr3, sort = "fixed")
+print(nr3, sort = "common")
 print(nr3, sort = FALSE)
 }
 

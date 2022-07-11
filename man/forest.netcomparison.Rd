@@ -8,7 +8,7 @@ meta-analysis}
 \usage{
 \method{forest}{netcomparison}(
   x,
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   leftcols = c("studlab", "treat1", "treat2"),
   leftlabs = c("Comparison", "Trt 1", "Trt 2"),
   rightcols = c("effect", "ci", "statistic", "pval"),
@@ -30,8 +30,8 @@ meta-analysis}
 \item{x}{An object of class \code{netcomparison}.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effect (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"common"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{leftcols}{A character vector specifying (additional) columns
 to be plotted on the left side of the forest plot or a logical
@@ -62,8 +62,7 @@ of overall effect, see \code{print.default}.}
 of overall effects, see \code{print.default}.}
 
 \item{smlab}{A label printed at top of figure. By default, text
-indicating either fixed effect or random effects model is
-printed.}
+indicating either common or random effects model is printed.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in forest plots. If \code{backtransf = TRUE},
@@ -98,8 +97,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 # Conduct random effects network meta-analysis
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = face, ref = "placebo",
-                sm = "OR", fixed = FALSE)
+  data = face, ref = "placebo", sm = "OR", common = FALSE)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)

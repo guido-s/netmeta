@@ -4,10 +4,10 @@
 #' Summary method for objects of class \code{netmeta}.
 #' 
 #' @param object An object of class \code{netmeta}.
-#' @param fixed A logical indicating whether results for the
-#'   fixed effects / common effects model should be printed.
-#' @param random A logical indicating whether results for the
-#'   random effects model should be printed.
+#' @param common A logical indicating whether results for the common
+#'   effects model should be printed.
+#' @param random A logical indicating whether results for the random
+#'   effects model should be printed.
 #' @param prediction A logical indicating whether prediction intervals
 #'   should be printed.
 #' @param reference.group Reference treatment.
@@ -27,13 +27,13 @@
 #' A list is returned with the following elements:
 #' \item{comparison}{Results for pairwise comparisons (data frame with
 #'   columns studlab, treat1, treat2, TE, seTE, lower, upper, z, p).}
-#' \item{comparison.nma.fixed}{Results for pairwise comparisons based
-#'   on fixed effects model (data frame with columns studlab, treat1,
+#' \item{comparison.nma.common}{Results for pairwise comparisons based
+#'   on common effects model (data frame with columns studlab, treat1,
 #'   treat2, TE, seTE, lower, upper, z, p, leverage).}
 #' \item{comparison.nma.random}{Results for pairwise comparisons based
 #'   on random effects model (data frame with columns studlab, treat1,
 #'   treat2, TE, seTE, lower, upper, z, p).}
-#' \item{fixed}{Results for fixed effects model (a list with elements
+#' \item{common}{Results for common effects model (a list with elements
 #'   TE, seTE, lower, upper, z, p).}
 #' \item{random}{Results for random effects model (a list with
 #'   elements TE, seTE, lower, upper, z, p).}
@@ -72,7 +72,7 @@
 #'   individual studies.}
 #' \item{level.ma}{The level used to calculate confidence intervals
 #'   for pooled estimates.}
-#' \item{fixed, random}{As defined above.}
+#' \item{common, random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
 #' \item{reference.group, baseline.reference}{As defined above.}
 #' \item{all.treatments, backtransf}{As defined above.}
@@ -97,11 +97,10 @@
 #' @examples
 #' data(Senn2013)
 #' 
-#' # Conduct fixed effects network meta-analysis
+#' # Conduct common effects network meta-analysis
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 random = FALSE)
+#'   data = Senn2013, sm = "MD", random = FALSE)
 #' print(net1, ref = "plac", digits = 3)
 #' summary(net1)
 #'
@@ -109,8 +108,7 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 fixed = FALSE)
+#'   data = Senn2013, sm = "MD", common = FALSE)
 #' print(net2, ref = "plac", digits = 3)
 #' summary(net2)
 #' }
@@ -120,7 +118,7 @@
 
 
 summary.netmeta <- function(object,
-                            fixed = object$fixed,
+                            common = object$common,
                             random = object$random,
                             prediction = object$prediction,
                             reference.group = object$reference.group,
@@ -155,10 +153,12 @@ summary.netmeta <- function(object,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  missing.fixed <- missing(fixed)
-  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
@@ -178,17 +178,17 @@ summary.netmeta <- function(object,
                         ci(object$TE, object$seTE, object$level)[keepvars],
                         stringsAsFactors = FALSE)
   ##
-  ci.nma.fixed <-
+  ci.nma.common <-
     data.frame(studlab = object$studlab,
                treat1 = object$treat1,
                treat2 = object$treat2,
-               TE = if (!is.bin) object$TE.nma.fixed else NA,
-               seTE = if (!is.bin) object$seTE.nma.fixed else NA,
-               lower = if (!is.bin) object$lower.nma.fixed else NA,
-               upper = if (!is.bin) object$upper.nma.fixed else NA,
-               statistic = if (!is.bin) object$statistic.nma.fixed else NA,
-               p = if (!is.bin) object$pval.nma.fixed else NA,
-               leverage = if (!is.bin) object$leverage.fixed else NA,
+               TE = if (!is.bin) object$TE.nma.common else NA,
+               seTE = if (!is.bin) object$seTE.nma.common else NA,
+               lower = if (!is.bin) object$lower.nma.common else NA,
+               upper = if (!is.bin) object$upper.nma.common else NA,
+               statistic = if (!is.bin) object$statistic.nma.common else NA,
+               p = if (!is.bin) object$pval.nma.common else NA,
+               leverage = if (!is.bin) object$leverage.common else NA,
                stringsAsFactors = FALSE)
   ##
   ci.nma.random <-
@@ -203,12 +203,12 @@ summary.netmeta <- function(object,
                p = if (!is.bin) object$pval.nma.random else NA,
                stringsAsFactors = FALSE)
   ##
-  ci.f <- list(TE = object$TE.fixed,
-               seTE = object$seTE.fixed,
-               lower = object$lower.fixed,
-               upper = object$upper.fixed,
-               statistic = object$statistic.fixed,
-               p = object$pval.fixed)
+  ci.c <- list(TE = object$TE.common,
+               seTE = object$seTE.common,
+               lower = object$lower.common,
+               upper = object$upper.common,
+               statistic = object$statistic.common,
+               p = object$pval.common)
   ##
   ci.r <- list(TE = object$TE.random,
                seTE = object$seTE.random,
@@ -227,13 +227,13 @@ summary.netmeta <- function(object,
   ## (4) Create summary.netmeta object
   ##
   ##
-  object$fixed <- fixed
+  object$common <- common
   object$random <- random
   ##
   res <- list(comparison = ci.comp,
-              comparison.nma.fixed = ci.nma.fixed,
+              comparison.nma.common = ci.nma.common,
               comparison.nma.random = ci.nma.random,
-              fixed = ci.f,
+              common = ci.c,
               random = ci.r,
               predict = ci.p,
               ##
@@ -305,6 +305,10 @@ summary.netmeta <- function(object,
   res$all.treatments <- all.treatments
   ##
   res$x <- object
+  ##
+  ## Backward compatibility
+  ##
+  res$fixed <- res$common
   ##
   if (is.bin)
     class(res) <- c("summary.netmeta", "summary.netmetabin")

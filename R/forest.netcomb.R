@@ -12,8 +12,8 @@
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa.
 #' @param pooled A character string indicating whether results for the
-#'   fixed effect (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#'   common (\code{"common"}) or random effects model (\code{"random"})
+#'   should be plotted. Can be abbreviated.
 #' @param leftcols A character vector specifying (additional) columns
 #'   to be plotted on the left side of the forest plot or a logical
 #'   value (see \code{\link{forest.meta}} help page for details).
@@ -29,8 +29,7 @@
 #' @param digits Minimal number of significant digits for treatment
 #'   effects and confidence intervals, see \code{print.default}.
 #' @param smlab A label printed at top of figure. By default, text
-#'   indicating either fixed effect or random effects model is
-#'   printed.
+#'   indicating either common or random effects model is printed.
 #' @param sortvar An optional vector used to sort the individual
 #'   studies (must be of same length as the total number of
 #'   treatments).
@@ -64,7 +63,7 @@
 #' Argument \code{add.data} can be used to add additional columns to
 #' the forest plot. This argument must be a data frame with the same
 #' row names as the treatment effects matrices in R object \code{x},
-#' i.e., \code{x$TE.fixed} or \code{x$TE.random}.
+#' i.e., \code{x$TE.common} or \code{x$TE.random}.
 #' 
 #' For more information see help page of \code{\link{forest.meta}}
 #' function.
@@ -87,8 +86,7 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = face, ref = "placebo",
-#'                 sm = "OR", fixed = FALSE)
+#'   data = face, ref = "placebo", sm = "OR", common = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -101,11 +99,11 @@
 #' # Specify, order of treatments
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
-#'           "rMAO-A", "Ind drug", "Hypericum", "Face-to-face CBT",
-#'           "Face-to-face PST", "Face-to-face interpsy", "Face-to-face psychodyn",
-#'           "Other face-to-face", "Remote CBT", "Self-help CBT", "No contact CBT",
-#'           "Face-to-face CBT + SSRI", "Face-to-face interpsy + SSRI",
-#'           "Face-to-face PST + SSRI", "UC", "Placebo")
+#'   "rMAO-A", "Ind drug", "Hypericum", "Face-to-face CBT",
+#'   "Face-to-face PST", "Face-to-face interpsy", "Face-to-face psychodyn",
+#'   "Other face-to-face", "Remote CBT", "Self-help CBT", "No contact CBT",
+#'   "Face-to-face CBT + SSRI", "Face-to-face interpsy + SSRI",
+#'   "Face-to-face PST + SSRI", "UC", "Placebo")
 #' #
 #' # Note, three treatments are actually combinations of 'SSRI' with
 #' # other components:
@@ -116,9 +114,8 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'                 data = Linde2016, ref = "placebo",
-#'                 seq = trts,
-#'                 sm = "OR", fixed = FALSE)
+#'   data = Linde2016, ref = "placebo",
+#'   seq = trts, sm = "OR", common = FALSE)
 #' #
 #' net2
 #' 
@@ -135,7 +132,7 @@
 
 
 forest.netcomb <- function(x,
-                           pooled = ifelse(x$random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "common"),
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
                            leftcols = "studlab",
@@ -163,7 +160,8 @@ forest.netcomb <- function(x,
   ##
   is.discomb <- inherits(x, "discomb")
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   ##
   chknumeric(digits, min = 0, length = 1)
   ##
@@ -176,11 +174,11 @@ forest.netcomb <- function(x,
   
   ##
   ##
-  ## (2) Extract results for fixed effect and random effects model
+  ## (2) Extract results for common and random effects model
   ##     and calculate P-scores
   ##
   ##
-  labels <- colnames(x$TE.fixed)
+  labels <- colnames(x$TE.common)
   ##
   if (reference.group == "") {
     warning("First treatment used as reference as ",
@@ -190,22 +188,22 @@ forest.netcomb <- function(x,
   else
     reference.group <- setref(reference.group, labels)
   ##
-  if (pooled == "fixed") {
-    TE   <- x$TE.fixed
-    seTE <- x$seTE.fixed
+  if (pooled == "common") {
+    TE   <- x$TE.common
+    seTE <- x$seTE.common
     ##
-    text.fixed <- "(Fixed Effects Model)"
+    text.common <- "(Common Effects Model)"
     ##
     if (is.null(smlab))
       if (baseline.reference)
         smlab <- paste("Comparison: other vs '",
                        reference.group, "'\n",
-                       text.fixed,
+                       text.common,
                        sep = "")
       else
         smlab <- paste("Comparison: '",
                        reference.group, "' vs other\n",
-                       text.fixed,
+                       text.common,
                        sep = "")
   }
   ##
@@ -338,7 +336,7 @@ forest.netcomb <- function(x,
   ##
   forest(m1,
          digits = digits,
-         fixed = FALSE, random = FALSE,
+         common = FALSE, random = FALSE,
          overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
          leftcols = leftcols,
          leftlabs = leftlabs,

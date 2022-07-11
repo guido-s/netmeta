@@ -7,7 +7,7 @@
 \method{plot}{rankogram}(
   x,
   type = if (cumulative.rankprob) "step" else "bar",
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   sort = TRUE,
   trts,
   cumulative.rankprob = x$cumulative.rankprob,
@@ -25,8 +25,8 @@
 abbreviated.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effects (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"common"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{sort}{A logical indicating whether treatments should be
 sorted by decreasing SUCRAs.}
@@ -57,7 +57,7 @@ step functions (argument \code{type}).
 
 By default (argument \code{pooled}), results for the random effects
 model are shown if a network meta-analysis was conducted for both
-the fixed effect and random effects model.
+the common and random effects model.
 
 Treatments are sorted according to their mean effects if argument
 \code{sort = TRUE} (default).  A subset of treatments can be
@@ -70,7 +70,7 @@ shown for cumulative ranking probabilites.
 \examples{
 data(Woods2010)
 p1 <- pairwise(treatment, event = r, n = N, studlab = author,
-               data = Woods2010, sm = "OR")
+  data = Woods2010, sm = "OR")
 net1 <- netmeta(p1, small.values = "good")
 
 ran1 <- rankogram(net1, nsim = 100)

@@ -3,29 +3,34 @@
 \name{netleague}
 \alias{netleague}
 \alias{print.netleague}
-\title{Create and print league table for network meta-analysis results}
+\title{Create league table with network meta-analysis results}
 \usage{
 netleague(
   x,
   y,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   seq = x$seq,
   ci = TRUE,
   backtransf = TRUE,
   direct = FALSE,
   digits = gs("digits"),
+  big.mark = gs("big.mark"),
+  text.NA = ".",
   bracket = gs("CIbracket"),
   separator = gs("CIseparator"),
-  text.NA = ".",
-  big.mark = gs("big.mark"),
+  lower.blank = gs("CIlower.blank"),
+  upper.blank = gs("CIupper.blank"),
+  writexl = !missing(path),
+  path = "leaguetable.xlsx",
+  overwrite = FALSE,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
 
 \method{print}{netleague}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   warn.deprecated = gs("warn.deprecated"),
   ...
@@ -37,9 +42,8 @@ netleague(
 
 \item{y}{An object of class \code{netmeta} (optional).}
 
-\item{fixed}{A logical indicating whether a league table should be
-printed for the fixed effects / common effects network
-meta-analysis.}
+\item{common}{A logical indicating whether a league table should be
+printed for the common effects network meta-analysis.}
 
 \item{random}{A logical indicating whether a league table should be
 printed for the random effects network meta-analysis.}
@@ -62,20 +66,43 @@ should be generated if argument \code{y} is not missing.}
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
 
+\item{big.mark}{A character used as thousands separator.}
+
+\item{text.NA}{A character string to label missing values.}
+
 \item{bracket}{A character with bracket symbol to print lower
 confidence interval: "[", "(", "\{", "".}
 
 \item{separator}{A character string with information on separator
 between lower and upper confidence interval.}
 
-\item{text.NA}{A character string to label missing values.}
+\item{lower.blank}{A logical indicating whether blanks between left
+bracket and lower confidence limit should be printed.}
 
-\item{big.mark}{A character used as thousands separator.}
+\item{upper.blank}{A logical indicating whether blanks between
+separator and upper confidence limit should be printed.}
+
+\item{writexl}{A logical indicating whether an Excel file should be
+created (R package \bold{writexl} must be available).}
+
+\item{path}{A character string specifying the filename of the Excel
+file.}
+
+\item{overwrite}{A logical indicating whether an existing Excel
+file should be overwritten.}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
 
-\item{\dots}{Additional arguments.}
+\item{\dots}{Additional arguments (passed on to \code{write_xlsx}
+to create Excel file).}
+}
+\value{
+An object of class \code{netleague} with corresponding \code{print}
+function if \code{writexl = FALSE}. The object is a list containing
+the league tables in list elements 'common' and 'random'. An Excel
+file is created if \code{writexl = TRUE}. In this case, \code{NULL}
+is returned in R.
 }
 \description{
 A league table is a square matrix showing all pairwise comparisons
@@ -101,6 +128,10 @@ object \code{x} in the lower triangle and from network
 meta-analysis object \code{y} in the upper triangle. This is, for
 example, useful to print information on efficacy and safety in the
 same league table.
+
+By default, an R object with the league tables is
+generated. Alternatively, an Excel file is created if argument
+\code{writexl = TRUE}.
 
 This implementation reports pairwise comparisons of the treatment
 in the row versus the treatment in the column in the lower triangle
@@ -129,28 +160,27 @@ rows and columns in the league table (see examples).
 data(Woods2010)
 
 p0 <- pairwise(treatment, event = r, n = N,
-               studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = Woods2010, sm = "OR")
 net0 <- netmeta(p0)
 
 oldopts <- options(width = 100)
 
-# League table for fixed and random effects model with
+# League table for common and random effects model with
 # - network estimates in lower triangle
 # - direct estimates in upper triangle
 #
 netleague(net0, digits = 2, bracket = "(", separator = " - ")
 
-# League table for fixed effects model
+# League table for common effects model
 #
 netleague(net0, random = FALSE, digits = 2)
 
 # Change order of treatments according to treatment ranking (random
 # effects model)
 #
-netleague(net0, fixed = FALSE, digits = 2,
-          seq = netrank(net0))
+netleague(net0, common = FALSE, digits = 2, seq = netrank(net0))
 #
-print(netrank(net0), fixed = FALSE)
+print(netrank(net0), common = FALSE)
 
 \dontrun{
 # Create a CSV file with league table for random effects model
@@ -158,23 +188,13 @@ print(netrank(net0), fixed = FALSE)
 league0 <- netleague(net0, digits = 2, bracket = "(", separator = " to ")
 #
 write.table(league0$random, file = "league0-random.csv",
-            row.names = FALSE, col.names = FALSE,
-            sep = ",")
+  row.names = FALSE, col.names = FALSE, sep = ",")
 #
 # Create Excel files with league tables
 # (if R package writexl is available)
 #
-library(writexl)
-#
-# League table from random effects model
-#
-write_xlsx(league0$random,
-           path = "league0-random.xlsx", col_names = FALSE)
-#
-# League tables from fixed and random effects models
-#
-write_xlsx(list(fixed = league0$fixed, random = league0$random),
-           path = "league0-both.xlsx", col_names = FALSE)
+netleague(net0, digits = 2, bracket = "(", separator = " to ",
+          path = tempfile(fileext = ".xlsx"))
 }
 
 \donttest{
@@ -185,8 +205,7 @@ data(Linde2015)
 # Define order of treatments
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
-          "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
-          "Placebo")
+  "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 
 # Outcome labels
 #
@@ -195,21 +214,19 @@ outcomes <- c("Early response", "Early remission")
 # (1) Early response
 #
 p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(resp1, resp2, resp3),
-               n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, fixed = FALSE,
+net1 <- netmeta(p1, common = FALSE,
                 seq = trts, ref = "Placebo", small = "bad")
 
 # (2) Early remission
 #
 p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-               event = list(remi1, remi2, remi3),
-               n = list(n1, n2, n3),
-               studlab = id, data = Linde2015, sm = "OR")
+  event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, fixed = FALSE,
+net2 <- netmeta(p2, common = FALSE,
                 seq = trts, ref = "Placebo", small = "bad")
 
 options(width = 200)
@@ -234,9 +251,9 @@ print(netrank(net2))
 # Report results for network meta-analysis twice
 #
 netleague(net1, net1, seq = netrank(net1), ci = FALSE,
-          backtransf = FALSE)
+  backtransf = FALSE)
 netleague(net1, net1, seq = netrank(net1), ci = FALSE,
-          backtransf = FALSE, direct = TRUE)
+  backtransf = FALSE, direct = TRUE)
 }
 
 options(oldopts)

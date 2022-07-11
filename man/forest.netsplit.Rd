@@ -7,7 +7,7 @@
 \usage{
 \method{forest}{netsplit}(
   x,
-  pooled = ifelse(x$x$random, "random", "fixed"),
+  pooled = ifelse(x$x$random, "random", "common"),
   show = "both",
   subgroup = "comparison",
   overall = TRUE,
@@ -49,8 +49,8 @@
 \item{x}{An object of class \code{netsplit}.}
 
 \item{pooled}{A character string indicating whether results for the
-fixed effect (\code{"fixed"}) or random effects model
-(\code{"random"}) should be plotted. Can be abbreviated.}
+common (\code{"common"}) or random effects model (\code{"random"})
+should be plotted. Can be abbreviated.}
 
 \item{show}{A character string indicating which comparisons should
 be printed (see Details).}
@@ -148,8 +148,7 @@ than log odds ratios, for example.}
 \item{lab.NA}{A character string to label missing values.}
 
 \item{smlab}{A label printed at top of figure. By default, text
-indicating either fixed effect or random effects model is
-printed.}
+indicating either common or random effects model is printed.}
 
 \item{\dots}{Additional arguments for \code{\link{forest.meta}}
 function.}
@@ -203,8 +202,7 @@ studies <- unique(Senn2013$studlab)
 Senn2013.5 <- subset(Senn2013, studlab \%in\% studies[1:5])
 
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-                studlab, data = Senn2013.5,
-                fixed = FALSE)
+  studlab, data = Senn2013.5, common = FALSE)
 #
 ns1 <- netsplit(net1)
 
@@ -217,15 +215,14 @@ forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
 # Forest plot showing comparisons contributing direct evidence
 #
 forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
-       show = "with.direct")
+  show = "with.direct")
 
 
 # Forest plot only showing network estimates compared to reference
 # group and prediction intervals
 #
 forest(ns1, fontsize = 8, spacing = 0.75,
-       show = "ref", prediction = TRUE,
-       direct = FALSE, indirect = FALSE)
+  show = "ref", prediction = TRUE, direct = FALSE, indirect = FALSE)
 }
 
 }

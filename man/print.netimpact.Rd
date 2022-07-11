@@ -6,9 +6,10 @@
 \usage{
 \method{print}{netimpact}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   digits = gs("digits.prop"),
+  legend = TRUE,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -16,13 +17,16 @@
 \arguments{
 \item{x}{An object of class \code{netimpact}.}
 
-\item{fixed}{A logical indicating whether results for the
-fixed effects / common effects model should be printed.}
+\item{common}{A logical indicating whether results for the common
+effects model should be printed.}
 
-\item{random}{A logical indicating whether results for the
-random effects model should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects model should be printed.}
 
 \item{digits}{Minimal number of significant digits.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
@@ -39,11 +43,10 @@ data(Franchini2012)
 #
 studies <- unique(Franchini2012$Study)
 p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
-               n = list(n1, n2, n3),
-               mean = list(y1, y2, y3),
-               sd = list(sd1, sd2, sd3),
-               data = subset(Franchini2012, Study \%in\% studies[1:2]),
-               studlab = Study)
+  n = list(n1, n2, n3),
+  mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
+  data = subset(Franchini2012, Study \%in\% studies[1:2]),
+  studlab = Study)
 
 net1 <- netmeta(p1)
 ni <- netimpact(net1, verbose = TRUE)

@@ -33,9 +33,9 @@
 #' data(Senn2013)
 #' 
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'                 data = Senn2013)
-#' L1 <- net1$L.matrix.fixed
-#' L2 <- invmat(net1$Lplus.matrix.fixed)
+#'   data = Senn2013)
+#' L1 <- net1$L.matrix.common
+#' L2 <- invmat(net1$Lplus.matrix.common)
 #' all.equal(round(L1, 10), round(L2, 10))
 #' 
 #' @export invmat

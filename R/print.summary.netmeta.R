@@ -6,8 +6,8 @@
 #' @param x An object of class \code{summary.netmeta}.
 #' @param sortvar An optional vector used to sort individual studies
 #'   (must be of same length as \code{x$TE}).
-#' @param fixed A logical indicating whether results for the fixed
-#'   effects / common effects model should be printed.
+#' @param common A logical indicating whether results for the common
+#'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
 #' @param prediction A logical indicating whether prediction intervals
@@ -22,8 +22,8 @@
 #'   be printed.
 #' @param details A logical indicating whether further details for
 #'   individual studies should be printed.
-#' @param nma A logical indicating whether summary results of
-#'   network meta-analysis should be printed.
+#' @param nma A logical indicating whether summary results of network
+#'   meta-analysis should be printed.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -51,8 +51,8 @@
 #' @param big.mark A character used as thousands separator.
 #' @param truncate An optional vector used to truncate the printout of
 #'   results for individual studies (must be a logical vector of
-#'   length corresponding to the number of pairwise
-#'   comparisons \code{x$TE} or contain numerical values).
+#'   length corresponding to the number of pairwise comparisons
+#'   \code{x$TE} or contain numerical values).
 #' @param text.truncate A character string printed if study results
 #'   were truncated from the printout.
 #' @param legend A logical indicating whether a legend should be
@@ -70,11 +70,10 @@
 #' @examples
 #' data(Senn2013)
 #' 
-#' # Conduct fixed effects network meta-analysis
+#' # Conduct common effects network meta-analysis
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 random = FALSE, ref = "plac")
+#'   data = Senn2013, sm = "MD", random = FALSE, ref = "plac")
 #' snet1 <- summary(net1)
 #' print(snet1, digits = 3)
 #' 
@@ -94,14 +93,13 @@
 #' # letter "W"
 #' #
 #' print(snet1, ref = "plac", digits = 3,
-#'       truncate = substring(studlab, 1, 1) == "W")
+#'   truncate = substring(studlab, 1, 1) == "W")
 #' 
 #' \dontrun{
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD",
-#'                 fixed = FALSE, ref = "plac")
+#'   data = Senn2013, sm = "MD", common = FALSE, ref = "plac")
 #' print(summary(net2), digits = 3)
 #' }
 #' 
@@ -111,7 +109,7 @@
 
 print.summary.netmeta <- function(x,
                                   sortvar,
-                                  fixed = x$x$fixed,
+                                  common = x$x$common,
                                   random = x$x$random,
                                   prediction = x$prediction,
                                   reference.group = x$reference.group,
@@ -176,18 +174,17 @@ print.summary.netmeta <- function(x,
   chklogical(nma)
   chklogical(legend)
   ##
-  mf <- match.call()
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
   ##
   ## Catch 'truncate' from network meta-analysis object:
   ##
   missing.truncate <- missing(truncate)
   if (!missing.truncate) {
-    truncate <- eval(mf[[match("truncate", names(mf))]],
-                     x$x, enclos = sys.frame(sys.parent()))
+    truncate <- catch("truncate", mc, x$x, sfsp)
     ##
     if (is.null(truncate))
-      truncate <- eval(mf[[match("truncate", names(mf))]],
-                       x$x$data, enclos = sys.frame(sys.parent()))
+      truncate <- catch("truncate", mc, x$x$data, sfsp)
     ##
     if (length(truncate) > k.all)
       stop("Length of argument 'truncate' is too long.",
@@ -223,9 +220,12 @@ print.summary.netmeta <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
                       warn.deprecated)
-  chklogical(fixed)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -260,17 +260,13 @@ print.summary.netmeta <- function(x,
       sm.lab <- paste("log", sm, sep = "")
     ##    
     trts <- x$x$trts
-    trts.abbr <- treats(trts, nchar.trts)
     ##
     treat1 <-
-      as.character(factor(x$x$treat1, levels = trts, labels = trts.abbr))
+      as.character(factor(x$x$treat1, levels = trts,
+                          labels = treats(trts, nchar.trts)))
     treat2 <-
-      as.character(factor(x$x$treat2, levels = trts, labels = trts.abbr))
-    ##
-    if (any(treat1 != x$x$treat1) | any(treat2 != x$x$treat2))
-      abbr <- c(treat1, treat2)
-    else
-      abbr <- NULL
+      as.character(factor(x$x$treat2, levels = trts,
+                          labels = treats(trts, nchar.trts)))
     
     
     ##
@@ -283,7 +279,7 @@ print.summary.netmeta <- function(x,
     if (details) {
       multiarm <- any(x$x$narms > 2)
       cat(paste("Original data",
-                ifelse(multiarm & (fixed | random),
+                ifelse(multiarm & (common | random),
                        paste(" (with adjusted standard errors for",
                              "multi-arm studies)"),
                        ""),
@@ -297,16 +293,16 @@ print.summary.netmeta <- function(x,
                                        big.mark = big.mark))
       ##
       if (multiarm) {
-        if (is.null(x$x$seTE.adj.fixed))
+        if (is.null(x$x$seTE.adj.common))
           seTE.adj <- x$x$seTE.adj
         else
-          seTE.adj <- x$x$seTE.adj.fixed
+          seTE.adj <- x$x$seTE.adj.common
         ##
-        if (fixed & random & !is.null(x$x$seTE.adj.random)) {
+        if (common & random & !is.null(x$x$seTE.adj.random)) {
           res$seTE.adj.f <- format(round(seTE.adj, digits.se))
           res$seTE.adj.r <- format(round(x$x$seTE.adj.random, digits.se))
         }
-        else if (fixed)
+        else if (common)
           res$seTE.adj <- format(round(seTE.adj, digits.se))
         else if (random & !is.null(x$x$seTE.adj.random))
           res$seTE.adj <- format(round(x$x$seTE.adj.random, digits.se))
@@ -348,9 +344,9 @@ print.summary.netmeta <- function(x,
     ## (5) Print results for individual studies
     ##
     ##
-    TE.f    <- x$comparison.nma.fixed$TE
-    lowTE.f <- x$comparison.nma.fixed$lower
-    uppTE.f <- x$comparison.nma.fixed$upper
+    TE.f    <- x$comparison.nma.common$TE
+    lowTE.f <- x$comparison.nma.common$lower
+    uppTE.f <- x$comparison.nma.common$upper
     ##
     if (backtransf & is.relative.effect(sm)) {
       TE.f    <- exp(TE.f)
@@ -374,18 +370,18 @@ print.summary.netmeta <- function(x,
                                     big.mark = big.mark),
                             formatN(round(uppTE.f, digits), digits, "NA",
                                     big.mark = big.mark)),
-                   if (fixed)
-                     formatN(round(x$x$Q.fixed, digits.Q), digits.Q, "NA",
+                   if (common)
+                     formatN(round(x$x$Q.common, digits.Q), digits.Q, "NA",
                              big.mark = big.mark),
-                   if (fixed & !all(x$x$narms > 2))
-                     formatN(round(x$x$leverage.fixed, 2), 2, ".")
+                   if (common & !all(x$x$narms > 2))
+                     formatN(round(x$x$leverage.common, 2), 2, ".")
                    )
     dimnames(res.f) <-
       list(treats(x$x$studlab, nchar.studlab),
            c("treat1", "treat2",
              sm.lab, ci.lab,
-             if (fixed) "Q",
-             if (fixed & !all(x$x$narms > 2)) "leverage"))
+             if (common) "Q",
+             if (common & !all(x$x$narms > 2)) "leverage"))
     ##
     res.r <- cbind(treat1, treat2,
                    formatN(TE.r, digits, text.NA = "NA", big.mark = big.mark),
@@ -397,8 +393,8 @@ print.summary.netmeta <- function(x,
       list(treats(x$x$studlab, nchar.studlab),
            c("treat1", "treat2", sm.lab, ci.lab))
     ##
-    if (fixed) {
-      cat("Results (fixed effects model):\n\n")
+    if (common) {
+      cat("Results (common effects model):\n\n")
       ##
       if (!missing.truncate)
         res.f <- res.f[truncate, , drop = FALSE]
@@ -430,9 +426,9 @@ print.summary.netmeta <- function(x,
   if (reference.group != "")
     reference.group <- setref(reference.group, rownames(x$x$A.matrix))
   ##  
-  if (nma)
+  if (nma) {
     print.netmeta(x$x,
-                  fixed = fixed, random = random,
+                  common = common, random = random,
                   prediction = prediction,
                   backtransf = backtransf,
                   reference.group = reference.group,
@@ -449,22 +445,14 @@ print.summary.netmeta <- function(x,
                   big.mark = big.mark,
                   ##
                   legend = legend)
-  else
-    if (!is.null(abbr)) {
-      abbr <- unique(abbr)
-      full <- unique(c(x$x$treat1, x$x$treat2))
-      ##
-      tmat <- data.frame(abbr, full)
-      names(tmat) <- c("Abbreviation", "Treatment name")
-      tmat <- tmat[abbr != full, ]
-      tmat <- tmat[order(tmat$Abbreviation), ]
-      ##
-      if (legend) {
-        cat("Legend:\n")
-        prmatrix(tmat, quote = FALSE, right = TRUE,
-                 rowlab = rep("", length(abbr)))
-      }
-    }
+  }
+  else {
+    ##
+    ## Add legend with abbreviated treatment labels
+    ##
+    legendabbr(trts, treats(trts, nchar.trts), legend)
+  }
+  
   
   invisible(NULL)
 }

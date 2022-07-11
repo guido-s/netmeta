@@ -7,9 +7,9 @@
 #' @param order A mandatory character or numerical vector specifying
 #'   the order of treatments or list of comparators (see Details).
 #' @param pooled A character string indicating whether results for the
-#'   fixed effect (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be used in test of funnel plot
-#'   asymmetry. Can be abbreviated.
+#'   common (\code{"common"}) or random effects model (\code{"random"})
+#'   should be used in test of funnel plot asymmetry. Can be
+#'   abbreviated.
 #' @param method.bias A character vector indicating which test(s) for
 #'   funnel plot asymmatrx to use. Admissible values are
 #'   \code{"Begg"}, \code{"Egger"}, and \code{"Thompson"}, can be
@@ -98,7 +98,7 @@
 #' data(Senn2013)
 #' 
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD")
+#'   data = Senn2013, sm = "MD")
 #' 
 #' # Test for asymmetry in 'comparison-adjusted' funnel plot not
 #' # conducted as argument 'order' is missing
@@ -126,7 +126,7 @@
 
 metabias.netmeta <- function(x,
                              order,
-                             pooled = ifelse(x$random, "random", "fixed"),
+                             pooled = ifelse(x$random, "random", "common"),
                              method.bias = "Egger",
                              lump.comparator = FALSE,
                              ...) {
@@ -141,7 +141,8 @@ metabias.netmeta <- function(x,
   x <- updateversion(x)
   sep.trts <- x$sep.trts
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   chklogical(lump.comparator)
   ##
   if (missing(order))
@@ -227,9 +228,9 @@ metabias.netmeta <- function(x,
   if (is.numeric(treat2))
     treat2 <- as.character(treat2)
   ##
-  if (pooled == "fixed")
+  if (pooled == "common")
     for (i in seq_along(res$TE))
-      res$TE.direct[i] <- x$TE.direct.fixed[treat1[i], treat2[i]]
+      res$TE.direct[i] <- x$TE.direct.common[treat1[i], treat2[i]]
   else
     for (i in seq_along(res$TE))
       res$TE.direct[i] <- x$TE.direct.random[treat1[i], treat2[i]]

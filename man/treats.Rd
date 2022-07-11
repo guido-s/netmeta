@@ -44,8 +44,8 @@ treatment names, \code{comps} calls \code{treats} internally.
 \examples{
 data(Senn2013)
 #
-net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-                studlab, data = Senn2013)
+net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
+  data = Senn2013)
 
 # Full treatment names
 #

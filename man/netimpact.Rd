@@ -30,8 +30,8 @@ estimation progress should be printed.}
 An object of class \code{"netimpact"} with corresponding
 \code{netgraph} and \code{print} function. The object is a list
 containing the following components:
-\item{impact.fixed}{A matrix with contributions of individual
-  studies (columns) to comparisons (rows) under the fixed effects
+\item{impact.common}{A matrix with contributions of individual
+  studies (columns) to comparisons (rows) under the common effects
   model.}
 \item{impact.random}{A matrix with contributions of individual
   studies (columns) to comparisons (rows) under the random effects
@@ -54,11 +54,10 @@ data(Franchini2012)
 #
 studies <- unique(Franchini2012$Study)
 p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
-               n = list(n1, n2, n3),
-               mean = list(y1, y2, y3),
-               sd = list(sd1, sd2, sd3),
-               data = subset(Franchini2012, Study \%in\% studies[1:2]),
-               studlab = Study)
+  n = list(n1, n2, n3),
+  mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
+  data = subset(Franchini2012, Study \%in\% studies[1:2]),
+  studlab = Study)
 
 net1 <- netmeta(p1)
 ni1 <- netimpact(net1, verbose = TRUE)

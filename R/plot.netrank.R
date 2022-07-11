@@ -7,8 +7,8 @@
 #' @param ... A single netrank object or a list of netrank objects.
 #' @param name An optional character vector providing descriptive
 #'   names for the network meta-analysis objects.
-#' @param fixed A logical indicating whether results for the fixed
-#'   effects / common effects model should be plotted.
+#' @param common A logical indicating whether results for the common
+#'   effects model should be plotted.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be plotted.
 #' @param seq A character or numerical vector specifying the sequence
@@ -57,7 +57,8 @@
 #'   \code{print.default}.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
-#' @param comb.fixed Deprecated argument (replaced by 'fixed').
+#' @param fixed Deprecated argument (replaced by 'common').
+#' @param comb.fixed Deprecated argument (replaced by 'common').
 #' @param comb.random Deprecated argument (replaced by 'random').
 #'
 #' @details
@@ -99,8 +100,7 @@
 #' # Define order of treatments
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
-#'           "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum",
-#'           "Placebo")
+#'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 #'
 #' # Outcome labels
 #' #
@@ -109,75 +109,66 @@
 #' # (1) Early response
 #' #
 #' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(resp1, resp2, resp3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#' net1 <- netmeta(p1, common = FALSE,
+#'   seq = trts, ref = "Placebo")
 #' 
 #' # (2) Early remission
 #' #
 #' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(remi1, remi2, remi3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#' net2 <- netmeta(p2, common = FALSE,
+#'   seq = trts, ref = "Placebo")
 #' 
 #' # Image plot of treatment rankings (two outcomes)
 #' #
 #' plot(netrank(net1, small.values = "bad"),
-#'      netrank(net2, small.values = "bad"),
-#'      name = outcomes, digits = 2)
+#'   netrank(net2, small.values = "bad"),
+#'   name = outcomes, digits = 2)
 #'
 #' 
 #' # Outcome labels
 #' #
 #' outcomes <- c("Early response", "Early remission",
-#'               "Lost to follow-up", "Lost to follow-up due to AEs",
-#'               "Adverse events (AEs)")
+#'   "Lost to follow-up", "Lost to follow-up due to AEs",
+#'   "Adverse events (AEs)")
 #' 
 #' # (3) Loss to follow-up
 #' #
 #' p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(loss1, loss2, loss3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net3 <- netmeta(p3, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#' net3 <- netmeta(p3, common = FALSE, seq = trts, ref = "Placebo")
 #' 
 #' # (4) Loss to follow-up due to adverse events
 #' #
 #' p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(loss.ae1, loss.ae2, loss.ae3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = subset(Linde2015, id != 55),
-#'                sm = "OR")
+#'   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
+#'   studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
 #' #
-#' net4 <- netmeta(p4, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#' net4 <- netmeta(p4, common = FALSE, seq = trts, ref = "Placebo")
 #' 
 #' # (5) Adverse events
 #' #
 #' p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'                event = list(ae1, ae2, ae3),
-#'                n = list(n1, n2, n3),
-#'                studlab = id, data = Linde2015, sm = "OR")
+#'   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net5 <- netmeta(p5, fixed = FALSE,
-#'                 seq = trts, ref = "Placebo")
+#' net5 <- netmeta(p5, common = FALSE, seq = trts, ref = "Placebo")
 #' 
 #' # Image plot of treatment rankings (two outcomes)
 #' #
 #' plot(netrank(net1, small.values = "bad"),
-#'      netrank(net2, small.values = "bad"),
-#'      netrank(net3, small.values = "good"),
-#'      netrank(net4, small.values = "good"),
-#'      netrank(net5, small.values = "good"),
-#'      name = outcomes, digits = 2)
+#'   netrank(net2, small.values = "bad"),
+#'   netrank(net3, small.values = "good"),
+#'   netrank(net4, small.values = "good"),
+#'   netrank(net5, small.values = "good"),
+#'   name = outcomes, digits = 2)
 #' }
 #' 
 #' @method plot netrank
@@ -186,7 +177,7 @@
 
 plot.netrank <- function(...,
                          name,
-                         fixed, random,
+                         common, random,
                          ##
                          seq,
                          ##
@@ -214,6 +205,7 @@ plot.netrank <- function(...,
                          ##
                          digits = 3,
                          ##
+                         fixed,
                          comb.fixed, comb.random,
                          ##
                          warn.deprecated = gs("warn.deprecated")) {
@@ -245,11 +237,12 @@ plot.netrank <- function(...,
       args[[i]] <- updateversion(args[[i]])
   ##
   missing.name <- missing(name)
-  missing.fixed <- missing(fixed)
+  missing.common <- missing(common)
   missing.random <- missing(random)
   missing.seq <- missing(seq)
   missing.main <- missing(main)
   missing.nchar.trts <- missing(nchar.trts)
+  missing.fixed <- missing(fixed)
   missing.comb.fixed <- missing(comb.fixed)
   missing.comb.random <- missing(comb.random)
   
@@ -259,14 +252,14 @@ plot.netrank <- function(...,
   ## (2) Identify additional arguments
   ##
   ##
-  formal.args <- c("name", "fixed", "random",
+  formal.args <- c("name", "common", "random",
                    "seq", "low", "mid", "high", "col",
                    "main", "main.size", "main.col", "main.face",
                    "legend", "axis.size", "axis.col", "axis.face",
                    "na.value", "angle",
                    "hjust.x", "vjust.x", "hjust.y", "vjust.y",
                    "nchar.trts", "digits",
-                   "comb.fixed", "comb.random", "warn.deprecated")
+                   "fixed", "comb.fixed", "comb.random", "warn.deprecated")
   ##
   for (i in n.i) {
     if (!is.netrank[i]) {
@@ -286,8 +279,8 @@ plot.netrank <- function(...,
           name <- args[[i]]
         }
         else if (cm == 2) {
-          missing.fixed <- FALSE
-          fixed <- args[[i]]
+          missing.common <- FALSE
+          common <- args[[i]]
         }
         else if (cm == 3) {
           missing.random <- FALSE
@@ -342,8 +335,8 @@ plot.netrank <- function(...,
         else if (cm == 24)
           digits <- args[[i]]
         else if (cm == 25) {
-          missing.comb.fixed <- FALSE
-          comb.fixed <- args[[i]]
+          missing.comb.common <- FALSE
+          comb.common <- args[[i]]
         }
         else if (cm == 26) {
           missing.comb.random <- FALSE
@@ -411,46 +404,52 @@ plot.netrank <- function(...,
   
   ##
   ##
-  ## (5) Determine fixed
+  ## (5) Determine common
   ##
   ##
-  if (missing.fixed & !missing.comb.fixed) {
+  if (missing.common & (!missing.fixed | !missing.comb.fixed)) {
     chklogical(warn.deprecated)
-    fixed <-
-      deprecated2(fixed, missing.fixed, comb.fixed, missing.comb.fixed,
+    common <-
+      deprecated2(common, missing.common, comb.fixed, missing.comb.fixed,
                   warn.deprecated)
-    missing.fixed <- FALSE
+    common <-
+      deprecated2(common, missing.common, fixed, missing.fixed,
+                  warn.deprecated)
+    missing.common <- FALSE
   }
   ##
-  if (missing.fixed & missing.comb.fixed) {
+  if (missing.common & missing.fixed & missing.comb.fixed) {
     cfs <- logical(0)
     ##
     for (i in n.i)
       if (is.netrank[i])
-        cfs[i] <- args[[i]]$x$fixed
+        cfs[i] <- args[[i]]$x$common
       else
         cfs[i] <- FALSE
     ##
     cfs <- unique(cfs[is.netrank])
     ##
     if (length(cfs) != 1) {
-      fixed <- TRUE
-      warning2 <- paste0("Argument 'fixed' set to TRUE ",
+      common <- TRUE
+      warning2 <- paste0("Argument 'common' set to TRUE ",
                          "(as it is not unique in network meta-analyses).")
       print.warning2 <- TRUE
     }
     else
-      fixed <- cfs
+      common <- cfs
   }
   else {
     chklogical(warn.deprecated)
-    fixed <-
-      deprecated2(fixed, missing.fixed, comb.fixed, missing.comb.fixed,
+    common <-
+      deprecated2(common, missing.common, comb.fixed, missing.comb.fixed,
                   warn.deprecated)
-    missing.fixed <- FALSE
+    common <-
+      deprecated2(common, missing.common, fixed, missing.fixed,
+                  warn.deprecated)
+    missing.common <- FALSE
   }
   ##
-  chklogical(fixed)
+  chklogical(common)
   
   
   ##
@@ -488,15 +487,15 @@ plot.netrank <- function(...,
   ##
   chklogical(random)
   ##
-  if (fixed & random) {
+  if (common & random) {
     warning4 <- paste0("P-scores for random effects model displayed ",
-                       "as both fixed and random effects ",
+                       "as both common and random effects ",
                        "network meta-analysis was conducted.")
     print.warning4 <- TRUE
-    fixed <- FALSE
+    common <- FALSE
   }
-  else if (!fixed & !random) {
-    warning("No plot generated as ranking was neither for fixed nor ",
+  else if (!common & !random) {
+    warning("No plot generated as ranking was neither for common nor ",
             "random effects network meta-analysis conducted.")
     return(invisible(NULL))
   }
@@ -540,7 +539,7 @@ plot.netrank <- function(...,
   ##
   for (i in n.i)
     if (is.netrank[i])
-      trts <- c(trts, names(args[[i]]$ranking.fixed))
+      trts <- c(trts, names(args[[i]]$ranking.common))
   ##
   trts <- unique(trts)
   ##  
@@ -551,12 +550,12 @@ plot.netrank <- function(...,
                         row.names = trts,
                         stringsAsFactors = FALSE)
     first <- min(seq_along(is.netrank)[is.netrank])
-    trts.first <- names(args[[first]]$ranking.fixed)
+    trts.first <- names(args[[first]]$ranking.common)
     ##
     if (random)
       trts1[trts.first, "ranking"] <- args[[first]]$ranking.random
     else
-      trts1[trts.first, "ranking"] <- args[[first]]$ranking.fixed
+      trts1[trts.first, "ranking"] <- args[[first]]$ranking.common
     ##
     trts1 <- trts1[rev(order(trts1$ranking, na.last = FALSE)), ]
     seq <- trts1$treat
@@ -581,12 +580,12 @@ plot.netrank <- function(...,
                           row.names = trts,
                           stringsAsFactors = FALSE)
       ##
-      trts.i <- names(args[[i]]$ranking.fixed)
+      trts.i <- names(args[[i]]$ranking.common)
       ##
       if (random)
         dat.i[trts.i, "ranking"] <- args[[i]]$ranking.random
       else 
-        dat.i[trts.i, "ranking"] <- args[[i]]$ranking.fixed
+        dat.i[trts.i, "ranking"] <- args[[i]]$ranking.common
       ##
       dat <- rbind(dat, dat.i)
     }

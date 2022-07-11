@@ -7,7 +7,7 @@
 \method{print}{summary.netmeta}(
   x,
   sortvar,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   prediction = x$prediction,
   reference.group = x$reference.group,
@@ -39,8 +39,8 @@
 \item{sortvar}{An optional vector used to sort individual studies
 (must be of same length as \code{x$TE}).}
 
-\item{fixed}{A logical indicating whether results for the fixed
-effects / common effects model should be printed.}
+\item{common}{A logical indicating whether results for the common
+effects model should be printed.}
 
 \item{random}{A logical indicating whether results for the random
 effects model should be printed.}
@@ -62,8 +62,8 @@ be printed.}
 \item{details}{A logical indicating whether further details for
 individual studies should be printed.}
 
-\item{nma}{A logical indicating whether summary results of
-network meta-analysis should be printed.}
+\item{nma}{A logical indicating whether summary results of network
+meta-analysis should be printed.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
@@ -103,8 +103,8 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 
 \item{truncate}{An optional vector used to truncate the printout of
 results for individual studies (must be a logical vector of
-length corresponding to the number of pairwise
-comparisons \code{x$TE} or contain numerical values).}
+length corresponding to the number of pairwise comparisons
+\code{x$TE} or contain numerical values).}
 
 \item{text.truncate}{A character string printed if study results
 were truncated from the printout.}
@@ -123,11 +123,10 @@ Print method for objects of class \code{summary.netmeta}.
 \examples{
 data(Senn2013)
 
-# Conduct fixed effects network meta-analysis
+# Conduct common effects network meta-analysis
 #
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                random = FALSE, ref = "plac")
+  data = Senn2013, sm = "MD", random = FALSE, ref = "plac")
 snet1 <- summary(net1)
 print(snet1, digits = 3)
 
@@ -147,14 +146,13 @@ print(snet1, digits = 3, truncate = c("Kim2007", "Willms1999"))
 # letter "W"
 #
 print(snet1, ref = "plac", digits = 3,
-      truncate = substring(studlab, 1, 1) == "W")
+  truncate = substring(studlab, 1, 1) == "W")
 
 \dontrun{
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-                data = Senn2013, sm = "MD",
-                fixed = FALSE, ref = "plac")
+  data = Senn2013, sm = "MD", common = FALSE, ref = "plac")
 print(summary(net2), digits = 3)
 }
 

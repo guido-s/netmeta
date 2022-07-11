@@ -20,8 +20,8 @@
 #' An object of class \code{"netimpact"} with corresponding
 #' \code{netgraph} and \code{print} function. The object is a list
 #' containing the following components:
-#' \item{impact.fixed}{A matrix with contributions of individual
-#'   studies (columns) to comparisons (rows) under the fixed effects
+#' \item{impact.common}{A matrix with contributions of individual
+#'   studies (columns) to comparisons (rows) under the common effects
 #'   model.}
 #' \item{impact.random}{A matrix with contributions of individual
 #'   studies (columns) to comparisons (rows) under the random effects
@@ -45,11 +45,10 @@
 #' #
 #' studies <- unique(Franchini2012$Study)
 #' p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
-#'                n = list(n1, n2, n3),
-#'                mean = list(y1, y2, y3),
-#'                sd = list(sd1, sd2, sd3),
-#'                data = subset(Franchini2012, Study %in% studies[1:2]),
-#'                studlab = Study)
+#'   n = list(n1, n2, n3),
+#'   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
+#'   data = subset(Franchini2012, Study %in% studies[1:2]),
+#'   studlab = Study)
 #' 
 #' net1 <- netmeta(p1)
 #' ni1 <- netimpact(net1, verbose = TRUE)
@@ -88,13 +87,13 @@ netimpact <- function(x,
   comparison <- paste(treat1, sep = x$sep.trts, treat2)
   
   
-  comparisons <- rownames(x$Cov.fixed)
+  comparisons <- rownames(x$Cov.common)
   ##
-  impact.fixed <- impact.random <-
+  impact.common <- impact.random <-
     matrix(NA, ncol = length(x$studies), nrow = length(comparisons))
   ##
-  rownames(impact.fixed) <- rownames(impact.random) <- comparisons
-  colnames(impact.fixed) <- colnames(impact.random) <- x$studies
+  rownames(impact.common) <- rownames(impact.random) <- comparisons
+  colnames(impact.common) <- colnames(impact.random) <- x$studies
   ##
   ## Run network meta-analyses "excluding" one study at a time
   ##
@@ -140,17 +139,17 @@ netimpact <- function(x,
     }
     nets[[i]] <- net.i
     ##
-    seTE.fixed <- x$seTE.fixed
-    seTE.fixed.i <- net.i$seTE.fixed
+    seTE.common <- x$seTE.common
+    seTE.common.i <- net.i$seTE.common
     ##
     seTE.random <- x$seTE.random
     seTE.random.i <- net.i$seTE.random
     ##
-    impact.fixed.i <- 1 - (lowertri(seTE.fixed) / lowertri(seTE.fixed.i))^2
-    zero.fixed <- abs(impact.fixed.i) < .Machine$double.eps^0.5
+    impact.common.i <- 1 - (lowertri(seTE.common) / lowertri(seTE.common.i))^2
+    zero.common <- abs(impact.common.i) < .Machine$double.eps^0.5
     ##
-    impact.fixed[, x$studies == i] <- impact.fixed.i
-    impact.fixed[zero.fixed, x$studies == i] <- 0
+    impact.common[, x$studies == i] <- impact.common.i
+    impact.common[zero.common, x$studies == i] <- 0
     ##
     impact.random.i <- 1 - (lowertri(seTE.random) / lowertri(seTE.random.i))^2
     zero.random <- abs(impact.random.i) < .Machine$double.eps^0.5
@@ -160,13 +159,17 @@ netimpact <- function(x,
   }
   
   
-  res <- list(impact.fixed = t(impact.fixed),
+  res <- list(impact.common = t(impact.common),
               impact.random = t(impact.random),
               ignored.comparisons = ignored,
               seTE.ignore = seTE.ignore,
               x = x,
               nets = nets,
               version = packageDescription("netmeta")$Version)
+  ##
+  ## Backward compatibility
+  ##
+  res$impact.fixed <- res$impact.common
   ##
   class(res) <- "netimpact"
   ##

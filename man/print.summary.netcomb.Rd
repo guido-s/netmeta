@@ -6,7 +6,7 @@
 \usage{
 \method{print}{summary.netcomb}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   backtransf = x$backtransf,
   nchar.comps = x$nchar.comps,
@@ -27,11 +27,11 @@
 \arguments{
 \item{x}{An object of class \code{summary.netcomb}}
 
-\item{fixed}{A logical indicating whether results for the
-fixed effects (common effects) model should be printed.}
+\item{common}{A logical indicating whether results for the common
+effects model should be printed.}
 
-\item{random}{A logical indicating whether results for the
-random effects model should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects model should be printed.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
@@ -90,8 +90,8 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 # Conduct random effects network meta-analysis
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-                data = face, reference.group = "placebo",
-                sm = "OR", fixed = FALSE)
+  data = face, reference.group = "placebo",
+  sm = "OR", common = FALSE)
 
 # Additive model for treatment components
 #

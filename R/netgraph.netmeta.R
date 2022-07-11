@@ -44,6 +44,8 @@
 #' @param dim A character string indicating whether a 2- or
 #'   3-dimensional plot should be produced, either \code{"2d"} or
 #'   \code{"3d"}.
+#' @param rotate A single numeric with value between -180 and 180
+#'   specifying the angle to rotate nodes in a circular network.
 #' @param highlight A character vector identifying comparisons that
 #'   should be marked in the network graph, e.g. \code{highlight =
 #'   "treat1:treat2"}.
@@ -158,19 +160,19 @@
 #'   (\code{thickness = "equal"})
 #' \item Proportional to number of studies comparing two treatments
 #'   (\code{thickness = "number.of.studies"})
-#' \item Proportional to inverse standard error of fixed effects model
-#'   comparing two treatments (\code{thickness = "se.fixed"})
+#' \item Proportional to inverse standard error of common effects model
+#'   comparing two treatments (\code{thickness = "se.common"})
 #' \item Proportional to inverse standard error of random effects
 #'   model comparing two treatments (\code{thickness = "se.random"})
-#' \item Weight from fixed effects model comparing two treatments
-#'   (\code{thickness = "w.fixed"})
+#' \item Weight from common effects model comparing two treatments
+#'   (\code{thickness = "w.common"})
 #' \item Weight from random effects model comparing two treatments
 #'   (\code{thickness = "w.random"})
 #' }
 #'
 #' Only evidence from direct treatment comparisons is considered to
 #' determine the line width if argument \code{thickness} is equal to
-#' any but the first method. By default, \code{thickness = "se.fixed"}
+#' any but the first method. By default, \code{thickness = "se.common"}
 #' is used if \code{start.layout = "circle"}, \code{iterate = FALSE},
 #' and \code{plastic = TRUE}. Otherwise, the same line width is used.
 #'
@@ -264,7 +266,7 @@
 #' # treatment 'plac'
 #' #
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD", reference = "plac")
+#'   data = Senn2013, sm = "MD", reference = "plac")
 #' 
 #' # Network graph with default settings
 #' #
@@ -275,46 +277,45 @@
 #' # highlighted comparison
 #' #
 #' trts <- c("plac", "benf", "migl", "acar", "sulf",
-#'           "metf", "rosi", "piog", "sita", "vild")
+#'   "metf", "rosi", "piog", "sita", "vild")
 #' netgraph(net1, highlight = "rosi:plac", seq = trts)
 #' 
 #' # Same network graph using argument 'seq' in netmeta function
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'                 data = Senn2013, sm = "MD", reference = "plac",
-#'                 seq = trts)
+#'   data = Senn2013, sm = "MD", reference = "plac", seq = trts)
 #' netgraph(net2, highlight = "rosi:plac")
 #' 
 #' # Network graph optimized, starting from a circle, with multi-arm
 #' # study colored
 #' #
 #' netgraph(net1, start = "circle", iterate = TRUE,
-#'          multiarm = TRUE, col.multiarm = "purple")
+#'   multiarm = TRUE, col.multiarm = "purple")
 #'
 #' # Network graph optimized, starting from a circle, with multi-arm
 #' # study colored and all intermediate iteration steps visible
 #' #
 #' netgraph(net1, start = "circle", iterate = TRUE,
-#'          multiarm = TRUE, col.multiarm = "purple",
-#'          allfigures = TRUE)
+#'   multiarm = TRUE, col.multiarm = "purple",
+#'   allfigures = TRUE)
 #' 
 #' # Network graph optimized, starting from Laplacian eigenvectors,
 #' # with multi-arm study colored
 #' #
 #' netgraph(net1, start = "eigen",
-#'          multiarm = TRUE, col.multiarm = "purple")
+#'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph optimized, starting from different Laplacian
 #' # eigenvectors, with multi-arm study colored
 #' #
 #' netgraph(net1, start = "prcomp",
-#'          multiarm = TRUE, col.multiarm = "purple")
+#'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph optimized, starting from random initial layout,
 #' # with multi-arm study colored
 #' #
 #' netgraph(net1, start = "random",
-#'          multiarm = TRUE, col.multiarm = "purple")
+#'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph without plastic look and one highlighted comparison
 #' #
@@ -329,7 +330,7 @@
 #' # treatments
 #' #
 #' netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
-#'          labels = LETTERS[1:10])
+#'   labels = LETTERS[1:10])
 #' 
 #' # Rotate treatment labels (orthogonal to circle)
 #' #
@@ -358,6 +359,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              col = "slateblue", plastic, thickness,
                              lwd = 5, lwd.min = lwd / 2.5, lwd.max = lwd * 4,
                              dim = "2d",
+                             rotate = 0,
                              ##
                              highlight = NULL, col.highlight = "red2",
                              scale.highlight = 1,
@@ -436,29 +438,31 @@ netgraph.netmeta <- function(x, seq = x$seq,
                    "\n  ",
                    "Please install package 'rgl' in order to ",
                    "produce 3-D plots\n  ",
-                  "(R command: 'install.packages(\"rgl\")').",
-                  if (length(grep("darwin", R.Version()$os)) == 1)
-                    paste0("\n  Note, macOS users have to install ",
-                           "XQuartz, see https://www.xquartz.org/.")
-                  ))
+                   "(R command: 'install.packages(\"rgl\")').",
+                   if (length(grep("darwin", R.Version()$os)) == 1)
+                     paste0("\n  Note, macOS users have to install ",
+                            "XQuartz, see https://www.xquartz.org/.")
+                   ))
     dim <- "2d"
     is_2d <- TRUE
     is_3d <- FALSE
   }
   ##
+  chknumeric(rotate, min = -180, max = 180)
+  ##
   missing.start.layout <- missing(start.layout)
   start.layout <-
     setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
   ##
-  mf <- match.call()
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
   ##
   if (!missing(seq) & is.null(seq))
     stop("Argument 'seq' must be not NULL.")
   ##
   if (!missing(labels)) {
     ##
-    labels <- eval(mf[[match("labels", names(mf))]],
-                   x, enclos = sys.frame(sys.parent()))
+    labels <- catch("labels", mc, x, sfsp)
     ##
     if (is.null(labels))
       stop("Argument 'labels' must be not NULL.")
@@ -504,8 +508,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
          "direct pairwise comparisons (", n.edges, ")")
   ##
   if (!missing(cex.points))
-    cex.points <- eval(mf[[match("cex.points", names(mf))]],
-                       x, enclos = sys.frame(sys.parent()))
+    cex.points <- catch("cex.points", mc, x, sfsp)
   ##
   if (length(cex.points) == 1)
     cex.points <- rep(cex.points, n.trts)
@@ -571,6 +574,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
             "equal to \"optimal\".")
     allfigures <- FALSE
   }
+  ##
+  if (iterate | is_3d)
+    rotate <- 0
   
   
   addargs <- names(list(...))
@@ -613,13 +619,13 @@ netgraph.netmeta <- function(x, seq = x$seq,
 
   if (missing(thickness)) {
     if (start.layout == "circle" & iterate == FALSE & plastic == TRUE) {
-      if (x$random & !x$fixed) {
+      if (x$random & !x$common) {
         thick <- "se.random"
         thickness <- "se.random"
       }
       else {
-        thick <- "se.fixed"
-        thickness <- "se.fixed"
+        thick <- "se.common"
+        thickness <- "se.common"
       }
     }
     else {
@@ -629,14 +635,18 @@ netgraph.netmeta <- function(x, seq = x$seq,
   }
   else {
     if (!is.matrix(thickness)) {
-      if (length(thickness) == 1 & is.character(thickness))
+      if (length(thickness) == 1 & is.character(thickness)) {
         thick <- setchar(thickness,
                          c("equal", "number.of.studies",
-                           "se.fixed", "se.random", "w.fixed", "w.random"))
+                           "se.common", "se.random", "w.common", "w.random",
+                           "se.fixed", "w.fixed"))
+        thick[thick == "se.fixed"] <- "se.common"
+        thick[thick == "w.fixed"] <- "w.common"
+      }
       ##
       else if (length(thickness) == 1 & is.logical(thickness)) {
         if (thickness)
-          thick <- "se.fixed"
+          thick <- "se.common"
         else
           thick <- "equal"
       }
@@ -661,8 +671,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
       thick <- "matrix"
     }
   }
-
-
+  
+  
   if (allfigures & is_3d) {
     warning("Argument 'allfigures' set to FALSE for 3-D network plot.")
     allfigures <- FALSE
@@ -758,6 +768,14 @@ netgraph.netmeta <- function(x, seq = x$seq,
     ##
     xpos <- stressdata$x
     ypos <- stressdata$y
+    ##
+    if (rotate != 0) {
+      val <- pi * rotate / 180
+      xpos.old <- xpos
+      xpos <-  xpos * cos(val) + ypos * sin(val)
+      ypos <- -xpos.old * sin(val) + ypos * cos(val)
+    }
+    ##
     if (is_3d)
       zpos <- stressdata$z
   }
@@ -967,8 +985,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   else if (thick == "equal") {
     W.matrix <- lwd * A.sign
   }
-  else if (thick == "se.fixed") {
-    IV.matrix <- x$seTE.direct.fixed[seq1, seq1]
+  else if (thick == "se.common") {
+    IV.matrix <- x$seTE.direct.common[seq1, seq1]
     IV.matrix[is.infinite(IV.matrix)] <- NA
     W.matrix <- lwd.max * min(IV.matrix, na.rm = TRUE) / IV.matrix
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
@@ -979,8 +997,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
     W.matrix <- lwd.max * min(IV.matrix, na.rm = TRUE) / IV.matrix
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
-  else if (thick == "w.fixed") {
-    IV.matrix <- 1 / x$seTE.direct.fixed[seq1, seq1]^2
+  else if (thick == "w.common") {
+    IV.matrix <- 1 / x$seTE.direct.common[seq1, seq1]^2
     IV.matrix[is.infinite(IV.matrix)] <- NA
     W.matrix <- lwd.max * IV.matrix / max(IV.matrix, na.rm = TRUE)
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
@@ -1236,7 +1254,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
           highs <- unlist(compsplit(high, split = highlight.split))
           if (length(highs) != 2)
             stop("Wrong format for argument 'highlight' ",
-            "(see helpfile of plotgraph command).")
+                 "(see helpfile of plotgraph command).")
           ##
           if (sum(dat.nodes$trts %in% highs) != 2)
             stop(paste("Argument 'highlight' must contain two of the ",

@@ -15,7 +15,7 @@ netsplit(
   sep.trts = x$sep.trts,
   quote.trts = "",
   tol.direct = 5e-04,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   backtransf = x$backtransf,
   warn = FALSE,
@@ -26,7 +26,7 @@ netsplit(
 
 \method{print}{netsplit}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   show = "all",
   overall = TRUE,
@@ -44,6 +44,7 @@ netsplit(
   scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
   legend = TRUE,
+  indent = TRUE,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -58,7 +59,7 @@ abbreviated. See Details.}
 
 \item{upper}{A logical indicating whether treatment comparisons
 should be selected from the lower or upper triangle of the
-treatment effect matrices (see list elements \code{TE.fixed} and
+treatment effect matrices (see list elements \code{TE.common} and
 \code{TE.random} in the \code{netmeta} object). Ignored if
 argument \code{order} is provided.}
 
@@ -84,12 +85,11 @@ labels.}
 direct evidence proportion from 0 or 1 to classify a comparison
 as providing only indirect or direct evidence, respectively.}
 
-\item{fixed}{A logical indicating whether results for the
-fixed effects / common effects network meta-analysis should be
-printed.}
+\item{common}{A logical indicating whether results for the common
+effects network meta-analysis should be printed.}
 
-\item{random}{A logical indicating whether results for the
-random effects network meta-analysis should be printed.}
+\item{random}{A logical indicating whether results for the random
+effects network meta-analysis should be printed.}
 
 \item{backtransf}{A logical indicating whether printed results
 should be back transformed. For example, if \code{backtransf =
@@ -154,28 +154,31 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}
+
+\item{indent}{A logical indicating whether items in the legend
+should be indented.}
 }
 \value{
 An object of class \code{netsplit} with corresponding \code{print}
 and \code{forest} functions. The object is a list containing the
 following components:
-\item{fixed, random}{As defined above.}
+\item{common, random}{As defined above.}
 \item{comparison}{A vector with treatment comparisons.}
-\item{prop.fixed, prop.random}{A vector with direct evidence
-  proportions (fixed / random effects model).}
-\item{fixed, random}{Results of network meta-analysis (fixed /
+\item{prop.common, prop.random}{A vector with direct evidence
+  proportions (common / random effects model).}
+\item{common, random}{Results of network meta-analysis (common /
   random effects model), i.e., data frame with columns comparison,
   TE, seTE, lower, upper, z, and p.}
-\item{direct.fixed, direct.random}{Network meta-analysis results
-  based on direct evidence (fixed / random effects model), i.e.,
+\item{direct.common, direct.random}{Network meta-analysis results
+  based on direct evidence (common / random effects model), i.e.,
   data frame with columns comparison, TE, seTE, lower, upper, z,
   and p.}
-\item{indirect.fixed, indirect.random}{Network meta-analysis
-  results based on indirect evidence (fixed / random effects
+\item{indirect.common, indirect.random}{Network meta-analysis
+  results based on indirect evidence (common / random effects
   model), i.e., data frame with columns comparison, TE, seTE,
   lower, upper, z, and p.}
-\item{compare.fixed, compare.random}{Comparison of direct and
-  indirect evidence in network meta-analysis (fixed / random
+\item{compare.common, compare.random}{Comparison of direct and
+  indirect evidence in network meta-analysis (common / random
   effects model), i.e., data frame with columns comparison, TE,
   seTE, lower, upper, z, and p.}
 \item{sm}{A character string indicating underlying summary measure}
@@ -239,7 +242,7 @@ installed.
 data(Woods2010)
 #
 p1 <- pairwise(treatment, event = r, n = N,
-               studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = Woods2010, sm = "OR")
 #
 net1 <- netmeta(p1)
 #
@@ -247,26 +250,26 @@ print(netsplit(net1), digits = 2)
 
 \dontrun{
 print(netsplit(net1), digits = 2,
-      backtransf = FALSE, fixed = FALSE)
+  backtransf = FALSE, common = FALSE)
 
 # Sort by increasing number of studies in direct comparisons
 print(netsplit(net1), digits = 2, sortvar = k)
 # Sort by decreasing number of studies in direct comparisons
 print(netsplit(net1), digits = 2, sortvar = -k)
 
-# Sort by increasing evidence proportion under fixed effects model
-print(netsplit(net1), digits = 2, sortvar = prop.fixed)
-# Sort by decreasing evidence proportion under fixed effects model
-print(netsplit(net1), digits = 2, sortvar = -prop.fixed)
+# Sort by increasing evidence proportion under common effects model
+print(netsplit(net1), digits = 2, sortvar = prop.common)
+# Sort by decreasing evidence proportion under common effects model
+print(netsplit(net1), digits = 2, sortvar = -prop.common)
 
-# Sort by decreasing evidence proportion under fixed effects model
+# Sort by decreasing evidence proportion under common effects model
 # and number of studies
-print(netsplit(net1), digits = 2, sortvar = cbind(-prop.fixed, -k))
+print(netsplit(net1), digits = 2, sortvar = cbind(-prop.common, -k))
 
 data(Senn2013)
 #
 net2 <- netmeta(TE, seTE, treat1.long, treat2.long,
-                studlab, data = Senn2013)
+  studlab, data = Senn2013)
 #
 print(netsplit(net2), digits = 2)
 # Layout of Puhan et al. (2014), Table 1
@@ -274,8 +277,8 @@ print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
 
 data(Dong2013)
 p3 <- pairwise(treatment, death, randomized, studlab = id,
-               data = Dong2013, sm = "OR")
-net3  <- netmetabin(p3)
+  data = Dong2013, sm = "OR")
+net3 <- netmetabin(p3)
 netsplit(net3)
 }
 

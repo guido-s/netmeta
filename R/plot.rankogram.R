@@ -9,8 +9,8 @@
 #'   "line" graph, or "step" functions should be drawn. Can be
 #'   abbreviated.
 #' @param pooled A character string indicating whether results for the
-#'   fixed effects (\code{"fixed"}) or random effects model
-#'   (\code{"random"}) should be plotted. Can be abbreviated.
+#'   common (\code{"common"}) or random effects model (\code{"random"})
+#'   should be plotted. Can be abbreviated.
 #' @param sort A logical indicating whether treatments should be
 #'   sorted by decreasing SUCRAs.
 #' @param trts Treatment(s) to show in rankogram.
@@ -30,7 +30,7 @@
 #'
 #' By default (argument \code{pooled}), results for the random effects
 #' model are shown if a network meta-analysis was conducted for both
-#' the fixed effect and random effects model.
+#' the common and random effects model.
 #'
 #' Treatments are sorted according to their mean effects if argument
 #' \code{sort = TRUE} (default).  A subset of treatments can be
@@ -55,7 +55,7 @@
 #' @examples
 #' data(Woods2010)
 #' p1 <- pairwise(treatment, event = r, n = N, studlab = author,
-#'                data = Woods2010, sm = "OR")
+#'   data = Woods2010, sm = "OR")
 #' net1 <- netmeta(p1, small.values = "good")
 #'
 #' ran1 <- rankogram(net1, nsim = 100)
@@ -71,7 +71,7 @@
 
 plot.rankogram <- function(x,
                            type = if (cumulative.rankprob) "step" else "bar",
-                           pooled = ifelse(x$random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "common"),
                            sort = TRUE, trts,
                            cumulative.rankprob = x$cumulative.rankprob,
                            ylim, ylab,
@@ -85,7 +85,8 @@ plot.rankogram <- function(x,
   
   type <- setchar(type, c("bar", "line", "step"))
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   ##
   chklogical(sort)
   ##
@@ -136,13 +137,13 @@ plot.rankogram <- function(x,
     ##
     sucras <- "ranking.random"
   }
-  else if (pooled == "fixed") {
+  else if (pooled == "common") {
     if (cumulative.rankprob)
-      rankmatrix <- "cumrank.matrix.fixed"
+      rankmatrix <- "cumrank.matrix.common"
     else 
-      rankmatrix <- "ranking.matrix.fixed"
+      rankmatrix <- "ranking.matrix.common"
     ##
-    sucras <- "ranking.fixed"
+    sucras <- "ranking.common"
   }
   ##
   if (is.null(x[[rankmatrix]]))

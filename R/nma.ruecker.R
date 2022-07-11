@@ -271,8 +271,8 @@ nma.ruecker <- function(TE, seTE,
                                method.tau = "DL", method.tau.ci = ""))
     ##
     if (is.na(tau.direct) | tau.direct == 0) {
-      TE.i   <- m.i.tau.preset$TE.fixed
-      seTE.i <- m.i.tau.preset$seTE.fixed
+      TE.i   <- m.i.tau.preset$TE.common
+      seTE.i <- m.i.tau.preset$seTE.common
     }
     else {
       TE.i   <- m.i.tau.preset$TE.random
