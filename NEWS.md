@@ -1,6 +1,10 @@
-## netmeta, version 2.2-0 (2022-mm-dd)
+## netmeta, version 2.5-0 (2022-mm-dd)
 
 ### Major changes
+
+* Use term 'common effects model' instead of 'fixed effects model' in
+  the documentation and argument 'common' instead of 'fixed' to (not)
+  show results for common effects model
 
 * New function nettable() to create tables with network, direct and
   indirect estimates from one or more network meta-analyses
@@ -11,9 +15,6 @@
 * Nodes in circular network graphs can be rotated
   
 * R package **writexl** added to suggested packages
-  
-* Use term "common effects model" instead of "fixed effects model" in
-  printouts and figures
 
 ### Bug fixes
 

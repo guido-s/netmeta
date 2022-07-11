@@ -8,7 +8,7 @@ meta-analysis}
 \usage{
 \method{forest}{netcomparison}(
   x,
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   leftcols = c("studlab", "treat1", "treat2"),
   leftlabs = c("Comparison", "Trt 1", "Trt 2"),
   rightcols = c("effect", "ci", "statistic", "pval"),
@@ -30,7 +30,7 @@ meta-analysis}
 \item{x}{An object of class \code{netcomparison}.}
 
 \item{pooled}{A character string indicating whether results for the
-common (\code{"fixed"}) or random effects model (\code{"random"})
+common (\code{"common"}) or random effects model (\code{"random"})
 should be plotted. Can be abbreviated.}
 
 \item{leftcols}{A character vector specifying (additional) columns
@@ -97,7 +97,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 # Conduct random effects network meta-analysis
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-  data = face, ref = "placebo", sm = "OR", fixed = FALSE)
+  data = face, ref = "placebo", sm = "OR", common = FALSE)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)

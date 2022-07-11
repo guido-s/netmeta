@@ -8,7 +8,7 @@
 netleague(
   x,
   y,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   seq = x$seq,
   ci = TRUE,
@@ -30,7 +30,7 @@ netleague(
 
 \method{print}{netleague}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   warn.deprecated = gs("warn.deprecated"),
   ...
@@ -42,7 +42,7 @@ netleague(
 
 \item{y}{An object of class \code{netmeta} (optional).}
 
-\item{fixed}{A logical indicating whether a league table should be
+\item{common}{A logical indicating whether a league table should be
 printed for the common effects network meta-analysis.}
 
 \item{random}{A logical indicating whether a league table should be
@@ -100,7 +100,7 @@ to create Excel file).}
 \value{
 An object of class \code{netleague} with corresponding \code{print}
 function if \code{writexl = FALSE}. The object is a list containing
-the league tables in list elements 'fixed' and 'random'. An Excel
+the league tables in list elements 'common' and 'random'. An Excel
 file is created if \code{writexl = TRUE}. In this case, \code{NULL}
 is returned in R.
 }
@@ -178,9 +178,9 @@ netleague(net0, random = FALSE, digits = 2)
 # Change order of treatments according to treatment ranking (random
 # effects model)
 #
-netleague(net0, fixed = FALSE, digits = 2, seq = netrank(net0))
+netleague(net0, common = FALSE, digits = 2, seq = netrank(net0))
 #
-print(netrank(net0), fixed = FALSE)
+print(netrank(net0), common = FALSE)
 
 \dontrun{
 # Create a CSV file with league table for random effects model
@@ -217,7 +217,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, fixed = FALSE,
+net1 <- netmeta(p1, common = FALSE,
                 seq = trts, ref = "Placebo", small = "bad")
 
 # (2) Early remission
@@ -226,7 +226,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, fixed = FALSE,
+net2 <- netmeta(p2, common = FALSE,
                 seq = trts, ref = "Placebo", small = "bad")
 
 options(width = 200)

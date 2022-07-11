@@ -15,7 +15,7 @@ netsplit(
   sep.trts = x$sep.trts,
   quote.trts = "",
   tol.direct = 5e-04,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   backtransf = x$backtransf,
   warn = FALSE,
@@ -26,7 +26,7 @@ netsplit(
 
 \method{print}{netsplit}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   show = "all",
   overall = TRUE,
@@ -59,7 +59,7 @@ abbreviated. See Details.}
 
 \item{upper}{A logical indicating whether treatment comparisons
 should be selected from the lower or upper triangle of the
-treatment effect matrices (see list elements \code{TE.fixed} and
+treatment effect matrices (see list elements \code{TE.common} and
 \code{TE.random} in the \code{netmeta} object). Ignored if
 argument \code{order} is provided.}
 
@@ -85,7 +85,7 @@ labels.}
 direct evidence proportion from 0 or 1 to classify a comparison
 as providing only indirect or direct evidence, respectively.}
 
-\item{fixed}{A logical indicating whether results for the common
+\item{common}{A logical indicating whether results for the common
 effects network meta-analysis should be printed.}
 
 \item{random}{A logical indicating whether results for the random
@@ -162,22 +162,22 @@ should be indented.}
 An object of class \code{netsplit} with corresponding \code{print}
 and \code{forest} functions. The object is a list containing the
 following components:
-\item{fixed, random}{As defined above.}
+\item{common, random}{As defined above.}
 \item{comparison}{A vector with treatment comparisons.}
-\item{prop.fixed, prop.random}{A vector with direct evidence
+\item{prop.common, prop.random}{A vector with direct evidence
   proportions (common / random effects model).}
-\item{fixed, random}{Results of network meta-analysis (common /
+\item{common, random}{Results of network meta-analysis (common /
   random effects model), i.e., data frame with columns comparison,
   TE, seTE, lower, upper, z, and p.}
-\item{direct.fixed, direct.random}{Network meta-analysis results
+\item{direct.common, direct.random}{Network meta-analysis results
   based on direct evidence (common / random effects model), i.e.,
   data frame with columns comparison, TE, seTE, lower, upper, z,
   and p.}
-\item{indirect.fixed, indirect.random}{Network meta-analysis
+\item{indirect.common, indirect.random}{Network meta-analysis
   results based on indirect evidence (common / random effects
   model), i.e., data frame with columns comparison, TE, seTE,
   lower, upper, z, and p.}
-\item{compare.fixed, compare.random}{Comparison of direct and
+\item{compare.common, compare.random}{Comparison of direct and
   indirect evidence in network meta-analysis (common / random
   effects model), i.e., data frame with columns comparison, TE,
   seTE, lower, upper, z, and p.}
@@ -250,7 +250,7 @@ print(netsplit(net1), digits = 2)
 
 \dontrun{
 print(netsplit(net1), digits = 2,
-  backtransf = FALSE, fixed = FALSE)
+  backtransf = FALSE, common = FALSE)
 
 # Sort by increasing number of studies in direct comparisons
 print(netsplit(net1), digits = 2, sortvar = k)
@@ -258,13 +258,13 @@ print(netsplit(net1), digits = 2, sortvar = k)
 print(netsplit(net1), digits = 2, sortvar = -k)
 
 # Sort by increasing evidence proportion under common effects model
-print(netsplit(net1), digits = 2, sortvar = prop.fixed)
+print(netsplit(net1), digits = 2, sortvar = prop.common)
 # Sort by decreasing evidence proportion under common effects model
-print(netsplit(net1), digits = 2, sortvar = -prop.fixed)
+print(netsplit(net1), digits = 2, sortvar = -prop.common)
 
 # Sort by decreasing evidence proportion under common effects model
 # and number of studies
-print(netsplit(net1), digits = 2, sortvar = cbind(-prop.fixed, -k))
+print(netsplit(net1), digits = 2, sortvar = cbind(-prop.common, -k))
 
 data(Senn2013)
 #

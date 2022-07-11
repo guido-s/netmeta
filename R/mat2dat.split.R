@@ -1,6 +1,6 @@
-mat2dat.split <- function(x, pooled = "fixed", dat.trts) {
+mat2dat.split <- function(x, pooled = "common", dat.trts) {
 
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random"))
   ##
   name.n <- paste0("nma.", pooled)
   name.d <- paste0("direct.", pooled)

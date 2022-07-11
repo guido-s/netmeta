@@ -7,7 +7,7 @@
 \method{print}{summary.netmeta}(
   x,
   sortvar,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   prediction = x$prediction,
   reference.group = x$reference.group,
@@ -39,7 +39,7 @@
 \item{sortvar}{An optional vector used to sort individual studies
 (must be of same length as \code{x$TE}).}
 
-\item{fixed}{A logical indicating whether results for the common
+\item{common}{A logical indicating whether results for the common
 effects model should be printed.}
 
 \item{random}{A logical indicating whether results for the random
@@ -152,7 +152,7 @@ print(snet1, ref = "plac", digits = 3,
 # Conduct random effects network meta-analysis
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", fixed = FALSE, ref = "plac")
+  data = Senn2013, sm = "MD", common = FALSE, ref = "plac")
 print(summary(net2), digits = 3)
 }
 

@@ -25,7 +25,7 @@ sidde <- function(x,
   ##
   ## Determine comparisons with direct evidence
   ##
-  idx.d <- which(!is.na(x$TE.direct.fixed), arr.ind = TRUE)
+  idx.d <- which(!is.na(x$TE.direct.common), arr.ind = TRUE)
   idx.d <- idx.d[idx.d[, 1] < idx.d[, 2], , drop = FALSE]
   ##
   rownames(idx.d) <- seq_len(nrow(idx.d))
@@ -39,9 +39,9 @@ sidde <- function(x,
   ## Perform network meta-analyses for indirect evidence
   ## (by dropping one direct comparison at a time)
   ##
-  TE.indirect.fixed <- x$TE.direct.fixed
-  TE.indirect.fixed[!is.na(TE.indirect.fixed)] <- NA
-  seTE.indirect.fixed <- TE.indirect.fixed
+  TE.indirect.common <- x$TE.direct.common
+  TE.indirect.common[!is.na(TE.indirect.common)] <- NA
+  seTE.indirect.common <- TE.indirect.common
   ##
   TE.indirect.random <- x$TE.direct.random
   TE.indirect.random[!is.na(TE.indirect.random)] <- NA
@@ -102,16 +102,16 @@ sidde <- function(x,
                          method.tau = x$method.tau,
                          warn = warn)
       ##
-      if (trts[idx1.i] %in% rownames(net.i$TE.fixed) &
-          trts[idx2.i] %in% colnames(net.i$TE.fixed)) {
-        TE.indirect.fixed[idx1.i, idx2.i] <-
-          net.i$TE.fixed[trts[idx1.i], trts[idx2.i]]
-        TE.indirect.fixed[idx2.i, idx1.i] <-
-          net.i$TE.fixed[trts[idx2.i], trts[idx1.i]]
+      if (trts[idx1.i] %in% rownames(net.i$TE.common) &
+          trts[idx2.i] %in% colnames(net.i$TE.common)) {
+        TE.indirect.common[idx1.i, idx2.i] <-
+          net.i$TE.common[trts[idx1.i], trts[idx2.i]]
+        TE.indirect.common[idx2.i, idx1.i] <-
+          net.i$TE.common[trts[idx2.i], trts[idx1.i]]
         ##
-        seTE.indirect.fixed[idx1.i, idx2.i] <-
-          seTE.indirect.fixed[idx2.i, idx1.i] <-
-          net.i$seTE.fixed[trts[idx1.i], trts[idx2.i]]
+        seTE.indirect.common[idx1.i, idx2.i] <-
+          seTE.indirect.common[idx2.i, idx1.i] <-
+          net.i$seTE.common[trts[idx1.i], trts[idx2.i]]
       }
       ##
       if (!is.bin) {
@@ -140,8 +140,8 @@ sidde <- function(x,
   }
   
   
-  res <- list(TE.indirect.fixed = TE.indirect.fixed,
-              seTE.indirect.fixed = seTE.indirect.fixed)
+  res <- list(TE.indirect.common = TE.indirect.common,
+              seTE.indirect.common = seTE.indirect.common)
   ##
   if (!is.bin) {
     res$TE.indirect.random <- TE.indirect.random

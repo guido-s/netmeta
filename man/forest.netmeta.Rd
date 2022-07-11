@@ -7,7 +7,7 @@
 \usage{
 \method{forest}{netmeta}(
   x,
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
   labels = x$trts,
@@ -37,7 +37,7 @@
 \item{x}{An object of class \code{netmeta}.}
 
 \item{pooled}{A character string indicating whether results for the
-common (\code{"fixed"}) or random effects model (\code{"random"})
+common (\code{"common"}) or random effects model (\code{"random"})
 should be plotted. Can be abbreviated.}
 
 \item{reference.group}{Reference treatment(s).}
@@ -185,7 +185,7 @@ forest(net1, xlim = c(-1.5, 1), ref = "plac",
 # Random effects effect model
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", fixed = FALSE)
+  data = Senn2013, sm = "MD", common = FALSE)
 
 forest(net2, xlim = c(-1.5, 1), ref = "plac",
   xlab = "HbA1c difference")

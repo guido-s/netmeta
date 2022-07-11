@@ -7,7 +7,7 @@
 \usage{
 \method{forest}{netbind}(
   x,
-  pooled = ifelse(x$x$random, "random", "fixed"),
+  pooled = ifelse(x$x$random, "random", "common"),
   equal.size = TRUE,
   leftcols = "studlab",
   leftlabs = "Treatment",
@@ -28,7 +28,7 @@
 \item{x}{An object of class \code{netbind}.}
 
 \item{pooled}{A character string indicating whether results for the
-common (\code{"fixed"}) or random effects model (\code{"random"})
+common (\code{"common"}) or random effects model (\code{"random"})
 should be plotted. Can be abbreviated.}
 
 \item{equal.size}{A logical indicating whether all squares should
@@ -98,7 +98,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
   data = face, reference.group = "placebo",
-  sm = "OR", fixed = FALSE)
+  sm = "OR", common = FALSE)
 
 # Additive CNMA model with placebo as inactive component and
 # reference

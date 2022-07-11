@@ -9,7 +9,7 @@ netcontrib(
   x,
   method = "shortestpath",
   hatmatrix.F1000 = FALSE,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   nchar.trts = x$nchar.trts,
   warn.deprecated = gs("warn.deprecated"),
@@ -19,7 +19,7 @@ netcontrib(
 
 \method{print}{netcontrib}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   digits = 4,
   nchar.trts = x$nchar.trts,
@@ -39,7 +39,7 @@ calculate the contribution matrix. Either \code{"randomwalk"} or
 given in F1000 article should be used for \code{method =
 "shortestpath"}.}
 
-\item{fixed}{A logical indicating whether a contribution matrix
+\item{common}{A logical indicating whether a contribution matrix
 should be printed for the common effects network meta-analysis.}
 
 \item{random}{A logical indicating whether a contribution matrix
@@ -66,14 +66,14 @@ printed.}
 An object of class \code{netcontrib} with corresponding
 \code{print} function. The object is a list containing the
 following components:
-\item{fixed}{Numeric matrix of percentage contributions of direct
+\item{common}{Numeric matrix of percentage contributions of direct
   comparisons for each network comparison for the common effects
   model.}
 \item{random}{Numeric matrix of percentage contributions of direct
   comparisons for each network comparison for the random effects
   model.}
 \item{x}{As defined above.}
-\item{tictoc.fixed}{Computation times under common effects model
+\item{tictoc.common}{Computation times under common effects model
   (if R package \bold{tictoc} is installed).}
 \item{tictoc.random}{Computation times under random effects model
   (if R package \bold{tictoc} is installed).}

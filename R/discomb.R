@@ -35,10 +35,10 @@
 #'   individual comparisons.
 #' @param level.ma The level used to calculate confidence intervals
 #'   for network estimates.
-#' @param fixed A logical indicating whether a common effects / common
-#'   effects network meta-analysis should be conducted.
-#' @param random A logical indicating whether a random effects
-#'   network meta-analysis should be conducted.
+#' @param common A logical indicating whether a common effects /
+#'   common effects network meta-analysis should be conducted.
+#' @param random A logical indicating whether a random effects network
+#'   meta-analysis should be conducted.
 #' @param reference.group Reference treatment (first treatment is used
 #'   if argument is missing).
 #' @param baseline.reference A logical indicating whether results
@@ -167,7 +167,7 @@
 #' \item{TE}{Estimate of treatment effect, i.e. difference between
 #'   first and second treatment.}
 #' \item{seTE}{Standard error of treatment estimate.}
-#' \item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+#' \item{seTE.adj.common, seTE.adj.random}{Standard error of treatment
 #'   estimate, adjusted for multi-arm studies.}
 #' \item{event1}{Number of events in first treatment group.}
 #' \item{event2}{Number of events in second treatment group.}
@@ -181,70 +181,70 @@
 #' \item{c}{Total number of components.}
 #' \item{trts}{Treatments included in network meta-analysis.}
 #' \item{comps}{Unique list of components present in the network.}
-#' \item{TE.cnma.fixed, TE.cnma.random}{A vector of length \emph{m} of
+#' \item{TE.cnma.common, TE.cnma.random}{A vector of length \emph{m} of
 #'   consistent treatment effects estimated by the additive (common and
 #'   random effects) model.}
-#' \item{seTE.cnma.fixed, seTE.cnma.random}{A vector of length
+#' \item{seTE.cnma.common, seTE.cnma.random}{A vector of length
 #'   \emph{m} with standard errors estimated by the additive (common
 #'   and random effects) model.}
-#' \item{lower.cnma.fixed, lower.cnma.random}{A vector of length
+#' \item{lower.cnma.common, lower.cnma.random}{A vector of length
 #'   \emph{m} of lower confidence interval limits for consistent
 #'   treatment effects estimated by the additive (common and random
 #'   effects) model.}
-#' \item{upper.cnma.fixed, upper.cnma.random}{A vector of length
+#' \item{upper.cnma.common, upper.cnma.random}{A vector of length
 #'   \emph{m} of upper confidence interval limits for consistent
 #'   treatment effects estimated by the additive (common and random
 #'   effects) model.}
-#' \item{statistic.cnma.fixed, statistic.cnma.random}{A vector of
+#' \item{statistic.cnma.common, statistic.cnma.random}{A vector of
 #'   length \emph{m} of z-values for the test of an overall effect
 #'   estimated by the additive (common and random effects) model.}
-#' \item{pval.cnma.fixed, pval.cnma.random}{A vector of length
+#' \item{pval.cnma.common, pval.cnma.random}{A vector of length
 #'   \emph{m} of p-values for the test of an overall effect estimated
 #'   by the additive (common and random effects) model.}
-#' \item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with overall
+#' \item{TE.common, TE.random}{\emph{n}x\emph{n} matrix with overall
 #'   treatment effects estimated by the additive (common and random
 #'   effects) model.}
-#' \item{seTE.fixed, seTE.random}{\emph{n}x\emph{n} matrix with
+#' \item{seTE.common, seTE.random}{\emph{n}x\emph{n} matrix with
 #'   standard errors estimated by the additive (common and random
 #'   effects) model.}
-#' \item{lower.fixed, upper.fixed, lower.random,
+#' \item{lower.common, upper.common, lower.random,
 #'   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
 #'   confidence interval limits estimated by the additive (common and
 #'   random effects) model.}
-#' \item{statistic.fixed, pval.fixed, statistic.random,
+#' \item{statistic.common, pval.common, statistic.random,
 #'   pval.random}{\emph{n}x\emph{n} matrices with z-values and
 #'   p-values for test of overall effect estimated by the additive
 #'   (common and random effects) model.}
-#' \item{Comp.fixed, Comp.random}{A vector of component effects (common
+#' \item{Comp.common, Comp.random}{A vector of component effects (common
 #'   and random effects model).}
-#' \item{seComp.fixed, seComp.random}{A vector with corresponding
+#' \item{seComp.common, seComp.random}{A vector with corresponding
 #'   standard errors (common and random effects model).}
-#' \item{lower.Comp.fixed, lower.Comp.random}{A vector with lower
+#' \item{lower.Comp.common, lower.Comp.random}{A vector with lower
 #'   confidence limits for components (common and random effects
 #'   model).}
-#' \item{upper.Comp.fixed, upper.Comp.random}{A vector with upper
+#' \item{upper.Comp.common, upper.Comp.random}{A vector with upper
 #'   confidence limits for components (common and random effects
 #'   model).}
-#' \item{statistic.Comp.fixed, statistic.Comp.random}{A vector with
+#' \item{statistic.Comp.common, statistic.Comp.random}{A vector with
 #'   z-values for the overall effect of components (common and random
 #'   effects model).}
-#' \item{pval.Comp.fixed, pval.Comp.random}{A vector with p-values for
+#' \item{pval.Comp.common, pval.Comp.random}{A vector with p-values for
 #'   the overall effect of components (common and random effects
 #'   model).}
-#' \item{Comb.fixed, Comb.random}{A vector of combination effects (common
+#' \item{Comb.common, Comb.random}{A vector of combination effects (common
 #'   and random effects model).}
-#' \item{seComb.fixed, seComb.random}{A vector with corresponding
+#' \item{seComb.common, seComb.random}{A vector with corresponding
 #'   standard errors (common and random effects model).}
-#' \item{lower.Comb.fixed, lower.Comb.random}{A vector with lower
+#' \item{lower.Comb.common, lower.Comb.random}{A vector with lower
 #'   confidence limits for combinations (common and random effects
 #'   model).}
-#' \item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
+#' \item{upper.Comb.common, upper.Comb.random}{A vector with upper
 #'   confidence limits for combinations (common and random effects
 #'   model).}
-#' \item{statistic.Comb.fixed, statistic.Comb.random}{A vector with
+#' \item{statistic.Comb.common, statistic.Comb.random}{A vector with
 #'   z-values for the overall effect of combinations (common and random
 #'   effects model).}
-#' \item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
+#' \item{pval.Comb.common, pval.Comb.random}{A vector with p-values for
 #'   the overall effect of combinations (common and random effects
 #'   model).}
 #' \item{Q.additive}{Overall heterogeneity / inconsistency statistic
@@ -272,7 +272,7 @@
 #' \item{C.matrix}{As defined above.}
 #' \item{sm}{Summary measure.}
 #' \item{level.ma}{Level for confidence intervals.}
-#' \item{fixed, random, tau.preset}{As defined above.}
+#' \item{common, random, tau.preset}{As defined above.}
 #' \item{sep.trts}{A character used in comparison names as separator
 #'   between treatment labels.}
 #' \item{nchar.comps}{A numeric defining the minimum number of
@@ -383,7 +383,7 @@ discomb <- function(TE, seTE,
                     sm,
                     level = gs("level"),
                     level.ma = gs("level.ma"),
-                    fixed = gs("fixed"),
+                    common = gs("common"),
                     random = gs("random") | !is.null(tau.preset),
                     ##
                     reference.group,
@@ -450,10 +450,12 @@ discomb <- function(TE, seTE,
                          warn.deprecated)
   chklevel(level.ma)
   ##
-  missing.fixed <- missing(fixed)
-  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
@@ -516,11 +518,11 @@ discomb <- function(TE, seTE,
   }
   else {
     is.pairwise <- FALSE
-  if (missing(sm))
-    if (!is.null(data) && !is.null(attr(data, "sm")))
-      sm <- attr(data, "sm")
-    else
-      sm <- ""
+    if (missing(sm))
+      if (!is.null(data) && !is.null(attr(data, "sm")))
+        sm <- attr(data, "sm")
+      else
+        sm <- ""
     ##
     seTE <- catch("seTE", mc, data, sfsp)
     treat1 <- catch("treat1", mc, data, sfsp)
@@ -850,7 +852,7 @@ discomb <- function(TE, seTE,
   m <- length(TE)
   k <- length(unique(studlab))
   ##
-  ## Fixed effects models
+  ## Common effects models
   ##
   df.Q.additive <- n.a - k - qr(X.matrix)$rank
   ##
@@ -871,7 +873,7 @@ discomb <- function(TE, seTE,
     df.Q.diff <- NA
   }
   ##  
-  res.f <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
+  res.c <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], level.ma,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
@@ -882,7 +884,7 @@ discomb <- function(TE, seTE,
   if (!is.null(tau.preset))
     tau <- tau.preset
   else
-    tau <- res.f$tau
+    tau <- res.c$tau
   ##
   p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, invmat)
   ##
@@ -902,7 +904,7 @@ discomb <- function(TE, seTE,
   designs <- designs(p0$treat1, p0$treat2, p0$studlab,
                      sep.trts = sep.trts)
   ##  
-  NAs <- rep(NA, length(res.f$comparisons$TE))
+  NAs <- rep(NA, length(res.c$comparisons$TE))
   ##
   res <- list(studlab = p0$studlab[o],
               treat1 = p0$treat1[o],
@@ -911,7 +913,7 @@ discomb <- function(TE, seTE,
               TE = p0$TE[o],
               seTE = p0$seTE[o],
               seTE.adj = sqrt(1 / p0$weights[o]),
-              seTE.adj.fixed = sqrt(1 / p0$weights[o]),
+              seTE.adj.common = sqrt(1 / p0$weights[o]),
               seTE.adj.random = sqrt(1 / p1$weights[o]),
               ##
               design = designs$design[o],
@@ -941,31 +943,31 @@ discomb <- function(TE, seTE,
               ##
               designs = unique(sort(designs$design)),
               ##
-              comps = names(res.f$components$TE),
+              comps = names(res.c$components$TE),
               k.comps = NA,
               n.comps = NA,
               events.comps = NA,
               ##
-              TE.nma.fixed = NAs,
-              seTE.nma.fixed = NAs,
-              lower.nma.fixed = NAs,
-              upper.nma.fixed = NAs,
-              statistic.nma.fixed = NAs,
-              pval.nma.fixed = NAs,
+              TE.nma.common = NAs,
+              seTE.nma.common = NAs,
+              lower.nma.common = NAs,
+              upper.nma.common = NAs,
+              statistic.nma.common = NAs,
+              pval.nma.common = NAs,
               ##
-              TE.cnma.fixed = res.f$comparisons$TE,
-              seTE.cnma.fixed = res.f$comparisons$seTE,
-              lower.cnma.fixed = res.f$comparisons$lower,
-              upper.cnma.fixed = res.f$comparisons$upper,
-              statistic.cnma.fixed = res.f$comparisons$statistic,
-              pval.cnma.fixed = res.f$comparisons$p,
+              TE.cnma.common = res.c$comparisons$TE,
+              seTE.cnma.common = res.c$comparisons$seTE,
+              lower.cnma.common = res.c$comparisons$lower,
+              upper.cnma.common = res.c$comparisons$upper,
+              statistic.cnma.common = res.c$comparisons$statistic,
+              pval.cnma.common = res.c$comparisons$p,
               ##
-              TE.fixed = res.f$all.comparisons$TE,
-              seTE.fixed = res.f$all.comparisons$seTE,
-              lower.fixed = res.f$all.comparisons$lower,
-              upper.fixed = res.f$all.comparisons$upper,
-              statistic.fixed = res.f$all.comparisons$statistic,
-              pval.fixed = res.f$all.comparisons$p,
+              TE.common = res.c$all.comparisons$TE,
+              seTE.common = res.c$all.comparisons$seTE,
+              lower.common = res.c$all.comparisons$lower,
+              upper.common = res.c$all.comparisons$upper,
+              statistic.common = res.c$all.comparisons$statistic,
+              pval.common = res.c$all.comparisons$p,
               ##
               TE.nma.random = NAs,
               seTE.nma.random = NAs,
@@ -988,12 +990,12 @@ discomb <- function(TE, seTE,
               statistic.random = res.r$all.comparisons$statistic,
               pval.random = res.r$all.comparisons$p,
               ##
-              Comp.fixed = unname(res.f$components$TE),
-              seComp.fixed = unname(res.f$components$seTE),
-              lower.Comp.fixed = unname(res.f$components$lower),
-              upper.Comp.fixed = unname(res.f$components$upper),
-              statistic.Comp.fixed = unname(res.f$components$statistic),
-              pval.Comp.fixed = unname(res.f$components$p),
+              Comp.common = unname(res.c$components$TE),
+              seComp.common = unname(res.c$components$seTE),
+              lower.Comp.common = unname(res.c$components$lower),
+              upper.Comp.common = unname(res.c$components$upper),
+              statistic.Comp.common = unname(res.c$components$statistic),
+              pval.Comp.common = unname(res.c$components$p),
               ##
               Comp.random = unname(res.r$components$TE),
               seComp.random = unname(res.r$components$seTE),
@@ -1002,12 +1004,12 @@ discomb <- function(TE, seTE,
               statistic.Comp.random = unname(res.r$components$statistic),
               pval.Comp.random = unname(res.r$components$p),
               ##
-              Comb.fixed = unname(res.f$combinations$TE),
-              seComb.fixed = unname(res.f$combinations$seTE),
-              lower.Comb.fixed = unname(res.f$combinations$lower),
-              upper.Comb.fixed = unname(res.f$combinations$upper),
-              statistic.Comb.fixed = unname(res.f$combinations$statistic),
-              pval.Comb.fixed = unname(res.f$combinations$p),
+              Comb.common = unname(res.c$combinations$TE),
+              seComb.common = unname(res.c$combinations$seTE),
+              lower.Comb.common = unname(res.c$combinations$lower),
+              upper.Comb.common = unname(res.c$combinations$upper),
+              statistic.Comb.common = unname(res.c$combinations$statistic),
+              pval.Comb.common = unname(res.c$combinations$p),
               ##
               Comb.random = unname(res.r$combinations$TE),
               seComb.random = unname(res.r$combinations$seTE),
@@ -1016,31 +1018,31 @@ discomb <- function(TE, seTE,
               statistic.Comb.random = unname(res.r$combinations$statistic),
               pval.Comb.random = unname(res.r$combinations$p),
               ##
-              Q.additive = res.f$Q.additive, 
+              Q.additive = res.c$Q.additive, 
               df.Q.additive = df.Q.additive, 
-              pval.Q.additive = res.f$pval.Q.additive,
+              pval.Q.additive = res.c$pval.Q.additive,
               tau = tau,
-              I2 = res.f$I2,
-              lower.I2 = res.f$lower.I2, upper.I2 = res.f$upper.I2,
+              I2 = res.c$I2,
+              lower.I2 = res.c$lower.I2, upper.I2 = res.c$upper.I2,
               ##
               Q.standard = Q,
               df.Q.standard = df.Q,
               pval.Q.standard = pval.Q, 
               ##
-              Q.diff = res.f$Q.diff,
+              Q.diff = res.c$Q.diff,
               df.Q.diff = df.Q.diff,
-              pval.Q.diff = res.f$pval.Q.diff, 
+              pval.Q.diff = res.c$pval.Q.diff, 
               ##
               X.matrix = X.matrix,
               B.matrix = B.matrix,
               C.matrix = C.matrix,
               ##
-              L.matrix.fixed = res.f$L.matrix,
-              Lplus.matrix.fixed = res.f$Lplus.matrix,
+              L.matrix.common = res.c$L.matrix,
+              Lplus.matrix.common = res.c$Lplus.matrix,
               L.matrix.random = res.r$L.matrix,
               Lplus.matrix.random = res.r$Lplus.matrix,
               ##
-              H.matrix.fixed = res.f$H.matrix[o, o],
+              H.matrix.common = res.c$H.matrix[o, o],
               H.matrix.random = res.r$H.matrix[o, o],
               ##
               n.matrix = NA,
@@ -1050,7 +1052,7 @@ discomb <- function(TE, seTE,
               method = "Inverse",
               level = level,
               level.ma = level.ma,
-              fixed = fixed,
+              common = common,
               random = random, 
               ##
               reference.group = reference.group,
@@ -1110,12 +1112,12 @@ discomb <- function(TE, seTE,
     for (i in seq_along(list.trts))
       sel1[i] <- any(list.trts[[i]] %in% sel.comps)
     ##
-    res$Comb.fixed[sel1] <- NA
-    res$seComb.fixed[sel1] <- NA
-    res$lower.Comb.fixed[sel1] <- NA
-    res$upper.Comb.fixed[sel1] <- NA
-    res$statistic.Comb.fixed[sel1] <- NA
-    res$pval.Comb.fixed[sel1] <- NA
+    res$Comb.common[sel1] <- NA
+    res$seComb.common[sel1] <- NA
+    res$lower.Comb.common[sel1] <- NA
+    res$upper.Comb.common[sel1] <- NA
+    res$statistic.Comb.common[sel1] <- NA
+    res$pval.Comb.common[sel1] <- NA
     ##
     res$Comb.random[sel1] <- NA
     res$seComb.random[sel1] <- NA
@@ -1124,19 +1126,19 @@ discomb <- function(TE, seTE,
     res$statistic.Comb.random[sel1] <- NA
     res$pval.Comb.random[sel1] <- NA
     ##
-    res$TE.fixed[sel1, ] <- NA
-    res$seTE.fixed[sel1, ] <- NA
-    res$lower.fixed[sel1, ] <- NA
-    res$upper.fixed[sel1, ] <- NA
-    res$statistic.fixed[sel1, ] <- NA
-    res$pval.fixed[sel1, ] <- NA
+    res$TE.common[sel1, ] <- NA
+    res$seTE.common[sel1, ] <- NA
+    res$lower.common[sel1, ] <- NA
+    res$upper.common[sel1, ] <- NA
+    res$statistic.common[sel1, ] <- NA
+    res$pval.common[sel1, ] <- NA
     ##
-    res$TE.fixed[, sel1] <- NA
-    res$seTE.fixed[, sel1] <- NA
-    res$lower.fixed[, sel1] <- NA
-    res$upper.fixed[, sel1] <- NA
-    res$statistic.fixed[, sel1] <- NA
-    res$pval.fixed[, sel1] <- NA
+    res$TE.common[, sel1] <- NA
+    res$seTE.common[, sel1] <- NA
+    res$lower.common[, sel1] <- NA
+    res$upper.common[, sel1] <- NA
+    res$statistic.common[, sel1] <- NA
+    res$pval.common[, sel1] <- NA
     ##
     res$TE.random[sel1, ] <- NA
     res$seTE.random[sel1, ] <- NA
@@ -1161,12 +1163,12 @@ discomb <- function(TE, seTE,
     for (i in seq_along(list.comps))
       sel2[i] <- any(list.comps[[i]] %in% sel.comps)
     ##
-    res$Comp.fixed[sel2] <- NA
-    res$seComp.fixed[sel2] <- NA
-    res$lower.Comp.fixed[sel2] <- NA
-    res$upper.Comp.fixed[sel2] <- NA
-    res$statistic.Comp.fixed[sel2] <- NA
-    res$pval.Comp.fixed[sel2] <- NA
+    res$Comp.common[sel2] <- NA
+    res$seComp.common[sel2] <- NA
+    res$lower.Comp.common[sel2] <- NA
+    res$upper.Comp.common[sel2] <- NA
+    res$statistic.Comp.common[sel2] <- NA
+    res$pval.Comp.common[sel2] <- NA
     ##
     res$Comp.random[sel2] <- NA
     res$seComp.random[sel2] <- NA
@@ -1175,6 +1177,51 @@ discomb <- function(TE, seTE,
     res$statistic.Comp.random[sel2] <- NA
     res$pval.Comp.random[sel2] <- NA
   }
+  ##
+  ## Backward compatibility
+  ##
+  res$fixed <- res$common
+  res$comb.fixed <- res$common
+  res$comb.random <- res$random
+  ##
+  res$seTE.adj.fixed <- res$seTE.adj.common
+  res$TE.nma.fixed <- res$TE.nma.common
+  res$seTE.nma.fixed <- res$seTE.nma.common
+  res$lower.nma.fixed <- res$lower.nma.common
+  res$upper.nma.fixed <- res$upper.nma.common
+  res$statistic.nma.fixed <- res$statistic.nma.common
+  res$pval.nma.fixed <- res$pval.nma.common
+  res$TE.cnma.fixed <- res$TE.cnma.common
+  res$seTE.cnma.fixed <- res$seTE.cnma.common
+  res$lower.cnma.fixed <- res$lower.cnma.common
+  res$upper.cnma.fixed <- res$upper.cnma.common
+  res$statistic.cnma.fixed <- res$statistic.cnma.common
+  res$pval.cnma.fixed <- res$pval.cnma.common
+  ##
+  res$TE.fixed <- res$TE.common
+  res$seTE.fixed <- res$seTE.common
+  res$lower.fixed <- res$lower.common
+  res$upper.fixed <- res$upper.common
+  res$statistic.fixed <- res$statistic.common
+  res$pval.fixed <- res$pval.common
+  ##
+  res$Comp.fixed <- res$Comp.common
+  res$seComp.fixed <- res$seComp.common
+  res$lower.Comp.fixed <- res$lower.Comp.common
+  res$upper.Comp.fixed <- res$upper.Comp.common
+  res$statistic.Comp.fixed <- res$statistic.Comp.common
+  res$pval.Comp.fixed <- res$pval.Comp.common
+  ##
+  res$Comb.fixed <- res$Comb.common
+  res$seComb.fixed <- res$seComb.common
+  res$lower.Comb.fixed <- res$lower.Comb.common
+  res$upper.Comb.fixed <- res$upper.Comb.common
+  res$statistic.Comb.fixed <- res$statistic.Comb.common
+  res$pval.Comb.fixed <- res$pval.Comb.common
+  ##
+  res$L.matrix.fixed <- res$L.matrix.common
+  res$Lplus.matrix.fixed <- res$Lplus.matrix.common
+  res$H.matrix.fixed <- res$H.matrix.common        
   ##
   class(res) <- c("discomb", "netcomb")
   

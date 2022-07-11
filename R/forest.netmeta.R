@@ -8,7 +8,7 @@
 #' 
 #' @param x An object of class \code{netmeta}.
 #' @param pooled A character string indicating whether results for the
-#'   common (\code{"fixed"}) or random effects model (\code{"random"})
+#'   common (\code{"common"}) or random effects model (\code{"random"})
 #'   should be plotted. Can be abbreviated.
 #' @param reference.group Reference treatment(s).
 #' @param baseline.reference A logical indicating whether results
@@ -137,7 +137,7 @@
 #' # Random effects effect model
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", fixed = FALSE)
+#'   data = Senn2013, sm = "MD", common = FALSE)
 #' 
 #' forest(net2, xlim = c(-1.5, 1), ref = "plac",
 #'   xlab = "HbA1c difference")
@@ -182,7 +182,7 @@
 
 
 forest.netmeta <- function(x,
-                           pooled = ifelse(x$random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "common"),
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
                            labels = x$trts,
@@ -218,7 +218,8 @@ forest.netmeta <- function(x,
   ##
   is.bin <- inherits(x, "netmetabin")
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   ##
   chklogical(equal.size)
   ##
@@ -260,7 +261,7 @@ forest.netmeta <- function(x,
                "TE", "seTE",
                "time.e", "time.c",
                "effect", "ci", "effect.ci",
-               "w.fixed", "w.random")
+               "w.common", "w.random")
   ##
   if (missing(leftlabs)) {
     leftlabs <- leftcols
@@ -320,20 +321,20 @@ forest.netmeta <- function(x,
   ##
   reference.group <- setref(reference.group, trts, length = 0)
   ##
-  if (pooled == "fixed") {
-    TE   <- x$TE.fixed
-    seTE <- x$seTE.fixed
+  if (pooled == "common") {
+    TE   <- x$TE.common
+    seTE <- x$seTE.common
     ##
-    prop.direct <- x$P.fixed
+    prop.direct <- x$P.common
     ##
     if (calcPscore)
       Pscore <- netrank(x, small.values = small.values,
-                        method = "P-score")$ranking.fixed
+                        method = "P-score")$ranking.common
     if (calcSUCRA) {
-      x$fixed <- TRUE
+      x$common <- TRUE
       x$random <- FALSE
       SUCRA <- netrank(x, small.values = small.values,
-                       method = "SUCRA", nsim = nsim)$ranking.fixed
+                       method = "SUCRA", nsim = nsim)$ranking.common
     }
     ##
     text.pooled <- "Common Effects Model"
@@ -355,7 +356,7 @@ forest.netmeta <- function(x,
       Pscore <- netrank(x, small.values = small.values,
                         method = "P-score")$ranking.random
     if (calcSUCRA) {
-      x$fixed <- FALSE
+      x$common <- FALSE
       x$random <- TRUE
       SUCRA <- netrank(x, small.values = small.values,
                        method = "SUCRA", nsim = nsim)$ranking.random
@@ -571,7 +572,7 @@ forest.netmeta <- function(x,
   ##
   forest(m1,
          digits = digits,
-         overall = FALSE, fixed = FALSE, random = FALSE,
+         overall = FALSE, common = FALSE, random = FALSE,
          hetstat = FALSE, test.subgroup = FALSE,
          leftcols = leftcols,
          leftlabs = leftlabs,

@@ -6,7 +6,7 @@
 #' @param x An object of class \code{summary.netmeta}.
 #' @param sortvar An optional vector used to sort individual studies
 #'   (must be of same length as \code{x$TE}).
-#' @param fixed A logical indicating whether results for the common
+#' @param common A logical indicating whether results for the common
 #'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
@@ -99,7 +99,7 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", fixed = FALSE, ref = "plac")
+#'   data = Senn2013, sm = "MD", common = FALSE, ref = "plac")
 #' print(summary(net2), digits = 3)
 #' }
 #' 
@@ -109,7 +109,7 @@
 
 print.summary.netmeta <- function(x,
                                   sortvar,
-                                  fixed = x$x$fixed,
+                                  common = x$x$common,
                                   random = x$x$random,
                                   prediction = x$prediction,
                                   reference.group = x$reference.group,
@@ -220,9 +220,12 @@ print.summary.netmeta <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
                       warn.deprecated)
-  chklogical(fixed)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -276,7 +279,7 @@ print.summary.netmeta <- function(x,
     if (details) {
       multiarm <- any(x$x$narms > 2)
       cat(paste("Original data",
-                ifelse(multiarm & (fixed | random),
+                ifelse(multiarm & (common | random),
                        paste(" (with adjusted standard errors for",
                              "multi-arm studies)"),
                        ""),
@@ -290,16 +293,16 @@ print.summary.netmeta <- function(x,
                                        big.mark = big.mark))
       ##
       if (multiarm) {
-        if (is.null(x$x$seTE.adj.fixed))
+        if (is.null(x$x$seTE.adj.common))
           seTE.adj <- x$x$seTE.adj
         else
-          seTE.adj <- x$x$seTE.adj.fixed
+          seTE.adj <- x$x$seTE.adj.common
         ##
-        if (fixed & random & !is.null(x$x$seTE.adj.random)) {
+        if (common & random & !is.null(x$x$seTE.adj.random)) {
           res$seTE.adj.f <- format(round(seTE.adj, digits.se))
           res$seTE.adj.r <- format(round(x$x$seTE.adj.random, digits.se))
         }
-        else if (fixed)
+        else if (common)
           res$seTE.adj <- format(round(seTE.adj, digits.se))
         else if (random & !is.null(x$x$seTE.adj.random))
           res$seTE.adj <- format(round(x$x$seTE.adj.random, digits.se))
@@ -341,9 +344,9 @@ print.summary.netmeta <- function(x,
     ## (5) Print results for individual studies
     ##
     ##
-    TE.f    <- x$comparison.nma.fixed$TE
-    lowTE.f <- x$comparison.nma.fixed$lower
-    uppTE.f <- x$comparison.nma.fixed$upper
+    TE.f    <- x$comparison.nma.common$TE
+    lowTE.f <- x$comparison.nma.common$lower
+    uppTE.f <- x$comparison.nma.common$upper
     ##
     if (backtransf & is.relative.effect(sm)) {
       TE.f    <- exp(TE.f)
@@ -367,18 +370,18 @@ print.summary.netmeta <- function(x,
                                     big.mark = big.mark),
                             formatN(round(uppTE.f, digits), digits, "NA",
                                     big.mark = big.mark)),
-                   if (fixed)
-                     formatN(round(x$x$Q.fixed, digits.Q), digits.Q, "NA",
+                   if (common)
+                     formatN(round(x$x$Q.common, digits.Q), digits.Q, "NA",
                              big.mark = big.mark),
-                   if (fixed & !all(x$x$narms > 2))
-                     formatN(round(x$x$leverage.fixed, 2), 2, ".")
+                   if (common & !all(x$x$narms > 2))
+                     formatN(round(x$x$leverage.common, 2), 2, ".")
                    )
     dimnames(res.f) <-
       list(treats(x$x$studlab, nchar.studlab),
            c("treat1", "treat2",
              sm.lab, ci.lab,
-             if (fixed) "Q",
-             if (fixed & !all(x$x$narms > 2)) "leverage"))
+             if (common) "Q",
+             if (common & !all(x$x$narms > 2)) "leverage"))
     ##
     res.r <- cbind(treat1, treat2,
                    formatN(TE.r, digits, text.NA = "NA", big.mark = big.mark),
@@ -390,7 +393,7 @@ print.summary.netmeta <- function(x,
       list(treats(x$x$studlab, nchar.studlab),
            c("treat1", "treat2", sm.lab, ci.lab))
     ##
-    if (fixed) {
+    if (common) {
       cat("Results (common effects model):\n\n")
       ##
       if (!missing.truncate)
@@ -425,7 +428,7 @@ print.summary.netmeta <- function(x,
   ##  
   if (nma) {
     print.netmeta(x$x,
-                  fixed = fixed, random = random,
+                  common = common, random = random,
                   prediction = prediction,
                   backtransf = backtransf,
                   reference.group = reference.group,

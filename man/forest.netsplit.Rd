@@ -7,7 +7,7 @@
 \usage{
 \method{forest}{netsplit}(
   x,
-  pooled = ifelse(x$x$random, "random", "fixed"),
+  pooled = ifelse(x$x$random, "random", "common"),
   show = "both",
   subgroup = "comparison",
   overall = TRUE,
@@ -49,7 +49,7 @@
 \item{x}{An object of class \code{netsplit}.}
 
 \item{pooled}{A character string indicating whether results for the
-common (\code{"fixed"}) or random effects model (\code{"random"})
+common (\code{"common"}) or random effects model (\code{"random"})
 should be plotted. Can be abbreviated.}
 
 \item{show}{A character string indicating which comparisons should
@@ -202,7 +202,7 @@ studies <- unique(Senn2013$studlab)
 Senn2013.5 <- subset(Senn2013, studlab \%in\% studies[1:5])
 
 net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-  studlab, data = Senn2013.5, fixed = FALSE)
+  studlab, data = Senn2013.5, common = FALSE)
 #
 ns1 <- netsplit(net1)
 

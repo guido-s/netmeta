@@ -95,7 +95,7 @@ netgraph.netimpact <- function(x,
   comparison <- paste(treat1, sep = sep.trts, treat2)
   
   
-  comparisons <- names(x$x$prop.direct.fixed)
+  comparisons <- names(x$x$prop.direct.common)
   studies <- x$x$studies
   narms <- x$x$narms
   ##  

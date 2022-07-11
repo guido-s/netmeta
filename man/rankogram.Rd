@@ -8,7 +8,7 @@
 rankogram(
   x,
   nsim = 1000,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   small.values = x$small.values,
   cumulative.rankprob = FALSE,
@@ -19,7 +19,7 @@ rankogram(
 
 \method{print}{rankogram}(
   x,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   cumulative.rankprob = x$cumulative.rankprob,
   nchar.trts = x$nchar.trts,
@@ -34,7 +34,7 @@ rankogram(
 
 \item{nsim}{Number of simulations.}
 
-\item{fixed}{A logical indicating to compute ranking probabilities
+\item{common}{A logical indicating to compute ranking probabilities
 and SUCRAs for the common effects model.}
 
 \item{random}{A logical indicating to compute ranking probabilities
@@ -65,21 +65,21 @@ printed.}
 An object of class \code{rankogram} with corresponding \code{print}
 and \code{plot} function. The object is a list containing the
 following components:
-\item{ranking.matrix.fixed}{Numeric matrix giving the probability
+\item{ranking.matrix.common}{Numeric matrix giving the probability
   of each treatment being at each possible rank for the common
   effects model.}
-\item{ranking.fixed}{SUCRA values for the common effects model.}
+\item{ranking.common}{SUCRA values for the common effects model.}
 \item{ranking.matrix.random}{Numeric matrix giving the probability
   of each treatment being at each possible rank for the random
   effects model.}
 \item{ranking.random}{SUCRA values for the random effects model.}
-\item{cumrank.matrix.fixed}{Numeric matrix giving the cumulative
+\item{cumrank.matrix.common}{Numeric matrix giving the cumulative
   ranking probability of each treatment for the
   common effects model.}
 \item{cumrank.matrix.random}{Numeric matrix giving the cumulative
   ranking probability of each treatment for the random effects
   model.}
-\item{nsim, fixed, random}{As defined above},
+\item{nsim, common, random}{As defined above},
 \item{small.values, x}{As defined above},
 }
 \description{

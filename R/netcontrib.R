@@ -15,7 +15,7 @@
 #' @param hatmatrix.F1000 A logical indicating whether hat matrix
 #'   given in F1000 article should be used for \code{method =
 #'   "shortestpath"}.
-#' @param fixed A logical indicating whether a contribution matrix
+#' @param common A logical indicating whether a contribution matrix
 #'   should be printed for the common effects network meta-analysis.
 #' @param random A logical indicating whether a contribution matrix
 #'   should be printed for the random effects network meta-analysis.
@@ -113,14 +113,14 @@
 #' An object of class \code{netcontrib} with corresponding
 #' \code{print} function. The object is a list containing the
 #' following components:
-#' \item{fixed}{Numeric matrix of percentage contributions of direct
+#' \item{common}{Numeric matrix of percentage contributions of direct
 #'   comparisons for each network comparison for the common effects
 #'   model.}
 #' \item{random}{Numeric matrix of percentage contributions of direct
 #'   comparisons for each network comparison for the random effects
 #'   model.}
 #' \item{x}{As defined above.}
-#' \item{tictoc.fixed}{Computation times under common effects model
+#' \item{tictoc.common}{Computation times under common effects model
 #'   (if R package \bold{tictoc} is installed).}
 #' \item{tictoc.random}{Computation times under random effects model
 #'   (if R package \bold{tictoc} is installed).}
@@ -167,7 +167,7 @@
 netcontrib <- function(x,
                        method = "shortestpath",
                        hatmatrix.F1000 = FALSE,
-                       fixed = x$fixed,
+                       common = x$common,
                        random = x$random,
                        nchar.trts = x$nchar.trts,
                        warn.deprecated = gs("warn.deprecated"),
@@ -205,9 +205,12 @@ netcontrib <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -219,13 +222,13 @@ netcontrib <- function(x,
   ## (3) Create netcontrib object
   ##
   ##
-  x$fixed <- fixed
+  x$common <- common
   x$random <- random
   ##
-  cm.f <- contribution.matrix(x, method, "fixed", hatmatrix.F1000, verbose)
+  cm.f <- contribution.matrix(x, method, "common", hatmatrix.F1000, verbose)
   cm.r <- contribution.matrix(x, method, "random", hatmatrix.F1000, verbose)
   ##
-  res <- list(fixed = cm.f$weights,
+  res <- list(common = cm.f$weights,
               random = cm.r$weights,
               method = method,
               hatmatrix.F1000 = hatmatrix.F1000,
@@ -235,9 +238,15 @@ netcontrib <- function(x,
               )
   ##
   if (!is.null(cm.f$tictoc))
-    res$tictoc.fixed <- cm.f$tictoc
+    res$tictoc.common <- cm.f$tictoc
   if (!is.null(cm.r$tictoc))
     res$tictoc.random <- cm.r$tictoc
+  ##
+  ## Backward compatibility
+  ##
+  res$fixed <- res$common
+  if (!is.null(res$tictoc.common))
+    res$tictoc.fixed <- res$tictoc.common
   ##
   class(res) <- "netcontrib"
   ##
@@ -256,7 +265,7 @@ netcontrib <- function(x,
 
 
 print.netcontrib <- function(x,
-                             fixed = x$x$fixed,
+                             common = x$x$common,
                              random = x$x$random,
                              digits = 4,
                              nchar.trts = x$nchar.trts,
@@ -286,9 +295,12 @@ print.netcontrib <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -318,13 +330,13 @@ print.netcontrib <- function(x,
   ##
   trts <- x$x$trts
   ##
-  if (fixed) {
-    rownames(x$fixed) <- comps(x$fixed, trts, x$x$sep.trts, nchar.trts)
-    colnames(x$fixed) <- comps(x$fixed, trts, x$x$sep.trts, nchar.trts,
-                               row = FALSE)
+  if (common) {
+    rownames(x$common) <- comps(x$common, trts, x$x$sep.trts, nchar.trts)
+    colnames(x$common) <- comps(x$common, trts, x$x$sep.trts, nchar.trts,
+                                row = FALSE)
     ##
     cat("Common effects model:\n\n")
-    prmatrix(round(x$fixed, digits))
+    prmatrix(round(x$common, digits))
     if (random)
       cat("\n")
   }
@@ -339,7 +351,7 @@ print.netcontrib <- function(x,
   ##
   ## Add legend with abbreviated treatment labels
   ##
-  legendabbr(trts, treats(trts, nchar.trts), legend & (fixed | random))
+  legendabbr(trts, treats(trts, nchar.trts), legend & (common | random))
   ##
   invisible(NULL)
 }

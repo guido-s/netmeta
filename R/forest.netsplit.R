@@ -9,7 +9,7 @@
 #' 
 #' @param x An object of class \code{netsplit}.
 #' @param pooled A character string indicating whether results for the
-#'   common (\code{"fixed"}) or random effects model (\code{"random"})
+#'   common (\code{"common"}) or random effects model (\code{"random"})
 #'   should be plotted. Can be abbreviated.
 #' @param show A character string indicating which comparisons should
 #'   be printed (see Details).
@@ -130,7 +130,7 @@
 #' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
 #' 
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-#'   studlab, data = Senn2013.5, fixed = FALSE)
+#'   studlab, data = Senn2013.5, common = FALSE)
 #' #
 #' ns1 <- netsplit(net1)
 #' 
@@ -158,7 +158,7 @@
 
 
 forest.netsplit <- function(x,
-                            pooled = ifelse(x$x$random, "random", "fixed"),
+                            pooled = ifelse(x$x$random, "random", "common"),
                             show = "both",
                             ##
                             subgroup = "comparison",
@@ -213,7 +213,8 @@ forest.netsplit <- function(x,
   chkclass(x, "netsplit")
   x <- updateversion(x)
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   ##
   subgroup <- setchar(subgroup, c("comparison", "estimate"))
   ##
@@ -296,7 +297,7 @@ forest.netsplit <- function(x,
   ##
   chkchar(lab.NA)
   ##
-  if (pooled == "fixed") {
+  if (pooled == "common") {
     if (!(missing(prediction)) & prediction)
       warning("Prediction intervals not shown for estimates ",
               "from common effects model.")
@@ -411,18 +412,18 @@ forest.netsplit <- function(x,
   ## (2) Extract results for common and random effects model
   ##
   ##
-  if (pooled == "fixed") {
-    dat.direct <- x$direct.fixed
+  if (pooled == "common") {
+    dat.direct <- x$direct.common
     ##
-    dat.indirect <- x$indirect.fixed
+    dat.indirect <- x$indirect.common
     dat.indirect$Q <- dat.indirect$tau2 <-
       dat.indirect$tau <- dat.indirect$I2 <- NA
     ##
-    dat.overall <- x$fixed
+    dat.overall <- x$common
     dat.overall$Q <- dat.overall$tau2 <-
       dat.overall$tau <- dat.overall$I2 <- NA
     ##
-    dat.direct$prop <- formatPT(x$prop.fixed, digits = digits.prop)
+    dat.direct$prop <- formatPT(x$prop.common, digits = digits.prop)
     dat.indirect$prop <- NA
     dat.overall$prop <- NA
     ##
@@ -536,18 +537,18 @@ forest.netsplit <- function(x,
   ##
   ##
   if (show == "all")
-    sel <- rep_len(TRUE, length(x$direct.fixed$TE))
+    sel <- rep_len(TRUE, length(x$direct.common$TE))
   else if (show == "with.direct")
-    sel <- (!is.na(x$direct.fixed$TE) & !is.na(x$direct.random$TE))
+    sel <- (!is.na(x$direct.common$TE) & !is.na(x$direct.random$TE))
   else if (show == "both")
-    sel <- (!is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
+    sel <- (!is.na(x$direct.common$TE)  & !is.na(x$indirect.common$TE) &
             !is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
   else if (show == "direct.only")
-    sel <- (!is.na(x$direct.fixed$TE)  & is.na(x$indirect.fixed$TE) &
+    sel <- (!is.na(x$direct.common$TE)  & is.na(x$indirect.common$TE) &
             !is.na(x$direct.random$TE) & is.na(x$indirect.random$TE))
   else if (show == "indirect.only")
-    sel <- (is.na(x$direct.fixed$TE)  & !is.na(x$indirect.fixed$TE) &
-             is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
+    sel <- (is.na(x$direct.common$TE)  & !is.na(x$indirect.common$TE) &
+            is.na(x$direct.random$TE) & !is.na(x$indirect.random$TE))
   ##
   if (only.reference) {
     if (x$reference.group == "") {
@@ -620,7 +621,7 @@ forest.netsplit <- function(x,
                                  method.tau = "DL", method.tau.ci = ""))
     ##
     if (overall) {
-      m$w.fixed[m$studlab == text.overall] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.common[m$studlab == text.overall] <- max(m$w.common, na.rm = TRUE)
       m$w.random[m$studlab == text.overall] <- max(m$w.random, na.rm = TRUE)
     }
     ##
@@ -628,13 +629,13 @@ forest.netsplit <- function(x,
       m$lower[m$studlab == text.predict] <- dat.predict$lower
       m$upper[m$studlab == text.predict] <- dat.predict$upper
       ##
-      m$w.fixed[m$studlab == text.predict] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.common[m$studlab == text.predict] <- max(m$w.common, na.rm = TRUE)
       m$w.random[m$studlab == text.predict] <- max(m$w.random, na.rm = TRUE)
     }
     ##
     forest(m,
            digits = digits,
-           fixed = FALSE, random = FALSE,
+           common = FALSE, random = FALSE,
            hetstat = FALSE, test.subgroup = FALSE,
            leftcols = leftcols,
            leftlabs = leftlabs,
@@ -646,7 +647,7 @@ forest.netsplit <- function(x,
            type.study = dat$type.study,
            col.square = dat$col.estimate,
            col.square.lines = dat$col.lines,
-           weight.study = if (equal.size) "same" else "fixed",
+           weight.study = if (equal.size) "same" else "common",
            ...)
   }
   else {
@@ -677,7 +678,7 @@ forest.netsplit <- function(x,
                                  method.tau = "DL", method.tau.ci = ""))
     ##
     if (overall) {
-      m$w.fixed[m$byvar == text.overall] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.common[m$byvar == text.overall] <- max(m$w.common, na.rm = TRUE)
       m$w.random[m$byvar == text.overall] <- max(m$w.random, na.rm = TRUE)
     }
     ##
@@ -685,13 +686,13 @@ forest.netsplit <- function(x,
       m$lower[m$byvar == text.predict] <- dat.predict$lower
       m$upper[m$byvar == text.predict] <- dat.predict$upper
       ##
-      m$w.fixed[m$byvar == text.predict] <- max(m$w.fixed, na.rm = TRUE)
+      m$w.common[m$byvar == text.predict] <- max(m$w.common, na.rm = TRUE)
       m$w.random[m$byvar == text.predict] <- max(m$w.random, na.rm = TRUE)
     }
     ##
     forest(m,
            digits = digits,
-           fixed = FALSE, random = FALSE,
+           common = FALSE, random = FALSE,
            overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
            leftcols = leftcols,
            leftlabs = leftlabs,
@@ -703,7 +704,7 @@ forest.netsplit <- function(x,
            type.study = dat$type.study,
            col.square = dat$col.estimate,
            col.square.lines = dat$col.lines,
-           weight.study = if (equal.size) "same" else "fixed",
+           weight.study = if (equal.size) "same" else "common",
            ...)
   }
 
@@ -716,7 +717,7 @@ forest.netsplit <- function(x,
               lab.NA = lab.NA,
               backtransf = backtransf,
               smlab = smlab,
-              weight.study = if (equal.size) "same" else "fixed",
+              weight.study = if (equal.size) "same" else "common",
               ##
               args = list(
                 pooled = pooled,
@@ -747,7 +748,7 @@ forest.netsplit <- function(x,
                 digits.prop = digits.prop)
               )
 
-              
+  
   invisible(res)
 }
 

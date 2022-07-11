@@ -10,7 +10,7 @@ netrank(
   small.values = x$small.values,
   method,
   nsim,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   warn.deprecated = gs("warn.deprecated"),
   ...
@@ -18,7 +18,7 @@ netrank(
 
 \method{print}{netrank}(
   x,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   sort = TRUE,
   digits = gs("digits.prop"),
@@ -39,7 +39,7 @@ calculated.}
 
 \item{nsim}{Number of simulations to calculate SUCRAs.}
 
-\item{fixed}{A logical indicating whether to print P-scores or
+\item{common}{A logical indicating whether to print P-scores or
 SUCRAs for the common effects model.}
 
 \item{random}{A logical indicating whether to print P-scores or
@@ -60,9 +60,9 @@ by decreasing P-score.}
 \value{
 An object of class \code{netrank} with corresponding \code{print}
 function. The object is a list containing the following components:
-\item{ranking.fixed}{A named numeric vector with P-scores or SUCRAs
+\item{ranking.common}{A named numeric vector with P-scores or SUCRAs
   for the common effects model.}
-\item{Pmatrix.fixed}{Numeric matrix based on pairwise one-sided
+\item{Pmatrix.common}{Numeric matrix based on pairwise one-sided
   p-values for the common effects model.}
 \item{ranking.random}{A named numeric vector with P-scores or
   SUCRAs for the random effects model.}
@@ -122,7 +122,7 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 
 nr2 <- netrank(net2)
 nr2
-print(nr2, sort = "fixed")
+print(nr2, sort = "common")
 print(nr2, sort = FALSE)
 }
 
@@ -132,7 +132,7 @@ net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
 
 nr3 <- netrank(net3, method = "SUCRA", nsim = 100)
 nr3
-print(nr3, sort = "fixed")
+print(nr3, sort = "common")
 print(nr3, sort = FALSE)
 }
 

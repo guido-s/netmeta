@@ -1,11 +1,11 @@
-mat2dat.table <- function(x, pooled = "fixed", dat.trts,
+mat2dat.table <- function(x, pooled = "common", dat.trts,
                           backtransf,
                           digits, digits.I2, digits.pval,
                           scientific.pval, zero.pval, JAMA.pval,
                           big.mark, text.NA,
                           writexl) {
   
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random"))
   ##
   name.n <- paste0("nma.", pooled)
   name.d <- paste0("direct.", pooled)

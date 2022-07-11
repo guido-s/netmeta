@@ -4,7 +4,7 @@
 #' Print method for objects of class \code{netimpact}.
 #' 
 #' @param x An object of class \code{netimpact}.
-#' @param fixed A logical indicating whether results for the common
+#' @param common A logical indicating whether results for the common
 #'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
@@ -42,7 +42,7 @@
 
 
 print.netimpact <- function(x,
-                            fixed = x$x$fixed,
+                            common = x$x$common,
                             random = x$x$random,
                             digits = gs("digits.prop"),
                             ##
@@ -73,9 +73,12 @@ print.netimpact <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
                       warn.deprecated)
-  chklogical(fixed)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -89,7 +92,7 @@ print.netimpact <- function(x,
   ##
   sep.trts <- x$x$sep.trts
   ##
-  cn <- colnames(x$impact.fixed)
+  cn <- colnames(x$impact.common)
   mat <- matrix(unlist(strsplit(cn, split = sep.trts)),
                 ncol = 2, byrow = TRUE)
   treat1.long <- mat[, 1]
@@ -108,12 +111,12 @@ print.netimpact <- function(x,
   ## (4) Print results
   ##
   ##
-  if (fixed) {
+  if (common) {
     cat("Common effects model: \n\n")
-    impact.fixed <- formatN(x$impact.fixed, digits = digits)
-    colnames(impact.fixed) <- paste(treat1, treat2, sep = sep.trts)
+    impact.common <- formatN(x$impact.common, digits = digits)
+    colnames(impact.common) <- paste(treat1, treat2, sep = sep.trts)
     ##
-    prmatrix(impact.fixed, quote = FALSE, right = TRUE)
+    prmatrix(impact.common, quote = FALSE, right = TRUE)
     if (random)
       cat("\n")
   }
@@ -130,7 +133,7 @@ print.netimpact <- function(x,
   ##
   ## Add legend with abbreviated treatment labels
   ##
-  if (fixed | random)
+  if (common | random)
     legendabbr(trts, treats(trts, x$x$nchar.trts), legend)
   
   

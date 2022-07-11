@@ -111,7 +111,7 @@ text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex = 0.8)
 # treatment 'plac', i.e. placebo
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", reference = "plac", fixed = FALSE)
+  data = Senn2013, sm = "MD", reference = "plac", common = FALSE)
 
 # Calculate measures based on a random effects model
 #                          

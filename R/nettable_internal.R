@@ -55,15 +55,15 @@ nettable_internal <- function(x, method,
   
   ##
   ##
-  ## (4) Change order of prop.direct.fixed and prop.direct.random
+  ## (4) Change order of prop.direct.common and prop.direct.random
   ##
   ##
   if (!(is.bin & method == "SIDDE")) {
-    prop.fixed <- sortprop(x$prop.direct.fixed, dat.trts, x$sep.trts)
+    prop.common <- sortprop(x$prop.direct.common, dat.trts, x$sep.trts)
     prop.random <- sortprop(x$prop.direct.random, dat.trts, x$sep.trts)
   }
   else
-    prop.fixed <- prop.random <- NULL
+    prop.common <- prop.random <- NULL
   
   
   ##
@@ -76,8 +76,8 @@ nettable_internal <- function(x, method,
   if (method == "SIDDE") {
     sid <- sidde(x.direct.indirect, x$sep.trts, verbose, warn, FALSE)
     ##    
-    x.direct.indirect$TE.indirect.fixed <- sid$TE.indirect.fixed
-    x.direct.indirect$seTE.indirect.fixed <- sid$seTE.indirect.fixed
+    x.direct.indirect$TE.indirect.common <- sid$TE.indirect.common
+    x.direct.indirect$seTE.indirect.common <- sid$seTE.indirect.common
     ##
     if (!is.bin) {
       x.direct.indirect$TE.indirect.random <- sid$TE.indirect.random
@@ -93,12 +93,12 @@ nettable_internal <- function(x, method,
   ## (6) Transform matrices to data frames
   ##
   ##
-  fixed <- mat2dat.table(direct.indirect, "fixed", dat.trts,
-                         backtransf,
-                         digits, digits.I2, digits.pval,
-                         scientific.pval, zero.pval, JAMA.pval,
-                         big.mark, text.NA,
-                         writexl)
+  common <- mat2dat.table(direct.indirect, "common", dat.trts,
+                          backtransf,
+                          digits, digits.I2, digits.pval,
+                          scientific.pval, zero.pval, JAMA.pval,
+                          big.mark, text.NA,
+                          writexl)
   ##
   random <- mat2dat.table(direct.indirect, "random", dat.trts,
                           backtransf,
@@ -108,7 +108,7 @@ nettable_internal <- function(x, method,
                           writexl)
   
   
-  res <- list(fixed = fixed, random = random)
+  res <- list(common = common, random = random)
   ##
   res
 }

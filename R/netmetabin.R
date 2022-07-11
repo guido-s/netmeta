@@ -47,7 +47,7 @@
 #'   individual studies.
 #' @param level.ma The level used to calculate confidence intervals
 #'   for network estimates.
-#' @param fixed A logical indicating whether a common effects network
+#' @param common A logical indicating whether a common effects network
 #'   meta-analysis should be conducted.
 #' @param random A logical indicating whether a random effects network
 #'   meta-analysis should be conducted.
@@ -146,12 +146,12 @@
 #' 
 #' For \code{method = "Inverse"}, both common and random effects
 #' models are calculated regardless of values choosen for arguments
-#' \code{fixed} and \code{random}. Accordingly, the network estimates
+#' \code{common} and \code{random}. Accordingly, the network estimates
 #' for the random effects model can be extracted from component
 #' \code{TE.random} of an object of class \code{"netmeta"} even if
 #' argument \code{random = FALSE}.  However, all functions in R
 #' package \bold{netmeta} will adequately consider the values for
-#' \code{fixed} and \code{random}. E.g. function
+#' \code{common} and \code{random}. E.g. function
 #' \code{\link{print.summary.netmeta}} will not print results for the
 #' random effects model if \code{random = FALSE}.
 #' 
@@ -173,7 +173,7 @@
 #' Names of treatment comparisons are created by concatenating
 #' treatment labels of pairwise comparisons using \code{sep.trts} as
 #' separator (see \code{\link{paste}}). These comparison names are
-#' used in the covariance matrices \code{Cov.fixed} and
+#' used in the covariance matrices \code{Cov.common} and
 #' \code{Cov.random} and in some R functions, e.g,
 #' \code{\link{decomp.design}}. By default, a colon is used as the
 #' separator. If any treatment label contains a colon the following
@@ -208,13 +208,13 @@
 #' \item{designs}{Unique list of designs present in the network. A
 #'   design corresponds to the set of treatments compared within a
 #'   study.}
-#' \item{TE.fixed, seTE.fixed}{\emph{n}x\emph{n} matrix with estimated
+#' \item{TE.common, seTE.common}{\emph{n}x\emph{n} matrix with estimated
 #'   overall treatment effects and standard errors for common effects
 #'   model.}
-#' \item{lower.fixed, upper.fixed}{\emph{n}x\emph{n} matrices with
+#' \item{lower.common, upper.common}{\emph{n}x\emph{n} matrices with
 #'   lower and upper confidence interval limits for common effects
 #'   model.}
-#' \item{statistic.fixed, pval.fixed}{\emph{n}x\emph{n} matrices with
+#' \item{statistic.common, pval.common}{\emph{n}x\emph{n} matrices with
 #'   z-value and p-value for test of overall treatment effect under
 #'   common effects model.}
 #' \item{TE.random, seTE.random}{\emph{n}x\emph{n} matrix with
@@ -228,13 +228,13 @@
 #'   with z-value and p-value for test of overall treatment effect
 #'   under random effects model (only available if \code{method =
 #'   "Inverse"}).}
-#' \item{TE.direct.fixed, seTE.direct.fixed}{\emph{n}x\emph{n} matrix
+#' \item{TE.direct.common, seTE.direct.common}{\emph{n}x\emph{n} matrix
 #'   with estimated treatment effects and standard errors from direct
 #'   evidence under common effects model.}
-#' \item{lower.direct.fixed, upper.direct.fixed}{\emph{n}x\emph{n}
+#' \item{lower.direct.common, upper.direct.common}{\emph{n}x\emph{n}
 #'   matrices with lower and upper confidence interval limits from
 #'   direct evidence under common effects model.}
-#' \item{statistic.direct.fixed, pval.direct.fixed}{\emph{n}x\emph{n}
+#' \item{statistic.direct.common, pval.direct.common}{\emph{n}x\emph{n}
 #'   matrices with z-value and p-value for test of overall treatment
 #'   effect from direct evidence under common effects model.}
 #' \item{TE.direct.random, seTE.direct.random}{\emph{n}x\emph{n}
@@ -279,7 +279,7 @@
 #' \item{sm, method, level, level.ma}{As defined above.}
 #' \item{incr, allincr, addincr, allstudies, cc.pooled}{As defined
 #'   above.}
-#' \item{fixed, random}{As defined above.}
+#' \item{common, random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
 #' \item{reference.group, baseline.reference, all.treatments}{As
 #'   defined above.}
@@ -384,7 +384,7 @@ netmetabin <- function(event1, n1, event2, n2,
                        incr, allincr, addincr, allstudies,
                        level = gs("level"),
                        level.ma = gs("level.ma"),
-                       fixed = gs("fixed"),
+                       common = gs("common"),
                        random = method == "Inverse" &
                          (gs("random") | !is.null(tau.preset)),
                        ##
@@ -442,20 +442,22 @@ netmetabin <- function(event1, n1, event2, n2,
                          warn.deprecated)
   chklevel(level.ma)
   ##
-  missing.fixed <- missing(fixed)
-  fixed <- deprecated(fixed, missing.fixed, args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
   ##
-  if (method != "Inverse" & !fixed) {
-    warning("Argument 'fixed' set to TRUE for Mantel-Haenszel ",
+  if (method != "Inverse" & !common) {
+    warning("Argument 'common' set to TRUE for Mantel-Haenszel ",
             "method and non-central hypergeometric distribution.",
             call. = FALSE)
-    fixed <- TRUE
+    common <- TRUE
   }
   ##
   if (method != "Inverse" & random) {
@@ -1225,8 +1227,8 @@ netmetabin <- function(event1, n1, event2, n2,
   NAmatrix <- matrix(NA, nrow = n.treat, ncol = n.treat)
   rownames(NAmatrix) <- colnames(NAmatrix) <- trts
   ##
-  TE.fixed <- seTE.fixed <- NAmatrix
-  TE.direct.fixed <- seTE.direct.fixed <- NAmatrix
+  TE.common <- seTE.common <- NAmatrix
+  TE.direct.common <- seTE.direct.common <- NAmatrix
   Q.direct <- tau2.direct <- I2.direct <- NAmatrix
   
   
@@ -1264,7 +1266,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   net.iv <- netmeta(p.iv,
                     level = level, level.ma = level.ma,
-                    fixed = fixed, random = random,
+                    common = common, random = random,
                     prediction = prediction, level.predict = level.predict,
                     reference.group = reference.group,
                     baseline.reference = baseline.reference,
@@ -1284,7 +1286,7 @@ netmetabin <- function(event1, n1, event2, n2,
   if (method == "Inverse")
     return(net.iv)
   else {
-    net.iv$Cov.fixed[!is.na(net.iv$Cov.fixed)] <- NA
+    net.iv$Cov.common[!is.na(net.iv$Cov.common)] <- NA
     net.iv$Cov.random[!is.na(net.iv$Cov.random)] <- NA
   }
   
@@ -1748,10 +1750,10 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   d.hat <- H %*% TE.basic
   ##
-  TE.fixed[lower.tri(TE.fixed, diag = FALSE)] <-  d.hat
-  TE.fixed <- t(TE.fixed)
-  TE.fixed[lower.tri(TE.fixed, diag = FALSE)] <- -d.hat
-  diag(TE.fixed) <- 0
+  TE.common[lower.tri(TE.common, diag = FALSE)] <-  d.hat
+  TE.common <- t(TE.common)
+  TE.common[lower.tri(TE.common, diag = FALSE)] <- -d.hat
+  diag(TE.common) <- 0
   ##
   ## Matrix with standard errors
   ##
@@ -1760,14 +1762,14 @@ netmetabin <- function(event1, n1, event2, n2,
   else
     cov.d.hat <- H %*% W %*% t(H)
   ##
-  seTE.fixed[lower.tri(seTE.fixed, diag = FALSE)] <- sqrt(diag(cov.d.hat))
-  seTE.fixed <- t(seTE.fixed)
-  seTE.fixed[lower.tri(seTE.fixed, diag = FALSE)] <- sqrt(diag(cov.d.hat))
-  diag(seTE.fixed) <- 0
+  seTE.common[lower.tri(seTE.common, diag = FALSE)] <- sqrt(diag(cov.d.hat))
+  seTE.common <- t(seTE.common)
+  seTE.common[lower.tri(seTE.common, diag = FALSE)] <- sqrt(diag(cov.d.hat))
+  diag(seTE.common) <- 0
   ##
   ## Confidence intervals
   ##
-  ci.f <- ci(TE.fixed, seTE.fixed, level = level.ma)
+  ci.f <- ci(TE.common, seTE.common, level = level.ma)
   ##
   ## Inconsistency global
   ##
@@ -1806,20 +1808,20 @@ netmetabin <- function(event1, n1, event2, n2,
                    Q.Cochrane = FALSE,
                    warn.deprecated = FALSE)
     ##
-    TE.i   <- m.i$TE.fixed
-    seTE.i <- m.i$seTE.fixed
+    TE.i   <- m.i$TE.common
+    seTE.i <- m.i$seTE.common
     Q.i <- m.i$Q
     tau2.i <- m.i$tau2
     I2.i <- m.i$I2
     ##
-    TE.direct.fixed[sel.treat1, sel.treat2]   <- TE.i
-    seTE.direct.fixed[sel.treat1, sel.treat2] <- seTE.i
+    TE.direct.common[sel.treat1, sel.treat2]   <- TE.i
+    seTE.direct.common[sel.treat1, sel.treat2] <- seTE.i
     Q.direct[sel.treat1, sel.treat2] <- Q.i
     tau2.direct[sel.treat1, sel.treat2] <- tau2.i
     I2.direct[sel.treat1, sel.treat2] <- I2.i
     ##
-    TE.direct.fixed[sel.treat2, sel.treat1]   <- -TE.i
-    seTE.direct.fixed[sel.treat2, sel.treat1] <- seTE.i
+    TE.direct.common[sel.treat2, sel.treat1]   <- -TE.i
+    seTE.direct.common[sel.treat2, sel.treat1] <- seTE.i
     Q.direct[sel.treat2, sel.treat1] <- Q.i
     tau2.direct[sel.treat2, sel.treat1] <- tau2.i
     I2.direct[sel.treat2, sel.treat1] <- I2.i
@@ -1827,7 +1829,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   rm(sel.treat1, sel.treat2, selstud, m.i, TE.i, seTE.i)
   ##
-  ci.d <- ci(TE.direct.fixed, seTE.direct.fixed, level = level.ma)
+  ci.d <- ci(TE.direct.common, seTE.direct.common, level = level.ma)
   
   
   labels <- sort(unique(c(treat1, treat2)))
@@ -1848,7 +1850,7 @@ netmetabin <- function(event1, n1, event2, n2,
               TE = data$.TE[!data$.drop],
               seTE = data$.seTE[!data$.drop],
               seTE.adj = rep(NA, sum(!data$.drop)),
-              seTE.adj.fixed = rep(NA, sum(!data$.drop)),
+              seTE.adj.common = rep(NA, sum(!data$.drop)),
               seTE.adj.random = rep(NA, sum(!data$.drop)),
               ##
               design = designs(treat1, treat2, studlab)$design,
@@ -1873,12 +1875,12 @@ netmetabin <- function(event1, n1, event2, n2,
               ##
               designs = designs,
               ##
-              TE.fixed = TE.fixed,
-              seTE.fixed = seTE.fixed,
-              lower.fixed = ci.f$lower,
-              upper.fixed = ci.f$upper,
-              statistic.fixed = ci.f$statistic,
-              pval.fixed = ci.f$p,
+              TE.common = TE.common,
+              seTE.common = seTE.common,
+              lower.common = ci.f$lower,
+              upper.common = ci.f$upper,
+              statistic.common = ci.f$statistic,
+              pval.common = ci.f$p,
               ##
               TE.random = NAmatrix,
               seTE.random = NAmatrix,
@@ -1891,15 +1893,15 @@ netmetabin <- function(event1, n1, event2, n2,
               lower.predict = NAmatrix,
               upper.predict = NAmatrix,
               ##
-              prop.direct.fixed = NA,
+              prop.direct.common = NA,
               prop.direct.random = NA,
               ##
-              TE.direct.fixed = TE.direct.fixed,
-              seTE.direct.fixed = seTE.direct.fixed,
-              lower.direct.fixed = ci.d$lower,
-              upper.direct.fixed = ci.d$upper,
-              statistic.direct.fixed = ci.d$statistic,
-              pval.direct.fixed = ci.d$p,
+              TE.direct.common = TE.direct.common,
+              seTE.direct.common = seTE.direct.common,
+              lower.direct.common = ci.d$lower,
+              upper.direct.common = ci.d$upper,
+              statistic.direct.common = ci.d$statistic,
+              pval.direct.common = ci.d$p,
               ##
               TE.direct.random = NAmatrix,
               seTE.direct.random = NAmatrix,
@@ -1913,12 +1915,12 @@ netmetabin <- function(event1, n1, event2, n2,
               tau2.direct = tau2.direct,
               I2.direct = I2.direct,
               ##
-              TE.indirect.fixed = NA,
-              seTE.indirect.fixed = NA,
-              lower.indirect.fixed = NA,
-              upper.indirect.fixed = NA,
-              statistic.indirect.fixed = NA,
-              pval.indirect.fixed = NA,
+              TE.indirect.common = NA,
+              seTE.indirect.common = NA,
+              lower.indirect.common = NA,
+              upper.indirect.common = NA,
+              statistic.indirect.common = NA,
+              pval.indirect.common = NA,
               ##
               TE.indirect.random = NA,
               seTE.indirect.random = NA,
@@ -1948,10 +1950,10 @@ netmetabin <- function(event1, n1, event2, n2,
               n.matrix = NA,
               events.matrix = NA,
               ##
-              P.fixed = NA,
+              P.common = NA,
               P.random = NA,
               ##
-              Cov.fixed = net.iv$Cov.fixed,
+              Cov.common = net.iv$Cov.common,
               Cov.random = net.iv$Cov.random,
               ##
               sm = sm,
@@ -1965,7 +1967,7 @@ netmetabin <- function(event1, n1, event2, n2,
               ##
               level = level,
               level.ma = level.ma,
-              fixed = fixed,
+              common = common,
               random = random,
               ##
               prediction = prediction,
@@ -2006,31 +2008,31 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   n <- res$n
   ##
-  res$prop.direct.fixed <-
+  res$prop.direct.common <-
     netmeasures(res, random = FALSE, warn = warn)$proportion
-  if (is.logical(res$prop.direct.fixed))
-    res$prop.direct.fixed <- as.numeric(res$prop.direct.fixed)
+  if (is.logical(res$prop.direct.common))
+    res$prop.direct.common <- as.numeric(res$prop.direct.common)
   ##
-  P.fixed <- P.random <- matrix(NA, n, n)
-  colnames(P.fixed) <- rownames(P.fixed) <-
+  P.common <- P.random <- matrix(NA, n, n)
+  colnames(P.common) <- rownames(P.common) <-
     colnames(P.random) <- rownames(P.random) <- trts
   ##
   if (n == 2) {
     ##
     ## For two treatments only direct evidence is available
     ##
-    res$prop.direct.fixed <- 1
-    names(res$prop.direct.fixed) <- paste(labels, collapse = sep.trts)
+    res$prop.direct.common <- 1
+    names(res$prop.direct.common) <- paste(labels, collapse = sep.trts)
     ##
-    sel <- row(P.fixed) != col(P.fixed)
-    P.fixed[sel] <- 1
+    sel <- row(P.common) != col(P.common)
+    P.common[sel] <- 1
   }
   else {
     k <- 0
     for (i in 1:(n - 1)) {
       for (j in (i + 1):n) {
         k <- k + 1
-        P.fixed[i, j] <- P.fixed[j, i] <- res$prop.direct.fixed[k]
+        P.common[i, j] <- P.common[j, i] <- res$prop.direct.common[k]
       }
     }
   }
@@ -2038,35 +2040,35 @@ netmetabin <- function(event1, n1, event2, n2,
   ## Set direct evidence estimates to 0 if only indirect evidence is available
   ## (otherwise indirect estimates would be NA as direct estimates are NA)
   ##
-  TE.direct.fixed <- res$TE.direct.fixed
+  TE.direct.common <- res$TE.direct.common
   ##
-  TE.direct.fixed[abs(P.fixed) < .Machine$double.eps^0.5] <- 0
+  TE.direct.common[abs(P.common) < .Machine$double.eps^0.5] <- 0
   ##
   ## Indirect estimate is NA if only direct evidence is available
   ##
-  res$P.fixed <- P.fixed
+  res$P.common <- P.common
   ##
-  P.fixed[abs(P.fixed - 1) < .Machine$double.eps^0.5] <- NA
-  P.fixed[P.fixed > 1] <- NA
+  P.common[abs(P.common - 1) < .Machine$double.eps^0.5] <- NA
+  P.common[P.common > 1] <- NA
   ##
   ## Common effects model
   ##
-  ci.if <- ci((res$TE.fixed - P.fixed * TE.direct.fixed) / (1 - P.fixed),
-              sqrt(res$seTE.fixed^2 / (1 - P.fixed)),
+  ci.if <- ci((res$TE.common - P.common * TE.direct.common) / (1 - P.common),
+              sqrt(res$seTE.common^2 / (1 - P.common)),
               level = level)
   ##
-  res$TE.indirect.fixed   <- ci.if$TE
-  res$seTE.indirect.fixed <- ci.if$seTE
+  res$TE.indirect.common   <- ci.if$TE
+  res$seTE.indirect.common <- ci.if$seTE
   ##
-  res$lower.indirect.fixed <- ci.if$lower
-  res$upper.indirect.fixed <- ci.if$upper
+  res$lower.indirect.common <- ci.if$lower
+  res$upper.indirect.common <- ci.if$upper
   ##
-  res$statistic.indirect.fixed <- ci.if$statistic
-  res$pval.indirect.fixed <- ci.if$p
+  res$statistic.indirect.common <- ci.if$statistic
+  res$pval.indirect.common <- ci.if$p
   ##
   ## No results for random effects model
   ##
-  res$prop.direct.random <- res$prop.direct.fixed
+  res$prop.direct.random <- res$prop.direct.common
   res$prop.direct.random[!is.na(res$prop.direct.random)] <- NA
   res$P.random <- P.random
   ##
@@ -2129,6 +2131,40 @@ netmetabin <- function(event1, n1, event2, n2,
   dat.e <- by(dat.e$n, dat.e$treat, sum, na.rm = TRUE)
   res$events.trts <- as.vector(dat.e[trts])
   names(res$events.trts) <- trts
+  ##
+  ## Backward compatibility
+  ##
+  res$fixed <- res$common
+  res$comb.fixed <- res$common
+  res$comb.random <- res$random
+  ##
+  res$seTE.adj.fixed <- res$seTE.adj.common
+  ##
+  res$TE.fixed <- res$TE.common
+  res$seTE.fixed <- res$seTE.common
+  res$lower.fixed <- res$lower.common
+  res$upper.fixed <- res$upper.common
+  res$statistic.fixed <- res$statistic.common
+  res$pval.fixed <- res$pval.common
+  ##
+  res$prop.direct.fixed <- res$prop.direct.common
+  ##
+  res$TE.direct.fixed <- res$TE.direct.common
+  res$seTE.direct.fixed <- res$seTE.direct.common
+  res$lower.direct.fixed <- res$lower.direct.common
+  res$upper.direct.fixed <- res$upper.direct.common
+  res$statistic.direct.fixed <- res$statistic.direct.common
+  res$pval.direct.fixed <- res$pval.direct.common
+  ##
+  res$TE.indirect.fixed <- res$TE.indirect.common
+  res$seTE.indirect.fixed <- res$seTE.indirect.common
+  res$lower.indirect.fixed <- res$lower.indirect.common
+  res$upper.indirect.fixed <- res$upper.indirect.common
+  res$statistic.indirect.fixed <- res$statistic.indirect.common
+  res$pval.indirect.fixed <- res$pval.indirect.common
+  ##
+  res$P.fixed <- res$P.common
+  res$Cov.fixed <- res$Cov.common               
   
   
   res

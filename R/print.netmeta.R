@@ -4,7 +4,7 @@
 #' Print method for objects of class \code{netmeta}.
 #' 
 #' @param x An object of class \code{netmeta}.
-#' @param fixed A logical indicating whether results for the common
+#' @param common A logical indicating whether results for the common
 #'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
@@ -66,7 +66,7 @@
 
 
 print.netmeta <- function(x,
-                          fixed = x$fixed,
+                          common = x$common,
                           random = x$random,
                           prediction = x$prediction,
                           reference.group = x$reference.group,
@@ -150,9 +150,12 @@ print.netmeta <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -189,12 +192,12 @@ print.netmeta <- function(x,
   ## (4) Set and backtransform results of meta-analysis
   ##
   ##
-  TE.fixed <- x$TE.fixed
-  seTE.fixed <- x$seTE.fixed
-  lowTE.fixed <- x$lower.fixed
-  uppTE.fixed <- x$upper.fixed
-  statistic.fixed <- replaceNULL(x$statistic.fixed, x$zval.fixed)
-  pval.fixed <- x$pval.fixed
+  TE.common <- x$TE.common
+  seTE.common <- x$seTE.common
+  lowTE.common <- x$lower.common
+  uppTE.common <- x$upper.common
+  statistic.common <- replaceNULL(x$statistic.common, x$zval.common)
+  pval.common <- x$pval.common
   ##
   TE.random <- x$TE.random
   seTE.random <- x$seTE.random
@@ -207,12 +210,12 @@ print.netmeta <- function(x,
   uppTE.predict <- x$upper.predict
   ##
   if (!is.null(x$seq)) {
-    TE.fixed <- TE.fixed[x$seq, x$seq]
-    seTE.fixed <- seTE.fixed[x$seq, x$seq]
-    lowTE.fixed <- lowTE.fixed[x$seq, x$seq]
-    uppTE.fixed <- uppTE.fixed[x$seq, x$seq]
-    statistic.fixed <- statistic.fixed[x$seq, x$seq]
-    pval.fixed <- pval.fixed[x$seq, x$seq]
+    TE.common <- TE.common[x$seq, x$seq]
+    seTE.common <- seTE.common[x$seq, x$seq]
+    lowTE.common <- lowTE.common[x$seq, x$seq]
+    uppTE.common <- uppTE.common[x$seq, x$seq]
+    statistic.common <- statistic.common[x$seq, x$seq]
+    pval.common <- pval.common[x$seq, x$seq]
     ##
     if (!all(is.na(TE.random))) {
       TE.random <- TE.random[x$seq, x$seq]
@@ -232,9 +235,9 @@ print.netmeta <- function(x,
   if (backtransf & is.relative.effect(sm)) {
     noeffect <- 1
     ##
-    TE.fixed    <- exp(TE.fixed)
-    lowTE.fixed <- exp(lowTE.fixed)
-    uppTE.fixed <- exp(uppTE.fixed)
+    TE.common    <- exp(TE.common)
+    lowTE.common <- exp(lowTE.common)
+    uppTE.common <- exp(uppTE.common)
     ##
     TE.random    <- exp(TE.random)
     lowTE.random <- exp(lowTE.random)
@@ -246,10 +249,10 @@ print.netmeta <- function(x,
     }
   }
   ##
-  TE.fixed <- round(TE.fixed, digits)
-  lowTE.fixed <- round(lowTE.fixed, digits)
-  uppTE.fixed <- round(uppTE.fixed, digits)
-  statistic.fixed <- round(statistic.fixed, digits.stat)
+  TE.common <- round(TE.common, digits)
+  lowTE.common <- round(lowTE.common, digits)
+  uppTE.common <- round(uppTE.common, digits)
+  statistic.common <- round(statistic.common, digits.stat)
   ##
   TE.random    <- round(TE.random, digits)
   lowTE.random <- round(lowTE.random, digits)
@@ -278,9 +281,9 @@ print.netmeta <- function(x,
     all.treatments <- FALSE
   ##
   if (reference.group != "")
-    reference.group <- setref(reference.group, rownames(TE.fixed))
+    reference.group <- setref(reference.group, rownames(TE.common))
   ##  
-  if (fixed | random) {
+  if (common | random) {
     cat(paste("Number of studies: k = ", k, "\n", sep = ""))
     cat(paste0("Number of pairwise comparisons: m = ", m, "\n"))
     if (!is.null(x$n.trts))
@@ -296,76 +299,76 @@ print.netmeta <- function(x,
         comptext <- paste("comparison: ",
                           if (x$n == 2)
                             paste("'",
-                                  treats(rownames(TE.fixed),
-                                         nchar.trts)[rownames(TE.fixed)
+                                  treats(rownames(TE.common),
+                                         nchar.trts)[rownames(TE.common)
                                                      != reference.group],
                                   "'", sep = "")
                           else
                             "other treatments",
                           " vs '",
-                          treats(rownames(TE.fixed),
-                                 nchar.trts)[rownames(TE.fixed)
+                          treats(rownames(TE.common),
+                                 nchar.trts)[rownames(TE.common)
                                              == reference.group],
                           "'", sep = "")
       else
         comptext <- paste("comparison: '",
-                          treats(rownames(TE.fixed),
-                                 nchar.trts)[rownames(TE.fixed)
+                          treats(rownames(TE.common),
+                                 nchar.trts)[rownames(TE.common)
                                              == reference.group],
                           "' vs ",
                           if (x$n == 2)
                             paste("'",
-                                  treats(rownames(TE.fixed),
-                                         nchar.trts)[rownames(TE.fixed)
+                                  treats(rownames(TE.common),
+                                         nchar.trts)[rownames(TE.common)
                                                      != reference.group],
                                   "'", sep = "")
                           else
                             "other treatments", sep = "")
     ##    
-    if (fixed) {
+    if (common) {
       if (all.treatments | reference.group != "") {
-        text.fixed <- "Common effects model"
+        text.common <- "Common effects model"
         ##
         if (x$method == "MH")
-          text.fixed <-
-            paste(text.fixed, "(Mantel-Haenszel method)")
+          text.common <-
+            paste(text.common, "(Mantel-Haenszel method)")
         else if (x$method == "NCH")
-          text.fixed <-
-            paste(text.fixed, "(Non-central hypergeometric distribution)")
+          text.common <-
+            paste(text.common, "(Non-central hypergeometric distribution)")
         ##
-        cat(paste0("\n", text.fixed, "\n"))
+        cat(paste0("\n", text.common, "\n"))
       }
       ##
       if (all.treatments) {
         cat("\nTreatment estimate (sm = '", sm.lab, "'):\n", sep = "")
         ##
-        TEf <- formatN(TE.fixed, digits = digits)
+        TEf <- formatN(TE.common, digits = digits)
         rownames(TEf) <- treats(TEf, nchar.trts)
         colnames(TEf) <- treats(TEf, nchar.trts, FALSE)
         ##
-        if (all(diag(TE.fixed) == noeffect))
+        if (all(diag(TE.common) == noeffect))
           diag(TEf) <- "."
         ##
         prmatrix(TEf, quote = FALSE, right = TRUE)
         ##
         cat("\nLower ", 100 * x$level.ma, "%-confidence limit:\n", sep = "")
         ##
-        lowTEf <- formatN(lowTE.fixed, digits = digits)
+        lowTEf <- formatN(lowTE.common, digits = digits)
         rownames(lowTEf) <- treats(lowTEf, nchar.trts)
         colnames(lowTEf) <- treats(lowTEf, nchar.trts, FALSE)
         ##
-        if (all(diag(lowTE.fixed) == noeffect))
+        if (all(diag(lowTE.common) == noeffect))
           diag(lowTEf) <- "."
         ##
         prmatrix(lowTEf, quote = FALSE, right = TRUE)
         ##
         cat("\nUpper ", 100 * x$level.ma, "%-confidence limit:\n", sep = "")
         ##
-        uppTEf <- formatN(uppTE.fixed, digits = digits)
+        uppTEf <- formatN(uppTE.common, digits = digits)
         rownames(uppTEf) <- treats(uppTEf, nchar.trts)
         colnames(uppTEf) <- treats(uppTEf, nchar.trts, FALSE)
         ##
-        if (all(diag(uppTE.fixed) == noeffect))
+        if (all(diag(uppTE.common) == noeffect))
           diag(uppTEf) <- "."
         ##
         prmatrix(uppTEf, quote = FALSE, right = TRUE)
@@ -401,49 +404,49 @@ print.netmeta <- function(x,
         }
       }
       if (reference.group != "") {
-        if (all(colnames(TE.fixed) != reference.group))
+        if (all(colnames(TE.common) != reference.group))
           stop("Argument 'reference.group' must match any of ",
                "the following values: ",
-               paste(paste0("'", colnames(TE.fixed), "'"),
-                           collapse = " - "))
+               paste(paste0("'", colnames(TE.common), "'"),
+                     collapse = " - "))
         ##
         if (baseline.reference) {
-          TE.fixed.b <- TE.fixed[, colnames(TE.fixed) == reference.group]
-          lowTE.fixed.b <-
-            lowTE.fixed[, colnames(lowTE.fixed) == reference.group]
-          uppTE.fixed.b <-
-            uppTE.fixed[, colnames(uppTE.fixed) == reference.group]
-          statistic.fixed.b <-
-            statistic.fixed[, colnames(statistic.fixed) == reference.group]
-          pval.fixed.b <-
-            pval.fixed[, colnames(pval.fixed) == reference.group]
+          TE.common.b <- TE.common[, colnames(TE.common) == reference.group]
+          lowTE.common.b <-
+            lowTE.common[, colnames(lowTE.common) == reference.group]
+          uppTE.common.b <-
+            uppTE.common[, colnames(uppTE.common) == reference.group]
+          statistic.common.b <-
+            statistic.common[, colnames(statistic.common) == reference.group]
+          pval.common.b <-
+            pval.common[, colnames(pval.common) == reference.group]
         }
         else {
-          TE.fixed.b <- TE.fixed[rownames(TE.fixed) == reference.group, ]
-          lowTE.fixed.b <-
-            lowTE.fixed[rownames(lowTE.fixed) == reference.group, ]
-          uppTE.fixed.b <-
-            uppTE.fixed[rownames(uppTE.fixed) == reference.group, ]
-          statistic.fixed.b <-
-            statistic.fixed[rownames(statistic.fixed) == reference.group, ]
-          pval.fixed.b <-
-            pval.fixed[rownames(pval.fixed) == reference.group, ]
+          TE.common.b <- TE.common[rownames(TE.common) == reference.group, ]
+          lowTE.common.b <-
+            lowTE.common[rownames(lowTE.common) == reference.group, ]
+          uppTE.common.b <-
+            uppTE.common[rownames(uppTE.common) == reference.group, ]
+          statistic.common.b <-
+            statistic.common[rownames(statistic.common) == reference.group, ]
+          pval.common.b <-
+            pval.common[rownames(pval.common) == reference.group, ]
         }
         ##
-        res <- cbind(formatN(TE.fixed.b, digits, text.NA = "NA",
+        res <- cbind(formatN(TE.common.b, digits, text.NA = "NA",
                              big.mark = big.mark),
-                     formatCI(formatN(round(lowTE.fixed.b, digits),
+                     formatCI(formatN(round(lowTE.common.b, digits),
                                       digits, "NA", big.mark = big.mark),
-                              formatN(round(uppTE.fixed.b, digits),
+                              formatN(round(uppTE.common.b, digits),
                                       digits, "NA", big.mark = big.mark)),
-                     formatN(statistic.fixed.b, digits.stat, text.NA = "NA",
+                     formatN(statistic.common.b, digits.stat, text.NA = "NA",
                              big.mark = big.mark),
-                     formatPT(pval.fixed.b,
+                     formatPT(pval.common.b,
                               digits = digits.pval,
                               scientific = scientific.pval)
                      )
         dimnames(res) <-
-          list(colnames(TE.fixed), c(sm.lab, ci.lab, "z", "p-value"))
+          list(colnames(TE.common), c(sm.lab, ci.lab, "z", "p-value"))
         ##
         ## Add prediction interval (or not)
         ##
@@ -471,7 +474,7 @@ print.netmeta <- function(x,
           colnames(res)[ncol(res)] <- pi.lab
         }
         ##
-        if (TE.fixed.b[rownames(res) == reference.group] == noeffect)
+        if (TE.common.b[rownames(res) == reference.group] == noeffect)
           res[rownames(res) == reference.group, ] <- "."
         ##
         rownames(res) <- treats(rownames(res), nchar.trts)
@@ -743,8 +746,8 @@ print.netmeta <- function(x,
   ##
   ## Add legend with abbreviated treatment labels
   ##
-  legendabbr(unique(rownames(TE.fixed)),
-             treats(TE.fixed, nchar.trts),
+  legendabbr(unique(rownames(TE.common)),
+             treats(TE.common, nchar.trts),
              legend)
   
   

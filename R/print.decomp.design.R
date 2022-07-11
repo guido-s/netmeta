@@ -64,6 +64,7 @@ print.decomp.design <- function(x,
   
   
   chkclass(x, "decomp.design")
+  x <- updateversion(x)
   ##
   chknumeric(digits.Q, min = 0, length = 1)
   chknumeric(digits.pval.Q, min = 0, length = 1)

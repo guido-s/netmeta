@@ -9,7 +9,7 @@
 #' 
 #' @param x An object of class \code{netcomparison}.
 #' @param pooled A character string indicating whether results for the
-#'   common (\code{"fixed"}) or random effects model (\code{"random"})
+#'   common (\code{"common"}) or random effects model (\code{"random"})
 #'   should be plotted. Can be abbreviated.
 #' @param leftcols A character vector specifying (additional) columns
 #'   to be plotted on the left side of the forest plot or a logical
@@ -66,7 +66,7 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'   data = face, ref = "placebo", sm = "OR", fixed = FALSE)
+#'   data = face, ref = "placebo", sm = "OR", common = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -90,7 +90,7 @@
 
 forest.netcomparison <- function(x,
                                  pooled =
-                                   ifelse(x$random, "random", "fixed"),
+                                   ifelse(x$random, "random", "common"),
                                  leftcols = c("studlab", "treat1", "treat2"),
                                  leftlabs = c("Comparison", "Trt 1", "Trt 2"),
                                  rightcols =
@@ -114,7 +114,8 @@ forest.netcomparison <- function(x,
   ##
   chkclass(x, "netcomparison")
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   ##
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
@@ -132,11 +133,11 @@ forest.netcomparison <- function(x,
   ## (2) Extract results for common and random effects model
   ##
   ##
-  if (pooled == "fixed") {
-    TE   <- x$TE.fixed
-    seTE <- x$seTE.fixed
-    stat <- x$statistic.fixed
-    pval <- x$pval.fixed
+  if (pooled == "common") {
+    TE   <- x$TE.common
+    seTE <- x$seTE.common
+    stat <- x$statistic.common
+    pval <- x$pval.common
     ##
     if (is.null(smlab))
       smlab <- "Common Effects Model"
@@ -211,7 +212,7 @@ forest.netcomparison <- function(x,
   ##
   forest(m1,
          digits = digits,
-         fixed = FALSE, random = FALSE,
+         common = FALSE, random = FALSE,
          overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
          leftcols = leftcols,
          leftlabs = leftlabs,

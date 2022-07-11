@@ -7,7 +7,7 @@
 \method{plot}{netposet}(
   x,
   plottype = "scatter",
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   dim = "2d",
   sel.x = 1,
   sel.y = 2,
@@ -43,7 +43,7 @@ plot or biplot should be produced, either \code{"scatter"} or
 \code{"biplot"}. Can be abbreviated.}
 
 \item{pooled}{A character string indicating whether scatter plot
-should be drawn for common (\code{"fixed"}) or random effects
+should be drawn for common (\code{"common"}) or random effects
 model (\code{"random"}). Can be abbreviated.}
 
 \item{dim}{A character string indicating whether a 2- or
@@ -168,7 +168,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, fixed = FALSE,
+net1 <- netmeta(p1, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "bad")
 
 # (2) Early remission
@@ -177,7 +177,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, fixed = FALSE,
+net2 <- netmeta(p2, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "bad")
 
 # Partial order of treatment rankings
@@ -205,7 +205,7 @@ p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net3 <- netmeta(p3, fixed = FALSE,
+net3 <- netmeta(p3, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "good")
 
 # Partial order of treatment rankings (with three outcomes) 

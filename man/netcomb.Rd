@@ -9,7 +9,7 @@ netcomb(
   inactive = NULL,
   sep.comps = "+",
   C.matrix,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random | !is.null(tau.preset),
   tau.preset = NULL,
   details.chkident = FALSE,
@@ -30,7 +30,7 @@ treatment components.}
 
 \item{C.matrix}{C matrix (see Details).}
 
-\item{fixed}{A logical indicating whether a common effects network
+\item{common}{A logical indicating whether a common effects network
 meta-analysis should be conducted.}
 
 \item{random}{A logical indicating whether a random effects network
@@ -64,7 +64,7 @@ containing the following components:
 \item{TE}{Estimate of treatment effect, i.e. difference between
   first and second treatment.}
 \item{seTE}{Standard error of treatment estimate.}
-\item{seTE.adj.fixed, seTE.adj.random}{Standard error of treatment
+\item{seTE.adj.common, seTE.adj.random}{Standard error of treatment
   estimate, adjusted for multi-arm studies.}
 \item{design}{Design of study providing pairwise comparison.}
 \item{event1}{Number of events in first treatment group.}
@@ -90,90 +90,90 @@ containing the following components:
   design corresponds to the set of treatments compared within a
   study.}
 \item{comps}{Unique list of components present in the network.}
-\item{TE.nma.fixed, TE.nma.random}{A vector of length \emph{m} of
+\item{TE.nma.common, TE.nma.random}{A vector of length \emph{m} of
   consistent treatment effects estimated by network meta-analysis
   (nma) (common and random effects model).}
-\item{seTE.nma.fixed, seTE.nma.random}{A vector of length \emph{m}
+\item{seTE.nma.common, seTE.nma.random}{A vector of length \emph{m}
   of effective standard errors estimated by network meta-analysis
   (common and random effects model).}
-\item{lower.nma.fixed, lower.nma.random}{A vector of length
+\item{lower.nma.common, lower.nma.random}{A vector of length
   \emph{m} of lower confidence interval limits for consistent
   treatment effects estimated by network meta-analysis (common
   and random effects model).}
-\item{upper.nma.fixed, upper.nma.random}{A vector of length
+\item{upper.nma.common, upper.nma.random}{A vector of length
   \emph{m} of upper confidence interval limits for the consistent
   treatment effects estimated by network meta-analysis (common
   and random effects model).}
-\item{statistic.nma.fixed, statistic.nma.random}{A vector of length \emph{m}
+\item{statistic.nma.common, statistic.nma.random}{A vector of length \emph{m}
   of z-values for test of treatment effect for individual
   comparisons (common and random effects model).}
-\item{pval.nma.fixed, pval.nma.random}{A vector of length \emph{m}
+\item{pval.nma.common, pval.nma.random}{A vector of length \emph{m}
   of p-values for test of treatment effect for individual
   comparisons (common and random effects model).}
-\item{TE.cnma.fixed, TE.cnma.random}{A vector of length \emph{m} of
+\item{TE.cnma.common, TE.cnma.random}{A vector of length \emph{m} of
   consistent treatment effects estimated by the additive (common and
   random effects) model.}
-\item{seTE.cnma.fixed, seTE.cnma.random}{A vector of length
+\item{seTE.cnma.common, seTE.cnma.random}{A vector of length
   \emph{m} with standard errors estimated by the additive (common
   and random effects) model.}
-\item{lower.cnma.fixed, lower.cnma.random}{A vector of length
+\item{lower.cnma.common, lower.cnma.random}{A vector of length
   \emph{m} of lower confidence interval limits for consistent
   treatment effects estimated by the additive (common and random
   effects) model.}
-\item{upper.cnma.fixed, upper.cnma.random}{A vector of length
+\item{upper.cnma.common, upper.cnma.random}{A vector of length
   \emph{m} of upper confidence interval limits for consistent
   treatment effects estimated by the additive (common and random
   effects) model.}
-\item{statistic.cnma.fixed, statistic.cnma.random}{A vector of length
+\item{statistic.cnma.common, statistic.cnma.random}{A vector of length
   \emph{m} of z-values for the test of an overall effect estimated
   by the additive (common and random effects) model.}
-\item{pval.cnma.fixed, pval.cnma.random}{A vector of length
+\item{pval.cnma.common, pval.cnma.random}{A vector of length
   \emph{m} of p-values for the test of an overall effect estimated
   by the additive (common and random effects) model.}
-\item{TE.fixed, TE.random}{\emph{n}x\emph{n} matrix with overall
+\item{TE.common, TE.random}{\emph{n}x\emph{n} matrix with overall
   treatment effects estimated by the additive (common and random
   effects) model.}
-\item{seTE.fixed, seTE.random}{\emph{n}x\emph{n} matrix with
+\item{seTE.common, seTE.random}{\emph{n}x\emph{n} matrix with
   standard errors estimated by the additive (common and random
   effects) model.}
-\item{lower.fixed, upper.fixed, lower.random,
+\item{lower.common, upper.common, lower.random,
   upper.random}{\emph{n}x\emph{n} matrices with lower and upper
   confidence interval limits estimated by the additive (common and
   random effects) model.}
-\item{statistic.fixed, pval.fixed, statistic.random,
+\item{statistic.common, pval.common, statistic.random,
   pval.random}{\emph{n}x\emph{n} matrices with z-values and
   p-values for test of overall effect estimated by the additive
   (common and random effects) model.}
-\item{Comp.fixed, Comp.random}{A vector of component effects (common
+\item{Comp.common, Comp.random}{A vector of component effects (common
   and random effects model).}
-\item{seComp.fixed, seComp.random}{A vector with corresponding
+\item{seComp.common, seComp.random}{A vector with corresponding
   standard errors (common and random effects model).}
-\item{lower.Comp.fixed, lower.Comp.random}{A vector with lower
+\item{lower.Comp.common, lower.Comp.random}{A vector with lower
   confidence limits for components (common and random effects
   model).}
-\item{upper.Comp.fixed, upper.Comp.random}{A vector with upper
+\item{upper.Comp.common, upper.Comp.random}{A vector with upper
   confidence limits for components (common and random effects
   model).}
-\item{statistic.Comp.fixed, statistic.Comp.random}{A vector with z-values for
+\item{statistic.Comp.common, statistic.Comp.random}{A vector with z-values for
   the overall effect of components (common and random effects
   model).}
-\item{pval.Comp.fixed, pval.Comp.random}{A vector with p-values for
+\item{pval.Comp.common, pval.Comp.random}{A vector with p-values for
   the overall effect of components (common and random effects
   model).}
-\item{Comb.fixed, Comb.random}{A vector of combination effects
+\item{Comb.common, Comb.random}{A vector of combination effects
   (common and random effects model).}
-\item{seComb.fixed, seComb.random}{A vector with corresponding
+\item{seComb.common, seComb.random}{A vector with corresponding
   standard errors (common and random effects model).}
-\item{lower.Comb.fixed, lower.Comb.random}{A vector with lower
+\item{lower.Comb.common, lower.Comb.random}{A vector with lower
   confidence limits for combinations (common and random effects
   model).}
-\item{upper.Comb.fixed, upper.Comb.random}{A vector with upper
+\item{upper.Comb.common, upper.Comb.random}{A vector with upper
   confidence limits for combinations (common and random effects
   model).}
-\item{statistic.Comb.fixed, statistic.Comb.random}{A vector with
+\item{statistic.Comb.common, statistic.Comb.random}{A vector with
   z-values for the overall effect of combinations (common and random
   effects model).}
-\item{pval.Comb.fixed, pval.Comb.random}{A vector with p-values for
+\item{pval.Comb.common, pval.Comb.random}{A vector with p-values for
   the overall effect of combinations (common and random effects
   model).}
 \item{Q.additive}{Overall heterogeneity / inconsistency statistic
@@ -202,7 +202,7 @@ containing the following components:
 \item{C.matrix}{As defined above.}
 \item{sm}{Summary measure.}
 \item{level.ma}{Level for confidence intervals.}
-\item{fixed, random, tau.preset}{As defined above.}
+\item{common, random, tau.preset}{As defined above.}
 \item{sep.trts}{A character used in comparison names as separator
   between treatment labels.}
 \item{nchar.comps}{A numeric defining the minimum number of
@@ -302,7 +302,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 # Conduct random effects network meta-analysis
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-  data = face, ref = "placebo", sm = "OR", fixed = FALSE)
+  data = face, ref = "placebo", sm = "OR", common = FALSE)
 net1
 forest(net1, xlim = c(0.2, 50))
 
@@ -333,7 +333,7 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
   data = Linde2016, ref = "placebo",
-  seq = trts, sm = "OR", fixed = FALSE)
+  seq = trts, sm = "OR", common = FALSE)
 net1
 forest(net1, xlim = c(0.2, 50))
 

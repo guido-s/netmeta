@@ -3,7 +3,7 @@ comptrts <- function(x,
                      order = NULL, sep.trts = x$sep.trts, quote.trts = "") {
   
   
-  seq.comps <- rownames(x$Cov.fixed)
+  seq.comps <- rownames(x$Cov.common)
   ##
   dat.trts <- matrix(unlist(compsplit(seq.comps, x$sep.trts)),
                      ncol = 2, byrow = TRUE)
@@ -31,7 +31,7 @@ comptrts <- function(x,
     wo <- rep_len(FALSE, length(seq.comps))
     ##
     if (reference.group != "") {
-      reference.group <- setref(reference.group, colnames(x$TE.fixed))
+      reference.group <- setref(reference.group, colnames(x$TE.common))
       ##
       if (baseline.reference)
         wo <- dat.trts$treat1 == reference.group

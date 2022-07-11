@@ -5,7 +5,7 @@
 #' 
 #' @param x An object of class \code{netbind} or
 #'   \code{summary.netbind}.
-#' @param fixed A logical indicating whether results for the common
+#' @param common A logical indicating whether results for the common
 #'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
@@ -32,7 +32,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'   data = face, reference.group = "placebo",
-#'   sm = "OR", fixed = FALSE)
+#'   sm = "OR", common = FALSE)
 #' 
 #' # Additive CNMA model with placebo as inactive component and
 #' # reference
@@ -46,14 +46,14 @@
 #'   col.study = c("red", "black"), col.square = c("red", "black"))
 #' 
 #' nb1
-#' print(nb1, fixed = TRUE)
+#' print(nb1, common = TRUE)
 #' 
 #' @method print netbind
 #' @export
 
 
 print.netbind <- function(x,
-                          fixed = x$x$fixed,
+                          common = x$x$common,
                           random = x$x$random,
                           ##
                           warn.deprecated = gs("warn.deprecated"),
@@ -77,9 +77,12 @@ print.netbind <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -91,10 +94,10 @@ print.netbind <- function(x,
   ## (3) Print results
   ##
   ##
-  if (fixed) {
+  if (common) {
     cat("Common effects model\n\n")
-    print(x$fixed[, c("name", "treat",
-                      "TE", "seTE", "lower", "upper", "statistic", "pval")])
+    print(x$common[, c("name", "treat",
+                       "TE", "seTE", "lower", "upper", "statistic", "pval")])
     if (random)
       cat("\n")
   }

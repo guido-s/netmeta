@@ -17,13 +17,13 @@
 #'   abbreviated. See Details.
 #' @param order A optional character or numerical vector specifying
 #'   the order of treatments in comparisons.
-#' @param fixed A logical indicating whether table for the common
+#' @param common A logical indicating whether table for the common
 #'   effects network meta-analysis should be printed.
 #' @param random A logical indicating whether table for the random
 #'   effects network meta-analysis should be printed.
 #' @param upper A logical indicating whether treatment comparisons
 #'   should be selected from the lower or upper triangle of the
-#'   treatment effect matrices (see list elements \code{TE.fixed} and
+#'   treatment effect matrices (see list elements \code{TE.common} and
 #'   \code{TE.random} in the \code{netmeta} object). Ignored if
 #'   argument \code{order} is provided.
 #' @param reference.group Reference treatment. Ignored if argument
@@ -116,7 +116,7 @@
 #' @return
 #' An object of class \code{nettable} with corresponding \code{print}
 #' function if argument \code{writexl = FALSE}. The object is a list
-#' containing the network tables in list elements 'fixed' and
+#' containing the network tables in list elements 'common' and
 #' 'random'. An Excel file is created if \code{writexl = TRUE}. In
 #' this case, \code{NULL} is returned in R.
 #' 
@@ -154,7 +154,7 @@
 #' #
 #' nt1 <- nettable(net1, digits = 2)
 #' nt1
-#' print(nt1, fixed = FALSE)
+#' print(nt1, common = FALSE)
 #' print(nt1, random = FALSE)
 #' 
 #' \dontrun{
@@ -180,7 +180,7 @@ nettable <- function(...,
                      name = NULL,
                      method = NULL,
                      ##
-                     order = NULL, fixed, random,
+                     order = NULL, common, random,
                      ##
                      upper = TRUE,
                      reference.group = NULL,
@@ -222,7 +222,7 @@ nettable <- function(...,
   is.nma <- function(x)
     inherits(x, "netmeta")
   ##
-  missing.fixed <- missing(fixed)
+  missing.common <- missing(common)
   missing.random <- missing(random)
   ##
   args <- list(...)
@@ -243,21 +243,27 @@ nettable <- function(...,
       fix <- ran <- rep_len(NA, n.netmeta)
       for (i in n.i) {
         args2[[i]] <- args[[1]][[i]]
-        fix[i] <- args[[1]][[i]]$fixed
+        fix[i] <- args[[1]][[i]]$common
         ran[i] <- args[[1]][[i]]$random
       }
-      if (missing.fixed)
-        fixed <- any(fix, na.rm = TRUE)
+      if (missing.common)
+        common <- any(fix, na.rm = TRUE)
       if (missing.random)
         random <- any(ran, na.rm = TRUE)
       ##
       args <- args2
     }
     else {
-      if (missing.fixed)
-        fixed <- args[[1]]$fixed
+      if (missing.common)
+        common <- args[[1]]$common
+      if (is.null(common))
+        common <- args[[1]]$fixed
+      if (is.null(common))
+        common <- args[[1]]$comb.fixed
       if (missing.random)
         random <- args[[1]]$random
+      if (is.null(random))
+        random <- args[[1]]$comb.random
     }
   }
   ##
@@ -278,16 +284,16 @@ nettable <- function(...,
          "(see list element 'level.ma').",
          call. = FALSE)
   ##
-  if (n.netmeta > 1 & (missing.fixed | missing.random)) {
+  if (n.netmeta > 1 & (missing.common | missing.random)) {
     fix <- ran <- rep_len(NA, n.netmeta)
     for (i in n.i) {
       if (is.nma(args[[i]])) {
-        fix[i] <- args[[i]]$fixed
+        fix[i] <- args[[i]]$common
         ran[i] <- args[[i]]$random
       }
     }
-    if (missing.fixed)
-      fixed <- any(fix, na.rm = TRUE)
+    if (missing.common)
+      common <- any(fix, na.rm = TRUE)
     if (missing.random)
       random <- any(ran, na.rm = TRUE)
   }
@@ -326,7 +332,7 @@ nettable <- function(...,
   if (!missing(method))
     method <- setchar(method, c("Back-calculation", "SIDDE"))
   ##
-  chklogical(fixed)
+  chklogical(common)
   chklogical(random)
   ##
   chklogical(upper)
@@ -375,9 +381,9 @@ nettable <- function(...,
             "Direct estimate", "Indirect estimate",
             "Network meta-analysis", "Incoherence")
   ##
-  table.fixed <- table.random <-
+  table.common <- table.random <-
     data.frame(matrix(nrow = 0, ncol = length(vars)))
-  colnames(table.fixed) <- colnames(table.random) <- vars
+  colnames(table.common) <- colnames(table.random) <- vars
   ##
   for (i in n.i) {
     table.i <- 
@@ -391,15 +397,15 @@ nettable <- function(...,
                         writexl,
                         warn, verbose)
     ##
-    table.fixed <- rbind(table.fixed, table.i$fixed)
+    table.common <- rbind(table.common, table.i$common)
     table.random <- rbind(table.random, table.i$random)
   }
   ##
-  if (all(is.na(table.fixed$n)))
-    table.fixed$n <- NULL
+  if (all(is.na(table.common$n)))
+    table.common$n <- NULL
   else
-    table.fixed$n <- formatN(round(table.fixed$n), digits = 0,
-                             text.NA = text.NA, big.mark = big.mark)
+    table.common$n <- formatN(round(table.common$n), digits = 0,
+                              text.NA = text.NA, big.mark = big.mark)
   ##
   if (all(is.na(table.random$n)))
     table.random$n <- NULL
@@ -414,9 +420,9 @@ nettable <- function(...,
   ##
   ##
   if (writexl) {
-    if (!(fixed | random)) {
+    if (!(common | random)) {
       warning("Excel file not generated as neither ",
-              "argument 'fixed' nor 'random' is TRUE.")
+              "argument 'common' nor 'random' is TRUE.")
       return(invisible(NULL))
     }
     ##
@@ -432,15 +438,15 @@ nettable <- function(...,
               "Use argument 'overwrite = TRUE' to overwrite file.",
               call. = FALSE)
     else {
-      if (fixed & random)
-        xlsx <- list(fixed = table.fixed, random = table.random)
-      else if (fixed)
-        xlsx <- list(fixed = table.fixed)
+      if (common & random)
+        xlsx <- list(common = table.common, random = table.random)
+      else if (common)
+        xlsx <- list(common = table.common)
       else
         xlsx <- list(random = table.random)
       ##
       writexl::write_xlsx(xlsx, path = path, col_names = TRUE)
-      message(paste0("Network table", if (fixed & random) "s",
+      message(paste0("Network table", if (common & random) "s",
                      " saved in file '", path, "'."))
     }
     ##
@@ -453,7 +459,7 @@ nettable <- function(...,
   ## (5) Return network tables
   ##
   ##
-  res <- list(fixed = table.fixed,
+  res <- list(common = table.common,
               random = table.random,
               ##
               upper = upper,
@@ -479,7 +485,7 @@ nettable <- function(...,
               lower.blank = separator,
               upper.blank = upper.blank,
               ##
-              x = list(fixed = fixed, random = random),
+              x = list(common = common, random = random),
               ##
               backtransf = backtransfs,
               sm = sms,
@@ -487,6 +493,11 @@ nettable <- function(...,
               ##
               version = packageDescription("netmeta")$Version
               )
+  ##
+  ## Backward compatibility
+  ##
+  res$fixed <- res$common
+  res$x$fixed <- res$x$common
   ##
   class(res) <- "nettable"
   
@@ -502,7 +513,7 @@ nettable <- function(...,
 #' @export
 
 
-print.nettable <- function(x, fixed = x$x$fixed, random = x$x$random, ...) {
+print.nettable <- function(x, common = x$x$common, random = x$x$random, ...) {
   
   ##
   ##
@@ -510,33 +521,37 @@ print.nettable <- function(x, fixed = x$x$fixed, random = x$x$random, ...) {
   ##
   ##
   chkclass(x, "nettable")
+  x <- updateversion(x)
   ##  
   ## All individual results in a single row - be on the save side:
   ##
   oldopts <- options(width = 200)
   on.exit(options(oldopts))
   ##
-  chklogical(fixed)
+  args <- list(...)
+  common <- deprecated(common, missing(common), args, "fixed", FALSE)
+  chklogical(common)
   chklogical(random)
   
   
   ##
   ##
-  ## (2) Print network table for fixed effects model
+  ## (2) Print network table for common effects model
   ##
   ##
-  if (fixed) {
-    cat("Network table (common effects model):\n")
+  if (common) {
+    cat(paste0("Network table (", gs("text.w.common"),
+               ") effects model):\n"))
     ##
-    if (isCol(x$fixed, "Outcome")) {
-      outcomes <- unique(x$fixed$Outcome)
+    if (isCol(x$common, "Outcome")) {
+      outcomes <- unique(x$common$Outcome)
       n.netmeta <- length(outcomes)
       backtransf <- x$backtransf
       if (length(backtransf) != n.netmeta)
         backtransf <- rep(backtransf, n.netmeta)
       for (i in seq_len(n.netmeta)) {
-        mat.i <- x$fixed[x$fixed$Outcome == outcomes[i],
-                         names(x$fixed) != "Outcome"]
+        mat.i <- x$common[x$common$Outcome == outcomes[i],
+                          names(x$common) != "Outcome"]
         outcome.txt <- paste0("\nOutcome: ", outcomes[i])
         if (n.netmeta > 1 & length(x$sm) != 1)
           outcome.txt <-
@@ -551,8 +566,8 @@ print.nettable <- function(x, fixed = x$x$fixed, random = x$x$random, ...) {
     }
     else {
       cat("\n")
-      prmatrix(x$fixed, quote = FALSE, right = TRUE,
-               rowlab = rep("", nrow(x$fixed)), ...)
+      prmatrix(x$common, quote = FALSE, right = TRUE,
+               rowlab = rep("", nrow(x$common)), ...)
     }
     if (random)
       cat("\n")
@@ -565,7 +580,8 @@ print.nettable <- function(x, fixed = x$x$fixed, random = x$x$random, ...) {
   ##
   ##
   if (random) {
-    cat("Network table (random effects model):\n")
+    cat(paste0("Network table (", gs("text.w.random"),
+               ") effects model):\n"))
     ##
     if (isCol(x$random, "Outcome")) {
       outcomes <- unique(x$random$Outcome)

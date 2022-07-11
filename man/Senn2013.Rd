@@ -73,7 +73,7 @@ netmeta(TE, seTE, treat1.long, treat2.long,
 # Random effects model
 #
 net2 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-  data = Senn2013, fixed = FALSE)
+  data = Senn2013, common = FALSE)
 net2
 forest(net2, ref = "plac")
 }

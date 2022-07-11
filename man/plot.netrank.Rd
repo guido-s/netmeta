@@ -7,7 +7,7 @@
 \method{plot}{netrank}(
   ...,
   name,
-  fixed,
+  common,
   random,
   seq,
   low = "red",
@@ -30,6 +30,7 @@
   vjust.y = 0,
   nchar.trts,
   digits = 3,
+  fixed,
   comb.fixed,
   comb.random,
   warn.deprecated = gs("warn.deprecated")
@@ -41,7 +42,7 @@
 \item{name}{An optional character vector providing descriptive
 names for the network meta-analysis objects.}
 
-\item{fixed}{A logical indicating whether results for the common
+\item{common}{A logical indicating whether results for the common
 effects model should be plotted.}
 
 \item{random}{A logical indicating whether results for the random
@@ -112,7 +113,9 @@ characters used to create unique treatment names.}
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
 
-\item{comb.fixed}{Deprecated argument (replaced by 'fixed').}
+\item{fixed}{Deprecated argument (replaced by 'common').}
+
+\item{comb.fixed}{Deprecated argument (replaced by 'common').}
 
 \item{comb.random}{Deprecated argument (replaced by 'random').}
 
@@ -156,7 +159,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, fixed = FALSE,
+net1 <- netmeta(p1, common = FALSE,
   seq = trts, ref = "Placebo")
 
 # (2) Early remission
@@ -165,7 +168,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, fixed = FALSE,
+net2 <- netmeta(p2, common = FALSE,
   seq = trts, ref = "Placebo")
 
 # Image plot of treatment rankings (two outcomes)
@@ -187,7 +190,7 @@ p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net3 <- netmeta(p3, fixed = FALSE, seq = trts, ref = "Placebo")
+net3 <- netmeta(p3, common = FALSE, seq = trts, ref = "Placebo")
 
 # (4) Loss to follow-up due to adverse events
 #
@@ -195,7 +198,7 @@ p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
   studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
 #
-net4 <- netmeta(p4, fixed = FALSE, seq = trts, ref = "Placebo")
+net4 <- netmeta(p4, common = FALSE, seq = trts, ref = "Placebo")
 
 # (5) Adverse events
 #
@@ -203,7 +206,7 @@ p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net5 <- netmeta(p5, fixed = FALSE, seq = trts, ref = "Placebo")
+net5 <- netmeta(p5, common = FALSE, seq = trts, ref = "Placebo")
 
 # Image plot of treatment rankings (two outcomes)
 #

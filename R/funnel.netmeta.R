@@ -8,7 +8,7 @@
 #' @param order A mandatory character or numerical vector specifying
 #'   the order of treatments or list of comparators (see Details).
 #' @param pooled A character string indicating whether results for the
-#'   common (\code{"fixed"}) or random effects model (\code{"random"})
+#'   common (\code{"common"}) or random effects model (\code{"random"})
 #'   should be plotted. Can be abbreviated.
 #' @param xlab A label for the x-axis.
 #' @param level The confidence level utilised in the plot. For the
@@ -187,7 +187,7 @@
 
 funnel.netmeta <- function(x,
                            order,
-                           pooled = ifelse(x$random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "common"),
                            ##
                            xlab = NULL,
                            level = x$level,
@@ -240,7 +240,8 @@ funnel.netmeta <- function(x,
   chkclass(x, "netmeta")
   x <- updateversion(x)
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   chklogical(lump.comparator)
   ##
   if (missing(order))
@@ -397,9 +398,9 @@ funnel.netmeta <- function(x,
   if (is.numeric(treat2))
     treat2 <- as.character(treat2)
   ##
-  if (pooled == "fixed")
+  if (pooled == "common")
     for (i in seq_along(res$TE))
-      res$TE.direct[i] <- x$TE.direct.fixed[treat1[i], treat2[i]]
+      res$TE.direct[i] <- x$TE.direct.common[treat1[i], treat2[i]]
   else
     for (i in seq_along(res$TE))
       res$TE.direct[i] <- x$TE.direct.random[treat1[i], treat2[i]]
@@ -494,7 +495,7 @@ funnel.netmeta <- function(x,
          pch = res$pch,
          col = res$col,
          level = level,
-         fixed = FALSE, random = FALSE,
+         common = FALSE, random = FALSE,
          xlab = xlab,
          backtransf = backtransf,
          ref.triangle = TRUE,

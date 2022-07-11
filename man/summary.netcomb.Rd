@@ -6,7 +6,7 @@
 \usage{
 \method{summary}{netcomb}(
   object,
-  fixed = object$fixed,
+  common = object$common,
   random = object$random,
   warn.deprecated = gs("warn.deprecated"),
   ...
@@ -15,7 +15,7 @@
 \arguments{
 \item{object}{An object of class \code{netcomb}.}
 
-\item{fixed}{A logical indicating whether results for the common
+\item{common}{A logical indicating whether results for the common
 effects model should be printed.}
 
 \item{random}{A logical indicating whether results for the random
@@ -45,7 +45,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
   data = face, reference.group = "placebo",
-  sm = "OR", fixed = FALSE)
+  sm = "OR", common = FALSE)
 
 # Additive model for treatment components
 #
@@ -58,7 +58,7 @@ print(summary(nc1), digits = 2, digits.stat = 3)
 #
 net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
   data = Linde2016, reference.group = "placebo",
-  sm = "OR", fixed = FALSE)
+  sm = "OR", common = FALSE)
 
 # Additive model for treatment components
 #

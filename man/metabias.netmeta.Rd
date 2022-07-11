@@ -7,7 +7,7 @@
 \method{metabias}{netmeta}(
   x,
   order,
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   method.bias = "Egger",
   lump.comparator = FALSE,
   ...
@@ -20,7 +20,7 @@
 the order of treatments or list of comparators (see Details).}
 
 \item{pooled}{A character string indicating whether results for the
-common (\code{"fixed"}) or random effects model (\code{"random"})
+common (\code{"common"}) or random effects model (\code{"random"})
 should be used in test of funnel plot asymmetry. Can be
 abbreviated.}
 

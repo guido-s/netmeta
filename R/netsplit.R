@@ -14,7 +14,7 @@
 #'   abbreviated. See Details.
 #' @param upper A logical indicating whether treatment comparisons
 #'   should be selected from the lower or upper triangle of the
-#'   treatment effect matrices (see list elements \code{TE.fixed} and
+#'   treatment effect matrices (see list elements \code{TE.common} and
 #'   \code{TE.random} in the \code{netmeta} object). Ignored if
 #'   argument \code{order} is provided.
 #' @param reference.group Reference treatment. Ignored if argument
@@ -33,7 +33,7 @@
 #' @param tol.direct A numeric defining the maximum deviation of the
 #'   direct evidence proportion from 0 or 1 to classify a comparison
 #'   as providing only indirect or direct evidence, respectively.
-#' @param fixed A logical indicating whether results for the common
+#' @param common A logical indicating whether results for the common
 #'   effects network meta-analysis should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects network meta-analysis should be printed.
@@ -133,22 +133,22 @@
 #' An object of class \code{netsplit} with corresponding \code{print}
 #' and \code{forest} functions. The object is a list containing the
 #' following components:
-#' \item{fixed, random}{As defined above.}
+#' \item{common, random}{As defined above.}
 #' \item{comparison}{A vector with treatment comparisons.}
-#' \item{prop.fixed, prop.random}{A vector with direct evidence
+#' \item{prop.common, prop.random}{A vector with direct evidence
 #'   proportions (common / random effects model).}
-#' \item{fixed, random}{Results of network meta-analysis (common /
+#' \item{common, random}{Results of network meta-analysis (common /
 #'   random effects model), i.e., data frame with columns comparison,
 #'   TE, seTE, lower, upper, z, and p.}
-#' \item{direct.fixed, direct.random}{Network meta-analysis results
+#' \item{direct.common, direct.random}{Network meta-analysis results
 #'   based on direct evidence (common / random effects model), i.e.,
 #'   data frame with columns comparison, TE, seTE, lower, upper, z,
 #'   and p.}
-#' \item{indirect.fixed, indirect.random}{Network meta-analysis
+#' \item{indirect.common, indirect.random}{Network meta-analysis
 #'   results based on indirect evidence (common / random effects
 #'   model), i.e., data frame with columns comparison, TE, seTE,
 #'   lower, upper, z, and p.}
-#' \item{compare.fixed, compare.random}{Comparison of direct and
+#' \item{compare.common, compare.random}{Comparison of direct and
 #'   indirect evidence in network meta-analysis (common / random
 #'   effects model), i.e., data frame with columns comparison, TE,
 #'   seTE, lower, upper, z, and p.}
@@ -202,7 +202,7 @@
 #' 
 #' \dontrun{
 #' print(netsplit(net1), digits = 2,
-#'   backtransf = FALSE, fixed = FALSE)
+#'   backtransf = FALSE, common = FALSE)
 #'
 #' # Sort by increasing number of studies in direct comparisons
 #' print(netsplit(net1), digits = 2, sortvar = k)
@@ -210,13 +210,13 @@
 #' print(netsplit(net1), digits = 2, sortvar = -k)
 #' 
 #' # Sort by increasing evidence proportion under common effects model
-#' print(netsplit(net1), digits = 2, sortvar = prop.fixed)
+#' print(netsplit(net1), digits = 2, sortvar = prop.common)
 #' # Sort by decreasing evidence proportion under common effects model
-#' print(netsplit(net1), digits = 2, sortvar = -prop.fixed)
+#' print(netsplit(net1), digits = 2, sortvar = -prop.common)
 #' 
 #' # Sort by decreasing evidence proportion under common effects model
 #' # and number of studies
-#' print(netsplit(net1), digits = 2, sortvar = cbind(-prop.fixed, -k))
+#' print(netsplit(net1), digits = 2, sortvar = cbind(-prop.common, -k))
 #' 
 #' data(Senn2013)
 #' #
@@ -245,7 +245,7 @@ netsplit <- function(x, method,
                      order = NULL,
                      sep.trts = x$sep.trts, quote.trts = "",
                      tol.direct = 0.0005,
-                     fixed = x$fixed,
+                     common = x$common,
                      random = x$random,
                      backtransf = x$backtransf,
                      warn = FALSE, warn.deprecated = gs("warn.deprecated"),
@@ -301,15 +301,18 @@ netsplit <- function(x, method,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
   chklogical(random)
   ##
-  x$fixed <- fixed
+  x$common <- common
   x$random <- random
   
   
@@ -324,15 +327,15 @@ netsplit <- function(x, method,
   
   ##
   ##
-  ## (4) Change order of prop.direct.fixed and prop.direct.random
+  ## (4) Change order of prop.direct.common and prop.direct.random
   ##
   ##
   if (!(is.bin & method == "SIDDE")) {
-    prop.fixed <- sortprop(x$prop.direct.fixed, dat.trts, x$sep.trts)
+    prop.common <- sortprop(x$prop.direct.common, dat.trts, x$sep.trts)
     prop.random <- sortprop(x$prop.direct.random, dat.trts, x$sep.trts)
   }
   else
-    prop.fixed <- prop.random <- NULL
+    prop.common <- prop.random <- NULL
   
   
   ##
@@ -345,8 +348,8 @@ netsplit <- function(x, method,
   if (method == "SIDDE") {
     sid <- sidde(x.direct.indirect, sep.trts, verbose, warn, is.tictoc)
     ##    
-    x.direct.indirect$TE.indirect.fixed <- sid$TE.indirect.fixed
-    x.direct.indirect$seTE.indirect.fixed <- sid$seTE.indirect.fixed
+    x.direct.indirect$TE.indirect.common <- sid$TE.indirect.common
+    x.direct.indirect$seTE.indirect.common <- sid$seTE.indirect.common
     ##
     if (!is.bin) {
       x.direct.indirect$TE.indirect.random <- sid$TE.indirect.random
@@ -362,7 +365,7 @@ netsplit <- function(x, method,
   ## (6) Transform matrices to data frames
   ##
   ##
-  m2d.f <- mat2dat.split(direct.indirect, "fixed", dat.trts)
+  m2d.f <- mat2dat.split(direct.indirect, "common", dat.trts)
   m2d.r <- mat2dat.split(direct.indirect, "random", dat.trts)
   
   
@@ -375,12 +378,12 @@ netsplit <- function(x, method,
               ##
               k = m2d.f$k,
               ##
-              prop.fixed = prop.fixed,
+              prop.common = prop.common,
               ##
-              fixed = m2d.f$nma,
-              direct.fixed = m2d.f$direct,
-              indirect.fixed = m2d.f$indirect,
-              compare.fixed = m2d.f$compare,
+              common = m2d.f$nma,
+              direct.common = m2d.f$direct,
+              indirect.common = m2d.f$indirect,
+              compare.common = m2d.f$compare,
               ##
               prop.random = prop.random,
               ##
@@ -418,6 +421,14 @@ netsplit <- function(x, method,
   if (method == "SIDDE" & is.tictoc)
     res$tictoc <- sid$tictoc
   ##
+  ## Backward compatibility
+  ##
+  res$prop.fixed <- res$prop.common
+  res$fixed <- res$common
+  res$direct.fixed <- res$direct.common
+  res$indirect.fixed <- res$indirect.common
+  res$compare.fixed <- res$compare.common
+  ##
   class(res) <- c("netsplit",
                   if (is.bin & method == "SIDDE") "netsplit.netmetabin")
   
@@ -434,7 +445,7 @@ netsplit <- function(x, method,
 
 
 print.netsplit <- function(x,
-                           fixed = x$x$fixed,
+                           common = x$x$common,
                            random = x$x$random,
                            ##
                            show = "all",
@@ -549,10 +560,13 @@ print.netsplit <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
-  fixed.logical <- fixed
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
+  common.logical <- common
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -614,15 +628,15 @@ print.netsplit <- function(x,
   
   
   if (show == "all")
-    sel <- rep_len(TRUE, length(x$direct.fixed$TE))
+    sel <- rep_len(TRUE, length(x$direct.common$TE))
   else if (show == "with.direct")
-    sel <- !is.na(x$direct.fixed$TE)
+    sel <- !is.na(x$direct.common$TE)
   else if (show == "both")
-    sel <- !is.na(x$direct.fixed$TE) & !is.na(x$indirect.fixed$TE)
+    sel <- !is.na(x$direct.common$TE) & !is.na(x$indirect.common$TE)
   else if (show == "direct.only")
-    sel <- !is.na(x$direct.fixed$TE) & is.na(x$indirect.fixed$TE)
+    sel <- !is.na(x$direct.common$TE) & is.na(x$indirect.common$TE)
   else if (show == "indirect.only")
-    sel <- is.na(x$direct.fixed$TE) & !is.na(x$fixed$TE)
+    sel <- is.na(x$direct.common$TE) & !is.na(x$common$TE)
   ##
   if (only.reference) {
     if (x$reference.group == "") {
@@ -644,25 +658,25 @@ print.netsplit <- function(x,
   ##
   k <- x$k[sel]
   ##
-  prop.fixed <- x$prop.fixed[sel]
+  prop.common <- x$prop.common[sel]
   ##
-  TE.fixed <- x$fixed$TE[sel]
-  lower.fixed <- x$fixed$lower[sel]
-  upper.fixed <- x$fixed$upper[sel]
+  TE.common <- x$common$TE[sel]
+  lower.common <- x$common$lower[sel]
+  upper.common <- x$common$upper[sel]
   ##
-  TE.direct.fixed <- x$direct.fixed$TE[sel]
-  lower.direct.fixed <- x$direct.fixed$lower[sel]
-  upper.direct.fixed <- x$direct.fixed$upper[sel]
+  TE.direct.common <- x$direct.common$TE[sel]
+  lower.direct.common <- x$direct.common$lower[sel]
+  upper.direct.common <- x$direct.common$upper[sel]
   ##
-  TE.indirect.fixed <- x$indirect.fixed$TE[sel]
-  lower.indirect.fixed <- x$indirect.fixed$lower[sel]
-  upper.indirect.fixed <- x$indirect.fixed$upper[sel]
+  TE.indirect.common <- x$indirect.common$TE[sel]
+  lower.indirect.common <- x$indirect.common$lower[sel]
+  upper.indirect.common <- x$indirect.common$upper[sel]
   ##
-  TE.compare.fixed <- x$compare.fixed$TE[sel]
-  lower.compare.fixed <- x$compare.fixed$lower[sel]
-  upper.compare.fixed <- x$compare.fixed$upper[sel]
-  statistic.compare.fixed <- x$compare.fixed$statistic[sel]
-  pval.compare.fixed <- x$compare.fixed$p[sel]
+  TE.compare.common <- x$compare.common$TE[sel]
+  lower.compare.common <- x$compare.common$lower[sel]
+  upper.compare.common <- x$compare.common$upper[sel]
+  statistic.compare.common <- x$compare.common$statistic[sel]
+  pval.compare.common <- x$compare.common$p[sel]
   ##
   if (random.available) {
     prop.random <- x$prop.random[sel]
@@ -688,21 +702,21 @@ print.netsplit <- function(x,
   
   
   if (backtransf & relative) {
-    TE.fixed <- exp(TE.fixed)
-    lower.fixed <- exp(lower.fixed)
-    upper.fixed <- exp(upper.fixed)
+    TE.common <- exp(TE.common)
+    lower.common <- exp(lower.common)
+    upper.common <- exp(upper.common)
     ##
-    TE.direct.fixed <- exp(TE.direct.fixed)
-    lower.direct.fixed <- exp(lower.direct.fixed)
-    upper.direct.fixed <- exp(upper.direct.fixed)
+    TE.direct.common <- exp(TE.direct.common)
+    lower.direct.common <- exp(lower.direct.common)
+    upper.direct.common <- exp(upper.direct.common)
     ##
-    TE.indirect.fixed <- exp(TE.indirect.fixed)
-    lower.indirect.fixed <- exp(lower.indirect.fixed)
-    upper.indirect.fixed <- exp(upper.indirect.fixed)
+    TE.indirect.common <- exp(TE.indirect.common)
+    lower.indirect.common <- exp(lower.indirect.common)
+    upper.indirect.common <- exp(upper.indirect.common)
     ##
-    TE.compare.fixed <- exp(TE.compare.fixed)
-    lower.compare.fixed <- exp(lower.compare.fixed)
-    upper.compare.fixed <- exp(upper.compare.fixed)
+    TE.compare.common <- exp(TE.compare.common)
+    lower.compare.common <- exp(lower.compare.common)
+    upper.compare.common <- exp(upper.compare.common)
     ##
     if (random.available) {
       TE.random <- exp(TE.random)
@@ -724,65 +738,70 @@ print.netsplit <- function(x,
   }
   
   
-  fixed <- list(comp = comp,
-                k = k,
-                prop = formatPT(prop.fixed, digits = digits.prop))
-  names.fixed <- c("comparison", "k", "prop")
+  common <- list(comp = comp,
+                 k = k,
+                 prop = formatPT(prop.common, digits = digits.prop))
+  names.common <- c("comparison", "k", "prop")
   ##
   if (overall) {
-    fixed$TE.fixed <- formatN(TE.fixed, digits, text.NA = text.NA,
-                              big.mark = big.mark)
-    names.fixed <- c(names.fixed, "nma")
+    common$TE.common <- formatN(TE.common, digits, text.NA = text.NA,
+                                big.mark = big.mark)
+    names.common <- c(names.common, "nma")
     if (ci) {
-      fixed$ci.fixed <- formatCI(round(lower.fixed, digits),
-                                 round(upper.fixed, digits))
-      fixed$ci.fixed[is.na(fixed$ci.fixed)] <- text.NA
-      names.fixed <- c(names.fixed, ci.lab)
+      common$ci.common <- formatCI(round(lower.common, digits),
+                                   round(upper.common, digits))
+      common$ci.common[is.na(common$ci.common)] <- text.NA
+      names.common <- c(names.common, ci.lab)
     }
   }
   ##
-  fixed$TE.direct.fixed <- formatN(TE.direct.fixed, digits, text.NA = text.NA,
-                                   big.mark = big.mark)
-  names.fixed <- c(names.fixed, "direct")
+  common$TE.direct.common <-
+    formatN(TE.direct.common, digits, text.NA = text.NA,
+            big.mark = big.mark)
+  names.common <- c(names.common, "direct")
   if (ci) {
-    fixed$ci.direct.fixed <- formatCI(round(lower.direct.fixed, digits),
-                                      round(upper.direct.fixed, digits))
-    fixed$ci.direct.fixed[is.na(fixed$ci.direct.fixed)] <- text.NA
-    names.fixed <- c(names.fixed, ci.lab)
+    common$ci.direct.common <-
+      formatCI(round(lower.direct.common, digits),
+               round(upper.direct.common, digits))
+    common$ci.direct.common[is.na(common$ci.direct.common)] <- text.NA
+    names.common <- c(names.common, ci.lab)
   }
   ##
-  fixed$TE.indirect.fixed <- formatN(TE.indirect.fixed, digits,
-                                     text.NA = text.NA, big.mark = big.mark)
-  names.fixed <- c(names.fixed, "indir.")
+  common$TE.indirect.common <-
+    formatN(TE.indirect.common, digits,
+            text.NA = text.NA, big.mark = big.mark)
+  names.common <- c(names.common, "indir.")
   ##
   if (ci) {
-    fixed$ci.indirect.fixed <- formatCI(round(lower.indirect.fixed, digits),
-                                        round(upper.indirect.fixed, digits))
-    fixed$ci.indirect.fixed[is.na(fixed$ci.indirect.fixed)] <- text.NA
-    names.fixed <- c(names.fixed, ci.lab)
+    common$ci.indirect.common <-
+      formatCI(round(lower.indirect.common, digits),
+               round(upper.indirect.common, digits))
+    common$ci.indirect.common[is.na(common$ci.indirect.common)] <- text.NA
+    names.common <- c(names.common, ci.lab)
   }
   ##
   if (test) {
-    fixed$diff <- formatN(TE.compare.fixed, digits, text.NA = text.NA,
-                          big.mark = big.mark)
-    names.fixed <- c(names.fixed, if (backtransf & relative) "RoR" else "Diff")
+    common$diff <- formatN(TE.compare.common, digits, text.NA = text.NA,
+                           big.mark = big.mark)
+    names.common <-
+      c(names.common, if (backtransf & relative) "RoR" else "Diff")
     if (ci) {
-      fixed$ci.diff <- formatCI(round(lower.compare.fixed, digits),
-                                round(upper.compare.fixed, digits))
-      fixed$ci.diff[is.na(fixed$ci.diff)] <- text.NA
-      names.fixed <- c(names.fixed, ci.lab)
+      common$ci.diff <- formatCI(round(lower.compare.common, digits),
+                                 round(upper.compare.common, digits))
+      common$ci.diff[is.na(common$ci.diff)] <- text.NA
+      names.common <- c(names.common, ci.lab)
     }
     ##
-    fixed$statistic <- formatN(statistic.compare.fixed, digits.stat,
-                               big.mark = big.mark)
-    fixed$statistic[fixed$statistic == "--"] <- text.NA
-    fixed$p <- formatPT(pval.compare.fixed, digits = digits.pval,
-                        scientific = scientific.pval)
-    fixed$p[rmSpace(fixed$p) == "--"] <- text.NA
-    names.fixed <- c(names.fixed, c("z", "p-value"))
+    common$statistic <- formatN(statistic.compare.common, digits.stat,
+                                big.mark = big.mark)
+    common$statistic[common$statistic == "--"] <- text.NA
+    common$p <- formatPT(pval.compare.common, digits = digits.pval,
+                         scientific = scientific.pval)
+    common$p[rmSpace(common$p) == "--"] <- text.NA
+    names.common <- c(names.common, c("z", "p-value"))
   }
-  fixed <- as.data.frame(fixed)
-  names(fixed) <- names.fixed
+  common <- as.data.frame(common)
+  names(common) <- names.common
   
   
   if (random.available) {
@@ -819,8 +838,9 @@ print.netsplit <- function(x,
                                          big.mark = big.mark)
     names.random <- c(names.random, "indir.")
     if (ci) {
-      random$ci.indirect.random <- formatCI(round(lower.indirect.random, digits),
-                                            round(upper.indirect.random, digits))
+      random$ci.indirect.random <-
+        formatCI(round(lower.indirect.random, digits),
+                 round(upper.indirect.random, digits))
       random$ci.indirect.random[is.na(random$ci.indirect.random)] <- text.NA
       names.random <- c(names.random, ci.lab)
     }
@@ -828,7 +848,8 @@ print.netsplit <- function(x,
     if (test) {
       random$diff <- formatN(TE.compare.random, digits, text.NA = text.NA,
                              big.mark = big.mark)
-      names.random <- c(names.random, if (backtransf & relative) "RoR" else "Diff")
+      names.random <- c(names.random,
+                        if (backtransf & relative) "RoR" else "Diff")
       if (ci) {
         random$ci.diff <- formatCI(round(lower.compare.random, digits),
                                    round(upper.compare.random, digits))
@@ -851,9 +872,9 @@ print.netsplit <- function(x,
   
   ## Do not print direct evidence proportion for SIDDE
   ##
-  noprop <- is.bin | x$method == "SIDDE" | all(fixed$prop == "")
+  noprop <- is.bin | x$method == "SIDDE" | all(common$prop == "")
   if (noprop) {
-    fixed <- fixed[, !(names(fixed) %in% "prop")]
+    common <- common[, !(names(common) %in% "prop")]
     if (random.available)
       random <- random[, !(names(random) %in% "prop")]
   }
@@ -864,14 +885,14 @@ print.netsplit <- function(x,
     ##
     o <- order(sortvar)
     ##
-    if (fixed.logical)
-      fixed <- fixed[o, ]
+    if (common.logical)
+      common <- common[o, ]
     if (random.logical)
       random <- random[o, ]
   }
   
   
-  if (fixed.logical | random.logical) {
+  if (common.logical | random.logical) {
     if (x$method == "SIDDE")
       cat("Separate indirect from direct design evidence (SIDDE)\n\n")
     else
@@ -882,13 +903,13 @@ print.netsplit <- function(x,
     legend <- FALSE
   
   
-  if (fixed.logical) {
+  if (common.logical) {
     cat("Common effects model: \n\n")
-    fixed[is.na(fixed)] <- text.NA
-    trts <- unique(sort(unlist(compsplit(fixed$comparison, x$sep.trts))))
-    fixed$comparison <- comps(fixed$comparison, trts, x$sep.trts, nchar.trts)
-    prmatrix(fixed, quote = FALSE, right = TRUE,
-             rowlab = rep("", dim(fixed)[1]))
+    common[is.na(common)] <- text.NA
+    trts <- unique(sort(unlist(compsplit(common$comparison, x$sep.trts))))
+    common$comparison <- comps(common$comparison, trts, x$sep.trts, nchar.trts)
+    prmatrix(common, quote = FALSE, right = TRUE,
+             rowlab = rep("", dim(common)[1]))
     if (random.logical)
       cat("\n")
   }

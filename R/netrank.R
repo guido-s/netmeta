@@ -14,7 +14,7 @@
 #'   \code{"P-score"} or \code{"SUCRA"} ranking metric will be
 #'   calculated.
 #' @param nsim Number of simulations to calculate SUCRAs.
-#' @param fixed A logical indicating whether to print P-scores or
+#' @param common A logical indicating whether to print P-scores or
 #'   SUCRAs for the common effects model.
 #' @param random A logical indicating whether to print P-scores or
 #'   SUCRAs for the random effects model.
@@ -62,9 +62,9 @@
 #' @return
 #' An object of class \code{netrank} with corresponding \code{print}
 #' function. The object is a list containing the following components:
-#' \item{ranking.fixed}{A named numeric vector with P-scores or SUCRAs
+#' \item{ranking.common}{A named numeric vector with P-scores or SUCRAs
 #'   for the common effects model.}
-#' \item{Pmatrix.fixed}{Numeric matrix based on pairwise one-sided
+#' \item{Pmatrix.common}{Numeric matrix based on pairwise one-sided
 #'   p-values for the common effects model.}
 #' \item{ranking.random}{A named numeric vector with P-scores or
 #'   SUCRAs for the random effects model.}
@@ -108,7 +108,7 @@
 #' 
 #' nr2 <- netrank(net2)
 #' nr2
-#' print(nr2, sort = "fixed")
+#' print(nr2, sort = "common")
 #' print(nr2, sort = FALSE)
 #' }
 #' 
@@ -118,7 +118,7 @@
 #' 
 #' nr3 <- netrank(net3, method = "SUCRA", nsim = 100)
 #' nr3
-#' print(nr3, sort = "fixed")
+#' print(nr3, sort = "common")
 #' print(nr3, sort = FALSE)
 #' }
 #' 
@@ -127,7 +127,7 @@
 
 
 netrank <- function(x, small.values = x$small.values, method, nsim,
-                    fixed = x$fixed, random = x$random,
+                    common = x$common, random = x$random,
                     warn.deprecated = gs("warn.deprecated"),
                     ...) {
   
@@ -163,9 +163,12 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -186,7 +189,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
       rnk <- rankogram(x,
                        nsim = nsim,
                        small.values = small.values,
-                       fixed = fixed, random = random)
+                       common = common, random = random)
     }
     else {
       if (!missing(nsim))
@@ -197,10 +200,10 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
       nsim <- rnk$nsim
     }
     ##
-    P.fixed <- NULL
+    P.common <- NULL
     P.random <- NULL
     ##
-    ranking.fixed <- rnk$ranking.fixed
+    ranking.common <- rnk$ranking.common
     ranking.random <- rnk$ranking.random
   }
   else {
@@ -209,8 +212,8 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
     ##
     nsim <- NULL
     ##
-    TE.fixed <- x$TE.fixed
-    pval.fixed <- x$pval.fixed
+    TE.common <- x$TE.common
+    pval.common <- x$pval.common
     ##
     TE.random <- x$TE.random
     pval.random <- x$pval.random
@@ -218,15 +221,15 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
     
     ## Calculate one-sided p-values
     ##
-    w.fixed <- (1 + sign(TE.fixed)) / 2
-    p.fixed <- pval.fixed
+    w.common <- (1 + sign(TE.common)) / 2
+    p.common <- pval.common
     ##
     if (small.values == "good")
-      P.fixed <-
-        w.fixed * p.fixed / 2 + (1 - w.fixed) * (1 - p.fixed / 2)
+      P.common <-
+        w.common * p.common / 2 + (1 - w.common) * (1 - p.common / 2)
     else
-      P.fixed <-
-        w.fixed * (1 - p.fixed / 2) + (1 - w.fixed) * p.fixed / 2
+      P.common <-
+        w.common * (1 - p.common / 2) + (1 - w.common) * p.common / 2
     ##
     w.random <- (1 + sign(TE.random)) / 2
     p.random <- pval.random
@@ -241,7 +244,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
     
     ## Row means provide P-scores
     ##
-    ranking.fixed <- rowMeans(P.fixed, na.rm = TRUE)
+    ranking.common <- rowMeans(P.common, na.rm = TRUE)
     ##
     if (!all(is.na(TE.random)))
       ranking.random <- rowMeans(P.random, na.rm = TRUE)
@@ -250,8 +253,8 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
   }
   
   
-  res <- list(ranking.fixed = ranking.fixed,
-              Pmatrix.fixed = P.fixed,
+  res <- list(ranking.common = ranking.common,
+              Pmatrix.common = P.common,
               ##
               ranking.random = ranking.random,
               Pmatrix.random = P.random,
@@ -261,24 +264,34 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
               ##
               nsim = nsim,
               ##
-              fixed = fixed,
+              common = common,
               random = random,
               ##
               x = x,
               title = x$title,
               version = packageDescription("netmeta")$Version,
               ##
-              Pscore = paste("'Pscore' replaced by 'ranking.fixed'",
+              Pscore = paste("'Pscore' replaced by 'ranking.common'",
                              "and 'ranking.random'."),
-              Pmatrix = paste("'Pmatrix' replaced by 'Pmatrix.fixed'",
-                              "and 'Pmatrix.random'."),
-              ##
-              ## Backward compatibility (for R package NMAoutlier)
-              ##
-              Pscore.fixed = if (method == "P-score") ranking.fixed else NULL,
-              Pscore.random = if (method == "P-score") ranking.random else NULL
+              Pmatrix = paste("'Pmatrix' replaced by 'Pmatrix.common'",
+                              "and 'Pmatrix.random'.")
               )
-
+  ##
+  ## Backward compatibility
+  ##
+  res$fixed <- common
+  ##
+  res$ranking.fixed <- res$ranking.common
+  res$Pmatrix.fixed <- res$Pmatrix.common
+  ##
+  ## For R package NMAoutlier:
+  ##
+  res$Pscore.fixed <-
+    if (method == "P-score") ranking.common else NULL
+  res$Pscore.random <-
+    if (method == "P-score") ranking.random else NULL
+  
+  
   class(res) <- "netrank"
   
   res
@@ -294,7 +307,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
 
 
 print.netrank <- function(x,
-                          fixed = x$fixed,
+                          common = x$common,
                           random = x$random,
                           sort = TRUE,
                           digits = gs("digits.prop"),
@@ -315,8 +328,10 @@ print.netrank <- function(x,
   ## (2) Check other arguments
   ##
   ##
-  if (is.character(sort))
-    sort <- setchar(sort, c("fixed", "random"))
+  if (is.character(sort)) {
+    sort <- setchar(sort, c("common", "random", "fixed"))
+    sort[sort == "fixed"] <- "common"
+  }
   else
     chklogical(sort)
   ##
@@ -327,25 +342,28 @@ print.netrank <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
-                      warn.deprecated)
-  chklogical(fixed)
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
+                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
   chklogical(random)
   
   
-  both <- (fixed + random) == 2
+  both <- (common + random) == 2
   ##
   if (!both & is.character(sort)) {
-    if (fixed & sort == "random") {
+    if (common & sort == "random") {
       warning("Argument 'sort=\"random\"' ignored for common effects model.",
               call. = FALSE)
       sort <- TRUE
     }
-    if (random & sort == "fixed") {
-      warning("Argument 'sort=\"fixed\"' ignored for random effects model.",
+    if (random & sort == "common") {
+      warning("Argument 'sort=\"common\"' ignored for random effects model.",
               call. = FALSE)
       sort <- TRUE
     }
@@ -356,29 +374,31 @@ print.netrank <- function(x,
 
   if (is.null(x$method)) {
     x$method <- "P-score"
-    x$ranking.fixed <- x$Pscore.fixed
+    x$ranking.common <- x$Pscore.common
     x$ranking.random <- x$Pscore.random
   }
   
   
   if (both) {
     if (is.character(sort)) {
-      res.both <- data.frame(fixed = round(x$ranking.fixed, digits),
+      res.both <- data.frame(common = round(x$ranking.common, digits),
                              random = round(x$ranking.random, digits))
       res.both <- res.both[order(-res.both[, sort]), ]
     }
     else if (!sort) {
-      res.both <- data.frame(fixed = round(x$ranking.fixed[x$x$seq], digits),
+      res.both <- data.frame(common = round(x$ranking.common[x$x$seq], digits),
                              random = round(x$ranking.random[x$x$seq], digits))
     }
     ##
-    colnames(res.both)  <- paste(x$method, c("(common)", "(random)"))
+    colnames(res.both) <-
+      paste(x$method,
+            paste0("(", c(gs("text.w.common"), gs("text.w.random")), ")"))
   }
   else {
     if (sort) {
-      if (fixed)
-        res.fixed <-
-          as.data.frame(round(x$ranking.fixed[order(-x$ranking.fixed)],
+      if (common)
+        res.common <-
+          as.data.frame(round(x$ranking.common[order(-x$ranking.common)],
                               digits))
       if (random)
         res.random <-
@@ -386,14 +406,14 @@ print.netrank <- function(x,
                               digits))
     }
     else {
-      if (fixed)
-        res.fixed <- as.data.frame(round(x$ranking.fixed[x$x$seq], digits))
+      if (common)
+        res.common <- as.data.frame(round(x$ranking.common[x$x$seq], digits))
       if (random)
         res.random <- as.data.frame(round(x$ranking.random[x$x$seq], digits))
     }
     ##
-    if (fixed)
-      colnames(res.fixed)  <- x$method
+    if (common)
+      colnames(res.common)  <- x$method
     if (random)
       colnames(res.random) <- x$method
   }
@@ -403,8 +423,8 @@ print.netrank <- function(x,
   if (both)
     prmatrix(res.both, quote = FALSE, ...)
   ##
-  else if (fixed) {
-    prmatrix(res.fixed, quote = FALSE, ...)
+  else if (common) {
+    prmatrix(res.common, quote = FALSE, ...)
     if (random)
       cat("\n")
   }

@@ -71,12 +71,12 @@
 #' 
 #' # Draw network graphs
 #' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-#'   thickness = "se.fixed")
+#'   thickness = "se.common")
 #' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-#'   thickness = "se.fixed",
+#'   thickness = "se.common",
 #'   iterate = TRUE, plastic = TRUE)
 #' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-#'   thickness = "se.fixed",
+#'   thickness = "se.common",
 #'   iterate = TRUE, plastic = TRUE, start = "eigen")
 
 

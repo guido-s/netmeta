@@ -7,7 +7,7 @@
 \method{funnel}{netmeta}(
   x,
   order,
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   xlab = NULL,
   level = x$level,
   pch,
@@ -39,7 +39,7 @@
 the order of treatments or list of comparators (see Details).}
 
 \item{pooled}{A character string indicating whether results for the
-common (\code{"fixed"}) or random effects model (\code{"random"})
+common (\code{"common"}) or random effects model (\code{"random"})
 should be plotted. Can be abbreviated.}
 
 \item{xlab}{A label for the x-axis.}

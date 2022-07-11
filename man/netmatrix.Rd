@@ -59,7 +59,7 @@ smokingcessation$rob <- rep(1:2, 12)
 p1 <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
   data = smokingcessation, sm = "OR")
-net1 <- netmeta(p1, fixed = FALSE, ref = "A")
+net1 <- netmeta(p1, common = FALSE, ref = "A")
 
 # Generate network graph with information on risk of bias
 #

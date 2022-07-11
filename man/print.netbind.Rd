@@ -6,7 +6,7 @@
 \usage{
 \method{print}{netbind}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   warn.deprecated = gs("warn.deprecated"),
   ...
@@ -16,7 +16,7 @@
 \item{x}{An object of class \code{netbind} or
 \code{summary.netbind}.}
 
-\item{fixed}{A logical indicating whether results for the common
+\item{common}{A logical indicating whether results for the common
 effects model should be printed.}
 
 \item{random}{A logical indicating whether results for the random
@@ -43,7 +43,7 @@ face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 #
 net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
   data = face, reference.group = "placebo",
-  sm = "OR", fixed = FALSE)
+  sm = "OR", common = FALSE)
 
 # Additive CNMA model with placebo as inactive component and
 # reference
@@ -57,7 +57,7 @@ nb1 <- netbind(nc1, net1,
   col.study = c("red", "black"), col.square = c("red", "black"))
 
 nb1
-print(nb1, fixed = TRUE)
+print(nb1, common = TRUE)
 
 }
 \seealso{

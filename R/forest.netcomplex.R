@@ -9,7 +9,7 @@
 #' 
 #' @param x An object of class \code{netcomplex}.
 #' @param pooled A character string indicating whether results for the
-#'   common (\code{"fixed"}) or random effects model (\code{"random"})
+#'   common (\code{"common"}) or random effects model (\code{"random"})
 #'   should be plotted. Can be abbreviated.
 #' @param leftcols A character vector specifying (additional) columns
 #'   to be plotted on the left side of the forest plot or a logical
@@ -66,7 +66,7 @@
 #' # Conduct random effects network meta-analysis
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'   data = face, ref = "placebo", sm = "OR", fixed = FALSE)
+#'   data = face, ref = "placebo", sm = "OR", common = FALSE)
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
@@ -90,7 +90,7 @@
 
 
 forest.netcomplex <- function(x,
-                              pooled = ifelse(x$random, "random", "fixed"),
+                              pooled = ifelse(x$random, "random", "common"),
                               leftcols = "studlab",
                               leftlabs = NULL,
                               rightcols =
@@ -114,7 +114,8 @@ forest.netcomplex <- function(x,
   ##
   chkclass(x, "netcomplex")
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   ##
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
@@ -132,11 +133,11 @@ forest.netcomplex <- function(x,
   ## (2) Extract results for common and random effects model
   ##
   ##
-  if (pooled == "fixed") {
-    TE   <- x$Comb.fixed
-    seTE <- x$seComb.fixed
-    stat <- x$statistic.Comb.fixed
-    pval <- x$pval.Comb.fixed
+  if (pooled == "common") {
+    TE   <- x$Comb.common
+    seTE <- x$seComb.common
+    stat <- x$statistic.Comb.common
+    pval <- x$pval.Comb.common
     ##
     if (is.null(smlab))
       smlab <- "Common Effects Model"
@@ -191,7 +192,7 @@ forest.netcomplex <- function(x,
   ##
   forest(m1,
          digits = digits,
-         fixed = FALSE, random = FALSE,
+         common = FALSE, random = FALSE,
          overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
          leftcols = leftcols,
          leftlabs = leftlabs,

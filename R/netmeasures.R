@@ -104,7 +104,7 @@
 #' # treatment 'plac', i.e. placebo
 #' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", reference = "plac", fixed = FALSE)
+#'   data = Senn2013, sm = "MD", reference = "plac", common = FALSE)
 #' 
 #' # Calculate measures based on a random effects model
 #' #                          
@@ -183,11 +183,11 @@ netmeasures <- function(x,
     ## Direct evidence proportion
     ## (Rücker et al. 2020, BMC Med Res Meth, equation 7)
     ##
-    se.direct  <- uppertri(x$seTE.direct.fixed)
-    se.network <- uppertri(x$seTE.fixed)
+    se.direct  <- uppertri(x$seTE.direct.common)
+    se.network <- uppertri(x$seTE.common)
     proportion <- se.network^2 / se.direct^2
     proportion[is.na(proportion)] <- 0
-    names(proportion) <- rownames(x$Cov.fixed)
+    names(proportion) <- rownames(x$Cov.common)
     ##
     meanpath <- NA
     minpar <- NA

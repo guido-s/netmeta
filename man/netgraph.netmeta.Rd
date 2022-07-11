@@ -278,18 +278,18 @@ Argument \code{thickness} providing the line width of the nodes
 \item Proportional to number of studies comparing two treatments
   (\code{thickness = "number.of.studies"})
 \item Proportional to inverse standard error of common effects model
-  comparing two treatments (\code{thickness = "se.fixed"})
+  comparing two treatments (\code{thickness = "se.common"})
 \item Proportional to inverse standard error of random effects
   model comparing two treatments (\code{thickness = "se.random"})
 \item Weight from common effects model comparing two treatments
-  (\code{thickness = "w.fixed"})
+  (\code{thickness = "w.common"})
 \item Weight from random effects model comparing two treatments
   (\code{thickness = "w.random"})
 }
 
 Only evidence from direct treatment comparisons is considered to
 determine the line width if argument \code{thickness} is equal to
-any but the first method. By default, \code{thickness = "se.fixed"}
+any but the first method. By default, \code{thickness = "se.common"}
 is used if \code{start.layout = "circle"}, \code{iterate = FALSE},
 and \code{plastic = TRUE}. Otherwise, the same line width is used.
 

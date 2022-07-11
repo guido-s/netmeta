@@ -60,12 +60,16 @@ as.data.frame.netmeta <- function(x, row.names = NULL,
   ##
   res$studies <- NULL
   res$narms <- NULL
+  ##
+  res$lower.nma.fixed <- NULL
+  res$upper.nma.fixed <- NULL
+  res$leverage.fixed <- NULL
   
   if (!details)
     res <- res[, !(names(res) %in% c("treat1.pos", "treat2.pos",
-                                     "lower.nma.fixed", "upper.nma.fixed",
+                                     "lower.nma.common", "upper.nma.common",
                                      "lower.nma.random", "upper.nma.random",
-                                     "leverage.fixed"))]
+                                     "leverage.common"))]
   
   attr(res, "version") <- packageDescription("netmeta")$Version
   

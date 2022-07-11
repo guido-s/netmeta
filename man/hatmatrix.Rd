@@ -9,7 +9,7 @@ hatmatrix(
   x,
   method = "Ruecker",
   type,
-  fixed = x$fixed,
+  common = x$common,
   random = x$random,
   nchar.trts = x$nchar.trts,
   nchar.studlab = x$nchar.studlab
@@ -17,7 +17,7 @@ hatmatrix(
 
 \method{print}{hatmatrix}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   nchar.trts = x$x$nchar.trts,
   nchar.studlab = x$x$nchar.studlab,
@@ -37,7 +37,7 @@ derive the hat matrix. Either \code{"Ruecker"}, \code{"Krahn"} or
 \item{type}{A character string indicating which specific hat matrix
 should be derived (can be abbreviated, see Details).}
 
-\item{fixed}{A logical indicating whether a hat matrix should be
+\item{common}{A logical indicating whether a hat matrix should be
 printed for the common effects network meta-analysis.}
 
 \item{random}{A logical indicating whether a hat matrix should be
@@ -61,7 +61,7 @@ be printed for abbreviated study labels.}
 \item{\dots}{Additional arguments (ignored).}
 }
 \value{
-A list with two hat matrices: \code{fixed} (common effects model)
+A list with two hat matrices: \code{common} (common effects model)
 and \code{random} (random effects model).
 }
 \description{
@@ -79,11 +79,11 @@ Let \emph{n} be the number of different treatments (nodes,
 vertices) in a network and let \emph{m} be the number of existing
 comparisons (edges) between the treatments. If there are only
 two-arm studies, \emph{m} is equal to the number of studies,
-\emph{k}. Let seTE.adj.fixed and seTE.adj.random be the vectors of
+\emph{k}. Let seTE.adj.common and seTE.adj.random be the vectors of
 adjusted standard errors under the common and random effects model
 (see \code{\link{netmeta}}). Let \strong{W} be the \emph{m} x
 \emph{m} diagonal matrix that contains the inverse variance 1 /
-seTE.adj.fixed\eqn{^2} or 1 / seTE.adj.random\eqn{^2}.
+seTE.adj.common\eqn{^2} or 1 / seTE.adj.random\eqn{^2}.
 
 The given comparisons define the network structure. Therefrom an
 \emph{m} x \emph{n} design matrix X (edge-vertex incidence matrix) is
@@ -168,7 +168,7 @@ data(Dong2013)
 first10 <- subset(Dong2013, id <= 10)
 p1 <- pairwise(treatment, death, randomized, studlab = id,
   data = first10, sm = "OR")
-net1 <- netmeta(p1, fixed = FALSE)
+net1 <- netmeta(p1, common = FALSE)
 
 hatmatrix(net1)
 hatmatrix(net1, method = "k")

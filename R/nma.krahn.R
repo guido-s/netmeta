@@ -80,8 +80,8 @@ nma.krahn <- function(x, reference.group = x$reference.group,
                                warn = FALSE))
     ##
     direct$comparison[j] <- i
-    direct$TE[j] <- m1$TE.fixed
-    direct$seTE[j] <- m1$seTE.fixed
+    direct$TE[j] <- m1$TE.common
+    direct$seTE[j] <- m1$seTE.common
     ##
     if (sum(studies$comparison == i & !selmulti) > 0) {
       TE.i   <- studies$TE[studies$comparison == i & studies$narms == 2]
@@ -91,8 +91,8 @@ nma.krahn <- function(x, reference.group = x$reference.group,
                                  method.tau = "DL", method.tau.ci = "",
                                  warn = FALSE))
       ##
-      direct$TE.2arm[j] <- m2$TE.fixed
-      direct$seTE.2arm[j] <- m2$seTE.fixed
+      direct$TE.2arm[j] <- m2$TE.common
+      direct$seTE.2arm[j] <- m2$seTE.common
       direct$n.2arm[j] <- m2$k
     }
   }

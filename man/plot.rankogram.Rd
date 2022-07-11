@@ -7,7 +7,7 @@
 \method{plot}{rankogram}(
   x,
   type = if (cumulative.rankprob) "step" else "bar",
-  pooled = ifelse(x$random, "random", "fixed"),
+  pooled = ifelse(x$random, "random", "common"),
   sort = TRUE,
   trts,
   cumulative.rankprob = x$cumulative.rankprob,
@@ -25,7 +25,7 @@
 abbreviated.}
 
 \item{pooled}{A character string indicating whether results for the
-common (\code{"fixed"}) or random effects model (\code{"random"})
+common (\code{"common"}) or random effects model (\code{"random"})
 should be plotted. Can be abbreviated.}
 
 \item{sort}{A logical indicating whether treatments should be

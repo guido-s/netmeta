@@ -6,7 +6,7 @@
 \usage{
 \method{print}{netimpact}(
   x,
-  fixed = x$x$fixed,
+  common = x$x$common,
   random = x$x$random,
   digits = gs("digits.prop"),
   legend = TRUE,
@@ -17,7 +17,7 @@
 \arguments{
 \item{x}{An object of class \code{netimpact}.}
 
-\item{fixed}{A logical indicating whether results for the common
+\item{common}{A logical indicating whether results for the common
 effects model should be printed.}
 
 \item{random}{A logical indicating whether results for the random

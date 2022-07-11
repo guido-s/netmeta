@@ -6,7 +6,7 @@
 #' 
 #' @param x An object of class \code{netposet} (mandatory).
 #' @param pooled A character string indicating whether Hasse diagram
-#'   show be drawn for common (\code{"fixed"}) or random effects model
+#'   show be drawn for common (\code{"common"}) or random effects model
 #'   (\code{"random"}). Can be abbreviated.
 #' @param newpage A logical value indicating whether a new figure
 #'   should be printed in an existing graphics window. Otherwise, the
@@ -65,7 +65,7 @@
 #'   n = list(n1, n2, n3),
 #'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, fixed = FALSE,
+#' net1 <- netmeta(p1, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # (2) Early remission
@@ -75,7 +75,7 @@
 #'   n = list(n1, n2, n3),
 #'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, fixed = FALSE,
+#' net2 <- netmeta(p2, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # Partial order of treatment rankings
@@ -91,13 +91,14 @@
 
 
 hasse <- function(x,
-                  pooled = ifelse(x$random, "random", "fixed"),
+                  pooled = ifelse(x$random, "random", "common"),
                   newpage = TRUE) {
   
   chkclass(x, "netposet")
   x <- updateversion(x)
   ##
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   
   if (!is.installed.package("hasseDiagram", stop = FALSE))
     stop(paste0("Package 'hasseDiagram' missing.",
@@ -113,8 +114,8 @@ hasse <- function(x,
                 "install.packages(\"hasseDiagram\")"),
          call. = FALSE)
   
-  if (pooled == "fixed")
-    M <- x$M.fixed
+  if (pooled == "common")
+    M <- x$M.common
   else
     M <- x$M.random
   ##

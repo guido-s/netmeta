@@ -144,7 +144,6 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = TRUE,
   
   
   chkclass(x, "netmeta")
-  x <- updateversion(x)
   ##
   if (x$n == 2) {
     warning("No decomposition possible for network meta-analysis ",

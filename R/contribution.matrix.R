@@ -21,7 +21,7 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
                                        verbose = FALSE) {
   
   chkclass(x, "netmeta")
-  model <- setchar(model, c("fixed", "random"))
+  model <- setchar(model, c("common", "random"))
   chklogical(hatmatrix.F1000)
   chklogical(verbose)
   ##
@@ -184,7 +184,7 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
 contribution.matrix.davies <- function(x, model, verbose = FALSE) {
   
   chkclass(x, "netmeta")
-  model <- setchar(model, c("fixed", "random"))
+  model <- setchar(model, c("common", "random"))
   chklogical(verbose)
   ##
   is.tictoc <- is.installed.package("tictoc", stop = FALSE)

@@ -10,7 +10,7 @@ nettable(
   name = NULL,
   method = NULL,
   order = NULL,
-  fixed,
+  common,
   random,
   upper = TRUE,
   reference.group = NULL,
@@ -36,7 +36,7 @@ nettable(
   verbose = FALSE
 )
 
-\method{print}{nettable}(x, fixed = x$x$fixed, random = x$x$random, ...)
+\method{print}{nettable}(x, common = x$x$common, random = x$x$random, ...)
 }
 \arguments{
 \item{\dots}{Any number of network meta-analysis objects or a
@@ -53,7 +53,7 @@ abbreviated. See Details.}
 \item{order}{A optional character or numerical vector specifying
 the order of treatments in comparisons.}
 
-\item{fixed}{A logical indicating whether table for the common
+\item{common}{A logical indicating whether table for the common
 effects network meta-analysis should be printed.}
 
 \item{random}{A logical indicating whether table for the random
@@ -61,7 +61,7 @@ effects network meta-analysis should be printed.}
 
 \item{upper}{A logical indicating whether treatment comparisons
 should be selected from the lower or upper triangle of the
-treatment effect matrices (see list elements \code{TE.fixed} and
+treatment effect matrices (see list elements \code{TE.common} and
 \code{TE.random} in the \code{netmeta} object). Ignored if
 argument \code{order} is provided.}
 
@@ -141,7 +141,7 @@ should be printed.}
 \value{
 An object of class \code{nettable} with corresponding \code{print}
 function if argument \code{writexl = FALSE}. The object is a list
-containing the network tables in list elements 'fixed' and
+containing the network tables in list elements 'common' and
 'random'. An Excel file is created if \code{writexl = TRUE}. In
 this case, \code{NULL} is returned in R.
 }
@@ -195,7 +195,7 @@ net1 <- netmeta(p1)
 #
 nt1 <- nettable(net1, digits = 2)
 nt1
-print(nt1, fixed = FALSE)
+print(nt1, common = FALSE)
 print(nt1, random = FALSE)
 
 \dontrun{

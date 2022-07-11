@@ -281,12 +281,12 @@ net1
 # Draw network graphs
 #
 netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-  thickness = "se.fixed")
+  thickness = "se.common")
 netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-  plastic = TRUE, thickness = "se.fixed",
+  plastic = TRUE, thickness = "se.common",
   iterate = TRUE)
 netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-  plastic = TRUE, thickness = "se.fixed",
+  plastic = TRUE, thickness = "se.common",
   iterate = TRUE, start = "eigen")
 
 # Example using generic outcomes (internal call of function

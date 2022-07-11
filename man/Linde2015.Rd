@@ -78,7 +78,7 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI",
   "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 
 # Conduct random effects network meta-analysis
-net1 <- netmeta(p1, fixed = FALSE, reference = "Placebo", seq = trts)
+net1 <- netmeta(p1, common = FALSE, reference = "Placebo", seq = trts)
 print(net1, digits = 2)
 }
 }

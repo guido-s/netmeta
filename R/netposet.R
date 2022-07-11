@@ -12,18 +12,20 @@
 #' @param outcomes A character vector with outcome names.
 #' @param treatments A character vector with treatment names.
 #' @param small.values See details.
-#' @param fixed A logical indicating whether to show results for the
+#' @param common A logical indicating whether to show results for the
 #'   common effects model.
 #' @param random A logical indicating whether to show results for the
 #'   random effects model.
 #' @param x An object of class \code{netposet}.
 #' @param pooled A character string indicating whether Hasse diagram
-#'   should be drawn for common (\code{"fixed"}) or random effects
+#'   should be drawn for common (\code{"common"}) or random effects
 #'   model (\code{"random"}). Can be abbreviated.
-#' @param warn.deprecated A logical indicating whether warnings should
-#'   be printed if deprecated arguments are used.
-#' @param comb.fixed Deprecated argument; replaced by \code{fixed}.
-#' @param comb.random Deprecated argument; replaced by \code{random}.
+#' @param fixed Ignored deprecated argument (replaced by
+#'   \code{common}).
+#' @param comb.fixed Ignored deprecated argument (replaced by
+#'   \code{common}).
+#' @param comb.random Ignored deprecated argument (replaced by
+#'   \code{random}).
 #' 
 #' @details
 #' In network meta-analysis, frequently different outcomes are
@@ -75,12 +77,12 @@
 #' \code{\link{netrank}}. This argument is ignored for a ranking
 #' matrix and \code{netrank} objects.
 #' 
-#' Arguments \code{fixed} and \code{random} can be used to define
+#' Arguments \code{common} and \code{random} can be used to define
 #' whether results should be printed and plotted for common and random
 #' effects model. If netmeta and netrank objects are provided in
-#' argument \code{\dots{}}, values for \code{fixed} and \code{random}
+#' argument \code{\dots{}}, values for \code{common} and \code{random}
 #' within these objects are considered; if these values are not
-#' unique, argument \code{fixed} or \code{random} are set to
+#' unique, argument \code{common} or \code{random} are set to
 #' \code{TRUE}.
 #' 
 #' In function \code{print.netposet}, argument \code{\dots{}} is
@@ -90,12 +92,12 @@
 #' An object of class \code{netposet} with corresponding \code{print},
 #' \code{plot}, and \code{hasse} functions. The object is a list
 #' containing the following components:
-#' \item{P.fixed}{Ranking matrix with rows corresponding to treatments
+#' \item{P.common}{Ranking matrix with rows corresponding to treatments
 #'   and columns corresponding to outcomes (common effects model).}
-#' \item{M0.fixed}{Hasse matrix skipping unnecessary paths (common
+#' \item{M0.common}{Hasse matrix skipping unnecessary paths (common
 #'   effects model).}
-#' \item{M.fixed}{"Full" Hasse matrix (common effects model).}
-#' \item{O.fixed}{Matrix with information about partial ordering
+#' \item{M.common}{"Full" Hasse matrix (common effects model).}
+#' \item{O.common}{Matrix with information about partial ordering
 #'   (common effects model).}
 #' \item{P.random}{Ranking matrix with rows corresponding to
 #'   treatments and columns corresponding to outcomes (random effects
@@ -105,7 +107,7 @@
 #' \item{M.random}{"Full" Hasse matrix (random effects model).}
 #' \item{O.random}{Matrix with information about partial ordering
 #'   (random effects model).}
-#' \item{small.values, fixed, random}{As.defined above.}
+#' \item{small.values, common, random}{As.defined above.}
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
@@ -161,7 +163,7 @@
 #'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
 #'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net1 <- netmeta(p1, fixed = FALSE,
+#' net1 <- netmeta(p1, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # (2) Early remission
@@ -170,7 +172,7 @@
 #'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
 #'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net2 <- netmeta(p2, fixed = FALSE,
+#' net2 <- netmeta(p2, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "bad")
 #' 
 #' # Partial order of treatment rankings (two outcomes)
@@ -195,7 +197,7 @@
 #'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
 #'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net3 <- netmeta(p3, fixed = FALSE,
+#' net3 <- netmeta(p3, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # (4) Loss to follow-up due to adverse events
@@ -204,7 +206,7 @@
 #'   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
 #'   studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
 #' #
-#' net4 <- netmeta(p4, fixed = FALSE,
+#' net4 <- netmeta(p4, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # (5) Adverse events
@@ -213,7 +215,7 @@
 #'   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
 #'   studlab = id, data = Linde2015, sm = "OR")
 #' #
-#' net5 <- netmeta(p5, fixed = FALSE,
+#' net5 <- netmeta(p5, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "good")
 #' 
 #' # Partial order of treatment rankings (all five outcomes)
@@ -289,15 +291,14 @@
 
 
 netposet <- function(..., outcomes, treatments, small.values,
-                     fixed, random, comb.fixed, comb.random,
-                     warn.deprecated = gs("warn.deprecated")) {
+                     common, random, fixed, comb.fixed, comb.random) {
   
   
   args <- list(...)
   
   
-  if (!missing(fixed))
-    chklogical(fixed)
+  if (!missing(common))
+    chklogical(common)
   if (!missing(random))
     chklogical(random)
   
@@ -375,11 +376,11 @@ netposet <- function(..., outcomes, treatments, small.values,
     rownames(ranking.matrix) <- treatments
     colnames(ranking.matrix) <- outcomes
     ##
-    ranking.matrix.fixed <- ranking.matrix
+    ranking.matrix.common <- ranking.matrix
     ranking.matrix.random <- ranking.matrix
     ##
-    if (missing(fixed))
-      fixed <- FALSE
+    if (missing(common))
+      common <- FALSE
     if (missing(random))
       random <- FALSE
   }
@@ -445,33 +446,33 @@ netposet <- function(..., outcomes, treatments, small.values,
     ##
     ## (2) Extract P-Scores
     ##
-    ranking.list.fixed <- ranking.list.random <- list()
-    fixeds <- randoms <- rep_len(NA, length(args))
+    ranking.list.common <- ranking.list.random <- list()
+    commons <- randoms <- rep_len(NA, length(args))
     ##
     for (i in seq_along(args)) {
       ##
       args.i <- args[[i]]
       ##
       if (inherits(args.i, "netmeta")) {
-        ranking.list.fixed[[i]] <- netrank(args.i,
+        ranking.list.common[[i]] <- netrank(args.i,
                                            small.values =
-                                             small.values[i])$ranking.fixed
+                                             small.values[i])$ranking.common
         ranking.list.random[[i]] <- netrank(args.i,
                                             small.values =
                                               small.values[i])$ranking.random
-        fixeds[i]  <- args.i$fixed
+        commons[i]  <- args.i$common
         randoms[i] <- args.i$random
       }
       else if (inherits(args.i, "netrank")) {
-        ranking.list.fixed[[i]] <- args.i$ranking.fixed
+        ranking.list.common[[i]] <- args.i$ranking.common
         ranking.list.random[[i]] <- args.i$ranking.random
-        fixeds[i]  <- args.i$x$fixed
+        commons[i]  <- args.i$x$common
         randoms[i] <- args.i$x$random
       }
     }
     
     
-    ranking.treatments <- lapply(ranking.list.fixed, names)
+    ranking.treatments <- lapply(ranking.list.common, names)
     n.treatments <- unlist(lapply(ranking.treatments, length))
     ##
     if (length(unique(n.treatments)) != 1) {
@@ -489,10 +490,10 @@ netposet <- function(..., outcomes, treatments, small.values,
           stop("Treatment names of all rankings must be in same order.",
                call. = FALSE)
         ##
-        ranking.j <- ranking.list.fixed[[j]]
-        ranking.list.fixed[[j]] <- ranking.list.fixed[[sel.max]]
-        ranking.list.fixed[[j]][treatments[!missing.j]] <- ranking.j
-        ranking.list.fixed[[j]][treatments[missing.j]]  <- NA
+        ranking.j <- ranking.list.common[[j]]
+        ranking.list.common[[j]] <- ranking.list.common[[sel.max]]
+        ranking.list.common[[j]][treatments[!missing.j]] <- ranking.j
+        ranking.list.common[[j]][treatments[missing.j]]  <- NA
         ##
         ranking.j <- ranking.list.random[[j]]
         ranking.list.random[[j]] <- ranking.list.random[[sel.max]]
@@ -525,15 +526,15 @@ netposet <- function(..., outcomes, treatments, small.values,
                call. = FALSE)
       }
     ##
-    ranking.matrix.fixed <- matrix(unlist(ranking.list.fixed,
+    ranking.matrix.common <- matrix(unlist(ranking.list.common,
                                           use.names = FALSE),
                                    ncol = length(outcomes), byrow = FALSE)
     ranking.matrix.random <- matrix(unlist(ranking.list.random,
                                            use.names = FALSE),
                                     ncol = length(outcomes), byrow = FALSE)
-    rownames(ranking.matrix.fixed) <- treatments
+    rownames(ranking.matrix.common) <- treatments
     rownames(ranking.matrix.random) <- treatments
-    colnames(ranking.matrix.fixed) <- outcomes
+    colnames(ranking.matrix.common) <- outcomes
     colnames(ranking.matrix.random) <- outcomes
     ##
     text.netmeta.netrank <- if (any.netmeta) "netmeta" else ""
@@ -541,13 +542,13 @@ netposet <- function(..., outcomes, treatments, small.values,
     text.netmeta.netrank <- if (!any.netmeta & any.netrank) "netrank"
     text.netmeta.netrank <- paste(text.netmeta.netrank, "objects.")
     ##
-    if (missing(fixed)) {
-      fixed <- unique(fixeds)
-      if (length(fixed) != 1) {
-        warning("Argument 'fixed' set to TRUE as different values are ",
+    if (missing(common)) {
+      common <- unique(commons)
+      if (length(common) != 1) {
+        warning("Argument 'common' set to TRUE as different values are ",
                 "available in ", text.netmeta.netrank,
                 call. = FALSE)
-        fixed <- TRUE
+        common <- TRUE
       }
     }
     ##
@@ -563,18 +564,20 @@ netposet <- function(..., outcomes, treatments, small.values,
   } 
   
   
-  n <- nrow(ranking.matrix.fixed)
-  o <- ncol(ranking.matrix.fixed)
+  n <- nrow(ranking.matrix.common)
+  o <- ncol(ranking.matrix.common)
   
   
-  Pos.fixed <- M.fixed <- matrix(0, nrow = n, ncol = n)
+  Pos.common <- M.common <- matrix(0, nrow = n, ncol = n)
   ##
-  rownames(Pos.fixed) <- colnames(Pos.fixed) <- rownames(ranking.matrix.fixed)
-  rownames(M.fixed) <- colnames(M.fixed) <- rownames(ranking.matrix.fixed)
+  rownames(Pos.common) <- colnames(Pos.common) <-
+    rownames(ranking.matrix.common)
+  rownames(M.common) <- colnames(M.common) <- rownames(ranking.matrix.common)
   ##
   Pos.random <- M.random <- matrix(0, nrow = n, ncol = n)
   ##
-  rownames(Pos.random) <- colnames(Pos.random) <- rownames(ranking.matrix.random)
+  rownames(Pos.random) <- colnames(Pos.random) <-
+    rownames(ranking.matrix.random)
   rownames(M.random) <- colnames(M.random) <- rownames(ranking.matrix.random)
   
   
@@ -585,10 +588,10 @@ netposet <- function(..., outcomes, treatments, small.values,
     for (j in 1:n)
       if (i != j)
         for (k in 1:o)
-          if (!is.na(ranking.matrix.fixed[i, k]) &
-              !is.na(ranking.matrix.fixed[j, k]) &
-              ranking.matrix.fixed[i, k] >= ranking.matrix.fixed[j, k])
-            Pos.fixed[i, j] <- Pos.fixed[i, j] + 1
+          if (!is.na(ranking.matrix.common[i, k]) &
+              !is.na(ranking.matrix.common[j, k]) &
+              ranking.matrix.common[i, k] >= ranking.matrix.common[j, k])
+            Pos.common[i, j] <- Pos.common[i, j] + 1
   ##
   for (i in 1:n)
     for (j in 1:n)
@@ -602,16 +605,16 @@ netposet <- function(..., outcomes, treatments, small.values,
   
   ## Calculate "full" Hasse matrix M
   ##
-  M.fixed[Pos.fixed == o]   <- 1
+  M.common[Pos.common == o]   <- 1
   M.random[Pos.random == o] <- 1
   
   
   ## Matrix with information about partial ordering
   ##
-  PO.fixed <- M.fixed[1:2, ]
-  PO.fixed[1, ] <- rowSums(M.fixed)
-  PO.fixed[2, ] <- colSums(M.fixed)
-  rownames(PO.fixed) <- c("inferior", "superior")
+  PO.common <- M.common[1:2, ]
+  PO.common[1, ] <- rowSums(M.common)
+  PO.common[2, ] <- colSums(M.common)
+  rownames(PO.common) <- c("inferior", "superior")
   ##
   PO.random <- M.random[1:2, ]
   PO.random[1, ] <- rowSums(M.random)
@@ -621,7 +624,7 @@ netposet <- function(..., outcomes, treatments, small.values,
   
   ## Skipping each direct path where a path of length 2 is found
   ##
-  M0.fixed <- M.fixed - sign(M.fixed %*% M.fixed)
+  M0.common <- M.common - sign(M.common %*% M.common)
   ##
   M0.random <- M.random - sign(M.random %*% M.random)
   
@@ -630,16 +633,16 @@ netposet <- function(..., outcomes, treatments, small.values,
     small.values <- NULL
   
   
-  res <- list(P.fixed = ranking.matrix.fixed,
-              M0.fixed = M0.fixed,
-              M.fixed = M.fixed,
-              O.fixed = PO.fixed,
+  res <- list(P.common = ranking.matrix.common,
+              M0.common = M0.common,
+              M.common = M.common,
+              O.common = PO.common,
               P.random = ranking.matrix.random,
               M0.random = M0.random,
               M.random = M.random,
               O.random = PO.random,
               small.values = small.values,
-              fixed = fixed,
+              common = common,
               random = random,
               call = match.call(),
               version = packageDescription("netmeta")$Version)
@@ -659,19 +662,20 @@ netposet <- function(..., outcomes, treatments, small.values,
 
 
 print.netposet <- function(x,
-                           pooled = ifelse(x$random, "random", "fixed"),
+                           pooled = ifelse(x$random, "random", "common"),
                            ...) {
   
   chkclass(x, "netposet")
   x <- updateversion(x)
   
   
-  pooled <- setchar(pooled, c("fixed", "random"))
+  pooled <- setchar(pooled, c("common", "random", "fixed"))
+  pooled[pooled == "fixed"] <- "common"
   
-  if (pooled == "fixed") {
-    if (!(!x$fixed & !x$random))
+  if (pooled == "common") {
+    if (!(!x$common & !x$random))
       cat("Common effects model\n")
-    print(x$M0.fixed, ...)
+    print(x$M0.common, ...)
     if (x$random)
       cat("\n")
   }

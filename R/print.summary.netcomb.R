@@ -4,7 +4,7 @@
 #' Print detailed information  for component network meta-analysis.
 #' 
 #' @param x An object of class \code{summary.netcomb}
-#' @param fixed A logical indicating whether results for the common
+#' @param common A logical indicating whether results for the common
 #'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
@@ -57,7 +57,7 @@
 #' #
 #' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'   data = face, reference.group = "placebo",
-#'   sm = "OR", fixed = FALSE)
+#'   sm = "OR", common = FALSE)
 #' 
 #' # Additive model for treatment components
 #' #
@@ -69,7 +69,7 @@
 
 
 print.summary.netcomb <- function(x,
-                                  fixed = x$x$fixed,
+                                  common = x$x$common,
                                   random = x$x$random,
                                   backtransf = x$backtransf,
                                   nchar.comps = x$nchar.comps,
@@ -125,9 +125,12 @@ print.summary.netcomb <- function(x,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  fixed <- deprecated(fixed, missing(fixed), args, "comb.fixed",
+  missing.common <- missing(common)
+  common <- deprecated(common, missing.common, args, "comb.fixed",
                       warn.deprecated)
-  chklogical(fixed)
+  common <- deprecated(common, missing.common, args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
   ##
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
@@ -147,7 +150,7 @@ print.summary.netcomb <- function(x,
   comps <- sort(c(x$comps, x$inactive))
   comps.abbr <- treats(comps, nchar.comps)
   ##
-  comp.f <- x$comparison.cnma.fixed
+  comp.f <- x$comparison.cnma.common
   comp.f$seTE <- NULL
   ##
   dat.f <- formatComp(comp.f,
@@ -167,7 +170,7 @@ print.summary.netcomb <- function(x,
                       scientific.pval, zero.pval, JAMA.pval,
                       big.mark)
   ##
-  if (fixed) {
+  if (common) {
     cat("Additive model (common effects model):\n")
     prmatrix(dat.f, quote = FALSE, right = TRUE, ...)
     cat("\n")
@@ -179,9 +182,9 @@ print.summary.netcomb <- function(x,
     cat("\n")
   }
   ##  
-  if (fixed | random)
+  if (common | random)
     print.netcomb(x$x,
-                  fixed = fixed,
+                  common = common,
                   random = random,
                   backtransf = backtransf,
                   nchar.comps = nchar.comps,
@@ -202,7 +205,7 @@ print.summary.netcomb <- function(x,
                   ##
                   ...)
   else
-    cat(paste("Please use argument 'fixed = TRUE' or 'random = TRUE'",
+    cat(paste("Please use argument 'common = TRUE' or 'random = TRUE'",
               "to print network meta-analysis results.\n"))
   
   

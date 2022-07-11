@@ -4,13 +4,13 @@
 \alias{hasse}
 \title{Hasse diagram}
 \usage{
-hasse(x, pooled = ifelse(x$random, "random", "fixed"), newpage = TRUE)
+hasse(x, pooled = ifelse(x$random, "random", "common"), newpage = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{netposet} (mandatory).}
 
 \item{pooled}{A character string indicating whether Hasse diagram
-show be drawn for common (\code{"fixed"}) or random effects model
+show be drawn for common (\code{"common"}) or random effects model
 (\code{"random"}). Can be abbreviated.}
 
 \item{newpage}{A logical value indicating whether a new figure
@@ -54,7 +54,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(p1, fixed = FALSE,
+net1 <- netmeta(p1, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "bad")
 
 # (2) Early remission
@@ -64,7 +64,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   n = list(n1, n2, n3),
   studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(p2, fixed = FALSE,
+net2 <- netmeta(p2, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "bad")
 
 # Partial order of treatment rankings

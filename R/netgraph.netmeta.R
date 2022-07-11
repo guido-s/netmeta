@@ -161,18 +161,18 @@
 #' \item Proportional to number of studies comparing two treatments
 #'   (\code{thickness = "number.of.studies"})
 #' \item Proportional to inverse standard error of common effects model
-#'   comparing two treatments (\code{thickness = "se.fixed"})
+#'   comparing two treatments (\code{thickness = "se.common"})
 #' \item Proportional to inverse standard error of random effects
 #'   model comparing two treatments (\code{thickness = "se.random"})
 #' \item Weight from common effects model comparing two treatments
-#'   (\code{thickness = "w.fixed"})
+#'   (\code{thickness = "w.common"})
 #' \item Weight from random effects model comparing two treatments
 #'   (\code{thickness = "w.random"})
 #' }
 #'
 #' Only evidence from direct treatment comparisons is considered to
 #' determine the line width if argument \code{thickness} is equal to
-#' any but the first method. By default, \code{thickness = "se.fixed"}
+#' any but the first method. By default, \code{thickness = "se.common"}
 #' is used if \code{start.layout = "circle"}, \code{iterate = FALSE},
 #' and \code{plastic = TRUE}. Otherwise, the same line width is used.
 #'
@@ -438,11 +438,11 @@ netgraph.netmeta <- function(x, seq = x$seq,
                    "\n  ",
                    "Please install package 'rgl' in order to ",
                    "produce 3-D plots\n  ",
-                  "(R command: 'install.packages(\"rgl\")').",
-                  if (length(grep("darwin", R.Version()$os)) == 1)
-                    paste0("\n  Note, macOS users have to install ",
-                           "XQuartz, see https://www.xquartz.org/.")
-                  ))
+                   "(R command: 'install.packages(\"rgl\")').",
+                   if (length(grep("darwin", R.Version()$os)) == 1)
+                     paste0("\n  Note, macOS users have to install ",
+                            "XQuartz, see https://www.xquartz.org/.")
+                   ))
     dim <- "2d"
     is_2d <- TRUE
     is_3d <- FALSE
@@ -619,13 +619,13 @@ netgraph.netmeta <- function(x, seq = x$seq,
 
   if (missing(thickness)) {
     if (start.layout == "circle" & iterate == FALSE & plastic == TRUE) {
-      if (x$random & !x$fixed) {
+      if (x$random & !x$common) {
         thick <- "se.random"
         thickness <- "se.random"
       }
       else {
-        thick <- "se.fixed"
-        thickness <- "se.fixed"
+        thick <- "se.common"
+        thickness <- "se.common"
       }
     }
     else {
@@ -635,14 +635,18 @@ netgraph.netmeta <- function(x, seq = x$seq,
   }
   else {
     if (!is.matrix(thickness)) {
-      if (length(thickness) == 1 & is.character(thickness))
+      if (length(thickness) == 1 & is.character(thickness)) {
         thick <- setchar(thickness,
                          c("equal", "number.of.studies",
-                           "se.fixed", "se.random", "w.fixed", "w.random"))
+                           "se.common", "se.random", "w.common", "w.random",
+                           "se.fixed", "w.fixed"))
+        thick[thick == "se.fixed"] <- "se.common"
+        thick[thick == "w.fixed"] <- "w.common"
+      }
       ##
       else if (length(thickness) == 1 & is.logical(thickness)) {
         if (thickness)
-          thick <- "se.fixed"
+          thick <- "se.common"
         else
           thick <- "equal"
       }
@@ -667,8 +671,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
       thick <- "matrix"
     }
   }
-
-
+  
+  
   if (allfigures & is_3d) {
     warning("Argument 'allfigures' set to FALSE for 3-D network plot.")
     allfigures <- FALSE
@@ -981,8 +985,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   else if (thick == "equal") {
     W.matrix <- lwd * A.sign
   }
-  else if (thick == "se.fixed") {
-    IV.matrix <- x$seTE.direct.fixed[seq1, seq1]
+  else if (thick == "se.common") {
+    IV.matrix <- x$seTE.direct.common[seq1, seq1]
     IV.matrix[is.infinite(IV.matrix)] <- NA
     W.matrix <- lwd.max * min(IV.matrix, na.rm = TRUE) / IV.matrix
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
@@ -993,8 +997,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
     W.matrix <- lwd.max * min(IV.matrix, na.rm = TRUE) / IV.matrix
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
-  else if (thick == "w.fixed") {
-    IV.matrix <- 1 / x$seTE.direct.fixed[seq1, seq1]^2
+  else if (thick == "w.common") {
+    IV.matrix <- 1 / x$seTE.direct.common[seq1, seq1]^2
     IV.matrix[is.infinite(IV.matrix)] <- NA
     W.matrix <- lwd.max * IV.matrix / max(IV.matrix, na.rm = TRUE)
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
@@ -1250,7 +1254,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
           highs <- unlist(compsplit(high, split = highlight.split))
           if (length(highs) != 2)
             stop("Wrong format for argument 'highlight' ",
-            "(see helpfile of plotgraph command).")
+                 "(see helpfile of plotgraph command).")
           ##
           if (sum(dat.nodes$trts %in% highs) != 2)
             stop(paste("Argument 'highlight' must contain two of the ",
