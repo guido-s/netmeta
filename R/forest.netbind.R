@@ -228,8 +228,8 @@ forest.netbind <- function(x,
   forest(m,
          digits = digits,
          ##
-         common = FALSE, random = FALSE,
-         overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
+         overall = FALSE, common = FALSE, random = FALSE,
+         hetstat = FALSE, test.subgroup = FALSE,
          ##
          subgroup.hetstat = FALSE,
          prediction.subgroup = FALSE,

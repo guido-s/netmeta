@@ -1,3 +1,13 @@
+## netmeta, version 2.5-1 (2022-mm-dd)
+
+### Bug fixes
+
+* rankogram():
+  - export list elements 'fixed', 'ranking.fixed',
+    'ranking.matrix.fixed', and 'cumrank.matrix.fixed' for backward
+    compatibility
+
+
 ## netmeta, version 2.5-0 (2022-07-11)
 
 ### Major changes

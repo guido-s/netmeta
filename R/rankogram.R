@@ -186,11 +186,11 @@ rankogram <- function(x, nsim = 1000,
   ##
   ## Backward compatibility
   ##
-  x$fixed <- common
+  res$fixed <- common
   ##
-  x$ranking.fixed <- ranking.common
-  x$ranking.matrix.fixed <- ranking.matrix.common
-  x$cumrank.matrix.fixed <- cumrank.matrix.common
+  res$ranking.fixed <- ranking.common
+  res$ranking.matrix.fixed <- ranking.matrix.common
+  res$cumrank.matrix.fixed <- cumrank.matrix.common
   ##
   class(res) <- "rankogram"
   

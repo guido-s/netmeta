@@ -428,7 +428,7 @@ forest.netsplit <- function(x,
     dat.overall$prop <- NA
     ##
     if (missing.smlab)
-      smlab <- "Common effects model"
+      smlab <- "Common Effects Model"
   }
   else {
     dat.direct <- x$direct.random
@@ -446,7 +446,7 @@ forest.netsplit <- function(x,
     dat.overall$prop <- NA
     ##
     if (missing.smlab)
-      smlab <- "Random effects model"
+      smlab <- "Random Effects Model"
   }
   ##
   if (missing.smlab & n.subgroup == 1)
@@ -612,12 +612,15 @@ forest.netsplit <- function(x,
         suppressWarnings(metagen(dat$TE, dat$seTE,
                                  studlab = dat$evidence, data = dat,
                                  sm = x$sm,
+                                 common = FALSE, random = FALSE,
                                  method.tau = "DL", method.tau.ci = "",
-                                 byvar = dat$comps, print.byvar = FALSE))
+                                 subgroup = dat$comps,
+                                 print.subgroup.name = FALSE))
     else
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
                                  studlab = dat$comps, data = dat, sm = x$sm,
+                                 common = FALSE, random = FALSE,
                                  method.tau = "DL", method.tau.ci = ""))
     ##
     if (overall) {
@@ -669,41 +672,52 @@ forest.netsplit <- function(x,
         suppressWarnings(metagen(dat$TE, dat$seTE,
                                  studlab = dat$comps, data = dat,
                                  sm = x$sm,
+                                 common = FALSE, random = FALSE,
                                  method.tau = "DL", method.tau.ci = "",
-                                 byvar = dat$evidence, print.byvar = FALSE))
+                                 subgroup = dat$evidence,
+                                 print.subgroup.name = FALSE))
     else
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
                                  studlab = dat$comps, data = dat, sm = x$sm,
+                                 common = FALSE, random = FALSE,
                                  method.tau = "DL", method.tau.ci = ""))
     ##
     if (overall) {
-      m$w.common[m$byvar == text.overall] <- max(m$w.common, na.rm = TRUE)
-      m$w.random[m$byvar == text.overall] <- max(m$w.random, na.rm = TRUE)
+      m$w.common[m$subgroup == text.overall] <- max(m$w.common, na.rm = TRUE)
+      m$w.random[m$subgroup == text.overall] <- max(m$w.random, na.rm = TRUE)
     }
     ##
     if (prediction) {
-      m$lower[m$byvar == text.predict] <- dat.predict$lower
-      m$upper[m$byvar == text.predict] <- dat.predict$upper
+      m$lower[m$subgroup == text.predict] <- dat.predict$lower
+      m$upper[m$subgroup == text.predict] <- dat.predict$upper
       ##
-      m$w.common[m$byvar == text.predict] <- max(m$w.common, na.rm = TRUE)
-      m$w.random[m$byvar == text.predict] <- max(m$w.random, na.rm = TRUE)
+      m$w.common[m$subgroup == text.predict] <- max(m$w.common, na.rm = TRUE)
+      m$w.random[m$subgroup == text.predict] <- max(m$w.random, na.rm = TRUE)
     }
     ##
     forest(m,
            digits = digits,
-           common = FALSE, random = FALSE,
-           overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
+           ##
+           overall = FALSE, common = FALSE, random = FALSE,
+           hetstat = FALSE, test.subgroup = FALSE,
+           ##
+           subgroup.hetstat = FALSE,
+           prediction.subgroup = FALSE,
+           ##
            leftcols = leftcols,
            leftlabs = leftlabs,
            rightcols = rightcols,
            rightlabs = rightlabs,
+           ##
            lab.NA = lab.NA,
-           backtransf = backtransf,
            smlab = smlab,
+           backtransf = backtransf,
+           ##
            type.study = dat$type.study,
            col.square = dat$col.estimate,
            col.square.lines = dat$col.lines,
+           ##
            weight.study = if (equal.size) "same" else "common",
            ...)
   }
