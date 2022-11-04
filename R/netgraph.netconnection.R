@@ -14,8 +14,6 @@
 #'   disconnected networks).
 #' @param plastic A logical indicating whether the appearance of the
 #'   comparisons should be in '3D look'.
-#' @param iterate A logical indicating whether the stress majorization
-#'   algorithm is carried out for optimization of the layout.
 #' @param \dots Additional arguments passed on to
 #'   \code{\link{netgraph.netmeta}} (see Details).
 #' 
@@ -57,7 +55,6 @@ netgraph.netconnection <- function(x, seq,
                                    col = seq_len(x$n.subnets),
                                    reference.group = NULL,
                                    plastic = FALSE,
-                                   iterate = FALSE,
                                    ...) {
   
   
@@ -129,8 +126,7 @@ netgraph.netconnection <- function(x, seq,
   
   
   res <- netgraph(x, plastic = plastic, col = col,
-                  seq = seq, iterate = iterate,
-                  ...)
+                  seq = seq, ...)
 
   
   invisible(res)
