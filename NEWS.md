@@ -1,20 +1,18 @@
-## netmeta, version 2.6-0 (2022-mm-dd)
+## netmeta, version 2.6-0 (2022-11-04)
 
 ### Major changes
 
-* Network graphs:
- - general layout of network graphs irrespective whether '3-D look' is
-   used or not (argument 'plastic')
- - thickness of lines / edges proportional to the number of studies
-   directly comparing treatments (new default)
- - thickness of lines / edges can be re-scaled using new argument
-   'rescale.thickness'
- - more similar thickness of lines if proportional to the number of
-   studies directly comparing treatments by using sqrt() instead of
-   I()
- - more similar point sizes if proportional to the number of
-   observations in treatment arms by using sqrt() instead of
-   I() to rescale point sizes
+* New general layout of network graphs:
+  - same general layout irrespective whether '3-D look' is used or not
+    (argument 'plastic')
+  - thickness of lines / edges proportional to the number of studies
+    directly comparing treatments
+  - more similar thickness of lines if proportional to the number of
+    studies directly comparing treatments by using sqrt() to rescale
+    lines
+  - more similar point sizes if proportional to the number of
+    observations in treatment arms by using sqrt() to rescale point
+    sizes
 
 ### Bug fixes
 
@@ -26,16 +24,17 @@
 ### User-visible changes
 
 * netgraph.netmeta():
-  - thickness of lines is proportional to the number of studies
-    comparing the two treatments (previous default: proportional to
+  - thickness of lines / edges proportional to the number of studies
+    directly comparing treatments (previous default: proportional to
     standard error of direct pairwise comparisons in common effects or
     random effects model if 'plastic = TRUE' and equal thickness if
     'plastic = FALSE')
   - print black lines if 'plastic = FALSE' (previous default:
     slateblue lines)
-  - new argument 'rescale.thickness' to specify function to re-scale
+  - print slateblue lines if 'iterate = TRUE'
+  - new argument 'rescale.thickness' to specify function to rescale
     line thickness
-  - new argument 'rescale.pointsize' to specify function to re-scale
+  - new argument 'rescale.pointsize' to specify function to rescale
     point sizes
   - new argument 'points.max' to define maximum point size
   - new argument 'points.min' to define minimal point size
@@ -45,12 +44,12 @@
     slateblue lines)
 
 * netgraph.netconnection():
-  - new argument 'iterate' (was hard-coded as FALSE before)
+  - argument 'iterate' can be used (was hard-coded as FALSE)
 
-* netgraph.discomb():
-  - new argument 'lwd'
+* netgraph.discomb(), netgraph.netimpact():
+  - new argument 'plastic'
 
-* plot.rangogram():
+* plot.rankogram():
   - do not print gray background
 
 

@@ -10,7 +10,6 @@
   col = seq_len(x$n.subnets),
   reference.group = NULL,
   plastic = FALSE,
-  iterate = FALSE,
   ...
 )
 }
@@ -30,9 +29,6 @@ disconnected networks).}
 
 \item{plastic}{A logical indicating whether the appearance of the
 comparisons should be in '3D look'.}
-
-\item{iterate}{A logical indicating whether the stress majorization
-algorithm is carried out for optimization of the layout.}
 
 \item{\dots}{Additional arguments passed on to
 \code{\link{netgraph.netmeta}} (see Details).}
