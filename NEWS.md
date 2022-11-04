@@ -1,11 +1,57 @@
-## netmeta, version 2.5-1 (2022-mm-dd)
+## netmeta, version 2.6-0 (2022-mm-dd)
+
+### Major changes
+
+* Network graphs:
+ - general layout of network graphs irrespective whether '3-D look' is
+   used or not (argument 'plastic')
+ - thickness of lines / edges proportional to the number of studies
+   directly comparing treatments (new default)
+ - thickness of lines / edges can be re-scaled using new argument
+   'rescale.thickness'
+ - more similar thickness of lines if proportional to the number of
+   studies directly comparing treatments by using sqrt() instead of
+   I()
+ - more similar point sizes if proportional to the number of
+   observations in treatment arms by using sqrt() instead of
+   I() to rescale point sizes
 
 ### Bug fixes
 
 * rankogram():
-  - export list elements 'fixed', 'ranking.fixed',
-    'ranking.matrix.fixed', and 'cumrank.matrix.fixed' for backward
-    compatibility
+  - for backward compatibility, export list elements 'fixed',
+    'ranking.fixed', 'ranking.matrix.fixed', and
+    'cumrank.matrix.fixed'
+
+### User-visible changes
+
+* netgraph.netmeta():
+  - thickness of lines is proportional to the number of studies
+    comparing the two treatments (previous default: proportional to
+    standard error of direct pairwise comparisons in common effects or
+    random effects model if 'plastic = TRUE' and equal thickness if
+    'plastic = FALSE')
+  - print black lines if 'plastic = FALSE' (previous default:
+    slateblue lines)
+  - new argument 'rescale.thickness' to specify function to re-scale
+    line thickness
+  - new argument 'rescale.pointsize' to specify function to re-scale
+    point sizes
+  - new argument 'points.max' to define maximum point size
+  - new argument 'points.min' to define minimal point size
+
+* netgraph.netimpact():
+  - print black lines if 'plastic = FALSE' (previous default:
+    slateblue lines)
+
+* netgraph.netconnection():
+  - new argument 'iterate' (was hard-coded as FALSE before)
+
+* netgraph.discomb():
+  - new argument 'lwd'
+
+* plot.rangogram():
+  - do not print gray background
 
 
 ## netmeta, version 2.5-0 (2022-07-11)

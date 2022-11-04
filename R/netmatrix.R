@@ -51,15 +51,13 @@
 #' col.rob <- netmatrix(net1, rob, ties.method = "last",
 #'   levels = 1:2, labels = c("green", "yellow"))
 #' #
-#' netgraph(net1, col = col.rob,
-#'   plastic = FALSE, thickness = "number.of.studies", multi = FALSE)
+#' netgraph(net1, plastic = FALSE, col = col.rob,
+#'   cex.points = 5, bg.points = "gray", adj = 0.5)
 #' 
-#' netgraph(net1, col = col.rob,
-#'   plastic = FALSE, thickness = "number.of.studies", multi = FALSE,
-#'   points = TRUE, col.points = "blue",
-#'   cex.points = 6 * sqrt(n.trts / max(n.trts)),
+#' netgraph(net1, plastic = FALSE, col = col.rob,
+#'   cex.points = n.trts, bg.points = "blue",
 #'   labels = paste0(trts, " (n=", n.trts, ")"),
-#'   offset = 0.025)
+#'   offset = c(0.05, 0.035, 0.05, 0.025))
 #' 
 #' @export netmatrix
 

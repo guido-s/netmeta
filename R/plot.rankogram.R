@@ -115,16 +115,16 @@ plot.rankogram <- function(x,
   
   
   mytheme <-
-    theme(axis.line.x = ggplot2::element_line(colour = "grey22", size = 1,
+    theme(axis.line.x = ggplot2::element_line(colour = "black", size = 1,
                                               linetype = "solid"),
-          axis.line.y = ggplot2::element_line(colour = "grey22", size = 1,
+          axis.line.y = ggplot2::element_line(colour = "black", size = 1,
                                               linetype = "solid"),
-          panel.grid.major  = ggplot2::element_line(color = "grey90"),
-          panel.grid.minor  = ggplot2::element_line(color = "grey90"),
-          panel.background = ggplot2::element_rect(fill = "grey90"),
+          panel.grid.major = ggplot2::element_line(color = "transparent"),
+          panel.grid.minor = ggplot2::element_line(color = "transparent"),
+          panel.background = ggplot2::element_rect(fill = "transparent"),
           plot.background = ggplot2::element_rect(
-                                       fill = "grey90",
-                                       colour = "white",
+                                       fill = "transparent",
+                                       colour = "transparent",
                                        size = 1)
           )
   

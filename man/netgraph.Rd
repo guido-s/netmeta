@@ -20,6 +20,9 @@ network graphs:
 \itemize{
 \item \code{\link{netgraph.netmeta}}
 \item \code{\link{netgraph.netimpact}}
+\item \code{\link{netgraph.netconnection}}
+\item \code{\link{netgraph.netcomb}}
+\item \code{\link{netgraph.discomb}}
 }
 }
 \examples{
@@ -53,10 +56,6 @@ netgraph(net2, number.of.studies = TRUE,
   labels = paste0(trts, " (n=", n.trts, ")"))
 }
 
-}
-\seealso{
-\code{\link{netgraph.netmeta}},
-  \code{\link{netgraph.netimpact}}
 }
 \author{
 Guido Schwarzer \email{sc@imbi.uni-freiburg.de

@@ -13,13 +13,13 @@
 #' \itemize{
 #' \item \code{\link{netgraph.netmeta}}
 #' \item \code{\link{netgraph.netimpact}}
+#' \item \code{\link{netgraph.netconnection}}
+#' \item \code{\link{netgraph.netcomb}}
+#' \item \code{\link{netgraph.discomb}}
 #' }
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de
 #' }
-#' 
-#' @seealso \code{\link{netgraph.netmeta}},
-#'   \code{\link{netgraph.netimpact}}
 #' 
 #' @keywords hplot
 #'

@@ -27,6 +27,8 @@
 #'   connecting treatments (edges) if argument \code{plastic =
 #'   FALSE}. Length of the vector must be equal to the number of
 #'   edges.
+#' @param plastic A logical indicating whether the appearance of the
+#'   comparisons should be in '3D look'.
 #' @param \dots Additional arguments passed on to
 #'   \code{\link{netgraph.netmeta}}.
 #' 
@@ -50,8 +52,23 @@
 #'   studlab = Study)
 #' 
 #' net1 <- netmeta(p1)
-#' ni <- netimpact(net1, verbose = TRUE)
-#' netgraph(ni, plastic = FALSE)
+#' ni1 <- netimpact(net1, verbose = TRUE)
+#' netgraph(ni1)
+#' netgraph(ni1, plastic = TRUE)
+#'
+#' \dontrun{
+#' p2 <- pairwise(list(Treatment1, Treatment2, Treatment3),
+#'   n = list(n1, n2, n3),
+#'   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
+#'   data = Franchini2012,
+#'   studlab = Study)
+#' 
+#' net2 <- netmeta(p2)
+#' ni2 <- netimpact(net2, verbose = TRUE)
+#' netgraph(ni2)
+#' netgraph(ni2, plastic = TRUE)
+#' }
+#' 
 #' 
 #' @method netgraph netimpact
 #' @export
@@ -65,7 +82,8 @@ netgraph.netimpact <- function(x,
                                col.multiarm = NULL,
                                alpha.transparency = 0.5,
                                col.ignore.multiarm =  "transparent",
-                               col = "slateblue",
+                               col = "black",
+                               plastic = FALSE,
                                ...) {
   
   
@@ -154,6 +172,7 @@ netgraph.netimpact <- function(x,
                     multiarm = multiarm, col.multiarm = col.polygon.i,
                     alpha.transparency = alpha.transparency,
                     number.of.studies = number.of.studies,
+                    plastic = plastic,
                     col = col, ...)
     ##
     res[[i]] <- list(nodes = n.i$nodes, edges = n.i$edges)
