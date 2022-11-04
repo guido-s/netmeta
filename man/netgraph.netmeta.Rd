@@ -11,14 +11,15 @@
   cex = 1,
   adj = NULL,
   srt.labels = 0,
-  offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
+  offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.02,
   scale = 1.1,
-  col = "slateblue",
-  plastic,
-  thickness,
+  col = if (iterate) "slateblue" else "black",
+  plastic = !(iterate & allfigures),
+  thickness = "number.of.studies",
   lwd = 5,
   lwd.min = lwd/2.5,
   lwd.max = lwd * 4,
+  rescale.thickness = if (thickness == "number.of.studies") sqrt else I,
   dim = "2d",
   rotate = 0,
   highlight = NULL,
@@ -27,11 +28,14 @@
   multiarm = FALSE,
   col.multiarm = NULL,
   alpha.transparency = 0.5,
-  points = FALSE,
-  col.points = "red",
-  cex.points = 1,
-  pch.points = 20,
-  bg.points = "gray",
+  points = !missing(cex.points),
+  cex.points = 4,
+  pch.points = 21,
+  col.points = "black",
+  bg.points = "red",
+  points.max = if (length(unique(cex.points)) != 1) 8 else cex.points,
+  points.min = if (length(unique(cex.points)) != 1) 1 else cex.points,
+  rescale.pointsize = sqrt,
   number.of.studies = FALSE,
   cex.number.of.studies = cex,
   col.number.of.studies = "white",
@@ -41,7 +45,7 @@
   eig1 = 2,
   eig2 = 3,
   eig3 = 4,
-  iterate,
+  iterate = FALSE,
   tol = 1e-04,
   maxit = 500,
   allfigures = FALSE,
@@ -108,6 +112,9 @@ with line widths below this values will be set to \code{lwd.min}.}
 with the largest value according to argument \code{thickness}
 will be set to this value.}
 
+\item{rescale.thickness}{R function to scale the thickness of
+lines.}
+
 \item{dim}{A character string indicating whether a 2- or
 3-dimensional plot should be produced, either \code{"2d"} or
 \code{"3d"}.}
@@ -139,9 +146,18 @@ opaque).}
 \item{points}{A logical indicating whether points should be printed
 at nodes (i.e. treatments) of the network graph.}
 
-\item{col.points, cex.points, pch.points, bg.points}{Corresponding
-color, size, type, and background color for points. Can be a
+\item{cex.points, pch.points, col.points, bg.points}{Corresponding
+color, background color, size, and type for points. Can be a
 vector with length equal to the number of treatments.}
+
+\item{points.max}{Maximum point size in network graph. The node
+with the largest value according to argument \code{cex.points}
+will be set to this value.}
+
+\item{points.min}{Minimum point size. All points with size below
+this values will be set to \code{points.min}.}
+
+\item{rescale.pointsize}{R function to scale the point size.}
 
 \item{number.of.studies}{A logical indicating whether number of
 studies should be added to network graph.}
@@ -194,7 +210,7 @@ algorithm is carried out for optimization of the layout.}
 steps if \code{iterate = TRUE}.}
 
 \item{allfigures}{A logical indicating whether all iteration steps
-are shown if \code{iterate = TRUE}. May slow down calculations if
+are shown if \code{iterate = TRUE}. May slow down computations if
 set to \code{TRUE} (especially if \code{plastic = TRUE}).}
 
 \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}) characterizing
@@ -224,9 +240,14 @@ shown.}
 \item{\dots}{Additional graphical arguments.}
 }
 \value{
-A data frame containing the following columns:
+A list containing two data frames with information on nodes and
+edges.
+
+\bold{List element 'nodes'}
+\item{trts}{Treatment names.}
 \item{labels}{Treatment labels.}
 \item{seq}{Sequence of treatment labels.}
+\item{srt}{String rotation.}
 \item{xpos}{Position of treatment / edge on x-axis.}
 \item{ypos}{Position of treatment / edge on y-axis.}
 \item{zpos}{Position of treatment / edge on z-axis (for 3-D
@@ -235,10 +256,29 @@ A data frame containing the following columns:
   plots).}
 \item{ypos.labels}{Position of treatment labels on y-axis (for 2-D
   plots).}
+\item{offset.x}{Offset of treatment labels on x-axis (for 2-D
+  plots).}
+\item{offset.y}{Offset of treatment labels on y-axis (for 2-D
+  plots).}
+\item{cex}{Point size of treatments / edges.}
+\item{col}{Color for points.}
+\item{pch}{Point type.}
+\item{bg}{Background color for points.}
 \item{adj.x}{Adjustment for treatment label on x-axis.}
 \item{adj.y}{Adjustment for treatment label on y-axis.}
 \item{adj.z}{Adjustment for treatment label on z-axis (for 3-D
   plots).}
+
+\bold{List element 'edges'}
+\item{treat1}{Name of first treatment.}
+\item{treat2}{Name of second treatment.}
+\item{n.stud}{Number of studies directly comparing treatments.}
+\item{xpos}{Position of number of studies on x-axis.}
+\item{ypos}{Position of number of studies on y-axis.}
+\item{adj}{Adjustment of number of studies.}
+\item{pos.number.of.studies}{Position of number of studies on
+  edge.}
+\item{col}{Color for edges.}
 }
 \description{
 This function generates a graph of the evidence network.
@@ -253,7 +293,7 @@ layout is further optimized using the stress majorization
 algorithm. This algorithm specifies an 'ideal' distance (e.g., the
 graph distance) between two nodes in the plane. In the optimal
 layout, these distances are best approximated in the sense of least
-squares.  Starting from an initial layout, the optimum is
+squares. Starting from an initial layout, the optimum is
 approximated in an iterative process called stress majorization
 (Kamada and Kawai 1989, Michailidis and de Leeuw 2001, Hu
 2012). The starting layout can be chosen as a circle or coming from
@@ -273,10 +313,8 @@ Argument \code{thickness} providing the line width of the nodes
 (comparisons) can be a matrix of the same dimension as argument
 \code{A.matrix} or any of the following character variables:
 \itemize{
-\item Same line width (argument \code{lwd}) for all comparisons
-  (\code{thickness = "equal"})
 \item Proportional to number of studies comparing two treatments
-  (\code{thickness = "number.of.studies"})
+  (\code{thickness = "number.of.studies", default})
 \item Proportional to inverse standard error of common effects model
   comparing two treatments (\code{thickness = "se.common"})
 \item Proportional to inverse standard error of random effects
@@ -285,13 +323,13 @@ Argument \code{thickness} providing the line width of the nodes
   (\code{thickness = "w.common"})
 \item Weight from random effects model comparing two treatments
   (\code{thickness = "w.random"})
+\item Same line width (argument \code{lwd}) for all comparisons
+  (\code{thickness = "equal"})
 }
 
 Only evidence from direct treatment comparisons is considered to
 determine the line width if argument \code{thickness} is equal to
-any but the first method. By default, \code{thickness = "se.common"}
-is used if \code{start.layout = "circle"}, \code{iterate = FALSE},
-and \code{plastic = TRUE}. Otherwise, the same line width is used.
+any but the last method.
 
 Argument \code{srt.labels} can be used to specific the rotation (in
 degrees) of the treatment labels. If \code{srt.labels} is equal to
@@ -381,10 +419,9 @@ netgraph(net1, start = "random",
 #
 netgraph(net1, plastic = FALSE, highlight = "rosi:plac")
 
-# Network graph without plastic look and comparisons with same
-# thickness
+# Network graph with same thickness for all comparisons
 #
-netgraph(net1, plastic = FALSE, thickness = FALSE)
+netgraph(net1, thickness = "equal")
 
 # Network graph with changed labels and specified order of the
 # treatments

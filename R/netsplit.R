@@ -347,14 +347,14 @@ netsplit <- function(x, method,
   ##
   if (method == "SIDDE") {
     sid <- sidde(x.direct.indirect, sep.trts, verbose, warn, is.tictoc)
-    ##    
+    ##
     x.direct.indirect$TE.indirect.common <- sid$TE.indirect.common
     x.direct.indirect$seTE.indirect.common <- sid$seTE.indirect.common
     ##
     if (!is.bin) {
       x.direct.indirect$TE.indirect.random <- sid$TE.indirect.random
       x.direct.indirect$seTE.indirect.random <- sid$seTE.indirect.random
-    } 
+    }
   }
   ##
   direct.indirect <- direct.indirect(x.direct.indirect, tol.direct)

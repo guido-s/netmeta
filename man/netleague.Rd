@@ -134,8 +134,8 @@ generated. Alternatively, an Excel file is created if argument
 \code{writexl = TRUE}.
 
 This implementation reports pairwise comparisons of the treatment
-in the row versus the treatment in the column in the lower triangle
-and column versus row in the upper triangle. This is a common
+in the column versus the treatment in the row in the lower triangle
+and row versus column in the upper triangle. This is a common
 presentation for network meta-analyses which allows to easily
 compare direction and magnitude of treatment effects. For example,
 given treatments A, B, and C, the results reported in the first row

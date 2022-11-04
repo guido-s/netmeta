@@ -10,6 +10,7 @@
   col = seq_len(x$n.subnets),
   reference.group = NULL,
   plastic = FALSE,
+  iterate = FALSE,
   ...
 )
 }
@@ -30,6 +31,9 @@ disconnected networks).}
 \item{plastic}{A logical indicating whether the appearance of the
 comparisons should be in '3D look'.}
 
+\item{iterate}{A logical indicating whether the stress majorization
+algorithm is carried out for optimization of the layout.}
+
 \item{\dots}{Additional arguments passed on to
 \code{\link{netgraph.netmeta}} (see Details).}
 }
@@ -45,10 +49,6 @@ only considered in disconnected networks, i.e., if more than one
 subnetworks. In this case, the first color provided in argument
 \code{col} defines the color for the subnetwork with the reference
 treatment.
-
-The following arguments for network graphs are used internally and
-cannot be specified by the user: \code{thickness}, \code{seq},
-\code{iterate}.
 }
 \examples{
 # Artificial example with two subnetworks
@@ -59,7 +59,9 @@ t2 <- c("B", "C", "E", "E", "H", "A")
 nc1 <- netconnection(t1, t2)
 print(nc1, details = TRUE)
 
-netgraph(nc1, plastic = TRUE)
+netgraph(nc1, points = TRUE, adj = 0.5, bg.points = "lightgray")
+netgraph(nc1, points = TRUE, adj = 0.5, bg.points = "lightgray",
+  plastic = TRUE)
 
 }
 \seealso{

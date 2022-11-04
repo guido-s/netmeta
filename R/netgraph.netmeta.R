@@ -36,11 +36,13 @@
 #'   dimension and row and column names as argument \code{A.matrix}
 #'   with information on line width.
 #' @param lwd A numeric for scaling the line width of comparisons.
+#' @param lwd.min Minimum line width in network graph. All connections
+#'   with line widths below this values will be set to \code{lwd.min}.
 #' @param lwd.max Maximum line width in network graph. The connection
 #'   with the largest value according to argument \code{thickness}
 #'   will be set to this value.
-#' @param lwd.min Minimum line width in network graph. All connections
-#'   with line widths below this values will be set to \code{lwd.min}.
+#' @param rescale.thickness R function to scale the thickness of
+#'   lines.
 #' @param dim A character string indicating whether a 2- or
 #'   3-dimensional plot should be produced, either \code{"2d"} or
 #'   \code{"3d"}.
@@ -63,9 +65,15 @@
 #'   opaque).
 #' @param points A logical indicating whether points should be printed
 #'   at nodes (i.e. treatments) of the network graph.
-#' @param col.points,cex.points,pch.points,bg.points Corresponding
-#'   color, size, type, and background color for points. Can be a
+#' @param cex.points,pch.points,col.points,bg.points Corresponding
+#'   color, background color, size, and type for points. Can be a
 #'   vector with length equal to the number of treatments.
+#' @param points.min Minimum point size. All points with size below
+#'   this values will be set to \code{points.min}.
+#' @param points.max Maximum point size in network graph. The node
+#'   with the largest value according to argument \code{cex.points}
+#'   will be set to this value.
+#' @param rescale.pointsize R function to scale the point size.
 #' @param number.of.studies A logical indicating whether number of
 #'   studies should be added to network graph.
 #' @param cex.number.of.studies The magnification to be used for
@@ -105,7 +113,7 @@
 #' @param maxit An integer defining the maximum number of iteration
 #'   steps if \code{iterate = TRUE}.
 #' @param allfigures A logical indicating whether all iteration steps
-#'   are shown if \code{iterate = TRUE}. May slow down calculations if
+#'   are shown if \code{iterate = TRUE}. May slow down computations if
 #'   set to \code{TRUE} (especially if \code{plastic = TRUE}).
 #' @param A.matrix Adjacency matrix (\emph{n}x\emph{n}) characterizing
 #'   the structure of the network graph. Row and column names must be
@@ -136,7 +144,7 @@
 #' algorithm. This algorithm specifies an 'ideal' distance (e.g., the
 #' graph distance) between two nodes in the plane. In the optimal
 #' layout, these distances are best approximated in the sense of least
-#' squares.  Starting from an initial layout, the optimum is
+#' squares. Starting from an initial layout, the optimum is
 #' approximated in an iterative process called stress majorization
 #' (Kamada and Kawai 1989, Michailidis and de Leeuw 2001, Hu
 #' 2012). The starting layout can be chosen as a circle or coming from
@@ -156,10 +164,8 @@
 #' (comparisons) can be a matrix of the same dimension as argument
 #' \code{A.matrix} or any of the following character variables:
 #' \itemize{
-#' \item Same line width (argument \code{lwd}) for all comparisons
-#'   (\code{thickness = "equal"})
 #' \item Proportional to number of studies comparing two treatments
-#'   (\code{thickness = "number.of.studies"})
+#'   (\code{thickness = "number.of.studies", default})
 #' \item Proportional to inverse standard error of common effects model
 #'   comparing two treatments (\code{thickness = "se.common"})
 #' \item Proportional to inverse standard error of random effects
@@ -168,13 +174,13 @@
 #'   (\code{thickness = "w.common"})
 #' \item Weight from random effects model comparing two treatments
 #'   (\code{thickness = "w.random"})
+#' \item Same line width (argument \code{lwd}) for all comparisons
+#'   (\code{thickness = "equal"})
 #' }
 #'
 #' Only evidence from direct treatment comparisons is considered to
 #' determine the line width if argument \code{thickness} is equal to
-#' any but the first method. By default, \code{thickness = "se.common"}
-#' is used if \code{start.layout = "circle"}, \code{iterate = FALSE},
-#' and \code{plastic = TRUE}. Otherwise, the same line width is used.
+#' any but the last method.
 #'
 #' Argument \code{srt.labels} can be used to specific the rotation (in
 #' degrees) of the treatment labels. If \code{srt.labels} is equal to
@@ -202,9 +208,15 @@
 #' Window System must be available (see
 #' \url{https://www.xquartz.org}).
 #'
-#' @return A data frame containing the following columns:
+#' @return
+#' A list containing two data frames with information on nodes and
+#' edges.
+#' 
+#' \bold{List element 'nodes'}
+#' \item{trts}{Treatment names.}
 #' \item{labels}{Treatment labels.}
 #' \item{seq}{Sequence of treatment labels.}
+#' \item{srt}{String rotation.}
 #' \item{xpos}{Position of treatment / edge on x-axis.}
 #' \item{ypos}{Position of treatment / edge on y-axis.}
 #' \item{zpos}{Position of treatment / edge on z-axis (for 3-D
@@ -213,10 +225,29 @@
 #'   plots).}
 #' \item{ypos.labels}{Position of treatment labels on y-axis (for 2-D
 #'   plots).}
+#' \item{offset.x}{Offset of treatment labels on x-axis (for 2-D
+#'   plots).}
+#' \item{offset.y}{Offset of treatment labels on y-axis (for 2-D
+#'   plots).}
+#' \item{cex}{Point size of treatments / edges.}
+#' \item{col}{Color for points.}
+#' \item{pch}{Point type.}
+#' \item{bg}{Background color for points.}
 #' \item{adj.x}{Adjustment for treatment label on x-axis.}
 #' \item{adj.y}{Adjustment for treatment label on y-axis.}
 #' \item{adj.z}{Adjustment for treatment label on z-axis (for 3-D
 #'   plots).}
+#' 
+#' \bold{List element 'edges'}
+#' \item{treat1}{Name of first treatment.}
+#' \item{treat2}{Name of second treatment.}
+#' \item{n.stud}{Number of studies directly comparing treatments.}
+#' \item{xpos}{Position of number of studies on x-axis.}
+#' \item{ypos}{Position of number of studies on y-axis.}
+#' \item{adj}{Adjustment of number of studies.}
+#' \item{pos.number.of.studies}{Position of number of studies on
+#'   edge.}
+#' \item{col}{Color for edges.}
 #' 
 #' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Ulrike
 #'   Krahn \email{ulrike.krahn@@bayer.com}, Jochem König
@@ -321,10 +352,9 @@
 #' #
 #' netgraph(net1, plastic = FALSE, highlight = "rosi:plac")
 #' 
-#' # Network graph without plastic look and comparisons with same
-#' # thickness
+#' # Network graph with same thickness for all comparisons
 #' #
-#' netgraph(net1, plastic = FALSE, thickness = FALSE)
+#' netgraph(net1, thickness = "equal")
 #' 
 #' # Network graph with changed labels and specified order of the
 #' # treatments
@@ -354,10 +384,17 @@ netgraph.netmeta <- function(x, seq = x$seq,
                                if (!is.null(adj) && all(unique(adj) == 0.5))
                                  0
                                else
-                                 0.0175,
+                                 0.02,
                              scale = 1.10,
-                             col = "slateblue", plastic, thickness,
+                             ##
+                             col = if (iterate) "slateblue" else "black",
+                             plastic = !(iterate & allfigures),
+                             thickness = "number.of.studies",
                              lwd = 5, lwd.min = lwd / 2.5, lwd.max = lwd * 4,
+                             rescale.thickness =
+                               if (thickness == "number.of.studies") sqrt
+                               else I,
+                             ##
                              dim = "2d",
                              rotate = 0,
                              ##
@@ -368,9 +405,17 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              col.multiarm = NULL,
                              alpha.transparency = 0.5,
                              ##
-                             points = FALSE, col.points = "red",
-                             cex.points = 1, pch.points = 20,
-                             bg.points = "gray",
+                             points = !missing(cex.points),
+                             cex.points = 4, pch.points = 21,
+                             col.points = "black",
+                             bg.points = "red",
+                             points.max =
+                               if (length(unique(cex.points)) != 1) 8
+                               else cex.points,
+                             points.min =
+                               if (length(unique(cex.points)) != 1) 1
+                               else cex.points,
+                             rescale.pointsize = sqrt,
                              ##
                              number.of.studies = FALSE,
                              cex.number.of.studies = cex,
@@ -381,8 +426,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              start.layout =
                                ifelse(dim == "2d", "circle", "eigen"),
                              eig1 = 2, eig2 = 3, eig3 = 4,
-                             iterate,
+                             iterate = FALSE,
                              tol = 0.0001, maxit = 500, allfigures = FALSE,
+                             ##
                              A.matrix = x$A.matrix,
                              N.matrix = sign(A.matrix),
                              D.matrix = netdistance(N.matrix),
@@ -404,7 +450,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
       setchar(srt.labels, "orthogonal",
               "should be equal to 'orthogonal' or numeric (vector)")
     if (!missing(iterate) && iterate == TRUE) {
-      warning("Orthogonal labels not supported if argument 'iterate = TRUE'")
+      warning("Orthogonal labels not supported if argument 'iterate = TRUE'.",
+              call. = FALSE)
       srt.labels <- 0
     }
     ##
@@ -420,6 +467,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
     }
     srt.labels <- srtfunc(x$n)
   }
+  ##
+  chklogical(points)
+  ##
   chknumeric(srt.labels, min = -180, max = 180)
   chknumeric(lwd, min = 0, zero = TRUE, length = 1)
   chknumeric(lwd.min, min = 0, zero = TRUE, length = 1)
@@ -442,12 +492,14 @@ netgraph.netmeta <- function(x, seq = x$seq,
                    if (length(grep("darwin", R.Version()$os)) == 1)
                      paste0("\n  Note, macOS users have to install ",
                             "XQuartz, see https://www.xquartz.org/.")
-                   ))
+                   ),
+            call. = FALSE)
     dim <- "2d"
     is_2d <- TRUE
     is_3d <- FALSE
   }
   ##
+  missing.rotate <- missing(rotate)
   chknumeric(rotate, min = -180, max = 180)
   ##
   missing.start.layout <- missing(start.layout)
@@ -459,6 +511,42 @@ netgraph.netmeta <- function(x, seq = x$seq,
   ##
   if (!missing(seq) & is.null(seq))
     stop("Argument 'seq' must be not NULL.")
+  ##
+  if (is.null(seq) | (length(seq) == 1 & x$d == 1))
+    seq1 <- 1:length(labels)
+  else if (length(seq) == 1 & x$d > 1) {
+    seq <- setchar(seq, "optimal", "should be equal to ",
+                   "'optimal' or a permutation of treatments")
+    ##
+    if (missing.start.layout)
+      start.layout <- "eigen"
+    ##
+    seq1 <- optcircle(x, start.layout = start.layout)$seq
+    ##
+    start.layout <- "circle"
+  }
+  else if (!(start.layout == "circle" &
+             (missing(iterate) || iterate == FALSE))) {
+    seq1 <- 1:length(labels)
+    ##
+    if (!missing(seq) & !is.null(seq) & (is.null(xpos) & is.null(ypos)))
+      warning("Argument 'seq' only considered if ",
+              "start.layout=\"circle\" and iterate=FALSE.",
+              call. = FALSE)
+  }
+  else
+    seq1 <- charmatch(setseq(seq, x$trts), x$trts)
+  ##
+  if (missing(iterate))
+    iterate <- ifelse(start.layout == "circle", FALSE, TRUE)
+  else if (length(seq) == 1 && seq == "optimal") {
+    warning("Argument 'iterate' ignored as argument 'seq' is ",
+            "equal to \"optimal\".",
+            call. = FALSE)
+    iterate <- FALSE
+  }
+  ##
+  chklogical(plastic)
   ##
   if (!missing(labels)) {
     ##
@@ -507,6 +595,17 @@ netgraph.netmeta <- function(x, seq = x$seq,
          n.pos, ") is different from the number of ",
          "direct pairwise comparisons (", n.edges, ")")
   ##
+  if (!missing(adj)) {
+    adj <- catch("adj", mc, x, sfsp)
+    if (is.data.frame(adj))
+      adj <- as.matrix(adj)
+    if (is.logical(adj))
+      adj <- 1L * adj
+  }
+  ##
+  if (!missing(offset))
+    offset <- catch("offset", mc, x, sfsp)
+  ##
   if (!missing(cex.points))
     cex.points <- catch("cex.points", mc, x, sfsp)
   ##
@@ -536,47 +635,23 @@ netgraph.netmeta <- function(x, seq = x$seq,
   ##
   chklogical(figure)
   ##
-  if (is.null(seq) | (length(seq) == 1 & x$d == 1))
-    seq1 <- 1:length(labels)
-  else if (length(seq) == 1 & x$d > 1) {
-    seq <- setchar(seq, "optimal", "should be equal to ",
-                   "'optimal' or a permutation of treatments")
-    ##
-    if (missing.start.layout)
-      start.layout <- "eigen"
-    ##
-    seq1 <- optcircle(x, start.layout = start.layout)$seq
-    ##
-    start.layout <- "circle"
-  }
-  else if (!(start.layout == "circle" &
-             (missing(iterate) || iterate == FALSE))) {
-    seq1 <- 1:length(labels)
-    ##
-    if (!missing(seq) & !is.null(seq) & (is.null(xpos) & is.null(ypos)))
-      warning("Argument 'seq' only considered if ",
-              "start.layout=\"circle\" and iterate=FALSE.")
-  }
-  else
-    seq1 <- charmatch(setseq(seq, x$trts), x$trts)
-  
-  
-  if (missing(iterate))
-    iterate <- ifelse(start.layout == "circle", FALSE, TRUE)
-  else if (length(seq) == 1 && seq == "optimal") {
-    warning("Argument 'iterate' ignored as argument 'seq' is ",
-            "equal to \"optimal\".")
-    iterate <- FALSE
-  }
-  ##
   if (!missing(allfigures) && length(seq) == 1 && seq == "optimal") {
     warning("Argument 'allfigures' ignored as argument 'seq' is ",
-            "equal to \"optimal\".")
+            "equal to \"optimal\".",
+            call. = FALSE)
     allfigures <- FALSE
   }
   ##
-  if (iterate | is_3d)
+  if (allfigures | is_3d) {
+    if (allfigures & !missing.rotate & rotate != 0)
+      warning("Argument 'rotate' set to 0 as argument 'allfigures' is TRUE.",
+              call. = FALSE)
+    if (is_3d & !missing.rotate & rotate != 0)
+      warning("Argument 'rotate' set to 0 as argument 'dim' is equal to ",
+              "\"3d\".",
+              call. = FALSE)
     rotate <- 0
+  }
   
   
   addargs <- names(list(...))
@@ -584,7 +659,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   if ("highlight.split" %in% addargs)
     warning("Argument 'highlight.split' has been removed from ",
             "R function netgraph.\n  This argument has been replaced by ",
-            "argument 'sep.trts' in R function netmeta.")
+            "argument 'sep.trts' in R function netmeta.",
+            call. = FALSE)
   ##
   highlight.split <- x$sep.trts
   ##
@@ -610,43 +686,23 @@ netgraph.netmeta <- function(x, seq = x$seq,
     col.highlight <- rep(col.highlight, n.high)
   
   
-  if (missing(plastic))
-    if (start.layout == "circle" & iterate == FALSE & is_2d)
-      plastic <- TRUE
-    else
-      plastic <- FALSE
-
-
   if (missing(thickness)) {
-    if (start.layout == "circle" & iterate == FALSE & plastic == TRUE) {
-      if (x$random & !x$common) {
-        thick <- "se.random"
-        thickness <- "se.random"
-      }
-      else {
-        thick <- "se.common"
-        thickness <- "se.common"
-      }
-    }
-    else {
-      thick <- "equal"
-      thickness <- "equal"
-    }
+    thick <- thickness
   }
   else {
     if (!is.matrix(thickness)) {
       if (length(thickness) == 1 & is.character(thickness)) {
         thick <- setchar(thickness,
-                         c("equal", "number.of.studies",
+                         c("number.of.studies",
                            "se.common", "se.random", "w.common", "w.random",
+                           "equal",
                            "se.fixed", "w.fixed"))
         thick[thick == "se.fixed"] <- "se.common"
         thick[thick == "w.fixed"] <- "w.common"
       }
-      ##
       else if (length(thickness) == 1 & is.logical(thickness)) {
         if (thickness)
-          thick <- "se.common"
+          thick <- "number.of.studies"
         else
           thick <- "equal"
       }
@@ -674,7 +730,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   
   
   if (allfigures & is_3d) {
-    warning("Argument 'allfigures' set to FALSE for 3-D network plot.")
+    warning("Argument 'allfigures' set to FALSE for 3-D network plot.",
+            call. = FALSE)
     allfigures <- FALSE
   }
 
@@ -712,51 +769,58 @@ netgraph.netmeta <- function(x, seq = x$seq,
   cex.points <- cex.points[seq1]
   pch.points <- pch.points[seq1]
   bg.points  <- bg.points[seq1]
+  ##
+  cex.pointsize <- points.max *
+    do.call(rescale.pointsize, list(cex.points)) /
+    do.call(rescale.pointsize, list(max(cex.points)))
+  cex.pointsize[cex.pointsize < points.min & cex.pointsize != 0] <- points.min
+  
   
   A.sign <- sign(A.matrix)
-  
+  ##
   if ((is_2d & (is.null(xpos) & is.null(ypos))) |
       (is_3d & (is.null(xpos) & is.null(ypos) & is.null(zpos)))) {
     stressdata <- stress(x,
+                         ##
                          A.matrix = A.matrix,
                          N.matrix = N.matrix,
                          D.matrix = D.matrix,
                          ##
-                         dim = dim,
                          start.layout = start.layout,
-                         iterate = iterate,
                          eig1 = eig1, eig2 = eig2, eig3 = eig3,
-                         tol = tol,
-                         maxit = maxit,
+                         iterate = iterate,
+                         tol = tol, maxit = maxit, allfigures = allfigures,
+                         dim = dim,
                          ##
-                         allfigures = allfigures,
+                         ## Additional settings - argument '...' in stress()
                          ##
                          seq = seq,
                          ##
                          labels = labels,
-                         cex = cex,
-                         col = col,
-                         adj = adj,
-                         srt.labels = srt.labels,
+                         cex = cex, adj = adj, srt.labels = srt.labels,
                          offset = offset,
                          scale = scale,
                          ##
+                         col = col,
                          plastic = plastic,
                          thickness = thickness,
-                         lwd = lwd,
-                         lwd.min = lwd.min,
-                         lwd.max = lwd.max,
+                         lwd = lwd, lwd.min = lwd.min, lwd.max = lwd.max,
+                         rescale.thickness = rescale.thickness,
                          ##
-                         highlight = highlight,
-                         col.highlight = col.highlight,
+                         highlight = highlight, col.highlight = col.highlight,
                          scale.highlight = scale.highlight,
-                         ## multiarm
+                         ##
+                         multiarm = multiarm,
                          col.multiarm = col.multiarm,
                          alpha.transparency = alpha.transparency,
                          ##
-                         points = points, col.points = col.points,
+                         points = points,
                          cex.points = cex.points, pch.points = pch.points,
+                         col.points = col.points,
                          bg.points = bg.points,
+                         points.max = points.max,
+                         points.min = points.min,
+                         rescale.pointsize = rescale.pointsize,
                          ##
                          number.of.studies = number.of.studies,
                          cex.number.of.studies = cex.number.of.studies,
@@ -801,7 +865,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   dat.nodes <- data.frame(trts, labels, seq, srt = NA,
                           xpos, ypos, zpos = NA,
                           xpos.labels = NA, ypos.labels = NA,
-                          cex = cex.points,
+                          offset.x = NA, offset.y = NA,
+                          cex = cex.pointsize,
                           col = col.points,
                           pch = pch.points,
                           bg = bg.points,
@@ -895,7 +960,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
       offset.x <- offset[seq1]
       offset.y <- offset[seq1]
     }
-    else if (is.matrix(adj)) {
+    else if (is.matrix(offset)) {
       if (nrow(offset) != length(labels))
         stop("Number of rows of matrix 'offset' must be equal to ",
              "number of treatments.")
@@ -909,6 +974,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
       2 * (dat.nodes$adj.x == 0) * offset.x
     dat.nodes$ypos.labels <- dat.nodes$ypos - offset.y +
       2 * (dat.nodes$adj.y == 0) * offset.y
+    ##
+    dat.nodes$offset.x <- offset.x
+    dat.nodes$offset.y <- offset.y
   }
   else {
     dat.nodes$xpos.labels <- dat.nodes$xpos
@@ -979,7 +1047,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
   ## Define line width
   ##
   if (thick == "number.of.studies") {
-    W.matrix <- lwd.max * A.matrix / max(A.matrix)
+    W.matrix <- lwd.max *
+      do.call(rescale.thickness, list(A.matrix)) /
+      do.call(rescale.thickness, list(max(A.matrix)))
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   else if (thick == "equal") {
@@ -988,25 +1058,33 @@ netgraph.netmeta <- function(x, seq = x$seq,
   else if (thick == "se.common") {
     IV.matrix <- x$seTE.direct.common[seq1, seq1]
     IV.matrix[is.infinite(IV.matrix)] <- NA
-    W.matrix <- lwd.max * min(IV.matrix, na.rm = TRUE) / IV.matrix
+    W.matrix <- lwd.max *
+      do.call(rescale.thickness, list(min(IV.matrix, na.rm = TRUE))) /
+      do.call(rescale.thickness, list(IV.matrix))
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   else if (thick == "se.random") {
     IV.matrix <- x$seTE.direct.random[seq1, seq1]
     IV.matrix[is.infinite(IV.matrix)] <- NA
-    W.matrix <- lwd.max * min(IV.matrix, na.rm = TRUE) / IV.matrix
+    W.matrix <- lwd.max *
+      do.call(rescale.thickness, list(min(IV.matrix, na.rm = TRUE))) /
+      do.call(rescale.thickness, list(IV.matrix))
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   else if (thick == "w.common") {
     IV.matrix <- 1 / x$seTE.direct.common[seq1, seq1]^2
     IV.matrix[is.infinite(IV.matrix)] <- NA
-    W.matrix <- lwd.max * IV.matrix / max(IV.matrix, na.rm = TRUE)
+    W.matrix <- lwd.max *
+      do.call(rescale.thickness, list(IV.matrix)) /
+      do.call(rescale.thickness, list(max(IV.matrix, na.rm = TRUE)))
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   else if (thick == "w.random") {
     IV.matrix <- 1 / x$seTE.direct.random[seq1, seq1]^2
     IV.matrix[is.infinite(IV.matrix)] <- NA
-    W.matrix <- lwd.max * IV.matrix / max(IV.matrix, na.rm = TRUE)
+    W.matrix <- lwd.max *
+      do.call(rescale.thickness, list(IV.matrix)) /
+      do.call(rescale.thickness, list(max(IV.matrix, na.rm = TRUE)))
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   else if (thick == "matrix") {
@@ -1015,7 +1093,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
         max(W.matrix[W.matrix != 0], na.rm = TRUE))
       W.matrix <- lwd * W.matrix
     else
-      W.matrix <- lwd.max * W.matrix / max(W.matrix, na.rm = TRUE)
+      W.matrix <- lwd.max *
+        do.call(rescale.thickness, list(W.matrix)) /
+        do.call(rescale.thickness, list(max(W.matrix, na.rm = TRUE)))
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
 
@@ -1188,7 +1268,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
       ##
       if (points)
         points(xpos, ypos,
-               pch = pch.points, cex = cex.points, col = col.points,
+               pch = pch.points, cex = cex.pointsize, col = col.points,
                bg = bg.points)
       ##
       ## Print treatment labels
@@ -1225,7 +1305,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
     }
     else {
       rgl::plot3d(xpos, ypos, zpos,
-                  size = 10, col = col.points, cex = cex.points,
+                  size = 10, col = col.points, cex = cex.pointsize,
                   bg = bg.points,
                   axes = FALSE, box = FALSE,
                   xlab = "", ylab = "", zlab = "")
@@ -1234,7 +1314,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
       ##
       if (points)
         rgl::points3d(xpos, ypos, zpos,
-                      pch = pch.points, cex = cex.points, col = col.points,
+                      pch = pch.points, cex = cex.pointsize, col = col.points,
                       bg = bg.points)
       ##
       ## Print treatment labels
@@ -1298,7 +1378,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
         }
         if (morethan3)
           warning("Multi-arm studies with more than three treatments ",
-                  "not shown in 3-D plot.")
+                  "not shown in 3-D plot.",
+                  call. = FALSE)
       }
       ##
       ## Draw lines

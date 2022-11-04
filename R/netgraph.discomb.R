@@ -4,12 +4,14 @@
 #' This function generates a graph of the evidence network.
 #' 
 #' @param x An object of class \code{discomb}.
+#' @param plastic A logical indicating whether the appearance of the
+#'   comparisons should be in '3D look'.
 #' @param \dots Additional arguments passed on to
 #'   \code{\link{netgraph.netmeta}} (see Details).
 #' 
 #' @details
-#' The following arguments are used internally and cannot be specified
-#' by the user: \code{thickness}, \code{seq}, \code{iterate}.
+#' The arguments \code{seq} and \code{iterate} are used internally and
+#' cannot be specified by the user.
 #' 
 #' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de},
 #'   Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}
@@ -49,7 +51,7 @@
 #' @export
 
 
-netgraph.discomb <- function(x, ...) {
+netgraph.discomb <- function(x, plastic = FALSE, ...) {
   
   
   chkclass(x, "discomb")
@@ -64,7 +66,7 @@ netgraph.discomb <- function(x, ...) {
   class(y) <- "netmeta"
   
   
-  res <- netgraph(y, thickness = "equal", seq = y$seq, iterate = FALSE, ...)
+  res <- netgraph(y, seq = y$seq, iterate = FALSE, plastic = plastic, ...)
   
   
   invisible(res)

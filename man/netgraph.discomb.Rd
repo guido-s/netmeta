@@ -4,10 +4,13 @@
 \alias{netgraph.discomb}
 \title{Network graph for objects of class discomb}
 \usage{
-\method{netgraph}{discomb}(x, ...)
+\method{netgraph}{discomb}(x, plastic = FALSE, ...)
 }
 \arguments{
 \item{x}{An object of class \code{discomb}.}
+
+\item{plastic}{A logical indicating whether the appearance of the
+comparisons should be in '3D look'.}
 
 \item{\dots}{Additional arguments passed on to
 \code{\link{netgraph.netmeta}} (see Details).}
@@ -16,8 +19,8 @@
 This function generates a graph of the evidence network.
 }
 \details{
-The following arguments are used internally and cannot be specified
-by the user: \code{thickness}, \code{seq}, \code{iterate}.
+The arguments \code{seq} and \code{iterate} are used internally and
+cannot be specified by the user.
 }
 \examples{
 # Artificial dataset
