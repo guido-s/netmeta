@@ -404,10 +404,7 @@ print.netcomplex <- function(x,
   
   relative <- is.relative.effect(x$x$sm)
   ##
-  sm.lab <- x$x$sm
-  ##
-  if (!backtransf & relative)
-    sm.lab <- paste0("log", sm.lab)
+  sm.lab <- armlab(x$x$sm, backtransf)
   ##  
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   

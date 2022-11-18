@@ -1,3 +1,26 @@
+## netmeta, version 2.6-1 (2022-mm-dd)
+
+### Major changes
+
+* In component network meta-analysis, print correct labels for
+  combinations and components
+
+### User-visible changes
+
+* print.netcomb(), print.discomb():
+  - print layout similar to print.netmeta()
+  - show results for comparisons with the reference treatment
+  - only show 'real' combinations
+  - print all results for common effects and random effects model
+    jointly
+  - do not show results for inactive component
+
+### Internal changes
+
+* New internal function armlab() to generate labels for combinations
+  and components in component network meta-analysis
+
+
 ## netmeta, version 2.6-0 (2022-11-04)
 
 ### Major changes
@@ -348,9 +371,6 @@
   - keep all variables from original dataset if variable is missing
     for one group but not the other (so far, only the first variable
     was kept)
-
-* summary.netcomb(), print.summary.netcomb(), print.netcomb():
-  - new argument 'show.combs'
 
 * netcomb():
   - new argument 'nchar.comps' to abbreviate component names

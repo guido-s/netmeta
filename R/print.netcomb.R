@@ -192,7 +192,7 @@ print.netcomb <- function(x,
   I2 <- round(100 * x$I2, digits.I2)
   lower.I2 <- round(100 * x$lower.I2, digits.I2)
   upper.I2 <- round(100 * x$upper.I2, digits.I2)
-  ##  
+  ##
   if (common | random) {
     cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
     cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
@@ -205,10 +205,63 @@ print.netcomb <- function(x,
     ##
     cat("\n")
   }
-  ##  
+  ##
+  ## (a) Results for comparisons
+  ##
+  sm.lab <- x$sm
+  ##
+  if (!x$backtransf & is.relative.effect(x$sm))
+    sm.lab <- paste("log", x$sm, sep = "")
+  ##
+  ci.lab <- paste(round(100 * x$level, 1), "%-CI", sep = "")
+  ##
+  nc <- netcomparison(x)
+  ##
+  if (x$backtransf & is.relative.effect(x$sm)) {
+    nc$TE.common    <- exp(nc$TE.common)
+    nc$lower.common <- exp(nc$lower.common)
+    nc$upper.common <- exp(nc$upper.common)
+    ##
+    nc$TE.random    <- exp(nc$TE.random)
+    nc$lower.random <- exp(nc$lower.random)
+    nc$upper.random <- exp(nc$upper.random)
+  }
+  ##
+  dat1.c <- cbind(formatN(nc$TE.common, digits, text.NA = "NA",
+                          big.mark = big.mark),
+                  formatCI(formatN(round(nc$lower.common, digits),
+                                   digits, "NA", big.mark = big.mark),
+                           formatN(round(nc$upper.common, digits),
+                                   digits, "NA", big.mark = big.mark)),
+                  formatN(nc$statistic.common, digits.stat, text.NA = "NA",
+                          big.mark = big.mark),
+                  formatPT(nc$pval.common,
+                        digits = digits.pval,
+                        scientific = scientific.pval)
+                  )
+  dimnames(dat1.c) <-
+    list(nc$treat1, c(sm.lab, ci.lab, "z", "p-value"))
+  ##
+  dat1.r <- cbind(formatN(nc$TE.random, digits, text.NA = "NA",
+                          big.mark = big.mark),
+                  formatCI(formatN(round(nc$lower.random, digits),
+                                   digits, "NA", big.mark = big.mark),
+                           formatN(round(nc$upper.random, digits),
+                                   digits, "NA", big.mark = big.mark)),
+                  formatN(nc$statistic.random, digits.stat, text.NA = "NA",
+                          big.mark = big.mark),
+                  formatPT(nc$pval.random,
+                        digits = digits.pval,
+                        scientific = scientific.pval)
+                  )
+  dimnames(dat1.r) <-
+    list(nc$treat1, c(sm.lab, ci.lab, "z", "p-value"))
+  ##
+  ## (b) Results for combinations
+  ##
   comps <- sort(c(x$comps, x$inactive))
   comps.abbr <- treats(comps, nchar.comps)
-  ##  
+  ##
   ci.comb.f <- data.frame(TE = x$Comb.common,
                           seTE = x$seComb.common,
                           lower = x$lower.Comb.common,
@@ -218,7 +271,7 @@ print.netcomb <- function(x,
                           stringsAsFactors = FALSE)
   rownames(ci.comb.f) <- x$trts
   ##
-  dat1.f <- formatCC(ci.comb.f,
+  dat2.c <- formatCC(ci.comb.f,
                      backtransf, x$sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
@@ -235,7 +288,7 @@ print.netcomb <- function(x,
                           stringsAsFactors = FALSE)
   rownames(ci.comb.r) <- x$trts
   ##
-  dat1.r <- formatCC(ci.comb.r,
+  dat2.r <- formatCC(ci.comb.r,
                      backtransf, x$sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
@@ -243,18 +296,20 @@ print.netcomb <- function(x,
                      big.mark,
                      x$seq)
   ##
-  if (common) {
-    cat("Results for combinations (additive model, common effects model):\n")
-    print(dat1.f)
-    cat("\n")
+  ## Drop result for inactive component (if available)
+  ##
+  if (!is.null(x$inactive)) {
+    dat2.c <- subset(dat2.c, rownames(dat2.c) != x$inactive)
+    dat2.r <- subset(dat2.r, rownames(dat2.r) != x$inactive)
   }
   ##
-  if (random) {
-    cat("Results for combinations (additive model, random effects model):\n")
-    print(dat1.r)
-    cat("\n")
-  }
-  ##  
+  ## Drop combinations consisting of single components
+  ##
+  dat2.c <- subset(dat2.c, grepl(x$sep.comps, rownames(dat2.c), fixed = TRUE))
+  dat2.r <- subset(dat2.r, grepl(x$sep.comps, rownames(dat2.r), fixed = TRUE))
+  ##
+  ## (c) Results for components
+  ##
   ci.comp.f <- data.frame(TE = x$Comp.common,
                           seTE = x$seComp.common,
                           lower = x$lower.Comp.common,
@@ -264,7 +319,7 @@ print.netcomb <- function(x,
                           stringsAsFactors = FALSE)
   rownames(ci.comp.f) <- x$comps
   ##
-  dat2.f <- formatCC(ci.comp.f,
+  dat3.c <- formatCC(ci.comp.f,
                      backtransf, x$sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
@@ -280,7 +335,7 @@ print.netcomb <- function(x,
                           stringsAsFactors = FALSE)
   rownames(ci.comp.r) <- x$comps
   ##
-  dat2.r <- formatCC(ci.comp.r,
+  dat3.r <- formatCC(ci.comp.r,
                      backtransf, x$sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
@@ -288,16 +343,48 @@ print.netcomb <- function(x,
                      big.mark)
   ##
   if (common) {
-    cat("Results for components (common effects model):\n")
-    print(dat2.f)
+    cat(paste0("Common effects model",
+               if (!is.null(x$inactive))
+                 paste0(" (inactive component: '", x$inactive, "')"),
+               "\n\n"))
+    ##
+    cat("Treatment estimate (sm = '", sm.lab,
+        "', other treatments vs '", x$reference.group,
+        "'):\n", sep = "")
+    prmatrix(dat1.c, quote = FALSE, right = TRUE)
+    ##
+    if (nrow(dat2.c) >= 1) {
+      cat("\nResults for combinations:\n")
+      print(dat2.c)
+    }
+    ##
+    cat("\nResults for components:\n")
+    print(dat3.c)
     cat("\n")
   }
   ##
   if (random) {
-    cat("Results for components (random effects model):\n")
-    print(dat2.r)
+    cat(paste0("Random effects model",
+               if (!is.null(x$inactive))
+                 paste0(" (inactive component: '", x$inactive, "')"),
+               "\n\n"))
+    ##
+    cat("Treatment estimate (sm = '", sm.lab,
+        "', other treatments vs '", x$reference.group,
+        "'):\n", sep = "")
+    prmatrix(dat1.r, quote = FALSE, right = TRUE)
+    ##
+    if (nrow(dat2.r) >= 1) {
+      cat("\nResults for combinations:\n")
+      print(dat2.r)
+    }
+    ##
+    cat("\nResults for components:\n")
+    print(dat3.r)
   }
-  ##  
+  ##
+  ## (d) Heterogeneity / inconsistency
+  ##
   cat(paste0("\nQuantifying heterogeneity / inconsistency:\n",
              formatPT(x$tau^2,
                       lab = TRUE, labval = text.tau2,
@@ -314,7 +401,7 @@ print.netcomb <- function(x,
                pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
              "\n")
       )
-  ##  
+  ##
   cat("\nHeterogeneity statistics:\n")
   ##
   hetdat <- 
@@ -336,7 +423,7 @@ print.netcomb <- function(x,
   names(hetdat) <- c("Q", "df", "p-value")
   ##
   print(hetdat)
-  ##  
+  ##
   if (legend && (common | random)) {
     diff.comps <- comps != comps.abbr
     if (any(diff.comps)) {
