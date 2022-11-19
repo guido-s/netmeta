@@ -331,18 +331,18 @@
 #' 
 #' # Conduct random effects network meta-analysis
 #' #
-#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+#' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'   data = Linde2016, ref = "placebo",
 #'   seq = trts, sm = "OR", common = FALSE)
-#' net1
-#' forest(net1, xlim = c(0.2, 50))
+#' net2
+#' forest(net2, xlim = c(0.2, 50))
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
 #' #
-#' nc1 <- netcomb(net1, inactive = "placebo")
-#' nc1
-#' forest(nc1, xlim = c(0.2, 50))
+#' nc2 <- netcomb(net2, inactive = "placebo")
+#' nc2
+#' forest(nc2, xlim = c(0.2, 50))
 #' }
 #' 
 #' @export netcomb

@@ -293,8 +293,8 @@ print.netmeta <- function(x,
     cat(paste0("Number of treatments: n = ", n, "\n"))
     if (!oldversion)
       cat(paste0("Number of designs: d = ", x$d, "\n"))
-    ##    
-    if (reference.group != "")
+    ##
+    if (reference.group != "") {
       if (baseline.reference)
         comptext <- paste("comparison: ",
                           if (x$n == 2)
@@ -324,7 +324,8 @@ print.netmeta <- function(x,
                                   "'", sep = "")
                           else
                             "other treatments", sep = "")
-    ##    
+    }
+    ##
     if (common) {
       if (all.treatments | reference.group != "") {
         text.common <- "Common effects model"
@@ -485,7 +486,7 @@ print.netmeta <- function(x,
         prmatrix(res, quote = FALSE, right = TRUE)
       }
     }
-    ##    
+    ##
     if (random) {
       if (all.treatments | reference.group != "")
         cat("\nRandom effects model\n")
@@ -641,7 +642,7 @@ print.netmeta <- function(x,
     }
     ##
     zlab <- "z"
-    ##    
+    ##
     if (!is.null(x$tau.preset))
       tau <- x$tau.preset
     else
@@ -672,7 +673,7 @@ print.netmeta <- function(x,
                            digits.I2, big.mark, unit = "%"),
                  "\n")
           )
-    ##    
+    ##
     if (m > 1) {
       if (is.bin) {
         Q.overall <- x$Q.inconsistency
@@ -730,7 +731,7 @@ print.netmeta <- function(x,
         prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
       }
     }
-    ##    
+    ##
     if (!is.null(x$tau.preset)) {
       cat("\nDetails:")
       ##

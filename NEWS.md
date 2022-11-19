@@ -7,7 +7,7 @@
 
 ### User-visible changes
 
-* print.netcomb(), print.discomb():
+* print.netcomb():
   - print layout similar to print.netmeta()
   - show results for comparisons with the reference treatment
   - only show 'real' combinations

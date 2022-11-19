@@ -208,54 +208,122 @@ print.netcomb <- function(x,
   ##
   ## (a) Results for comparisons
   ##
-  sm.lab <- x$sm
+  sm <- x$sm
+  reference.group <- x$reference.group
   ##
-  if (!x$backtransf & is.relative.effect(x$sm))
-    sm.lab <- paste("log", x$sm, sep = "")
+  if (!backtransf & is.relative.effect(sm))
+    sm.lab <- paste("log", sm, sep = "")
+  else
+    sm.lab <- sm
   ##
   ci.lab <- paste(round(100 * x$level, 1), "%-CI", sep = "")
   ##
-  nc <- netcomparison(x)
+  TE.common <- x$TE.common
+  lowTE.common <- x$lower.common
+  uppTE.common <- x$upper.common
+  statistic.common <- replaceNULL(x$statistic.common, x$zval.common)
+  pval.common <- x$pval.common
   ##
-  if (x$backtransf & is.relative.effect(x$sm)) {
-    nc$TE.common    <- exp(nc$TE.common)
-    nc$lower.common <- exp(nc$lower.common)
-    nc$upper.common <- exp(nc$upper.common)
+  TE.random <- x$TE.random
+  lowTE.random <- x$lower.random
+  uppTE.random <- x$upper.random
+  statistic.random <- replaceNULL(x$statistic.random, x$zval.random)
+  pval.random <- x$pval.random
+  ##
+  if (!is.null(x$seq)) {
+    TE.common <- TE.common[x$seq, x$seq]
+    lowTE.common <- lowTE.common[x$seq, x$seq]
+    uppTE.common <- uppTE.common[x$seq, x$seq]
+    statistic.common <- statistic.common[x$seq, x$seq]
+    pval.common <- pval.common[x$seq, x$seq]
     ##
-    nc$TE.random    <- exp(nc$TE.random)
-    nc$lower.random <- exp(nc$lower.random)
-    nc$upper.random <- exp(nc$upper.random)
+    if (!all(is.na(TE.random))) {
+      TE.random <- TE.random[x$seq, x$seq]
+      lowTE.random <- lowTE.random[x$seq, x$seq]
+      uppTE.random <- uppTE.random[x$seq, x$seq]
+      statistic.random <- statistic.random[x$seq, x$seq]
+      pval.random <- pval.random[x$seq, x$seq]
+    }
+  }
+  ##  
+  noeffect <- 0
+  ##
+  if (backtransf & is.relative.effect(sm)) {
+    noeffect <- 1
+    ##
+    TE.common    <- exp(TE.common)
+    lowTE.common <- exp(lowTE.common)
+    uppTE.common <- exp(uppTE.common)
+    ##
+    TE.random    <- exp(TE.random)
+    lowTE.random <- exp(lowTE.random)
+    uppTE.random <- exp(uppTE.random)
   }
   ##
-  dat1.c <- cbind(formatN(nc$TE.common, digits, text.NA = "NA",
-                          big.mark = big.mark),
-                  formatCI(formatN(round(nc$lower.common, digits),
-                                   digits, "NA", big.mark = big.mark),
-                           formatN(round(nc$upper.common, digits),
-                                   digits, "NA", big.mark = big.mark)),
-                  formatN(nc$statistic.common, digits.stat, text.NA = "NA",
-                          big.mark = big.mark),
-                  formatPT(nc$pval.common,
-                        digits = digits.pval,
-                        scientific = scientific.pval)
-                  )
-  dimnames(dat1.c) <-
-    list(nc$treat1, c(sm.lab, ci.lab, "z", "p-value"))
+  TE.common <- round(TE.common, digits)
+  lowTE.common <- round(lowTE.common, digits)
+  uppTE.common <- round(uppTE.common, digits)
+  statistic.common <- round(statistic.common, digits.stat)
   ##
-  dat1.r <- cbind(formatN(nc$TE.random, digits, text.NA = "NA",
-                          big.mark = big.mark),
-                  formatCI(formatN(round(nc$lower.random, digits),
-                                   digits, "NA", big.mark = big.mark),
-                           formatN(round(nc$upper.random, digits),
-                                   digits, "NA", big.mark = big.mark)),
-                  formatN(nc$statistic.random, digits.stat, text.NA = "NA",
-                          big.mark = big.mark),
-                  formatPT(nc$pval.random,
-                        digits = digits.pval,
-                        scientific = scientific.pval)
-                  )
+  TE.random    <- round(TE.random, digits)
+  lowTE.random <- round(lowTE.random, digits)
+  uppTE.random <- round(uppTE.random, digits)
+  statistic.random <- round(statistic.random, digits.stat)
+  ##
+  TE.common.b <- TE.common[rownames(TE.common) == reference.group, ]
+  lowTE.common.b <-
+    lowTE.common[rownames(lowTE.common) == reference.group, ]
+  uppTE.common.b <-
+    uppTE.common[rownames(uppTE.common) == reference.group, ]
+  statistic.common.b <-
+    statistic.common[rownames(statistic.common) == reference.group, ]
+  pval.common.b <-
+    pval.common[rownames(pval.common) == reference.group, ]
+  ##
+  dat1.c <-
+    cbind(formatN(TE.common.b, digits, text.NA = "NA",
+                  big.mark = big.mark),
+          formatCI(formatN(round(lowTE.common.b, digits),
+                           digits, "NA", big.mark = big.mark),
+                   formatN(round(uppTE.common.b, digits),
+                           digits, "NA", big.mark = big.mark)),
+          formatN(statistic.common.b, digits.stat, text.NA = "NA",
+                  big.mark = big.mark),
+          formatPT(pval.common.b,
+                   digits = digits.pval,
+                   scientific = scientific.pval)
+          )
+  dat1.c[rownames(dat1.c) == reference.group, ] <- rep(".", ncol(dat1.c))
+  dimnames(dat1.c) <-
+    list(colnames(TE.common), c(sm.lab, ci.lab, "z", "p-value"))
+  ##
+  TE.random.b <-
+    TE.random[colnames(TE.random) == reference.group]
+  lowTE.random.b <-
+    lowTE.random[rownames(lowTE.random) == reference.group, ]
+  uppTE.random.b <-
+    uppTE.random[rownames(uppTE.random) == reference.group, ]
+  statistic.random.b <-
+    statistic.random[rownames(statistic.random) == reference.group, ]
+  pval.random.b <-
+    pval.random[rownames(pval.random) == reference.group, ]
+  ##
+  dat1.r <-
+    cbind(formatN(TE.random.b, digits, text.NA = "NA",
+                  big.mark = big.mark),
+          formatCI(formatN(round(lowTE.random.b, digits),
+                           digits, "NA", big.mark = big.mark),
+                   formatN(round(uppTE.random.b, digits),
+                           digits, "NA", big.mark = big.mark)),
+          formatN(statistic.random.b, digits.stat, text.NA = "NA",
+                  big.mark = big.mark),
+          formatPT(pval.random.b,
+                   digits = digits.pval,
+                   scientific = scientific.pval)
+          )
+  dat1.r[rownames(dat1.r) == reference.group, ] <- rep(".", ncol(dat1.r))
   dimnames(dat1.r) <-
-    list(nc$treat1, c(sm.lab, ci.lab, "z", "p-value"))
+    list(colnames(TE.random), c(sm.lab, ci.lab, "z", "p-value"))
   ##
   ## (b) Results for combinations
   ##
@@ -272,7 +340,7 @@ print.netcomb <- function(x,
   rownames(ci.comb.f) <- x$trts
   ##
   dat2.c <- formatCC(ci.comb.f,
-                     backtransf, x$sm, x$level,
+                     backtransf, sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
                      scientific.pval, zero.pval, JAMA.pval,
@@ -289,7 +357,7 @@ print.netcomb <- function(x,
   rownames(ci.comb.r) <- x$trts
   ##
   dat2.r <- formatCC(ci.comb.r,
-                     backtransf, x$sm, x$level,
+                     backtransf, sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
                      scientific.pval, zero.pval, JAMA.pval,
@@ -320,7 +388,7 @@ print.netcomb <- function(x,
   rownames(ci.comp.f) <- x$comps
   ##
   dat3.c <- formatCC(ci.comp.f,
-                     backtransf, x$sm, x$level,
+                     backtransf, sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
                      scientific.pval, zero.pval, JAMA.pval,
@@ -336,7 +404,7 @@ print.netcomb <- function(x,
   rownames(ci.comp.r) <- x$comps
   ##
   dat3.r <- formatCC(ci.comp.r,
-                     backtransf, x$sm, x$level,
+                     backtransf, sm, x$level,
                      comps, comps.abbr, x$sep.comps,
                      digits, digits.stat, digits.pval,
                      scientific.pval, zero.pval, JAMA.pval,
@@ -349,7 +417,7 @@ print.netcomb <- function(x,
                "\n\n"))
     ##
     cat("Treatment estimate (sm = '", sm.lab,
-        "', other treatments vs '", x$reference.group,
+        "', other treatments vs '", reference.group,
         "'):\n", sep = "")
     prmatrix(dat1.c, quote = FALSE, right = TRUE)
     ##
@@ -370,7 +438,7 @@ print.netcomb <- function(x,
                "\n\n"))
     ##
     cat("Treatment estimate (sm = '", sm.lab,
-        "', other treatments vs '", x$reference.group,
+        "', other treatments vs '", reference.group,
         "'):\n", sep = "")
     prmatrix(dat1.r, quote = FALSE, right = TRUE)
     ##
