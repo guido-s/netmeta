@@ -26,6 +26,10 @@
 * New internal function armlab() to generate labels for combinations
   and components in component network meta-analysis
 
+* netcomb():
+  - new list elements 'na.unident' (new argument) and 'comps.unident'
+    (vector of unidentifiable components)
+
 
 ## netmeta, version 2.6-0 (2022-11-04)
 

@@ -3,8 +3,7 @@ formatCC <- function(x,
                      comps, comps.abbr, sep.comps,
                      digits, digits.stat, digits.pval.Q,
                      scientific.pval, zero.pval, JAMA.pval,
-                     big.mark,
-                     seq = NULL) {
+                     big.mark) {
   
   
   relative <- is.relative.effect(sm)
@@ -19,9 +18,6 @@ formatCC <- function(x,
   ##
   res <- x
   ##
-  if (!is.null(seq))
-    res <- res[seq, ]
-  ##
   rownames(res) <- compos(rownames(res), comps, comps.abbr, sep.comps)
   ##
   if (backtransf & relative) {
@@ -32,16 +28,16 @@ formatCC <- function(x,
   ##
   res$TE <- formatN(res$TE, digits, "NA", big.mark)
   res$lower <- formatCI(formatN(round(res$lower, digits),
-                                       digits, "NA", big.mark),
-                               formatN(round(res$upper, digits),
-                                       digits, "NA", big.mark))
+                                digits, "NA", big.mark),
+                        formatN(round(res$upper, digits),
+                                digits, "NA", big.mark))
   res$statistic <- formatN(round(res$statistic, digits.stat),
                            digits.stat, big.mark = big.mark)
   res$p <- formatPT(res$p,
-                           digits = digits.pval.Q,
-                           scientific = scientific.pval,
-                           zero = zero.pval,
-                           JAMA = JAMA.pval)
+                    digits = digits.pval.Q,
+                    scientific = scientific.pval,
+                    zero = zero.pval,
+                    JAMA = JAMA.pval)
   ##
   res$seTE <- res$upper <- res$z <- NULL
   ##

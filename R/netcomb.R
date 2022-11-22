@@ -481,7 +481,7 @@ netcomb <- function(x,
   ##
   ## Check for and warn about not uniquely identifiable components
   ##
-  sel.unident.comps <- character(0)
+  comps.unident <- character(0)
   ##
   if (qr(X.matrix)$rank < c) {
     Xplus <- ginv(X.matrix)
@@ -494,15 +494,15 @@ netcomb <- function(x,
     ##
     if (dim(M)[2] > 0) {
       for (i in 1:dim(M)[2])
-        sel.unident.comps <-
-          c(sel.unident.comps, names(M[, i])[!is.zero(M[, i], n = 100)])
+        comps.unident <-
+          c(comps.unident, names(M[, i])[!is.zero(M[, i], n = 100)])
       ##
-      sel.unident.comps <- unique(sort(sel.unident.comps))
+      comps.unident <- unique(sort(comps.unident))
       warning(paste0("The following component",
-                     if (length(sel.unident.comps) > 1)
+                     if (length(comps.unident) > 1)
                        "s are " else " is ",
                      "not uniquely identifiable: ",
-                     paste(paste0("'", sel.unident.comps, "'"),
+                     paste(paste0("'", comps.unident, "'"),
                            collapse = ", "),
                      if (!details.chkident)
                        paste("\nFor more details, re-run netcomb()",
@@ -564,25 +564,28 @@ netcomb <- function(x,
   ##
   ## Set unidentifiable components and combinations to NA
   ##
-  if (na.unident & length(sel.unident.comps) > 0) {
+  if (na.unident & length(comps.unident) > 0) {
     setNA <- function(x, select) {
       x[names(x) %in% select] <- NA
       x
     }
     ##
     trts <- names(res.c$combinations$TE)
-    unident.pattern <- paste0("^", sel.unident.comps, "$", collapse = "|")
-    sel.unident.combs <-
+    unident.pattern <- paste0("^", comps.unident, "$", collapse = "|")
+    unident.combs <-
       trts[unlist(lapply(lapply(compsplit(trts, sep.comps),
                                 grepl,
                                 pattern = unident.pattern), any))]
     ##
-    res.c$components <- lapply(res.c$components, setNA, sel.unident.comps)
-    res.c$combinations <- lapply(res.c$combinations, setNA, sel.unident.combs)
+    res.c$components <- lapply(res.c$components, setNA, comps.unident)
+    res.c$combinations <- lapply(res.c$combinations, setNA, unident.combs)
     ##
-    res.r$components <- lapply(res.r$components, setNA, sel.unident.comps)
-    res.r$combinations <- lapply(res.r$combinations, setNA, sel.unident.combs)
+    res.r$components <- lapply(res.r$components, setNA, comps.unident)
+    res.r$combinations <- lapply(res.r$combinations, setNA, unident.combs)
   }
+  ##
+  if (length(comps.unident) == 0)
+    comps.unident <- NULL
   
   
   ##
@@ -630,6 +633,8 @@ netcomb <- function(x,
               k.comps = NA,
               n.comps = NA,
               events.comps = NA,
+              na.unident = na.unident,
+              comps.unident = comps.unident,
               ##
               TE.nma.common = x$TE.nma.common,
               seTE.nma.common = x$seTE.nma.common,

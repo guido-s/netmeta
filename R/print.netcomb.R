@@ -258,12 +258,7 @@ print.netcomb <- function(x,
                    collapse = " - "))
       ##
       trts <- rownames(TE.common)
-      list.trts <- compsplit(trts, split = sep.comps)
-      list.trts.abbr <-
-        lapply(list.trts, factor, levels = comps, labels = comps.abbr)
-      add <- if (attributes(list.trts)$withspace) " " else ""
-      trts.abbr <- unlist(lapply(list.trts.abbr, paste,
-                                 collapse = paste0(add, sep.comps, add)))
+      trts.abbr <- compos(trts, comps, comps.abbr, sep.comps)
       ##
       if (baseline.reference)
         comptext <- paste("comparison: ",
@@ -413,15 +408,20 @@ print.netcomb <- function(x,
                             stringsAsFactors = FALSE)
     rownames(ci.comb.c) <- x$trts
     ## Only consider combinations with identifiable components
-    sel.c <- !is.na(ci.comb.c$TE)
+    ci.comb.c <- ci.comb.c[!is.na(ci.comb.c$TE), ]
+    ## Drop result for inactive component (if available)
+    if (!is.null(x$inactive))
+      ci.comb.c <- subset(ci.comb.c, rownames(ci.comb.c) != x$inactive)
+    ## Drop combinations consisting of single components
+    ci.comb.c <-
+      subset(ci.comb.c, grepl(sep.comps, rownames(ci.comb.c), fixed = TRUE))
     ##
     dat2.c <- formatCC(ci.comb.c,
                        backtransf, sm, x$level,
                        comps, comps.abbr, sep.comps,
                        digits, digits.stat, digits.pval,
                        scientific.pval, zero.pval, JAMA.pval,
-                       big.mark,
-                       x$seq)
+                       big.mark)
     ##
     ci.comb.r <- data.frame(TE = x$Comb.random,
                             seTE = x$seComb.random,
@@ -431,32 +431,21 @@ print.netcomb <- function(x,
                             p = x$pval.Comb.random,
                             stringsAsFactors = FALSE)
     rownames(ci.comb.r) <- x$trts
-    sel.r <- !is.na(ci.comb.r$TE)
+    ## Only consider combinations with identifiable components
+    ci.comb.r <- ci.comb.r[!is.na(ci.comb.r$TE), ]
+    ## Drop result for inactive component (if available)
+    if (!is.null(x$inactive))
+      ci.comb.r <- subset(ci.comb.r, rownames(ci.comb.r) != x$inactive)
+    ## Drop combinations consisting of single components
+    ci.comb.r <-
+      subset(ci.comb.r, grepl(sep.comps, rownames(ci.comb.r), fixed = TRUE))
     ##
     dat2.r <- formatCC(ci.comb.r,
                        backtransf, sm, x$level,
                        comps, comps.abbr, sep.comps,
                        digits, digits.stat, digits.pval,
                        scientific.pval, zero.pval, JAMA.pval,
-                       big.mark,
-                       x$seq)
-    ##
-    ## Only consider combinations with identifiable components
-    ##
-    dat2.c <- subset(dat2.c, sel.c)
-    dat2.r <- subset(dat2.r, sel.r)
-    ##
-    ## Drop result for inactive component (if available)
-    ##
-    if (!is.null(x$inactive)) {
-      dat2.c <- subset(dat2.c, rownames(dat2.c) != x$inactive)
-      dat2.r <- subset(dat2.r, rownames(dat2.r) != x$inactive)
-    }
-    ##
-    ## Drop combinations consisting of single components
-    ##
-    dat2.c <- subset(dat2.c, grepl(sep.comps, rownames(dat2.c), fixed = TRUE))
-    dat2.r <- subset(dat2.r, grepl(sep.comps, rownames(dat2.r), fixed = TRUE))
+                       big.mark)
     ##
     ## (c) Results for components
     ##
@@ -468,6 +457,8 @@ print.netcomb <- function(x,
                             p = x$pval.Comp.common,
                             stringsAsFactors = FALSE)
     rownames(ci.comp.c) <- x$comps
+    ## Only consider components with identifiable components
+    sel.comb.c <- !is.na(ci.comp.c$TE)
     ##
     dat3.c <- formatCC(ci.comp.c,
                        backtransf, sm, x$level,
@@ -475,6 +466,7 @@ print.netcomb <- function(x,
                        digits, digits.stat, digits.pval,
                        scientific.pval, zero.pval, JAMA.pval,
                        big.mark)
+    dat3.c[!sel.comb.c, 2:4] <- "."
     ##
     ci.comp.r <- data.frame(TE = x$Comp.random,
                             seTE = x$seComp.random,
@@ -484,6 +476,8 @@ print.netcomb <- function(x,
                             p = x$pval.Comp.random,
                             stringsAsFactors = FALSE)
     rownames(ci.comp.r) <- x$comps
+    ## Only consider components with identifiable components
+    sel.comb.r <- !is.na(ci.comp.r$TE)
     ##
     dat3.r <- formatCC(ci.comp.r,
                        backtransf, sm, x$level,
@@ -491,6 +485,7 @@ print.netcomb <- function(x,
                        digits, digits.stat, digits.pval,
                        scientific.pval, zero.pval, JAMA.pval,
                        big.mark)
+    dat3.r[!sel.comb.r, 2:4] <- "."
     ##
     if (common) {
       if (reference.group != "") {
@@ -506,12 +501,12 @@ print.netcomb <- function(x,
       }
       ##
       if (nrow(dat2.c) >= 1) {
-        cat(paste("Absolute effect for existing combinations:\n"))
+        cat("Absolute effect for existing combinations:\n")
         print(dat2.c)
         cat("\n")
       }
       ##
-      cat(paste("Absolute effect for components:\n"))
+      cat("Absolute effect for components:\n")
       print(dat3.c)
       cat("\n")
     }
@@ -530,12 +525,12 @@ print.netcomb <- function(x,
       }
       ##
       if (nrow(dat2.r) >= 1) {
-        cat(paste("Absolute effect for existing combinations:\n"))
+        cat("Absolute effect for existing combinations:\n")
         print(dat2.r)
         cat("\n")
       }
       ##
-      cat(paste("Absolute effect for components:\n"))
+      cat("Absolute effect for components:\n")
       print(dat3.r)
       cat("\n")
     }
