@@ -537,7 +537,7 @@ print.netcomb <- function(x,
     ##
     ## (d) Heterogeneity / inconsistency
     ##
-    cat(paste0("\nQuantifying heterogeneity / inconsistency:\n",
+    cat(paste0("Quantifying heterogeneity / inconsistency:\n",
                formatPT(x$tau^2,
                         lab = TRUE, labval = text.tau2,
                         digits = digits.tau2,
@@ -551,10 +551,10 @@ print.netcomb <- function(x,
                  paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
                if (!(is.na(lower.I2) | is.na(upper.I2)))
                  pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
-               "\n")
+               "\n\n")
         )
     ##
-    cat("\nHeterogeneity statistics:\n")
+    cat("Heterogeneity statistics:\n")
     ##
     hetdat <- 
       data.frame(Q = formatN(c(x$Q.additive,
