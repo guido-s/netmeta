@@ -27,6 +27,8 @@
 #'   Details).
 #' @param func.inverse R function used to calculate the pseudoinverse
 #'   of the Laplacian matrix L (see \code{\link{netmeta}}).
+#' @param na.unident A logical indicating whether unidentifiable
+#'   components and combinations should be set to missing values.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments (to catch deprecated arguments).
@@ -360,6 +362,7 @@ netcomb <- function(x,
                     ##
                     func.inverse = invmat,
                     ##
+                    na.unident = TRUE,
                     warn.deprecated = gs("warn.deprecated"),
                     ...) {
   
@@ -381,6 +384,7 @@ netcomb <- function(x,
   chklogical(details.chkident)
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
+  chklogical(na.unident)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -477,6 +481,8 @@ netcomb <- function(x,
   ##
   ## Check for and warn about not uniquely identifiable components
   ##
+  sel.unident.comps <- character(0)
+  ##
   if (qr(X.matrix)$rank < c) {
     Xplus <- ginv(X.matrix)
     colnames(Xplus) <- rownames(X.matrix)
@@ -487,16 +493,16 @@ netcomb <- function(x,
     M <- as.matrix(E[, is.zero(e, n = 100)])
     ##
     if (dim(M)[2] > 0) {
-      sel.ident <- character(0)
       for (i in 1:dim(M)[2])
-        sel.ident <- c(sel.ident, names(M[, i])[!is.zero(M[, i], n = 100)])
+        sel.unident.comps <-
+          c(sel.unident.comps, names(M[, i])[!is.zero(M[, i], n = 100)])
       ##
-      sel.ident <- unique(sort(sel.ident))
+      sel.unident.comps <- unique(sort(sel.unident.comps))
       warning(paste0("The following component",
-                     if (length(sel.ident) > 1)
+                     if (length(sel.unident.comps) > 1)
                        "s are " else " is ",
                      "not uniquely identifiable: ",
-                     paste(paste0("'", sel.ident, "'"),
+                     paste(paste0("'", sel.unident.comps, "'"),
                            collapse = ", "),
                      if (!details.chkident)
                        paste("\nFor more details, re-run netcomb()",
@@ -555,6 +561,28 @@ netcomb <- function(x,
                         X.matrix, C.matrix, x$B.matrix,
                         x$Q, df.Q.additive, df.Q.diff,
                         x$n, x$sep.trts)
+  ##
+  ## Set unidentifiable components and combinations to NA
+  ##
+  if (na.unident & length(sel.unident.comps) > 0) {
+    setNA <- function(x, select) {
+      x[names(x) %in% select] <- NA
+      x
+    }
+    ##
+    trts <- names(res.c$combinations$TE)
+    unident.pattern <- paste0("^", sel.unident.comps, "$", collapse = "|")
+    sel.unident.combs <-
+      trts[unlist(lapply(lapply(compsplit(trts, sep.comps),
+                                grepl,
+                                pattern = unident.pattern), any))]
+    ##
+    res.c$components <- lapply(res.c$components, setNA, sel.unident.comps)
+    res.c$combinations <- lapply(res.c$combinations, setNA, sel.unident.combs)
+    ##
+    res.r$components <- lapply(res.r$components, setNA, sel.unident.comps)
+    res.r$combinations <- lapply(res.r$combinations, setNA, sel.unident.combs)
+  }
   
   
   ##

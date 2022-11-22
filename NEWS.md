@@ -1,18 +1,24 @@
-## netmeta, version 2.6-1 (2022-mm-dd)
+## netmeta, version 2.7-0 (2022-mm-dd)
 
 ### Major changes
 
-* In component network meta-analysis, print correct labels for
-  combinations and components
+* In component network meta-analysis,
+  - print correct labels for combinations and components
+  - by default, do not return estimates but missing values for
+    unidentifiable components and comparisons
 
 ### User-visible changes
+
+* netcomb():
+  - new logical argument 'na.unident' to specify whether missing
+    values should be returned for unidentifiable components and
+    comparisons instead of calculated values
 
 * print.netcomb():
   - print layout similar to print.netmeta()
   - show results for comparisons with the reference treatment
-  - only show 'real' combinations
-  - print all results for common effects and random effects model
-    jointly
+  - only show effects for existing combinations in the network
+  - print results for common effects and random effects model jointly
   - do not show results for inactive component
 
 ### Internal changes

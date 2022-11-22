@@ -404,16 +404,18 @@ print.netcomb <- function(x,
     ##
     ## (b) Results for combinations
     ##
-    ci.comb.f <- data.frame(TE = x$Comb.common,
+    ci.comb.c <- data.frame(TE = x$Comb.common,
                             seTE = x$seComb.common,
                             lower = x$lower.Comb.common,
                             upper = x$upper.Comb.common,
                             statistic = x$statistic.Comb.common,
                             p = x$pval.Comb.common,
                             stringsAsFactors = FALSE)
-    rownames(ci.comb.f) <- x$trts
+    rownames(ci.comb.c) <- x$trts
+    ## Only consider combinations with identifiable components
+    sel.c <- !is.na(ci.comb.c$TE)
     ##
-    dat2.c <- formatCC(ci.comb.f,
+    dat2.c <- formatCC(ci.comb.c,
                        backtransf, sm, x$level,
                        comps, comps.abbr, sep.comps,
                        digits, digits.stat, digits.pval,
@@ -429,6 +431,7 @@ print.netcomb <- function(x,
                             p = x$pval.Comb.random,
                             stringsAsFactors = FALSE)
     rownames(ci.comb.r) <- x$trts
+    sel.r <- !is.na(ci.comb.r$TE)
     ##
     dat2.r <- formatCC(ci.comb.r,
                        backtransf, sm, x$level,
@@ -437,6 +440,11 @@ print.netcomb <- function(x,
                        scientific.pval, zero.pval, JAMA.pval,
                        big.mark,
                        x$seq)
+    ##
+    ## Only consider combinations with identifiable components
+    ##
+    dat2.c <- subset(dat2.c, sel.c)
+    dat2.r <- subset(dat2.r, sel.r)
     ##
     ## Drop result for inactive component (if available)
     ##
@@ -452,16 +460,16 @@ print.netcomb <- function(x,
     ##
     ## (c) Results for components
     ##
-    ci.comp.f <- data.frame(TE = x$Comp.common,
+    ci.comp.c <- data.frame(TE = x$Comp.common,
                             seTE = x$seComp.common,
                             lower = x$lower.Comp.common,
                             upper = x$upper.Comp.common,
                             statistic = x$statistic.Comp.common,
                             p = x$pval.Comp.common,
                             stringsAsFactors = FALSE)
-    rownames(ci.comp.f) <- x$comps
+    rownames(ci.comp.c) <- x$comps
     ##
-    dat3.c <- formatCC(ci.comp.f,
+    dat3.c <- formatCC(ci.comp.c,
                        backtransf, sm, x$level,
                        comps, comps.abbr, sep.comps,
                        digits, digits.stat, digits.pval,
@@ -498,14 +506,12 @@ print.netcomb <- function(x,
       }
       ##
       if (nrow(dat2.c) >= 1) {
-        cat(paste(if (noeffect == 0) "Absolute" else "Relative",
-                  "effect for existing combinations:\n"))
+        cat(paste("Absolute effect for existing combinations:\n"))
         print(dat2.c)
         cat("\n")
       }
       ##
-      cat(paste(if (noeffect == 0) "Absolute" else "Relative",
-                "effect for components:\n"))
+      cat(paste("Absolute effect for components:\n"))
       print(dat3.c)
       cat("\n")
     }
@@ -524,14 +530,12 @@ print.netcomb <- function(x,
       }
       ##
       if (nrow(dat2.r) >= 1) {
-        cat(paste(if (noeffect == 0) "Absolute" else "Relative",
-                  "effect for existing combinations:\n"))
+        cat(paste("Absolute effect for existing combinations:\n"))
         print(dat2.r)
         cat("\n")
       }
       ##
-      cat(paste(if (noeffect == 0) "Absolute" else "Relative",
-                "effect for components:\n"))
+      cat(paste("Absolute effect for components:\n"))
       print(dat3.r)
       cat("\n")
     }

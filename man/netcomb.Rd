@@ -15,6 +15,7 @@ netcomb(
   details.chkident = FALSE,
   nchar.comps = x$nchar.trts,
   func.inverse = invmat,
+  na.unident = TRUE,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -48,6 +49,9 @@ Details).}
 
 \item{func.inverse}{R function used to calculate the pseudoinverse
 of the Laplacian matrix L (see \code{\link{netmeta}}).}
+
+\item{na.unident}{A logical indicating whether unidentifiable
+components and combinations should be set to missing values.}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
