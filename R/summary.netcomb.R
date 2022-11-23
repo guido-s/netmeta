@@ -8,6 +8,10 @@
 #'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in printouts and forest plots.
+#' @param nchar.comps A numeric defining the minimum number of
+#'   characters used to create unique component names.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments (to catch deprecated arguments).
@@ -63,6 +67,8 @@
 summary.netcomb <- function(object,
                             common = object$common,
                             random = object$random,
+                            backtransf = object$backtransf,
+                            nchar.comps = object$nchar.comps,
                             warn.deprecated = gs("warn.deprecated"),
                             ...) {
   
@@ -79,6 +85,10 @@ summary.netcomb <- function(object,
   ##
   ## (2) Check other arguments
   ##
+  ##
+  chklogical(backtransf)
+  nchar.comps <- replaceNULL(nchar.comps, 666)
+  chknumeric(nchar.comps, min = 1, length = 1)
   ##
   args  <- list(...)
   chklogical(warn.deprecated)
@@ -274,12 +284,12 @@ summary.netcomb <- function(object,
               tau.preset = object$tau.preset,
               ##
               sep.comps = object$sep.comps,
-              nchar.comps = replaceNULL(object$nchar.comps, 666),
+              nchar.comps = nchar.comps,
               ##
               inactive = object$inactive,
               sep.comps = object$sep.comps,
               ##
-              backtransf = object$backtransf,
+              backtransf = backtransf,
               ##
               title = object$title,
               ##

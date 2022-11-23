@@ -10,7 +10,7 @@
 ### User-visible changes
 
 * netcomb():
-  - new logical argument 'na.unident' to specify whether missing
+  - new argument 'na.unident' to specify whether missing
     values should be returned for unidentifiable components and
     comparisons instead of calculated values
 
@@ -20,6 +20,17 @@
   - only show effects for existing combinations in the network
   - print results for common effects and random effects model jointly
   - do not show results for inactive component
+
+* netcomb(), netcomparison(), netcomplex(), summary.netcomb(),
+  summary.netmeta():
+  - new argument 'backtransf' indicating whether estimates should be
+    back-transformed in printouts and plots
+
+* summary.netmeta():
+  - new argument 'nchar.trts' to print abbreviated treatment names
+
+* summary.netcomb():
+  - new argument 'nchar.comps' to print abbreviated component names
 
 ### Internal changes
 
@@ -340,7 +351,7 @@
 
 * decomp.design(), print.decomp.design() print.netsplit(),
   rankogram(), print.rankogram(), plot.rankogram():
-  -  new argument 'nchar.trts' to print abbreviated treatment names
+  - new argument 'nchar.trts' to print abbreviated treatment names
 
 * rankogram():
   - new list elements 'cumrank.matrix.fixed' and

@@ -8,6 +8,8 @@
   object,
   common = object$common,
   random = object$random,
+  backtransf = object$backtransf,
+  nchar.comps = object$nchar.comps,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -20,6 +22,12 @@ effects model should be printed.}
 
 \item{random}{A logical indicating whether results for the random
 effects model should be printed.}
+
+\item{backtransf}{A logical indicating whether results should be
+back transformed in printouts and forest plots.}
+
+\item{nchar.comps}{A numeric defining the minimum number of
+characters used to create unique component names.}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}

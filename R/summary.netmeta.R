@@ -18,6 +18,10 @@
 #' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
 #'   matrices with all treatment effects, and confidence limits will
 #'   be printed.
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in printouts and forest plots.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names (see Details).
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments (to catch deprecated arguments).
@@ -124,6 +128,8 @@ summary.netmeta <- function(object,
                             reference.group = object$reference.group,
                             baseline.reference = object$baseline.reference,
                             all.treatments = object$all.treatments,
+                            backtransf = object$backtransf,
+                            nchar.trts = object$nchar.trts,
                             warn.deprecated = gs("warn.deprecated"),
                             ...) {
   
@@ -145,6 +151,8 @@ summary.netmeta <- function(object,
   ##
   chklogical(prediction)
   chklogical(baseline.reference)
+  chklogical(backtransf)
+  chknumeric(nchar.trts, min = 1, length = 1)
   ##
   fun <- "summary.netmeta"
   ##
@@ -284,9 +292,9 @@ summary.netmeta <- function(object,
               ##
               n.trts = object$n.trts,
               sep.trts = object$sep.trts,
-              nchar.trts = object$nchar.trts,
+              nchar.trts = nchar.trts,
               ##
-              backtransf = object$backtransf,
+              backtransf = backtransf,
               ##
               title = object$title,
               ##

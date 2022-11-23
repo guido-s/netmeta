@@ -13,6 +13,7 @@ netcomplex(
   random = x$random,
   level = x$level.ma,
   nchar.comps = x$nchar.trts,
+  backtransf = x$backtransf,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -55,15 +56,15 @@ combinations of components.}
 characters used to create unique names for components (see
 Details).}
 
-\item{warn.deprecated}{A logical indicating whether warnings should
-be printed if deprecated arguments are used.}
-
-\item{\dots}{Additional arguments (to catch deprecated arguments).}
-
 \item{backtransf}{A logical indicating whether printed results
 should be back transformed. If \code{backtransf=TRUE}, results
 for \code{sm="OR"} are printed as odds ratios rather than log
 odds ratios.}
+
+\item{warn.deprecated}{A logical indicating whether warnings should
+be printed if deprecated arguments are used.}
+
+\item{\dots}{Additional arguments (to catch deprecated arguments).}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}

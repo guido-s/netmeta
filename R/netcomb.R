@@ -20,6 +20,8 @@
 #'   meta-analysis should be conducted.
 #' @param tau.preset An optional value for the square-root of the
 #'   between-study variance \eqn{\tau^2}.
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in printouts and forest plots.
 #' @param details.chkident A logical indicating whether details on
 #'   unidentifiable components should be printed.
 #' @param nchar.comps A numeric defining the minimum number of
@@ -361,6 +363,7 @@ netcomb <- function(x,
                     nchar.comps = x$nchar.trts,
                     ##
                     func.inverse = invmat,
+                    backtransf = x$backtransf,
                     ##
                     na.unident = TRUE,
                     warn.deprecated = gs("warn.deprecated"),
@@ -384,6 +387,7 @@ netcomb <- function(x,
   chklogical(details.chkident)
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
+  chklogical(backtransf)
   chklogical(na.unident)
   ##
   ## Check for deprecated arguments in '...'
@@ -764,7 +768,7 @@ netcomb <- function(x,
               ##
               func.inverse = deparse(substitute(func.inverse)),
               ##
-              backtransf = x$backtransf,
+              backtransf = backtransf,
               ##
               title = x$title,
               ##

@@ -12,6 +12,8 @@
   reference.group = object$reference.group,
   baseline.reference = object$baseline.reference,
   all.treatments = object$all.treatments,
+  backtransf = object$backtransf,
+  nchar.trts = object$nchar.trts,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -38,6 +40,12 @@ only considered if \code{reference.group} has been specified.}
 \item{all.treatments}{A logical or \code{"NULL"}. If \code{TRUE},
 matrices with all treatment effects, and confidence limits will
 be printed.}
+
+\item{backtransf}{A logical indicating whether results should be
+back transformed in printouts and forest plots.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names (see Details).}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}

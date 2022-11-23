@@ -175,6 +175,7 @@ netcomplex <- function(x, complex,
                        random = x$random,
                        level = x$level.ma,
                        nchar.comps = x$nchar.trts,
+                       backtransf = x$backtransf,
                        warn.deprecated = gs("warn.deprecated"),
                        ...) {
   
@@ -193,8 +194,10 @@ netcomplex <- function(x, complex,
   ##
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
+  ##
+  chklogical(backtransf)
   
-
+  
   if (missing(complex)) {
     complex <- x$trts
     complex.orig <- complex
@@ -304,7 +307,7 @@ netcomplex <- function(x, complex,
               inactive = x$inactive,
               nchar.comps = nchar.comps,
               ##
-              backtransf = x$backtransf,
+              backtransf = backtransf,
               ##
               x = x,
               ##
