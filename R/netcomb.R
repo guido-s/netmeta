@@ -507,10 +507,7 @@ netcomb <- function(x,
                        "s are " else " is ",
                      "not uniquely identifiable: ",
                      paste(paste0("'", comps.unident, "'"),
-                           collapse = ", "),
-                     if (!details.chkident)
-                       paste("\nFor more details, re-run netcomb()",
-                             "with argument details.chkident = TRUE.")),
+                           collapse = ", ")),
               call. = FALSE)
       ##
       if (details.chkident) {
