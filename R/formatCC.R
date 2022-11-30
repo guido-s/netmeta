@@ -8,8 +8,13 @@ formatCC <- function(x,
   
   relative <- is.relative.effect(sm)
   
-  
-  sm.lab <- armlab(sm, backtransf)
+  sm.lab <- sm
+  ##
+  if (sm != "") {
+    sm.lab <- paste0("i", sm)
+    if (!backtransf & relative)
+      sm.lab <- paste0("log(", sm.lab, ")")
+  }
   ##  
   ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
   

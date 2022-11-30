@@ -41,8 +41,8 @@
 #' @param lwd.max Maximum line width in network graph. The connection
 #'   with the largest value according to argument \code{thickness}
 #'   will be set to this value.
-#' @param rescale.thickness R function to scale the thickness of
-#'   lines.
+#' @param rescale.thickness R function to scale the thickness of lines
+#'   (see Details).
 #' @param dim A character string indicating whether a 2- or
 #'   3-dimensional plot should be produced, either \code{"2d"} or
 #'   \code{"3d"}.
@@ -66,14 +66,15 @@
 #' @param points A logical indicating whether points should be printed
 #'   at nodes (i.e. treatments) of the network graph.
 #' @param cex.points,pch.points,col.points,bg.points Corresponding
-#'   color, background color, size, and type for points. Can be a
+#'   size, type, color, and background color for points. Can be a
 #'   vector with length equal to the number of treatments.
 #' @param points.min Minimum point size. All points with size below
 #'   this values will be set to \code{points.min}.
 #' @param points.max Maximum point size in network graph. The node
 #'   with the largest value according to argument \code{cex.points}
 #'   will be set to this value.
-#' @param rescale.pointsize R function to scale the point size.
+#' @param rescale.pointsize R function to scale the point size (see
+#'   Details).
 #' @param number.of.studies A logical indicating whether number of
 #'   studies should be added to network graph.
 #' @param cex.number.of.studies The magnification to be used for
@@ -135,6 +136,10 @@
 #' @param \dots Additional graphical arguments.
 #' 
 #' @details
+#' This function generates a network graph for an R object created
+#' with \code{\link{netmeta}}.
+#'
+#' \subsection{Layout of network graph}{
 #' The network is laid out in the plane, where the nodes in the graph
 #' layout correspond to the treatments and edges display the observed
 #' treatment comparisons. For the default setting, nodes are placed on
@@ -159,13 +164,16 @@
 #' \code{start.layout}. Note, is is not possible of prespecify the
 #' best value for argument \code{start.layout} for any situation as
 #' the result depends on the network structure.
+#' }
 #' 
-#' Argument \code{thickness} providing the line width of the nodes
+#' \subsection{Definition of line widths}{
+#' Argument \code{thickness} providing the line width of edges
 #' (comparisons) can be a matrix of the same dimension as argument
-#' \code{A.matrix} or any of the following character variables:
+#' \code{A.matrix} or any of the following character strings (which
+#' can be abbreviated):
 #' \itemize{
 #' \item Proportional to number of studies comparing two treatments
-#'   (\code{thickness = "number.of.studies", default})
+#'   (\code{thickness = "number.of.studies"}, default)
 #' \item Proportional to inverse standard error of common effects model
 #'   comparing two treatments (\code{thickness = "se.common"})
 #' \item Proportional to inverse standard error of random effects
@@ -174,14 +182,56 @@
 #'   (\code{thickness = "w.common"})
 #' \item Weight from random effects model comparing two treatments
 #'   (\code{thickness = "w.random"})
-#' \item Same line width (argument \code{lwd}) for all comparisons
-#'   (\code{thickness = "equal"})
+#' \item Same line width for all comparisons (\code{thickness =
+#'   "equal"})
 #' }
 #'
 #' Only evidence from direct treatment comparisons is considered to
 #' determine the line width if argument \code{thickness} is equal to
 #' any but the last method.
 #'
+#' Line widths are determined by argument \code{lwd} if all lines have
+#' the same width. This is possible if either argument \code{thickness
+#' = "equal"}, all pairwise comparisons have the same number of
+#' studies for \code{thickness = "number.of.studies"} or all direct
+#' comparisons are equally precise.
+#'
+#' Otherwise, the line width of the thickest line is equal to the
+#' value of argument \code{lwd.max} and all lines with a thickness
+#' below the value of argument \code{lwd.min} are set to this
+#' value. Default for argument \code{lwd.max} is \code{4 * lwd}.
+#' 
+#' Argument \code{rescale.thickness} can be used to provide a function
+#' to specify the relative line width of edges (comparisons). By
+#' default, the square root function \code{\link[base]{sqrt}} is used
+#' in order to lessen the differences in line widths. The identity
+#' function \code{\link[base]{I}} can be used to not rescale line
+#' widths.
+#' }
+#' 
+#' \subsection{Definition of point sizes}{
+#' Points are printed at nodes (treatments) if argument \code{points =
+#' TRUE} or argument \code{cex.points} is provided.
+#'
+#' Point sizes are equal to the value of argument \code{cex.points} if
+#' all points are of equal size. 
+#'
+#' Otherwise, the point size of the largest point is equal to the
+#' value of argument \code{points.max} and all points smaller than the
+#' value of argument \code{points.min} are set to this value. The
+#' default for argument \code{points.max} is equal to the largest
+#' value provided in argument \code{cex.points} if this largest value
+#' is below or equal to 25. Otherwise the default is \code{points.max
+#' = 8}.
+#' 
+#' Argument \code{rescale.pointsize} can be used to provide a function
+#' to specify relative point sizes of nodes (treatments). By default,
+#' the square root function \code{\link[base]{sqrt}} is used in order
+#' to lessen the differences in point sizes. The identity function
+#' \code{\link[base]{I}} can be used to not rescale point sizes.
+#' }
+#' 
+#' \subsection{Other settings}{
 #' Argument \code{srt.labels} can be used to specific the rotation (in
 #' degrees) of the treatment labels. If \code{srt.labels} is equal to
 #' \code{"orthogonal"}, treatment labels are orthogonal to the
@@ -207,6 +257,7 @@
 #' package \bold{rgl} is necessary. Note, under macOS the X.Org X
 #' Window System must be available (see
 #' \url{https://www.xquartz.org}).
+#' }
 #'
 #' @return
 #' A list containing two data frames with information on nodes and
@@ -390,10 +441,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              col = if (iterate) "slateblue" else "black",
                              plastic = !(iterate & allfigures),
                              thickness = "number.of.studies",
-                             lwd = 5, lwd.min = lwd / 2.5, lwd.max = lwd * 4,
-                             rescale.thickness =
-                               if (thickness == "number.of.studies") sqrt
-                               else I,
+                             lwd = 5, lwd.min = lwd / 2.5, lwd.max,
+                             rescale.thickness,
                              ##
                              dim = "2d",
                              rotate = 0,
@@ -406,16 +455,17 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              alpha.transparency = 0.5,
                              ##
                              points = !missing(cex.points),
-                             cex.points = 4, pch.points = 21,
-                             col.points = "black",
+                             cex.points = 2,
+                             pch.points = 19,
+                             col.points =
+                               if (length(pch.points) == 1 && pch.points == 21)
+                                 "black" else "red",
                              bg.points = "red",
-                             points.max =
-                               if (length(unique(cex.points)) != 1) 8
-                               else cex.points,
                              points.min =
                                if (length(unique(cex.points)) != 1) 1
                                else cex.points,
-                             rescale.pointsize = sqrt,
+                             points.max,
+                             rescale.pointsize,
                              ##
                              number.of.studies = FALSE,
                              cex.number.of.studies = cex,
@@ -473,11 +523,23 @@ netgraph.netmeta <- function(x, seq = x$seq,
   chknumeric(srt.labels, min = -180, max = 180)
   chknumeric(lwd, min = 0, zero = TRUE, length = 1)
   chknumeric(lwd.min, min = 0, zero = TRUE, length = 1)
+  ##
+  missing.lwd.max <- missing(lwd.max)
+  if (missing.lwd.max)
+     lwd.max <- 4 * lwd
   chknumeric(lwd.max, min = 0, zero = TRUE, length = 1)
-  chknumeric(scale.highlight, min = 0, zero = TRUE)
   ##
   if (lwd.min > lwd.max)
     stop("Argument 'lwd.min' must be smaller than 'lwd.max'.")
+  ##
+  if (missing(rescale.thickness)) {
+    if (!is.matrix(thickness) && thickness == "equal")
+      rescale.thickness <- I
+    else
+      rescale.thickness <- sqrt
+  }
+  ##
+  chknumeric(scale.highlight, min = 0, zero = TRUE)
   ##
   dim <- setchar(dim, c("2d", "3d"))
   is_2d <- dim == "2d"
@@ -614,6 +676,20 @@ netgraph.netmeta <- function(x, seq = x$seq,
   else if (length(cex.points) != n.trts)
     stop("Length of argument 'cex.points' must be equal to the ",
          "number of treatments.")
+  ##
+  if (missing(points.max)) {
+    if (length(unique(cex.points)) == 1 | max(cex.points) <= 25)
+      points.max <- max(cex.points)
+    else
+      points.max <- 8
+  }
+  ##
+  if (missing(rescale.pointsize)) {
+    if (length(unique(cex.points)) == 1 | max(cex.points) <= 25)
+      rescale.pointsize <- I
+    else
+      rescale.pointsize <- sqrt
+  }
   ##
   if (length(col.points) == 1)
     col.points <- rep(col.points, n.trts)
@@ -1098,11 +1174,11 @@ netgraph.netmeta <- function(x, seq = x$seq,
         do.call(rescale.thickness, list(max(W.matrix, na.rm = TRUE)))
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
-
-
-
-
-
+  ##
+  if (missing.lwd.max & length(unique(W.matrix[W.matrix != 0])) == 1)
+    W.matrix <- W.matrix / 4
+  
+  
   ##
   ##
   ## Plot graph

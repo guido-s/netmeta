@@ -501,12 +501,12 @@ print.netcomb <- function(x,
       }
       ##
       if (nrow(dat2.c) >= 1) {
-        cat("Absolute effect for existing combinations:\n")
+        cat("Incremental effect for existing combinations:\n")
         print(dat2.c)
         cat("\n")
       }
       ##
-      cat("Absolute effect for components:\n")
+      cat("Incremental effect for components:\n")
       print(dat3.c)
       cat("\n")
     }
@@ -525,12 +525,12 @@ print.netcomb <- function(x,
       }
       ##
       if (nrow(dat2.r) >= 1) {
-        cat("Absolute effect for existing combinations:\n")
+        cat("Incremental effect for existing combinations:\n")
         print(dat2.r)
         cat("\n")
       }
       ##
-      cat("Absolute effect for components:\n")
+      cat("Incremental effect for components:\n")
       print(dat3.r)
       cat("\n")
     }

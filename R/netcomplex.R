@@ -404,10 +404,18 @@ print.netcomplex <- function(x,
                            x$x$sep.comps, x$add[i] == " ")
   }
   
-  
-  relative <- is.relative.effect(x$x$sm)
+
+  sm <- x$x$sm
   ##
-  sm.lab <- armlab(x$x$sm, backtransf)
+  relative <- is.relative.effect(sm)
+  ##
+  sm.lab <- sm
+  ##
+  if (sm != "") {
+    sm.lab <- paste0("i", sm)
+    if (backtransf)
+      sm.lab <- paste0("log(", sm, ")")
+  }
   ##  
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   

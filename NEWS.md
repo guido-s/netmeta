@@ -1,11 +1,11 @@
-## netmeta, version 2.7-0 (2022-mm-dd)
+## netmeta, version 2.6-1 (2022-mm-dd)
 
 ### Major changes
 
 * In component network meta-analysis,
-  - print correct labels for combinations and components
   - by default, do not return estimates but missing values for
     unidentifiable components and comparisons
+  - print more precise labels for combinations and components
 
 ### User-visible changes
 
@@ -17,7 +17,8 @@
 * print.netcomb():
   - print layout similar to print.netmeta()
   - show results for comparisons with the reference treatment
-  - only show effects for existing combinations in the network
+  - only show incremental effects for existing combinations in the
+    network
   - print results for common effects and random effects model jointly
   - do not show results for inactive component
 
@@ -31,6 +32,9 @@
 
 * summary.netcomb():
   - new argument 'nchar.comps' to print abbreviated component names
+
+* Help page for netgraph.netmeta():
+  - add information on thickness of lines and point sizes
 
 ### Internal changes
 
