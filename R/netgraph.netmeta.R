@@ -204,7 +204,7 @@
 #' Argument \code{rescale.thickness} can be used to provide a function
 #' to specify the relative line width of edges (comparisons). By
 #' default, the square root function \code{\link[base]{sqrt}} is used
-#' in order to lessen the differences in line widths. The identity
+#' in order to lessen differences in line widths. The identity
 #' function \code{\link[base]{I}} can be used to not rescale line
 #' widths.
 #' }
@@ -225,10 +225,13 @@
 #' = 8}.
 #' 
 #' Argument \code{rescale.pointsize} can be used to provide a function
-#' to specify relative point sizes of nodes (treatments). By default,
-#' the square root function \code{\link[base]{sqrt}} is used in order
-#' to lessen the differences in point sizes. The identity function
-#' \code{\link[base]{I}} can be used to not rescale point sizes.
+#' to specify relative point sizes. Point sizes are not rescaled at
+#' all if they are all equal or the largest \code{cex.points} value is
+#' below or equal to 25. Otherwise, the square root function
+#' \code{\link[base]{sqrt}} is used in order to lessen the differences
+#' in point sizes. Note, internally the identity function
+#' \code{\link[base]{I}} is used if point sizes should not be
+#' rescaled.
 #' }
 #' 
 #' \subsection{Other settings}{
