@@ -41,8 +41,8 @@
 #' @param lwd.max Maximum line width in network graph. The connection
 #'   with the largest value according to argument \code{thickness}
 #'   will be set to this value.
-#' @param rescale.thickness R function to scale the thickness of lines
-#'   (see Details).
+#' @param rescale.thickness A logical value or R function to scale the
+#'   thickness of lines (see Details).
 #' @param dim A character string indicating whether a 2- or
 #'   3-dimensional plot should be produced, either \code{"2d"} or
 #'   \code{"3d"}.
@@ -73,8 +73,8 @@
 #' @param points.max Maximum point size in network graph. The node
 #'   with the largest value according to argument \code{cex.points}
 #'   will be set to this value.
-#' @param rescale.pointsize R function to scale the point size (see
-#'   Details).
+#' @param rescale.pointsize A logical value or R function to scale the
+#'   point size (see Details).
 #' @param number.of.studies A logical indicating whether number of
 #'   studies should be added to network graph.
 #' @param cex.number.of.studies The magnification to be used for
@@ -204,9 +204,10 @@
 #' Argument \code{rescale.thickness} can be used to provide a function
 #' to specify the relative line width of edges (comparisons). By
 #' default, the square root function \code{\link[base]{sqrt}} is used
-#' in order to lessen differences in line widths. The identity
-#' function \code{\link[base]{I}} can be used to not rescale line
-#' widths.
+#' in order to lessen differences in line widths. Argument
+#' \code{rescale.thickness = FALSE} or \code{rescale.thickness = I},
+#' i.e., the identity function \code{\link[base]{I}}, can be used to
+#' not rescale line widths.
 #' }
 #' 
 #' \subsection{Definition of point sizes}{
@@ -229,9 +230,9 @@
 #' all if they are all equal or the largest \code{cex.points} value is
 #' below or equal to 25. Otherwise, the square root function
 #' \code{\link[base]{sqrt}} is used in order to lessen the differences
-#' in point sizes. Note, internally the identity function
-#' \code{\link[base]{I}} is used if point sizes should not be
-#' rescaled.
+#' in point sizes. Argument \code{rescale.pointsize = FALSE} or
+#' \code{rescale.pointsize = I}, i.e., the identity function
+#' \code{\link[base]{I}}, can be used to not rescale point sizes.
 #' }
 #' 
 #' \subsection{Other settings}{
@@ -541,6 +542,22 @@ netgraph.netmeta <- function(x, seq = x$seq,
     else
       rescale.thickness <- sqrt
   }
+  else {
+    if (is.logical(rescale.thickness)) {
+      if (rescale.thickness) {
+        if (!is.matrix(thickness) && thickness == "equal")
+          rescale.thickness <- I
+        else
+          rescale.thickness <- sqrt
+      }
+      else
+        rescale.thickness <- I
+    }
+    else if (!is.function(rescale.thickness))
+      stop("Argument 'rescale.thickness' must be a logical value or ",
+           "an R function to rescale line widths.",
+           call. = FALSE)
+  }
   ##
   chknumeric(scale.highlight, min = 0, zero = TRUE)
   ##
@@ -692,6 +709,22 @@ netgraph.netmeta <- function(x, seq = x$seq,
       rescale.pointsize <- I
     else
       rescale.pointsize <- sqrt
+  }
+  else {
+    if (is.logical(rescale.pointsize)) {
+      if (rescale.pointsize) {
+        if (length(unique(cex.points)) == 1 | max(cex.points) <= 25)
+          rescale.pointsize <- I
+        else
+          rescale.pointsize <- sqrt
+      }
+      else
+        rescale.pointsize <- I
+    }
+    else if (!is.function(rescale.pointsize))
+      stop("Argument 'rescale.pointsize' must be a logical value or ",
+           "an R function to rescale point sizes.",
+           call. = FALSE)
   }
   ##
   if (length(col.points) == 1)

@@ -112,8 +112,8 @@ with line widths below this values will be set to \code{lwd.min}.}
 with the largest value according to argument \code{thickness}
 will be set to this value.}
 
-\item{rescale.thickness}{R function to scale the thickness of lines
-(see Details).}
+\item{rescale.thickness}{A logical value or R function to scale the
+thickness of lines (see Details).}
 
 \item{dim}{A character string indicating whether a 2- or
 3-dimensional plot should be produced, either \code{"2d"} or
@@ -157,8 +157,8 @@ this values will be set to \code{points.min}.}
 with the largest value according to argument \code{cex.points}
 will be set to this value.}
 
-\item{rescale.pointsize}{R function to scale the point size (see
-Details).}
+\item{rescale.pointsize}{A logical value or R function to scale the
+point size (see Details).}
 
 \item{number.of.studies}{A logical indicating whether number of
 studies should be added to network graph.}
@@ -353,9 +353,10 @@ value. Default for argument \code{lwd.max} is \code{4 * lwd}.
 Argument \code{rescale.thickness} can be used to provide a function
 to specify the relative line width of edges (comparisons). By
 default, the square root function \code{\link[base]{sqrt}} is used
-in order to lessen the differences in line widths. The identity
-function \code{\link[base]{I}} can be used to not rescale line
-widths.
+in order to lessen differences in line widths. Argument
+\code{rescale.thickness = FALSE} or \code{rescale.thickness = I},
+i.e., the identity function \code{\link[base]{I}}, can be used to
+not rescale line widths.
 }
 
 \subsection{Definition of point sizes}{
@@ -374,10 +375,13 @@ is below or equal to 25. Otherwise the default is \code{points.max
 = 8}.
 
 Argument \code{rescale.pointsize} can be used to provide a function
-to specify relative point sizes of nodes (treatments). By default,
-the square root function \code{\link[base]{sqrt}} is used in order
-to lessen the differences in point sizes. The identity function
-\code{\link[base]{I}} can be used to not rescale point sizes.
+to specify relative point sizes. Point sizes are not rescaled at
+all if they are all equal or the largest \code{cex.points} value is
+below or equal to 25. Otherwise, the square root function
+\code{\link[base]{sqrt}} is used in order to lessen the differences
+in point sizes. Argument \code{rescale.pointsize = FALSE} or
+\code{rescale.pointsize = I}, i.e., the identity function
+\code{\link[base]{I}}, can be used to not rescale point sizes.
 }
 
 \subsection{Other settings}{
