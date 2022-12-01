@@ -439,7 +439,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
                                if (!is.null(adj) && all(unique(adj) == 0.5))
                                  0
                                else
-                                 0.02,
+                                 0.0175,
                              scale = 1.10,
                              ##
                              col = if (iterate) "slateblue" else "black",
@@ -459,17 +459,13 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              alpha.transparency = 0.5,
                              ##
                              points = !missing(cex.points),
-                             cex.points = 2,
-                             pch.points = 19,
+                             cex.points = 1,
+                             pch.points = 20,
                              col.points =
                                if (length(pch.points) == 1 && pch.points == 21)
                                  "black" else "red",
                              bg.points = "red",
-                             points.min =
-                               if (length(unique(cex.points)) != 1) 1
-                               else cex.points,
-                             points.max,
-                             rescale.pointsize,
+                             points.min, points.max, rescale.pointsize,
                              ##
                              number.of.studies = FALSE,
                              cex.number.of.studies = cex,
@@ -697,31 +693,48 @@ netgraph.netmeta <- function(x, seq = x$seq,
     stop("Length of argument 'cex.points' must be equal to the ",
          "number of treatments.")
   ##
-  if (missing(points.max)) {
-    if (length(unique(cex.points)) == 1 | max(cex.points) <= 25)
-      points.max <- max(cex.points)
+  if (missing(points.min)) {
+    if (length(unique(cex.points)) == 1 | max(cex.points, na.rm = TRUE) <= 25)
+      points.min <- NULL
     else
-      points.max <- 8
+      points.min <- 1
   }
+  if (!is.null(points.min))
+    chknumeric(points.min, 0, zero = TRUE, length = 1)
+  ##
+  if (missing(points.max) ) {
+    if (length(unique(cex.points)) == 1)
+      points.max <- NULL
+    else if (max(cex.points, na.rm = TRUE) <= 25)
+      points.max <- max(cex.points, na.rm = TRUE)
+    else {
+      if (length(pch.points) == 1 && pch.points == 21)
+        points.max <- 8
+      else
+        points.max <- 12
+    }
+  }
+  if (!is.null(points.max))
+    chknumeric(points.max, 0, zero = TRUE, length = 1)
   ##
   if (missing(rescale.pointsize)) {
-    if (length(unique(cex.points)) == 1 | max(cex.points) <= 25)
-      rescale.pointsize <- I
+    if (length(unique(cex.points)) == 1 | max(cex.points, na.rm = TRUE) <= 25)
+      rescale.pointsize <- NULL
     else
       rescale.pointsize <- sqrt
   }
   else {
     if (is.logical(rescale.pointsize)) {
       if (rescale.pointsize) {
-        if (length(unique(cex.points)) == 1 | max(cex.points) <= 25)
-          rescale.pointsize <- I
+        if (length(unique(cex.points)) == 1 | max(cex.points, na.rm = TRUE) <= 25)
+          rescale.pointsize <- NULL
         else
           rescale.pointsize <- sqrt
       }
       else
         rescale.pointsize <- I
     }
-    else if (!is.function(rescale.pointsize))
+    else if (!is.function(rescale.pointsize) && !is.null(rescale.pointsize))
       stop("Argument 'rescale.pointsize' must be a logical value or ",
            "an R function to rescale point sizes.",
            call. = FALSE)
@@ -882,10 +895,15 @@ netgraph.netmeta <- function(x, seq = x$seq,
   pch.points <- pch.points[seq1]
   bg.points  <- bg.points[seq1]
   ##
-  cex.pointsize <- points.max *
-    do.call(rescale.pointsize, list(cex.points)) /
-    do.call(rescale.pointsize, list(max(cex.points)))
-  cex.pointsize[cex.pointsize < points.min & cex.pointsize != 0] <- points.min
+  if (!is.null(points.max) & !is.null(rescale.pointsize))
+    cex.pointsize <- points.max *
+      do.call(rescale.pointsize, list(cex.points)) /
+      do.call(rescale.pointsize, list(max(cex.points, na.rm = TRUE)))
+  else
+    cex.pointsize <- cex.points
+  ##
+  if (!is.null(points.min))
+    cex.pointsize[cex.pointsize < points.min & cex.pointsize != 0] <- points.min
   
   
   A.sign <- sign(A.matrix)
@@ -1161,7 +1179,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
   if (thick == "number.of.studies") {
     W.matrix <- lwd.max *
       do.call(rescale.thickness, list(A.matrix)) /
-      do.call(rescale.thickness, list(max(A.matrix)))
+      do.call(rescale.thickness, list(max(A.matrix, na.rm = TRUE)))
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   else if (thick == "equal") {
