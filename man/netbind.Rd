@@ -120,5 +120,5 @@ forest(nb1,
   \code{\link{discomb}}, \code{\link{forest.netbind}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

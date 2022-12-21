@@ -111,7 +111,7 @@
 #' \item{B.matrix}{B matrix.}
 #' \item{C.matrix}{C matrix.}
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netcomb}}, \code{\link{discomb}},
 #'   \code{\link{netcomplex}}
@@ -180,6 +180,7 @@ netcomparison <- function(x, treat1, treat2,
                           random = x$random,
                           level = x$level.ma,
                           nchar.comps = x$nchar.comps,
+                          backtransf = x$backtransf,
                           warn.deprecated = gs("warn.deprecated"),
                           ...) {
   
@@ -197,6 +198,7 @@ netcomparison <- function(x, treat1, treat2,
   chklevel(level)
   ##
   chknumeric(nchar.comps, min = 1, length = 1)
+  chklogical(backtransf)
   
   
   missing.treat1 <- missing(treat1)
@@ -359,8 +361,7 @@ netcomparison <- function(x, treat1, treat2,
               comps = colnames(C.matrix)[apply(C.matrix, 2, sum) > 0],
               inactive = x$inactive,
               nchar.comps = nchar.comps,
-              ##
-              backtransf = x$backtransf,
+              backtransf = backtransf,
               ##
               B.matrix = B.matrix,
               C.matrix = C.matrix,

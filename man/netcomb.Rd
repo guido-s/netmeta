@@ -15,6 +15,8 @@ netcomb(
   details.chkident = FALSE,
   nchar.comps = x$nchar.trts,
   func.inverse = invmat,
+  backtransf = x$backtransf,
+  na.unident = TRUE,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -48,6 +50,12 @@ Details).}
 
 \item{func.inverse}{R function used to calculate the pseudoinverse
 of the Laplacian matrix L (see \code{\link{netmeta}}).}
+
+\item{backtransf}{A logical indicating whether results should be
+back transformed in printouts and forest plots.}
+
+\item{na.unident}{A logical indicating whether unidentifiable
+components and combinations should be set to missing values.}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
@@ -331,18 +339,18 @@ trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
 
 # Conduct random effects network meta-analysis
 #
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
   data = Linde2016, ref = "placebo",
   seq = trts, sm = "OR", common = FALSE)
-net1
-forest(net1, xlim = c(0.2, 50))
+net2
+forest(net2, xlim = c(0.2, 50))
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
 #
-nc1 <- netcomb(net1, inactive = "placebo")
-nc1
-forest(nc1, xlim = c(0.2, 50))
+nc2 <- netcomb(net2, inactive = "placebo")
+nc2
+forest(nc2, xlim = c(0.2, 50))
 }
 
 }
@@ -376,6 +384,6 @@ psychological interventions in coronary heart disease.
   \code{\link{netcomplex}}, \code{\link{netcomparison}}
 }
 \author{
-Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
-  Schwarzer \email{sc@imbi.uni-freiburg.de}
+Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido
+  Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

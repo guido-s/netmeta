@@ -18,6 +18,10 @@
 #' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
 #'   matrices with all treatment effects, and confidence limits will
 #'   be printed.
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in printouts and forest plots.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names (see Details).
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments (to catch deprecated arguments).
@@ -88,29 +92,38 @@
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}
 #' 
 #' @keywords summary
 #' 
 #' @examples
+#' data(smokingcessation)
+#' 
+#' p1 <- pairwise(list(treat1, treat2, treat3),
+#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
+#'   data = smokingcessation, sm = "OR")
+#' net1 <- netmeta(p1)
+#'
+#' summary(net1)
+#' 
+#' \dontrun{
 #' data(Senn2013)
 #' 
 #' # Conduct common effects network meta-analysis
 #' #
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", random = FALSE)
-#' print(net1, ref = "plac", digits = 3)
-#' summary(net1)
-#'
-#' \dontrun{
-#' # Conduct random effects network meta-analysis
-#' #
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", common = FALSE)
+#'   data = Senn2013, sm = "MD", random = FALSE)
 #' print(net2, ref = "plac", digits = 3)
 #' summary(net2)
+#'
+#' # Conduct random effects network meta-analysis
+#' #
+#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#'   data = Senn2013, sm = "MD", common = FALSE)
+#' print(net3, ref = "plac", digits = 3)
+#' summary(net3)
 #' }
 #' 
 #' @method summary netmeta
@@ -124,6 +137,8 @@ summary.netmeta <- function(object,
                             reference.group = object$reference.group,
                             baseline.reference = object$baseline.reference,
                             all.treatments = object$all.treatments,
+                            backtransf = object$backtransf,
+                            nchar.trts = object$nchar.trts,
                             warn.deprecated = gs("warn.deprecated"),
                             ...) {
   
@@ -145,6 +160,8 @@ summary.netmeta <- function(object,
   ##
   chklogical(prediction)
   chklogical(baseline.reference)
+  chklogical(backtransf)
+  chknumeric(nchar.trts, min = 1, length = 1)
   ##
   fun <- "summary.netmeta"
   ##
@@ -284,9 +301,9 @@ summary.netmeta <- function(object,
               ##
               n.trts = object$n.trts,
               sep.trts = object$sep.trts,
-              nchar.trts = object$nchar.trts,
+              nchar.trts = nchar.trts,
               ##
-              backtransf = object$backtransf,
+              backtransf = backtransf,
               ##
               title = object$title,
               ##

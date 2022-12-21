@@ -417,8 +417,8 @@
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
-#' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
-#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
+#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{pairwise}}, \code{\link{forest.netmeta}},
 #'   \code{\link{netrank}}, \code{\link{metagen}}
@@ -456,35 +456,48 @@
 #' \bold{36}, 1--48
 #' 
 #' @examples
+#' data(smokingcessation)
+#' 
+#' # Transform data from arm-based format to contrast-based format
+#' #
+#' p1 <- pairwise(list(treat1, treat2, treat3),
+#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
+#'   data = smokingcessation, sm = "OR")
+#' 
+#' # Conduct random effects network meta-analysis
+#' #
+#' net1 <- netmeta(p1, common = FALSE)
+#' net1
+#' 
+#' \dontrun{
 #' data(Senn2013)
 #' 
 #' # Conduct common effects network meta-analysis
 #' #
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD", random = FALSE)
-#' net1
-#' net1$Q.decomp
+#' net2
+#' net2$Q.decomp
 #' 
 #' # Comparison with reference group
 #' #
-#' print(net1, reference = "plac")
+#' print(net2, reference = "plac")
 #'
-#' \dontrun{
 #' # Conduct random effects network meta-analysis
 #' #
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD", common = FALSE)
-#' net2
+#' net3
 #' 
 #' # Change printing order of treatments with placebo last and use
 #' # long treatment names
 #' #
 #' trts <- c("acar", "benf", "metf", "migl", "piog",
 #'   "rosi", "sita", "sulf", "vild", "plac")
-#' net3 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
+#' net4 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
 #'   data = Senn2013, sm = "MD", common = FALSE,
 #'   seq = trts, reference = "Placebo")
-#' print(net3, digits = 2)
+#' print(net4, digits = 2)
 #' }
 #' 
 #' @export netmeta

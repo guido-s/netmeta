@@ -1,3 +1,51 @@
+## netmeta, version 2.7-0 (2022-mm-dd)
+
+### Major changes
+
+* In component network meta-analysis,
+  - by default, do not return estimates but missing values for
+    unidentifiable components and comparisons
+  - print more precise labels for combinations and components
+
+### User-visible changes
+
+* netcomb():
+  - new argument 'na.unident' to specify whether missing
+    values should be returned for unidentifiable components and
+    comparisons instead of calculated values
+
+* print.netcomb():
+  - print layout similar to print.netmeta()
+  - show results for comparisons with the reference treatment
+  - only show incremental effects for existing combinations in the
+    network
+  - print results for common effects and random effects model jointly
+  - do not show results for inactive component
+
+* netcomb(), netcomparison(), netcomplex(), summary.netcomb(),
+  summary.netmeta():
+  - new argument 'backtransf' indicating whether estimates should be
+    back-transformed in printouts and plots
+
+* summary.netmeta():
+  - new argument 'nchar.trts' to print abbreviated treatment names
+
+* summary.netcomb():
+  - new argument 'nchar.comps' to print abbreviated component names
+
+* Help page for netgraph.netmeta():
+  - add information on thickness of lines and point sizes
+
+### Internal changes
+
+* New internal function armlab() to generate labels for combinations
+  and components in component network meta-analysis
+
+* netcomb():
+  - new list elements 'na.unident' (new argument) and 'comps.unident'
+    (vector of unidentifiable components)
+
+
 ## netmeta, version 2.6-0 (2022-11-04)
 
 ### Major changes
@@ -307,7 +355,7 @@
 
 * decomp.design(), print.decomp.design() print.netsplit(),
   rankogram(), print.rankogram(), plot.rankogram():
-  -  new argument 'nchar.trts' to print abbreviated treatment names
+  - new argument 'nchar.trts' to print abbreviated treatment names
 
 * rankogram():
   - new list elements 'cumrank.matrix.fixed' and
@@ -348,9 +396,6 @@
   - keep all variables from original dataset if variable is missing
     for one group but not the other (so far, only the first variable
     was kept)
-
-* summary.netcomb(), print.summary.netcomb(), print.netcomb():
-  - new argument 'show.combs'
 
 * netcomb():
   - new argument 'nchar.comps' to abbreviate component names

@@ -18,39 +18,55 @@
 #' \item \code{\link{netgraph.discomb}}
 #' }
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de
 #' }
 #' 
 #' @keywords hplot
 #'
 #' @examples
+#' data(smokingcessation)
+#' 
+#' # Transform data from arm-based format to contrast-based format
+#' #
+#' p1 <- pairwise(list(treat1, treat2, treat3),
+#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
+#'   data = smokingcessation, sm = "OR")
+#' 
+#' # Conduct random effects network meta-analysis
+#' #
+#' net1 <- netmeta(p1, common = FALSE)
+#' 
+#' # Network graph with default settings
+#' #
+#' netgraph(net1)
+#' 
+#' \dontrun{
 #' data(Senn2013)
 #' 
 #' # Generation of an object of class 'netmeta' with reference
 #' # treatment 'plac'
 #' #
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD", reference = "plac")
 #' 
 #' # Network graph with default settings
 #' #
-#' netgraph(net1)
+#' netgraph(net2)
 #'
-#' \dontrun{
 #' data(Woods2010)
-#' p1 <- pairwise(treatment, event = r, n = N,
+#' p3 <- pairwise(treatment, event = r, n = N,
 #'   studlab = author, data = Woods2010, sm = "OR")
-#' net2 <- netmeta(p1)
+#' net3 <- netmeta(p3)
 #' 
 #' # Network graph with default settings
 #' #
-#' netgraph(net2)
+#' netgraph(net3)
 #' 
 #' # Network graph with
 #' # - number of studies for each pairwise comparison and
 #' # - number of participants for each treatment arm
 #' #
-#' netgraph(net2, number.of.studies = TRUE,
+#' netgraph(net3, number.of.studies = TRUE,
 #'   labels = paste0(trts, " (n=", n.trts, ")"))
 #' }
 #' 

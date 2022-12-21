@@ -20,6 +20,8 @@
 #'   meta-analysis should be conducted.
 #' @param tau.preset An optional value for the square-root of the
 #'   between-study variance \eqn{\tau^2}.
+#' @param backtransf A logical indicating whether results should be
+#'   back transformed in printouts and forest plots.
 #' @param details.chkident A logical indicating whether details on
 #'   unidentifiable components should be printed.
 #' @param nchar.comps A numeric defining the minimum number of
@@ -27,6 +29,8 @@
 #'   Details).
 #' @param func.inverse R function used to calculate the pseudoinverse
 #'   of the Laplacian matrix L (see \code{\link{netmeta}}).
+#' @param na.unident A logical indicating whether unidentifiable
+#'   components and combinations should be set to missing values.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments (to catch deprecated arguments).
@@ -260,8 +264,8 @@
 #' \item{version}{Version of R package netmeta used to create
 #'   object.}
 #' 
-#' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
-#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
+#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{discomb}}, \code{\link{netmeta}},
 #'   \code{\link{forest.netcomb}}, \code{\link{print.netcomb}},
@@ -331,18 +335,18 @@
 #' 
 #' # Conduct random effects network meta-analysis
 #' #
-#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+#' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
 #'   data = Linde2016, ref = "placebo",
 #'   seq = trts, sm = "OR", common = FALSE)
-#' net1
-#' forest(net1, xlim = c(0.2, 50))
+#' net2
+#' forest(net2, xlim = c(0.2, 50))
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
 #' #
-#' nc1 <- netcomb(net1, inactive = "placebo")
-#' nc1
-#' forest(nc1, xlim = c(0.2, 50))
+#' nc2 <- netcomb(net2, inactive = "placebo")
+#' nc2
+#' forest(nc2, xlim = c(0.2, 50))
 #' }
 #' 
 #' @export netcomb
@@ -359,7 +363,9 @@ netcomb <- function(x,
                     nchar.comps = x$nchar.trts,
                     ##
                     func.inverse = invmat,
+                    backtransf = x$backtransf,
                     ##
+                    na.unident = TRUE,
                     warn.deprecated = gs("warn.deprecated"),
                     ...) {
   
@@ -381,6 +387,8 @@ netcomb <- function(x,
   chklogical(details.chkident)
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
+  chklogical(backtransf)
+  chklogical(na.unident)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -477,6 +485,8 @@ netcomb <- function(x,
   ##
   ## Check for and warn about not uniquely identifiable components
   ##
+  comps.unident <- character(0)
+  ##
   if (qr(X.matrix)$rank < c) {
     Xplus <- ginv(X.matrix)
     colnames(Xplus) <- rownames(X.matrix)
@@ -487,20 +497,17 @@ netcomb <- function(x,
     M <- as.matrix(E[, is.zero(e, n = 100)])
     ##
     if (dim(M)[2] > 0) {
-      sel.ident <- character(0)
       for (i in 1:dim(M)[2])
-        sel.ident <- c(sel.ident, names(M[, i])[!is.zero(M[, i], n = 100)])
+        comps.unident <-
+          c(comps.unident, names(M[, i])[!is.zero(M[, i], n = 100)])
       ##
-      sel.ident <- unique(sort(sel.ident))
+      comps.unident <- unique(sort(comps.unident))
       warning(paste0("The following component",
-                     if (length(sel.ident) > 1)
+                     if (length(comps.unident) > 1)
                        "s are " else " is ",
                      "not uniquely identifiable: ",
-                     paste(paste0("'", sel.ident, "'"),
-                           collapse = ", "),
-                     if (!details.chkident)
-                       paste("\nFor more details, re-run netcomb()",
-                             "with argument details.chkident = TRUE.")),
+                     paste(paste0("'", comps.unident, "'"),
+                           collapse = ", ")),
               call. = FALSE)
       ##
       if (details.chkident) {
@@ -555,6 +562,31 @@ netcomb <- function(x,
                         X.matrix, C.matrix, x$B.matrix,
                         x$Q, df.Q.additive, df.Q.diff,
                         x$n, x$sep.trts)
+  ##
+  ## Set unidentifiable components and combinations to NA
+  ##
+  if (na.unident & length(comps.unident) > 0) {
+    setNA <- function(x, select) {
+      x[names(x) %in% select] <- NA
+      x
+    }
+    ##
+    trts <- names(res.c$combinations$TE)
+    unident.pattern <- paste0("^", comps.unident, "$", collapse = "|")
+    unident.combs <-
+      trts[unlist(lapply(lapply(compsplit(trts, sep.comps),
+                                grepl,
+                                pattern = unident.pattern), any))]
+    ##
+    res.c$components <- lapply(res.c$components, setNA, comps.unident)
+    res.c$combinations <- lapply(res.c$combinations, setNA, unident.combs)
+    ##
+    res.r$components <- lapply(res.r$components, setNA, comps.unident)
+    res.r$combinations <- lapply(res.r$combinations, setNA, unident.combs)
+  }
+  ##
+  if (length(comps.unident) == 0)
+    comps.unident <- NULL
   
   
   ##
@@ -602,6 +634,8 @@ netcomb <- function(x,
               k.comps = NA,
               n.comps = NA,
               events.comps = NA,
+              na.unident = na.unident,
+              comps.unident = comps.unident,
               ##
               TE.nma.common = x$TE.nma.common,
               seTE.nma.common = x$seTE.nma.common,
@@ -731,7 +765,7 @@ netcomb <- function(x,
               ##
               func.inverse = deparse(substitute(func.inverse)),
               ##
-              backtransf = x$backtransf,
+              backtransf = backtransf,
               ##
               title = x$title,
               ##

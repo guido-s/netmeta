@@ -46,7 +46,7 @@
 #' \item{level.ma}{Level for confidence intervals.}
 #' \item{reference.group, baseline.reference}{As defined above.}
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netcomb}},
 #'   \code{\link{discomb}}, \code{\link{forest.netbind}}

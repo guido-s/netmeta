@@ -100,8 +100,8 @@
 #' file is created if \code{writexl = TRUE}. In this case, \code{NULL}
 #' is returned in R.
 #'
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Gerta
-#'   Rücker \email{ruecker@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Gerta
+#'   Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netposet}},
 #'   \code{\link{netrank}}

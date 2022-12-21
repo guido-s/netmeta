@@ -159,8 +159,8 @@
 #'   \bold{tictoc} is installed).}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Gerta
-#'   Rücker \email{ruecker@@imbi.uni-freiburg.de}, Orestis Efthimiou
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Gerta
+#'   Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Orestis Efthimiou
 #'   \email{oremiou@@gmail.com}
 #' 
 #' @seealso \code{\link{forest.netsplit}}, \code{\link{netmeta}},

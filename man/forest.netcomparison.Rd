@@ -121,6 +121,6 @@ forest(netcomparison(nc1, c("F", "TCA"), "UC"), nchar.comps = 4)
   \code{\link{discomb}}, \code{\link{forest.meta}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{hplot}

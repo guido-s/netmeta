@@ -164,6 +164,7 @@ variance), \code{"invse"} (inverse of the standard error), and
 \code{"size"} (study size).
 }
 \examples{
+\dontrun{
 data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
@@ -189,7 +190,6 @@ funnel(net1, order = "pl", method.bias = "Egger",
 ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
 funnel(net1, order = ord)
 
-\dontrun{
 # Add results for tests of funnel plot asymmetry and use different
 # plotting symbols and colours
 #
@@ -237,6 +237,6 @@ choice of axis.
   \code{\link{metabias}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{hplot}

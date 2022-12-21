@@ -460,5 +460,5 @@ data.
 }
 \author{
 Orestis Efthimiou \email{oremiou@gmail.com}, Guido
-  Schwarzer \email{sc@imbi.uni-freiburg.de}
+  Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

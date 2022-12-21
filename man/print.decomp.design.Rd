@@ -72,7 +72,7 @@ decomp.design(net1)
 \code{\link{decomp.design}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}, Ulrike
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Ulrike
   Krahn \email{ulrike.krahn@bayer.com}
 }
 \keyword{print}

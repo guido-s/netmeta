@@ -120,7 +120,7 @@
 #' 'random'. An Excel file is created if \code{writexl = TRUE}. In
 #' this case, \code{NULL} is returned in R.
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netsplit}}, \code{\link{netmeta}},
 #'   \code{\link{netmetabin}}, \code{\link{netmeasures}}

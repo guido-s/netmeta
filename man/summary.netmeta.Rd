@@ -12,6 +12,8 @@
   reference.group = object$reference.group,
   baseline.reference = object$baseline.reference,
   all.treatments = object$all.treatments,
+  backtransf = object$backtransf,
+  nchar.trts = object$nchar.trts,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -38,6 +40,12 @@ only considered if \code{reference.group} has been specified.}
 \item{all.treatments}{A logical or \code{"NULL"}. If \code{TRUE},
 matrices with all treatment effects, and confidence limits will
 be printed.}
+
+\item{backtransf}{A logical indicating whether results should be
+back transformed in printouts and forest plots.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names (see Details).}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
@@ -113,22 +121,31 @@ A list is returned with the following elements:
 Summary method for objects of class \code{netmeta}.
 }
 \examples{
+data(smokingcessation)
+
+p1 <- pairwise(list(treat1, treat2, treat3),
+  event = list(event1, event2, event3), n = list(n1, n2, n3),
+  data = smokingcessation, sm = "OR")
+net1 <- netmeta(p1)
+
+summary(net1)
+
+\dontrun{
 data(Senn2013)
 
 # Conduct common effects network meta-analysis
 #
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", random = FALSE)
-print(net1, ref = "plac", digits = 3)
-summary(net1)
-
-\dontrun{
-# Conduct random effects network meta-analysis
-#
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", common = FALSE)
+  data = Senn2013, sm = "MD", random = FALSE)
 print(net2, ref = "plac", digits = 3)
 summary(net2)
+
+# Conduct random effects network meta-analysis
+#
+net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
+  data = Senn2013, sm = "MD", common = FALSE)
+print(net3, ref = "plac", digits = 3)
+summary(net3)
 }
 
 }
@@ -136,6 +153,6 @@ summary(net2)
 \code{\link{netmeta}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{summary}

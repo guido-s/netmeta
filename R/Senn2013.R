@@ -56,7 +56,9 @@
 #' 
 #' @examples
 #' data(Senn2013)
+#' head(Senn2013)
 #' 
+#' \dontrun{
 #' # Common effects model
 #' #
 #' net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
@@ -68,7 +70,6 @@
 #' #
 #' forest(net1, ref = "plac")
 #' 
-#' \dontrun{
 #' # Comparison with reference group
 #' #
 #' netmeta(TE, seTE, treat1.long, treat2.long,

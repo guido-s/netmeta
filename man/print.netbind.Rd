@@ -64,6 +64,6 @@ print(nb1, common = TRUE)
 \code{\link{netbind}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{print}

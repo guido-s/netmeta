@@ -11,15 +11,15 @@
   cex = 1,
   adj = NULL,
   srt.labels = 0,
-  offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.02,
+  offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
   scale = 1.1,
   col = if (iterate) "slateblue" else "black",
   plastic = !(iterate & allfigures),
   thickness = "number.of.studies",
   lwd = 5,
   lwd.min = lwd/2.5,
-  lwd.max = lwd * 4,
-  rescale.thickness = if (thickness == "number.of.studies") sqrt else I,
+  lwd.max,
+  rescale.thickness,
   dim = "2d",
   rotate = 0,
   highlight = NULL,
@@ -29,13 +29,13 @@
   col.multiarm = NULL,
   alpha.transparency = 0.5,
   points = !missing(cex.points),
-  cex.points = 4,
-  pch.points = 21,
-  col.points = "black",
+  cex.points = 1,
+  pch.points = 20,
+  col.points = if (length(pch.points) == 1 && pch.points == 21) "black" else "red",
   bg.points = "red",
-  points.max = if (length(unique(cex.points)) != 1) 8 else cex.points,
-  points.min = if (length(unique(cex.points)) != 1) 1 else cex.points,
-  rescale.pointsize = sqrt,
+  points.min,
+  points.max,
+  rescale.pointsize,
   number.of.studies = FALSE,
   cex.number.of.studies = cex,
   col.number.of.studies = "white",
@@ -112,8 +112,8 @@ with line widths below this values will be set to \code{lwd.min}.}
 with the largest value according to argument \code{thickness}
 will be set to this value.}
 
-\item{rescale.thickness}{R function to scale the thickness of
-lines.}
+\item{rescale.thickness}{A logical value or R function to scale the
+thickness of lines (see Details).}
 
 \item{dim}{A character string indicating whether a 2- or
 3-dimensional plot should be produced, either \code{"2d"} or
@@ -147,17 +147,18 @@ opaque).}
 at nodes (i.e. treatments) of the network graph.}
 
 \item{cex.points, pch.points, col.points, bg.points}{Corresponding
-color, background color, size, and type for points. Can be a
+size, type, color, and background color for points. Can be a
 vector with length equal to the number of treatments.}
+
+\item{points.min}{Minimum point size. All points with size below
+this values will be set to \code{points.min}.}
 
 \item{points.max}{Maximum point size in network graph. The node
 with the largest value according to argument \code{cex.points}
 will be set to this value.}
 
-\item{points.min}{Minimum point size. All points with size below
-this values will be set to \code{points.min}.}
-
-\item{rescale.pointsize}{R function to scale the point size.}
+\item{rescale.pointsize}{A logical value or R function to scale the
+point size (see Details).}
 
 \item{number.of.studies}{A logical indicating whether number of
 studies should be added to network graph.}
@@ -284,6 +285,10 @@ edges.
 This function generates a graph of the evidence network.
 }
 \details{
+This function generates a network graph for an R object created
+with \code{\link{netmeta}}.
+
+\subsection{Layout of network graph}{
 The network is laid out in the plane, where the nodes in the graph
 layout correspond to the treatments and edges display the observed
 treatment comparisons. For the default setting, nodes are placed on
@@ -308,13 +313,16 @@ argument \code{seq = "optimal"} in combination with argument
 \code{start.layout}. Note, is is not possible of prespecify the
 best value for argument \code{start.layout} for any situation as
 the result depends on the network structure.
+}
 
-Argument \code{thickness} providing the line width of the nodes
+\subsection{Definition of line widths}{
+Argument \code{thickness} providing the line width of edges
 (comparisons) can be a matrix of the same dimension as argument
-\code{A.matrix} or any of the following character variables:
+\code{A.matrix} or any of the following character strings (which
+can be abbreviated):
 \itemize{
 \item Proportional to number of studies comparing two treatments
-  (\code{thickness = "number.of.studies", default})
+  (\code{thickness = "number.of.studies"}, default)
 \item Proportional to inverse standard error of common effects model
   comparing two treatments (\code{thickness = "se.common"})
 \item Proportional to inverse standard error of random effects
@@ -323,14 +331,60 @@ Argument \code{thickness} providing the line width of the nodes
   (\code{thickness = "w.common"})
 \item Weight from random effects model comparing two treatments
   (\code{thickness = "w.random"})
-\item Same line width (argument \code{lwd}) for all comparisons
-  (\code{thickness = "equal"})
+\item Same line width for all comparisons (\code{thickness =
+  "equal"})
 }
 
 Only evidence from direct treatment comparisons is considered to
 determine the line width if argument \code{thickness} is equal to
 any but the last method.
 
+Line widths are determined by argument \code{lwd} if all lines have
+the same width. This is possible if either argument \code{thickness
+= "equal"}, all pairwise comparisons have the same number of
+studies for \code{thickness = "number.of.studies"} or all direct
+comparisons are equally precise.
+
+Otherwise, the line width of the thickest line is equal to the
+value of argument \code{lwd.max} and all lines with a thickness
+below the value of argument \code{lwd.min} are set to this
+value. Default for argument \code{lwd.max} is \code{4 * lwd}.
+
+Argument \code{rescale.thickness} can be used to provide a function
+to specify the relative line width of edges (comparisons). By
+default, the square root function \code{\link[base]{sqrt}} is used
+in order to lessen differences in line widths. Argument
+\code{rescale.thickness = FALSE} or \code{rescale.thickness = I},
+i.e., the identity function \code{\link[base]{I}}, can be used to
+not rescale line widths.
+}
+
+\subsection{Definition of point sizes}{
+Points are printed at nodes (treatments) if argument \code{points =
+TRUE} or argument \code{cex.points} is provided.
+
+Point sizes are equal to the value of argument \code{cex.points} if
+all points are of equal size. 
+
+Otherwise, the point size of the largest point is equal to the
+value of argument \code{points.max} and all points smaller than the
+value of argument \code{points.min} are set to this value. The
+default for argument \code{points.max} is equal to the largest
+value provided in argument \code{cex.points} if this largest value
+is below or equal to 25. Otherwise the default is \code{points.max
+= 8}.
+
+Argument \code{rescale.pointsize} can be used to provide a function
+to specify relative point sizes. Point sizes are not rescaled at
+all if they are all equal or the largest \code{cex.points} value is
+below or equal to 25. Otherwise, the square root function
+\code{\link[base]{sqrt}} is used in order to lessen the differences
+in point sizes. Argument \code{rescale.pointsize = FALSE} or
+\code{rescale.pointsize = I}, i.e., the identity function
+\code{\link[base]{I}}, can be used to not rescale point sizes.
+}
+
+\subsection{Other settings}{
 Argument \code{srt.labels} can be used to specific the rotation (in
 degrees) of the treatment labels. If \code{srt.labels} is equal to
 \code{"orthogonal"}, treatment labels are orthogonal to the
@@ -357,87 +411,104 @@ package \bold{rgl} is necessary. Note, under macOS the X.Org X
 Window System must be available (see
 \url{https://www.xquartz.org}).
 }
+}
 \examples{
-data(Senn2013)
+data(smokingcessation)
 
-# Generation of an object of class 'netmeta' with reference
-# treatment 'plac'
+# Transform data from arm-based format to contrast-based format
 #
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", reference = "plac")
+p1 <- pairwise(list(treat1, treat2, treat3),
+  event = list(event1, event2, event3), n = list(n1, n2, n3),
+  data = smokingcessation, sm = "OR")
+
+# Conduct random effects network meta-analysis
+#
+net1 <- netmeta(p1, common = FALSE)
 
 # Network graph with default settings
 #
 netgraph(net1)
 
 \dontrun{
+data(Senn2013)
+
+# Generation of an object of class 'netmeta' with reference
+# treatment 'plac'
+#
+net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+  data = Senn2013, sm = "MD", reference = "plac")
+
+# Network graph with default settings
+#
+netgraph(net2)
+
 # Network graph with specified order of the treatments and one
 # highlighted comparison
 #
 trts <- c("plac", "benf", "migl", "acar", "sulf",
   "metf", "rosi", "piog", "sita", "vild")
-netgraph(net1, highlight = "rosi:plac", seq = trts)
+netgraph(net2, highlight = "rosi:plac", seq = trts)
 
 # Same network graph using argument 'seq' in netmeta function
 #
-net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
   data = Senn2013, sm = "MD", reference = "plac", seq = trts)
-netgraph(net2, highlight = "rosi:plac")
+netgraph(net3, highlight = "rosi:plac")
 
 # Network graph optimized, starting from a circle, with multi-arm
 # study colored
 #
-netgraph(net1, start = "circle", iterate = TRUE,
+netgraph(net2, start = "circle", iterate = TRUE,
   multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph optimized, starting from a circle, with multi-arm
 # study colored and all intermediate iteration steps visible
 #
-netgraph(net1, start = "circle", iterate = TRUE,
+netgraph(net2, start = "circle", iterate = TRUE,
   multiarm = TRUE, col.multiarm = "purple",
   allfigures = TRUE)
 
 # Network graph optimized, starting from Laplacian eigenvectors,
 # with multi-arm study colored
 #
-netgraph(net1, start = "eigen",
+netgraph(net2, start = "eigen",
   multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph optimized, starting from different Laplacian
 # eigenvectors, with multi-arm study colored
 #
-netgraph(net1, start = "prcomp",
+netgraph(net2, start = "prcomp",
   multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph optimized, starting from random initial layout,
 # with multi-arm study colored
 #
-netgraph(net1, start = "random",
+netgraph(net2, start = "random",
   multiarm = TRUE, col.multiarm = "purple")
 
 # Network graph without plastic look and one highlighted comparison
 #
-netgraph(net1, plastic = FALSE, highlight = "rosi:plac")
+netgraph(net2, plastic = FALSE, highlight = "rosi:plac")
 
 # Network graph with same thickness for all comparisons
 #
-netgraph(net1, thickness = "equal")
+netgraph(net2, thickness = "equal")
 
 # Network graph with changed labels and specified order of the
 # treatments
 #
-netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
+netgraph(net2, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
   labels = LETTERS[1:10])
 
 # Rotate treatment labels (orthogonal to circle)
 #
-netgraph(net1, srt.labels = "o")
+netgraph(net2, srt.labels = "o")
 
 # Network graph in 3-D (opens a new device, where you may rotate and
 # zoom the plot using the mouse / the mouse wheel).
 # The rgl package must be installed for 3-D plots.
 #
-netgraph(net1, dim = "3d")
+netgraph(net2, dim = "3d")
 }
 
 }
@@ -476,9 +547,9 @@ Automated drawing of network plots in network meta-analysis.
 \code{\link{netmeta}}
 }
 \author{
-Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Ulrike
+Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Ulrike
   Krahn \email{ulrike.krahn@bayer.com}, Jochem König
   \email{koenigjo@uni-mainz.de}, Guido Schwarzer
-  \email{sc@imbi.uni-freiburg.de}
+  \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{hplot}

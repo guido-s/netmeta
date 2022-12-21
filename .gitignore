@@ -1,7 +1,9 @@
 *~
 *.bak
-src-x86_64
-.Rhistory
-.DS_Store
+symbols.rds
 .Rproj.user
+.Rhistory
+.RData
+.Ruserdata
 roxygen2-*.R
+.DS_Store

@@ -106,7 +106,7 @@
 #' \item{pch}{Plotting symbol(s).}
 #' \item{col}{Colour of plotting symbol(s).}
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{funnel.meta}},
 #'   \code{\link{metabias}}
@@ -132,6 +132,7 @@
 #' @keywords hplot
 #' 
 #' @examples
+#' \dontrun{
 #' data(Senn2013)
 #' 
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
@@ -157,7 +158,6 @@
 #' ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
 #' funnel(net1, order = ord)
 #'
-#' \dontrun{
 #' # Add results for tests of funnel plot asymmetry and use different
 #' # plotting symbols and colours
 #' #

@@ -102,7 +102,7 @@
 #' \item{level, nchar.comps, backtransf, x}{A defined above.}
 #' \item{C.matrix}{C matrix.}
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netcomb}}, \code{\link{discomb}},
 #'   \code{\link{netcomparison}}
@@ -175,6 +175,7 @@ netcomplex <- function(x, complex,
                        random = x$random,
                        level = x$level.ma,
                        nchar.comps = x$nchar.trts,
+                       backtransf = x$backtransf,
                        warn.deprecated = gs("warn.deprecated"),
                        ...) {
   
@@ -193,8 +194,10 @@ netcomplex <- function(x, complex,
   ##
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
+  ##
+  chklogical(backtransf)
   
-
+  
   if (missing(complex)) {
     complex <- x$trts
     complex.orig <- complex
@@ -304,7 +307,7 @@ netcomplex <- function(x, complex,
               inactive = x$inactive,
               nchar.comps = nchar.comps,
               ##
-              backtransf = x$backtransf,
+              backtransf = backtransf,
               ##
               x = x,
               ##
@@ -401,13 +404,18 @@ print.netcomplex <- function(x,
                            x$x$sep.comps, x$add[i] == " ")
   }
   
-  
-  relative <- is.relative.effect(x$x$sm)
+
+  sm <- x$x$sm
   ##
-  sm.lab <- x$x$sm
+  relative <- is.relative.effect(sm)
   ##
-  if (!backtransf & relative)
-    sm.lab <- paste0("log", sm.lab)
+  sm.lab <- sm
+  ##
+  if (sm != "") {
+    sm.lab <- paste0("i", sm)
+    if (backtransf)
+      sm.lab <- paste0("log(", sm, ")")
+  }
   ##  
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   

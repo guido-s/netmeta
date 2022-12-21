@@ -96,6 +96,7 @@ is \code{TRUE}, all comparators will be lumped into a single
 group.
 }
 \examples{
+\dontrun{
 data(Senn2013)
 
 net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
@@ -120,6 +121,7 @@ metabias(net1, order = "pl", method.bias = "Begg")
 #
 ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
 metabias(net1, order = ord)
+}
 
 }
 \references{
@@ -139,5 +141,5 @@ PLOS ONE,
   \code{\link{metabias}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

@@ -88,13 +88,17 @@ prespecified by argument \code{tau.preset} in function
 \code{netmeta}.
 }
 \examples{
-data(Senn2013)
+data(smokingcessation)
 
-# Conduct common effects network meta-analysis with reference
-# treatment 'plac', i.e. placebo
+# Transform data from arm-based format to contrast-based format
 #
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", reference = "plac", random = FALSE)
+p1 <- pairwise(list(treat1, treat2, treat3),
+  event = list(event1, event2, event3), n = list(n1, n2, n3),
+  data = smokingcessation, sm = "OR")
+
+# Conduct network meta-analysis
+#
+net1 <- netmeta(p1)
 
 # Calculate measures based on a common effects model
 #        
@@ -102,20 +106,38 @@ nm1 <- netmeasures(net1)
 
 # Plot of minimal parallelism versus mean path length
 #
-plot(nm1$meanpath, nm1$minpar, pch = "",
+plot(nm1$meanpath, nm1$minpar, type = "n",
   xlab = "Mean path length", ylab = "Minimal parallelism")
 text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex = 0.8)
 
 \dontrun{
-# Conduct random effects network meta-analysis with reference
+data(Senn2013)
+
+# Conduct common effects network meta-analysis with reference
 # treatment 'plac', i.e. placebo
 #
 net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+  data = Senn2013, sm = "MD", reference = "plac", random = FALSE)
+
+# Calculate measures based on a common effects model
+#        
+nm2 <- netmeasures(net2)
+
+# Plot of minimal parallelism versus mean path length
+#
+plot(nm2$meanpath, nm2$minpar, type = "n",
+  xlab = "Mean path length", ylab = "Minimal parallelism")
+text(nm2$meanpath, nm2$minpar, names(nm2$meanpath), cex = 0.8)
+
+# Conduct random effects network meta-analysis with reference
+# treatment 'plac', i.e. placebo
+#
+net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
   data = Senn2013, sm = "MD", reference = "plac", common = FALSE)
 
 # Calculate measures based on a random effects model
 #                          
-nm2 <- netmeasures(net2)
+nm3 <- netmeasures(net3)
 }
 
 }

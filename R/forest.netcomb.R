@@ -68,7 +68,7 @@
 #' For more information see help page of \code{\link{forest.meta}}
 #' function.
 #'
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netcomb}}, \code{\link{discomb}},
 #'   \code{\link{forest.meta}}

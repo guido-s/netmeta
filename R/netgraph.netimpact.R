@@ -32,8 +32,8 @@
 #' @param \dots Additional arguments passed on to
 #'   \code{\link{netgraph.netmeta}}.
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de},
-#'   Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de},
+#'   Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netimpact}}, \code{\link{netgraph.netmeta}}
 #' 

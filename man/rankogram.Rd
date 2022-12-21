@@ -120,5 +120,5 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 }
 \author{
 Theodoros Papakonstantinou \email{dev@tpapak.com}, Guido
-  Schwarzer \email{sc@imbi.uni-freiburg.de}
+  Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

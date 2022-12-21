@@ -312,7 +312,7 @@ effect estimates from network meta-analysis.
   \code{\link{netmetabin}}, \code{\link{netmeasures}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}, Gerta
-  Rücker \email{ruecker@imbi.uni-freiburg.de}, Orestis Efthimiou
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Gerta
+  Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Orestis Efthimiou
   \email{oremiou@gmail.com}
 }

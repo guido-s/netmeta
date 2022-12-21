@@ -25,13 +25,24 @@ Laplacian matrix \strong{L} (Rücker, 2012):
 with identity matrix \strong{J} of dimension \emph{n}x\emph{n}.
 }
 \examples{
+data(smokingcessation)
+
+p1 <- pairwise(list(treat1, treat2, treat3),
+  event = list(event1, event2, event3), n = list(n1, n2, n3),
+  data = smokingcessation, sm = "OR")
+net1 <- netmeta(p1)
+
+invmat(net1$L.matrix.common)
+
+\dontrun{
 data(Senn2013)
 
-net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
+net2 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
   data = Senn2013)
-L1 <- net1$L.matrix.common
-L2 <- invmat(net1$Lplus.matrix.common)
+L1 <- net2$L.matrix.common
+L2 <- invmat(net2$Lplus.matrix.common)
 all.equal(round(L1, 10), round(L2, 10))
+}
 
 }
 \references{
@@ -44,6 +55,6 @@ Network meta-analysis, electrical networks and graph theory.
 \code{\link{netmeta}}, \code{\link{solve}}
 }
 \author{
-Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer
-  \email{sc@imbi.uni-freiburg.de}
+Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido Schwarzer
+  \email{guido.schwarzer@uniklinik-freiburg.de}
 }

@@ -286,8 +286,8 @@
 #' \item{version}{Version of R package netmeta used to create
 #'   object.}
 #' 
-#' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
-#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
+#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netcomb}}, \code{\link{forest.netcomb}},
 #'   \code{\link{summary.netcomb}}, \code{\link{netmeta}},
@@ -820,10 +820,7 @@ discomb <- function(TE, seTE,
                        "s are " else " is ",
                      "not identifiable: ",
                      paste(paste0("'", sel.ident, "'"),
-                           collapse = ", "),
-                     if (!details.chkident)
-                       paste("\nFor more details, re-run discomb()",
-                             "with argument details.chkident = TRUE.")),
+                           collapse = ", ")),
               call. = FALSE)
       ##
       if (details.chkident) {

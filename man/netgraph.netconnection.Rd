@@ -64,7 +64,7 @@ netgraph(nc1, points = TRUE, adj = 0.5, bg.points = "lightgray",
 \code{\link{netconnection}}, \code{\link{netgraph.netmeta}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de},
-  Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de},
+  Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}
 }
 \keyword{hplot}

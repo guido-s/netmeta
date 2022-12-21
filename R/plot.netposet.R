@@ -86,8 +86,8 @@
 #' Window System must be available (see
 #' \url{https://www.xquartz.org}).
 #' 
-#' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
-#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
+#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netposet}}, \code{\link{hasse}},
 #'   \code{\link{netrank}}, \code{\link{netmeta}}

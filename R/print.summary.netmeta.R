@@ -61,46 +61,60 @@
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments.
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #'
 #' @seealso \code{\link{netmeta}}, \code{\link{summary.netmeta}}
 #' 
 #' @keywords print
 #' 
 #' @examples
+#' data(smokingcessation)
+#' 
+#' # Transform data from arm-based format to contrast-based format
+#' #
+#' p1 <- pairwise(list(treat1, treat2, treat3),
+#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
+#'   data = smokingcessation, sm = "OR")
+#' 
+#' # Conduct random effects network meta-analysis and print detailed
+#' # summary
+#' #
+#' net1 <- netmeta(p1, common = FALSE)
+#' summary(net1)
+#' 
+#' \dontrun{
 #' data(Senn2013)
 #' 
 #' # Conduct common effects network meta-analysis
 #' #
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD", random = FALSE, ref = "plac")
-#' snet1 <- summary(net1)
-#' print(snet1, digits = 3)
+#' snet2 <- summary(net2)
+#' print(snet2, digits = 3)
 #' 
 #' # Only show individual study results for multi-arm studies
 #' #
-#' print(snet1, digits = 3, truncate = multiarm)
+#' print(snet2, digits = 3, truncate = multiarm)
 #' 
 #' # Only show first three individual study results
 #' #
-#' print(snet1, digits = 3, truncate = 1:3)
+#' print(snet2, digits = 3, truncate = 1:3)
 #' 
 #' # Only show individual study results for Kim2007 and Willms1999
 #' #
-#' print(snet1, digits = 3, truncate = c("Kim2007", "Willms1999"))
+#' print(snet2, digits = 3, truncate = c("Kim2007", "Willms1999"))
 #' 
 #' # Only show individual study results for studies starting with the
 #' # letter "W"
 #' #
-#' print(snet1, ref = "plac", digits = 3,
+#' print(snet2, ref = "plac", digits = 3,
 #'   truncate = substring(studlab, 1, 1) == "W")
 #' 
-#' \dontrun{
 #' # Conduct random effects network meta-analysis
 #' #
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD", common = FALSE, ref = "plac")
-#' print(summary(net2), digits = 3)
+#' print(summary(net3), digits = 3)
 #' }
 #' 
 #' @method print summary.netmeta

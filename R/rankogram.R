@@ -56,7 +56,7 @@
 #' \item{small.values, x}{As defined above},
 #'
 #' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Guido
-#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #'
 #' @seealso \code{\link{netmeta}}, \code{\link{netrank}}
 #'

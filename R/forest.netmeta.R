@@ -114,52 +114,64 @@
 #' See help page of \code{\link{forest.meta}} for more information on
 #' the generation of forest plots and additional arguments.
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{forest.meta}}
 #' 
 #' @keywords hplot
 #' 
 #' @examples
-#' data(Senn2013)
+#' data(smokingcessation)
+#' 
+#' # Transform data from arm-based format to contrast-based format
+#' #
+#' p1 <- pairwise(list(treat1, treat2, treat3),
+#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
+#'   data = smokingcessation, sm = "OR")
+#' 
+#' # Conduct random effects network meta-analysis
+#' #
+#' net1 <- netmeta(p1, common = FALSE)
+#'
+#' forest(net1)
 #' 
 #' \dontrun{
+#' data(Senn2013)
+#' 
 #' # Conduct network meta-analysis
 #' #
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD")
 #' 
-#' forest(net1, ref = "plac")
-#' forest(net1, xlim = c(-1.5, 1), ref = "plac",
+#' forest(net2, ref = "plac")
+#' forest(net2, xlim = c(-1.5, 1), ref = "plac",
 #'   xlab = "HbA1c difference", rightcols = FALSE)
-#' }
 #' 
 #' # Random effects effect model
 #' #
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD", common = FALSE)
 #' 
-#' forest(net2, xlim = c(-1.5, 1), ref = "plac",
+#' forest(net3, xlim = c(-1.5, 1), ref = "plac",
 #'   xlab = "HbA1c difference")
 #' 
-#' \dontrun{
 #' # Add column with P-Scores on right side of forest plot
 #' #
-#' forest(net2, xlim = c(-1.5, 1), ref = "plac",
+#' forest(net3, xlim = c(-1.5, 1), ref = "plac",
 #'   xlab = "HbA1c difference",
 #'   rightcols = c("effect", "ci", "Pscore"),
 #'   just.addcols = "right")
 #' 
 #' # Add column with P-Scores on left side of forest plot
 #' #
-#' forest(net2, xlim = c(-1.5, 1), ref = "plac",
+#' forest(net3, xlim = c(-1.5, 1), ref = "plac",
 #'   xlab = "HbA1c difference",
 #'   leftcols = c("studlab", "Pscore"),
 #'   just.addcols = "right")
 #' 
 #' # Sort forest plot by descending P-Score
 #' #
-#' forest(net2, xlim = c(-1.5, 1), ref = "plac",
+#' forest(net3, xlim = c(-1.5, 1), ref = "plac",
 #'   xlab = "HbA1c difference",
 #'   rightcols = c("effect", "ci", "Pscore"),
 #'   just.addcols = "right",
@@ -168,7 +180,7 @@
 #' # Drop reference group and sort by and print number of studies with
 #' # direct treatment comparisons
 #' #
-#' forest(net2, xlim = c(-1.5, 1), ref = "plac",
+#' forest(net3, xlim = c(-1.5, 1), ref = "plac",
 #'   xlab = "HbA1c difference",
 #'   leftcols = c("studlab", "k"),
 #'   leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
