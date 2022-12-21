@@ -230,6 +230,6 @@ forest(ns1, fontsize = 8, spacing = 0.75,
 \code{\link{forest.meta}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{hplot}

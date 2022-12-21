@@ -33,5 +33,5 @@ An algorithm for construction of the molecular distance matrix.
 \code{\link{netmeta}}, \code{\link{netconnection}}
 }
 \author{
-Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}
+Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}
 }

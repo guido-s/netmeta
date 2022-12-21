@@ -80,6 +80,6 @@ print(summary(nc2), digits = 2, digits.stat = 3)
 \code{\link{netcomb}}, \code{\link{discomb}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{print}

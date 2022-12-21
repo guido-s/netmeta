@@ -238,5 +238,5 @@ effect estimates from network meta-analysis.
   \code{\link{netmetabin}}, \code{\link{netmeasures}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

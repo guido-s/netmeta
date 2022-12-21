@@ -161,6 +161,6 @@ print(summary(net2), digits = 3)
 \code{\link{netmeta}}, \code{\link{summary.netmeta}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{print}

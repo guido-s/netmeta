@@ -44,6 +44,6 @@ Network meta-analysis, electrical networks and graph theory.
 \code{\link{netmeta}}, \code{\link{solve}}
 }
 \author{
-Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido Schwarzer
-  \email{sc@imbi.uni-freiburg.de}
+Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido Schwarzer
+  \email{guido.schwarzer@uniklinik-freiburg.de}
 }

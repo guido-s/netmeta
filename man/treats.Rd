@@ -77,5 +77,5 @@ with(net1, comps(comparisons, trts, sep.trts, nchar = 4))
   \code{\link{print.summary.netmeta}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

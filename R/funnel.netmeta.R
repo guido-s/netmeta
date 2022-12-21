@@ -106,7 +106,7 @@
 #' \item{pch}{Plotting symbol(s).}
 #' \item{col}{Colour of plotting symbol(s).}
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{funnel.meta}},
 #'   \code{\link{metabias}}

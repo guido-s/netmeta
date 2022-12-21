@@ -230,6 +230,6 @@ forest(net2, xlim = c(-1.5, 1), ref = "plac",
 \code{\link{forest.meta}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{hplot}

@@ -29,7 +29,7 @@
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{print.netmeta}},
 #'   \code{\link{print.summary.netmeta}}

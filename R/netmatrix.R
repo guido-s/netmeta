@@ -30,7 +30,7 @@
 #' A matrix with the same row and column names as the adjacency matrix
 #' \code{x$A.matrix}.
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 #' 

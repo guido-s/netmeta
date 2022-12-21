@@ -304,10 +304,10 @@
 #'   edge.}
 #' \item{col}{Color for edges.}
 #' 
-#' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Ulrike
+#' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Ulrike
 #'   Krahn \email{ulrike.krahn@@bayer.com}, Jochem König
 #'   \email{koenigjo@@uni-mainz.de}, Guido Schwarzer
-#'   \email{sc@@imbi.uni-freiburg.de}
+#'   \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}
 #' 

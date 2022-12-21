@@ -23,7 +23,7 @@
 #'   printed.
 #' @param \dots Additional arguments (ignored at the moment).
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Ulrike
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Ulrike
 #'   Krahn \email{ulrike.krahn@@bayer.com}
 #' 
 #' @seealso \code{\link{decomp.design}}

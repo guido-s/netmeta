@@ -6,7 +6,7 @@
 #' 
 #' @param x Either a netmeta object or an adjacency matrix.
 #'
-#' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}
+#' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netconnection}}
 #' 

@@ -104,6 +104,6 @@ print(summary(nc1), digits = 2)
   \code{\link{summary.netcomb}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{print}

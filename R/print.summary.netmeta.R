@@ -61,7 +61,7 @@
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments.
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #'
 #' @seealso \code{\link{netmeta}}, \code{\link{summary.netmeta}}
 #' 

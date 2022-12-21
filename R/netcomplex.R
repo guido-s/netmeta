@@ -102,7 +102,7 @@
 #' \item{level, nchar.comps, backtransf, x}{A defined above.}
 #' \item{C.matrix}{C matrix.}
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netcomb}}, \code{\link{discomb}},
 #'   \code{\link{netcomparison}}

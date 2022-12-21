@@ -73,8 +73,8 @@
 #' \item{small.values, method, x}{As defined above.}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
-#' @author Gerta Rücker \email{ruecker@@imbi.uni-freiburg.de}, Guido
-#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}, Theodoros
+#' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
+#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Theodoros
 #'   Papakonstantinou \email{dev@@tpapak.com}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{rankogram}}

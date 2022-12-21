@@ -531,9 +531,9 @@ Automated drawing of network plots in network meta-analysis.
 \code{\link{netmeta}}
 }
 \author{
-Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Ulrike
+Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Ulrike
   Krahn \email{ulrike.krahn@bayer.com}, Jochem König
   \email{koenigjo@uni-mainz.de}, Guido Schwarzer
-  \email{sc@imbi.uni-freiburg.de}
+  \email{guido.schwarzer@uniklinik-freiburg.de}
 }
 \keyword{hplot}

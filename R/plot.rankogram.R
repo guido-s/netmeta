@@ -41,7 +41,7 @@
 #' shown for cumulative ranking probabilites.
 #'
 #' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Guido
-#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{rankogram}}
 #'

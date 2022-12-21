@@ -73,7 +73,7 @@
 #' @return
 #' A ggplot2 object or NULL if no ranking was conducted.
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}, Clément
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Clément
 #'   Palpacuer \email{clementpalpacuer@@gmail.com}
 #' 
 #' @seealso \code{\link{netrank}}, \code{\link{netmeta}},

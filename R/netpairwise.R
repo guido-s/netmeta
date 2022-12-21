@@ -65,7 +65,7 @@
 #' comparisons as subgroups or a list with \code{\link{metagen}}
 #' objects for each direct pairwise comparison.
 #' 
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netsplit}},
 #'   \code{\link{pairwise}}

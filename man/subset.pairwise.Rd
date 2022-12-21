@@ -37,5 +37,5 @@ subset(p1, !grepl("Lieberman", studlab))[, 1:5]
 \code{\link{pairwise}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

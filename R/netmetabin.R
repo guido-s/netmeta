@@ -295,7 +295,7 @@
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
 #' @author Orestis Efthimiou \email{oremiou@@gmail.com}, Guido
-#'   Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{pairwise}}, \code{\link{netmeta}}
 #' 

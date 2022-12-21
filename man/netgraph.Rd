@@ -58,7 +58,7 @@ netgraph(net2, number.of.studies = TRUE,
 
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de
 }
 }
 \keyword{hplot}

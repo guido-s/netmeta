@@ -20,7 +20,7 @@
 #' A list is returned with the same elements as a
 #' \code{\link{netcomb}} object.
 #'
-#' @author Guido Schwarzer \email{sc@@imbi.uni-freiburg.de}
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netcomb}}, \code{\link{discomb}}
 #' 

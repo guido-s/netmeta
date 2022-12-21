@@ -384,6 +384,6 @@ psychological interventions in coronary heart disease.
   \code{\link{netcomplex}}, \code{\link{netcomparison}}
 }
 \author{
-Gerta Rücker \email{ruecker@imbi.uni-freiburg.de}, Guido
-  Schwarzer \email{sc@imbi.uni-freiburg.de}
+Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido
+  Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

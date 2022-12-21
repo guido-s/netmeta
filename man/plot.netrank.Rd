@@ -234,7 +234,7 @@ acamprosate, baclofen and topiramate.
   \code{\link{netposet}}, \code{\link{hasse}}
 }
 \author{
-Guido Schwarzer \email{sc@imbi.uni-freiburg.de}, Clément
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Clément
   Palpacuer \email{clementpalpacuer@gmail.com}
 }
 \keyword{hplot}
