@@ -17,6 +17,16 @@
 #' \bold{8}, 170--73
 #' 
 #' @examples
+#' data(smokingcessation)
+#' 
+#' p1 <- pairwise(list(treat1, treat2, treat3),
+#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
+#'   data = smokingcessation, sm = "OR")
+#' net1 <- netmeta(p1, common = FALSE)
+#' 
+#' netdistance(net1)
+#' 
+#' \dontrun{
 #' data(Senn2013)
 #' 
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
@@ -24,6 +34,7 @@
 #' 
 #' netdistance(net1)
 #' netdistance(net1$A.matrix)
+#' }
 #' 
 #' @export netdistance
 

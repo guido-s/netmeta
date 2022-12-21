@@ -26,33 +26,49 @@ network graphs:
 }
 }
 \examples{
-data(Senn2013)
+data(smokingcessation)
 
-# Generation of an object of class 'netmeta' with reference
-# treatment 'plac'
+# Transform data from arm-based format to contrast-based format
 #
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", reference = "plac")
+p1 <- pairwise(list(treat1, treat2, treat3),
+  event = list(event1, event2, event3), n = list(n1, n2, n3),
+  data = smokingcessation, sm = "OR")
+
+# Conduct random effects network meta-analysis
+#
+net1 <- netmeta(p1, common = FALSE)
 
 # Network graph with default settings
 #
 netgraph(net1)
 
 \dontrun{
-data(Woods2010)
-p1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = Woods2010, sm = "OR")
-net2 <- netmeta(p1)
+data(Senn2013)
+
+# Generation of an object of class 'netmeta' with reference
+# treatment 'plac'
+#
+net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+  data = Senn2013, sm = "MD", reference = "plac")
 
 # Network graph with default settings
 #
 netgraph(net2)
 
+data(Woods2010)
+p3 <- pairwise(treatment, event = r, n = N,
+  studlab = author, data = Woods2010, sm = "OR")
+net3 <- netmeta(p3)
+
+# Network graph with default settings
+#
+netgraph(net3)
+
 # Network graph with
 # - number of studies for each pairwise comparison and
 # - number of participants for each treatment arm
 #
-netgraph(net2, number.of.studies = TRUE,
+netgraph(net3, number.of.studies = TRUE,
   labels = paste0(trts, " (n=", n.trts, ")"))
 }
 

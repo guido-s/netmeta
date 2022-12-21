@@ -346,86 +346,102 @@
 #' @keywords hplot
 #'
 #' @examples
-#' data(Senn2013)
+#' data(smokingcessation)
 #' 
-#' # Generation of an object of class 'netmeta' with reference
-#' # treatment 'plac'
+#' # Transform data from arm-based format to contrast-based format
 #' #
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", reference = "plac")
+#' p1 <- pairwise(list(treat1, treat2, treat3),
+#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
+#'   data = smokingcessation, sm = "OR")
+#' 
+#' # Conduct random effects network meta-analysis
+#' #
+#' net1 <- netmeta(p1, common = FALSE)
 #' 
 #' # Network graph with default settings
 #' #
 #' netgraph(net1)
 #' 
 #' \dontrun{
+#' data(Senn2013)
+#' 
+#' # Generation of an object of class 'netmeta' with reference
+#' # treatment 'plac'
+#' #
+#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#'   data = Senn2013, sm = "MD", reference = "plac")
+#' 
+#' # Network graph with default settings
+#' #
+#' netgraph(net2)
+#' 
 #' # Network graph with specified order of the treatments and one
 #' # highlighted comparison
 #' #
 #' trts <- c("plac", "benf", "migl", "acar", "sulf",
 #'   "metf", "rosi", "piog", "sita", "vild")
-#' netgraph(net1, highlight = "rosi:plac", seq = trts)
+#' netgraph(net2, highlight = "rosi:plac", seq = trts)
 #' 
 #' # Same network graph using argument 'seq' in netmeta function
 #' #
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD", reference = "plac", seq = trts)
-#' netgraph(net2, highlight = "rosi:plac")
+#' netgraph(net3, highlight = "rosi:plac")
 #' 
 #' # Network graph optimized, starting from a circle, with multi-arm
 #' # study colored
 #' #
-#' netgraph(net1, start = "circle", iterate = TRUE,
+#' netgraph(net2, start = "circle", iterate = TRUE,
 #'   multiarm = TRUE, col.multiarm = "purple")
 #'
 #' # Network graph optimized, starting from a circle, with multi-arm
 #' # study colored and all intermediate iteration steps visible
 #' #
-#' netgraph(net1, start = "circle", iterate = TRUE,
+#' netgraph(net2, start = "circle", iterate = TRUE,
 #'   multiarm = TRUE, col.multiarm = "purple",
 #'   allfigures = TRUE)
 #' 
 #' # Network graph optimized, starting from Laplacian eigenvectors,
 #' # with multi-arm study colored
 #' #
-#' netgraph(net1, start = "eigen",
+#' netgraph(net2, start = "eigen",
 #'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph optimized, starting from different Laplacian
 #' # eigenvectors, with multi-arm study colored
 #' #
-#' netgraph(net1, start = "prcomp",
+#' netgraph(net2, start = "prcomp",
 #'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph optimized, starting from random initial layout,
 #' # with multi-arm study colored
 #' #
-#' netgraph(net1, start = "random",
+#' netgraph(net2, start = "random",
 #'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph without plastic look and one highlighted comparison
 #' #
-#' netgraph(net1, plastic = FALSE, highlight = "rosi:plac")
+#' netgraph(net2, plastic = FALSE, highlight = "rosi:plac")
 #' 
 #' # Network graph with same thickness for all comparisons
 #' #
-#' netgraph(net1, thickness = "equal")
+#' netgraph(net2, thickness = "equal")
 #' 
 #' # Network graph with changed labels and specified order of the
 #' # treatments
 #' #
-#' netgraph(net1, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
+#' netgraph(net2, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
 #'   labels = LETTERS[1:10])
 #' 
 #' # Rotate treatment labels (orthogonal to circle)
 #' #
-#' netgraph(net1, srt.labels = "o")
+#' netgraph(net2, srt.labels = "o")
 #' 
 #' # Network graph in 3-D (opens a new device, where you may rotate and
 #' # zoom the plot using the mouse / the mouse wheel).
 #' # The rgl package must be installed for 3-D plots.
 #' #
-#' netgraph(net1, dim = "3d")
+#' netgraph(net2, dim = "3d")
 #' }
 #' 
 #' @method netgraph netmeta

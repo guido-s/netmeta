@@ -95,6 +95,7 @@
 #' \bold{8}, e76654
 #' 
 #' @examples
+#' \dontrun{
 #' data(Senn2013)
 #' 
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
@@ -119,6 +120,7 @@
 #' #
 #' ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
 #' metabias(net1, order = ord)
+#' }
 #'
 #' @method metabias netmeta
 #' @export

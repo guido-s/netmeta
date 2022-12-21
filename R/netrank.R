@@ -93,33 +93,40 @@
 #' \bold{64}, 163--71
 #' 
 #' @examples
+#' data(smokingcessation)
+#' 
+#' p1 <- pairwise(list(treat1, treat2, treat3),
+#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
+#'   data = smokingcessation, sm = "OR")
+#' net1 <- netmeta(p1)
+#'
+#' netrank(net1)
+#' 
+#' \dontrun{
 #' data(Senn2013)
 #' 
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", random = FALSE)
-#' 
-#' nr1 <- netrank(net1)
-#' nr1
-#' print(nr1, sort = FALSE)
-#'
-#' \dontrun{
 #' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD")
+#'   data = Senn2013, sm = "MD", random = FALSE)
 #' 
 #' nr2 <- netrank(net2)
 #' nr2
-#' print(nr2, sort = "common")
 #' print(nr2, sort = FALSE)
-#' }
-#' 
-#' \dontrun{
+#'
 #' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD")
 #' 
-#' nr3 <- netrank(net3, method = "SUCRA", nsim = 100)
+#' nr3 <- netrank(net3)
 #' nr3
 #' print(nr3, sort = "common")
 #' print(nr3, sort = FALSE)
+#'
+#' net4 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#'   data = Senn2013, sm = "MD")
+#' 
+#' nr4 <- netrank(net4, method = "SUCRA", nsim = 100)
+#' nr4
+#' print(nr4, sort = "common")
+#' print(nr4, sort = FALSE)
 #' }
 #' 
 #' @rdname netrank

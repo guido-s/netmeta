@@ -42,34 +42,56 @@ In order to construct comparisons with uniquely abbreviated
 treatment names, \code{comps} calls \code{treats} internally.
 }
 \examples{
-data(Senn2013)
+data(smokingcessation)
+
+# Transform data from arm-based format to contrast-based format
 #
-net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-  data = Senn2013)
+p1 <- pairwise(list(treat1, treat2, treat3),
+  event = list(event1, event2, event3), n = list(n1, n2, n3),
+  data = smokingcessation, sm = "OR")
+
+# Conduct random effects network meta-analysis and show data frame
+#
+net1 <- netmeta(p1, common = FALSE)
 
 # Full treatment names
 #
 net1$trts
 
-# Treatment names with four characters
+# Treatment names with maximal four characters
 #
 treats(net1$trts, nchar.trts = 4)
 
+\dontrun{
+data(Senn2013)
+#
+net2 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
+  data = Senn2013)
+
+# Full treatment names
+#
+net2$trts
+
+# Treatment names with four characters
+#
+treats(net2$trts, nchar.trts = 4)
+
 # With two characters
 #
-treats(net1$trts, nchar.trts = 2)
+treats(net2$trts, nchar.trts = 2)
 
 # With one character (if possible)
 #
-treats(net1$trts, nchar.trts = 1)
+treats(net2$trts, nchar.trts = 1)
 
 # Full comparison names
 #
-net1$comparisons
+net2$comparisons
 
 # Abbreviated comparison names
 #
-with(net1, comps(comparisons, trts, sep.trts, nchar = 4))
+with(net2, comps(comparisons, trts, sep.trts, nchar = 4))
+}
 
 }
 \seealso{
