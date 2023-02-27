@@ -528,20 +528,26 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   event1 <- catch("event1", mc, data, sfsp)
   ##
-  if (is.data.frame(event1) & !is.null(attr(event1, "pairwise"))) {
+  if (is.data.frame(event1)  &&
+      (!is.null(attr(event1, "pairwise")) ||
+       inherits(event1, "pairwise"))) {
     is.pairwise <- TRUE
     ##
     if (missing.incr)
-      incr <- attr(event1, "incr")
+      incr <-
+        replaceNULL(attr(event1, "incr"), gs("incr"))
     if (missing(allincr))
-      allincr <- attr(event1, "allincr")
+      allincr <-
+        replaceNULL(attr(event1, "allincr"), gs("allincr"))
     if (missing(addincr))
-      addincr <- attr(event1, "addincr")
+      addincr <-
+        replaceNULL(attr(event1, "addincr"), gs("addincr"))
     if (missing(allstudies))
-      allstudies <- attr(event1, "allstudies")
+      allstudies <-
+        replaceNULL(attr(event1, "allstudies"), gs("allstudies"))
     ##
     if (missing(sm) & method == "Inverse")
-      sm <- attr(event1, "sm")
+      sm <- replaceNULL(attr(event1, "sm"), gs("smbin"))
     else if (method != "Inverse") {
       if (!missing(sm) && tolower(sm) != "or")
         warning("Argument 'sm' set to 'OR'.", call. = FALSE)
@@ -559,6 +565,14 @@ netmetabin <- function(event1, n1, event2, n2,
     data <- event1
     ##
     event1 <- event1$event1
+    ##
+    chknull(event1, text = "Variable")
+    chknull(n1, text = "Variable")
+    chknull(event2, text = "Variable")
+    chknull(n2, text = "Variable")
+    chknull(treat1, text = "Variable")
+    chknull(treat2, text = "Variable")
+    chknull(studlab, text = "Variable")
   }
   else {
     is.pairwise <- FALSE
@@ -593,6 +607,14 @@ netmetabin <- function(event1, n1, event2, n2,
     treat2 <- catch("treat2", mc, data, sfsp)
     ##
     studlab <- catch("studlab", mc, data, sfsp)
+    ##
+    chknull(event1)
+    chknull(n1)
+    chknull(event2)
+    chknull(n2)
+    chknull(treat1)
+    chknull(treat2)
+    chknull(studlab)
   }
   ##
   chknumeric(event1)

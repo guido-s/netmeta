@@ -8,8 +8,8 @@
 #' 
 #' @param x An object of class \code{netmeta}.
 #' @param pooled A character string indicating whether results for the
-#'   common (\code{"common"}) or random effects model (\code{"random"})
-#'   should be plotted. Can be abbreviated.
+#'   common (\code{"common"}) or random effects model
+#'   (\code{"random"}) should be plotted. Can be abbreviated.
 #' @param reference.group Reference treatment(s).
 #' @param baseline.reference A logical indicating whether results
 #'   should be expressed as comparisons of other treatments versus the
@@ -33,8 +33,8 @@
 #' @param digits Minimal number of significant digits for treatment
 #'   effects and confidence intervals, see \code{print.default}.
 #' @param small.values A character string specifying whether small
-#'   treatment effects indicate a beneficial (\code{"good"}) or
-#'   harmful (\code{"bad"}) effect, can be abbreviated; see
+#'   treatment effects indicate a beneficial (\code{"desirable"}) or
+#'   harmful (\code{"undesirable"}) effect, can be abbreviated; see
 #'   \code{\link{netrank}}.
 #' @param nsim Number of simulations to calculate SUCRAs.
 #' @param digits.prop Minimal number of significant digits for
@@ -237,10 +237,8 @@ forest.netmeta <- function(x,
   ##
   chknumeric(digits, min = 0, length = 1)
   ##
-  if (is.null(small.values))
-    small.values <- "good"
-  else
-    small.values <- setchar(small.values, c("good", "bad"))
+  small.values <- setsv(small.values)
+  ##
   chknumeric(nsim, min = 1, length = 1)
   chknumeric(digits.prop, min = 0, length = 1)
   ##
@@ -604,7 +602,6 @@ forest.netmeta <- function(x,
   rownames(dat.out) <- seq_len(nrow(dat.out))
   ##
   attr(dat.out, "pooled") <- pooled
-  attr(dat.out, "small.values") <- small.values
   attr(dat.out, "small.values") <- small.values
   ##
   invisible(dat.out)

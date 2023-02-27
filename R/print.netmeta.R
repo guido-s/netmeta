@@ -206,8 +206,8 @@ print.netmeta <- function(x,
   statistic.random <- replaceNULL(x$statistic.random, x$zval.random)
   pval.random <- x$pval.random
   ##
-  lowTE.predict <- x$lower.predict
-  uppTE.predict <- x$upper.predict
+  lower.predict <- x$lower.predict
+  upper.predict <- x$upper.predict
   ##
   if (!is.null(x$seq)) {
     TE.common <- TE.common[x$seq, x$seq]
@@ -225,8 +225,8 @@ print.netmeta <- function(x,
       statistic.random <- statistic.random[x$seq, x$seq]
       pval.random <- pval.random[x$seq, x$seq]
       ##
-      lowTE.predict <- lowTE.predict[x$seq, x$seq]
-      uppTE.predict <- uppTE.predict[x$seq, x$seq]
+      lower.predict <- lower.predict[x$seq, x$seq]
+      upper.predict <- upper.predict[x$seq, x$seq]
     }
   }
   ##  
@@ -244,8 +244,8 @@ print.netmeta <- function(x,
     uppTE.random <- exp(uppTE.random)
     ##
     if (prediction) {
-      lowTE.predict <- exp(lowTE.predict)
-      uppTE.predict <- exp(uppTE.predict)
+      lower.predict <- exp(lower.predict)
+      upper.predict <- exp(upper.predict)
     }
   }
   ##
@@ -260,8 +260,8 @@ print.netmeta <- function(x,
   statistic.random <- round(statistic.random, digits.stat)
   ##
   if (prediction) {
-    lowTE.predict <- round(lowTE.predict, digits)
-    uppTE.predict <- round(uppTE.predict, digits)
+    lower.predict <- round(lower.predict, digits)
+    upper.predict <- round(upper.predict, digits)
   }
   ##
   I2 <- round(100 * x$I2, digits.I2)
@@ -376,17 +376,17 @@ print.netmeta <- function(x,
         ##
         ## Print prediction intervals
         ##
-        if (!random & prediction & x$df.Q >= 2) {
+        if (!random && prediction & x$df.Q >= 2) {
           cat("\nPrediction intervals\n")
           ##
           cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n",
               sep = "")
           ##
-          lowTEp <- formatN(lowTE.predict, digits = digits)
+          lowTEp <- formatN(lower.predict, digits = digits)
           rownames(lowTEp) <- treats(lowTEp, nchar.trts)
           colnames(lowTEp) <- treats(lowTEp, nchar.trts, FALSE)
           ##
-          if (all(diag(lowTE.predict) == noeffect))
+          if (all(diag(lower.predict) == noeffect))
             diag(lowTEp) <- "."
           ##
           prmatrix(lowTEp, quote = FALSE, right = TRUE)
@@ -394,11 +394,11 @@ print.netmeta <- function(x,
           cat("\nUpper ", 100 * x$level.predict, "%-prediction limit:\n",
               sep = "")
           ##
-          uppTEp <- formatN(uppTE.predict, digits = digits)
+          uppTEp <- formatN(upper.predict, digits = digits)
           rownames(uppTEp) <- treats(uppTEp, nchar.trts)
           colnames(uppTEp) <- treats(uppTEp, nchar.trts, FALSE)
           ##
-          if (all(diag(uppTE.predict) == noeffect))
+          if (all(diag(upper.predict) == noeffect))
             diag(uppTEp) <- "."
           ##
           prmatrix(uppTEp, quote = FALSE, right = TRUE)
@@ -451,32 +451,37 @@ print.netmeta <- function(x,
         ##
         ## Add prediction interval (or not)
         ##
-        if (!random & prediction & x$df.Q >= 2) {
+        if (!random && prediction & x$df.Q >= 2) {
           if (baseline.reference) {
-            lowTE.predict.b <-
-              lowTE.predict[, colnames(lowTE.predict) == reference.group]
-            uppTE.predict.b <-
-              uppTE.predict[, colnames(uppTE.predict) == reference.group]
+            lower.predict.b <-
+              lower.predict[, colnames(lower.predict) == reference.group]
+            upper.predict.b <-
+              upper.predict[, colnames(upper.predict) == reference.group]
           }
           else {
-            lowTE.predict.b <-
-              lowTE.predict[rownames(lowTE.predict) == reference.group, ]
-            uppTE.predict.b <-
-              uppTE.predict[rownames(uppTE.predict) == reference.group, ]
+            lower.predict.b <-
+              lower.predict[rownames(lower.predict) == reference.group, ]
+            upper.predict.b <-
+              upper.predict[rownames(upper.predict) == reference.group, ]
           }
           ##
           pi.lab <- paste(round(100 * x$level.predict, 1), "%-PI", sep = "")
           ##
           res <- cbind(res,
-                       formatCI(formatN(round(lowTE.predict.b, digits),
+                       rep_len("", nrow(res)),
+                       formatCI(formatN(round(lower.predict.b, digits),
                                         digits, "NA", big.mark = big.mark),
-                                formatN(round(uppTE.predict.b, digits),
+                                formatN(round(upper.predict.b, digits),
                                         digits, "NA", big.mark = big.mark)))
+          colnames(res)[ncol(res) - 1] <- ".not.a.column."
           colnames(res)[ncol(res)] <- pi.lab
         }
         ##
-        if (TE.common.b[rownames(res) == reference.group] == noeffect)
+        if (TE.common.b[rownames(res) == reference.group] == noeffect) {
           res[rownames(res) == reference.group, ] <- "."
+          res[, colnames(res) == ".not.a.column."] <- ""
+          colnames(res)[colnames(res) == ".not.a.column."] <- ""
+        }
         ##
         rownames(res) <- treats(rownames(res), nchar.trts)
         ##
@@ -532,11 +537,11 @@ print.netmeta <- function(x,
           cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n",
               sep = "")
           ##
-          lowTEp <- formatN(lowTE.predict, digits = digits)
+          lowTEp <- formatN(lower.predict, digits = digits)
           rownames(lowTEp) <- treats(lowTEp, nchar.trts)
           colnames(lowTEp) <- treats(lowTEp, nchar.trts, FALSE)
           ##
-          if (all(diag(lowTE.predict) == noeffect))
+          if (all(diag(lower.predict) == noeffect))
             diag(lowTEp) <- "."
           ##
           prmatrix(lowTEp, quote = FALSE, right = TRUE)
@@ -544,11 +549,11 @@ print.netmeta <- function(x,
           cat("\nUpper ", 100 * x$level.predict, "%-prediction limit:\n",
               sep = "")
           ##
-          uppTEp <- formatN(uppTE.predict, digits = digits)
+          uppTEp <- formatN(upper.predict, digits = digits)
           rownames(uppTEp) <- treats(uppTEp, nchar.trts)
           colnames(uppTEp) <- treats(uppTEp, nchar.trts, FALSE)
           ##
-          if (all(diag(uppTE.predict) == noeffect))
+          if (all(diag(upper.predict) == noeffect))
             diag(uppTEp) <- "."
           ##
           prmatrix(uppTEp, quote = FALSE, right = TRUE)
@@ -605,38 +610,43 @@ print.netmeta <- function(x,
         ##
         if (prediction & x$df.Q >= 2) {
           if (baseline.reference) {
-            lowTE.predict.b <-
-              lowTE.predict[, colnames(lowTE.predict) == reference.group]
-            uppTE.predict.b <-
-              uppTE.predict[, colnames(uppTE.predict) == reference.group]
+            lower.predict.b <-
+              lower.predict[, colnames(lower.predict) == reference.group]
+            upper.predict.b <-
+              upper.predict[, colnames(upper.predict) == reference.group]
           }
           else {
-            lowTE.predict.b <-
-              lowTE.predict[rownames(lowTE.predict) == reference.group, ]
-            uppTE.predict.b <-
-              uppTE.predict[rownames(uppTE.predict) == reference.group, ]
+            lower.predict.b <-
+              lower.predict[rownames(lower.predict) == reference.group, ]
+            upper.predict.b <-
+              upper.predict[rownames(upper.predict) == reference.group, ]
           }
           ##
-          pi.lab <- paste(round(100 * x$level.predict, 1), "%-PI", sep = "")
+          pi.lab <- paste0(round(100 * x$level.predict, 1), "%-PI")
           ##
           res <- cbind(res,
-                       formatCI(formatN(round(lowTE.predict.b, digits),
+                       rep_len("", nrow(res)),
+                       formatCI(formatN(round(lower.predict.b, digits),
                                         digits, "NA", big.mark = big.mark),
-                                formatN(round(uppTE.predict.b, digits),
+                                formatN(round(upper.predict.b, digits),
                                         digits, "NA", big.mark = big.mark))
                        )
+          colnames(res)[ncol(res) - 1] <- ".not.a.column."
           colnames(res)[ncol(res)] <- pi.lab
         }
         ##
         if (!is.na(TE.random.b[rownames(res) == reference.group]) &&
-            TE.random.b[rownames(res) == reference.group] == noeffect)
+            TE.random.b[rownames(res) == reference.group] == noeffect) {
           res[rownames(res) == reference.group, ] <- "."
+          res[, colnames(res) == ".not.a.column."] <- ""
+          colnames(res)[colnames(res) == ".not.a.column."] <- ""
+        }
         ##
         rownames(res) <- treats(rownames(res), nchar.trts)
         ##
         cat("\nTreatment estimate (sm = '", sm.lab,
             "', ", comptext, "):\n", sep = "")
-        
+        ##
         prmatrix(res, quote = FALSE, right = TRUE)
       }
     }
@@ -740,8 +750,7 @@ print.netmeta <- function(x,
                        digits = digits.tau2,
                        lab.NA = "NA", big.mark = big.mark)
       ##
-      cat(paste("\n- Preset between-study variance: ",
-                tau2, "\n", sep = ""))
+      cat("\n- Preset between-study variance: ", tau2, "\n", sep = "")
     }
   }
   ##

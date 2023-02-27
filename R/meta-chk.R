@@ -177,7 +177,7 @@ chkmiss <- function(x, name = NULL) {
   ##
   invisible(NULL)
 }
-chknull <- function(x, name = NULL) {
+chknull <- function(x, name = NULL, text = "Argument") {
   ##
   ## Check whether argument is NULL
   ##
@@ -185,7 +185,7 @@ chknull <- function(x, name = NULL) {
     name <- deparse(substitute(x))
   ##
   if (is.null(x))
-    stop("Argument '", name, "' is NULL.", call. = FALSE)
+    stop(text, " '", name, "' is NULL.", call. = FALSE)
   ##
   invisible(NULL)
 }

@@ -73,9 +73,10 @@
 #' If argument \code{\dots{}} consists of \code{netmeta} objects,
 #' \code{netrank} is called internally to calculate P-scores. In this
 #' case, argument \code{small.values} can be used to specify for each
-#' outcome whether small values are good or bad; see
-#' \code{\link{netrank}}. This argument is ignored for a ranking
-#' matrix and \code{netrank} objects.
+#' outcome whether small values are beneficial (\code{"desirable"}) or
+#' harmfull (\code{"undesirable"}); see \code{\link{netrank}}. This
+#' argument is ignored for a ranking matrix and \code{netrank}
+#' objects.
 #' 
 #' Arguments \code{common} and \code{random} can be used to define
 #' whether results should be printed and plotted for common and random
@@ -164,7 +165,7 @@
 #'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, common = FALSE,
-#'   seq = trts, ref = "Placebo", small.values = "bad")
+#'   seq = trts, ref = "Placebo", small.values = "undesirable")
 #' 
 #' # (2) Early remission
 #' #
@@ -173,7 +174,7 @@
 #'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, common = FALSE,
-#'   seq = trts, ref = "Placebo", small.values = "bad")
+#'   seq = trts, ref = "Placebo", small.values = "undesirable")
 #' 
 #' # Partial order of treatment rankings (two outcomes)
 #' #
@@ -198,7 +199,7 @@
 #'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net3 <- netmeta(p3, common = FALSE,
-#'   seq = trts, ref = "Placebo", small.values = "good")
+#'   seq = trts, ref = "Placebo", small.values = "desirable")
 #' 
 #' # (4) Loss to follow-up due to adverse events
 #' #
@@ -207,7 +208,7 @@
 #'   studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
 #' #
 #' net4 <- netmeta(p4, common = FALSE,
-#'   seq = trts, ref = "Placebo", small.values = "good")
+#'   seq = trts, ref = "Placebo", small.values = "desirable")
 #' 
 #' # (5) Adverse events
 #' #
@@ -216,7 +217,7 @@
 #'   studlab = id, data = Linde2015, sm = "OR")
 #' #
 #' net5 <- netmeta(p5, common = FALSE,
-#'   seq = trts, ref = "Placebo", small.values = "good")
+#'   seq = trts, ref = "Placebo", small.values = "desirable")
 #' 
 #' # Partial order of treatment rankings (all five outcomes)
 #' #
@@ -301,6 +302,8 @@ netposet <- function(..., outcomes, treatments, small.values,
     chklogical(common)
   if (!missing(random))
     chklogical(random)
+  ##
+  missing.small.values <- missing(small.values)
   
   
   any.netmeta <- any.netrank <- FALSE
@@ -319,7 +322,7 @@ netposet <- function(..., outcomes, treatments, small.values,
            "data frame if only a single argument is provided.",
            call. = FALSE)
     ##
-    if (!missing(small.values))
+    if (!missing.small.values)
       warning("Argument 'small.values' is ignored as first argument ",
               "is a ranking matrix.",
               call. = FALSE)
@@ -410,7 +413,6 @@ netposet <- function(..., outcomes, treatments, small.values,
            "and number of rankings differ.",
            call. = FALSE)
     ##
-    missing.small.values <- missing(small.values)
     if (!missing.small.values) {
       if (length(small.values) != n.outcomes)
         stop("Number of values provided by argument 'small.values' ",
@@ -430,12 +432,14 @@ netposet <- function(..., outcomes, treatments, small.values,
              "'netmeta' or 'netrank'.",
              call. = FALSE)
       ##
+      args[[i]] <- updateversion(args[[i]])
+      ##
       if (!missing.small.values)
-        small.values[i] <- setchar(small.values[i], c("good", "bad"))
+        small.values[i] <- setsv(small.values[i])
       else {
         small.values[i] <-
           ifelse(is.null(args[[i]]$small.values),
-                 "good", args[[i]]$small.values)
+                 "desirable", args[[i]]$small.values)
       }
       ##
       if (length(small.values) != n.outcomes)
@@ -455,8 +459,8 @@ netposet <- function(..., outcomes, treatments, small.values,
       ##
       if (inherits(args.i, "netmeta")) {
         ranking.list.common[[i]] <- netrank(args.i,
-                                           small.values =
-                                             small.values[i])$ranking.common
+                                            small.values =
+                                              small.values[i])$ranking.common
         ranking.list.random[[i]] <- netrank(args.i,
                                             small.values =
                                               small.values[i])$ranking.random
@@ -629,7 +633,7 @@ netposet <- function(..., outcomes, treatments, small.values,
   M0.random <- M.random - sign(M.random %*% M.random)
   
   
-  if (missing(small.values) | !any.netmeta | length(args) == 1)
+  if (missing.small.values | !any.netmeta | length(args) == 1)
     small.values <- NULL
   
   

@@ -1,3 +1,72 @@
+## netmeta, version 2.8-0 (2023-02-27)
+
+### Major changes
+
+* R functions funnel(), metabias(), radial(), trimfill(), metainf(),
+  metacum(), baujat() and metareg() can be applied to netpairwise
+  objects created with argument 'separate = TRUE', i.e., separate
+  meta-analysis for all pairwise comparisons in a network
+
+* Heat plot implemented showing network estimates with confidence
+  intervals
+
+### Bug fixes
+
+* netmeta():
+  - calculate correct number of studies per treatment for multi-arm
+    studies (list element 'n.trts')
+
+* netcontrib():
+  - standard call resulted in an error due to a change in R package
+    **igraph**, version 1.4-0
+
+### User-visible changes
+
+* netpairwise():
+  - new argument 'order' to specify order of treatments in pairwise
+    meta-analyses
+  - new argument 'k.min' to specify minimal number of studies in
+    pairwise comparison to show funnel plot, radial plot or conduct
+    test for funnel plot asymmetry
+
+* print.decomp.design():
+  - by default, results are sorted by p-values (argument 'sort')
+
+* print.netmeta():
+  - only print prediction intervals with common effects network
+    meta-analysis if not printed with random effects results
+
+* netmeta(), netposet(), netrank(), forest.netmeta():
+  - possible values "desirable" and "undesirable" instead of "good"
+    and "bad" for argument 'small.values'
+
+* funnel.netmeta():
+  - value for argument 'order' can be extracted from network
+    meta-analysis object
+
+* New functions funnel.netpairwise(), metabias.netpairwise(),
+  radial.netpairwise(), trimfill.netpairwise(), metainf.netpairwise()
+  and metacum.netpairwise()
+
+* New generic function heatplot() to generate heat plot
+
+### Internal changes
+
+* New generic function netconnection() to check connectivity
+
+* New functions netconnection.pairwise() and netconnection.default()
+
+* netgraph.netmeta():
+  - new row names for invisibly returned data sets with information on
+    nodes and edges
+
+* netmetabin():
+  - additional checks and assignments if first argument is a data set
+
+* New internal function setsv() to set value for argument
+  'small.value'
+
+
 ## netmeta, version 2.7-0 (2022-12-21)
 
 ### Major changes

@@ -1,9 +1,9 @@
 ranksampling <- function(x, nsim,
-                         pooled = "random", small.values = "good",
+                         pooled = "random", small.values = "desirable",
                          keep.sample = FALSE) {
   chkclass(x, "netmeta")
   pooled <- setchar(pooled, c("common", "random"))
-  small.values <- setchar(small.values, c("good", "bad"))
+  small.values <- setsv(small.values)
   chklogical(keep.sample)
   ##
   if (pooled == "common") {
@@ -15,7 +15,7 @@ ranksampling <- function(x, nsim,
     Cov.pooled <- x$Cov.random
   }
   ##
-  if (small.values == "good")
+  if (small.values == "desirable")
     theta <- TE.pooled[, 1]
   else
     theta <- TE.pooled[1, ]

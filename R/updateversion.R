@@ -30,6 +30,7 @@ updateversion <- function(x, verbose = FALSE) {
   update.1.3.0 <- update_needed(x$version, 1, 3, verbose)
   update.2.0.0 <- update_needed(x$version, 2, 0, verbose)
   update.2.5.0 <- update_needed(x$version, 2, 5, verbose)
+  update.2.8.0 <- update_needed(x$version, 2, 8, verbose)
   
   
   ##
@@ -169,6 +170,9 @@ updateversion <- function(x, verbose = FALSE) {
       x$Cov.common <- x$Cov.fixed               
     }
     ##
+    if (update.2.8.0)
+      x$small.values <- setsv(x$small.values)
+    ##
     return(x)
   }
   
@@ -189,6 +193,9 @@ updateversion <- function(x, verbose = FALSE) {
     ##
     if (update.2.5.0)
       x$x$common <- x$x$fixed
+    ##
+    if (update.2.8.0)
+      x$x$small.values <- setsv(x$x$small.values)
     ##
     return(x)
   }
@@ -269,6 +276,9 @@ updateversion <- function(x, verbose = FALSE) {
       x$Lplus.matrix.common <- x$Lplus.matrix.fixed
       x$H.matrix.common <- x$H.matrix.fixed        
     }
+    ##
+    if (update.2.8.0)
+      x$x$small.values <- setsv(x$x$small.values)
     ##
     return(x)
   }
@@ -396,6 +406,9 @@ updateversion <- function(x, verbose = FALSE) {
       x$compare.common <- x$compare.fixed
     }
     ##
+    if (update.2.8.0)
+      x$x$small.values <- setsv(x$x$small.values)
+    ##
     return(x)
   }
   
@@ -416,6 +429,9 @@ updateversion <- function(x, verbose = FALSE) {
       x$ranking.common <- x$ranking.fixed
       x$Pmatrix.common <- x$Pmatrix.fixed
     }
+    ##
+    if (update.2.8.0)
+      x$small.values <- setsv(x$small.values)
     ##
     return(x)
   }
@@ -447,6 +463,9 @@ updateversion <- function(x, verbose = FALSE) {
       x$cumrank.matrix.common <- x$cumrank.matrix.fixed
     }
     ##
+    if (update.2.8.0)
+      x$small.values <- setsv(x$small.values)
+    ##
     return(x)
   }
   
@@ -467,6 +486,9 @@ updateversion <- function(x, verbose = FALSE) {
       ##
       x$version <- packageDescription("netmeta")$Version
     }              
+    ##
+    if (update.2.8.0)
+      x$x$small.values <- setsv(x$x$small.values)
     ##
     return(x)
   }
@@ -521,6 +543,9 @@ updateversion <- function(x, verbose = FALSE) {
       x$version <- packageDescription("netmeta")$Version
     }              
     ##
+    if (update.2.8.0)
+      x$small.values <- setsv(x$small.values)
+    ##
     return(x)
   }
   
@@ -545,6 +570,9 @@ updateversion <- function(x, verbose = FALSE) {
         res$tictoc.common <- res$tictoc.fixed
     }
     ##
+    if (update.2.8.0)
+      x$x$small.values <- setsv(x$x$small.values)
+    ##
     return(x)
   }
   
@@ -566,6 +594,9 @@ updateversion <- function(x, verbose = FALSE) {
       x$version <- packageDescription("netmeta")$Version
     }
     ##
+    if (update.2.8.0)
+      x$x$small.values <- setsv(x$x$small.values)
+    ##
     return(x)
   }
   
@@ -586,6 +617,9 @@ updateversion <- function(x, verbose = FALSE) {
       ##
       x$version <- packageDescription("netmeta")$Version
     }
+    ##
+    if (update.2.8.0)
+      x$x$small.values <- setsv(x$x$small.values)
     ##
     return(x)
   }

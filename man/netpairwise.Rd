@@ -7,6 +7,19 @@
 \alias{print.summary.netpairwise}
 \alias{forest.netpairwise}
 \alias{plot.netpairwise}
+\alias{funnel.netpairwise}
+\alias{radial.netpairwise}
+\alias{baujat.netpairwise}
+\alias{metabias.netpairwise}
+\alias{print.metabias.netpairwise}
+\alias{trimfill.netpairwise}
+\alias{print.trimfill.netpairwise}
+\alias{metainf.netpairwise}
+\alias{print.metainf.netpairwise}
+\alias{metacum.netpairwise}
+\alias{print.metacum.netpairwise}
+\alias{metareg.netpairwise}
+\alias{print.metareg.netpairwise}
 \title{Conduct pairwise meta-analyses for all comparisons with direct
 evidence in a network meta-analysis}
 \usage{
@@ -19,9 +32,10 @@ netpairwise(
   level.ma = x$level.ma,
   prediction = x$prediction,
   level.predict = x$level.predict,
-  reference.group = x$reference.group,
+  reference.group = if (missing(order)) x$reference.group else "",
   baseline.reference = x$baseline.reference,
   method.tau = x$method.tau,
+  order = NULL,
   sep.trts = x$sep.trts,
   nchar.trts = x$nchar.trts,
   backtransf = x$backtransf,
@@ -38,6 +52,32 @@ netpairwise(
 \method{forest}{netpairwise}(x, ...)
 
 \method{plot}{netpairwise}(x, ...)
+
+\method{funnel}{netpairwise}(x, k.min = 3, ...)
+
+\method{radial}{netpairwise}(x, k.min = 3, ...)
+
+\method{baujat}{netpairwise}(x, k.min = 3, ...)
+
+\method{metabias}{netpairwise}(x, k.min = 10, ...)
+
+\method{print}{metabias.netpairwise}(x, ...)
+
+\method{trimfill}{netpairwise}(x, k.min = 3, ...)
+
+\method{print}{trimfill.netpairwise}(x, ...)
+
+\method{metainf}{netpairwise}(x, k.min = 2, ...)
+
+\method{print}{metainf.netpairwise}(x, ...)
+
+\method{metacum}{netpairwise}(x, k.min = 2, ...)
+
+\method{print}{metacum.netpairwise}(x, ...)
+
+\method{metareg}{netpairwise}(x, ..., k.min = 2)
+
+\method{print}{metareg.netpairwise}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} or \code{netpairwise}.}
@@ -76,6 +116,9 @@ used to estimate the between-study variance \eqn{\tau^2} and its
 square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
 \code{"ML"}, can be abbreviated.}
 
+\item{order}{An optional character or numerical vector specifying
+the order of treatments.}
+
 \item{sep.trts}{A character used in comparison names as separator
 between treatment labels.}
 
@@ -95,6 +138,10 @@ be printed if deprecated arguments are used.}
 print functions and to catch deprecated arguments).}
 
 \item{object}{An object of class \code{netpairwise}.}
+
+\item{k.min}{Minimum number of studies in pairwise comparison to
+show funnel plot, radial plot or conduct test for funnel plot
+asymmetry.}
 }
 \value{
 Either a single \code{\link{metagen}} object with pairwise
@@ -148,7 +195,7 @@ data(Senn2013)
 # Random effects model
 #
 net2 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-  data = Senn2013, sm = "MD", common = FALSE)
+  data = Senn2013, sm = "MD", common = FALSE, reference = "plac")
 
 # Calculate and print concise results for all pairwise
 # meta-analyses
@@ -163,6 +210,9 @@ forest(np2)
 #
 np3 <- netpairwise(net2, separate = TRUE)
 forest(np3)
+funnel(np3)
+radial(np3)
+funnel(np3, k.min = 1)
 }
 
 settings.meta(oldsets)

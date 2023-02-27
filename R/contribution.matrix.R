@@ -66,9 +66,10 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
     igraph::E(dg)[]$weight <- rep(0, dims[2])
     igraph::E(dg)[]$flow <- abs(x[comparison, ])
     igraph::V(dg)[]$label <- igraph::V(dg)[]$name
-    dg <- igraph::set.edge.attribute(dg, 'label', value = igraph::E(dg))
+    resg <-
+      igraph::set.edge.attribute(dg, 'label', value = 1:igraph::gsize(dg))
     ##
-    dg
+    resg
   }
   ##
   reducePath <- function(g, comparison, spl) {

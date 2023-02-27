@@ -37,8 +37,8 @@
 \item{x}{An object of class \code{netmeta}.}
 
 \item{pooled}{A character string indicating whether results for the
-common (\code{"common"}) or random effects model (\code{"random"})
-should be plotted. Can be abbreviated.}
+common (\code{"common"}) or random effects model
+(\code{"random"}) should be plotted. Can be abbreviated.}
 
 \item{reference.group}{Reference treatment(s).}
 
@@ -72,8 +72,8 @@ Details).}
 effects and confidence intervals, see \code{print.default}.}
 
 \item{small.values}{A character string specifying whether small
-treatment effects indicate a beneficial (\code{"good"}) or
-harmful (\code{"bad"}) effect, can be abbreviated; see
+treatment effects indicate a beneficial (\code{"desirable"}) or
+harmful (\code{"undesirable"}) effect, can be abbreviated; see
 \code{\link{netrank}}.}
 
 \item{nsim}{Number of simulations to calculate SUCRAs.}

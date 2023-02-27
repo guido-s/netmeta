@@ -19,6 +19,8 @@
 #' @param big.mark A character used as thousands separator.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
+#' @param sort A logical indicating whether to sort results by
+#'   p-values.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param \dots Additional arguments (ignored at the moment).
@@ -59,6 +61,7 @@ print.decomp.design <- function(x,
                                 scientific.pval = gs("scientific.pval"),
                                 big.mark = gs("big.mark"),
                                 nchar.trts = x$nchar.trts,
+                                sort = TRUE,
                                 legend = TRUE,
                                 ...) {
   
@@ -74,6 +77,7 @@ print.decomp.design <- function(x,
   if (is.null(nchar.trts))
     nchar.trts <- 666
   chknumeric(nchar.trts, min = 1, length = 1)
+  chklogical(sort)
   chklogical(legend)
   ##
   if (is.null(x$x$sep.trts))
@@ -87,8 +91,8 @@ print.decomp.design <- function(x,
     ##
     Qdata$Q <- round(Qdata$Q, digits.Q)
     Qdata$pval <- formatPT(Qdata$pval,
-                                  digits = digits.pval.Q,
-                                  scientific = scientific.pval)
+                           digits = digits.pval.Q,
+                           scientific = scientific.pval)
     ##
     dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
     ##
@@ -123,11 +127,15 @@ print.decomp.design <- function(x,
   ##
   Q.design$Q <- formatN(round(Q.design$Q, digits.Q), digits.Q, "NA",
                         big.mark = big.mark)
+  if (sort)
+    Q.design <- Q.design[order(Q.design$pval), , drop = FALSE]
   Q.design$pval <- formatPT(Q.design$pval, digits = digits.pval.Q,
                             scientific = scientific.pval)
   ##
   Q.detach$Q <- formatN(round(Q.detach$Q, digits.Q), digits.Q, "NA",
                         big.mark = big.mark)
+  if (sort)
+    Q.detach <- Q.detach[order(-Q.detach$pval), , drop = FALSE]
   Q.detach$pval <- formatPT(Q.detach$pval, digits = digits.pval.Q,
                             scientific = scientific.pval)
   ##
@@ -171,7 +179,10 @@ print.decomp.design <- function(x,
   }
   
   if (nrow(Q.detach) > 0) {
-    cat("\nBetween-designs Q statistic after detaching of single designs\n\n")
+    cat(paste0("\nBetween-designs Q statistic after detaching of ",
+               "single designs\n",
+               "(influential designs have p-value markedly different from ",
+               rmSpace(Q.decomp[3, 3]), ")\n\n"))
     ##
     trts2 <- unique(sort(unlist(compsplit(Q.detach[, 1], sep.trts))))
     Q.detach[, 1] <- comps(Q.detach[, 1], trts2, sep.trts, nchar.trts)

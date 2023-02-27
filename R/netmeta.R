@@ -44,8 +44,8 @@
 #'   reference treatment (default) or vice versa. This argument is
 #'   only considered if \code{reference.group} has been specified.
 #' @param small.values A character string specifying whether small
-#'   treatment effects indicate a beneficial (\code{"good"}) or
-#'   harmful (\code{"bad"}) effect (passed on to
+#'   treatment effects indicate a beneficial (\code{"desirable"}) or
+#'   harmful (\code{"undesirable"}) effect (passed on to
 #'   \code{\link{netrank}}, can be abbreviated.
 #' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
 #'   matrices with all treatment effects, and confidence limits will
@@ -517,7 +517,7 @@ netmeta <- function(TE, seTE,
                     ##
                     reference.group,
                     baseline.reference = TRUE,
-                    small.values = "good",
+                    small.values = "desirable",
                     all.treatments = NULL,
                     seq = NULL,
                     ##
@@ -571,7 +571,7 @@ netmeta <- function(TE, seTE,
   missing.reference.group <- missing(reference.group)
   chklogical(baseline.reference)
   ##
-  small.values <- setchar(small.values, c("good", "bad"))
+  small.values <- setsv(small.values)
   ##
   if (!is.null(all.treatments))
     chklogical(all.treatments)
@@ -1422,7 +1422,7 @@ netmeta <- function(TE, seTE,
               d = length(unique(designs$design)),
               ##
               trts = trts,
-              k.trts = rowSums(res.f$A.matrix),
+              k.trts = NA,
               n.trts = if (available.n) NA else NULL,
               events.trts = if (available.events) NA else NULL,
               ##
@@ -1693,7 +1693,17 @@ netmeta <- function(TE, seTE,
   res$statistic.indirect.random <- ci.ir$statistic
   res$pval.indirect.random <- ci.ir$p
   ##
+  ## Additional assignments
+  ##
   res$small.values <- small.values
+  ##
+  l1 <- length(res$treat1)
+  tab.trts <-
+    table(longarm(res$treat1, res$treat2,
+                  rep(1, l1), rep(2, l1), rep(1, l1), rep(2, l1),
+                  studlab = res$studlab)$treat)
+  res$k.trts <- as.numeric(tab.trts)
+  names(res$k.trts) <- names(tab.trts)
   ##
   if (any(res$narms > 2)) {
     tdata1 <- data.frame(studlab = res$studlab,

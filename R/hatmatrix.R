@@ -62,7 +62,7 @@
 #' = "Krahn"}.
 #'
 #' Use of \code{type = "design"} (default) results in a hat matrix of
-#' dimension \emph{n(n-1)/2} x \emph{d}, where \emph{d} is the sum of
+#' dimension \emph{n(n-1)/2} x \emph{s}, where \emph{s} is the sum of
 #' the number of independent comparisons from each design.
 #'
 #' Use of \code{type = "studies"} results in a hat matrix of dimension
