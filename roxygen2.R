@@ -8,26 +8,26 @@ library(roxygen2)
 ##
 ## (2) Create documentation file(s)
 ##
-document("../netmeta")
+document()
 
 
 ##
 ## (3) Build R package and PDF file with help pages
 ##
-build("../netmeta")
-build_manual("../netmeta")
+build()
+build_manual()
 
 
 ##
 ## (4) Install R package
 ##
-install("../netmeta")
+install()
 
 
 ##
 ## (5) Check R package
 ##
-check("../netmeta")
+check()
 
 
 ##
@@ -37,10 +37,3 @@ setwd("..")
 run_examples("netmeta", fresh = TRUE,
              run_dontrun = TRUE, run_donttest = TRUE)
 warnings()
-
-
-##
-## (6) Check R package (with donttest examples)
-##
-##setwd("netmeta")
-##check("../netmeta", run_dont_test = TRUE)

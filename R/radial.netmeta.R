@@ -1,7 +1,7 @@
-#' \sQuote{Comparison-adjusted} funnel plot
+#' \sQuote{Comparison-adjusted} radial plot
 #' 
 #' @description
-#' Draw a \sQuote{comparison-adjusted} funnel plot to assess funnel
+#' Draw a \sQuote{comparison-adjusted} radial plot to assess funnel
 #' plot asymmetry in network meta-analysis.
 #' 
 #' @param x An object of class \code{netmeta}.
@@ -10,10 +10,7 @@
 #' @param pooled A character string indicating whether results for the
 #'   common (\code{"common"}) or random effects model (\code{"random"})
 #'   should be plotted. Can be abbreviated.
-#' @param xlab A label for the x-axis.
-#' @param level The confidence level utilised in the plot. For the
-#'   funnel plot, confidence limits are not drawn if \code{yaxis =
-#'   "size"}.
+#' @param level The confidence level utilised in the plot.
 #' @param pch The plotting symbol(s) used for individual studies
 #'   within direct comparisons.
 #' @param col The colour(s) used for individual studies within direct
@@ -44,12 +41,6 @@
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names (see
 #'   \code{\link{netmeta}}).
-#' @param backtransf A logical indicating whether results for relative
-#'   summary measures (argument \code{sm} equal to \code{"OR"},
-#'   \code{"RR"}, \code{"HR"}, or \code{"IRR"}) should be back
-#'   transformed in funnel plots. If \code{backtransf = TRUE}, results
-#'   for \code{sm = "OR"} are printed as odds ratios rather than log
-#'   odds ratios, for example.
 #' @param digits.pval Minimal number of significant digits for p-value
 #'   of test(s) for funnel plot asymmetry.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -58,11 +49,14 @@
 #' @param rank Deprecated argument (replaced by \code{method.bias}).
 #' @param mm Deprecated argument (replaced by \code{method.bias}).
 #' @param \dots Additional graphical arguments passed as arguments to
-#'   \code{\link{funnel.meta}}.
+#'   \code{\link{radial.meta}}.
 #' 
 #' @details
-#' A \sQuote{comparison-adjusted} funnel plot (Chaimani & Salanti,
-#' 2012) is drawn in the active graphics window.
+#' 
+#' A \sQuote{comparison-adjusted} radial plot is drawn in the active
+#' graphics window. The idea of this radial plot is similar to a
+#' \sQuote{comparison-adjusted} funnel plot (Chaimani & Salanti,
+#' 2012).
 #' 
 #' Argument \code{order} is mandatory to determine the order of
 #' treatments (Chaimani et al., 2013):
@@ -84,13 +78,6 @@
 #' is \code{TRUE}, all comparators will be lumped into a single
 #' group. The text for this group can be specified with argument
 #' \code{text.comparator}.
-#' 
-#' In the funnel plot, if \code{yaxis} is \code{"se"}, the standard
-#' error of the treatment estimates is plotted on the y-axis which is
-#' likely to be the best choice (Sterne & Egger, 2001). Other possible
-#' choices for \code{yaxis} are \code{"invvar"} (inverse of the
-#' variance), \code{"invse"} (inverse of the standard error), and
-#' \code{"size"} (study size).
 #'
 #' @return
 #' A data frame with the following columns:
@@ -108,8 +95,8 @@
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{netmeta}}, \code{\link{funnel.meta}},
-#'   \code{\link{metabias}}
+#' @seealso \code{\link{netmeta}}, \code{\link{radial.meta}},
+#'   \code{\link{funnel.meta}}, \code{\link{metabias}}
 #' 
 #' @references
 #' Chaimani A & Salanti G (2012):
@@ -123,12 +110,6 @@
 #' PLOS ONE,
 #' \bold{8}, e76654
 #' 
-#' Sterne JAC & Egger M (2001):
-#' Funnel plots for detecting bias in meta-analysis: Guidelines on
-#' choice of axis.
-#' \emph{Journal of Clinical Epidemiology},
-#' \bold{54}, 1046--55
-#' 
 #' @keywords hplot
 #' 
 #' @examples
@@ -138,64 +119,63 @@
 #' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD")
 #' 
-#' # 'Comparison-adjusted' funnel plot not created as argument 'order'
+#' # 'Comparison-adjusted' radial plot not created as argument 'order'
 #' # is missing
 #' #
-#' try(funnel(net1))
+#' try(radial(net1))
 #' 
 #' # Only show comparisons with placebo
 #' #
-#' funnel(net1, order = "pl")
+#' radial(net1, order = "pl")
 #' 
 #' # Add result for Egger test of funnel plot asymmetry
 #' #
-#' funnel(net1, order = "pl", method.bias = "Egger",
+#' radial(net1, order = "pl", method.bias = "Egger",
 #'   digits.pval = 2)
 #' 
 #' # (Non-sensical) alphabetic order of treatments with placebo as
 #' # last treatment
 #' #
 #' ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
-#' funnel(net1, order = ord)
+#' radial(net1, order = ord)
 #'
 #' # Add results for tests of funnel plot asymmetry and use different
 #' # plotting symbols and colours
 #' #
-#' funnel(net1, order = ord,
+#' radial(net1, order = ord,
 #'   pch = rep(c(15:18, 1), 3), col = 1:3,
 #'   method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 #' 
 #' # Same results for tests of funnel plot asymmetry using reversed
 #' # order of treatments
 #' #
-#' funnel(net1, order = rev(ord),
+#' radial(net1, order = rev(ord),
 #'   pch = rep(c(15:18, 1), 3), col = 1:3,
 #'   method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 #' 
 #' # Calculate tests for funnel plot asymmetry
 #' #
-#' f1 <- funnel(net1, order = ord)
+#' f1 <- radial(net1, order = ord)
 #' #
 #' metabias(metagen(TE.adj, seTE, data = f1))
 #' metabias(metagen(TE.adj, seTE, data = f1), method = "Begg")
 #' metabias(metagen(TE.adj, seTE, data = f1), method = "Thompson")
 #' }
 #'
-#' @method funnel netmeta
+#' @method radial netmeta
 #' @export
 
 
-funnel.netmeta <- function(x,
+radial.netmeta <- function(x,
                            order,
                            pooled = ifelse(x$random, "random", "common"),
                            ##
-                           xlab = NULL,
                            level = x$level,
                            ##
                            pch,
                            col = "black",
                            ##
-                           legend = TRUE,
+                           legend = FALSE,
                            ##
                            pos.legend = "topright",
                            pos.tests = "topleft",
@@ -211,7 +191,6 @@ funnel.netmeta <- function(x,
                            sep.trts = x$sep.trts,
                            nchar.trts = x$nchar.trts,
                            ##
-                           backtransf = x$backtransf,
                            digits.pval = gs("digits.pval"),
                            ##
                            warn.deprecated = gs("warn.deprecated"),
@@ -224,10 +203,7 @@ funnel.netmeta <- function(x,
   
   ##
   ##
-  ## Generate 'comparison-adjusted' funnel plot according to
-  ## Chaimani, Anna, Julian P T Higgins, Dimitris Mavridis, Panagiota
-  ## Spyridonos, and Georgia Salanti. 2013. Graphical tools for network
-  ## meta-analysis in STATA. PLoS One 8 (10): e76654
+  ## Generate 'comparison-adjusted' radial plot
   ##
   ##
   
@@ -250,7 +226,7 @@ funnel.netmeta <- function(x,
   if (missing(order))
     stop("Argument 'order' with a meaningful order of treatments ",
          "must be provided.\n  ",
-         "(see help page of funnel.netmeta for some examples).")
+         "(see help page of radial.netmeta for some examples).")
   else {
     order <- catch("order", mc, x, sfsp)
     ##
@@ -311,8 +287,6 @@ funnel.netmeta <- function(x,
   ##
   chkchar(sep.trts)
   chknumeric(nchar.trts, min = 1, length = 1)
-  ##
-  chklogical(backtransf)
   ##
   chknumeric(digits.pval, min = 1, length = 1)
   
@@ -383,14 +357,6 @@ funnel.netmeta <- function(x,
                     treat1, treat2, comparison,
                     trt1, trt2, comp,
                     TE, TE.direct = NA, TE.adj = NA, seTE)
-  ##
-  if (missing(xlab)) {
-    if (xlab(x$sm, backtransf) == "")
-      xlab <- "Centered at comparison-specific effect"
-    else
-      xlab <- paste(xlab(x$sm, backtransf),
-                    "centered at\ncomparison-specific effect")
-  }
   
   
   ##
@@ -428,7 +394,7 @@ funnel.netmeta <- function(x,
   
   ##
   ##
-  ## (4) Calculate necessary data for funnel plot
+  ## (4) Calculate necessary data for radial plot
   ##
   ##
   m.adj <-
@@ -493,17 +459,14 @@ funnel.netmeta <- function(x,
   
   ##
   ##
-  ## (5) Funnel plot
+  ## (5) Radial plot
   ##
   ##
-  funnel(m.adj,
+  radial(m.adj,
          pch = res$pch,
          col = res$col,
          level = level,
-         common = FALSE, random = FALSE,
-         xlab = xlab,
-         backtransf = backtransf,
-         ref.triangle = TRUE,
+         common = FALSE,
          ...
          )
   ##

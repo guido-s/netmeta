@@ -8,8 +8,8 @@
 #' 
 #' @param x An object of class \code{netmeta} or \code{rankogram}.
 #' @param small.values A character string specifying whether small
-#'   treatment effects indicate a beneficial (\code{"good"}) or
-#'   harmful (\code{"bad"}) effect, can be abbreviated.
+#'   treatment effects indicate a beneficial (\code{"desirable"}) or
+#'   harmful (\code{"undesirable"}) effect, can be abbreviated.
 #' @param method A character string specifying whether the
 #'   \code{"P-score"} or \code{"SUCRA"} ranking metric will be
 #'   calculated.
@@ -160,10 +160,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
   else
     method <- setchar(method, c("P-score", "SUCRA"))
   ##
-  if (is.null(small.values))
-    small.values <- "good"
-  else
-    small.values <- setchar(small.values, c("good", "bad"))
+  small.values <- setsv(small.values)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -231,7 +228,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
     w.common <- (1 + sign(TE.common)) / 2
     p.common <- pval.common
     ##
-    if (small.values == "good")
+    if (small.values == "desirable")
       P.common <-
         w.common * p.common / 2 + (1 - w.common) * (1 - p.common / 2)
     else
@@ -241,7 +238,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
     w.random <- (1 + sign(TE.random)) / 2
     p.random <- pval.random
     ##
-    if (small.values == "good")
+    if (small.values == "desirable")
       P.random <-
         w.random * p.random / 2 + (1 - w.random) * (1 - p.random / 2)
     else

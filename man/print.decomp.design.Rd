@@ -13,6 +13,7 @@
   scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
   nchar.trts = x$nchar.trts,
+  sort = TRUE,
   legend = TRUE,
   ...
 )
@@ -41,6 +42,9 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
+
+\item{sort}{A logical indicating whether to sort results by
+p-values.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}

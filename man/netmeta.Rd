@@ -22,7 +22,7 @@ netmeta(
   level.predict = gs("level.predict"),
   reference.group,
   baseline.reference = TRUE,
-  small.values = "good",
+  small.values = "desirable",
   all.treatments = NULL,
   seq = NULL,
   method.tau = "DL",
@@ -133,8 +133,8 @@ reference treatment (default) or vice versa. This argument is
 only considered if \code{reference.group} has been specified.}
 
 \item{small.values}{A character string specifying whether small
-treatment effects indicate a beneficial (\code{"good"}) or
-harmful (\code{"bad"}) effect (passed on to
+treatment effects indicate a beneficial (\code{"desirable"}) or
+harmful (\code{"undesirable"}) effect (passed on to
 \code{\link{netrank}}, can be abbreviated.}
 
 \item{all.treatments}{A logical or \code{"NULL"}. If \code{TRUE},

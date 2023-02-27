@@ -30,8 +30,8 @@ netrank(
 \item{x}{An object of class \code{netmeta} or \code{rankogram}.}
 
 \item{small.values}{A character string specifying whether small
-treatment effects indicate a beneficial (\code{"good"}) or
-harmful (\code{"bad"}) effect, can be abbreviated.}
+treatment effects indicate a beneficial (\code{"desirable"}) or
+harmful (\code{"undesirable"}) effect, can be abbreviated.}
 
 \item{method}{A character string specifying whether the
 \code{"P-score"} or \code{"SUCRA"} ranking metric will be

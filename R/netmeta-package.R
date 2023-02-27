@@ -182,8 +182,9 @@
 #'
 #' @keywords package
 #' 
-#' @importFrom meta forest funnel metabias
-#'   metabin metacont metagen metainc gs ci cilayout
+#' @importFrom meta baujat forest funnel radial trimfill longarm
+#'   metabias metabin metacont metagen metainc metacum metainf metareg
+#'   gs ci cilayout
 #'
 #' @importFrom magic adiag
 #'
@@ -202,7 +203,7 @@
 #'
 #' @importFrom ggplot2 ggplot aes theme_classic geom_tile xlab ylab
 #'   theme element_blank element_text scale_fill_gradient2 geom_text
-#'   ggtitle
+#'   ggtitle scale_x_discrete scale_y_discrete theme_dark
 #'
 #' @importFrom metafor bldiag contrmat rma.mv
 

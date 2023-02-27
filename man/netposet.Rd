@@ -124,9 +124,10 @@ if the first argument is a ranking matrix. If argument
 If argument \code{\dots{}} consists of \code{netmeta} objects,
 \code{netrank} is called internally to calculate P-scores. In this
 case, argument \code{small.values} can be used to specify for each
-outcome whether small values are good or bad; see
-\code{\link{netrank}}. This argument is ignored for a ranking
-matrix and \code{netrank} objects.
+outcome whether small values are beneficial (\code{"desirable"}) or
+harmfull (\code{"undesirable"}); see \code{\link{netrank}}. This
+argument is ignored for a ranking matrix and \code{netrank}
+objects.
 
 Arguments \code{common} and \code{random} can be used to define
 whether results should be printed and plotted for common and random
@@ -161,7 +162,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   studlab = id, data = Linde2015, sm = "OR")
 #
 net1 <- netmeta(p1, common = FALSE,
-  seq = trts, ref = "Placebo", small.values = "bad")
+  seq = trts, ref = "Placebo", small.values = "undesirable")
 
 # (2) Early remission
 #
@@ -170,7 +171,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   studlab = id, data = Linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, common = FALSE,
-  seq = trts, ref = "Placebo", small.values = "bad")
+  seq = trts, ref = "Placebo", small.values = "undesirable")
 
 # Partial order of treatment rankings (two outcomes)
 #
@@ -195,7 +196,7 @@ p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   studlab = id, data = Linde2015, sm = "OR")
 #
 net3 <- netmeta(p3, common = FALSE,
-  seq = trts, ref = "Placebo", small.values = "good")
+  seq = trts, ref = "Placebo", small.values = "desirable")
 
 # (4) Loss to follow-up due to adverse events
 #
@@ -204,7 +205,7 @@ p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
 #
 net4 <- netmeta(p4, common = FALSE,
-  seq = trts, ref = "Placebo", small.values = "good")
+  seq = trts, ref = "Placebo", small.values = "desirable")
 
 # (5) Adverse events
 #
@@ -213,7 +214,7 @@ p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   studlab = id, data = Linde2015, sm = "OR")
 #
 net5 <- netmeta(p5, common = FALSE,
-  seq = trts, ref = "Placebo", small.values = "good")
+  seq = trts, ref = "Placebo", small.values = "desirable")
 
 # Partial order of treatment rankings (all five outcomes)
 #

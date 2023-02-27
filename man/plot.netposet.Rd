@@ -169,7 +169,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   studlab = id, data = Linde2015, sm = "OR")
 #
 net1 <- netmeta(p1, common = FALSE,
-  seq = trts, ref = "Placebo", small.values = "bad")
+  seq = trts, ref = "Placebo", small.values = "undesirable")
 
 # (2) Early remission
 #
@@ -178,7 +178,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   studlab = id, data = Linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, common = FALSE,
-  seq = trts, ref = "Placebo", small.values = "bad")
+  seq = trts, ref = "Placebo", small.values = "undesirable")
 
 # Partial order of treatment rankings
 #
@@ -206,7 +206,7 @@ p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   studlab = id, data = Linde2015, sm = "OR")
 #
 net3 <- netmeta(p3, common = FALSE,
-  seq = trts, ref = "Placebo", small.values = "good")
+  seq = trts, ref = "Placebo", small.values = "desirable")
 
 # Partial order of treatment rankings (with three outcomes) 
 #

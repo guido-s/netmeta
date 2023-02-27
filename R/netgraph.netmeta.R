@@ -1560,8 +1560,11 @@ netgraph.netmeta <- function(x, seq = x$seq,
   }
   ##
   dat.nodes$zpos.labels <- NULL
-
-
+  ##
+  rownames(dat.nodes) <- dat.nodes$trts
+  rownames(dat.edges) <-
+    paste(dat.edges$treat1, dat.edges$treat2, sep = highlight.split)
+  ##  
   dat.edges$xpos[is.zero(dat.edges$xpos)] <- 0
   dat.edges$ypos[is.zero(dat.edges$ypos)] <- 0
   

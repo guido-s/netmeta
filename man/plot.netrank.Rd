@@ -173,8 +173,8 @@ net2 <- netmeta(p2, common = FALSE,
 
 # Image plot of treatment rankings (two outcomes)
 #
-plot(netrank(net1, small.values = "bad"),
-  netrank(net2, small.values = "bad"),
+plot(netrank(net1, small.values = "undesirable"),
+  netrank(net2, small.values = "undesirable"),
   name = outcomes, digits = 2)
 
 
@@ -210,11 +210,11 @@ net5 <- netmeta(p5, common = FALSE, seq = trts, ref = "Placebo")
 
 # Image plot of treatment rankings (two outcomes)
 #
-plot(netrank(net1, small.values = "bad"),
-  netrank(net2, small.values = "bad"),
-  netrank(net3, small.values = "good"),
-  netrank(net4, small.values = "good"),
-  netrank(net5, small.values = "good"),
+plot(netrank(net1, small.values = "undesirable"),
+  netrank(net2, small.values = "undesirable"),
+  netrank(net3, small.values = "desirable"),
+  netrank(net4, small.values = "desirable"),
+  netrank(net5, small.values = "desirable"),
   name = outcomes, digits = 2)
 }
 

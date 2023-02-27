@@ -31,6 +31,8 @@
 #'   used to estimate the between-study variance \eqn{\tau^2} and its
 #'   square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
 #'   \code{"ML"}, can be abbreviated.
+#' @param order An optional character or numerical vector specifying
+#'   the order of treatments.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
 #' @param nchar.trts A numeric defining the minimum number of
@@ -40,6 +42,9 @@
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
 #'   presented as odds ratios rather than log odds ratios, for
 #'   example.
+#' @param k.min Minimum number of studies in pairwise comparison to
+#'   show funnel plot, radial plot or conduct test for funnel plot
+#'   asymmetry.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments (passed on to \code{metagen} or
@@ -98,7 +103,7 @@
 #' # Random effects model
 #' #
 #' net2 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'   data = Senn2013, sm = "MD", common = FALSE)
+#'   data = Senn2013, sm = "MD", common = FALSE, reference = "plac")
 #' 
 #' # Calculate and print concise results for all pairwise
 #' # meta-analyses
@@ -113,13 +118,15 @@
 #' #
 #' np3 <- netpairwise(net2, separate = TRUE)
 #' forest(np3)
+#' funnel(np3)
+#' radial(np3)
+#' funnel(np3, k.min = 1)
 #' }
 #'
 #' settings.meta(oldsets)
 #' 
 #' @rdname netpairwise
 #' @export
-#' @export netpairwise
 
 
 netpairwise <- function(x,
@@ -130,9 +137,11 @@ netpairwise <- function(x,
                         level.ma = x$level.ma,
                         prediction = x$prediction,
                         level.predict = x$level.predict,
-                        reference.group = x$reference.group,
+                        reference.group =
+                          if (missing(order)) x$reference.group else "",
                         baseline.reference = x$baseline.reference,
                         method.tau = x$method.tau,
+                        order = NULL,
                         sep.trts = x$sep.trts,
                         nchar.trts = x$nchar.trts,
                         backtransf = x$backtransf,
@@ -141,14 +150,12 @@ netpairwise <- function(x,
   
   
   ##
-  ## Check for netmeta object
+  ##
+  ## (1) Check and set arguments
+  ##
   ##
   chkclass(x, "netmeta")
   x <- updateversion(x)
-  
-  
-  ##
-  ## Check other arguments
   ##
   chklogical(separate)
   ##
@@ -170,34 +177,96 @@ netpairwise <- function(x,
   ##
   method.tau <- setchar(method.tau, c("DL", "ML", "REML"))
   ##
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
+  ##
+  if (!missing(order)) {
+    order <- catch("order", mc, x, sfsp)
+    ##
+    if (length(order) != length(x$trts))
+      order <- setchar(order, x$trts)
+    else
+      order <- setseq(order, x$trts)
+  }
+  ##
+  if (is.null(order))
+    order <- x$trts
+  ##
   chkchar(sep.trts)
   chknumeric(nchar.trts, min = 1, length = 1)
   chklogical(backtransf)
-
   
   
-  trts.abbr <- treats(x$trts, nchar.trts)
-  trt1 <- as.character(factor(x$data$.treat1,
-                              levels = x$trts, labels = trts.abbr))
-  trt2 <- as.character(factor(x$data$.treat2,
-                              levels = x$trts, labels = trts.abbr))
+  ##
+  ##
+  ## (2) Get data
+  ##
+  ##
   TE <- x$data$.TE
   seTE <- x$data$.seTE
   studlab <- x$data$.studlab
+  ##
   n1 <- x$data$.n1
   n2 <- x$data$.n2
   ##
-  wo <- trt1 > trt2
+  treat1 <- x$data$.treat1
+  treat2 <- x$data$.treat2
+  ##
+  comparison <- paste(treat1, treat2, sep = sep.trts)
+  comparison21 <- paste(treat2, treat1, sep = sep.trts)
+  ##
+  treat1.pos <- as.numeric(factor(treat1, levels = order))
+  treat2.pos <- as.numeric(factor(treat2, levels = order))
+  ##
+  trts.abbr <- treats(x$trts, nchar.trts)
+  trt1 <- as.character(factor(treat1, levels = x$trts, labels = trts.abbr))
+  trt2 <- as.character(factor(treat2, levels = x$trts, labels = trts.abbr))
+  ##
+  comp <- paste(trt1, trt2, sep = sep.trts)
+  comp21 <- paste(trt2, trt1, sep = sep.trts)
+  ##
+  wo <- treat1.pos > treat2.pos
   ##
   if (any(wo)) {
+    ttreat1.pos <- treat1.pos
+    treat1.pos[wo] <- treat2.pos[wo]
+    treat2.pos[wo] <- ttreat1.pos[wo]
+    ##
     TE[wo] <- -TE[wo]
-    ttrt1 <- trt1
-    trt1[wo] <- trt2[wo]
-    trt2[wo] <- ttrt1[wo]
+    ##
     tn1 <- n1
     n1[wo] <- n2[wo]
     n2[wo] <- tn1[wo]
+    ##
+    ttreat1 <- treat1
+    treat1[wo] <- treat2[wo]
+    treat2[wo] <- ttreat1[wo]
+    ##
+    comparison[wo] <- comparison21[wo]
+    ##
+    ttrt1 <- trt1
+    trt1[wo] <- trt2[wo]
+    trt2[wo] <- ttrt1[wo]
+    ##
+    comp[wo] <- comp21[wo]
   }
+  ##
+  o <- order(treat1.pos, treat2.pos)
+  ##
+  TE <- TE[o]
+  seTE <- seTE[o]
+  studlab <- studlab[o]
+  ##
+  n1 <- n1[o]
+  n2 <- n2[o]
+  ##
+  treat1 <- treat1[o]
+  treat2 <- treat2[o]
+  comparison <- comparison[o]
+  ##
+  trt1 <- trt1[o]
+  trt2 <- trt2[o]
+  comp <- comp[o]
   ##
   if (reference.group != "") {
     if (baseline.reference) {
@@ -227,6 +296,11 @@ netpairwise <- function(x,
   }
   
   
+  ##
+  ##
+  ## (3) Run pairwise meta-analyses
+  ##
+  ##
   if (!separate) {
     res <- metagen(TE, seTE, studlab = studlab,
                    n.e = n1, n.c = n2,
@@ -250,6 +324,8 @@ netpairwise <- function(x,
     res$k <- x$m
     res$w.common[!is.na(res$w.common)] <- NA
     res$w.random[!is.na(res$w.random)] <- NA
+    ##
+    res$order <- order
     ##
     class(res) <- c(class(res), "netpairwise")
   }
@@ -277,9 +353,9 @@ netpairwise <- function(x,
                 method.tau = method.tau,
                 warn.deprecated = FALSE,
                 ...)
-      attr(res[[i]], "comparison") <- comp.i
     }
     ##
+    attr(res, "order") <- order
     attr(res, "version") <- packageDescription("netmeta")$Version
     ##
     class(res) <- "netpairwise"
@@ -301,12 +377,17 @@ print.netpairwise <- function(x, ...) {
   
   chkclass(x, "netpairwise")
   
-  n <- 1
-  for (i in 1:length(x)) {
-    if (n > 1)
-      cat("\n*****\n\n")
-    print(x[[i]], ...)
-    n <- n + 1
+  if (inherits(x, "metagen")) {
+    print(x, ...)
+  }
+  else {
+    n <- 1
+    for (i in 1:length(x)) {
+      if (n > 1)
+        cat("\n*****\n\n")
+      print(x[[i]], ...)
+      n <- n + 1
+    }
   }
   
   invisible(NULL)
@@ -325,12 +406,18 @@ summary.netpairwise <- function(object, ...) {
   
   chkclass(object, "netpairwise")
   
-  for (i in seq_len(length(object)))
-    object[[i]] <- summary(object[[i]])
-  ##
-  class(object) <- "summary.netpairwise"
+  if (inherits(object, "metagen")) {
+    res <- summary(object)
+  }
+  else {
+    res <- object
+    for (i in seq_len(length(object)))
+      res[[i]] <- summary(object[[i]])
+    ##
+    class(res) <- "summary.netpairwise"
+  }
   
-  object
+  res
 }
 
 
@@ -346,12 +433,17 @@ print.summary.netpairwise <- function(x, ...) {
   
   chkclass(x, "summary.netpairwise")
   
-  n <- 1
-  for (i in seq_len(length(x))) {
-    if (n > 1)
-      cat("\n*****\n\n")
-    print(x[[i]], ...)
-    n <- n + 1
+  if (inherits(x, "metagen")) {
+    print(x, ...)
+  }
+  else {
+    n <- 1
+    for (i in seq_len(length(x))) {
+      if (n > 1)
+        cat("\n*****\n\n")
+      print(x[[i]], ...)
+      n <- n + 1
+    }
   }
   
   invisible(NULL)
@@ -370,10 +462,16 @@ forest.netpairwise <- function(x, ...) {
   
   chkclass(x, "netpairwise")
   
-  for (i in seq_len(length(x)))
-    forest(x[[i]],
-           smlab = paste0("Comparison:\n", attr(x[[i]], "comparison")),
-           ...)
+  if (inherits(x, "metagen")) {
+    res <- forest(x, ...)
+    return(invisible(res))
+  }
+  else {
+    for (i in seq_len(length(x))) {
+      m.i <- x[[i]]
+      forest(m.i, smlab = paste0("Comparison:\n", m.i$complab), ...)
+    }
+  }
   
   invisible(NULL)
 }
@@ -385,7 +483,417 @@ forest.netpairwise <- function(x, ...) {
 #' @rdname netpairwise
 #' @method plot netpairwise
 #' @export
-#'
 
 plot.netpairwise <- function(x, ...)
   forest(x, ...)
+
+
+
+
+
+#' @rdname netpairwise
+#' @method funnel netpairwise
+#' @export
+
+
+funnel.netpairwise <- function(x, k.min = 3, ...) {
+  
+  chkclass(x, "netpairwise")
+
+  if (inherits(x, "metagen")) {
+     stop("Funnel plot not suitable for object of class \"netpairwise\" ",
+          "without argument 'separate = TRUE'")
+  }
+  else {
+    for (i in seq_len(length(x))) {
+      m.i <- x[[i]]
+      if (m.i$k >= k.min) {
+        funnel(m.i, ...)
+        title(m.i$complab)
+      }
+    }
+  }
+  
+  invisible(NULL)
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method radial netpairwise
+#' @export
+
+
+radial.netpairwise <- function(x, k.min = 3, ...) {
+  
+  chkclass(x, "netpairwise")
+  
+  if (inherits(x, "metagen")) {
+     stop("Radial plot not suitable for object of class \"netpairwise\" ",
+          "without argument 'separate = TRUE'")
+  }
+  else {
+    for (i in seq_len(length(x))) {
+      m.i <- x[[i]]
+      if (m.i$k >= k.min) {
+        radial(m.i, ...)
+        title(m.i$complab)
+      }
+    }
+  }
+  
+  invisible(NULL)
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method baujat netpairwise
+#' @export
+
+
+baujat.netpairwise <- function(x, k.min = 3, ...) {
+  
+  chkclass(x, "netpairwise")
+
+  if (inherits(x, "metagen")) {
+     stop("Baujat plot not suitable for object of class \"netpairwise\" ",
+          "without argument 'separate = TRUE'")
+  }
+  else {
+    for (i in seq_len(length(x))) {
+      m.i <- x[[i]]
+      if (m.i$k >= k.min) {
+        baujat(m.i, ...)
+        title(m.i$complab)
+      }
+    }
+  }
+  
+  invisible(NULL)
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method metabias netpairwise
+#' @export
+
+
+metabias.netpairwise <- function(x, k.min = 10, ...) {
+  
+  chkclass(x, "netpairwise")
+  res <- list()
+
+  if (inherits(x, "metagen")) {
+     stop("Test for funnel plot asymmetry not suitable for object of ",
+          "class \"netpairwise\" without argument 'separate = TRUE'.")
+  }
+  else {
+    n <- 0
+    for (i in seq_len(length(x))) {
+      m.i <- x[[i]]
+      if (m.i$k >= k.min) {
+        n <- n + 1
+        res[[n]] <- metabias(m.i, k.min = k.min, ...)
+      }
+    }
+    ##
+    if (n > 0)
+      class(res) <- "metabias.netpairwise"
+    else {
+      warning("No pairwise comparison with least ", k.min, " studies.",
+              call. = FALSE)
+      res <- NULL
+    }
+  }
+  
+  res
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method print metabias.netpairwise
+#' @export
+
+
+print.metabias.netpairwise <- function(x, ...) {
+  
+  chkclass(x, "metabias.netpairwise")
+  
+  n <- 1
+  for (i in seq_len(length(x))) {
+    if (n > 1)
+      cat("\n*****\n\n")
+    print(x[[i]], ...)
+    n <- n + 1
+  }
+  
+  invisible(NULL)
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method trimfill netpairwise
+#' @export
+
+
+trimfill.netpairwise <- function(x, k.min = 3, ...) {
+  
+  chkclass(x, "netpairwise")
+  res <- list()
+  
+  if (inherits(x, "metagen")) {
+     stop("Trim-and-fill method not suitable for object of ",
+          "class \"netpairwise\" without argument 'separate = TRUE'.")
+  }
+  else {
+    n <- 0
+    for (i in seq_len(length(x))) {
+      m.i <- x[[i]]
+      if (m.i$k >= k.min) {
+        n <- n + 1
+        res[[n]] <- trimfill(m.i, ...)
+      }
+    }
+    ##
+    if (n > 0)
+      class(res) <- c("trimfill.netpairwise", "netpairwise")
+    else {
+      warning("No pairwise comparison with least ", k.min, " studies.",
+              call. = FALSE)
+      res <- NULL
+    }
+  }
+  
+  res
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method print trimfill.netpairwise
+#' @export
+
+
+print.trimfill.netpairwise <- function(x, ...) {
+  
+  chkclass(x, "trimfill.netpairwise")
+  
+  n <- 1
+  for (i in seq_len(length(x))) {
+    if (n > 1)
+      cat("\n*****\n\n")
+    print(x[[i]], ...)
+    n <- n + 1
+  }
+  
+  invisible(NULL)
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method metainf netpairwise
+#' @export
+
+
+metainf.netpairwise <- function(x, k.min = 2, ...) {
+  
+  chkclass(x, "netpairwise")
+  res <- list()
+  
+  if (inherits(x, "metagen")) {
+     stop("Trim-and-fill method not suitable for object of ",
+          "class \"netpairwise\" without argument 'separate = TRUE'.")
+  }
+  else {
+    n <- 0
+    for (i in seq_len(length(x))) {
+      m.i <- x[[i]]
+      if (m.i$k >= k.min) {
+        n <- n + 1
+        res[[n]] <- metainf(m.i, ...)
+      }
+    }
+    ##
+    if (n > 0)
+      class(res) <- c("metainf.netpairwise", "netpairwise")
+    else {
+      warning("No pairwise comparison with least ", k.min, " studies.",
+              call. = FALSE)
+      res <- NULL
+    }
+  }
+  
+  ##
+  res
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method print metainf.netpairwise
+#' @export
+
+
+print.metainf.netpairwise <- function(x, ...) {
+  
+  chkclass(x, "metainf.netpairwise")
+  
+  n <- 1
+  for (i in seq_len(length(x))) {
+    if (n > 1)
+      cat("\n*****\n\n")
+    print(x[[i]], ...)
+    n <- n + 1
+  }
+  
+  invisible(NULL)
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method metacum netpairwise
+#' @export
+
+
+metacum.netpairwise <- function(x, k.min = 2, ...) {
+  
+  chkclass(x, "netpairwise")
+  res <- list()
+  
+  if (inherits(x, "metagen")) {
+     stop("Trim-and-fill method not suitable for object of ",
+          "class \"netpairwise\" without argument 'separate = TRUE'.")
+  }
+  else {
+    n <- 0
+    for (i in seq_len(length(x))) {
+      m.i <- x[[i]]
+      if (m.i$k >= k.min) {
+        n <- n + 1
+        res[[n]] <- metacum(m.i, ...)
+      }
+    }
+    ##
+    if (n > 0)
+      class(res) <- c("metacum.netpairwise", "netpairwise")
+    else {
+      warning("No pairwise comparison with least ", k.min, " studies.",
+              call. = FALSE)
+      res <- NULL
+    }
+  }
+  
+  res
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method print metacum.netpairwise
+#' @export
+
+
+print.metacum.netpairwise <- function(x, ...) {
+  
+  chkclass(x, "metacum.netpairwise")
+  
+  n <- 1
+  for (i in seq_len(length(x))) {
+    if (n > 1)
+      cat("\n*****\n\n")
+    print(x[[i]], ...)
+    n <- n + 1
+  }
+  
+  invisible(NULL)
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method metareg netpairwise
+#' @export
+
+
+metareg.netpairwise <- function(x, ..., k.min = 2) {
+  
+  chkclass(x, "netpairwise")
+  res <- list()
+  
+  if (inherits(x, "metagen")) {
+     stop("Trim-and-fill method not suitable for object of ",
+          "class \"netpairwise\" without argument 'separate = TRUE'.")
+  }
+  else {
+    n <- 0
+    for (i in seq_len(length(x))) {
+      m.i <- x[[i]]
+      if (m.i$k >= k.min) {
+        n <- n + 1
+        res[[n]] <- metareg(m.i, ...)
+      }
+    }
+    ##
+    if (n > 0)
+      class(res) <- c("metareg.netpairwise", "netpairwise")
+    else {
+      warning("No pairwise comparison with least ", k.min, " studies.",
+              call. = FALSE)
+      res <- NULL
+    }
+  }
+  
+  res
+}
+
+
+
+
+
+#' @rdname netpairwise
+#' @method print metareg.netpairwise
+#' @export
+
+
+print.metareg.netpairwise <- function(x, ...) {
+  
+  chkclass(x, "metareg.netpairwise")
+  
+  n <- 1
+  for (i in seq_len(length(x))) {
+    if (n > 1)
+      cat("\n*****\n\n")
+    print(x[[i]], ...)
+    n <- n + 1
+  }
+  
+  invisible(NULL)
+}

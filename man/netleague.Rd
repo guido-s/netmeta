@@ -218,7 +218,7 @@ p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   studlab = id, data = Linde2015, sm = "OR")
 #
 net1 <- netmeta(p1, common = FALSE,
-                seq = trts, ref = "Placebo", small = "bad")
+                seq = trts, ref = "Placebo", small = "undesirable")
 
 # (2) Early remission
 #
@@ -227,7 +227,7 @@ p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   studlab = id, data = Linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, common = FALSE,
-                seq = trts, ref = "Placebo", small = "bad")
+                seq = trts, ref = "Placebo", small = "undesirable")
 
 options(width = 200)
 netleague(net1, digits = 2)

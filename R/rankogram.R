@@ -12,8 +12,8 @@
 #' @param random A logical indicating to compute ranking probabilities
 #'   and SUCRAs for the random effects model.
 #' @param small.values A character string specifying whether small
-#'   treatment effects indicate a beneficial (\code{"good"}) or
-#'   harmful (\code{"bad"}) effect, can be abbreviated.
+#'   treatment effects indicate a beneficial (\code{"desirable"}) or
+#'   harmful (\code{"undesirable"}) effect, can be abbreviated.
 #' @param cumulative.rankprob A logical indicating whether cumulative
 #'   ranking probabilites should be printed.
 #' @param nchar.trts A numeric defining the minimum number of
@@ -71,7 +71,7 @@
 #' data(Woods2010)
 #' p1 <- pairwise(treatment, event = r, n = N, studlab = author,
 #'                data = Woods2010, sm = "OR")
-#' net1 <- netmeta(p1, small.values = "good")
+#' net1 <- netmeta(p1, small.values = "desirable")
 #'
 #' ran1 <- rankogram(net1, nsim = 100)
 #' ran1
@@ -109,7 +109,7 @@ rankogram <- function(x, nsim = 1000,
   ##
   chknumeric(nsim, min = 1, length = 1)
   ##
-  small.values <- setchar(small.values, c("good", "bad"))
+  small.values <- setsv(small.values)
   ##
   chklogical(cumulative.rankprob)
   ##
