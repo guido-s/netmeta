@@ -51,14 +51,14 @@
 #'
 #' To account for multi-arm trials, we use the H matrix from a
 #' two-step (aggregate) version of the graph theoretical NMA model
-#' (Davies et al., 2021). This H matrix can be obtained from
+#' (Davies et al., 2022). This H matrix can be obtained from
 #' \code{\link{hatmatrix}} with argument \code{method = "davies"}.
 #' 
 #' Two methods are implemented to estimate the streams and as a
 #' result, the proportion contributions:
 #' 
 #' (1) If argument \code{method = "randomwalk"}, an analytical
-#' random-walk (RW) approach is used (Davies et al., 2021). Here, the
+#' random-walk (RW) approach is used (Davies et al., 2022). Here, the
 #' "full" version of the aggregate H matrix (\code{\link{hatmatrix}}
 #' with arguments \code{method = "davies"} and \code{type = "full"})
 #' is used to define RW transition matrices. For each pair of
@@ -135,9 +135,10 @@
 #' 
 #' @references
 #' Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
-#' (2021):
+#' (2022):
 #' Network meta-analysis and random walks.
-#' Available from: http://arxiv.org/abs/2107.02886
+#' \emph{Statistics in Medicine},
+#' \bold{41}, 2091--2114
 #' 
 #' Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
 #' Schwarzer, G., Egger, M., Salanti, G. (2018):
@@ -318,7 +319,7 @@ print.netcontrib <- function(x,
              if (is.null(x$method) | x$method == "shortestpath")
                "Papakonstantinou et al., 2018, F1000Research"
              else
-               "Davies et al., 2021",
+               "Davies et al., 2022, Stat Med",
              ")"))
   if ((is.null(x$method) | x$method == "shortestpath") & x$hatmatrix.F1000)
     cat(paste(",\nhat matrix does not take correlation of",

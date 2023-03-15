@@ -45,7 +45,7 @@ containing the following components:
 \description{
 This function measures the importance of individual studies in
 network meta-analysis by the reduction of the precision if the
-study is removed / ignored from the network.
+study is removed / ignored from the network (Rücker et al., 2020).
 }
 \examples{
 data(Franchini2012)
@@ -65,6 +65,14 @@ ni1
 
 netgraph(ni1)
 
+}
+\references{
+Rücker G, Nikolakopoulou A, Papakonstantinou T, Salanti G, Riley
+RD, Schwarzer G (2020):
+The statistical importance of a study for a network meta-analysis
+estimate.
+\emph{BMC Medical Research Methodology},
+\bold{20}, 190
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netmetabin}},

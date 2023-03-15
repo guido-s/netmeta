@@ -1,3 +1,11 @@
+## netmeta, version 2.8-1 (2023-03-16)
+
+### User-visible changes
+
+* New citation for R package **netmeta**: [Balduzzi et
+  al. (2023)](https://doi.org/10.18637/jss.v106.i02)
+
+
 ## netmeta, version 2.8-0 (2023-02-27)
 
 ### Major changes

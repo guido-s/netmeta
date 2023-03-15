@@ -4,7 +4,7 @@
 #' @description
 #' This function measures the importance of individual studies in
 #' network meta-analysis by the reduction of the precision if the
-#' study is removed / ignored from the network.
+#' study is removed / ignored from the network (Rücker et al., 2020).
 #' 
 #' @param x An object of class \code{netmeta}.
 #' @param seTE.ignore Assumed (large) standard error in order to
@@ -34,6 +34,14 @@
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de},
 #'   Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
+#' 
+#' @references
+#' Rücker G, Nikolakopoulou A, Papakonstantinou T, Salanti G, Riley
+#' RD, Schwarzer G (2020):
+#' The statistical importance of a study for a network meta-analysis
+#' estimate.
+#' \emph{BMC Medical Research Methodology},
+#' \bold{20}, 190
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netmetabin}},
 #'   \code{\link{netgraph.netimpact}}, \code{\link{print.netimpact}}

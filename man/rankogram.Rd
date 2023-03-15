@@ -116,7 +116,8 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \bold{64}, 163--71
 }
 \seealso{
-\code{\link{netmeta}}, \code{\link{netrank}}
+\code{\link{netmeta}}, \code{\link{netrank}},
+  \code{\link{plot.rankogram}}
 }
 \author{
 Theodoros Papakonstantinou \email{dev@tpapak.com}, Guido

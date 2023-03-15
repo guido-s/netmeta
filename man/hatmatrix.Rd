@@ -113,7 +113,7 @@ independent pairwise comparisons, i.e., a three-arm study
 contributes two pairwise comparisons.
 }
 
-\subsection{Hat matrices by Davies et al. (2021)}{
+\subsection{Hat matrices by Davies et al. (2022)}{
 
 One of three hat matrices is estimated if \code{method = "Davies"}.
 
@@ -140,7 +140,7 @@ node \emph{i} to node \emph{j}.
 (1) Use of \code{type = "short"} (default) results in a hat matrix
 of dimension \emph{e} x \emph{e}, where \emph{e} is the number of
 (unique) edges (direct comparisons) in the network. This is the
-aggregate hat matrix described in Davies et al. (2021). Each row
+aggregate hat matrix described in Davies et al. (2022). Each row
 and column represents a pair of treatments for which there is at
 least one direct comparison.
 
@@ -180,9 +180,10 @@ hatmatrix(net1, method = "d", type = "full")
 }
 \references{
 Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
-(2021):
+(2022):
 Network meta-analysis and random walks.
-Available from: http://arxiv.org/abs/2107.02886
+\emph{Statistics in Medicine},
+\bold{41}, 2091--2114
 
 Krahn U, Binder H, König J (2013):
 A graphical tool for locating inconsistency in network meta-analyses.

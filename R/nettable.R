@@ -130,7 +130,7 @@
 #' (2019):
 #' A Mantel-Haenszel model for network meta-analysis of rare events.
 #' \emph{Statistics in Medicine},
-#' 1--21, https://doi.org/10.1002/sim.8158
+#' \bold{38}, 2992--3012
 #' 
 #' König J, Krahn U, Binder H (2013):
 #' Visualizing the flow of evidence in network meta-analysis and
