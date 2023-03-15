@@ -58,7 +58,8 @@
 #' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Guido
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #'
-#' @seealso \code{\link{netmeta}}, \code{\link{netrank}}
+#' @seealso \code{\link{netmeta}}, \code{\link{netrank}},
+#'   \code{\link{plot.rankogram}}
 #'
 #' @references
 #' Salanti G, Ades AE, Ioannidis JP (2011):

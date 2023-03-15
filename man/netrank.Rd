@@ -158,7 +158,8 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \bold{64}, 163--71
 }
 \seealso{
-\code{\link{netmeta}}, \code{\link{rankogram}}
+\code{\link{netmeta}}, \code{\link{rankogram}},
+  \code{\link{plot.rankogram}}
 }
 \author{
 Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido

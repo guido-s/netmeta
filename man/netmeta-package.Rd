@@ -5,71 +5,96 @@
 \alias{netmeta-package}
 \title{netmeta: Brief overview of methods and general hints}
 \description{
-R package \bold{netmeta} provides frequentist methods for network
-meta-analysis and supports Schwarzer et al. (2015), Chapter 8 on
-network meta-analysis
+R package \bold{netmeta} (Balduzzi et al., 2023) provides
+frequentist methods for network meta-analysis and supports
+Schwarzer et al. (2015), Chapter 8 on network meta-analysis
 \url{https://link.springer.com/book/10.1007/978-3-319-21416-0}.
 }
 \details{
 R package \bold{netmeta} is an add-on package for \bold{meta}
-providing the following meta-analysis methods:
+providing the following network meta-analysis models:
 \itemize{
 \item frequentist network meta-analysis (function
   \code{\link{netmeta}}) based on Rücker (2012) and Rücker &
   Schwarzer (2014);
-\item net heat plot (\code{\link{netheat}}) and design-based
-  decomposition of Cochran's Q (\code{\link{decomp.design}})
-  described in Krahn et al. (2013);
-\item measures characterizing the flow of evidence between two
-  treatments (\code{\link{netmeasures}}) described in König et
-  al. (2013);
-\item ranking of treatments (\code{\link{netrank}}) based on
-  P-scores (Rücker & Schwarzer, 2015) or SUCRAs (Salanti et al.,
-  2011);
-\item rankograms (\code{\link{rankogram}}) (Salanti et al., 2011);
-\item partial order of treatment rankings (\code{\link{netposet}},
-  \code{\link{plot.netposet}}) and Hasse diagram
-  (\code{\link{hasse}}) according to Carlsen & Bruggemann (2014)
-  and Rücker & Schwarzer (2017);
-\item split direct and indirect evidence (\code{\link{netsplit}})
-  to check for consistency (Dias et al., 2010; Efthimiou et al.,
-  2019);
-\item contribution of direct comparisons to network estimates
-  (\code{\link{netcontrib}}) (Papakonstantinou et al., 2018; Davies
-  et al., 2021);
-\item league table with network meta-analysis results
-  (\code{\link{netleague}});
-\item table with network, direct and indirect estimates from one or
-  more network meta-analyses (\code{\link{nettable}});
 \item additive network meta-analysis for combinations of treatments
-  (\code{\link{netcomb}}, \code{\link{discomb}} for disconnected
-  networks) (Rücker et al., 2020);
-\item calculate comparison effects of two arbitrary complex
-  interventions in component network meta-analysis
-  (\code{\link{netcomparison}});
-\item calculate effect of arbitrary complex interventions in
-  component network meta-analysis (\code{\link{netcomplex}});
+  (\code{\link{netcomb}} for connected networks,
+  \code{\link{discomb}} for disconnected networks) (Rücker et al.,
+  2020a);
 \item network meta-analysis of binary data
   (\code{\link{netmetabin}}) using the Mantel-Haenszel or
   non-central hypergeometric distribution method (Efthimiou et al.,
+  2019).
+}
+
+The following methods are available to present results of a network
+meta-analysis:
+\itemize{
+\item network graphs (\code{\link{netgraph}}) described in Rücker &
+  Schwarzer (2016);
+\item forest plots (\code{\link{forest.netmeta}},
+  \code{\link{forest.netcomb}});
+\item league tables with network meta-analysis results
+  (\code{\link{netleague}});
+\item tables with network, direct and indirect estimates
+  (\code{\link{nettable}}) looking similar to the statistical part
+  of a GRADE table for a network meta-analysis (Puhan et al.,
+  2014).
+}
+
+The following methods are implemented to rank treatments:
+\itemize{
+\item rankograms (\code{\link{rankogram}}) (Salanti et al., 2011);
+\item ranking of treatments (\code{\link{netrank}}) based on
+  P-scores (Rücker & Schwarzer, 2015) or the Surface Under the
+  Cumulative RAnking curve (SUCRA) (Salanti et al., 2011);
+\item partial order of treatment rankings (\code{\link{netposet}},
+  \code{\link{plot.netposet}}) and Hasse diagram
+  (\code{\link{hasse}}) according to Carlsen & Bruggemann (2014)
+  and Rücker & Schwarzer (2017).
+}
+
+Available functions to evaluate network inconsistency:
+\itemize{
+\item split direct and indirect evidence (\code{\link{netsplit}})
+  to check for consistency (Dias et al., 2010; Efthimiou et al.,
   2019);
+\item net heat plot (\code{\link{netheat}}) and design-based
+  decomposition of Cochran's Q (\code{\link{decomp.design}})
+  described in Krahn et al. (2013).
+}
+
+Additional methods and functions:
+\itemize{
+\item information on network connectivity
+  (\code{\link{netconnection}});
+\item contribution of direct comparisons to network estimates
+  (\code{\link{netcontrib}}) (Papakonstantinou et al., 2018; Davies
+  et al., 2022);
+\item importance of individual studies measured by reduction of
+  precision if removed from network (\code{\link{netimpact}})
+  (Rücker et al., 2020b);
 \item\sQuote{comparison-adjusted} funnel plot
   (\code{\link{funnel.netmeta}}) to assess funnel plot asymmetry in
   network meta-analysis (Chaimani & Salanti, 2012);
 \item conduct pairwise meta-analyses for all comparisons with
   direct evidence in a network meta-analysis
   (\code{\link{netpairwise}});
-  \code{\link{netbind}} to show these results in a forest plot;
-\item automated drawing of network graphs
-  (\code{\link{netgraph.netmeta}}) described in Rücker & Schwarzer
-  (2016);
 \item results of several network meta-analyses can be combined with
-  \code{\link{netbind}} to show these results in a forest plot.
+  \code{\link{netbind}} to show these results in a forest plot
+  (\code{\link{forest.netbind}}).
+\item measures characterizing the flow of evidence between two
+  treatments (\code{\link{netmeasures}}) described in König et
+  al. (2013);
+\item calculate comparison effects of two arbitrary complex
+  interventions in component network meta-analysis
+  (\code{\link{netcomparison}});
+\item calculate effect of arbitrary complex interventions in
+  component network meta-analysis (\code{\link{netcomplex}}).
 }
 
-Furthermore, functions and datasets from \bold{netmeta} are
-utilised in Schwarzer et al. (2015), Chapter 8
-"Network Meta-Analysis",
+Functions and datasets from \bold{netmeta} are utilised in
+Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
 \url{https://link.springer.com/book/10.1007/978-3-319-21416-0}.
 
 Type \code{help(package = "netmeta")} for a listing of all R
@@ -90,6 +115,13 @@ The development version of \bold{netmeta} is available on GitHub
 \url{https://github.com/guido-s/netmeta}.
 }
 \references{
+Balduzzi S, Rücker G, Nikolakopoulou A, Papakonstantinou T, Salanti
+G, Efthimiou O, Schwarzer G (2023):
+netmeta: An R Package for network meta-analysis using frequentist
+methods.
+\emph{Journal of Statistical Software},
+\bold{106}, 1--40
+
 Carlsen L, Bruggemann R (2014):
 Partial order methodology: a valuable tool in chemometrics.
 \emph{Journal of Chemometrics},
@@ -102,9 +134,10 @@ small-study effects in a network of interventions.
 \bold{3}, 161--76
 
 Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
-(2021):
+(2022):
 Network meta-analysis and random walks.
-Available from: http://arxiv.org/abs/2107.02886
+\emph{Statistics in Medicine},
+\bold{41}, 2091--2114
 
 Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
 Checking consistency in mixed treatment comparison meta-analysis.
@@ -115,7 +148,7 @@ Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
 (2019):
 A Mantel-Haenszel model for network meta-analysis of rare events.
 \emph{Statistics in Medicine},
-1--21, https://doi.org/10.1002/sim.8158
+\bold{38}, 2992--3012
 
 König J, Krahn U, Binder H (2013):
 Visualizing the flow of evidence in network meta-analysis and
@@ -133,6 +166,12 @@ Schwarzer, G., Egger, M., Salanti, G. (2018):
 Estimating the contribution of studies in network meta-analysis:
 paths, flows and streams.
 \emph{F1000Research}
+
+Puhan MA, Schünemann HJ, Murad MH, et al. (2014):
+A GRADE working group approach for rating the quality of treatment
+effect estimates from network meta-analysis.
+\emph{British Medical Journal},
+\bold{349}, g5630
 
 Rücker G (2012):
 Network meta-analysis, electrical networks and graph theory.
@@ -162,10 +201,17 @@ Partial ordering of treatments.
 \emph{Research Synthesis Methods},
 \bold{8}, 526--36
 
-Rücker G, Petropoulou M, Schwarzer G (2020):
+Rücker G, Petropoulou M, Schwarzer G (2020a):
 Network meta-analysis of multicomponent interventions.
 \emph{Biometrical Journal},
 \bold{62}, 808--21
+
+Rücker G, Nikolakopoulou A, Papakonstantinou T, Salanti G, Riley
+RD, Schwarzer G (2020b):
+The statistical importance of a study for a network meta-analysis
+estimate.
+\emph{BMC Medical Research Methodology},
+\bold{20}, 190
 
 Salanti G, Ades AE, Ioannidis JP (2011):
 Graphical methods and numerical summaries for presenting results

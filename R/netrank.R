@@ -77,7 +77,8 @@
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Theodoros
 #'   Papakonstantinou \email{dev@@tpapak.com}
 #' 
-#' @seealso \code{\link{netmeta}}, \code{\link{rankogram}}
+#' @seealso \code{\link{netmeta}}, \code{\link{rankogram}},
+#'   \code{\link{plot.rankogram}}
 #' 
 #' @references
 #' Rücker G, Schwarzer G (2017):
