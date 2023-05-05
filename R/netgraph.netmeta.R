@@ -509,34 +509,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   ##
   n.edges <- sum(x$A.matrix[upper.tri(x$A.matrix)] > 0)
   n.trts <- length(x$trts)
-  
-  
-  if (length(srt.labels) == 1 && is.character(srt.labels)) {
-    srt.labels <-
-      setchar(srt.labels, "orthogonal",
-              "should be equal to 'orthogonal' or numeric (vector)")
-    if (!missing(iterate) && iterate == TRUE) {
-      warning("Orthogonal labels not supported if argument 'iterate = TRUE'.",
-              call. = FALSE)
-      srt.labels <- 0
-    }
-    ##
-    srtfunc <- function(ntrt) {
-      s <- 180 * (2 * (1:ntrt) / ntrt - 1)
-      for (i in 1:ntrt) {
-        if (i < ntrt / 4)
-          s[i] <- 360 * i / ntrt
-        if (i > 3 * ntrt / 4)
-          s[i] <- 360 * (i / ntrt - 1)
-      }
-      s
-    }
-    srt.labels <- srtfunc(x$n)
-  }
   ##
   chklogical(points)
-  ##
-  chknumeric(srt.labels, min = -180, max = 180)
   chknumeric(lwd, min = 0, zero = TRUE, length = 1)
   chknumeric(lwd.min, min = 0, zero = TRUE, length = 1)
   ##
@@ -793,6 +767,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
               call. = FALSE)
     rotate <- 0
   }
+  ##
+  rotn <- rotate * x$n / 360
   
   
   addargs <- names(list(...))
@@ -989,8 +965,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
     if (is_3d)
       zpos <- stressdata$z
   }
-
-
+  
+  
   if (allfigures)
     return(invisible(NULL))
 
@@ -1129,6 +1105,31 @@ netgraph.netmeta <- function(x, seq = x$seq,
     dat.nodes$ypos.labels <- dat.nodes$ypos
     dat.nodes$zpos.labels <- dat.nodes$zpos
   }
+  ##  
+  if (length(srt.labels) == 1 && is.character(srt.labels)) {
+    srt.labels <-
+      setchar(srt.labels, "orthogonal",
+              "should be equal to 'orthogonal' or numeric (vector)")
+    if (!missing(iterate) && iterate == TRUE) {
+      warning("Orthogonal labels not supported if argument 'iterate = TRUE'.",
+              call. = FALSE)
+      srt.labels <- 0
+    }
+    ##
+    srtfunc <- function(ntrt) {
+      s <- 180 * (2 * (1:ntrt) / ntrt - 1)
+      for (i in 1:ntrt) {
+        if (i < ntrt / 4)
+          s[i] <- 360 * i / ntrt
+        if (i > 3 * ntrt / 4)
+          s[i] <- 360 * (i / ntrt - 1)
+      }
+      s
+    }
+    srt.labels <- srtfunc(x$n)
+  }
+  ##
+  chknumeric(srt.labels, min = -180, max = 180)
   ##
   if (length(srt.labels) == 1)
     dat.nodes$srt <- srt.labels
@@ -1137,8 +1138,17 @@ netgraph.netmeta <- function(x, seq = x$seq,
       stop("Length of vector 'srt.labels' must be equal to",
            "number of treatments.",
            eval. = FALSE)
-    if (is.null(names(srt.labels)))
-      dat.nodes$srt <- srt.labels
+    if (is.null(names(srt.labels))) {
+      if (is.wholenumber(rotn) & abs(rotn) < x$n) {
+        srt1 <- seq_len(x$n)
+        srt1 <- srt1 - rotn
+        srt1[srt1 > x$n] <- srt1[srt1 > x$n] - x$n
+        srt1[srt1 <= 0] <- x$n + srt1[srt1 <= 0]
+        dat.nodes$srt <- srt.labels[srt1]
+      }
+      else
+        dat.nodes$srt <- srt.labels
+    }
     else {
       ## Check names of named vector 'srt.labels'
       names.srt.labels <- names(srt.labels)

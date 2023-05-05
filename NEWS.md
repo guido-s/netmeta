@@ -1,9 +1,24 @@
+## netmeta, version 2.8-2 (2023-mm-dd)
+
+### Major changes
+
+* Vignette with publication on **netmeta** in *Journal of Statistical
+  Software* added (command: vignette("netmeta"))
+  
+* R package **R.rsp** added to suggested packages
+
+
 ## netmeta, version 2.8-1 (2023-03-16)
 
 ### User-visible changes
 
 * New citation for R package **netmeta**: [Balduzzi et
   al. (2023)](https://doi.org/10.18637/jss.v106.i02)
+
+### Internal changes
+
+* New branch 'release' on GitHub starting with **netmeta**, version
+  2.8-1
 
 
 ## netmeta, version 2.8-0 (2023-02-27)
