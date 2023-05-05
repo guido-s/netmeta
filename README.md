@@ -104,18 +104,19 @@ install.packages("remotes")
 remotes::install_github("guido-s/netmeta", ref = "develop")
 ```
 
+
 ### Bug Reports:
+
+You can report bugs on GitHub under
+[Issues](https://github.com/guido-s/netmeta/issues).
+
+or using the R command
 
 ```r
 bug.report(package = "netmeta")
 ```
 
-The bug.report function is not supported in RStudio. Please send an
-email to Guido Schwarzer <guido.schwarzer@uniklinik-freiburg.de> if
-you use RStudio.
-
-You can also report bugs on GitHub under
-[Issues](https://github.com/guido-s/netmeta/issues).
+(which is not supported in RStudio).
 
 
 ## References
