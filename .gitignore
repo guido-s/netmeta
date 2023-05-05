@@ -7,3 +7,4 @@ symbols.rds
 .Ruserdata
 roxygen2-*.R
 .DS_Store
+cran-comments.md
