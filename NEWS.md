@@ -1,4 +1,4 @@
-## netmeta, version 2.8-2 (2023-05-05)
+## netmeta, version 2.8-2 (2023-05-06)
 
 ### Major changes
 
