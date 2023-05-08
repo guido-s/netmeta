@@ -111,7 +111,7 @@ remotes::install_github("guido-s/netmeta", ref = "develop")
 A BibTeX entry for LaTeX users is provided by
 
 ```
-citation(package = "crossnma")
+citation(package = "netmeta")
 ```
 
 
