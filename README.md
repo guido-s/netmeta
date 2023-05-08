@@ -1,7 +1,6 @@
 # netmeta: Network Meta-Analysis using Frequentist Methods
 Official Git repository of R package **netmeta**
 
-[![Build Status](https://travis-ci.org/guido-s/netmeta.svg?branch=master)](https://travis-ci.org/guido-s/netmeta)
 [![CRAN Version](http://www.r-pkg.org/badges/version/netmeta)](https://cran.r-project.org/package=netmeta)
 [![Monthly Downloads](http://cranlogs.r-pkg.org/badges/netmeta)](http://cranlogs.r-pkg.org/badges/netmeta)
 [![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)
@@ -105,6 +104,17 @@ remotes::install_github("guido-s/netmeta", ref = "develop")
 ```
 
 
+## How to cite netmeta?
+
+[Balduzzi S, Rücker G, Nikolakopoulou A, Papakonstantinou T, Salanti G, Efthimiou O, Schwarzer G (2023): netmeta: An R package for network meta-analysis using frequentist methods. *Journal of Statistical Software*, **106**, 1-40](https://doi.org/10.18637/jss.v106.i02)
+
+A BibTeX entry for LaTeX users is provided by
+
+```
+citation(package = "crossnma")
+```
+
+
 ### Bug Reports:
 
 You can report bugs on GitHub under
@@ -120,6 +130,8 @@ bug.report(package = "netmeta")
 
 
 ## References
+
+[Balduzzi S, Rücker G, Nikolakopoulou A, Papakonstantinou T, Salanti G, Efthimiou O, Schwarzer G (2023): netmeta: An R package for network meta-analysis using frequentist methods. *Journal of Statistical Software*, **106**, 1-40](https://doi.org/10.18637/jss.v106.i02)
 
 [Carlsen L, Bruggemann R (2014): Partial order methodology: a valuable tool in chemometrics. *Journal of Chemometrics*, **28**, 226-34](https://scholar.google.com/scholar?q=Partial+order+methodology%3A+a+valuable+tool+in+chemometrics)
 
