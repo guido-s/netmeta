@@ -631,6 +631,11 @@ netmetabin <- function(event1, n1, event2, n2,
   if (is.factor(studlab))
     studlab <- as.character(studlab)
   ##
+  ## Remove leading and trailing whitespace
+  ##
+  treat1 <- rmSpace(rmSpace(treat1, end = TRUE))
+  treat2 <- rmSpace(rmSpace(treat2, end = TRUE))
+  ##
   ## Keep original order of studies
   ##
   .order <- seq_along(studlab)
