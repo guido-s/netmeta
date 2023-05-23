@@ -744,6 +744,11 @@ netmeta <- function(TE, seTE,
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
   ##
+  ## Remove leading and trailing whitespace
+  ##
+  treat1 <- rmSpace(rmSpace(treat1, end = TRUE))
+  treat2 <- rmSpace(rmSpace(treat2, end = TRUE))
+  ##
   if (length(studlab) == 0) {
     if (warn)
       warning("No information given for argument 'studlab'. ",

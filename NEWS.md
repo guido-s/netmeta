@@ -7,6 +7,16 @@
   
 * R package **R.rsp** added to suggested packages
 
+### User-visible changes
+
+* netmeta() / discomb():
+  - remove leading and trailing whitespace in treatment names
+
+### Bug fixes
+
+* Use of netsplit() resulted in an obscure error in networks with
+  treatment names containing leading and trailing whitespace
+
 
 ## netmeta, version 2.8-1 (2023-03-16)
 
