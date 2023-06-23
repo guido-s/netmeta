@@ -515,9 +515,12 @@ netgraph.netmeta <- function(x, seq = x$seq,
   chknumeric(lwd.min, min = 0, zero = TRUE, length = 1)
   ##
   missing.lwd.max <- missing(lwd.max)
-  if (missing.lwd.max)
-     lwd.max <- 4 * lwd
-  chknumeric(lwd.max, min = 0, zero = TRUE, length = 1)
+  if (missing.lwd.max) {
+    if (thickness == "equal")
+      lwd.max <- 2 * lwd
+    else
+      lwd.max <- 4 * lwd
+  }
   ##
   if (lwd.min > lwd.max)
     stop("Argument 'lwd.min' must be smaller than 'lwd.max'.")
@@ -1209,7 +1212,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   else if (thick == "equal") {
-    W.matrix <- lwd * A.sign
+    W.matrix <- lwd.max * A.sign
   }
   else if (thick == "se.common") {
     IV.matrix <- x$seTE.direct.common[seq1, seq1]
@@ -1255,8 +1258,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   ##
-  if (missing.lwd.max & length(unique(W.matrix[W.matrix != 0])) == 1)
-    W.matrix <- W.matrix / 4
+  if (missing.lwd.max & thickness != "equal" &
+      length(unique(W.matrix[W.matrix != 0])) == 1)
+    W.matrix <- W.matrix / 2
   
   
   ##

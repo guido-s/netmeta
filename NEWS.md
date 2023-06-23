@@ -1,3 +1,11 @@
+## netmeta, version 2.8-3 (2023-mm-dd)
+
+### User-visible changes
+
+* netgraph.netmeta():
+  - wider lines if argument 'thickness = "equal"'
+
+
 ## netmeta, version 2.8-2 (2023-05-06)
 
 ### Major changes
