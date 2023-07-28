@@ -1,7 +1,17 @@
 ## netmeta, version 2.8-3 (2023-mm-dd)
 
+### Major changes
+
+* Two new methods to calculate network contributions implemented
+
 ### User-visible changes
 
+* netcontrib():
+  - new pseudo-inverse method based on L2 solution implemented
+    (argument 'method = "pseudoinverse"')
+  - another L1 solution based on R package **cccp** implemented
+    (argument 'method = "cccp"')
+  
 * netgraph.netmeta():
   - wider lines if argument 'thickness = "equal"'
 

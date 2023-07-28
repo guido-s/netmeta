@@ -1280,7 +1280,6 @@ netmeta <- function(TE, seTE,
       }
       ##
       dat.tau <- dat.tau[keep, , drop = FALSE]
-      dat.tau$id <- seq_along(dat.tau$TE)
       ##
       wo <- wo[keep]
       if (sum(wo) > 0) {
@@ -1314,6 +1313,8 @@ netmeta <- function(TE, seTE,
       newnames <- paste0("V", seq_len(ncols2 - ncols1))
       names(dat.tau)[(ncols1 + 1):ncols2] <- newnames
       ##
+      dat.tau <- dat.tau[order(dat.tau$studlab), ]
+      ##
       trts.tau <- newnames[-length(newnames)]
       ##
       formula.trts <-
@@ -1323,20 +1324,20 @@ netmeta <- function(TE, seTE,
       ##
       if (available.n &
           (available.events | available.times | (available.sds))) {
-        dat.tau <- dat.tau[order(dat.tau$studlab), ]
         V <- bldiag(lapply(split(dat.tau, dat.tau$studlab), calcV, sm = sm))
       }
       else
         V <- dat.tau$seTE^2
       ##
       dat.tau.TE <- dat.tau$TE
+      dat.tau$comparison <- paste(dat.tau$treat1, dat.tau$treat2, sep = " vs ")
       ##
       rma1 <-
         runNN(rma.mv,
               list(yi = dat.tau.TE, V = V,
                    data = dat.tau,
                    mods = formula.trts,
-                   random = as.call(~ factor(id) | studlab),
+                   random = as.call(~ factor(comparison) | studlab),
                    rho = 0.5,
                    method = method.tau, control = control))
       ##

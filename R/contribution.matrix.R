@@ -9,6 +9,10 @@ contribution.matrix <- function(x, method, model, hatmatrix.F1000,
   else if (method == "shortestpath")
     return(contribution.matrix.tpapak(x, model, hatmatrix.F1000,
                                       verbose = verbose))
+  else if (method == "cccp")
+    return(contribution.matrix.ruecker.cccp(x, model, verbose = verbose))
+  else if (method == "pseudoinverse")
+    return(contribution.matrix.ruecker.pseudoinv(x, model, verbose = verbose))
   else
     return(NULL)
 }
@@ -338,6 +342,366 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
   
   
   res <- list(weights = weights)
+  ##
+  if (is.tictoc)
+    res$tictoc <- tictoc
+  ##
+  res
+}
+
+
+
+
+
+contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
+  
+  chkclass(x, "netmeta")
+  ##
+  model <- setchar(model, c("common", "random"))
+  chklogical(verbose)
+  ##
+  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
+  
+  
+  H.full <- hatmatrix.aggr(x, model, type = "full")
+  ## Total number of possible pairwise comparisons
+  comps <- rownames(H.full)
+  n.comps <- nrow(H.full)
+  ##
+  n <- x$n
+  
+  
+  ##
+  ## Create prop contribution matrix (square matrix)
+  ##
+  weights <- matrix(0, nrow = n.comps, ncol = n.comps)
+  rownames(weights) <- colnames(weights) <- rownames(H.full)
+  
+  
+  ##
+  ## Create phi vector
+  ##
+  phi <- pl <- vector("list", n.comps)
+  names(phi) <- names(pl) <- comps
+  
+  
+  ##
+  ## List with Z matrices
+  ##
+  zlist <- vector("list", choose(n,2))
+  
+  
+  ##
+  ## Measure times
+  ##
+  if (is.tictoc) {
+    tictoc <- rep(NA, n.comps)
+    names(tictoc) <- comps
+  }
+  
+  
+  ##
+  ## Cycle through comparisons
+  ##
+  r <- 0
+  ##
+  for (t1 in seq_len(n - 1)) {
+    for (t2 in (t1 + 1):n) {
+      r <- r + 1
+      ##
+      if (is.tictoc)
+        tictoc::tic()
+      ##
+      if (verbose) {
+        cat(paste0("*** ",
+                   paste(x$trts[t1], x$trts[t2], sep = x$sep.trts),
+                   " (", r, " / ", n.comps, ") ***\n"))
+      }
+      ##
+      Q <- matrix(0, nrow = n, ncol = n)
+      idx <- 0
+      for (i in seq_len(n - 1)) {
+        for (j in (i + 1):n) {
+          idx <- idx + 1
+          Q[i, j] <- H.full[r, idx]
+        }
+      }
+      ##
+      for (i in seq_len(n))
+        for (j in seq_len(n))
+          if (i != j)
+            Q[j, i] <- -Q[i, j]
+      ##
+      for (i in seq_len(n))
+        for (j in seq_len(n))
+          if (i != j & Q[i, j] <= 0)
+            Q[i, j] <- 0
+      ##
+      P <- MASS::ginv(diag(rowSums(Q))) %*% Q # Transition matrix
+      P[t2, ] <- rep(0, n)
+      P[t2, t2] <- 1
+      P[is.zero(P, n = 1000)] <- 0
+      Pgraph <-
+        igraph::graph_from_adjacency_matrix(
+                  P, "directed", weighted = TRUE, diag = FALSE)
+      all.paths <- igraph::all_simple_paths(Pgraph, t1, t2, mode = "out")
+      ##
+      Z <- matrix(0, nrow = length(all.paths), ncol = dim(H.full)[2])
+      rownames(Z) <- all.paths
+      colnames(Z) <- colnames(H.full)
+      ##
+      for (p in 1:length(all.paths)) {
+        l <- length(all.paths[[p]])
+        for (i in 1:(l-1)) {
+          s <- 1
+          v1 <- all.paths[[p]][i]
+          v2 <- all.paths[[p]][i+1]
+          if (v2 < v1) {
+            s <- -1
+            v1 <- all.paths[[p]][i+1]
+            v2 <- all.paths[[p]][i]
+          }
+          Z[p, n * (v1 - 1) - choose(v1 + 1, 2) + v2] <- s
+        }
+      }
+      ##
+      zlist[[r]] <- Z
+      ##
+      ## There is an exact least squares (L2) solution for 
+      ## phi %*% Z = H.full[r, ]
+      ## given by
+      ## phi0 = H.full[r, ] %*% ginv(Z)
+      ##
+      ## The L1 solution is given by this idea (h = H.full[r, ]):
+      ## If phi %*% Z = h is solvable, the full set of solutions is given by
+      ##    phi = h %*% ginv(Z) + w %*% (I - Z %*% ginv(Z))
+      ##        = phi0 + w %*% (I - Z %*% ginv(Z))
+      ## Minimising |phi| means finding w such that 
+      ##       |phi0 + w %*% (I - Z %*% ginv(Z))| is minimised
+      ## Thus the problem is to minimise |phi0 + w %*% A| where
+      ##       A = (I - Z %*% ginv(Z)) and phi0 = h %*% ginv(Z)
+      ## If a solution w is found, the solution for phi is given by 
+      ##       phi = phi0 + w %*% A
+      ##
+      ## Find LS solution phi0.r
+      ##
+      path.length <- rowSums(abs(Z))
+      phi0.r <- H.full[r, ] %*% MASS::ginv(Z)
+      ##
+      ## Find L1 solution
+      ##
+      A <- diag(p) - Z %*% MASS::ginv(Z)
+      ##
+      ## Minimise |wA + phi0.r|
+      ##
+      mn <- cccp::l1(A, -phi0.r, optctrl = cccp::ctrl(trace = FALSE))
+      w <- cccp::getx(mn)[1:p]
+      phi.r <- phi0.r + w %*% A
+      ##
+      weights[r, ] <- (phi.r / path.length) %*% abs(Z)
+      phi[[r]] <- as.vector(phi.r)
+      pl[[r]] <- path.length
+      ##
+      if (is.tictoc) {
+        tictoc.r <- tictoc::toc(func.toc = NULL)
+        tictoc[r] <- as.numeric(tictoc.r$toc) - as.numeric(tictoc.r$tic)
+        ##
+        if (verbose)
+          cat(paste(round(tictoc[r], 3), "sec elapsed\n"))
+      }
+    }
+  }
+  ##
+  w <- weights
+  weights[is.zero(weights)] <- 0
+  weights <- weights[, apply(weights, 2, sum) > 0, drop = FALSE]
+  attr(weights, "model") <- model
+  
+  
+  res <- list(weights = weights, phi = phi, w = w, pl = pl, zlist = zlist)
+  ##
+  if (is.tictoc) 
+    res$tictoc <- tictoc
+  ##
+  res
+}
+
+
+contribution.matrix.ruecker.pseudoinv <- function (x, model, verbose = FALSE) {
+  
+  chkclass(x, "netmeta")
+  model <- setchar(model, c("common", "random"))
+  chklogical(verbose)
+  ##
+  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
+  
+  
+  ##
+  ## 'Full' aggregated hat matrix
+  ##
+  H.full <- hatmatrix.aggr(x, model, type = "full")
+  ## Total number of possible pairwise comparisons
+  comps <- rownames(H.full)
+  n.comps <- length(comps)
+  n <- x$n
+  
+  
+  ##
+  ## Create prop contribution matrix (square matrix)
+  ##
+  weights <- matrix(0, nrow = n.comps, ncol = n.comps)
+  rownames(weights) <- colnames(weights) <- comps
+
+
+  ##
+  ## List with phis (path weights) and pl (path lengths)
+  ##
+  phi <- pl <- vector("list", n.comps)
+  names(phi) <- names(pl) <- comps
+  
+  ##                                       ####
+  ## List with Z matrices                  ####
+  ##                                       ####
+  zlist <- vector("list", choose(n,2))     ####
+  
+  
+  ##
+  ## Measure times
+  ##
+  if (is.tictoc) {
+    tictoc <- rep(NA, n.comps)
+    names(tictoc) <- comps
+  }
+  
+  
+  ##
+  ## Cycle through comparisons
+  ##
+  r <- 0
+  ##
+  for (t1 in seq_len(n - 1)) {
+    for (t2 in (t1 + 1):n) {
+      r <- r + 1
+      ##
+      if (is.tictoc)
+        tictoc::tic()
+      ##
+      if (verbose)
+        cat(paste0("- ",
+                   paste(x$trts[t1], x$trts[t2], sep = x$sep.trts),
+                   " (", r, "/", n.comps, ")\n"))
+      ##
+      ## For each row, t1 is the source and t2 is the sink
+      ##
+      ## Create a transition matrix (P, n x n) from t1 (source) to t2
+      ## (sink) using H.full
+      ##
+      ## Create a dummy n x n matrix Q (this is a step in getting P)
+      ##
+      ## Assign Q[i, j] equal to the element of H.full in row r and
+      ## column representing comparison ij this defines only the upper
+      ## half of the matrix Q
+      ##
+      Q <- matrix(0, nrow = n, ncol = n)
+      idx <- 0
+      for (i in seq_len(n - 1)) {
+        for (j in (i + 1):n) {
+          idx <- idx + 1
+          Q[i, j] <- H.full[r, idx]
+        }
+      }
+      ##
+      ## Now use H_ij = -H_ji to define the lower half of Q
+      ##
+      for (i in seq_len(n))
+        for (j in seq_len(n))
+          if (i != j)
+            Q[j, i] <- -Q[i, j]
+      ##
+      ## RW can only move in direction of flow therefore if H_ij < 0
+      ## then set Q[i, j] = 0
+      ##
+      for (i in seq_len(n))
+        for (j in seq_len(n))
+          if (i != j & Q[i, j] <= 0)
+            Q[i, j] <- 0.0
+      ##
+      ## Create the transition matrix by normalising the values in
+      ## each row of Q
+      ##
+      P <- MASS::ginv(diag(rowSums(Q))) %*% Q
+      P[t2, ] <- rep(0, n)
+      P[t2, t2] <- 1
+      ##
+      P[is.zero(P, n = 1000)] <- 0
+      ##
+      ## Find all possible paths
+      ##
+      ## Define an igraph using P as adjacency matrix. The graph is
+      ## directed (and acyclic) and weighted
+      ##
+      Pgraph <-
+        igraph::graph_from_adjacency_matrix(P, "directed", weighted = TRUE,
+                                            diag = FALSE)
+      ##
+      ## Now find all possible paths from source to sink
+      ##
+      ## Simple paths means no vertex is visited more than once 
+      ## This is true for us as the graph is acyclic
+      ##
+      all.paths <- igraph::all_simple_paths(Pgraph, t1, t2, mode = "out")
+      ##
+      ## Calculate streams
+      ##
+      Z <- matrix(0, nrow = length(all.paths), ncol = dim(H.full)[2])
+      rownames(Z) <- all.paths
+      colnames(Z) <- colnames(H.full)
+      ##
+      ## The solution is unique <=> Z %*% ginv(Z) is an identity
+      ## matrix, see round(Z %*% ginv(Z), 8).
+      ##
+      for (p in 1:length(all.paths)) {
+        l <- length(all.paths[[p]])
+        for (i in 1:(l-1)) {
+          s <- 1
+          v1 <- all.paths[[p]][i]
+          v2 <- all.paths[[p]][i + 1]
+          if (v2 < v1) {
+            s <- -1
+            v1 <- all.paths[[p]][i + 1]
+            v2 <- all.paths[[p]][i]
+          }
+          Z[p, n * (v1 - 1) - choose(v1 + 1, 2) + v2] <- s
+        }
+      }
+      zlist[[r]] <- Z               ####
+      ##
+      ## Calculate the least squares solution of
+      ## phi %*% Z = H.full[r, ]
+      ##
+      path.length <- rowSums(abs(Z))
+      phi.r <- H.full[r, ] %*% MASS::ginv(Z)
+      weights[r, ] <- (phi.r / path.length) %*% abs(Z)
+      phi[[r]] <- as.vector(phi.r)
+      pl[[r]] <- path.length
+      ##
+      if (is.tictoc) {
+        tictoc.r <- tictoc::toc(func.toc = NULL)
+        tictoc[r] <- as.numeric(tictoc.r$toc) - as.numeric(tictoc.r$tic)
+        ##
+        if (verbose)
+          cat(paste(round(tictoc[r], 3), "sec elapsed\n"))
+      }
+    }
+  }
+  ##  
+  w <- weights
+  weights[is.zero(weights)] <- 0
+  weights <- weights[, apply(weights, 2, sum) > 0, drop = FALSE]
+  attr(weights, "model") <- model
+  
+  
+  res <- list(weights = weights, phi = phi, w = w, pl = pl, zlist = zlist)
   ##
   if (is.tictoc)
     res$tictoc <- tictoc
