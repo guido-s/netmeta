@@ -494,7 +494,10 @@ contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
       ##
       ## Minimise |wA + phi0.r|
       ##
-      mn <- cccp::l1(A, -phi0.r, optctrl = cccp::ctrl(trace = FALSE))
+      invisible(capture.output(mn <-
+                                 cccp::l1(A, -phi0.r,
+                                          optctrl = cccp::ctrl(trace = FALSE)),
+                               type = "message"))
       w <- cccp::getx(mn)[1:p]
       phi.r <- phi0.r + w %*% A
       ##
