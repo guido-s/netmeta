@@ -13,8 +13,8 @@
 #'   names for network meta-analysis objects.
 #' @param method A character string indicating which method to split
 #'   direct and indirect evidence is to be used. Either
-#'   \code{"Back-calculation"} or \code{"SIDDE"}, can be
-#'   abbreviated. See Details.
+#'   \code{"Back-calculation"}, \code{"Edge-splitting"} or
+#'   \code{"SIDDE"}, can be abbreviated. See Details.
 #' @param order A optional character or numerical vector specifying
 #'   the order of treatments in comparisons.
 #' @param common A logical indicating whether table for the common
@@ -87,12 +87,15 @@
 #' generated. Alternatively, an Excel file is created if argument
 #' \code{writexl = TRUE}.
 #' 
-#' Two methods to derive indirect estimates are available:
+#' Three methods to derive indirect estimates are available:
 #' \itemize{
 #' \item Separate Indirect from Direct Evidence (SIDE) using a
-#'   back-calculation method. The \emph{direct evidence proportion} as
-#'   described in König et al. (2013) is used in the calculation of
-#'   the indirect evidence;
+#'   back-calculation method (\code{method = "Back-calculation"})
+#'   based on the \emph{direct evidence proportion} to calculate the
+#'   indirect evidence (König et al., 2013);
+#' \item Separate Indirect from Direct Evidence (SIDE) using
+#'   node-splitting method in Dias et al. (2010) (\code{method =
+#'   "Edge-splitting"});
 #' \item Separate Indirect from Direct Design Evidence (SIDDE) as
 #'   described in Efthimiou et al. (2019).
 #' }
@@ -103,6 +106,11 @@
 #' way. Furthermore, this method is not available for the
 #' Mantel-Haenszel and non-central hypergeometric distribution
 #' approach implemented in \code{\link{netmetabin}}.
+#'
+#' Dias et al. (2010) used the term "node-splitting" method, however,
+#' the method actually does not split nodes, i.e., treatments, but
+#' edges, i.e., comparisons. Accordingly, we use the term
+#' "side-splitting" method.
 #' 
 #' For the random-effects model, the direct treatment estimates are
 #' based on the common between-study variance \eqn{\tau^2} from the
@@ -126,6 +134,11 @@
 #'   \code{\link{netmetabin}}, \code{\link{netmeasures}}
 #' 
 #' @references
+#' Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
+#' Checking consistency in mixed treatment comparison meta-analysis.
+#' \emph{Statistics in Medicine},
+#' \bold{29}, 932--44
+#' 
 #' Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
 #' (2019):
 #' A Mantel-Haenszel model for network meta-analysis of rare events.
@@ -330,7 +343,7 @@ nettable <- function(...,
       args[[i]]$outcome.name <- name[i]
   ##
   if (!missing(method))
-    method <- setchar(method, c("Back-calculation", "SIDDE"))
+    method <- setchar(method, c("Back-calculation", "Edge-splitting", "SIDDE"))
   ##
   chklogical(common)
   chklogical(random)

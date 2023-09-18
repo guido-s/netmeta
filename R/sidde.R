@@ -2,17 +2,15 @@ sidde <- function(x,
                   sep.trts = " vs ", verbose = TRUE, warn = TRUE,
                   is.tictoc = FALSE) {
   
-  
   chkclass(x, "netmeta")
   is.bin <- inherits(x, "netmetabin")
-  
   
   if (is.null(x$data))
     stop("SIDDE method only available for network meta-analysis objects ",
          "created with argument 'keepdata' equal to TRUE.")
   ##
   if (verbose)
-    cat("Start computations for SIDDE approach\n")
+    cat("Start computations for SIDDE method\n")
   ##
   dat <- x$data
   dat <- dat[order(dat$.studlab, dat$.treat1, dat$.treat2), ]
@@ -65,18 +63,23 @@ sidde <- function(x,
                  paste(trts[idx1.i], trts[idx2.i], sep = sep.trts),
                  " (", i, "/", n.comps, ")\n"))
     ##
-    drop.i <-
+    ## Determine all pairwise comparisons of trts[idx1.i] vs trts[idx2.i]
+    ##
+    direct.i <-
       (dat$.treat1 == trts[idx1.i] & dat$.treat2 == trts[idx2.i]) |
       (dat$.treat2 == trts[idx1.i] & dat$.treat1 == trts[idx2.i])
     ##
-    ## Studies (potentially with multi-arm studies) to drop from
-    ## calculation of indirect estimate
+    ## Determine all studies with pairwise comparison trts[idx1.i] vs
+    ## trts[idx2.i]
     ##
-    drop.studies <- unique(dat$.studlab[drop.i])
+    study.direct.i <- unique(dat$.studlab[direct.i])
     ##
-    ## Drop studies
+    ## Drop all studies containing the comparison trts[idx1.i] vs
+    ## trts[idx2.i], i.e., all comparisons of a multi-arm study
+    ## containing [idx1.i] and trts[idx2.i] are dropped
     ##
-    dat.i <- dat[!(dat$.studlab %in% drop.studies), , drop = FALSE]
+    dat.i <- dat[!(dat$.studlab %in% study.direct.i), , drop = FALSE]
+    ##
     dat.i$.design <- NULL
     ##
     if (nrow(dat.i) > 0)

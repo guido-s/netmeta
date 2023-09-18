@@ -1198,8 +1198,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   if (multiarm) {
     mc <- multicols(x$studies, x$narms, missing(col.multiarm),
                     col.multiarm, alpha.transparency)
-    col.polygon <- mc$cols
-    multiarm.studies <- mc$multiarm.studies
+    col.polygon <- mc$col
+    multiarm.studies <- mc$studlab
     n.multi <- length(multiarm.studies)
   }
   ##
@@ -1581,7 +1581,11 @@ netgraph.netmeta <- function(x, seq = x$seq,
   ##  
   dat.edges$xpos[is.zero(dat.edges$xpos)] <- 0
   dat.edges$ypos[is.zero(dat.edges$ypos)] <- 0
+
+  res <- list(nodes = dat.nodes, edges = dat.edges)
+  ##
+  if (multiarm)
+    res$multiarm <- mc
   
-  
-  invisible(list(nodes = dat.nodes, edges = dat.edges))
+  invisible(res)
 }

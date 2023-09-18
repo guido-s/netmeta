@@ -1,4 +1,4 @@
-## netmeta, version 2.8-3 (2023-mm-dd)
+## netmeta, version 2.9-0 (2023-mm-dd)
 
 ### Major changes
 
@@ -12,8 +12,14 @@
   - another L1 solution based on R package **cccp** implemented
     (argument 'method = "cccp"')
   
-* netgraph.netmeta():
+* netgraph.netmeta(), netgraph.netimpact():
+  - use original order of multi-arm studies for colouring (argument
+    'col.multiarm')
   - wider lines if argument 'thickness = "equal"'
+
+### Internal changes
+
+* New internal R function nodesplit() for node-splitting method
 
 
 ## netmeta, version 2.8-2 (2023-05-06)

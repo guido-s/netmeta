@@ -10,8 +10,8 @@
 #' @param x An object of class \code{netmeta} or \code{netsplit}.
 #' @param method A character string indicating which method to split
 #'   direct and indirect evidence is to be used. Either
-#'   \code{"Back-calculation"} or \code{"SIDDE"}, can be
-#'   abbreviated. See Details.
+#'   \code{"Back-calculation"}, \code{"Edge-splitting"} or
+#'   \code{"SIDDE"}, can be abbreviated. See Details.
 #' @param upper A logical indicating whether treatment comparisons
 #'   should be selected from the lower or upper triangle of the
 #'   treatment effect matrices (see list elements \code{TE.common} and
@@ -89,12 +89,15 @@
 #' as check for consistency of network meta-analysis (Dias et al.,
 #' 2010).
 #' 
-#' This function provides two methods to derive indirect estimates:
+#' This function provides three methods to derive indirect estimates:
 #' \itemize{
 #' \item Separate Indirect from Direct Evidence (SIDE) using a
-#'   back-calculation method. The \emph{direct evidence proportion} as
-#'   described in König et al. (2013) is used in the calculation of
-#'   the indirect evidence;
+#'   back-calculation method (\code{method = "Back-calculation"})
+#'   based on the \emph{direct evidence proportion} to calculate the
+#'   indirect evidence (König et al., 2013);
+#' \item Separate Indirect from Direct Evidence (SIDE) using
+#'   node-splitting method in Dias et al. (2010) (\code{method =
+#'   "Edge-splitting"});
 #' \item Separate Indirect from Direct Design Evidence (SIDDE) as
 #'   described in Efthimiou et al. (2019).
 #' }
@@ -105,6 +108,11 @@
 #' way. Furthermore, this method is not available for the
 #' Mantel-Haenszel and non-central hypergeometric distribution
 #' approach implemented in \code{\link{netmetabin}}.
+#'
+#' Dias et al. (2010) used the term "node-splitting" method, however,
+#' the method actually does not split nodes, i.e., treatments, but
+#' edges, i.e., comparisons. Accordingly, we use the term
+#' "side-splitting" method.
 #' 
 #' For the random-effects model, the direct treatment estimates are
 #' based on the common between-study variance \eqn{\tau^2} from the
@@ -123,11 +131,10 @@
 #'   evidence
 #' }
 #'
-#' The SIDDE approach can be compute-intensive in large
-#' networks. Crude information on the computation progress is printed
-#' for SIDDE if argument \code{verbose} is \code{TRUE}. In addition,
-#' computation times are printed if R package \bold{tictoc} is
-#' installed.
+#' The node-splitting method and SIDDE can be compute-intensive in
+#' large networks. Crude information on the computation progress is
+#' printed if argument \code{verbose = TRUE}. In addition, computation
+#' times are printed if R package \bold{tictoc} is installed.
 #'
 #' @return
 #' An object of class \code{netsplit} with corresponding \code{print}
@@ -155,8 +162,8 @@
 #' \item{sm}{A character string indicating underlying summary measure}
 #' \item{level.ma}{The level used to calculate confidence intervals
 #'   for pooled estimates.}
-#' \item{tictoc}{Computation times for SIDDE approach (if R package
-#'   \bold{tictoc} is installed).}
+#' \item{tictoc}{Computation times for node-splitting method or SIDDE
+#'   (if R package \bold{tictoc} is installed).}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Gerta
@@ -271,7 +278,7 @@ netsplit <- function(x, method,
   ##
   ##
   if (!missing(method))
-    method <- setchar(method, c("Back-calculation", "SIDDE"))
+    method <- setchar(method, c("Back-calculation", "Edge-splitting", "SIDDE"))
   else {
     if (is.bin)
       method <- "SIDDE"
@@ -298,7 +305,7 @@ netsplit <- function(x, method,
   ##
   ## Check for deprecated arguments in '...'
   ##
-  args  <- list(...)
+  args <- list(...)
   chklogical(warn.deprecated)
   ##
   missing.common <- missing(common)
@@ -330,7 +337,7 @@ netsplit <- function(x, method,
   ## (4) Change order of prop.direct.common and prop.direct.random
   ##
   ##
-  if (!(is.bin & method == "SIDDE")) {
+  if (!(is.bin & method %in% c("Edge-splitting", "SIDDE"))) {
     prop.common <- sortprop(x$prop.direct.common, dat.trts, x$sep.trts)
     prop.random <- sortprop(x$prop.direct.random, dat.trts, x$sep.trts)
   }
@@ -345,15 +352,19 @@ netsplit <- function(x, method,
   ##
   x.direct.indirect <- x
   ##
-  if (method == "SIDDE") {
-    sid <- sidde(x.direct.indirect, sep.trts, verbose, warn, is.tictoc)
+  if (method %in% c("Edge-splitting", "SIDDE")) {
+    ind <-
+      if (method == "Edge-splitting")
+        edgesplit(x.direct.indirect, sep.trts, verbose, warn, is.tictoc)
+      else
+        sidde(x.direct.indirect, sep.trts, verbose, warn, is.tictoc)
     ##
-    x.direct.indirect$TE.indirect.common <- sid$TE.indirect.common
-    x.direct.indirect$seTE.indirect.common <- sid$seTE.indirect.common
+    x.direct.indirect$TE.indirect.common <- ind$TE.indirect.common
+    x.direct.indirect$seTE.indirect.common <- ind$seTE.indirect.common
     ##
     if (!is.bin) {
-      x.direct.indirect$TE.indirect.random <- sid$TE.indirect.random
-      x.direct.indirect$seTE.indirect.random <- sid$seTE.indirect.random
+      x.direct.indirect$TE.indirect.random <- ind$TE.indirect.random
+      x.direct.indirect$seTE.indirect.random <- ind$seTE.indirect.random
     }
   }
   ##
@@ -418,8 +429,8 @@ netsplit <- function(x, method,
               version = packageDescription("netmeta")$Version
               )
   ##
-  if (method == "SIDDE" & is.tictoc)
-    res$tictoc <- sid$tictoc
+  if (method %in% c("Edge-splitting", "SIDDE") & is.tictoc)
+    res$tictoc <- ind$tictoc
   ##
   ## Backward compatibility
   ##
@@ -429,8 +440,10 @@ netsplit <- function(x, method,
   res$indirect.fixed <- res$indirect.common
   res$compare.fixed <- res$compare.common
   ##
-  class(res) <- c("netsplit",
-                  if (is.bin & method == "SIDDE") "netsplit.netmetabin")
+  class(res) <-
+    c("netsplit",
+      if (is.bin & method %in% c("Edge-splitting", "SIDDE"))
+        "netsplit.netmetabin")
   
   res
 }
@@ -495,6 +508,30 @@ print.netsplit <- function(x,
   ## (2) Check other arguments
   ##
   ##
+  ##
+  args <- list(...)
+  ##
+  show <-
+    deprecated(show, missing(show), args, "showall")
+  if (is.logical(show))
+    if (show)
+      show <- "all"
+    else
+      show <- "both"
+  ##
+  show <- setchar(show, c("all", "both", "with.direct",
+                          "direct.only", "indirect.only",
+                          "reference.only"))
+  ##
+  if (show == "reference.only") {
+    warning("Argument 'show = \"reference.only\" replaced with ",
+            "'only.reference = TRUE'.",
+            call. = FALSE)
+    show <- "both"
+    if (missing.only.reference)
+      only.reference <- TRUE
+  }
+  ##
   chklogical(overall)
   chklogical(ci)
   chklogical(test)
@@ -557,7 +594,6 @@ print.netsplit <- function(x,
   ##
   fun <- "print.netmeta"
   ##
-  args  <- list(...)
   chklogical(warn.deprecated)
   ##
   missing.common <- missing(common)
@@ -572,27 +608,6 @@ print.netsplit <- function(x,
                        warn.deprecated)
   chklogical(random)
   random.logical <- random
-  ##
-  show <-
-    deprecated(show, missing(show), args, "showall")
-  if (is.logical(show))
-    if (show)
-      show <- "all"
-    else
-      show <- "both"
-  ##
-  show <- setchar(show, c("all", "both", "with.direct",
-                          "direct.only", "indirect.only",
-                          "reference.only"))
-  ##
-  if (show == "reference.only") {
-    warning("Argument 'show = \"reference.only\" replaced with ",
-            "'only.reference = TRUE'.",
-            call. = FALSE)
-    show <- "both"
-    if (missing.only.reference)
-      only.reference <- TRUE
-  }
   
   
   ##
@@ -637,6 +652,12 @@ print.netsplit <- function(x,
     sel <- !is.na(x$direct.common$TE) & is.na(x$indirect.common$TE)
   else if (show == "indirect.only")
     sel <- is.na(x$direct.common$TE) & !is.na(x$common$TE)
+  ##
+  if (sum(sel) == 0) {
+    warning("No results for argument 'show = ", show, "'.",
+            call. = FALSE)
+    return(invisible(NULL))
+  }
   ##
   if (only.reference) {
     if (x$reference.group == "") {
@@ -870,9 +891,13 @@ print.netsplit <- function(x,
   }
   
   
-  ## Do not print direct evidence proportion for SIDDE
+  ## Do not print direct evidence proportion for node-splitting method
+  ## or SIDDE
+  ## 
   ##
-  noprop <- is.bin | x$method == "SIDDE" | all(common$prop == "")
+  noprop <- is.bin | x$method %in% c("Edge-splitting", "SIDDE") |
+    all(common$prop == "")
+  ##
   if (noprop) {
     common <- common[, !(names(common) %in% "prop")]
     if (random.available)
@@ -895,6 +920,9 @@ print.netsplit <- function(x,
   if (common.logical | random.logical) {
     if (x$method == "SIDDE")
       cat("Separate indirect from direct design evidence (SIDDE)\n\n")
+    else if (x$method == "Edge-splitting")
+      cat(paste("Separate indirect from direct evidence (SIDE)",
+                "using edge-splitting method\n\n"))
     else
       cat(paste("Separate indirect from direct evidence (SIDE)",
                 "using back-calculation method\n\n"))

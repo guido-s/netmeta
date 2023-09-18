@@ -54,8 +54,8 @@ netsplit(
 
 \item{method}{A character string indicating which method to split
 direct and indirect evidence is to be used. Either
-\code{"Back-calculation"} or \code{"SIDDE"}, can be
-abbreviated. See Details.}
+\code{"Back-calculation"}, \code{"Edge-splitting"} or
+\code{"SIDDE"}, can be abbreviated. See Details.}
 
 \item{upper}{A logical indicating whether treatment comparisons
 should be selected from the lower or upper triangle of the
@@ -184,8 +184,8 @@ following components:
 \item{sm}{A character string indicating underlying summary measure}
 \item{level.ma}{The level used to calculate confidence intervals
   for pooled estimates.}
-\item{tictoc}{Computation times for SIDDE approach (if R package
-  \bold{tictoc} is installed).}
+\item{tictoc}{Computation times for node-splitting method or SIDDE
+  (if R package \bold{tictoc} is installed).}
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
@@ -198,12 +198,15 @@ A comparison of direct and indirect treatment estimates can serve
 as check for consistency of network meta-analysis (Dias et al.,
 2010).
 
-This function provides two methods to derive indirect estimates:
+This function provides three methods to derive indirect estimates:
 \itemize{
 \item Separate Indirect from Direct Evidence (SIDE) using a
-  back-calculation method. The \emph{direct evidence proportion} as
-  described in König et al. (2013) is used in the calculation of
-  the indirect evidence;
+  back-calculation method (\code{method = "Back-calculation"})
+  based on the \emph{direct evidence proportion} to calculate the
+  indirect evidence (König et al., 2013);
+\item Separate Indirect from Direct Evidence (SIDE) using
+  node-splitting method in Dias et al. (2010) (\code{method =
+  "Edge-splitting"});
 \item Separate Indirect from Direct Design Evidence (SIDDE) as
   described in Efthimiou et al. (2019).
 }
@@ -214,6 +217,11 @@ combines and prints these estimates in a user-friendly
 way. Furthermore, this method is not available for the
 Mantel-Haenszel and non-central hypergeometric distribution
 approach implemented in \code{\link{netmetabin}}.
+
+Dias et al. (2010) used the term "node-splitting" method, however,
+the method actually does not split nodes, i.e., treatments, but
+edges, i.e., comparisons. Accordingly, we use the term
+"side-splitting" method.
 
 For the random-effects model, the direct treatment estimates are
 based on the common between-study variance \eqn{\tau^2} from the
@@ -232,11 +240,10 @@ Argument \code{show} determines which comparisons are printed:
   evidence
 }
 
-The SIDDE approach can be compute-intensive in large
-networks. Crude information on the computation progress is printed
-for SIDDE if argument \code{verbose} is \code{TRUE}. In addition,
-computation times are printed if R package \bold{tictoc} is
-installed.
+The node-splitting method and SIDDE can be compute-intensive in
+large networks. Crude information on the computation progress is
+printed if argument \code{verbose = TRUE}. In addition, computation
+times are printed if R package \bold{tictoc} is installed.
 }
 \examples{
 data(Woods2010)

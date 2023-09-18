@@ -1761,6 +1761,19 @@ netmeta <- function(TE, seTE,
                       by = ".studlab",
                       stringsAsFactors = FALSE)
     ##
+    ## Store adjusted standard errors in data set
+    ##
+    if (isCol(res$data, "subset"))
+      sel.s <- res$data$subset
+    else
+      sel.s <- rep(TRUE, nrow(res$data))
+    ##
+    res$data$.seTE.adj.common <- NA
+    res$data$.seTE.adj.random <- NA
+    ##
+    res$data$.seTE.adj.common[sel.s] <- res.f$seTE
+    res$data$.seTE.adj.random[sel.s] <- res.r$seTE
+    ##
     res$data <- res$data[order(res$data$.order), ]
     res$data$.order <- NULL
   }

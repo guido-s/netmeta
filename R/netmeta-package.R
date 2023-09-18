@@ -242,7 +242,7 @@
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
 #'   prcomp relevel reshape rnorm sd
 #'
-#' @importFrom utils installed.packages packageDescription
+#' @importFrom utils installed.packages packageDescription capture.output
 #'   packageVersion
 #'
 #' @importFrom MASS ginv
