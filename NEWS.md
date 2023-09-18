@@ -17,6 +17,17 @@
     'col.multiarm')
   - wider lines if argument 'thickness = "equal"'
 
+* netconnection.pairwise():
+  - add arguments 'treat1', 'treat2' and 'studlab' for backward
+    compatibility (see bug fix)
+  - argument 'subset' can be used with a pairwise() object
+
+### Bug fixes
+
+* The command 'netconnection(treat1, treat2, studlab, data = pw1)'
+  resulted in an obscure error if argument 'data' was a data set
+  created with pairwise().
+
 ### Internal changes
 
 * New internal R function nodesplit() for node-splitting method
