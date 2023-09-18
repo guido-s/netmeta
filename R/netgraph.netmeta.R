@@ -516,7 +516,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
   ##
   missing.lwd.max <- missing(lwd.max)
   if (missing.lwd.max) {
-    if (thickness == "equal")
+    if (!is.matrix(thickness) && thickness == "equal")
       lwd.max <- 2 * lwd
     else
       lwd.max <- 4 * lwd
@@ -1258,7 +1258,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   ##
-  if (missing.lwd.max & thickness != "equal" &
+  if (missing.lwd.max & !is.matrix(thickness) && thickness != "equal" &
       length(unique(W.matrix[W.matrix != 0])) == 1)
     W.matrix <- W.matrix / 2
   

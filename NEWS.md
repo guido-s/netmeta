@@ -24,9 +24,14 @@
 
 ### Bug fixes
 
-* The command 'netconnection(treat1, treat2, studlab, data = pw1)'
-  resulted in an obscure error if argument 'data' was a data set
-  created with pairwise().
+* netconnection.pairwise():
+  - the command 'netconnection(treat1, treat2, studlab, data = pw1)'
+    resulted in an obscure error if argument 'data' was a data set
+    created with pairwise()
+
+* netgraph.netmeta():
+  - error if argument 'thickness' was a matrix and argument 'lwd.max'
+    was missing
 
 ### Internal changes
 
