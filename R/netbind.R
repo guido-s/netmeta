@@ -105,6 +105,7 @@ netbind <- function(..., name,
   ## (1) Extract list elements and basic checks
   ##
   ##
+  
   chklogical(warn.deprecated)
   ##
   is.nma <- function(x)
@@ -117,7 +118,7 @@ netbind <- function(..., name,
   n.netmeta <- length(args)
   n.i <- seq_len(n.netmeta)
   ##
-  if (length(args) == 1) {
+  if (n.netmeta == 1) {
     if (!is.list(args[[1]]))
       stop("All elements of argument '...' must be of classes ",
            "'netmeta', 'netcomb', or 'discomb'.",

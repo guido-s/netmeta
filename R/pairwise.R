@@ -943,7 +943,8 @@ pairwise <- function(treat,
                             .order = seq_along(studlab),
                             incr = incr.study,
                             allstudies = allstudies,
-                            stringsAsFactors = FALSE)
+                            stringsAsFactors = FALSE,
+                            row.names = NULL)
           ##
           if (wide.armbased & !nulldata) {
             dat <- cbind(dat, data, stringsAsFactors = FALSE)
@@ -1064,7 +1065,8 @@ pairwise <- function(treat,
                             n1 = n[[i]], mean1 = mean[[i]], sd1 = sd[[i]],
                             n2 = n[[j]], mean2 = mean[[j]], sd2 = sd[[j]],
                             .order = seq_along(studlab),
-                            stringsAsFactors = FALSE)
+                            stringsAsFactors = FALSE,
+                            row.names = NULL)
           ##
           if (wide.armbased) {
             dat <- cbind(dat, data, stringsAsFactors = FALSE)
@@ -1148,7 +1150,8 @@ pairwise <- function(treat,
                             TE1 = TE[[i]], seTE1 = seTE[[i]],
                             TE2 = TE[[j]], seTE2 = seTE[[j]],
                             .order = seq_along(studlab),
-                            stringsAsFactors = FALSE)
+                            stringsAsFactors = FALSE,
+                            row.names = NULL)
           ##
           if (!is.null(event)) {
             dat$event1 <- event[[i]]
@@ -1276,7 +1279,8 @@ pairwise <- function(treat,
                             event2 = event[[j]], time2 = time[[j]],
                             incr = incr.study,
                             .order = seq_along(studlab),
-                            stringsAsFactors = FALSE)
+                            stringsAsFactors = FALSE,
+                            row.names = NULL)
           ##
           if (wide.armbased) {
             dat <- cbind(dat, data, stringsAsFactors = FALSE)

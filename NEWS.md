@@ -355,6 +355,9 @@
   - function ggplot2::xlab() instead of netmeta::xlab() must be used
     to create image plot
 
+* print.netcomplex():
+  - argument 'nchar.comps' was ignored
+
 ### User-visible changes
 
 * netmeta(), netmetabin(), netcomb(), discomb():
