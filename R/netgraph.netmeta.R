@@ -570,15 +570,17 @@ netgraph.netmeta <- function(x, seq = x$seq,
     is_3d <- FALSE
   }
   ##
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
+  ##
   missing.rotate <- missing(rotate)
-  chknumeric(rotate, min = -180, max = 180)
+  if (!missing.rotate)
+    rotate <- catch("rotate", mc, x, sfsp)
+  chknumeric(rotate, min = -180, max = 180, length = 1)
   ##
   missing.start.layout <- missing(start.layout)
   start.layout <-
     setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
-  ##
-  sfsp <- sys.frame(sys.parent())
-  mc <- match.call()
   ##
   if (!missing(seq) & is.null(seq))
     stop("Argument 'seq' must be not NULL.")

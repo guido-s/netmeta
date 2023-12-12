@@ -22,6 +22,21 @@
     compatibility (see bug fix)
   - argument 'subset' can be used with a pairwise() object
 
+* pairwise():
+  - new argument 'append' to append variables from data set provided in
+    argument 'data' (default: TRUE)
+  - can be used if only study labels and intervention names are provided
+    (and optionally sample sizes)
+
+* nettable():
+  - new argument 'nchar.trts' to abbreviate treatment names
+  - new argument 'legend' to suppress the printout of the legend describing
+    treatment abbreviations
+
+* print.nettable():
+  - new argument 'legend' to suppress printing of legend with abbreviated
+    treatment names
+
 ### Bug fixes
 
 * netconnection.pairwise():
@@ -32,6 +47,10 @@
 * netgraph.netmeta():
   - error if argument 'thickness' was a matrix and argument 'lwd.max'
     was missing
+
+* print.netcomplex():
+  - wrong label for summary measure for risk and odds ratio, e.g.,
+    log(OR) for odds ratio and OR for log odds ratio
 
 ### Internal changes
 
@@ -895,7 +914,8 @@
   - export the design matrix (new list element 'X.matrix')
 
 * discomb():
-  - export the number of subnetworks
+  - export the number of subnetworks
+
 
 * forest.netsplit():
   - print an informative warning (instead of an obscure error
@@ -925,7 +945,8 @@
   treatment estimates and standard errors)
 
 * New default for consistency tolerance: 0.001 instead of 0.0005
-
+
+
 * Print tau in addition to tau2 in outputs
 
 * Print confidence interval for I2 in outputs

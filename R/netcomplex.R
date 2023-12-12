@@ -413,7 +413,7 @@ print.netcomplex <- function(x,
   ##
   if (sm != "") {
     sm.lab <- paste0("i", sm)
-    if (backtransf)
+    if (!backtransf & relative)
       sm.lab <- paste0("log(", sm, ")")
   }
   ##  

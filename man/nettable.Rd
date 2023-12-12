@@ -16,6 +16,7 @@ nettable(
   reference.group = NULL,
   baseline.reference = NULL,
   backtransf = NULL,
+  nchar.trts = if (writexl) 666 else NULL,
   digits = gs("digits"),
   digits.I2 = gs("digits.I2"),
   digits.pval = gs("digits.pval"),
@@ -36,7 +37,7 @@ nettable(
   verbose = FALSE
 )
 
-\method{print}{nettable}(x, common = x$x$common, random = x$x$random, ...)
+\method{print}{nettable}(x, common = x$x$common, random = x$x$random, legend = TRUE, ...)
 }
 \arguments{
 \item{\dots}{Any number of network meta-analysis objects or a
@@ -78,6 +79,9 @@ and argument\code{order} is not provided.}
 should be back transformed. For example, if \code{backtransf =
 TRUE}, results for \code{sm = "OR"} are printed as odds ratios
 rather than log odds ratios.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
@@ -137,6 +141,9 @@ printed.}
 should be printed.}
 
 \item{x}{An object of class \code{nettable}.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed for abbreviated treatment names.}
 }
 \value{
 An object of class \code{nettable} with corresponding \code{print}

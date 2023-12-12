@@ -45,6 +45,9 @@
 #' @param keep.all.comparisons A logical indicating whether all
 #'   pairwise comparisons or only comparisons with the study-specific
 #'   reference group should be kept ('basic parameters').
+#' @param append A logical indicating whether variables from data set
+#'   provided in argument \code{data} are appended to data set with
+#'   pairwise comparisons.
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded due to only providing a single
 #'   treatment arm).
@@ -358,6 +361,7 @@ pairwise <- function(treat,
                      reference.group,
                      keep.all.comparisons,
                      ##
+                     append = !is.null(data),
                      warn = FALSE,
                      ...) {
   
@@ -371,6 +375,7 @@ pairwise <- function(treat,
   chklogical(allincr)
   chklogical(addincr)
   chklogical(allstudies)
+  chklogical(append)
   chklogical(warn)
   
   
@@ -543,6 +548,9 @@ pairwise <- function(treat,
       type <- "binary"
     else if (!is.null(n) & !is.null(mean) & !is.null(sd))
       type <- "continuous"
+    else if (is.null(event) & is.null(mean) & is.null(sd) &
+             is.null(TE) & is.null(seTE) & is.null(time))
+      type <- "onlytreat"
     else
       stop("Type of outcome unclear. Please provide the necessary ",
            "information:\n  - event, n (binary outcome)\n  - n, ",
@@ -561,14 +569,14 @@ pairwise <- function(treat,
       wide.armbased <- is.list(n) & is.list(mean) & is.list(sd)
     else if (type == "count")
       wide.armbased <- is.list(event) & is.list(time)
-
-
-
-
-
+    else if (type == "onlytreat")
+      wide.armbased <- is.list(treat)
+    
     ##
     ## Transform long arm-based format to list format
     ##
+    nulldata <- !(!nulldata & append)
+    #
     if (!wide.armbased) {
       if (is.null(studlab))
         stop("Argument 'studlab' mandatory if argument 'event' is a vector.")
@@ -768,8 +776,44 @@ pairwise <- function(treat,
         TE    <- TE.list
         seTE  <- seTE.list
       }
+      ##
+      else if (type == "onlytreat") {
+        ##
+        ## Generate lists
+        ##
+        tdat <- data.frame(studlab, treat,
+                           .order = seq_along(studlab),
+                           stringsAsFactors = FALSE)
+        ##
+        if (!is.null(n))
+          tdat$n <- n
+        ##
+        if (!nulldata) {
+          tdat <- cbind(tdat, data)
+          dupl <- duplicated(names(tdat))
+          if (any(dupl))
+            names(tdat)[dupl] <- paste(names(tdat)[dupl], "orig", sep = ".")
+        }
+        ##
+        studlab <- names(n.arms)
+        dat.studlab <- data.frame(studlab, stringsAsFactors = FALSE)
+        ##
+        for (i in 1:max.arms) {
+          sel.i <- !duplicated(tdat$studlab)
+          tdat.i <- merge(dat.studlab, tdat[sel.i, ],
+                          by = "studlab", all.x = TRUE)
+          ##
+          treat.list[[i]] <- tdat.i$treat
+          ##
+          if (!nulldata)
+            adddata[[i]] <- tdat.i
+          ##
+          tdat <- tdat[!sel.i, ]
+        }
+        ##
+        treat <- treat.list
+      }
     }
-    
     
     
     
@@ -989,9 +1033,8 @@ pairwise <- function(treat,
         }
       }
     }
-    
-    
-    if (type == "continuous") {
+    #
+    else if (type == "continuous") {
       if (length(n) != narms)
         stop("Different length of lists 'treat' and 'n'.")
       if (length(mean) != narms)
@@ -1111,9 +1154,8 @@ pairwise <- function(treat,
         }
       }
     }
-
-
-    if (type == "generic") {
+    #
+    else if (type == "generic") {
       if (length(TE) != narms)
         stop("Different length of lists 'treat' and 'TE'.",
              call. = FALSE)
@@ -1220,9 +1262,8 @@ pairwise <- function(treat,
         }
       }
     }
-
-
-    if (type == "count") {
+    #
+    else if (type == "count") {
       if (length(event) != narms)
         stop("Different length of lists 'treat' and 'event'.",
              call. = FALSE)
@@ -1326,6 +1367,54 @@ pairwise <- function(treat,
         }
       }
     }
+    #
+    else if (type == "onlytreat") {
+      for (i in 1:(narms - 1)) {
+        for (j in (i + 1):narms) {
+          ##
+          dat <- data.frame(studlab,
+                            treat1 = treat[[i]],
+                            treat2 = treat[[j]],
+                            .order = seq_along(studlab),
+                            stringsAsFactors = FALSE,
+                            row.names = NULL)
+          ##
+          if (!is.null(n)) {
+            dat$n1 <- n[[i]]
+            dat$n2 <- n[[j]]
+          }
+          ##
+          if (wide.armbased) {
+            dat <- cbind(dat, data, stringsAsFactors = FALSE)
+            dupl <- duplicated(names(dat))
+            if (any(dupl))
+              names(dat)[dupl] <- paste(names(dat)[dupl], "orig", sep = ".")
+          }
+          ##
+          dat <- dat[!is.na(dat$treat2), ]
+          ##
+          if (nrow(dat) > 0) {
+            dat.NAs <- data.frame()
+            ##
+            if (i == 1 & j == 2) {
+              res <- dat
+              res.NAs <- dat.NAs
+            }
+            else {
+              res <- rbind(res, dat)
+              res.NAs <- rbind(res.NAs, dat.NAs)
+            }
+          }
+          else
+            if (i == 1 & j == 2)
+              stop("No studies available for comparison of ",
+                   "first and second treatment.",
+                   call. = FALSE)
+        }
+      }
+    }
+    
+    
     ##
     if (!nulldata & !wide.armbased)
       res <- merge(res, newdata,
@@ -1369,7 +1458,7 @@ pairwise <- function(treat,
     ##
     ## c) Missing treatment estimates or standard errors?
     ##
-    if (nrow(res.NAs) > 0 & warn) {
+    if (type != "onlytreat" && nrow(res.NAs) > 0 & warn) {
       warning("Comparison",
               if (nrow(res.NAs) > 1) "s",
               " with missing TE / seTE or zero seTE",
@@ -1392,7 +1481,7 @@ pairwise <- function(treat,
     
     ## Calculate standard error for SMDs
     ##
-    if (type == "continuous" & m1$sm == "SMD") {
+    if (type == "continuous" && m1$sm == "SMD") {
       res$.seTE <- res$seTE
       ##
       for (i in unique(res$studlab)) {
@@ -1415,8 +1504,8 @@ pairwise <- function(treat,
     }
     
     
-    attr(res, "sm") <- m1$sm
-    attr(res, "method") <- m1$method
+    attr(res, "sm") <- if (type != "onlytreat") m1$sm else ""
+    attr(res, "method") <-  if (type != "onlytreat") m1$method else ""
     attr(res, "incr") <- incr
     attr(res, "allincr") <- allincr
     attr(res, "addincr") <- addincr
@@ -1452,20 +1541,24 @@ pairwise <- function(treat,
   labels <- unique(sort(c(res$treat1, res$treat2)))
   ##
   if (missing.reference.group) {
-    go.on <- TRUE
-    i <- 0
-    while (go.on) {
-      i <- i + 1
-      sel.i <-
-        !is.na(res$TE) & !is.na(res$seTE) &
-        (res$treat1 == labels[i] | res$treat2 == labels[i])
-      if (sum(sel.i) > 0) {
-        go.on <- FALSE
-        reference.group <- labels[i]
-      }
-      else if (i == length(labels)) {
-        go.on <- FALSE
-        reference.group <- ""
+    if (type == "onlytreat")
+      reference.group <- ""
+    else {
+      go.on <- TRUE
+      i <- 0
+      while (go.on) {
+        i <- i + 1
+        sel.i <-
+          !is.na(res$TE) & !is.na(res$seTE) &
+          (res$treat1 == labels[i] | res$treat2 == labels[i])
+        if (sum(sel.i) > 0) {
+          go.on <- FALSE
+          reference.group <- labels[i]
+          }
+        else if (i == length(labels)) {
+          go.on <- FALSE
+          reference.group <- ""
+        }
       }
     }
   }
