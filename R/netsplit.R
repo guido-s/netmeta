@@ -50,6 +50,9 @@
 #'   with the reference group should be printed.
 #' @param sortvar An optional vector used to sort comparisons (must be
 #'   of same length as the total number of comparisons).
+#' @param subset An optional logical vector specifying a subset of
+#'   comparisons to print (must be of same length as the total number of
+#'   comparisons) .
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
@@ -468,6 +471,7 @@ print.netsplit <- function(x,
                            only.reference = FALSE,
                            ##
                            sortvar = NULL,
+                           subset = NULL,
                            ##
                            nchar.trts = x$nchar.trts,
                            ##
@@ -539,13 +543,13 @@ print.netsplit <- function(x,
   missing.only.reference <- missing(only.reference)
   if (!missing.only.reference)
     chklogical(only.reference)
-  ##
-  ## Catch sortvar from data:
-  ##
-  error <-
-    try(sortvar.x <-
-          catch("sortvar", match.call(), x, sys.frame(sys.parent())),
-        silent = TRUE)
+  #
+  # Catch sortvar and subset from data:
+  #
+  mc <- match.call()
+  sfsp <- sys.frame(sys.parent())
+  #
+  error <- try(sortvar.x <- catch("sortvar", mc, x, sfsp), silent = TRUE)
   if (!any(class(error) == "try-error"))
     sortvar <- sortvar.x
   ##
@@ -572,6 +576,18 @@ print.netsplit <- function(x,
     ##
     if (!is.numeric(sortvar))
       sortvar <- setchar(sortvar, x$comparison)
+  }
+  #
+  error <- try(subset.x <- catch("subset", mc, x, sfsp), silent = TRUE)
+  if (!any(class(error) == "try-error"))
+    subset <- subset.x
+  ##
+  if (!is.null(subset)) {
+    chklength(subset, length(x$comparison),
+              text = paste0("Argument 'subset' must be of length ",
+                            length(x$comparison), "."))
+    if (!is.logical(subset))
+      stop("Argument 'subset' must be a logical vector.")
   }
   ##
   if (is.null(nchar.trts))
@@ -904,16 +920,30 @@ print.netsplit <- function(x,
       random <- random[, !(names(random) %in% "prop")]
   }
   
-  
-  if (!is.null(sortvar)) {
+
+  if (!is.null(sortvar))
     sortvar <- sortvar[sel]
-    ##
+  #
+  if (!is.null(subset))
+    subset <- subset[sel]
+  #
+  if (!is.null(sortvar)) {
     o <- order(sortvar)
-    ##
+    #
     if (common.logical)
       common <- common[o, ]
     if (random.logical)
       random <- random[o, ]
+    #
+    if (!is.null(subset))
+      subset <- subset[o]
+  }
+  #
+  if (!is.null(subset)) {
+    if (common.logical)
+      common <- common[subset, ]
+    if (random.logical)
+      random <- random[subset, ]
   }
   
   

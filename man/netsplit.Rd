@@ -34,6 +34,7 @@ netsplit(
   test = show \%in\% c("all", "with.direct", "both"),
   only.reference = FALSE,
   sortvar = NULL,
+  subset = NULL,
   nchar.trts = x$nchar.trts,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
@@ -125,6 +126,10 @@ with the reference group should be printed.}
 
 \item{sortvar}{An optional vector used to sort comparisons (must be
 of same length as the total number of comparisons).}
+
+\item{subset}{An optional logical vector specifying a subset of
+comparisons to print (must be of same length as the total number of
+comparisons) .}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}

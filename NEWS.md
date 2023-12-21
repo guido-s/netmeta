@@ -37,6 +37,9 @@
   - new argument 'legend' to suppress printing of legend with abbreviated
     treatment names
 
+* print.netsplit(), forest.netsplit():
+  - new argument 'subset' to define subset of comparisons to print
+
 ### Bug fixes
 
 * netconnection.pairwise():
