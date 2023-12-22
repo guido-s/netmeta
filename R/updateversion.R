@@ -175,7 +175,7 @@ updateversion <- function(x, verbose = FALSE) {
       x$small.values <- setsv(x$small.values)
     ##
     if (update.2.9.0) {
-      if (x$keepdata) {
+      if (is.null(x$keepdata) || x$keepdata) {
         if (isCol(x$data, "subset"))
           sel.s <- x$data$subset
         else

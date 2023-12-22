@@ -1,4 +1,4 @@
-## netmeta, version 2.9-0 (2023-mm-dd)
+## netmeta, version 2.9-0 (2024-mm-dd)
 
 ### Major changes
 
