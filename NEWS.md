@@ -3,6 +3,9 @@
 ### Major changes
 
 * Two new methods to calculate network contributions implemented
+  in netcontrib()
+
+* Edge-splitting method implemented in netsplit()
 
 ### User-visible changes
 
@@ -11,7 +14,10 @@
     (argument 'method = "pseudoinverse"')
   - another L1 solution based on R package **cccp** implemented
     (argument 'method = "cccp"')
-  
+
+* netsplit():
+  - edge-splitting approach implemented (argument 'method = "Edge-splitting"')
+
 * netgraph.netmeta(), netgraph.netimpact():
   - use original order of multi-arm studies for colouring (argument
     'col.multiarm')
