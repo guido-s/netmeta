@@ -58,7 +58,7 @@ nettable_internal <- function(x, method,
   ## (4) Change order of prop.direct.common and prop.direct.random
   ##
   ##
-  if (!(is.bin & method %in% c("Edge-splitting", "SIDDE"))) {
+  if (!(is.bin & method == "SIDDE")) {
     prop.common <- sortprop(x$prop.direct.common, dat.trts, x$sep.trts)
     prop.random <- sortprop(x$prop.direct.random, dat.trts, x$sep.trts)
   }
@@ -73,12 +73,8 @@ nettable_internal <- function(x, method,
   ##
   x.direct.indirect <- x
   ##
-  if (method %in% c("Edge-splitting", "SIDDE")) {
-    ind <-
-      if (method == "Edge-splitting")
-        edgesplit(x.direct.indirect, x$sep.trts, verbose, warn, FALSE)
-      else
-        sidde(x.direct.indirect, x$sep.trts, verbose, warn, FALSE)
+  if (method == "SIDDE") {
+    ind <- sidde(x.direct.indirect, x$sep.trts, verbose, warn, FALSE)
     ##    
     x.direct.indirect$TE.indirect.common <- ind$TE.indirect.common
     x.direct.indirect$seTE.indirect.common <- ind$seTE.indirect.common

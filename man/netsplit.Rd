@@ -55,8 +55,8 @@ netsplit(
 
 \item{method}{A character string indicating which method to split
 direct and indirect evidence is to be used. Either
-\code{"Back-calculation"}, \code{"Edge-splitting"} or
-\code{"SIDDE"}, can be abbreviated. See Details.}
+\code{"Back-calculation"} or \code{"SIDDE"}, can be abbreviated.
+See Details.}
 
 \item{upper}{A logical indicating whether treatment comparisons
 should be selected from the lower or upper triangle of the
@@ -203,15 +203,12 @@ A comparison of direct and indirect treatment estimates can serve
 as check for consistency of network meta-analysis (Dias et al.,
 2010).
 
-This function provides three methods to derive indirect estimates:
+This function provides two methods to derive indirect estimates:
 \itemize{
 \item Separate Indirect from Direct Evidence (SIDE) using a
   back-calculation method (\code{method = "Back-calculation"})
   based on the \emph{direct evidence proportion} to calculate the
   indirect evidence (König et al., 2013);
-\item Separate Indirect from Direct Evidence (SIDE) using
-  node-splitting method in Dias et al. (2010) (\code{method =
-  "Edge-splitting"});
 \item Separate Indirect from Direct Design Evidence (SIDDE) as
   described in Efthimiou et al. (2019).
 }
@@ -222,11 +219,6 @@ combines and prints these estimates in a user-friendly
 way. Furthermore, this method is not available for the
 Mantel-Haenszel and non-central hypergeometric distribution
 approach implemented in \code{\link{netmetabin}}.
-
-Dias et al. (2010) used the term "node-splitting" method, however,
-the method actually does not split nodes, i.e., treatments, but
-edges, i.e., comparisons. Accordingly, we use the term
-"side-splitting" method.
 
 For the random-effects model, the direct treatment estimates are
 based on the common between-study variance \eqn{\tau^2} from the
