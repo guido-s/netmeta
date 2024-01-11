@@ -3,14 +3,19 @@ multicols <- function(studies, narms, missing.col.multiarm,
   ##
   ## Define coloured regions for multi-arm studies
   ##
-  dat <- data.frame(studies = studies, narms = narms)
+  dat <- data.frame(studies = studies, narms = narms,
+                    idx = seq_along(studies))
   dat <- dat[rev(order(dat$narms)), ]
   dat <- dat[dat$narms > 2, ]
+  ##
+  o <- order(dat$idx)
   multiarm.studies <- dat$studies
   ##
   n.multi <- length(multiarm.studies)
   ##
   missing.col.multiarm <- missing(col.multiarm)
+  ##
+  o.cols <- TRUE
   ##
   if (missing.col.multiarm | is.null(col.multiarm)) {
     ## Check for R package colorspace & use various gray values if
@@ -33,7 +38,9 @@ multicols <- function(studies, narms, missing.col.multiarm,
       }
       ##
       if (csfun(mcname, "rainbow_hcl"))
-        cols <- colorspace::rainbow_hcl(n.multi, start = 240, end = 60, alpha = alpha.transparency)
+        cols <- colorspace::rainbow_hcl(n.multi,
+                                        start = 240, end = 60,
+                                        alpha = alpha.transparency)
       else if (csfun(mcname, "sequential_hcl"))
         cols <- colorspace::sequential_hcl(n.multi, alpha = alpha.transparency)
       else if (csfun(mcname, "diverge_hcl"))
@@ -60,11 +67,19 @@ multicols <- function(studies, narms, missing.col.multiarm,
   ##
   if (!missing.col.multiarm & is.character(col.multiarm)) {
     if (length(col.multiarm) > 1 & length(col.multiarm) != n.multi)
-      stop("Length of argument 'col.multiarm' must be equal to one or the number of multi-arm studies: ", n.multi)
+      stop("Length of argument 'col.multiarm' must be equal to one or ",
+           "the number of multi-arm studies: ", n.multi)
     cols <- col.multiarm
+    o.cols <- FALSE
   }
   
   
-  res <- list(cols = cols, multiarm.studies = multiarm.studies)
+  res <- data.frame(studlab = multiarm.studies[o])
+  ##
+  if (o.cols)
+    res$col <- cols[o]
+  else
+    res$col <- cols
+  ##
   res
 }

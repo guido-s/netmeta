@@ -16,6 +16,7 @@
   prediction = x$prediction,
   only.reference = FALSE,
   sortvar = NULL,
+  subset = NULL,
   text.overall = "Network estimate",
   text.direct = "Direct estimate",
   text.indirect = "Indirect estimate",
@@ -77,6 +78,10 @@ with the reference group should be printed.}
 
 \item{sortvar}{An optional vector used to sort comparisons (must be
 of same length as the total number of comparisons).}
+
+\item{subset}{An optional logical vector specifying a subset of
+comparisons to print (must be of same length as the total number of
+comparisons) .}
 
 \item{text.overall}{A character string used in the plot to label
 the network estimates.}

@@ -351,6 +351,7 @@ netpairwise <- function(x,
                 prediction = prediction,
                 level.predict = level.predict,
                 method.tau = method.tau,
+                label.e = comps$trt1[i], label.c = comps$trt2[i],
                 warn.deprecated = FALSE,
                 ...)
     }
@@ -608,9 +609,9 @@ metabias.netpairwise <- function(x, k.min = 10, ...) {
     if (n > 0)
       class(res) <- "metabias.netpairwise"
     else {
-      warning("No pairwise comparison with least ", k.min, " studies.",
+      warning("No pairwise comparison with at least ", k.min, " studies.",
               call. = FALSE)
-      res <- NULL
+      return(invisible(NULL))
     }
   }
   

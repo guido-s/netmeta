@@ -313,7 +313,7 @@ print.summary.netmeta <- function(x,
           seTE.adj <- x$x$seTE.adj.common
         ##
         if (common & random & !is.null(x$x$seTE.adj.random)) {
-          res$seTE.adj.f <- format(round(seTE.adj, digits.se))
+          res$seTE.adj.c <- format(round(seTE.adj, digits.se))
           res$seTE.adj.r <- format(round(x$x$seTE.adj.random, digits.se))
         }
         else if (common)

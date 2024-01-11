@@ -31,6 +31,7 @@ updateversion <- function(x, verbose = FALSE) {
   update.2.0.0 <- update_needed(x$version, 2, 0, verbose)
   update.2.5.0 <- update_needed(x$version, 2, 5, verbose)
   update.2.8.0 <- update_needed(x$version, 2, 8, verbose)
+  update.2.9.0 <- update_needed(x$version, 2, 9, verbose)
   
   
   ##
@@ -172,6 +173,21 @@ updateversion <- function(x, verbose = FALSE) {
     ##
     if (update.2.8.0)
       x$small.values <- setsv(x$small.values)
+    ##
+    if (update.2.9.0) {
+      if (is.null(x$keepdata) || x$keepdata) {
+        if (isCol(x$data, "subset"))
+          sel.s <- x$data$subset
+        else
+          sel.s <- rep(TRUE, nrow(x$data))
+        ##
+        x$data$.seTE.adj.common <- NA
+        x$data$.seTE.adj.random <- NA
+        ##
+        x$data$.seTE.adj.common[sel.s] <- x$seTE.adj.common
+        x$data$.seTE.adj.random[sel.s] <- x$seTE.adj.random
+      }
+    }
     ##
     return(x)
   }

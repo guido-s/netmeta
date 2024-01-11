@@ -10,8 +10,9 @@
 #' 
 #' @param x An object of class \code{netmeta} or \code{netcontrib}.
 #' @param method A character string indicating which method is to
-#'   calculate the contribution matrix. Either \code{"randomwalk"} or
-#'   \code{"shortestpath"}, can be abbreviated.
+#'   calculate the contribution matrix. Either \code{"randomwalk"},
+#'   \code{"shortestpath"}, \code{"cccp"}, or \code{"pseudoinverse"},
+#'   can be abbreviated.
 #' @param hatmatrix.F1000 A logical indicating whether hat matrix
 #'   given in F1000 article should be used for \code{method =
 #'   "shortestpath"}.
@@ -54,8 +55,8 @@
 #' (Davies et al., 2022). This H matrix can be obtained from
 #' \code{\link{hatmatrix}} with argument \code{method = "davies"}.
 #' 
-#' Two methods are implemented to estimate the streams and as a
-#' result, the proportion contributions:
+#' Four methods are implemented to estimate the proportion
+#' contributions:
 #' 
 #' (1) If argument \code{method = "randomwalk"}, an analytical
 #' random-walk (RW) approach is used (Davies et al., 2022). Here, the
@@ -89,11 +90,19 @@
 #' obtained by specifying \code{hatmatrix.F1000 = TRUE} for
 #' \code{method = "shortestpath"}. For other purposes, this method is
 #' not recommended.
+#'
+#' (3) If argument \code{method = "cccp"}, contributions are estimated
+#' using \code{\link[cccp]{l1}} from R package \bold{cccp} (Rücker et
+#' al., 2023, unpublished).
+#'
+#' (4) If argument \code{method = "pseudoinverse"}, contributions are
+#' derived from an L2 solution based on a Moore-Penrose pseudoinverse
+#' (Rücker et al., 2023, unpublished).
 #' 
-#' Once the streams have been identified (either by method (1) or
-#' (2)), the proportion contribution of each direct comparison is
-#' equal to the sum over the flow of evidence in each path containing
-#' that edge divided by the number of edges that make up that path.
+#' Once the streams have been identified by any method, the proportion
+#' contribution of each direct comparison is equal to the sum over the
+#' flow of evidence in each path containing that edge divided by the
+#' number of edges that make up that path.
 #'
 #' By default, treatment names are not abbreviated in
 #' printouts. However, in order to get more concise printouts,
@@ -191,13 +200,18 @@ netcontrib <- function(x,
   ## (2) Check other arguments
   ##
   ##
-  method <- setchar(method, c("randomwalk", "shortestpath"))
+  method <-
+    setchar(method, c("randomwalk", "shortestpath", "cccp", "pseudoinverse"))
   chklogical(hatmatrix.F1000)
   if (method == "randomwalk" & hatmatrix.F1000) {
     warning("Argument 'hatmatrix.F1000' ignored for random walk method.",
             call. = FALSE)
     hatmatrix.F1000 <- FALSE
   }
+  ##
+  if (method == "cccp")
+    is.installed.package("cccp")
+  
   chknumeric(nchar.trts, min = 1, length = 1)
   chklogical(verbose)
   ##
@@ -318,9 +332,18 @@ print.netcontrib <- function(x,
   cat(paste0("Contribution matrix (",
              if (is.null(x$method) | x$method == "shortestpath")
                "Papakonstantinou et al., 2018, F1000Research"
+             else if (x$method == "randomwalk")
+               "Davies et al., 2022, Stat Med"
+             else if (x$method == "cccp")
+               paste0("Ruecker et al., 2023, ",
+                      "L1 solution based on R package cccp")
+             else if (x$method == "pseudoinverse")
+               paste0("Ruecker et al., 2023, ",
+                      "L2 solution based on Moore-Penrose pseudoinverse")
              else
-               "Davies et al., 2022, Stat Med",
+               "unknown method",
              ")"))
+  ##
   if ((is.null(x$method) | x$method == "shortestpath") & x$hatmatrix.F1000)
     cat(paste(",\nhat matrix does not take correlation of",
               "multi-arm studies into account"))

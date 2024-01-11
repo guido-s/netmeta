@@ -16,6 +16,7 @@ nettable(
   reference.group = NULL,
   baseline.reference = NULL,
   backtransf = NULL,
+  nchar.trts = if (writexl) 666 else NULL,
   digits = gs("digits"),
   digits.I2 = gs("digits.I2"),
   digits.pval = gs("digits.pval"),
@@ -36,7 +37,7 @@ nettable(
   verbose = FALSE
 )
 
-\method{print}{nettable}(x, common = x$x$common, random = x$x$random, ...)
+\method{print}{nettable}(x, common = x$x$common, random = x$x$random, legend = TRUE, ...)
 }
 \arguments{
 \item{\dots}{Any number of network meta-analysis objects or a
@@ -47,8 +48,8 @@ names for network meta-analysis objects.}
 
 \item{method}{A character string indicating which method to split
 direct and indirect evidence is to be used. Either
-\code{"Back-calculation"} or \code{"SIDDE"}, can be
-abbreviated. See Details.}
+\code{"Back-calculation"} or \code{"SIDDE"}, can be abbreviated.
+See Details.}
 
 \item{order}{A optional character or numerical vector specifying
 the order of treatments in comparisons.}
@@ -78,6 +79,9 @@ and argument\code{order} is not provided.}
 should be back transformed. For example, if \code{backtransf =
 TRUE}, results for \code{sm = "OR"} are printed as odds ratios
 rather than log odds ratios.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
@@ -137,6 +141,9 @@ printed.}
 should be printed.}
 
 \item{x}{An object of class \code{nettable}.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed for abbreviated treatment names.}
 }
 \value{
 An object of class \code{nettable} with corresponding \code{print}
@@ -162,9 +169,9 @@ generated. Alternatively, an Excel file is created if argument
 Two methods to derive indirect estimates are available:
 \itemize{
 \item Separate Indirect from Direct Evidence (SIDE) using a
-  back-calculation method. The \emph{direct evidence proportion} as
-  described in König et al. (2013) is used in the calculation of
-  the indirect evidence;
+  back-calculation method (\code{method = "Back-calculation"})
+  based on the \emph{direct evidence proportion} to calculate the
+  indirect evidence (König et al., 2013);
 \item Separate Indirect from Direct Design Evidence (SIDDE) as
   described in Efthimiou et al. (2019).
 }
@@ -215,6 +222,11 @@ nettable(net1, digits = 2, bracket = "(", separator = " to ",
 
 }
 \references{
+Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
+Checking consistency in mixed treatment comparison meta-analysis.
+\emph{Statistics in Medicine},
+\bold{29}, 932--44
+
 Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
 (2019):
 A Mantel-Haenszel model for network meta-analysis of rare events.

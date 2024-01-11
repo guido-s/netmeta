@@ -25,6 +25,9 @@
 #'   with the reference group should be printed.
 #' @param sortvar An optional vector used to sort comparisons (must be
 #'   of same length as the total number of comparisons).
+#' @param subset An optional logical vector specifying a subset of
+#'   comparisons to print (must be of same length as the total number of
+#'   comparisons) .
 #' @param subgroup A character string indicating which layout should
 #'   be used in forest plot: subgroups by comparisons
 #'   (\code{"comparison"}) or subgroups by estimates
@@ -172,6 +175,7 @@ forest.netsplit <- function(x,
                             only.reference = FALSE,
                             ##
                             sortvar = NULL,
+                            subset = NULL,
                             ##
                             text.overall = "Network estimate",
                             text.direct = "Direct estimate",
@@ -227,13 +231,13 @@ forest.netsplit <- function(x,
   missing.only.reference <- missing(only.reference)
   if (!missing.only.reference)
     chklogical(only.reference)
-  ##
-  ## Catch sortvar from data:
-  ##
-  error <-
-    try(sortvar.x <-
-          catch("sortvar", match.call(), x, sys.frame(sys.parent())),
-        silent = TRUE)
+  #
+  # Catch sortvar and subset from data:
+  #
+  mc <- match.call()
+  sfsp <- sys.frame(sys.parent())
+  #
+  error <- try(sortvar.x <- catch("sortvar", mc, x, sfsp), silent = TRUE)
   if (!any(class(error) == "try-error"))
     sortvar <- sortvar.x
   ##
@@ -260,6 +264,18 @@ forest.netsplit <- function(x,
     ##
     if (!is.numeric(sortvar))
       sortvar <- setchar(sortvar, x$comparison)
+  }
+  #
+  error <- try(subset.x <- catch("subset", mc, x, sfsp), silent = TRUE)
+  if (!any(class(error) == "try-error"))
+    subset <- subset.x
+  ##
+  if (!is.null(subset)) {
+    chklength(subset, length(x$comparison),
+              text = paste0("Argument 'subset' must be of length ",
+                            length(x$comparison), "."))
+    if (!is.logical(subset))
+      stop("Argument 'subset' must be a logical vector.")
   }
   ##
   chkchar(text.overall)
@@ -571,16 +587,30 @@ forest.netsplit <- function(x,
   dat.indirect <- dat.indirect[sel, ]
   dat.overall <- dat.overall[sel, ]
   dat.predict <- dat.predict[sel, ]
-  ##
-  if (!is.null(sortvar)) {
+  #
+  if (!is.null(sortvar))
     sortvar <- sortvar[sel]
-    ##
+  #
+  if (!is.null(subset))
+    subset <- subset[sel]
+  #
+  if (!is.null(sortvar)) {
     o <- order(sortvar)
     ##
     dat.direct <- dat.direct[o, ]
     dat.indirect <- dat.indirect[o, ]
     dat.overall <- dat.overall[o, ]
     dat.predict <- dat.predict[o, ]
+    #
+    if (!is.null(subset))
+      subset <- subset[o]
+  }
+  #
+  if (!is.null(subset)) {
+    dat.direct <- dat.direct[subset, ]
+    dat.indirect <- subset(dat.indirect, subset)
+    dat.overall <- subset(dat.overall, subset)
+    dat.predict <- subset(dat.predict, subset)
   }
   ##
   if (direct & all(is.na(dat.direct$I2)) & missing.leftcols) {
@@ -744,6 +774,7 @@ forest.netsplit <- function(x,
                 prediction = prediction,
                 only.reference = only.reference,
                 sortvar = sortvar,
+                subset = subset,
                 text.overall = text.overall,
                 text.direct = text.direct,
                 text.indirect = text.indirect,

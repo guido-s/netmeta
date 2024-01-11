@@ -10,8 +10,8 @@
 #' @param x An object of class \code{netmeta} or \code{netsplit}.
 #' @param method A character string indicating which method to split
 #'   direct and indirect evidence is to be used. Either
-#'   \code{"Back-calculation"} or \code{"SIDDE"}, can be
-#'   abbreviated. See Details.
+#'   \code{"Back-calculation"} or \code{"SIDDE"}, can be abbreviated.
+#'   See Details.
 #' @param upper A logical indicating whether treatment comparisons
 #'   should be selected from the lower or upper triangle of the
 #'   treatment effect matrices (see list elements \code{TE.common} and
@@ -50,6 +50,9 @@
 #'   with the reference group should be printed.
 #' @param sortvar An optional vector used to sort comparisons (must be
 #'   of same length as the total number of comparisons).
+#' @param subset An optional logical vector specifying a subset of
+#'   comparisons to print (must be of same length as the total number of
+#'   comparisons) .
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
@@ -92,9 +95,9 @@
 #' This function provides two methods to derive indirect estimates:
 #' \itemize{
 #' \item Separate Indirect from Direct Evidence (SIDE) using a
-#'   back-calculation method. The \emph{direct evidence proportion} as
-#'   described in König et al. (2013) is used in the calculation of
-#'   the indirect evidence;
+#'   back-calculation method (\code{method = "Back-calculation"})
+#'   based on the \emph{direct evidence proportion} to calculate the
+#'   indirect evidence (König et al., 2013);
 #' \item Separate Indirect from Direct Design Evidence (SIDDE) as
 #'   described in Efthimiou et al. (2019).
 #' }
@@ -123,11 +126,10 @@
 #'   evidence
 #' }
 #'
-#' The SIDDE approach can be compute-intensive in large
-#' networks. Crude information on the computation progress is printed
-#' for SIDDE if argument \code{verbose} is \code{TRUE}. In addition,
-#' computation times are printed if R package \bold{tictoc} is
-#' installed.
+#' The node-splitting method and SIDDE can be compute-intensive in
+#' large networks. Crude information on the computation progress is
+#' printed if argument \code{verbose = TRUE}. In addition, computation
+#' times are printed if R package \bold{tictoc} is installed.
 #'
 #' @return
 #' An object of class \code{netsplit} with corresponding \code{print}
@@ -155,8 +157,8 @@
 #' \item{sm}{A character string indicating underlying summary measure}
 #' \item{level.ma}{The level used to calculate confidence intervals
 #'   for pooled estimates.}
-#' \item{tictoc}{Computation times for SIDDE approach (if R package
-#'   \bold{tictoc} is installed).}
+#' \item{tictoc}{Computation times for node-splitting method or SIDDE
+#'   (if R package \bold{tictoc} is installed).}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Gerta
@@ -298,7 +300,7 @@ netsplit <- function(x, method,
   ##
   ## Check for deprecated arguments in '...'
   ##
-  args  <- list(...)
+  args <- list(...)
   chklogical(warn.deprecated)
   ##
   missing.common <- missing(common)
@@ -346,14 +348,14 @@ netsplit <- function(x, method,
   x.direct.indirect <- x
   ##
   if (method == "SIDDE") {
-    sid <- sidde(x.direct.indirect, sep.trts, verbose, warn, is.tictoc)
+    ind <- sidde(x.direct.indirect, sep.trts, verbose, warn, is.tictoc)
     ##
-    x.direct.indirect$TE.indirect.common <- sid$TE.indirect.common
-    x.direct.indirect$seTE.indirect.common <- sid$seTE.indirect.common
+    x.direct.indirect$TE.indirect.common <- ind$TE.indirect.common
+    x.direct.indirect$seTE.indirect.common <- ind$seTE.indirect.common
     ##
     if (!is.bin) {
-      x.direct.indirect$TE.indirect.random <- sid$TE.indirect.random
-      x.direct.indirect$seTE.indirect.random <- sid$seTE.indirect.random
+      x.direct.indirect$TE.indirect.random <- ind$TE.indirect.random
+      x.direct.indirect$seTE.indirect.random <- ind$seTE.indirect.random
     }
   }
   ##
@@ -419,7 +421,7 @@ netsplit <- function(x, method,
               )
   ##
   if (method == "SIDDE" & is.tictoc)
-    res$tictoc <- sid$tictoc
+    res$tictoc <- ind$tictoc
   ##
   ## Backward compatibility
   ##
@@ -429,8 +431,10 @@ netsplit <- function(x, method,
   res$indirect.fixed <- res$indirect.common
   res$compare.fixed <- res$compare.common
   ##
-  class(res) <- c("netsplit",
-                  if (is.bin & method == "SIDDE") "netsplit.netmetabin")
+  class(res) <-
+    c("netsplit",
+      if (is.bin & method == "SIDDE")
+        "netsplit.netmetabin")
   
   res
 }
@@ -455,6 +459,7 @@ print.netsplit <- function(x,
                            only.reference = FALSE,
                            ##
                            sortvar = NULL,
+                           subset = NULL,
                            ##
                            nchar.trts = x$nchar.trts,
                            ##
@@ -495,6 +500,30 @@ print.netsplit <- function(x,
   ## (2) Check other arguments
   ##
   ##
+  ##
+  args <- list(...)
+  ##
+  show <-
+    deprecated(show, missing(show), args, "showall")
+  if (is.logical(show))
+    if (show)
+      show <- "all"
+    else
+      show <- "both"
+  ##
+  show <- setchar(show, c("all", "both", "with.direct",
+                          "direct.only", "indirect.only",
+                          "reference.only"))
+  ##
+  if (show == "reference.only") {
+    warning("Argument 'show = \"reference.only\" replaced with ",
+            "'only.reference = TRUE'.",
+            call. = FALSE)
+    show <- "both"
+    if (missing.only.reference)
+      only.reference <- TRUE
+  }
+  ##
   chklogical(overall)
   chklogical(ci)
   chklogical(test)
@@ -502,13 +531,13 @@ print.netsplit <- function(x,
   missing.only.reference <- missing(only.reference)
   if (!missing.only.reference)
     chklogical(only.reference)
-  ##
-  ## Catch sortvar from data:
-  ##
-  error <-
-    try(sortvar.x <-
-          catch("sortvar", match.call(), x, sys.frame(sys.parent())),
-        silent = TRUE)
+  #
+  # Catch sortvar and subset from data:
+  #
+  mc <- match.call()
+  sfsp <- sys.frame(sys.parent())
+  #
+  error <- try(sortvar.x <- catch("sortvar", mc, x, sfsp), silent = TRUE)
   if (!any(class(error) == "try-error"))
     sortvar <- sortvar.x
   ##
@@ -536,6 +565,18 @@ print.netsplit <- function(x,
     if (!is.numeric(sortvar))
       sortvar <- setchar(sortvar, x$comparison)
   }
+  #
+  error <- try(subset.x <- catch("subset", mc, x, sfsp), silent = TRUE)
+  if (!any(class(error) == "try-error"))
+    subset <- subset.x
+  ##
+  if (!is.null(subset)) {
+    chklength(subset, length(x$comparison),
+              text = paste0("Argument 'subset' must be of length ",
+                            length(x$comparison), "."))
+    if (!is.logical(subset))
+      stop("Argument 'subset' must be a logical vector.")
+  }
   ##
   if (is.null(nchar.trts))
     nchar.trts <- 666
@@ -557,7 +598,6 @@ print.netsplit <- function(x,
   ##
   fun <- "print.netmeta"
   ##
-  args  <- list(...)
   chklogical(warn.deprecated)
   ##
   missing.common <- missing(common)
@@ -572,27 +612,6 @@ print.netsplit <- function(x,
                        warn.deprecated)
   chklogical(random)
   random.logical <- random
-  ##
-  show <-
-    deprecated(show, missing(show), args, "showall")
-  if (is.logical(show))
-    if (show)
-      show <- "all"
-    else
-      show <- "both"
-  ##
-  show <- setchar(show, c("all", "both", "with.direct",
-                          "direct.only", "indirect.only",
-                          "reference.only"))
-  ##
-  if (show == "reference.only") {
-    warning("Argument 'show = \"reference.only\" replaced with ",
-            "'only.reference = TRUE'.",
-            call. = FALSE)
-    show <- "both"
-    if (missing.only.reference)
-      only.reference <- TRUE
-  }
   
   
   ##
@@ -637,6 +656,12 @@ print.netsplit <- function(x,
     sel <- !is.na(x$direct.common$TE) & is.na(x$indirect.common$TE)
   else if (show == "indirect.only")
     sel <- is.na(x$direct.common$TE) & !is.na(x$common$TE)
+  ##
+  if (sum(sel) == 0) {
+    warning("No results for argument 'show = ", show, "'.",
+            call. = FALSE)
+    return(invisible(NULL))
+  }
   ##
   if (only.reference) {
     if (x$reference.group == "") {
@@ -870,25 +895,42 @@ print.netsplit <- function(x,
   }
   
   
-  ## Do not print direct evidence proportion for SIDDE
+  ## Do not print direct evidence proportion for node-splitting method
+  ## or SIDDE
+  ## 
   ##
   noprop <- is.bin | x$method == "SIDDE" | all(common$prop == "")
+  ##
   if (noprop) {
     common <- common[, !(names(common) %in% "prop")]
     if (random.available)
       random <- random[, !(names(random) %in% "prop")]
   }
   
-  
-  if (!is.null(sortvar)) {
+
+  if (!is.null(sortvar))
     sortvar <- sortvar[sel]
-    ##
+  #
+  if (!is.null(subset))
+    subset <- subset[sel]
+  #
+  if (!is.null(sortvar)) {
     o <- order(sortvar)
-    ##
+    #
     if (common.logical)
       common <- common[o, ]
     if (random.logical)
       random <- random[o, ]
+    #
+    if (!is.null(subset))
+      subset <- subset[o]
+  }
+  #
+  if (!is.null(subset)) {
+    if (common.logical)
+      common <- common[subset, ]
+    if (random.logical)
+      random <- random[subset, ]
   }
   
   

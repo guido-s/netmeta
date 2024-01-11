@@ -22,6 +22,7 @@ pairwise(
   allstudies = gs("allstudies"),
   reference.group,
   keep.all.comparisons,
+  append = !is.null(data),
   warn = FALSE,
   ...
 )
@@ -78,6 +79,10 @@ if argument is missing).}
 \item{keep.all.comparisons}{A logical indicating whether all
 pairwise comparisons or only comparisons with the study-specific
 reference group should be kept ('basic parameters').}
+
+\item{append}{A logical indicating whether variables from data set
+provided in argument \code{data} are appended to data set with
+pairwise comparisons.}
 
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded due to only providing a single

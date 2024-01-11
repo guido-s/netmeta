@@ -13,8 +13,8 @@
 #'   names for network meta-analysis objects.
 #' @param method A character string indicating which method to split
 #'   direct and indirect evidence is to be used. Either
-#'   \code{"Back-calculation"} or \code{"SIDDE"}, can be
-#'   abbreviated. See Details.
+#'   \code{"Back-calculation"} or \code{"SIDDE"}, can be abbreviated.
+#'   See Details.
 #' @param order A optional character or numerical vector specifying
 #'   the order of treatments in comparisons.
 #' @param common A logical indicating whether table for the common
@@ -37,6 +37,8 @@
 #'   should be back transformed. For example, if \code{backtransf =
 #'   TRUE}, results for \code{sm = "OR"} are printed as odds ratios
 #'   rather than log odds ratios.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param digits.I2 Minimal number of significant digits for I-squared
@@ -72,6 +74,8 @@
 #'   file.
 #' @param overwrite A logical indicating whether an existing Excel
 #'   file should be overwritten.
+#' @param legend A logical indicating whether a legend should be
+#'   printed for abbreviated treatment names.
 #' @param warn A logical indicating whether warnings should be
 #'   printed.
 #' @param verbose A logical indicating whether progress information
@@ -90,9 +94,9 @@
 #' Two methods to derive indirect estimates are available:
 #' \itemize{
 #' \item Separate Indirect from Direct Evidence (SIDE) using a
-#'   back-calculation method. The \emph{direct evidence proportion} as
-#'   described in König et al. (2013) is used in the calculation of
-#'   the indirect evidence;
+#'   back-calculation method (\code{method = "Back-calculation"})
+#'   based on the \emph{direct evidence proportion} to calculate the
+#'   indirect evidence (König et al., 2013);
 #' \item Separate Indirect from Direct Design Evidence (SIDDE) as
 #'   described in Efthimiou et al. (2019).
 #' }
@@ -126,6 +130,11 @@
 #'   \code{\link{netmetabin}}, \code{\link{netmeasures}}
 #' 
 #' @references
+#' Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
+#' Checking consistency in mixed treatment comparison meta-analysis.
+#' \emph{Statistics in Medicine},
+#' \bold{29}, 932--44
+#' 
 #' Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
 #' (2019):
 #' A Mantel-Haenszel model for network meta-analysis of rare events.
@@ -187,6 +196,8 @@ nettable <- function(...,
                      baseline.reference = NULL,
                      ##
                      backtransf = NULL,
+                     ##
+                     nchar.trts = if (writexl) 666 else NULL,
                      ##
                      digits = gs("digits"),
                      digits.I2 = gs("digits.I2"),
@@ -311,6 +322,18 @@ nettable <- function(...,
   ##
   if (length(unique(backtransfs)) == 1)
     backtransfs <- unique(backtransfs)
+  ##
+  if (is.null(nchar.trts)) {
+    nchar.trts <- vector("numeric", n.netmeta)
+    for (i in n.i)
+      nchar.trts[i] <- args[[i]]$nchar.trts
+    ##
+    if (length(unique(nchar.trts)) == 1)
+      nchar.trts <- unique(nchar.trts)
+    else
+      nchar.trts <- min(nchar.trts, na.rm = TRUE)
+  }
+  chknumeric(nchar.trts, min = 1, length = 1)
   
   
   ##
@@ -412,7 +435,29 @@ nettable <- function(...,
   else
     table.random$n <- formatN(round(table.random$n), digits = 0,
                               text.NA = text.NA, big.mark = big.mark)
-  
+  ##
+  trts <- c(table.common[["Arm 1"]], table.common[["Arm 2"]])
+  ##
+  if (!(all(nchar.trts > nchar(trts)))) {
+    trts.abbr <- treats(trts, nchar.trts)
+    ##
+    table.common[["Arm 1"]] <-
+      as.character(factor(table.common[["Arm 1"]],
+                          levels = trts, labels = trts.abbr))
+    table.common[["Arm 2"]] <-
+      as.character(factor(table.common[["Arm 2"]],
+                          levels = trts, labels = trts.abbr))
+    ##
+    table.random[["Arm 1"]] <-
+      as.character(factor(table.random[["Arm 1"]],
+                          levels = trts, labels = trts.abbr))
+    table.random[["Arm 2"]] <-
+      as.character(factor(table.random[["Arm 2"]],
+                          levels = trts, labels = trts.abbr))
+  }
+  else
+    trts.abbr <- trts
+
   
   ##
   ##
@@ -491,6 +536,10 @@ nettable <- function(...,
               sm = sms,
               level.ma = unique(levs),
               ##
+              nchar.trts,
+              trts = unique(trts),
+              trts.abbr = unique(trts.abbr),
+              ##
               version = packageDescription("netmeta")$Version
               )
   ##
@@ -513,7 +562,8 @@ nettable <- function(...,
 #' @export
 
 
-print.nettable <- function(x, common = x$x$common, random = x$x$random, ...) {
+print.nettable <- function(x, common = x$x$common, random = x$x$random,
+                           legend = TRUE, ...) {
   
   ##
   ##
@@ -532,6 +582,7 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random, ...) {
   common <- deprecated(common, missing(common), args, "fixed", FALSE)
   chklogical(common)
   chklogical(random)
+  chklogical(legend)
   
   
   ##
@@ -611,6 +662,14 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random, ...) {
     }
   }
   
+  
+  ##
+  ##
+  ## (4) Legend
+  ##
+  ##
+  if (!is.null(x$trts) && !is.null(x$trts.abbr))
+    legendabbr(x$trts, x$trts.abbr, legend)
   
   invisible(NULL)
 }

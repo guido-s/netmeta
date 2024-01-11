@@ -24,6 +24,10 @@ distance matrix)}
 
 \method{netconnection}{pairwise}(
   data,
+  treat1,
+  treat2,
+  studlab = NULL,
+  subset = NULL,
   sep.trts = ":",
   nchar.trts = 666,
   title = "",
@@ -44,16 +48,17 @@ distance matrix)}
 netconnection(data, ...)
 }
 \arguments{
-\item{data}{An optional data frame containing the study
-information.}
+\item{data}{A data frame, e.g., created with
+\code{\link{pairwise}}.}
 
-\item{treat1}{Label / number for first treatment or a data frame
-created with \code{\link{pairwise}}.}
+\item{treat1}{Label / number for first treatment (ignored if
+\code{data} was created with \code{\link{pairwise}}).}
 
-\item{treat2}{Label / number for second treatment.}
+\item{treat2}{Label / number for second treatment (ignored if
+\code{data} was created with \code{\link{pairwise}}).}
 
-\item{studlab}{An optional - but important! - vector with study
-labels (see Details).}
+\item{studlab}{Study labels (ignored if \code{data} was created
+with \code{\link{pairwise}}).}
 
 \item{subset}{An optional vector specifying a subset of studies to
 be used.}
