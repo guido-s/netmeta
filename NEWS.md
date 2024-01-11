@@ -1,3 +1,66 @@
+## netmeta, version 2.9-0 (2024-01-11)
+
+### Major changes
+
+* Two new methods to calculate network contributions implemented
+  in netcontrib()
+
+### User-visible changes
+
+* netcontrib():
+  - new pseudo-inverse method based on L2 solution implemented
+    (argument 'method = "pseudoinverse"')
+  - another L1 solution based on R package **cccp** implemented
+    (argument 'method = "cccp"')
+
+* netgraph.netmeta(), netgraph.netimpact():
+  - use original order of multi-arm studies for colouring (argument
+    'col.multiarm')
+  - wider lines if argument 'thickness = "equal"'
+
+* netconnection.pairwise():
+  - add arguments 'treat1', 'treat2' and 'studlab' for backward
+    compatibility (see bug fix)
+  - argument 'subset' can be used with a pairwise() object
+
+* pairwise():
+  - new argument 'append' to append variables from data set provided in
+    argument 'data' (default: TRUE)
+  - can be used if only study labels and intervention names are provided
+    (and optionally sample sizes)
+
+* nettable():
+  - new argument 'nchar.trts' to abbreviate treatment names
+  - new argument 'legend' to suppress the printout of the legend describing
+    treatment abbreviations
+
+* print.nettable():
+  - new argument 'legend' to suppress printing of legend with abbreviated
+    treatment names
+
+* print.netsplit(), forest.netsplit():
+  - new argument 'subset' to define subset of comparisons to print
+
+### Bug fixes
+
+* netconnection.pairwise():
+  - the command 'netconnection(treat1, treat2, studlab, data = pw1)'
+    resulted in an obscure error if argument 'data' was a data set
+    created with pairwise()
+
+* netgraph.netmeta():
+  - error if argument 'thickness' was a matrix and argument 'lwd.max'
+    was missing
+
+* print.netcomplex():
+  - wrong label for summary measure for risk and odds ratio, e.g.,
+    log(OR) for odds ratio and OR for log odds ratio
+
+### Internal changes
+
+* New internal R function nodesplit() for node-splitting method
+
+
 ## netmeta, version 2.8-2 (2023-05-06)
 
 ### Major changes
@@ -6,6 +69,16 @@
   Software* added (command: vignette("netmeta"))
   
 * R package **R.rsp** added to suggested packages
+
+### User-visible changes
+
+* netmeta() / discomb():
+  - remove leading and trailing whitespace in treatment names
+
+### Bug fixes
+
+* Use of netsplit() resulted in an obscure error in networks with
+  treatment names containing leading and trailing whitespace
 
 
 ## netmeta, version 2.8-1 (2023-03-16)
@@ -304,6 +377,9 @@
 * plot.netrank():
   - function ggplot2::xlab() instead of netmeta::xlab() must be used
     to create image plot
+
+* print.netcomplex():
+  - argument 'nchar.comps' was ignored
 
 ### User-visible changes
 
@@ -842,7 +918,8 @@
   - export the design matrix (new list element 'X.matrix')
 
 * discomb():
-  - export the number of subnetworks
+  - export the number of subnetworks
+
 
 * forest.netsplit():
   - print an informative warning (instead of an obscure error
@@ -872,7 +949,8 @@
   treatment estimates and standard errors)
 
 * New default for consistency tolerance: 0.001 instead of 0.0005
-
+
+
 * Print tau in addition to tau2 in outputs
 
 * Print confidence interval for I2 in outputs

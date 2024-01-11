@@ -7,3 +7,5 @@ roxygen2.*[.]R
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
 install-rgraphviz.sh
+^.*\.Rproj$
+^\.Rproj\.user$

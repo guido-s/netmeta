@@ -34,6 +34,7 @@ netsplit(
   test = show \%in\% c("all", "with.direct", "both"),
   only.reference = FALSE,
   sortvar = NULL,
+  subset = NULL,
   nchar.trts = x$nchar.trts,
   digits = gs("digits"),
   digits.stat = gs("digits.stat"),
@@ -54,8 +55,8 @@ netsplit(
 
 \item{method}{A character string indicating which method to split
 direct and indirect evidence is to be used. Either
-\code{"Back-calculation"} or \code{"SIDDE"}, can be
-abbreviated. See Details.}
+\code{"Back-calculation"} or \code{"SIDDE"}, can be abbreviated.
+See Details.}
 
 \item{upper}{A logical indicating whether treatment comparisons
 should be selected from the lower or upper triangle of the
@@ -126,6 +127,10 @@ with the reference group should be printed.}
 \item{sortvar}{An optional vector used to sort comparisons (must be
 of same length as the total number of comparisons).}
 
+\item{subset}{An optional logical vector specifying a subset of
+comparisons to print (must be of same length as the total number of
+comparisons) .}
+
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
 
@@ -184,8 +189,8 @@ following components:
 \item{sm}{A character string indicating underlying summary measure}
 \item{level.ma}{The level used to calculate confidence intervals
   for pooled estimates.}
-\item{tictoc}{Computation times for SIDDE approach (if R package
-  \bold{tictoc} is installed).}
+\item{tictoc}{Computation times for node-splitting method or SIDDE
+  (if R package \bold{tictoc} is installed).}
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
@@ -201,9 +206,9 @@ as check for consistency of network meta-analysis (Dias et al.,
 This function provides two methods to derive indirect estimates:
 \itemize{
 \item Separate Indirect from Direct Evidence (SIDE) using a
-  back-calculation method. The \emph{direct evidence proportion} as
-  described in König et al. (2013) is used in the calculation of
-  the indirect evidence;
+  back-calculation method (\code{method = "Back-calculation"})
+  based on the \emph{direct evidence proportion} to calculate the
+  indirect evidence (König et al., 2013);
 \item Separate Indirect from Direct Design Evidence (SIDDE) as
   described in Efthimiou et al. (2019).
 }
@@ -232,11 +237,10 @@ Argument \code{show} determines which comparisons are printed:
   evidence
 }
 
-The SIDDE approach can be compute-intensive in large
-networks. Crude information on the computation progress is printed
-for SIDDE if argument \code{verbose} is \code{TRUE}. In addition,
-computation times are printed if R package \bold{tictoc} is
-installed.
+The node-splitting method and SIDDE can be compute-intensive in
+large networks. Crude information on the computation progress is
+printed if argument \code{verbose = TRUE}. In addition, computation
+times are printed if R package \bold{tictoc} is installed.
 }
 \examples{
 data(Woods2010)

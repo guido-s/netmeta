@@ -128,8 +128,8 @@ netgraph.netimpact <- function(x,
     mc <- multicols(studies, narms,
                     missing(col.multiarm),
                     col.multiarm, alpha.transparency)
-    col.polygon <- mc$cols
-    multiarm.studies <- mc$multiarm.studies
+    col.polygon <- mc$col
+    multiarm.studies <- mc$studlab
   }
   else
     col.polygon <- col.ignore.multiarm

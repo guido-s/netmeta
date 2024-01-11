@@ -515,9 +515,12 @@ netgraph.netmeta <- function(x, seq = x$seq,
   chknumeric(lwd.min, min = 0, zero = TRUE, length = 1)
   ##
   missing.lwd.max <- missing(lwd.max)
-  if (missing.lwd.max)
-     lwd.max <- 4 * lwd
-  chknumeric(lwd.max, min = 0, zero = TRUE, length = 1)
+  if (missing.lwd.max) {
+    if (!is.matrix(thickness) && thickness == "equal")
+      lwd.max <- 2 * lwd
+    else
+      lwd.max <- 4 * lwd
+  }
   ##
   if (lwd.min > lwd.max)
     stop("Argument 'lwd.min' must be smaller than 'lwd.max'.")
@@ -567,15 +570,17 @@ netgraph.netmeta <- function(x, seq = x$seq,
     is_3d <- FALSE
   }
   ##
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
+  ##
   missing.rotate <- missing(rotate)
-  chknumeric(rotate, min = -180, max = 180)
+  if (!missing.rotate)
+    rotate <- catch("rotate", mc, x, sfsp)
+  chknumeric(rotate, min = -180, max = 180, length = 1)
   ##
   missing.start.layout <- missing(start.layout)
   start.layout <-
     setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
-  ##
-  sfsp <- sys.frame(sys.parent())
-  mc <- match.call()
   ##
   if (!missing(seq) & is.null(seq))
     stop("Argument 'seq' must be not NULL.")
@@ -1195,8 +1200,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   if (multiarm) {
     mc <- multicols(x$studies, x$narms, missing(col.multiarm),
                     col.multiarm, alpha.transparency)
-    col.polygon <- mc$cols
-    multiarm.studies <- mc$multiarm.studies
+    col.polygon <- mc$col
+    multiarm.studies <- mc$studlab
     n.multi <- length(multiarm.studies)
   }
   ##
@@ -1209,7 +1214,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   else if (thick == "equal") {
-    W.matrix <- lwd * A.sign
+    W.matrix <- lwd.max * A.sign
   }
   else if (thick == "se.common") {
     IV.matrix <- x$seTE.direct.common[seq1, seq1]
@@ -1255,8 +1260,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
     W.matrix[W.matrix < lwd.min & W.matrix != 0] <- lwd.min
   }
   ##
-  if (missing.lwd.max & length(unique(W.matrix[W.matrix != 0])) == 1)
-    W.matrix <- W.matrix / 4
+  if (missing.lwd.max & !is.matrix(thickness) && thickness != "equal" &
+      length(unique(W.matrix[W.matrix != 0])) == 1)
+    W.matrix <- W.matrix / 2
   
   
   ##
@@ -1577,7 +1583,11 @@ netgraph.netmeta <- function(x, seq = x$seq,
   ##  
   dat.edges$xpos[is.zero(dat.edges$xpos)] <- 0
   dat.edges$ypos[is.zero(dat.edges$ypos)] <- 0
+
+  res <- list(nodes = dat.nodes, edges = dat.edges)
+  ##
+  if (multiarm)
+    res$multiarm <- mc
   
-  
-  invisible(list(nodes = dat.nodes, edges = dat.edges))
+  invisible(res)
 }

@@ -17,13 +17,14 @@
 #' 
 #' @aliases netconnection netconnection.default print.netconnection
 #' 
-#' @param data An optional data frame containing the study
-#'   information.
-#' @param treat1 Label / number for first treatment or a data frame
-#'   created with \code{\link{pairwise}}.
-#' @param treat2 Label / number for second treatment.
-#' @param studlab An optional - but important! - vector with study
-#'   labels (see Details).
+#' @param data A data frame, e.g., created with
+#'   \code{\link{pairwise}}.
+#' @param treat1 Label / number for first treatment (ignored if
+#'   \code{data} was created with \code{\link{pairwise}}).
+#' @param treat2 Label / number for second treatment (ignored if
+#'   \code{data} was created with \code{\link{pairwise}}).
+#' @param studlab Study labels (ignored if \code{data} was created
+#'   with \code{\link{pairwise}}).
 #' @param subset An optional vector specifying a subset of studies to
 #'   be used.
 #' @param title Title of meta-analysis / systematic review.
@@ -133,6 +134,7 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
   ## (1) Check arguments
   ##
   ##
+  
   nulldata <- is.null(data)
   sfsp <- sys.frame(sys.parent())
   mc <- match.call()
@@ -183,6 +185,7 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
   ## (2) Check length of essential variables
   ##
   ##
+  
   fun <- "netconnection"
   ##
   k.All <- length(treat1)
@@ -207,6 +210,7 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
   ## (3) Use subset for analysis
   ##
   ##
+  
   if (!missing.subset) {
     if ((is.logical(subset) & (sum(subset) > k.All)) ||
         (length(subset) > k.All))
@@ -223,6 +227,7 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
   ## (4) Additional checks
   ##
   ##
+  
   if (any(treat1 == treat2))
     stop("Treatments must be different (arguments 'treat1' and 'treat2').")
   ##
@@ -283,6 +288,7 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
   ## (5) Determine (sub)network(s)
   ##
   ##
+  
   treats <- as.factor(c(as.character(treat1), as.character(treat2)))
   trts <- levels(treats)
   ##
@@ -415,19 +421,42 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
 
 
 netconnection.pairwise <- function(data,
+                                   treat1, treat2, studlab = NULL,
+                                   subset = NULL,
                                    sep.trts = ":",
                                    nchar.trts = 666,
                                    title = "", details.disconnected = FALSE,
-                                   warn = FALSE, ...) {
+                                   warn = FALSE,
+                                   ...) {
   
   ##
   ##
   ## (1) Check arguments
   ##
   ##
+  
   chkclass(data, "pairwise")
   ##
-  ## Catch treat1, treat2, studlab
+  chklogical(warn)
+  ##
+  ## Arguments 'treat1', 'treat2' and 'studlab' ignored
+  ##
+  if (warn) {
+    if (!missing(treat1))
+      warning("Argument 'treat1' ignored as argument 'data' is an ",
+              "object created with pairwise().",
+              call. = FALSE)
+    ##
+    if (!missing(treat2))
+      warning("Argument 'treat2' ignored as argument 'data' is an ",
+              "object created with pairwise().",
+              call. = FALSE)
+    ##
+    if (!missing(studlab))
+      warning("Argument 'studlab' ignored as argument 'data' is an ",
+              "object created with pairwise().",
+              call. = FALSE)
+  }
   ##
   treat1 <- data$treat1
   treat2 <- data$treat2
@@ -438,10 +467,26 @@ netconnection.pairwise <- function(data,
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
   ##
+  missing.subset <- missing(subset)
+  if (!missing.subset) {
+    sfsp <- sys.frame(sys.parent())
+    mc <- match.call()
+    subset <- catch("subset", mc, data, sfsp)
+    ##
+    k.All <- length(treat1)
+    ##
+    if ((is.logical(subset) & (sum(subset) > k.All)) ||
+        (length(subset) > k.All))
+      stop("Length of subset is larger than number of studies.")
+    ##
+    treat1 <- treat1[subset]
+    treat2 <- treat2[subset]
+    studlab <- studlab[subset]
+  }
+  ##
   chknumeric(nchar.trts, min = 1, length = 1)
   ##
   chklogical(details.disconnected)
-  chklogical(warn)
   
   
   ##
@@ -449,6 +494,7 @@ netconnection.pairwise <- function(data,
   ## (2) Additional checks
   ##
   ##
+  
   if (any(treat1 == treat2))
     stop("Treatments must be different (arguments 'treat1' and 'treat2').")
   ##
@@ -509,6 +555,7 @@ netconnection.pairwise <- function(data,
   ## (3) Determine (sub)network(s)
   ##
   ##
+  
   treats <- as.factor(c(as.character(treat1), as.character(treat2)))
   trts <- levels(treats)
   ##

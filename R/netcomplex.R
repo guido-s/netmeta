@@ -413,7 +413,7 @@ print.netcomplex <- function(x,
   ##
   if (sm != "") {
     sm.lab <- paste0("i", sm)
-    if (backtransf)
+    if (!backtransf & relative)
       sm.lab <- paste0("log(", sm, ")")
   }
   ##  
@@ -487,6 +487,7 @@ print.netcomplex <- function(x,
     ##
     cat(msg)
     ##
+    dimnames(res.f)[[1]] <- complex
     dimnames(res.f)[[2]] <- c(sm.lab, ci.lab, "z", "p-value")
     ##
     cat("(additive CNMA model, common effects model):\n")
@@ -517,6 +518,7 @@ print.netcomplex <- function(x,
                            "NA", big.mark = big.mark),
             pval = pval.r)
     ##
+    dimnames(res.r)[[1]] <- complex
     dimnames(res.r)[[2]] <- c(sm.lab, ci.lab, "z", "p-value")
     ##
     cat(msg)

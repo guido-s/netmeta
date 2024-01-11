@@ -760,6 +760,5 @@ print.netmeta <- function(x,
              treats(TE.common, nchar.trts),
              legend)
   
-  
   invisible(NULL)
 }

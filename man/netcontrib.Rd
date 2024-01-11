@@ -32,8 +32,9 @@ netcontrib(
 \item{x}{An object of class \code{netmeta} or \code{netcontrib}.}
 
 \item{method}{A character string indicating which method is to
-calculate the contribution matrix. Either \code{"randomwalk"} or
-\code{"shortestpath"}, can be abbreviated.}
+calculate the contribution matrix. Either \code{"randomwalk"},
+\code{"shortestpath"}, \code{"cccp"}, or \code{"pseudoinverse"},
+can be abbreviated.}
 
 \item{hatmatrix.F1000}{A logical indicating whether hat matrix
 given in F1000 article should be used for \code{method =
@@ -110,8 +111,8 @@ two-step (aggregate) version of the graph theoretical NMA model
 (Davies et al., 2022). This H matrix can be obtained from
 \code{\link{hatmatrix}} with argument \code{method = "davies"}.
 
-Two methods are implemented to estimate the streams and as a
-result, the proportion contributions:
+Four methods are implemented to estimate the proportion
+contributions:
 
 (1) If argument \code{method = "randomwalk"}, an analytical
 random-walk (RW) approach is used (Davies et al., 2022). Here, the
@@ -146,10 +147,18 @@ obtained by specifying \code{hatmatrix.F1000 = TRUE} for
 \code{method = "shortestpath"}. For other purposes, this method is
 not recommended.
 
-Once the streams have been identified (either by method (1) or
-(2)), the proportion contribution of each direct comparison is
-equal to the sum over the flow of evidence in each path containing
-that edge divided by the number of edges that make up that path.
+(3) If argument \code{method = "cccp"}, contributions are estimated
+using \code{\link[cccp]{l1}} from R package \bold{cccp} (Rücker et
+al., 2023, unpublished).
+
+(4) If argument \code{method = "pseudoinverse"}, contributions are
+derived from an L2 solution based on a Moore-Penrose pseudoinverse
+(Rücker et al., 2023, unpublished).
+
+Once the streams have been identified by any method, the proportion
+contribution of each direct comparison is equal to the sum over the
+flow of evidence in each path containing that edge divided by the
+number of edges that make up that path.
 
 By default, treatment names are not abbreviated in
 printouts. However, in order to get more concise printouts,
