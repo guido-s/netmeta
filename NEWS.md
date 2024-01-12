@@ -1,3 +1,11 @@
+## netmeta, version 2.9-1 (2024-mm-dd)
+
+### Bug fixes
+
+* netcomplex():
+  - print correct component names for command *netcomplex(net1, 2)* etc.
+
+
 ## netmeta, version 2.9-0 (2024-01-11)
 
 ### Major changes

@@ -206,14 +206,14 @@ netcomplex <- function(x, complex,
     complex.orig <- complex    
   ##
   n.comps <- length(x$comps)
-  n.complex <- length(complex)
   ##
   comps <- x$comps
-  add <- rep("", n.complex)
   ##
   if (is.matrix(complex)) {
     C.matrix <- complex
     complex <- rownames(complex)   
+    n.complex <- length(complex)
+    add <- rep("", n.complex)
   }
   else if (is.numeric(complex)) {
     chknumeric(complex, min = 1, max = n.comps, length = 1)
@@ -229,6 +229,8 @@ netcomplex <- function(x, complex,
     }
     ##
     complex <- rownames(C.matrix)
+    n.complex <- length(complex)
+    add <- rep("", n.complex)
   }
   else if (is.vector(complex)) {
     ##
@@ -279,8 +281,7 @@ netcomplex <- function(x, complex,
   ##
   ci.f <- ci(Comb.common, seComb.common, level = level)
   ci.r <- ci(Comb.random, seComb.random, level = level)
-  
-  
+    
   res <- list(complex = complex,
               ##
               Comb.common = ci.f$TE,
@@ -398,13 +399,13 @@ print.netcomplex <- function(x,
   if (common | random) {
     comps <- c(x$comps, x$inactive)
     comps.abbr <- treats(comps, nchar.comps)
-    ##
+     ##
     for (i in seq_len(n.complex))
       complex[i] <- compos(x$complex[i], comps, comps.abbr,
                            x$x$sep.comps, x$add[i] == " ")
   }
   
-
+  
   sm <- x$x$sm
   ##
   relative <- is.relative.effect(sm)
