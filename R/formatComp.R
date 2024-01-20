@@ -12,7 +12,7 @@ formatComp <- function(x,
   sm.lab <- sm
   ##
   if (!backtransf & relative)
-    sm.lab <- paste0("log", sm)
+    sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##  
   ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
   
@@ -22,10 +22,19 @@ formatComp <- function(x,
   rnam <- x[, 1]
   res <- x[, -1]
   ##
-  if (backtransf & relative) {
-    res$TE <- exp(res$TE)
-    res$lower <- exp(res$lower)
-    res$upper <- exp(res$upper)
+  if (backtransf) {
+    res$TE <- backtransf(res$TE, sm)
+    res$lower <- backtransf(res$lower, sm)
+    res$upper <- backtransf(res$upper, sm)
+    #
+    # Switch lower and upper limit for VE if results have been
+    # backtransformed
+    #
+    if (sm == "VE") {
+      tmp.l <- res$lower
+      res$lower <- res$upper
+      res$upper <- tmp.l
+    }
   }
   ##
   res$treat1 <- compos(res$treat1, comps, comps.abbr, sep.comps)

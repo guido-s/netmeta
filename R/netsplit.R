@@ -619,16 +619,15 @@ print.netsplit <- function(x,
   ## (3) Some additional settings and checks
   ##
   ##
-  sm <- x$sm
-  sm.lab <- sm
-  ##
-  relative <- is.relative.effect(sm)
+  sm <- sm.lab <- x$sm
+  #
+  relative <- is.relative.effect(sm) | sm == "VE"
   ##
   if (!backtransf & relative)
-    sm.lab <- paste("log", sm, sep = "")
+    sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##
   if (!(sm.lab == "" | sm.lab == "log"))
-    sm.lab <- paste("(", sm.lab, ") ", sep = "")
+    sm.lab <- paste0("(", sm.lab, ") ")
   else
     sm.lab <- ""
   ##
@@ -726,39 +725,78 @@ print.netsplit <- function(x,
   }
   
   
-  if (backtransf & relative) {
-    TE.common <- exp(TE.common)
-    lower.common <- exp(lower.common)
-    upper.common <- exp(upper.common)
+  if (backtransf) {
+    TE.common <- backtransf(TE.common, sm)
+    lower.common <- backtransf(lower.common, sm)
+    upper.common <- backtransf(upper.common, sm)
     ##
-    TE.direct.common <- exp(TE.direct.common)
-    lower.direct.common <- exp(lower.direct.common)
-    upper.direct.common <- exp(upper.direct.common)
+    TE.direct.common <- backtransf(TE.direct.common, sm)
+    lower.direct.common <- backtransf(lower.direct.common, sm)
+    upper.direct.common <- backtransf(upper.direct.common, sm)
     ##
-    TE.indirect.common <- exp(TE.indirect.common)
-    lower.indirect.common <- exp(lower.indirect.common)
-    upper.indirect.common <- exp(upper.indirect.common)
+    TE.indirect.common <- backtransf(TE.indirect.common, sm)
+    lower.indirect.common <- backtransf(lower.indirect.common, sm)
+    upper.indirect.common <- backtransf(upper.indirect.common, sm)
     ##
-    TE.compare.common <- exp(TE.compare.common)
-    lower.compare.common <- exp(lower.compare.common)
-    upper.compare.common <- exp(upper.compare.common)
+    TE.compare.common <- backtransf(TE.compare.common, sm)
+    lower.compare.common <- backtransf(lower.compare.common, sm)
+    upper.compare.common <- backtransf(upper.compare.common, sm)
     ##
     if (random.available) {
-      TE.random <- exp(TE.random)
-      lower.random <- exp(lower.random)
-      upper.random <- exp(upper.random)
+      TE.random <- backtransf(TE.random, sm)
+      lower.random <- backtransf(lower.random, sm)
+      upper.random <- backtransf(upper.random, sm)
       ##
-      TE.direct.random <- exp(TE.direct.random)
-      lower.direct.random <- exp(lower.direct.random)
-      upper.direct.random <- exp(upper.direct.random)
+      TE.direct.random <- backtransf(TE.direct.random, sm)
+      lower.direct.random <- backtransf(lower.direct.random, sm)
+      upper.direct.random <- backtransf(upper.direct.random, sm)
       ##
-      TE.indirect.random <- exp(TE.indirect.random)
-      lower.indirect.random <- exp(lower.indirect.random)
-      upper.indirect.random <- exp(upper.indirect.random)
+      TE.indirect.random <- backtransf(TE.indirect.random, sm)
+      lower.indirect.random <- backtransf(lower.indirect.random, sm)
+      upper.indirect.random <- backtransf(upper.indirect.random, sm)
       ##
-      TE.compare.random <- exp(TE.compare.random)
-      lower.compare.random <- exp(lower.compare.random)
-      upper.compare.random <- exp(upper.compare.random)
+      TE.compare.random <- backtransf(TE.compare.random, sm)
+      lower.compare.random <- backtransf(lower.compare.random, sm)
+      upper.compare.random <- backtransf(upper.compare.random, sm)
+    }
+    #
+    # Switch lower and upper limit for VE if results have been
+    # backtransformed
+    #
+    if (sm == "VE") {
+      tmp.l <- lower.common
+      lower.common <- upper.common
+      upper.common <- tmp.l
+      #
+      tmp.l <- lower.direct.common
+      lower.direct.common <- upper.direct.common
+      upper.direct.common <- tmp.l
+      #
+      tmp.l <- lower.indirect.common
+      lower.indirect.common <- upper.indirect.common
+      upper.indirect.common <- tmp.l
+      #
+      tmp.l <- lower.compare.common
+      lower.compare.common <- upper.compare.common
+      upper.compare.common <- tmp.l
+      #
+      if (random.available) {
+        tmp.l <- lower.random
+        lower.random <- upper.random
+        upper.random <- tmp.l
+        #
+        tmp.l <- lower.direct.random
+        lower.direct.random <- upper.direct.random
+        upper.direct.random <- tmp.l
+        #
+        tmp.l <- lower.indirect.random
+        lower.indirect.random <- upper.indirect.random
+        upper.indirect.random <- tmp.l
+        #
+        tmp.l <- lower.compare.random
+        lower.compare.random <- upper.compare.random
+        upper.compare.random <- tmp.l
+      }
     }
   }
   

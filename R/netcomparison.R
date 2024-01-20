@@ -489,12 +489,12 @@ print.netcomparison <- function(x,
   }
   
   
-  sm.lab <- x$x$sm
+  sm <- sm.lab <- x$x$sm
   ##
-  relative <- is.relative.effect(x$x$sm)
-  ##
+  relative <- is.relative.effect(sm) | sm == "VE"
+  #
   if (!backtransf & relative)
-    sm.lab <- paste0("log", x$x$sm)
+    sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##  
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   
@@ -504,10 +504,19 @@ print.netcomparison <- function(x,
     lower.common <- x$lower.common
     upper.common <- x$upper.common
     ##
-    if (backtransf & relative) {
-      TE.common <- exp(TE.common)
-      lower.common <- exp(lower.common)
-      upper.common <- exp(upper.common)
+    if (backtransf) {
+      TE.common <- backtransf(TE.common, sm)
+      lower.common <- backtransf(lower.common, sm)
+      upper.common <- backtransf(upper.common, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lower.common
+        lower.common <- upper.common
+        upper.common <- tmp.l
+      }
     }
   }
   ##
@@ -516,10 +525,19 @@ print.netcomparison <- function(x,
     lower.random <- x$lower.random
     upper.random <- x$upper.random
     ##
-    if (backtransf & relative) {
-      TE.random <- exp(TE.random)
-      lower.random <- exp(lower.random)
-      upper.random <- exp(upper.random)
+    if (backtransf) {
+      TE.random <- backtransf(TE.random, sm)
+      lower.random <- backtransf(lower.random, sm)
+      upper.random <- backtransf(upper.random, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lower.random
+        lower.random <- upper.random
+        upper.random <- tmp.l
+      }
     }
   }
   

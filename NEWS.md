@@ -5,6 +5,10 @@
 * netcomplex():
   - print correct component names for command *netcomplex(net1, 2)* etc.
 
+### Internal changes
+
+* Use backtransf() from R package **meta** to backtransform results
+
 
 ## netmeta, version 2.9-0 (2024-01-11)
 

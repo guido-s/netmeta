@@ -117,14 +117,21 @@ heatplot.netmeta <- function(x,
     upper.nma <- x$upper.random[seq1, seq1]
   }
   ##
-  noeffect <- 0
-  ##
-  if (backtransf & is.relative.effect(sm)) {
-    noeffect <- 1
-    ##
-    TE.nma    <- exp(TE.nma)
-    lower.nma <- exp(lower.nma)
-    upper.nma <- exp(upper.nma)
+  noeffect <- 1L * (backtransf & is.relative.effect(sm))
+  #
+  if (backtransf) {
+    TE.nma    <- backtransf(TE.nma, sm)
+    lower.nma <- backtransf(lower.nma, sm)
+    upper.nma <- backtransf(upper.nma, sm)
+    #
+    # Switch lower and upper limit for VE if results have been
+    # backtransformed
+    #
+    if (sm == "VE") {
+      tmp.l <- lower.nma
+      lower.nma <- upper.nma
+      upper.nma <- tmp.l
+    }
   }
   ##
   TE.nma    <- round(TE.nma, digits)

@@ -233,6 +233,7 @@ netcomplex <- function(x, complex,
     add <- rep("", n.complex)
   }
   else if (is.vector(complex)) {
+    n.complex <- length(complex)
     ##
     complex.list <- compsplit(complex, x$sep.comps)
     ##
@@ -406,16 +407,14 @@ print.netcomplex <- function(x,
   }
   
   
-  sm <- x$x$sm
+  sm <- sm.lab <- x$x$sm
   ##
-  relative <- is.relative.effect(sm)
-  ##
-  sm.lab <- sm
+  relative <- is.relative.effect(sm) | sm == "VE"
   ##
   if (sm != "") {
     sm.lab <- paste0("i", sm)
     if (!backtransf & relative)
-      sm.lab <- paste0("log(", sm, ")")
+      sm.lab <- paste0("log(", if (sm == "VE") "VR" else sm, ")")
   }
   ##  
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
@@ -426,10 +425,19 @@ print.netcomplex <- function(x,
     lower.Comb.common <- x$lower.Comb.common
     upper.Comb.common <- x$upper.Comb.common
     ##
-    if (backtransf & relative) {
-      Comb.common <- exp(Comb.common)
-      lower.Comb.common <- exp(lower.Comb.common)
-      upper.Comb.common <- exp(upper.Comb.common)
+    if (backtransf) {
+      Comb.common <- backtransf(Comb.common, sm)
+      lower.Comb.common <- backtransf(lower.Comb.common, sm)
+      upper.Comb.common <- backtransf(upper.Comb.common, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lower.Comb.common
+        lower.Comb.common <- upper.Comb.common
+        upper.Comb.common <- tmp.l
+      }
     }
   }
   ##
@@ -438,10 +446,19 @@ print.netcomplex <- function(x,
     lower.Comb.random <- x$lower.Comb.random
     upper.Comb.random <- x$upper.Comb.random
     ##
-    if (backtransf & relative) {
-      Comb.random <- exp(Comb.random)
-      lower.Comb.random <- exp(lower.Comb.random)
-      upper.Comb.random <- exp(upper.Comb.random)
+    if (backtransf) {
+      Comb.random <- backtransf(Comb.random, sm)
+      lower.Comb.random <- backtransf(lower.Comb.random, sm)
+      upper.Comb.random <- backtransf(upper.Comb.random, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lower.Comb.random
+        lower.Comb.random <- upper.Comb.random
+        upper.Comb.random <- tmp.l
+      }
     }
   }
   

@@ -264,14 +264,12 @@ print.summary.netmeta <- function(x,
     if (length(sortvar) != k.all)
       stop("'x' and 'sortvar' have different length")
     ##
-    ci.lab <- paste(round(100 * x$level, 1), "%-CI", sep = "")
+    ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
     ##
-    sm <- x$sm
-    ##
-    sm.lab <- sm
-    ##
-    if (!backtransf & is.relative.effect(sm))
-      sm.lab <- paste("log", sm, sep = "")
+    sm <- sm.lab <- x$sm
+    #
+    if (!backtransf & (is.relative.effect(sm) | sm == "VE"))
+      sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
     ##    
     trts <- x$x$trts
     ##
@@ -362,20 +360,38 @@ print.summary.netmeta <- function(x,
     lowTE.f <- x$comparison.nma.common$lower
     uppTE.f <- x$comparison.nma.common$upper
     ##
-    if (backtransf & is.relative.effect(sm)) {
-      TE.f    <- exp(TE.f)
-      lowTE.f <- exp(lowTE.f)
-      uppTE.f <- exp(uppTE.f)
+    if (backtransf) {
+      TE.f    <- backtransf(TE.f, sm)
+      lowTE.f <- backtransf(lowTE.f, sm)
+      uppTE.f <- backtransf(uppTE.f, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lowTE.f
+        lowTE.f <- uppTE.f
+        uppTE.f <- tmp.l
+      }
     }
-    ##
+    #
     TE.r    <- x$comparison.nma.random$TE
     lowTE.r <- x$comparison.nma.random$lower
     uppTE.r <- x$comparison.nma.random$upper
     ##
-    if (backtransf & is.relative.effect(sm)) {
-      TE.r    <- exp(TE.r)
-      lowTE.r <- exp(lowTE.r)
-      uppTE.r <- exp(uppTE.r)
+    if (backtransf) {
+      TE.r    <- backtransf(TE.r, sm)
+      lowTE.r <- backtransf(lowTE.r, sm)
+      uppTE.r <- backtransf(uppTE.r, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lowTE.r
+        lowTE.r <- uppTE.r
+        uppTE.r <- tmp.l
+      }
     }
     ##
     res.f <- cbind(treat1, treat2,

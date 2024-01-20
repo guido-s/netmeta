@@ -215,8 +215,8 @@ print.netcomb <- function(x,
     comps.abbr <- treats(comps, nchar.comps)
     sep.comps <- x$sep.comps
     ##
-    if (!backtransf & is.relative.effect(sm))
-      sm.lab <- paste("log", sm, sep = "")
+    if (!backtransf & (is.relative.effect(sm) | sm == "VE"))
+      sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
     else
       sm.lab <- sm
     ##
@@ -282,18 +282,29 @@ print.netcomb <- function(x,
                           else
                             "other treatments", sep = "")
       ##
-      noeffect <- 0
-      ##  
-      if (backtransf & is.relative.effect(sm)) {
-        noeffect <- 1
+      noeffect <- 1L * (backtransf & is.relative.effect(sm))
+      #
+      if (backtransf) {
+        TE.common    <- backtransf(TE.common, sm)
+        lowTE.common <- backtransf(lowTE.common, sm)
+        uppTE.common <- backtransf(uppTE.common, sm)
         ##
-        TE.common    <- exp(TE.common)
-        lowTE.common <- exp(lowTE.common)
-        uppTE.common <- exp(uppTE.common)
-        ##
-        TE.random    <- exp(TE.random)
-        lowTE.random <- exp(lowTE.random)
-        uppTE.random <- exp(uppTE.random)
+        TE.random    <- backtransf(TE.random, sm)
+        lowTE.random <- backtransf(lowTE.random, sm)
+        uppTE.random <- backtransf(uppTE.random, sm)
+        #
+        # Switch lower and upper limit for VE if results have been
+        # backtransformed
+        #
+        if (sm == "VE") {
+          tmp.l <- lowTE.common
+          lowTE.common <- uppTE.common
+          uppTE.common <- tmp.l
+          #
+          tmp.l <- lowTE.random
+          lowTE.random <- uppTE.random
+          uppTE.random <- tmp.l
+        }
       }
       ##
       TE.common <- round(TE.common, digits)

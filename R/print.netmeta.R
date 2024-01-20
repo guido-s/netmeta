@@ -177,14 +177,12 @@ print.netmeta <- function(x,
   k <- x$k
   m <- x$m
   n <- x$n
-  sm <- x$sm
+  sm <- sm.lab <- x$sm
+  #
+  if (!backtransf & (is.relative.effect(sm) | sm == "VE"))
+    sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##
-  sm.lab <- sm
-  ##
-  if (!backtransf & is.relative.effect(sm))
-    sm.lab <- paste("log", sm, sep = "")
-  ##
-  ci.lab <- paste(round(100 * x$level.ma, 1), "%-CI", sep = "")
+  ci.lab <- paste0(round(100 * x$level.ma, 1), "%-CI")
   
   
   ##
@@ -230,22 +228,39 @@ print.netmeta <- function(x,
     }
   }
   ##  
-  noeffect <- 0
-  ##
-  if (backtransf & is.relative.effect(sm)) {
-    noeffect <- 1
-    ##
-    TE.common    <- exp(TE.common)
-    lowTE.common <- exp(lowTE.common)
-    uppTE.common <- exp(uppTE.common)
-    ##
-    TE.random    <- exp(TE.random)
-    lowTE.random <- exp(lowTE.random)
-    uppTE.random <- exp(uppTE.random)
-    ##
+  noeffect <- 1L * (backtransf & is.relative.effect(sm))
+  #
+  if (backtransf) {
+    TE.common    <- backtransf(TE.common, sm)
+    lowTE.common <- backtransf(lowTE.common, sm)
+    uppTE.common <- backtransf(uppTE.common, sm)
+    #
+    TE.random    <- backtransf(TE.random, sm)
+    lowTE.random <- backtransf(lowTE.random, sm)
+    uppTE.random <- backtransf(uppTE.random, sm)
+    #
     if (prediction) {
-      lower.predict <- exp(lower.predict)
-      upper.predict <- exp(upper.predict)
+      lower.predict <- backtransf(lower.predict, sm)
+      upper.predict <- backtransf(upper.predict, sm)
+    }
+    #
+    # Switch lower and upper limit for VE if results have been
+    # backtransformed
+    #
+    if (sm == "VE") {
+      tmp.l <- lowTE.common
+      lowTE.common <- uppTE.common
+      uppTE.common <- tmp.l
+      #
+      tmp.l <- lowTE.random
+      lowTE.random <- uppTE.random
+      uppTE.random <- tmp.l
+      #
+      if (prediction) {
+        tmp.l <- lower.predict
+        lower.predict <- upper.predict
+        upper.predict <- tmp.l
+      }
     }
   }
   ##

@@ -361,16 +361,31 @@ netleague <- function(x, y,
       upper.random.x <- x$upper.random
     }
   }
-  ##
-  if (backtransf & is.relative.effect(x$sm)) {
-    TE.common.x    <- exp(TE.common.x)
-    lower.common.x <- exp(lower.common.x)
-    upper.common.x <- exp(upper.common.x)
-    ##
+  #
+  if (backtransf) {
+    TE.common.x    <- backtransf(TE.common.x, x$sm)
+    lower.common.x <- backtransf(lower.common.x, x$sm)
+    upper.common.x <- backtransf(upper.common.x, x$sm)
+    #
+    # Switch lower and upper limit for VE if results have been
+    # backtransformed
+    #
+    if (x$sm == "VE") {
+      tmp.l <- lower.common.x
+      lower.common.x <- upper.common.x
+      upper.common.x <- tmp.l
+    }
+    #
     if (random) {
-      TE.random.x    <- exp(TE.random.x)
-      lower.random.x <- exp(lower.random.x)
-      upper.random.x <- exp(upper.random.x)
+      TE.random.x    <- backtransf(TE.random.x, x$sm)
+      lower.random.x <- backtransf(lower.random.x, x$sm)
+      upper.random.x <- backtransf(upper.random.x, x$sm)
+      #
+      if (x$sm == "VE") {
+        tmp.l <- lower.random.x
+        lower.random.x <- upper.random.x
+        upper.random.x <- tmp.l
+      }
     }
   }
   ##
@@ -398,15 +413,30 @@ netleague <- function(x, y,
       }
     }
     ##
-    if (backtransf & is.relative.effect(y$sm)) {
-      TE.common.y    <- exp(TE.common.y)
-      lower.common.y <- exp(lower.common.y)
-      upper.common.y <- exp(upper.common.y)
-      ##
+    if (backtransf) {
+      TE.common.y    <- backtransf(TE.common.y, y$sm)
+      lower.common.y <- backtransf(lower.common.y, y$sm)
+      upper.common.y <- backtransf(upper.common.y, y$sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (y$sm == "VE") {
+        tmp.l <- lower.common.y
+        lower.common.y <- upper.common.y
+        upper.common.y <- tmp.l
+      }
+      #
       if (random) {
-        TE.random.y    <- exp(TE.random.y)
-        lower.random.y <- exp(lower.random.y)
-        upper.random.y <- exp(upper.random.y)
+        TE.random.y    <- backtransf(TE.random.y, y$sm)
+        lower.random.y <- backtransf(lower.random.y, y$sm)
+        upper.random.y <- backtransf(upper.random.y, y$sm)
+        #
+        if (y$sm == "VE") {
+          tmp.l <- lower.random.y
+          lower.random.y <- upper.random.y
+          upper.random.y <- tmp.l
+        }
       }
     }
     ##
@@ -423,15 +453,30 @@ netleague <- function(x, y,
     }
   }
   else {
-    if (backtransf & is.relative.effect(x$sm)) {
-      TE.common.y    <- exp(x$TE.direct.common)
-      lower.common.y <- exp(x$lower.direct.common)
-      upper.common.y <- exp(x$upper.direct.common)
-      ##
+    if (backtransf) {
+      TE.common.y    <- backtransf(x$TE.direct.common, x$sm)
+      lower.common.y <- backtransf(x$lower.direct.common, x$sm)
+      upper.common.y <- backtransf(x$upper.direct.common, x$sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (x$sm == "VE") {
+        tmp.l <- lower.common.y
+        lower.common.y <- upper.common.y
+        upper.common.y <- tmp.l
+      }
+      #
       if (random) {
-        TE.random.y    <- exp(x$TE.direct.random)
-        lower.random.y <- exp(x$lower.direct.random)
-        upper.random.y <- exp(x$upper.direct.random)
+        TE.random.y    <- backtransf(x$TE.direct.random, x$sm)
+        lower.random.y <- backtransf(x$lower.direct.random, x$sm)
+        upper.random.y <- backtransf(x$upper.direct.random, x$sm)
+        #
+        if (x$sm == "VE") {
+          tmp.l <- lower.random.y
+          lower.random.y <- upper.random.y
+          upper.random.y <- tmp.l
+        }
       }
     }
     else {
