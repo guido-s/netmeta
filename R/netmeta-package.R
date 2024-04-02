@@ -109,10 +109,10 @@
 #' 
 #' The development version of \bold{netmeta} is available on GitHub
 #' \url{https://github.com/guido-s/netmeta}.
+#'
+#' _PACKAGE
 #' 
 #' @name netmeta-package
-#' 
-#' @docType package
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Gerta
 #'   Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}

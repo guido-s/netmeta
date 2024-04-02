@@ -196,15 +196,11 @@ forest.netcomb <- function(x,
     ##
     if (is.null(smlab))
       if (baseline.reference)
-        smlab <- paste("Comparison: other vs '",
-                       reference.group, "'\n",
-                       text.common,
-                       sep = "")
+        smlab <- paste0("Comparison: other vs '", reference.group, "'\n",
+                        text.common)
       else
-        smlab <- paste("Comparison: '",
-                       reference.group, "' vs other\n",
-                       text.common,
-                       sep = "")
+        smlab <- paste0("Comparison: '", reference.group, "' vs other\n",
+                       text.common)
   }
   ##
   if (pooled == "random") {
@@ -212,13 +208,11 @@ forest.netcomb <- function(x,
     seTE <- x$seTE.random
     if (is.null(smlab))
       if (baseline.reference)
-        smlab <- paste("Comparison: other vs '",
-                       reference.group, "'\n(Random Effects Model)",
-                       sep = "")
+        smlab <- paste0("Comparison: other vs '", reference.group,
+                        "'\n(Random Effects Model)")
       else
-        smlab <- paste("Comparison: '",
-                       reference.group, "' vs other\n(Random Effects Model)",
-                       sep = "")
+        smlab <- paste0("Comparison: '", reference.group,
+                        "' vs other\n(Random Effects Model)")
   }
   
   
@@ -261,7 +255,7 @@ forest.netcomb <- function(x,
            call. = FALSE)
     if (any(rownames(add.data) != labels))
       stop("Dataset 'add.data' must have the following row names:\n",
-           paste(paste("'", labels, "'", sep = ""), collapse = " - "),
+           paste(paste0("'", labels, "'"), collapse = " - "),
            call. = FALSE)
     ##
     dat <- cbind(dat, add.data)

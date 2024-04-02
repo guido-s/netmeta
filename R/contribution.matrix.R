@@ -1,8 +1,8 @@
 contribution.matrix <- function(x, method, model, hatmatrix.F1000,
                                 verbose = FALSE) {
   if (verbose)
-    cat(paste0("Calculate network contributions (",
-               model, " effects model):\n"))
+    cat("Calculate network contributions (", model, " effects model):\n",
+        sep = "")
   ##
   if (method == "randomwalk")
     return(contribution.matrix.davies(x, model, verbose = verbose))
@@ -104,7 +104,7 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
   ##
   reduceGraph <- function(g, comparison, verbose, is.tictoc) {
     if (verbose)
-      cat(paste0("- ", comparison, "\n"))
+      cat("- ", comparison, "\n", sep = "")
     ##
     if (verbose & is.tictoc)
       tictoc::tic()
@@ -234,9 +234,10 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
         tictoc::tic()
       ##
       if (verbose)
-        cat(paste0("- ",
-                   paste(x$trts[t1], x$trts[t2], sep = x$sep.trts),
-                   " (", r, "/", n.comps, ")\n"))
+        cat("- ",
+            paste(x$trts[t1], x$trts[t2], sep = x$sep.trts),
+            " (", r, "/", n.comps, ")\n",
+            sep = "")
       ##
       ## For each row, t1 is the source and t2 is the sink
       ##
@@ -329,7 +330,7 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
         tictoc[r] <- as.numeric(tictoc.r$toc) - as.numeric(tictoc.r$tic)
         ##
         if (verbose)
-          cat(paste(round(tictoc[r], 3), "sec elapsed\n"))
+          cat(round(tictoc[r], 3), "sec elapsed\n")
       }
     }
   }
@@ -413,9 +414,10 @@ contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
         tictoc::tic()
       ##
       if (verbose) {
-        cat(paste0("*** ",
-                   paste(x$trts[t1], x$trts[t2], sep = x$sep.trts),
-                   " (", r, " / ", n.comps, ") ***\n"))
+        cat("*** ",
+            paste(x$trts[t1], x$trts[t2], sep = x$sep.trts),
+            " (", r, " / ", n.comps, ") ***\n",
+            sep = "")
       }
       ##
       Q <- matrix(0, nrow = n, ncol = n)
@@ -510,7 +512,7 @@ contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
         tictoc[r] <- as.numeric(tictoc.r$toc) - as.numeric(tictoc.r$tic)
         ##
         if (verbose)
-          cat(paste(round(tictoc[r], 3), "sec elapsed\n"))
+          cat(round(tictoc[r], 3), "sec elapsed\n")
       }
     }
   }
@@ -590,9 +592,10 @@ contribution.matrix.ruecker.pseudoinv <- function (x, model, verbose = FALSE) {
         tictoc::tic()
       ##
       if (verbose)
-        cat(paste0("- ",
-                   paste(x$trts[t1], x$trts[t2], sep = x$sep.trts),
-                   " (", r, "/", n.comps, ")\n"))
+        cat("- ",
+            paste(x$trts[t1], x$trts[t2], sep = x$sep.trts),
+            " (", r, "/", n.comps, ")\n",
+            sep = "")
       ##
       ## For each row, t1 is the source and t2 is the sink
       ##
@@ -693,7 +696,7 @@ contribution.matrix.ruecker.pseudoinv <- function (x, model, verbose = FALSE) {
         tictoc[r] <- as.numeric(tictoc.r$toc) - as.numeric(tictoc.r$tic)
         ##
         if (verbose)
-          cat(paste(round(tictoc[r], 3), "sec elapsed\n"))
+          cat(round(tictoc[r], 3), "sec elapsed\n")
       }
     }
   }

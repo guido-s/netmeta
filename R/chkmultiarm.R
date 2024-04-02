@@ -91,15 +91,13 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
       ##
       if (length(studlabs) == 1)
         errmsg.incomplete <-
-          paste("  - Study '", studlabs,
-                "' has an incomplete set of comparisons.\n",
-                sep = "")
+          paste0("  - Study '", studlabs,
+                "' has an incomplete set of comparisons.\n")
       else
         errmsg.incomplete <-
-          paste("  - Studies with incomplete set of comparisons: ",
-                paste(paste("'", studlabs, "'", sep = ""),
-                      collapse = ", "),
-                "\n", sep = "")
+          paste0("  - Studies with incomplete set of comparisons: ",
+                paste(paste0("'", studlabs, "'"), collapse = ", "),
+                "\n")
     }
     else
       errmsg.incomplete <- ""
@@ -109,14 +107,12 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
       ##
       if (length(studlabs) == 1)
         errmsg.duplicate <-
-          paste("  - Duplicate comparison in study '", studlabs, "'.\n",
-                sep = "")
+          paste0("  - Duplicate comparison in study '", studlabs, "'.\n")
       else
         errmsg.duplicate <-
-          paste("  - Studies with duplicate comparisons: ",
-                paste(paste("'", studlabs, "'", sep = ""),
-                      collapse = ", "),
-                "\n", sep = "")
+          paste0("  - Studies with duplicate comparisons: ",
+                paste(paste0("'", studlabs, "'"), collapse = ", "),
+                "\n")
     }
     else
       errmsg.duplicate <- ""
@@ -294,8 +290,8 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
         dat.varTE$resid.var <- format(dat.varTE$resid.var)
         dat.varTE$seTE <- format(dat.varTE$seTE)
         dat.varTE$resid.se <- format(dat.varTE$resid.se)
-        cat(paste0("\nMulti-arm studies with inconsistent ",
-                   "variances / standard errors:\n\n"))
+        cat("\nMulti-arm studies with inconsistent",
+            "variances / standard errors:\n\n")
         prmatrix(dat.varTE, quote = FALSE, right = TRUE,
                  rowlab = rep("", dim(dat.varTE)[1]))
         cat("\n")
@@ -320,21 +316,19 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
                  rowlab = rep("", dim(dat.zero)[1]))
         cat("\n")
         ##
-        warning(paste("Note, for the following multi-arm ", 
-                      if (izero.sigma2 == 1) "study " else "studies ",
-                      "a zero treatment arm variance has been calculated: ",
-                      paste(paste("'", studlab.zero.sigma2, "'", sep = ""),
-                            collapse = ", "),
-                      sep = ""),
-                call. = FALSE)
+        warning(
+          paste0("Note, for the following multi-arm ",
+                 if (izero.sigma2 == 1) "study " else "studies ",
+                 "a zero treatment arm variance has been calculated: ",
+                 paste(paste0("'", studlab.zero.sigma2, "'"), collapse = ", ")),
+          call. = FALSE)
       }
       ##
       cat("Legend:\n")
       if (inconsistent)
         cat(" resid - residual deviation (observed minus expected)\n")
       if (iTE > 0)
-        cat(paste0(" TE", if (ivarTE > 0) "   ",
-                   " - treatment estimate\n"))
+        cat(" TE", if (ivarTE > 0) "   ", " - treatment estimate\n", sep = "")
       if (ivarTE > 0) {
         cat(" varTE - variance of treatment estimate\n")
         cat(" seTE  - standard error of treatment estimate\n")
@@ -352,37 +346,34 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab,
       ##
       if (iTE > 0)
         msgTE <-
-          paste("  ",
-                if (iTE == 1) "- Study " else "- Studies ",
-                "with inconsistent treatment estimates: ",
-                paste(paste("'", studlab.inconsistent.TE, "'", sep = ""),
-                      collapse = ", "),
-                "\n",
-                sep = "")
+          paste0("  ",
+                 if (iTE == 1) "- Study " else "- Studies ",
+                 "with inconsistent treatment estimates: ",
+                 paste(paste0("'", studlab.inconsistent.TE, "'"),
+                       collapse = ", "),
+                 "\n")
       else
         msgTE <- ""
       ##
       if (ivarTE > 0)
         msgvarTE <-
-          paste("  ",
-                if (ivarTE == 1) "- Study " else "- Studies ",
-                "with inconsistent variances: ",
-                paste(paste("'", studlab.inconsistent.varTE, "'", sep = ""),
-                      collapse = ", "),
-                "\n",
-                sep = "")
+          paste0("  ",
+                 if (ivarTE == 1) "- Study " else "- Studies ",
+                 "with inconsistent variances: ",
+                 paste(paste0("'", studlab.inconsistent.varTE, "'"),
+                       collapse = ", "),
+                 "\n")
       else
         msgvarTE <- ""
       ##
       if (negative)
         msgsigma2 <-
-          paste("  ",
-                if (inegative.sigma2 == 1) "- Study " else "- Studies ",
-                "with negative treatment arm variance: ",
-                paste(paste("'", studlab.negative.sigma2, "'", sep = ""),
-                      collapse = ", "),
-                "\n",
-                sep = "")
+          paste0("  ",
+                 if (inegative.sigma2 == 1) "- Study " else "- Studies ",
+                 "with negative treatment arm variance: ",
+                 paste(paste0("'", studlab.negative.sigma2, "'"),
+                       collapse = ", "),
+                 "\n")
       else
         msgsigma2 <- ""
       ##

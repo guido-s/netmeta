@@ -591,8 +591,7 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random,
   ##
   ##
   if (common) {
-    cat(paste0("Network table (", gs("text.w.common"),
-               ") effects model):\n"))
+    cat("Network table (", gs("text.w.common"), ") effects model):\n", sep = "")
     ##
     if (isCol(x$common, "Outcome")) {
       outcomes <- unique(x$common$Outcome)
@@ -609,7 +608,7 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random,
             paste0(outcome.txt," (sm = '",
                    if (is.relative.effect(x$sm[i]) & !backtransf[i]) "log",
                    x$sm[i], "')")
-        cat(paste0(outcome.txt, "\n"))
+        cat(outcome.txt, "\n", sep = "")
         prmatrix(mat.i,
                  quote = FALSE, right = TRUE,
                  rowlab = rep("", nrow(mat.i)), ...)
@@ -631,8 +630,7 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random,
   ##
   ##
   if (random) {
-    cat(paste0("Network table (", gs("text.w.random"),
-               ") effects model):\n"))
+    cat("Network table (", gs("text.w.random"), ") effects model):\n", sep = "")
     ##
     if (isCol(x$random, "Outcome")) {
       outcomes <- unique(x$random$Outcome)
@@ -649,7 +647,7 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random,
             paste0(outcome.txt," (sm = '",
                    if (is.relative.effect(x$sm[i]) & !backtransf[i]) "log",
                    x$sm[i], "')")
-        cat(paste0(outcome.txt, "\n"))
+        cat(outcome.txt, "\n", sep = "")
         prmatrix(mat.i,
                  quote = FALSE, right = TRUE,
                  rowlab = rep("", nrow(mat.i)), ...)

@@ -570,8 +570,8 @@ print.netcomparison <- function(x,
     ##
     res.c[res.c[, "treat1"] == res.c[, "treat2"], 4:7] <- "."
     ##
-    cat(paste0("Results for comparisons (additive CNMA model, ",
-               "common effects model):\n\n"))
+    cat("Results for comparisons (additive CNMA model,",
+        "common effects model):\n\n")
     ##
     prmatrix(res.c, quote = FALSE, right = TRUE, na.print = "--")
     ##
@@ -609,8 +609,8 @@ print.netcomparison <- function(x,
     ##
     res.r[res.r[, "treat1"] == res.r[, "treat2"], 4:7] <- "."
     ##
-    cat(paste0("Results for comparisons (additive CNMA model, ",
-               "random effects model):\n\n"))
+    cat("Results for comparisons (additive CNMA model,",
+        "random effects model):\n\n")
     ##
     prmatrix(res.r, quote = FALSE, right = TRUE, na.print = "--")
   }

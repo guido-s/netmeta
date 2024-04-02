@@ -96,7 +96,7 @@ print.decomp.design <- function(x,
     ##
     dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
     ##
-    cat(paste0("\nTest of inconsistency (between designs):\n"))
+    cat("\nTest of inconsistency (between designs):\n")
     prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
     ##
     return(invisible(NULL))
@@ -179,10 +179,10 @@ print.decomp.design <- function(x,
   }
   
   if (nrow(Q.detach) > 0) {
-    cat(paste0("\nBetween-designs Q statistic after detaching of ",
-               "single designs\n",
-               "(influential designs have p-value markedly different from ",
-               rmSpace(Q.decomp[3, 3]), ")\n\n"))
+    cat("\nBetween-designs Q statistic after detaching of single designs\n",
+        "(influential designs have p-value markedly different from ",
+        rmSpace(Q.decomp[3, 3]), ")\n\n",
+        sep = "")
     ##
     trts2 <- unique(sort(unlist(compsplit(Q.detach[, 1], sep.trts))))
     Q.detach[, 1] <- comps(Q.detach[, 1], trts2, sep.trts, nchar.trts)
@@ -192,9 +192,9 @@ print.decomp.design <- function(x,
     prmatrix(Q.detach, quote = FALSE, right = TRUE)
   }
 
-  cat(paste("\nQ statistic to assess consistency under the assumption of\n",
-            "a full design-by-treatment interaction random effects model\n\n",
-            sep = ""))
+  cat("\nQ statistic to assess consistency under the assumption of\n",
+      "a full design-by-treatment interaction random effects model\n\n",
+      sep = "")
   print(Q.inc.random)
   
   

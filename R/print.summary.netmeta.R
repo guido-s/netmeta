@@ -290,12 +290,14 @@ print.summary.netmeta <- function(x,
     ##  
     if (details) {
       multiarm <- any(x$x$narms > 2)
-      cat(paste("Original data",
-                ifelse(multiarm & (common | random),
-                       paste(" (with adjusted standard errors for",
-                             "multi-arm studies)"),
-                       ""),
-                ":\n\n", sep = ""))
+      cat("Original data",
+          ifelse(multiarm & (common | random),
+                 paste(" (with adjusted standard errors for",
+                       "multi-arm studies)"),
+                 ""),
+          ":\n\n",
+          sep = ""
+      )
       ##
       res <- data.frame(treat1,
                         treat2,

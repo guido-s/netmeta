@@ -709,11 +709,11 @@ print.netconnection <- function(x,
   
   matitle(x)
   ##
-  cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
-  cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
-  cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
+  cat("Number of studies: k = ", x$k, "\n", sep = "")
+  cat("Number of pairwise comparisons: m = ", x$m, "\n", sep = "")
+  cat("Number of treatments: n = ", x$n, "\n", sep = "")
   if (!is.null(x$d))
-    cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
+    cat("Number of designs: d = ", x$d, "\n", sep = "")
   ##
   cat("Number of subnetworks: ", x$n.subnets, "\n", sep = "")
   ##
@@ -738,7 +738,7 @@ print.netconnection <- function(x,
       cat("\n")
       for (i in seq_len(x$n.subnets)) {
         d.i <- subset(d, d$subnet == i)
-        cat(paste0("Subnetwork ", i, ":\n"))
+        cat("Subnetwork ", i, ":\n", sep = "")
         print(sort(unique(c(d.i$treat1, d.i$treat2))))
       }
     }

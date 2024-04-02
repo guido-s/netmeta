@@ -16,9 +16,10 @@ setseq <- function(seq, levs, text, equal.length = TRUE) {
       stop("Missing values not allowed in argument '",
            name, "'.", call. = FALSE)
     if (any(!(seq %in% seq_len(length(levs)))))
-      stop(paste("Argument '", name,
-                 "' must be a permutation of the integers from 1 to ",
-                 length(levs), ".", sep = ""), call. = FALSE)
+      stop(paste0("Argument '", name,
+                  "' must be a permutation of the integers from 1 to ",
+                  length(levs), "."),
+           call. = FALSE)
     res <- levs[seq]
   }
   else if (is.character(seq)) {
@@ -28,10 +29,10 @@ setseq <- function(seq, levs, text, equal.length = TRUE) {
       idx <- charmatch(seq, levs, nomatch = NA)
     ##
     if (equal.length && (anyNA(idx) || any(idx == 0)))
-      stop(paste(text,
-                 " must be a permutation of the following values:\n  ",
-                 paste(paste("'", levs, "'", sep = ""),
-                       collapse = " - "), sep = ""), call. = FALSE)
+      stop(paste0(text,
+                  " must be a permutation of the following values:\n  ",
+                  paste(paste0("'", levs, "'"), collapse = " - ")),
+           call. = FALSE)
     res <- levs[idx]
     if (!equal.length)
       res <- res[!is.na(res)]

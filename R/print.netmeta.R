@@ -299,46 +299,49 @@ print.netmeta <- function(x,
     reference.group <- setref(reference.group, rownames(TE.common))
   ##  
   if (common | random) {
-    cat(paste("Number of studies: k = ", k, "\n", sep = ""))
-    cat(paste0("Number of pairwise comparisons: m = ", m, "\n"))
+    cat("Number of studies: k = ", k, "\n", sep = "")
+    cat("Number of pairwise comparisons: m = ", m, "\n", sep = "")
     if (!is.null(x$n.trts))
-      cat(paste0("Number of observations: o = ",
-                 round(sum(x$n.trts, na.rm = TRUE), 1),
-                 "\n"))
-    cat(paste0("Number of treatments: n = ", n, "\n"))
+      cat("Number of observations: o = ",
+          round(sum(x$n.trts, na.rm = TRUE), 1),
+          "\n",
+          sep = "")
+    cat("Number of treatments: n = ", n, "\n", sep = "")
     if (!oldversion)
-      cat(paste0("Number of designs: d = ", x$d, "\n"))
+      cat("Number of designs: d = ", x$d, "\n", sep = "")
     ##
     if (reference.group != "") {
       if (baseline.reference)
-        comptext <- paste("comparison: ",
-                          if (x$n == 2)
-                            paste("'",
-                                  treats(rownames(TE.common),
-                                         nchar.trts)[rownames(TE.common)
-                                                     != reference.group],
-                                  "'", sep = "")
-                          else
-                            "other treatments",
-                          " vs '",
+        comptext <-
+          paste0("comparison: ",
+                 if (x$n == 2)
+                   paste0("'",
                           treats(rownames(TE.common),
                                  nchar.trts)[rownames(TE.common)
-                                             == reference.group],
-                          "'", sep = "")
+                                             != reference.group],
+                          "'")
+                 else
+                   "other treatments",
+                 " vs '",
+                 treats(rownames(TE.common),
+                        nchar.trts)[rownames(TE.common)
+                                    == reference.group],
+                 "'")
       else
-        comptext <- paste("comparison: '",
+        comptext <-
+          paste0("comparison: '",
+                 treats(rownames(TE.common),
+                        nchar.trts)[rownames(TE.common)
+                                    == reference.group],
+                 "' vs ",
+                 if (x$n == 2)
+                   paste0("'",
                           treats(rownames(TE.common),
                                  nchar.trts)[rownames(TE.common)
-                                             == reference.group],
-                          "' vs ",
-                          if (x$n == 2)
-                            paste("'",
-                                  treats(rownames(TE.common),
-                                         nchar.trts)[rownames(TE.common)
-                                                     != reference.group],
-                                  "'", sep = "")
-                          else
-                            "other treatments", sep = "")
+                                             != reference.group],
+                          "'")
+                 else
+                   "other treatments")
     }
     ##
     if (common) {
@@ -352,7 +355,7 @@ print.netmeta <- function(x,
           text.common <-
             paste(text.common, "(Non-central hypergeometric distribution)")
         ##
-        cat(paste0("\n", text.common, "\n"))
+        cat("\n", text.common, "\n", sep = "")
       }
       ##
       if (all.treatments) {
@@ -480,7 +483,7 @@ print.netmeta <- function(x,
               upper.predict[rownames(upper.predict) == reference.group, ]
           }
           ##
-          pi.lab <- paste(round(100 * x$level.predict, 1), "%-PI", sep = "")
+          pi.lab <- paste0(round(100 * x$level.predict, 1), "%-PI")
           ##
           res <- cbind(res,
                        rep_len("", nrow(res)),
@@ -681,23 +684,24 @@ print.netmeta <- function(x,
       hi.txt <- "heterogeneity / inconsistency"
     ##
     if (!is.bin)
-      cat(paste0("\nQuantifying ", hi.txt, ":\n",
-                 formatPT(tau^2,
-                          lab = TRUE, labval = text.tau2,
-                          digits = digits.tau2,
-                          lab.NA = "NA", big.mark = big.mark),
-                 "; ",
-                 formatPT(tau,
-                          lab = TRUE, labval = text.tau,
-                          digits = digits.tau,
-                          lab.NA = "NA", big.mark = big.mark),
-                 if (!is.na(I2))
-                   paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
-                 if (!(is.na(lower.I2) | is.na(upper.I2)))
-                   pasteCI(lower.I2, upper.I2,
-                           digits.I2, big.mark, unit = "%"),
-                 "\n")
-          )
+      cat("\nQuantifying ", hi.txt, ":\n",
+          formatPT(tau^2,
+                   lab = TRUE, labval = text.tau2,
+                   digits = digits.tau2,
+                   lab.NA = "NA", big.mark = big.mark),
+          "; ",
+          formatPT(tau,
+                   lab = TRUE, labval = text.tau,
+                   digits = digits.tau,
+                   lab.NA = "NA", big.mark = big.mark),
+          if (!is.na(I2))
+            paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
+          if (!(is.na(lower.I2) | is.na(upper.I2)))
+            pasteCI(lower.I2, upper.I2,
+                    digits.I2, big.mark, unit = "%"),
+          "\n",
+          sep = ""
+      )
     ##
     if (m > 1) {
       if (is.bin) {
@@ -733,7 +737,7 @@ print.netmeta <- function(x,
         ##
         dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
         ##
-        cat(paste0("\nTest of ", hi.txt, ":\n"))
+        cat("\nTest of ", hi.txt, ":\n", sep = "")
         prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
       }
       else {
@@ -742,10 +746,10 @@ print.netmeta <- function(x,
         pval.Qs <- c(x$pval.Q, x$pval.Q.heterogeneity, x$pval.Q.inconsistency)
         pval.Qs <- formatPT(pval.Qs, digits = digits.pval.Q,
                             scientific = scientific.pval)
-        cat(paste0("\nTests of heterogeneity (within designs) and ",
-                   "inconsistency",
-                   if (options()$width < 77) "\n" else " ",
-                   "(between designs):\n"))
+        cat("\nTests of heterogeneity (within designs) and inconsistency",
+            if (options()$width < 77) "\n" else " ",
+            "(between designs):\n",
+            sep = "")
         Qdata <- data.frame(Q = round(Qs, digits.Q),
                             df = df.Qs,
                             pval = pval.Qs)

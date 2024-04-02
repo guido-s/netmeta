@@ -329,24 +329,25 @@ print.netcontrib <- function(x,
   ##
   matitle(x$x)
   ##
-  cat(paste0("Contribution matrix (",
-             if (is.null(x$method) | x$method == "shortestpath")
-               "Papakonstantinou et al., 2018, F1000Research"
-             else if (x$method == "randomwalk")
-               "Davies et al., 2022, Stat Med"
-             else if (x$method == "cccp")
-               paste0("Ruecker et al., 2023, ",
-                      "L1 solution based on R package cccp")
-             else if (x$method == "pseudoinverse")
-               paste0("Ruecker et al., 2023, ",
-                      "L2 solution based on Moore-Penrose pseudoinverse")
-             else
-               "unknown method",
-             ")"))
+  cat("Contribution matrix (",
+      if (is.null(x$method) | x$method == "shortestpath")
+        "Papakonstantinou et al., 2018, F1000Research"
+      else if (x$method == "randomwalk")
+        "Davies et al., 2022, Stat Med"
+      else if (x$method == "cccp")
+        paste0("Ruecker et al., 2023, ",
+               "L1 solution based on R package cccp")
+      else if (x$method == "pseudoinverse")
+        paste0("Ruecker et al., 2023, ",
+               "L2 solution based on Moore-Penrose pseudoinverse")
+      else
+        "unknown method",
+      ")",
+      sep = "")
   ##
   if ((is.null(x$method) | x$method == "shortestpath") & x$hatmatrix.F1000)
-    cat(paste(",\nhat matrix does not take correlation of",
-              "multi-arm studies into account"))
+    cat(",\nhat matrix does not take correlation of",
+        "multi-arm studies into account")
   ##
   cat("\n\n")
   

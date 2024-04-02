@@ -976,8 +976,8 @@ print.netsplit <- function(x,
     if (x$method == "SIDDE")
       cat("Separate indirect from direct design evidence (SIDDE)\n\n")
     else
-      cat(paste("Separate indirect from direct evidence (SIDE)",
-                "using back-calculation method\n\n"))
+      cat("Separate indirect from direct evidence (SIDE)",
+          "using back-calculation method\n\n")
   }
   else
     legend <- FALSE
@@ -1006,37 +1006,44 @@ print.netsplit <- function(x,
   if (legend) {
     cat("\nLegend:\n")
     cat(" comparison - Treatment comparison\n")
-    cat(paste0(" k", if (indent) "          " else " ",
-               "- Number of studies providing direct evidence\n"))
+    cat(" k", if (indent) "          " else " ",
+        "- Number of studies providing direct evidence\n",
+        sep = "")
     if (!noprop)
-      cat(paste0(" prop", if (indent) "       " else " ",
-                 "- Direct evidence proportion\n"))
+      cat(" prop", if (indent) "       " else " ",
+          "- Direct evidence proportion\n",
+          sep = "")
     if (overall)
-      cat(paste0(" nma", if (indent) "        " else " ",
-                 "- Estimated treatment effect ", sm.lab,
-                 "in network meta-analysis\n", sep = ""))
-    cat(paste0(" direct", if (indent) "     " else " ",
-               "- Estimated treatment effect ", sm.lab,
-               "derived from direct evidence\n", sep = ""))
-    cat(paste0(" indir.", if (indent) "     " else " ",
-               "- Estimated treatment effect ", sm.lab,
-               "derived from indirect evidence\n", sep = ""))
+      cat(" nma", if (indent) "        " else " ",
+          "- Estimated treatment effect ", sm.lab,
+          "in network meta-analysis\n",
+          sep = "")
+    cat(" direct", if (indent) "     " else " ",
+        "- Estimated treatment effect ", sm.lab,
+        "derived from direct evidence\n",
+        sep = "")
+    cat(" indir.", if (indent) "     " else " ",
+        "- Estimated treatment effect ", sm.lab,
+        "derived from indirect evidence\n",
+        sep = "")
     if (test) {
       if (backtransf & relative)
-        cat(paste0(" RoR", if (indent) "        " else " ",
-                   "- Ratio of Ratios ",
-                   "(direct versus indirect)\n"))
+        cat(" RoR", if (indent) "        " else " ",
+            "- Ratio of Ratios ",
+            "(direct versus indirect)\n",
+            sep = "")
       else
-        cat(paste0(" Diff", if (indent) "       " else " ",
-                   "- Difference between direct and ",
-                   "indirect treatment estimates\n"))
+        cat(" Diff", if (indent) "       " else " ",
+            "- Difference between direct and ",
+            "indirect treatment estimates\n",
+            sep = "")
       ##
-      cat(paste0(" z", if (indent) "          " else " ",
-                 "- z-value of test for disagreement ",
-                 "(direct versus indirect)\n"))
-      cat(paste0(" p-value", if (indent) "    " else " ",
-                 "- p-value of test for disagreement ",
-                 "(direct versus indirect)\n"))
+      cat(" z", if (indent) "          " else " ",
+          "- z-value of test for disagreement (direct versus indirect)\n",
+          sep = "")
+      cat(" p-value", if (indent) "    " else " ",
+          "- p-value of test for disagreement (direct versus indirect)\n",
+          sep = "")
     }
     ##
     ## Add legend with abbreviated treatment labels

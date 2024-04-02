@@ -45,7 +45,7 @@ netdistance <- function(x) {
   ## distance algorithm by Mueller et al. (1987) using triangle
   ## inequality
   
-  if (inherits(x, "netmeta"))
+  if (inherits(x, c("netmeta", "discomb")))
     A <- x$A.matrix
   else
     A <- x

@@ -289,15 +289,16 @@ print.hatmatrix <- function(x,
   ##
   matitle(x$x)
   ##
-  cat(paste0("Hat matrix (",
-             if (x$method == "Ruecker")
-               "R\u00FCcker, 2012, Research Synthesis Method"
-             else if (x$method == "Krahn")
-               "Krahn et al., 2013"
-             else if (x$method == "Davies")
-               "Davies et al., 2021",
-             ")\n\n"))
-  ##
+  cat("Hat matrix (",
+      if (x$method == "Ruecker")
+        "R\u00FCcker, 2012, Research Synthesis Method"
+      else if (x$method == "Krahn")
+        "Krahn et al., 2013"
+      else if (x$method == "Davies")
+        "Davies et al., 2021",
+      ")\n\n",
+      sep = "")
+  #
   trts <- x$x$trts
   sep.trts <- x$x$sep.trts
   anystudy.r <- anystudy.c <- FALSE

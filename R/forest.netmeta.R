@@ -484,7 +484,7 @@ forest.netmeta <- function(x,
              call. = FALSE)
       if (any(rownames(add.data) != trts))
         stop("Dataset 'add.data' must have the following row names:\n",
-             paste(paste("'", trts, "'", sep = ""), collapse = " - "),
+             paste(paste0("'", trts, "'"), collapse = " - "),
              call. = FALSE)
       ##
       dat.i <- cbind(dat.i, add.data)

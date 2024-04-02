@@ -261,10 +261,11 @@ print.rankogram <- function(x,
   ##
   ##
   if (common | random)
-    cat(paste0(if (cumulative.rankprob)
-                 "Cumulative ranking probabilities" else "Rankogram",
-               " (based on ", x$nsim, " simulation",
-               if (x$nsim > 1) "s", ")\n\n"))
+    cat(if (cumulative.rankprob)
+      "Cumulative ranking probabilities" else "Rankogram",
+      " (based on ", x$nsim, " simulation",
+      if (x$nsim > 1) "s", ")\n\n",
+      sep = "")
   ##
   if (common) {
     if (cumulative.rankprob)

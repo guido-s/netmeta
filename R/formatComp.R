@@ -14,7 +14,7 @@ formatComp <- function(x,
   if (!backtransf & relative)
     sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##  
-  ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
+  ci.lab <- paste0(round(100 * level, 1), "%-CI")
   
   
   ## First column contains row names

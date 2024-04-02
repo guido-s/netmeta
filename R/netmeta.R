@@ -979,19 +979,17 @@ netmeta <- function(TE, seTE,
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   #
   if (sum(sel.narms) == 1)
-    stop(paste("Study '", names(tabnarms)[sel.narms],
-               "' has a wrong number of comparisons.",
-               "\n  Please provide data for all treatment comparisons",
-               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""),
+    stop("Study '", names(tabnarms)[sel.narms],
+         "' has a wrong number of comparisons.",
+         "\n  Please provide data for all treatment comparisons",
+         " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
          call. = FALSE)
   if (sum(sel.narms) > 1)
-    stop(paste("The following studies have a wrong number of comparisons: ",
-               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
-                     collapse = ", "),
-               "\n  Please provide data for all treatment comparisons",
-               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""),
+    stop("The following studies have a wrong number of comparisons: ",
+         paste(paste0("'", names(tabnarms)[sel.narms], "'"),
+               collapse = ", "),
+         "\n  Please provide data for all treatment comparisons",
+         " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
          call. = FALSE)
   #
   # Check number of subgraphs
@@ -999,9 +997,8 @@ netmeta <- function(TE, seTE,
   n.subnets <- netconnection(treat1, treat2, studlab)$n.subnets
   #
   if (n.subnets > 1)
-    stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
-               "Use R function 'netconnection' to identify sub-networks.",
-               sep = ""),
+    stop("Network consists of ", n.subnets, " separate sub-networks.\n  ",
+         "Use R function 'netconnection' to identify sub-networks.",
          call. = FALSE)
   #
   # Check NAs and zero standard errors
@@ -1026,9 +1023,10 @@ netmeta <- function(TE, seTE,
               "in network meta-analysis.",
               call. = FALSE)
     if (warn) {
-      cat(paste("Comparison",
-                if (sum(excl) > 1) "s",
-                " not considered in network meta-analysis:\n", sep = ""))
+      cat("Comparison",
+          if (sum(excl) > 1) "s",
+          " not considered in network meta-analysis:\n",
+          sep = "")
       prmatrix(dat.NAs, quote = FALSE, right = TRUE,
                rowlab = rep("", sum(excl)))
       cat("\n")
@@ -1074,23 +1072,20 @@ netmeta <- function(TE, seTE,
   sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   #
   if (sum(sel.narms) == 1)
-    stop(paste("After removing comparisons with missing treatment effects",
-               " or standard errors,\n  study '",
-               names(tabnarms)[sel.narms],
-               "' has a wrong number of comparisons.",
-               " Please check data and\n  consider to remove study",
-               " from network meta-analysis.",
-               sep = ""),
+    stop("After removing comparisons with missing treatment effects",
+         " or standard errors,\n  study '",
+         names(tabnarms)[sel.narms],
+         "' has a wrong number of comparisons.",
+         " Please check data and\n  consider to remove study",
+         " from network meta-analysis.",
          call. = FALSE)
   if (sum(sel.narms) > 1)
-    stop(paste("After removing comparisons with missing treatment effects",
-               " or standard errors,\n  the following studies have",
-               " a wrong number of comparisons: ",
-               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
-                     collapse = ", "),
-               "\n  Please check data and consider to remove studies",
-               " from network meta-analysis.",
-               sep = ""),
+    stop("After removing comparisons with missing treatment effects",
+         " or standard errors,\n  the following studies have",
+         " a wrong number of comparisons: ",
+         paste(paste0("'", names(tabnarms)[sel.narms], "'"), collapse = ", "),
+         "\n  Please check data and consider to remove studies",
+         " from network meta-analysis.",
          call. = FALSE)
   #
   # Check number of subgraphs
@@ -1098,12 +1093,11 @@ netmeta <- function(TE, seTE,
   n.subnets <- netconnection(treat1, treat2, studlab)$n.subnets
   #
   if (n.subnets > 1)
-    stop(paste("After removing comparisons with missing treatment effects",
-               " or standard errors,\n  network consists of ",
-               n.subnets, " separate sub-networks.\n  ",
-               "Please check data and consider to remove studies",
-               " from network meta-analysis.",
-               sep = ""),
+    stop("After removing comparisons with missing treatment effects",
+         " or standard errors,\n  network consists of ",
+         n.subnets, " separate sub-networks.\n  ",
+         "Please check data and consider to remove studies",
+         " from network meta-analysis.",
          call. = FALSE)
   #
   # Check for correct treatment order within comparison
@@ -1214,7 +1208,7 @@ netmeta <- function(TE, seTE,
   #
   # Common effects model
   #
-  res.f <- nma.ruecker(p0$TE, sqrt(1 / p0$weights),
+  res.c <- nma.ruecker(p0$TE, sqrt(1 / p0$weights),
                        p0$treat1, p0$treat2,
                        p0$treat1.pos, p0$treat2.pos,
                        p0$narms, p0$studlab,
@@ -1224,7 +1218,7 @@ netmeta <- function(TE, seTE,
                        method.tau,
                        func.inverse)
   #
-  trts <- rownames(res.f$A.matrix)
+  trts <- rownames(res.c$A.matrix)
   #
   #
   # Random effects model
@@ -1344,7 +1338,7 @@ netmeta <- function(TE, seTE,
       tau <- sqrt(rma1$tau2)
     }
     else
-      tau <- res.f$tau
+      tau <- res.c$tau
   }
   else
     tau <- tau.preset
@@ -1363,7 +1357,7 @@ netmeta <- function(TE, seTE,
   #
   TE.random <- res.r$TE.pooled
   seTE.random <- res.r$seTE.pooled
-  df.Q <- res.f$df
+  df.Q <- res.c$df
   #
   # Prediction intervals
   #
@@ -1393,17 +1387,17 @@ netmeta <- function(TE, seTE,
   #
   o <- order(p0$order)
   #
-  designs <- designs(res.f$treat1, res.f$treat2, res.f$studlab,
+  designs <- designs(res.c$treat1, res.c$treat2, res.c$studlab,
                      sep.trts = sep.trts)
   #
-  res <- list(studlab = res.f$studlab[o],
-              treat1 = res.f$treat1[o],
-              treat2 = res.f$treat2[o],
+  res <- list(studlab = res.c$studlab[o],
+              treat1 = res.c$treat1[o],
+              treat2 = res.c$treat2[o],
               #
-              TE = res.f$TE[o],
-              seTE = res.f$seTE.orig[o],
-              seTE.adj = res.f$seTE[o],
-              seTE.adj.common = res.f$seTE[o],
+              TE = res.c$TE[o],
+              seTE = res.c$seTE.orig[o],
+              seTE.adj = res.c$seTE[o],
+              seTE.adj.common = res.c$seTE[o],
               seTE.adj.random = res.r$seTE[o],
               #
               design = designs$design[o],
@@ -1422,9 +1416,9 @@ netmeta <- function(TE, seTE,
               time1 = time1,
               time2 = time2,
               #
-              k = res.f$k,
-              m = res.f$m,
-              n = res.f$n,
+              k = res.c$k,
+              m = res.c$m,
+              n = res.c$n,
               d = length(unique(designs$design)),
               #
               trts = trts,
@@ -1441,23 +1435,23 @@ netmeta <- function(TE, seTE,
               designs = unique(sort(designs$design)),
               comparisons = "",
               #
-              TE.nma.common = res.f$TE.nma[o],
-              seTE.nma.common = res.f$seTE.nma[o],
-              lower.nma.common = res.f$lower.nma[o],
-              upper.nma.common = res.f$upper.nma[o],
-              statistic.nma.common = res.f$statistic.nma[o],
-              pval.nma.common = res.f$pval.nma[o],
+              TE.nma.common = res.c$TE.nma[o],
+              seTE.nma.common = res.c$seTE.nma[o],
+              lower.nma.common = res.c$lower.nma[o],
+              upper.nma.common = res.c$upper.nma[o],
+              statistic.nma.common = res.c$statistic.nma[o],
+              pval.nma.common = res.c$pval.nma[o],
               #
-              leverage.common = res.f$leverage[o],
-              w.common = res.f$w.pooled[o],
-              Q.common = res.f$Q.pooled[o],
+              leverage.common = res.c$leverage[o],
+              w.common = res.c$w.pooled[o],
+              Q.common = res.c$Q.pooled[o],
               #
-              TE.common = res.f$TE.pooled,
-              seTE.common = res.f$seTE.pooled,
-              lower.common = res.f$lower.pooled,
-              upper.common = res.f$upper.pooled,
-              statistic.common = res.f$statistic.pooled,
-              pval.common = res.f$pval.pooled,
+              TE.common = res.c$TE.pooled,
+              seTE.common = res.c$seTE.pooled,
+              lower.common = res.c$lower.pooled,
+              upper.common = res.c$upper.pooled,
+              statistic.common = res.c$statistic.pooled,
+              pval.common = res.c$pval.pooled,
               #
               TE.nma.random = res.r$TE.nma[o],
               seTE.nma.random = res.r$seTE.nma[o],
@@ -1482,12 +1476,12 @@ netmeta <- function(TE, seTE,
               prop.direct.common = NA,
               prop.direct.random = NA,
               #
-              TE.direct.common = res.f$TE.direct,
-              seTE.direct.common = res.f$seTE.direct,
-              lower.direct.common = res.f$lower.direct,
-              upper.direct.common = res.f$upper.direct,
-              statistic.direct.common = res.f$statistic.direct,
-              pval.direct.common = res.f$pval.direct,
+              TE.direct.common = res.c$TE.direct,
+              seTE.direct.common = res.c$seTE.direct,
+              lower.direct.common = res.c$lower.direct,
+              upper.direct.common = res.c$upper.direct,
+              statistic.direct.common = res.c$statistic.direct,
+              pval.direct.common = res.c$pval.direct,
               #
               TE.direct.random = res.r$TE.direct,
               seTE.direct.random = res.r$seTE.direct,
@@ -1515,12 +1509,12 @@ netmeta <- function(TE, seTE,
               statistic.indirect.random = NA,
               pval.indirect.random = NA,
               #
-              Q = res.f$Q,
+              Q = res.c$Q,
               df.Q = df.Q,
-              pval.Q = res.f$pval.Q,
-              I2 = res.f$I2,
-              lower.I2 = res.f$lower.I2,
-              upper.I2 = res.f$upper.I2,
+              pval.Q = res.c$pval.Q,
+              I2 = res.c$I2,
+              lower.I2 = res.c$lower.I2,
+              upper.I2 = res.c$upper.I2,
               tau = tau,
               tau2 = tau^2,
               #
@@ -1532,22 +1526,22 @@ netmeta <- function(TE, seTE,
               df.Q.inconsistency = NA,
               pval.Q.inconsistency = NA,
               #
-              Q.decomp = res.f$Q.decomp,
+              Q.decomp = res.c$Q.decomp,
               #
-              A.matrix = res.f$A.matrix,
-              X.matrix = res.f$B.matrix[o, ],
-              B.matrix = res.f$B.matrix[o, ],
+              A.matrix = res.c$A.matrix,
+              X.matrix = res.c$B.matrix[o, ],
+              B.matrix = res.c$B.matrix[o, ],
               #
-              L.matrix.common = res.f$L.matrix,
-              Lplus.matrix.common = res.f$Lplus.matrix,
+              L.matrix.common = res.c$L.matrix,
+              Lplus.matrix.common = res.c$Lplus.matrix,
               L.matrix.random = res.r$L.matrix,
               Lplus.matrix.random = res.r$Lplus.matrix,
               #
-              Q.matrix = res.f$Q.matrix,
+              Q.matrix = res.c$Q.matrix,
               #
-              G.matrix = res.f$G.matrix[o, o, drop = FALSE],
+              G.matrix = res.c$G.matrix[o, o, drop = FALSE],
               #
-              H.matrix.common = res.f$H.matrix[o, o, drop = FALSE],
+              H.matrix.common = res.c$H.matrix[o, o, drop = FALSE],
               H.matrix.random = res.r$H.matrix[o, o, drop = FALSE],
               #
               n.matrix = if (available.n) NA else NULL,
@@ -1556,11 +1550,11 @@ netmeta <- function(TE, seTE,
               P.common = NA,
               P.random = NA,
               #
-              Cov.common = res.f$Cov,
+              Cov.common = res.c$Cov,
               Cov.random = res.r$Cov,
               #
-              treat1.pos = res.f$treat1.pos[o],
-              treat2.pos = res.f$treat2.pos[o],
+              treat1.pos = res.c$treat1.pos[o],
+              treat2.pos = res.c$treat2.pos[o],
               #
               sm = sm,
               method = "Inverse",
@@ -1771,7 +1765,7 @@ netmeta <- function(TE, seTE,
     res$data$.seTE.adj.common <- NA
     res$data$.seTE.adj.random <- NA
     #
-    res$data$.seTE.adj.common[sel.s] <- res.f$seTE
+    res$data$.seTE.adj.common[sel.s] <- res.c$seTE
     res$data$.seTE.adj.random[sel.s] <- res.r$seTE
     #
     res$data <- res$data[order(res$data$.order), ]

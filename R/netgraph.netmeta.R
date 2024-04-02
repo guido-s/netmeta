@@ -1338,9 +1338,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
         for (i in n.plastic:1) {
           j <- j + 1
           lwd.multiply[j] <- sin(pi * i / 2 / n.plastic)
-          cols[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
+          cols[j] <- paste0("gray", round(100 * (1 - i / n.plastic)))
           cols.highlight[, j] <-
-            paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
+            paste0("gray", round(100 * (1 - i / n.plastic)))
         }
         ##
         for (h in seq_len(n.high)) {
@@ -1350,8 +1350,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
                 substring(col.high.h, nchar(col.high.h)) %in% 1:4)
               col.high.h <- substring(col.high.h, 1, nchar(col.high.h) - 1)
             ##
-            cols.highlight[h, 1:12] <- rep(paste(col.high.h, 4:1, sep = ""),
-                                           rep(3, 4))
+            cols.highlight[h, 1:12] <- rep(paste0(col.high.h, 4:1), rep(3, 4))
             cols.highlight[h, 13:15] <- rep(col.high.h, 3)
           }
           else {
@@ -1380,11 +1379,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
                  "(see helpfile of plotgraph command).")
           ##
           if (sum(dat.nodes$trts %in% highs) != 2)
-            stop(paste0("Argument 'highlight' must contain two of ",
-                        "the following values ",
-                        "(separated by \":\"):\n  ",
-                        paste(paste("'", dat.nodes$trts, "'", sep = ""),
-                              collapse = " - "), sep = ""))
+            stop("Argument 'highlight' must contain two of ",
+                 "the following values (separated by \":\"):\n  ",
+                 paste(paste0("'", dat.nodes$trts, "'"), collapse = " - "))
           ##
           dat.high <- dat.nodes[dat.nodes$trts %in% highs, ]
           ##
@@ -1499,10 +1496,10 @@ netgraph.netmeta <- function(x, seq = x$seq,
                  "(see helpfile of plotgraph command).")
           ##
           if (sum(dat.nodes$trts %in% highs) != 2)
-            stop(paste("Argument 'highlight' must contain two of the ",
-                       "following values (separated by \":\"):\n  ",
-                       paste(paste("'", dat.nodes$trts, "'", sep = ""),
-                             collapse = " - "), sep = ""))
+            stop("Argument 'highlight' must contain two of the ",
+                 "following values (separated by \":\"):\n  ",
+                 paste(paste0("'", dat.nodes$trts, "'"),
+                       collapse = " - "))
           ##
           dat.high <- dat.nodes[dat.nodes$trts %in% highs, ]
           ##

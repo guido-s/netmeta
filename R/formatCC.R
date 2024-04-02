@@ -16,7 +16,7 @@ formatCC <- function(x,
       sm.lab <- paste0("log(", sm.lab, ")")
   }
   ##  
-  ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
+  ci.lab <- paste0(round(100 * level, 1), "%-CI")
   
   
   ## First column contains row names

@@ -357,8 +357,8 @@ forest.netsplit <- function(x,
   if (missing(text.predict))
     if (!(length(x$level.predict) == 0) &&
         x$level.ma != x$level.predict)
-      text.predict <- paste(text.predict, " (",
-                            round(x$level.predict * 100), "%-PI)", sep = "")
+      text.predict <- paste0(text.predict, " (",
+                             round(x$level.predict * 100), "%-PI)")
   ##
   if (overall & n.subgroup > 1) {
     if (text.overall == text.predict)
@@ -467,16 +467,15 @@ forest.netsplit <- function(x,
   }
   ##
   if (missing.smlab & n.subgroup == 1)
-    smlab <- paste(if (direct)
-                     paste(text.direct, "\n", sep = ""),
-                   if (indirect)
-                     paste(text.indirect, "\n", sep = ""),
-                   if (overall)
-                     paste(text.overall, "\n", sep = ""),
-                   "(",
-                   tolower(smlab),
-                   ")",
-                   sep = "")
+    smlab <- paste0(if (direct)
+      paste0(text.direct, "\n"),
+      if (indirect)
+        paste0(text.indirect, "\n"),
+      if (overall)
+        paste0(text.overall, "\n"),
+      "(",
+      tolower(smlab),
+      ")")
   ##
   dat.predict <- x$predict
   ##

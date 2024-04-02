@@ -459,10 +459,10 @@ netcomb <- function(x,
     }
     ##
     if (wrong.labels)
-      stop(paste("Row names of argument 'C.matrix' must be a ",
-                 "permutation of treatment names:\n  ",
-                 paste(paste("'", x$trts, "'", sep = ""),
-                       collapse = " - "), sep = ""),
+      stop("Row names of argument 'C.matrix' must be a ",
+           "permutation of treatment names:\n  ",
+           paste(paste0("'", x$trts, "'"),
+                 collapse = " - "),
            call. = FALSE)
     ##
     C.matrix <- C.matrix[x$trts, , drop = FALSE]

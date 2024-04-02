@@ -439,8 +439,9 @@ print.netrank <- function(x,
   }
 
   if (x$method == "SUCRA" & !is.null(x$nsim))
-    cat(paste0("\n- based on ", x$nsim,
-               " simulation", if (x$nsim > 1) "s", "\n"))
+    cat("\n- based on ", x$nsim,
+        " simulation", if (x$nsim > 1) "s", "\n",
+        sep = "")
   
   
   invisible(NULL)

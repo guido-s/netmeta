@@ -112,14 +112,13 @@ netimpact <- function(x,
     ignored[[i]] <- comparison[studlab == i]
     ##
     if (verbose) {
-      cat(paste0("** Removed study: ", i,
-                 " **\nComparison",
-                 if (length(comparison[studlab == i]) > 1) "s",
-                 ": ",
-                 paste(paste("'", comparison[studlab == i],
-                             "'", sep = ""),
-                       collapse = ", "),
-                 "\n\n"))
+      cat("** Removed study: ", i,
+          " **\nComparison",
+          if (length(comparison[studlab == i]) > 1) "s",
+          ": ",
+          paste(paste0("'", comparison[studlab == i], "'"), collapse = ", "),
+          "\n\n",
+          sep = "")
     }
     ##
     if (!inherits(x, "netmetabin")) {

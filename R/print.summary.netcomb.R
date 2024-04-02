@@ -205,8 +205,8 @@ print.summary.netcomb <- function(x,
                   ##
                   ...)
   else
-    cat(paste("Please use argument 'common = TRUE' or 'random = TRUE'",
-              "to print network meta-analysis results.\n"))
+    cat("Please use argument 'common = TRUE' or 'random = TRUE'",
+        "to print network meta-analysis results.\n")
   
   
   invisible(NULL)

@@ -514,18 +514,16 @@ netposet <- function(..., outcomes, treatments, small.values,
       if (any(ranking.treatments[[i]] != treatments)) {
         if (all(sort(ranking.treatments[[i]]) == sort(treatments)))
           stop("Different order of treatments provided:\n ",
-               paste(paste("'", treatments, "'", sep = ""),
-                     collapse = " - "),
+               paste(paste0("'", treatments, "'"), collapse = " - "),
                "\n ",
-               paste(paste("'", ranking.treatments[[i]], "'", sep = ""),
+               paste(paste0("'", ranking.treatments[[i]], "'"),
                      collapse = " - "),
                call. = FALSE)
         else
           stop("Different treatments provided:\n ",
-               paste(paste("'", treatments, "'", sep = ""),
-                     collapse = " - "),
+               paste(paste0("'", treatments, "'"), collapse = " - "),
                "\n ",
-               paste(paste("'", ranking.treatments[[i]], "'", sep = ""),
+               paste(paste0("'", ranking.treatments[[i]], "'"),
                      collapse = " - "),
                call. = FALSE)
       }

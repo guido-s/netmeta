@@ -898,8 +898,8 @@ pairwise <- function(treat,
             stop("Study label must be unique for single treatment arm.")
           ##
           for (nam in names.adddata[notunique]) {
-            dat.ij[, paste(nam, 1, sep = "")] <- adddata[[i]][nam]
-            dat.ij[, paste(nam, 2, sep = "")] <- adddata[[j]][nam]
+            dat.ij[, paste0(nam, 1)] <- adddata[[i]][nam]
+            dat.ij[, paste0(nam, 2)] <- adddata[[j]][nam]
           }
           ##
           if (i == 1 & j == 2)
@@ -1464,10 +1464,10 @@ pairwise <- function(treat,
               " with missing TE / seTE or zero seTE",
               " will not be considered in network meta-analysis.",
               call. = FALSE)
-      cat(paste("Comparison",
-                if (nrow(res.NAs) > 1) "s",
-                " will not be considered in network meta-analysis:\n",
-                sep = ""))
+      cat("Comparison",
+          if (nrow(res.NAs) > 1) "s",
+          " will not be considered in network meta-analysis:\n",
+          sep = "")
       ##
       res.NAs$.order <- NULL
       res.NAs$.order1 <- NULL

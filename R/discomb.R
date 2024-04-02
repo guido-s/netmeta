@@ -673,9 +673,9 @@ discomb <- function(TE, seTE,
             " with missing TE / seTE or zero seTE not considered in",
             " network meta-analysis.",
             call. = FALSE)
-    cat(paste0("Comparison",
-               if (sum(excl) > 1) "s",
-               " not considered in network meta-analysis:\n"))
+    cat("Comparison", if (sum(excl) > 1) "s",
+        " not considered in network meta-analysis:\n",
+        sep = "")
     prmatrix(dat.NAs, quote = FALSE, right = TRUE,
              rowlab = rep("", sum(excl)))
     cat("\n")
@@ -798,6 +798,8 @@ discomb <- function(TE, seTE,
   ##
   colnames(X.matrix) <- colnames(C.matrix)
   rownames(X.matrix) <- studlab
+  #
+  A.matrix <- diag(diag(t(B.matrix) %*% B.matrix)) - t(B.matrix) %*% B.matrix
   ##
   sel.comps <- character(0)
   ##
@@ -1035,6 +1037,7 @@ discomb <- function(TE, seTE,
               df.Q.diff = df.Q.diff,
               pval.Q.diff = res.c$pval.Q.diff, 
               ##
+              A.matrix = A.matrix,
               X.matrix = X.matrix,
               B.matrix = B.matrix,
               C.matrix = C.matrix,

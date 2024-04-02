@@ -26,10 +26,10 @@ setref <- function(reference.group, levs, length = 1,
       stop("Missing value not allowed in ", text.within, ".",
            call. = FALSE)
     if (!all(reference.group %in% seq_len(length(levs))))
-      stop(paste(text.start, " must ",
-                 if (length == 1) "be any of the " else "contain ",
-                 "integers from 1 to ",
-                 length(levs), ".", sep = ""),
+      stop(paste0(text.start, " must ",
+                  if (length == 1) "be any of the " else "contain ",
+                  "integers from 1 to ",
+                  length(levs), "."),
            call. = FALSE)
     res <- levs[reference.group]
   }
@@ -51,10 +51,10 @@ setref <- function(reference.group, levs, length = 1,
     ##
     if (anyNA(idx) || any(idx == 0))
       stop("Admissible values for ", text.within, ":\n  ",
-           paste(paste("'", levs, "'", sep = ""), collapse = " - "),
+           paste(paste0("'", levs, "'"), collapse = " - "),
            "\n  (unmatched value", if (sum(is.na(idx)) > 1) "s",
            ": ",
-           paste(paste("'", reference.group[is.na(idx)], "'", sep = ""),
+           paste(paste0("'", reference.group[is.na(idx)], "'"),
                  collapse = " - "),
            ")",
            call. = FALSE)

@@ -192,8 +192,7 @@ netgraph.netimpact <- function(x,
       title(sub = paste0("Comparison",
                          if (length(ignore.i) > 1) "s",
                          ": ",
-                         paste(paste("'", ignore.i, "'", sep = ""),
-                               collapse = ", ")))
+                         paste(paste0("'", ignore.i, "'"), collapse = ", ")))
   }
   
   

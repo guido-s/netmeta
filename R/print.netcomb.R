@@ -194,14 +194,14 @@ print.netcomb <- function(x,
   upper.I2 <- round(100 * x$upper.I2, digits.I2)
   ##
   if (common | random) {
-    cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
-    cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
-    cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
-    cat(paste("Number of active components: c = ", x$c, "\n", sep = ""))
+    cat("Number of studies: k = ", x$k, "\n", sep = "")
+    cat("Number of pairwise comparisons: m = ", x$m, "\n", sep = "")
+    cat("Number of treatments: n = ", x$n, "\n", sep = "")
+    cat("Number of active components: c = ", x$c, "\n", sep = "")
     if (!is.null(x$d))
-      cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
+      cat("Number of designs: d = ", x$d, "\n", sep = "")
     if (inherits(x, "discomb"))
-      cat(paste("Number of subnetworks: s = ", x$s, "\n", sep = ""))
+      cat("Number of subnetworks: s = ", x$s, "\n", sep = "")
     ##
     cat("\n")
     ##
@@ -220,7 +220,7 @@ print.netcomb <- function(x,
     else
       sm.lab <- sm
     ##
-    ci.lab <- paste(round(100 * x$level, 1), "%-CI", sep = "")
+    ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
     ##
     TE.common <- x$TE.common
     lowTE.common <- x$lower.common
@@ -261,26 +261,26 @@ print.netcomb <- function(x,
       trts.abbr <- compos(trts, comps, comps.abbr, sep.comps)
       ##
       if (baseline.reference)
-        comptext <- paste("comparison: ",
-                          if (x$n == 2)
-                            paste("'",
-                                  trts.abbr[trts != reference.group],
-                                  "'", sep = "")
-                          else
-                            "other treatments",
-                          " vs '",
-                         trts.abbr[trts == reference.group],
-                          "'", sep = "")
+        comptext <- paste0("comparison: ",
+                           if (x$n == 2)
+                             paste0("'",
+                                    trts.abbr[trts != reference.group],
+                                    "'")
+                           else
+                             "other treatments",
+                           " vs '",
+                           trts.abbr[trts == reference.group],
+                           "'")
       else
-        comptext <- paste("comparison: '",
-                         trts.abbr[trts == reference.group],
-                          "' vs ",
-                          if (x$n == 2)
-                            paste("'",
-                                  trts.abbr[trts != reference.group],
-                                  "'", sep = "")
-                          else
-                            "other treatments", sep = "")
+        comptext <- paste0("comparison: '",
+                           trts.abbr[trts == reference.group],
+                           "' vs ",
+                           if (x$n == 2)
+                             paste0("'",
+                                    trts.abbr[trts != reference.group],
+                                    "'")
+                           else
+                             "other treatments")
       ##
       noeffect <- 1L * (backtransf & is.relative.effect(sm))
       #
@@ -500,13 +500,14 @@ print.netcomb <- function(x,
     ##
     if (common) {
       if (reference.group != "") {
-        cat(paste0("Common effects model",
-                   if (!is.null(x$inactive))
-                     paste0(" (inactive component: '", x$inactive, "')"),
-                   "\n\n"))
+        cat("Common effects model",
+            if (!is.null(x$inactive))
+              paste0(" (inactive component: '", x$inactive, "')"),
+            "\n\n",
+            sep = "")
         ##
-        cat("Treatment estimate (sm = '", sm.lab,
-            "', ", comptext, "):\n", sep = "")
+        cat("Treatment estimate (sm = '", sm.lab, "', ", comptext, "):\n",
+            sep = "")
         prmatrix(dat1.c, quote = FALSE, right = TRUE)
         cat("\n")
       }
@@ -524,10 +525,11 @@ print.netcomb <- function(x,
     ##
     if (random) {
       if (reference.group != "") {
-        cat(paste0("Random effects model",
-                   if (!is.null(x$inactive))
-                     paste0(" (inactive component: '", x$inactive, "')"),
-                   "\n\n"))
+        cat("Random effects model",
+            if (!is.null(x$inactive))
+              paste0(" (inactive component: '", x$inactive, "')"),
+            "\n\n",
+            sep = "")
         ##
         cat("Treatment estimate (sm = '", sm.lab,
             "', ", comptext, "):\n", sep = "")
@@ -548,22 +550,23 @@ print.netcomb <- function(x,
     ##
     ## (d) Heterogeneity / inconsistency
     ##
-    cat(paste0("Quantifying heterogeneity / inconsistency:\n",
-               formatPT(x$tau^2,
-                        lab = TRUE, labval = text.tau2,
-                        digits = digits.tau2,
-                        lab.NA = "NA", big.mark = big.mark),
-               "; ",
-               formatPT(x$tau,
-                        lab = TRUE, labval = text.tau,
-                        digits = digits.tau,
-                        lab.NA = "NA", big.mark = big.mark),
-               if (!is.na(I2))
-                 paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
-               if (!(is.na(lower.I2) | is.na(upper.I2)))
-                 pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
-               "\n\n")
-        )
+    cat("Quantifying heterogeneity / inconsistency:\n",
+        formatPT(x$tau^2,
+                 lab = TRUE, labval = text.tau2,
+                 digits = digits.tau2,
+                 lab.NA = "NA", big.mark = big.mark),
+        "; ",
+        formatPT(x$tau,
+                 lab = TRUE, labval = text.tau,
+                 digits = digits.tau,
+                 lab.NA = "NA", big.mark = big.mark),
+        if (!is.na(I2))
+          paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
+        if (!(is.na(lower.I2) | is.na(upper.I2)))
+          pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
+        "\n\n",
+        sep = ""
+    )
     ##
     cat("Heterogeneity statistics:\n")
     ##
