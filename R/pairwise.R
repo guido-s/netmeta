@@ -559,27 +559,150 @@ pairwise <- function(treat,
     
     
     ##
-    ## Determine whether data is in wide or long arm-based format
+    ## Determine whether data is in long, wide or comparison-based format
     ##
-    if (type == "generic")
-      wide.armbased <- is.list(TE) & is.list(seTE)
-    if (type == "binary")
-      wide.armbased <- is.list(event) & is.list(n)
-    else if (type == "continuous")
-      wide.armbased <- is.list(n) & is.list(mean) & is.list(sd)
-    else if (type == "count")
-      wide.armbased <- is.list(event) & is.list(time)
-    else if (type == "onlytreat")
-      wide.armbased <- is.list(treat)
+    if (type == "generic") {
+      if (is.list(TE) & is.list(seTE)) {
+        if (length(TE) == 1 & length(seTE) == 1 & length(treat) == 1) {
+          data.format <- "long"
+          TE <- unlist(TE)
+          seTE <- unlist(seTE)
+          treat <- unlist(treat)
+        }
+        else if (length(TE) == 2 & length(seTE) == 2 & any(table(studlab) > 1))
+          data.format <- "comparison"
+        else
+          data.format <- "wide"
+      }
+      else
+        data.format <- "long"
+    }
+    #
+    else if (type == "binary") {
+      if (is.list(event) & is.list(n)) {
+        if (length(event) == 1 & length(n) == 1 & length(treat) == 1) {
+          data.format <- "long"
+          event <- unlist(event)
+          n <- unlist(n)
+          treat <- unlist(treat)
+        }
+        else if (length(event) == 2 & length(n) == 2 & any(table(studlab) > 1))
+          data.format <- "comparison"
+        else
+          data.format <- "wide"
+      }
+      else
+        data.format <- "long"
+    }
+    #
+    else if (type == "continuous") {
+      if (is.list(n) & is.list(mean) & is.list(sd)) {
+        if (length(n) == 1 & length(mean) == 1 & length(sd) == 1 &
+            length(treat) == 1) {
+          data.format <- "long"
+          n <- unlist(n)
+          mean <- unlist(mean)
+          sd <- unlist(sd)
+          treat <- unlist(treat)
+        }
+        else if (length(n) == 2 & length(mean) == 2 & length(sd) == 2 &
+                 any(table(studlab) > 1))
+          data.format <- "comparison"
+        else
+          data.format <- "wide"
+      }
+      else
+        data.format <- "long"
+    }
+    #
+    else if (type == "count") {
+      if (is.list(event) & is.list(time)) {
+        if (length(event) == 1 & length(time) == 1 & length(treat) == 1) {
+          data.format <- "long"
+          event <- unlist(event)
+          time <- unlist(time)
+          treat <- unlist(treat)
+        }
+        else if (length(event) == 2 & length(time) == 2 &
+                 any(table(studlab) > 1))
+          data.format <- "comparison"
+        else
+          data.format <- "wide"
+      }
+      else
+        data.format <- "long"
+    }
+    #
+    else if (type == "onlytreat") {
+      if (is.list(treat)) {
+        if (length(treat) == 1) {
+          data.format <- "long"
+          treat <- unlist(treat)
+        }
+        else if (length(treat) == 2 & any(table(studlab) > 1))
+          data.format <- "comparison"
+        else
+          data.format <- "wide"
+      }
+      else
+        data.format <- "long"
+    }
+    
+    
+    #
+    
+    if (data.format == "comparison") {
+      if (is.null(studlab))
+        stop("Argument 'studlab' mandatory for comparison-based format.")
+      #
+      if (type == "binary") {
+        ldat <- longarm(studlab = unlist(studlab),
+                        treat1 = treat[[1]], treat2 = treat[[2]],
+                        event1 = event[[1]], event2 = event[[2]],
+                        n1 = n[[1]], mean2 = n[[2]])
+        #
+        studlab <- ldat$studlab
+        treat <- ldat$treat
+        event <- ldat$event
+        n <- ldat$n
+      }
+      #
+      else if (type == "continuous") {
+        ldat <- longarm(studlab = unlist(studlab),
+                        treat1 = treat[[1]], treat2 = treat[[2]],
+                        n1 = n[[1]], n2 = n[[2]],
+                        mean1 = mean[[1]], mean2 = mean[[2]],
+                        sd1 = sd[[1]], sd2 = sd[[2]])
+        #
+        studlab <- ldat$studlab
+        treat <- ldat$treat
+        n <- ldat$n
+        mean <- ldat$mean
+        sd <- ldat$sd
+      }
+      #
+      else if (type == "count") {
+        ldat <- longarm(studlab = unlist(studlab),
+                        treat1 = treat[[1]], treat2 = treat[[2]],
+                        event1 = event[[1]], event2 = event[[2]],
+                        time1 = time[[1]], time2 = time[[2]])
+        #
+        studlab <- ldat$studlab
+        treat <- ldat$treat
+        event <- ldat$event
+        time <- ldat$time
+      }
+    }
+    
     
     ##
-    ## Transform long arm-based format to list format
+    ## Transform long arm-based or comparison-based format to list format
     ##
     nulldata <- !(!nulldata & append)
     #
-    if (!wide.armbased) {
+    if (data.format %in% c("comparison", "long")) {
       if (is.null(studlab))
-        stop("Argument 'studlab' mandatory if argument 'event' is a vector.")
+        stop("Argument 'studlab' mandatory for long arm-based format.")
       ##
       studlab <- as.character(studlab)
       ##
@@ -609,7 +732,7 @@ pairwise <- function(treat,
                            .order = seq_along(studlab),
                            stringsAsFactors = FALSE)
         ##
-        if (!nulldata) {
+        if (!nulldata & data.format == "long") {
           tdat <- cbind(tdat, data)
           dupl <- duplicated(names(tdat))
           if (any(dupl))
@@ -650,7 +773,7 @@ pairwise <- function(treat,
                            .order = seq_along(studlab),
                            stringsAsFactors = FALSE)
         ##
-        if (!nulldata) {
+        if (!nulldata & data.format == "long") {
           tdat <- cbind(tdat, data)
           dupl <- duplicated(names(tdat))
           if (any(dupl))
@@ -697,7 +820,7 @@ pairwise <- function(treat,
         if (!is.null(n))
           tdat$n <- n
         ##
-        if (!nulldata) {
+        if (!nulldata & data.format == "long") {
           tdat <- cbind(tdat, data)
           dupl <- duplicated(names(tdat))
           if (any(dupl))
@@ -744,7 +867,7 @@ pairwise <- function(treat,
         if (!is.null(event))
           tdat$event <- event
         ##
-        if (!nulldata) {
+        if (!nulldata & data.format == "long") {
           tdat <- cbind(tdat, data)
           dupl <- duplicated(names(tdat))
           if (any(dupl))
@@ -789,7 +912,8 @@ pairwise <- function(treat,
           tdat$n <- n
         ##
         if (!nulldata) {
-          tdat <- cbind(tdat, data)
+          if (data.format == "long")
+            tdat <- cbind(tdat, data)
           dupl <- duplicated(names(tdat))
           if (any(dupl))
             names(tdat)[dupl] <- paste(names(tdat)[dupl], "orig", sep = ".")
@@ -814,7 +938,7 @@ pairwise <- function(treat,
         treat <- treat.list
       }
     }
-    
+
     
     
     
@@ -830,8 +954,8 @@ pairwise <- function(treat,
     levs <- unique(studlab)
 
 
-    narms <- length(treat)
-    nstud <- length(studlab)
+    narms <- length(unique(treat))
+    nstud <- length(unique(studlab))
 
 
     ##
@@ -849,7 +973,7 @@ pairwise <- function(treat,
     ## Generate dataset with variables from original dataset
     ##
     ##
-    if (!nulldata & !wide.armbased) {
+    if (!nulldata & data.format == "long") {
       names.adddata <- names(adddata[[1]])
       ##
       notunique <- matrix(NA,
@@ -990,7 +1114,7 @@ pairwise <- function(treat,
                             stringsAsFactors = FALSE,
                             row.names = NULL)
           ##
-          if (wide.armbased & !nulldata) {
+          if (!nulldata & data.format == "wide") {
             dat <- cbind(dat, data, stringsAsFactors = FALSE)
             dupl <- duplicated(names(dat))
             if (any(dupl))
@@ -1111,7 +1235,7 @@ pairwise <- function(treat,
                             stringsAsFactors = FALSE,
                             row.names = NULL)
           ##
-          if (wide.armbased) {
+          if (data.format == "wide") {
             dat <- cbind(dat, data, stringsAsFactors = FALSE)
             dupl <- duplicated(names(dat))
             if (any(dupl))
@@ -1220,7 +1344,7 @@ pairwise <- function(treat,
             dat$time2 <- time[[j]]
           }
           ##
-          if (wide.armbased) {
+          if (data.format == "wide") {
             dat <- cbind(dat, data, stringsAsFactors = FALSE)
             dupl <- duplicated(names(dat))
             if (any(dupl))
@@ -1323,7 +1447,7 @@ pairwise <- function(treat,
                             stringsAsFactors = FALSE,
                             row.names = NULL)
           ##
-          if (wide.armbased) {
+          if (data.format == "wide") {
             dat <- cbind(dat, data, stringsAsFactors = FALSE)
             dupl <- duplicated(names(dat))
             if (any(dupl))
@@ -1384,7 +1508,7 @@ pairwise <- function(treat,
             dat$n2 <- n[[j]]
           }
           ##
-          if (wide.armbased) {
+          if (data.format == "wide") {
             dat <- cbind(dat, data, stringsAsFactors = FALSE)
             dupl <- duplicated(names(dat))
             if (any(dupl))
@@ -1413,10 +1537,8 @@ pairwise <- function(treat,
         }
       }
     }
-    
-    
     ##
-    if (!nulldata & !wide.armbased)
+    if (!nulldata & data.format == "long")
       res <- merge(res, newdata,
                    by = c("studlab", "treat1", "treat2"),
                    suffixes = c("",".orig"),

@@ -5,6 +5,10 @@
 * netcomplex():
   - print correct component names for command *netcomplex(net1, 2)* etc.
 
+* pairwise():
+  - inconsistent values for Cohen's d if data was already provided in contrast
+    based format
+
 ### Internal changes
 
 * Use backtransf() from R package **meta** to backtransform results
