@@ -558,9 +558,9 @@ pairwise <- function(treat,
            "  - event, time (incidence rates).")
     
     
-    ##
-    ## Determine whether data is in long, wide or comparison-based format
-    ##
+    #
+    # Determine whether data is in long, wide or comparison-based format
+    #
     if (type == "generic") {
       if (is.list(TE) & is.list(seTE)) {
         if (length(TE) == 1 & length(seTE) == 1 & length(treat) == 1) {
@@ -569,8 +569,12 @@ pairwise <- function(treat,
           seTE <- unlist(seTE)
           treat <- unlist(treat)
         }
-        else if (length(TE) == 2 & length(seTE) == 2 & any(table(studlab) > 1))
+        else if (length(TE) == 2 & length(seTE) == 2 & length(treat) == 2 &
+                 any(table(studlab) > 1)) {
           data.format <- "comparison"
+          dat.studlab.treat <-
+            data.frame(studlab, treat1 = treat[[1]], treat2 = treat[[2]])
+        }
         else
           data.format <- "wide"
       }
@@ -586,8 +590,12 @@ pairwise <- function(treat,
           n <- unlist(n)
           treat <- unlist(treat)
         }
-        else if (length(event) == 2 & length(n) == 2 & any(table(studlab) > 1))
+        else if (length(event) == 2 & length(n) == 2 & length(treat) == 2 &
+                 any(table(studlab) > 1)) {
           data.format <- "comparison"
+          dat.studlab.treat <-
+            data.frame(studlab, treat1 = treat[[1]], treat2 = treat[[2]])
+        }
         else
           data.format <- "wide"
       }
@@ -606,8 +614,11 @@ pairwise <- function(treat,
           treat <- unlist(treat)
         }
         else if (length(n) == 2 & length(mean) == 2 & length(sd) == 2 &
-                 any(table(studlab) > 1))
+                 length(treat) == 2 & any(table(studlab) > 1)) {
           data.format <- "comparison"
+          dat.studlab.treat <-
+            data.frame(studlab, treat1 = treat[[1]], treat2 = treat[[2]])
+        }
         else
           data.format <- "wide"
       }
@@ -623,9 +634,12 @@ pairwise <- function(treat,
           time <- unlist(time)
           treat <- unlist(treat)
         }
-        else if (length(event) == 2 & length(time) == 2 &
-                 any(table(studlab) > 1))
+        else if (length(event) == 2 & length(time) == 2 & length(treat) == 2 &
+                 any(table(studlab) > 1)) {
           data.format <- "comparison"
+          dat.studlab.treat <-
+            data.frame(studlab, treat1 = treat[[1]], treat2 = treat[[2]])
+        }
         else
           data.format <- "wide"
       }
@@ -639,8 +653,11 @@ pairwise <- function(treat,
           data.format <- "long"
           treat <- unlist(treat)
         }
-        else if (length(treat) == 2 & any(table(studlab) > 1))
+        else if (length(treat) == 2 & any(table(studlab) > 1)) {
           data.format <- "comparison"
+          dat.studlab.treat <-
+            data.frame(studlab, treat1 = treat[[1]], treat2 = treat[[2]])
+        }
         else
           data.format <- "wide"
       }
@@ -650,7 +667,9 @@ pairwise <- function(treat,
     
     
     #
-    
+    # Use longarm() to transform outcome variables from comparison-based
+    # to long arm-based format
+    #
     if (data.format == "comparison") {
       if (is.null(studlab))
         stop("Argument 'studlab' mandatory for comparison-based format.")
@@ -695,9 +714,9 @@ pairwise <- function(treat,
     }
     
     
-    ##
-    ## Transform long arm-based or comparison-based format to list format
-    ##
+    #
+    # Transform outcome variables from long arm-based to list format
+    #
     nulldata <- !(!nulldata & append)
     #
     if (data.format %in% c("comparison", "long")) {
@@ -729,7 +748,7 @@ pairwise <- function(treat,
         ## Generate lists
         ##
         tdat <- data.frame(studlab, treat, event, n,
-                           .order = seq_along(studlab),
+                           .order = seq_along(treat),
                            stringsAsFactors = FALSE)
         ##
         if (!nulldata & data.format == "long") {
@@ -770,7 +789,7 @@ pairwise <- function(treat,
         ## Generate lists
         ##
         tdat <- data.frame(studlab, treat, n, mean, sd,
-                           .order = seq_along(studlab),
+                           .order = seq_along(treat),
                            stringsAsFactors = FALSE)
         ##
         if (!nulldata & data.format == "long") {
@@ -814,7 +833,7 @@ pairwise <- function(treat,
         ## Generate lists
         ##
         tdat <- data.frame(studlab, treat, event, time,
-                           .order = seq_along(studlab),
+                           .order = seq_along(treat),
                            stringsAsFactors = FALSE)
         ##
         if (!is.null(n))
@@ -858,7 +877,7 @@ pairwise <- function(treat,
         ## Generate lists
         ##
         tdat <- data.frame(studlab, treat, TE, seTE,
-                           .order = seq_along(studlab),
+                           .order = seq_along(treat),
                            stringsAsFactors = FALSE)
         ##
         if (!is.null(n))
@@ -905,7 +924,7 @@ pairwise <- function(treat,
         ## Generate lists
         ##
         tdat <- data.frame(studlab, treat,
-                           .order = seq_along(studlab),
+                           .order = seq_along(treat),
                            stringsAsFactors = FALSE)
         ##
         if (!is.null(n))
@@ -1543,8 +1562,80 @@ pairwise <- function(treat,
                    by = c("studlab", "treat1", "treat2"),
                    suffixes = c("",".orig"),
                    all.x = TRUE)
-
-
+    #
+    if (!nulldata & data.format == "comparison") {
+      res$.order <- NULL
+      res2 <- data.frame()
+      for (i in seq_len(nrow(dat.studlab.treat))) {
+        sel.i <-
+          res$studlab == dat.studlab.treat$studlab[i] &
+          res$treat1 == dat.studlab.treat$treat1[i] &
+          res$treat2 == dat.studlab.treat$treat2[i]
+        #
+        sel.wo.i <-
+          res$studlab == dat.studlab.treat$studlab[i] &
+          res$treat1 == dat.studlab.treat$treat2[i] &
+          res$treat2 == dat.studlab.treat$treat1[i]
+        #
+        if (any(sel.i))
+          res2 <- rbind(res2, res[sel.i, ])
+        else if (any(sel.wo.i)) {
+          res2.i <- res[sel.wo.i, ]
+          #
+          res2.i$TE <- -res2.i$TE
+          #
+          t1 <- res2.i$treat1
+          res2.i$treat1 <- res2.i$treat2
+          res2.i$treat2 <- t1
+          #
+          if (type == "binary") {
+            ev1 <- res2.i$event1
+            res2.i$event1 <- res2.i$event2
+            res2.i$event2 <- ev1
+            #
+            tn1 <- res2.i$n1
+            res2.i$n1 <- res2.i$n2
+            res2.i$n2 <- tn1
+          }
+          #
+          else if (type == "continuous") {
+            tn1 <- res2.i$n1
+            res2.i$n1 <- res2.i$n2
+            res2.i$n2 <- tn1
+            #
+            me1 <- res2.i$mean1
+            res2.i$mean1 <- res2.i$mean2
+            res2.i$mean2 <- me1
+            #
+            ts1 <- res2.i$sd1
+            res2.i$sd1 <- res2.i$sd2
+            res2.i$sd2 <- ts1
+          }
+          #
+          else if (type == "count") {
+            ev1 <- res2.i$event1
+            res2.i$event1 <- res2.i$event2
+            res2.i$event2 <- ev1
+            #
+            tt1 <- res2.i$time1
+            res2.i$time1 <- res2.i$time2
+            res2.i$time2 <- tt1
+          }
+          res2 <- rbind(res2, res2.i)
+        }
+      }
+      #
+      res <- res2
+      #
+      if (!nulldata) {
+        res <- cbind(res, data)
+        dupl <- duplicated(names(res))
+        if (any(dupl))
+          names(res)[dupl] <- paste(names(res)[dupl], "orig", sep = ".")
+      }
+    }
+    
+    
     ##
     ## Additional checks
     ##
@@ -1634,24 +1725,26 @@ pairwise <- function(treat,
     attr(res, "allstudies") <- allstudies
     
     
-    if (!is.null(res$.order1)) {
-      res <- res[order(res$.order1), ]
-      res$.order1 <- NULL
-      res$.order2 <- NULL
-      res$.order <- NULL
-      res <- unique(res)
+    if (data.format != "comparison") {
+      if (!is.null(res$.order1)) {
+        res <- res[order(res$.order1), ]
+        res$.order1 <- NULL
+        res$.order2 <- NULL
+        res$.order <- NULL
+        res <- unique(res)
+      }
+      else if (!is.null(res$.order)) {
+        res <- res[order(res$.order), ]
+        res$.order <- NULL
+        res$.order.orig <- NULL
+        res <- unique(res)
+      }
+      else {
+        res <- res[order(factor(res$studlab, levels = levs),
+                         res$treat1, res$treat2), ]
+      }
     }
-    else if (!is.null(res$.order)) {
-      res <- res[order(res$.order), ]
-      res$.order <- NULL
-      res$.order.orig <- NULL
-      res <- unique(res)
-    }
-    else {
-      res <- res[order(factor(res$studlab, levels = levs),
-                       res$treat1, res$treat2), ]
-    }
-    ##
+    #
     rownames(res) <- 1:nrow(res)
   }
   
