@@ -2,12 +2,24 @@
 
 ### Bug fixes
 
-* netcomplex():
-  - print correct component names for command *netcomplex(net1, 2)* etc.
-
 * pairwise():
   - inconsistent values for Cohen's d if data was already provided in contrast
     based format
+
+* netcomplex():
+  - print correct component names for command *netcomplex(net1, 2)* etc.
+
+* netcomparison():
+  - NA was calculated for comparisons containing inestimable components which
+    canceled out, e.g., A + Z vs B + Z with inestimable Z
+
+* print.netcomparison():
+  - do not print information on abbreviated component label for inactive
+    component if it isn't part of the comparison
+
+* print.netcomb():
+  - printout resulted in an error if the reference intervention contained an
+    inestimable component
 
 ### Internal changes
 

@@ -358,7 +358,8 @@ print.netcomb <- function(x,
       dimnames(dat1.c) <-
         list(trts, c(sm.lab, ci.lab, "z", "p-value"))
       ##
-      if (TE.common.b[trts == reference.group] == noeffect)
+      if (!is.na(TE.common.b[trts == reference.group]) &&
+          TE.common.b[trts == reference.group] == noeffect)
         dat1.c[trts == reference.group, ] <- "."
       rownames(dat1.c) <- trts.abbr
       ##
@@ -403,7 +404,8 @@ print.netcomb <- function(x,
       dimnames(dat1.r) <-
         list(colnames(TE.random), c(sm.lab, ci.lab, "z", "p-value"))
       ##
-      if (TE.random.b[trts == reference.group] == noeffect)
+      if (!is.na(TE.random.b[trts == reference.group]) &&
+          TE.random.b[trts == reference.group] == noeffect)
         dat1.r[trts == reference.group, ] <- "."
       rownames(dat1.r) <- trts.abbr
     }

@@ -280,14 +280,20 @@ netcomparison <- function(x, treat1, treat2,
   for (i in seq_len(n.comparisons)) {
     sel1.i <- !comps1.list[[i]] %in% comps2.list[[i]]
     sel2.i <- !comps2.list[[i]] %in% comps1.list[[i]]
-    ##
-    if (any(sel1.i) | any(sel2.i))
-      comparison[i] <-
-        paste0(paste(comps1.list[[i]][sel1.i],
-                     collapse = paste0(add1[i], x$sep.comps, add1[i])),
-               x$sep.trts,
-               paste(comps2.list[[i]][sel2.i],
-                     collapse = paste0(add2[i], x$sep.comps, add2[i])))
+    #
+    if (any(sel1.i) | any(sel2.i)) {
+      comb1 <- paste(comps1.list[[i]][sel1.i],
+                     collapse = paste0(add1[i], x$sep.comps, add1[i]))
+      comb2 <- paste(comps2.list[[i]][sel2.i],
+                     collapse = paste0(add2[i], x$sep.comps, add2[i]))
+      #
+      if (comb1 == "")
+        comparison[i] <- comb2
+      else if (comb2 == "")
+        comparison[i] <- comb1
+      else
+        comparison[i] <- paste0(comb1, x$sep.trts, comb2)
+    }
   }
   
   
@@ -323,15 +329,33 @@ netcomparison <- function(x, treat1, treat2,
   ## Calculate estimates for comparisons
   ##
   X.matrix <- B.matrix %*% C.matrix
-  ##
-  TE.common <- as.vector(X.matrix %*% x$Comp.common)
+  #
+  # Identify inestimable components and drop them from the design matrix
+  #
+  compNA <- is.na(x$Comp.common)
+  inestimable <- apply(abs(X.matrix[, compNA, drop = FALSE]), 1, sum) > 0
+  X.matrix <- X.matrix[, !compNA, drop = FALSE]
+  #
+  TE.common <- as.vector(X.matrix %*% x$Comp.common[!compNA])
   seTE.common <-
-    sqrt(diag(X.matrix %*% x$Lplus.matrix.common %*% t(X.matrix)))
-  ##
-  TE.random <- as.vector(X.matrix %*% x$Comp.random)
+    sqrt(
+      diag(X.matrix %*% x$Lplus.matrix.common[!compNA, !compNA] %*%
+             t(X.matrix)))
+  #
+  TE.random <- as.vector(X.matrix %*% x$Comp.random[!compNA])
   seTE.random <-
-    sqrt(diag(X.matrix %*% x$Lplus.matrix.random %*% t(X.matrix)))
-  ##
+    sqrt(diag(X.matrix %*% x$Lplus.matrix.random[!compNA, !compNA] %*%
+                t(X.matrix)))
+  #
+  # Set comparisons with inestimable components to NA
+  #
+  TE.common[inestimable] <- NA
+  seTE.common[inestimable] <- NA
+  TE.random[inestimable] <- NA
+  seTE.random[inestimable] <- NA
+  #
+  # Calculate confidence intervals
+  #
   ci.f <- ci(TE.common, seTE.common, level = level)
   ci.r <- ci(TE.random, seTE.random, level = level)
   
@@ -454,7 +478,9 @@ print.netcomparison <- function(x,
   treat2 <- rep("", n.comparisons)
   ##
   if (common | random) {
-    comps <- c(x$comps, x$inactive)
+    comps <- x$comps
+    if (!is.null(x$inactive) && any(grepl(x$inactive, x$comparison)))
+      comps <- c(comps, x$inactive)
     comps.abbr <- treats(comps, nchar.comps)
     ##
     for (i in seq_len(n.comparisons))
@@ -478,13 +504,19 @@ print.netcomparison <- function(x,
       sel1.i <- !comps1.list[[i]] %in% comps2.list[[i]]
       sel2.i <- !comps2.list[[i]] %in% comps1.list[[i]]
       ##
-      if (any(sel1.i) | any(sel2.i))
-        comparison[i] <-
-          paste0(paste(comps1.list[[i]][sel1.i],
-                       collapse = paste0(x$add1[i], x$x$sep.comps, x$add1[i])),
-                 x$x$sep.trts,
-                 paste(comps2.list[[i]][sel2.i],
-                       collapse = paste0(x$add2[i], x$x$sep.comps, x$add2[i])))
+      if (any(sel1.i) | any(sel2.i)) {
+        comb1 <- paste(comps1.list[[i]][sel1.i],
+                       collapse = paste0(x$add1[i], x$x$sep.comps, x$add1[i]))
+        comb2 <- paste(comps2.list[[i]][sel2.i],
+                       collapse = paste0(x$add2[i], x$x$sep.comps, x$add2[i]))
+        #
+        if (comb1 == "")
+          comparison[i] <- comb2
+        else if (comb2 == "")
+          comparison[i] <- comb1
+        else
+          comparison[i] <- paste0(comb1, x$x$sep.trts, comb2)
+      }
     }
   }
   
