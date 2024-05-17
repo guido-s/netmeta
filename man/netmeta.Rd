@@ -13,6 +13,7 @@ netmeta(
   studlab,
   data = NULL,
   subset = NULL,
+  correlated,
   sm,
   level = gs("level"),
   level.ma = gs("level.ma"),
@@ -102,6 +103,9 @@ information.}
 
 \item{subset}{An optional vector specifying a subset of studies to
 be used.}
+
+\item{correlated}{An optional logical vector specifying whether
+treatment arms of a multi-arm study are correlated.}
 
 \item{sm}{A character string indicating underlying summary measure,
 e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},

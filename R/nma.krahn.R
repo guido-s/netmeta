@@ -74,6 +74,7 @@ nma.krahn <- function(x, reference.group = x$reference.group,
     ##
     TE.i <- studies$TE[studies$comparison == i]
     seTE.i <- studies$seTE[studies$comparison == i]
+    #
     m1 <-
       suppressWarnings(metagen(TE.i, seTE.i, sm = x$sm,
                                method.tau = "DL", method.tau.ci = "",
@@ -86,6 +87,7 @@ nma.krahn <- function(x, reference.group = x$reference.group,
     if (sum(studies$comparison == i & !selmulti) > 0) {
       TE.i   <- studies$TE[studies$comparison == i & studies$narms == 2]
       seTE.i <- studies$seTE[studies$comparison == i & studies$narms == 2]
+      #
       m2 <-
         suppressWarnings(metagen(TE.i, seTE.i, sm = x$sm,
                                  method.tau = "DL", method.tau.ci = "",
