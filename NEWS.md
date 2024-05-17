@@ -1,5 +1,10 @@
 ## netmeta, version 2.9-1 (2024-mm-dd)
 
+### User-visible changes
+
+* discomb():
+  - new arguments 'n1', 'n2', 'event1', 'event2', 'na.unident', 'keepdata'
+
 ### Bug fixes
 
 * pairwise():

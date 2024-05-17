@@ -598,11 +598,11 @@ netcomb <- function(x,
               treat1 = x$treat1,
               treat2 = x$treat2,
               ##
-              TE = x$TE,
-              seTE = x$seTE,
-              seTE.adj = x$seTE.adj,
-              seTE.adj.common = x$seTE.adj.common,
-              seTE.adj.random = x$seTE.adj.random,
+              TE = p0$TE[o],
+              seTE = p0$seTE[o],
+              seTE.adj = sqrt(1 / p0$weights[o]),
+              seTE.adj.common = sqrt(1 / p0$weights[o]),
+              seTE.adj.random = sqrt(1 / p1$weights[o]),
               ##
               design = x$design,
               ##
@@ -610,6 +610,7 @@ netcomb <- function(x,
               event2 = x$event2,
               n1 = x$n1,
               n2 = x$n2,
+              incr = x$incr,
               ##
               k = x$k,
               m = x$m,
@@ -737,8 +738,8 @@ netcomb <- function(x,
               n.matrix = x$n.matrix,
               events.matrix = x$events.matrix,
               ##
-              Cov.common = x$Cov.common,
-              Cov.random = x$Cov.random,
+              Cov.common = res.c$Cov,
+              Cov.random = res.r$Cov,
               ##
               sm = x$sm,
               method = "Inverse",
@@ -773,6 +774,9 @@ netcomb <- function(x,
               call = match.call(),
               version = packageDescription("netmeta")$Version
               )
+  #
+  if (!is.null(x$data))
+    res$data <- x$data
   ##
   ## Backward compatibility
   ##

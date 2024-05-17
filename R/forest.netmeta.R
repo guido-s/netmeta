@@ -272,28 +272,19 @@ forest.netmeta <- function(x,
                "time.e", "time.c",
                "effect", "ci", "effect.ci",
                "w.common", "w.random")
-  ##
-  if (missing(leftlabs)) {
+  #
+  missing.leftlabs <- missing(leftlabs)
+  if (missing.leftlabs) {
     leftlabs <- leftcols
     leftlabs[leftcols %in% stdlabs] <- NA
-    ##
-    if (length(reference.group) > 1)
-      leftlabs[matchVar(leftcols, "studlab")] <- "Comparison"
-    else
-      leftlabs[matchVar(leftcols, "studlab")] <- "Treatment"
   }
-  else if (length(leftcols) != length(leftlabs)) {
-    if (length(reference.group) > 1)
-      leftlabs[matchVar(leftcols, "studlab")] <- "Comparison"
-    else
-      leftlabs[matchVar(leftcols, "studlab")] <- "Treatment"
-  }
-  ##
-  if (missing(rightlabs)) {
+  #
+  missing.rightlabs <- missing(rightlabs)
+  if (missing.rightlabs) {
     rightlabs <- rightcols
     rightlabs[rightcols %in% stdlabs] <- NA
   }
-  ##
+  #
   for (i in names(list(...))) {
     if (!is.null(setchar(i, "weight.study", stop.at.error = FALSE)))
       stop("Argument 'weight.study' set internally.", call. = TRUE)
@@ -392,40 +383,62 @@ forest.netmeta <- function(x,
     else
       smlab  <- text.pooled
   }
-  ##
+  #
+  if (!missing.rightlabs && length(rightlabs) > length(rightcols))
+    stop("Too many labels defined in argument 'rightlabs': ",
+         length(rightlabs), " label", if (length(rightlabs) > 1) "s",
+         " for ", length(rightcols), " column",
+         if (length(rightcols) > 1) "s",
+         ".",
+         call. = FALSE)
+  #
   rightcols <- setCol(rightcols, "Pscore")
-  rightlabs <- setLab(rightlabs, rightcols, "Pscore", "P-score")
-  ##
   rightcols <- setCol(rightcols, "SUCRA")
-  rightlabs <- setLab(rightlabs, rightcols, "SUCRA", "SUCRA")
-  ##
   rightcols <- setCol(rightcols, "n.trts")
-  rightlabs <- setLab(rightlabs, rightcols, "n.trts",
-                      "Number of\nParticipants")
-  ##
   rightcols <- setCol(rightcols, "k")
-  rightlabs <- setLab(rightlabs, rightcols, "k", "Direct\nComparisons")
-  ##
   rightcols <- setCol(rightcols, "prop.direct")
-  rightlabs <- setLab(rightlabs, rightcols, "prop.direct",
-                      "Direct Evidence\nProportion")
-  ##
+  #
+  if (missing.rightlabs || (length(rightlabs) < length(rightcols))) {
+    rightlabs <- setLab(rightlabs, rightcols, "Pscore", "P-score")
+    rightlabs <- setLab(rightlabs, rightcols, "SUCRA", "SUCRA")
+    rightlabs <- setLab(rightlabs, rightcols, "n.trts",
+                        "Number of\nParticipants")
+    rightlabs <- setLab(rightlabs, rightcols, "k", "Direct\nComparisons")
+    rightlabs <- setLab(rightlabs, rightcols, "prop.direct",
+                        "Direct Evidence\nProportion")
+  }
+  #
+  if (!missing.leftlabs && length(leftlabs) > length(leftcols))
+    stop("Too many labels defined in argument 'leftlabs': ",
+         length(leftlabs), " label", if (length(leftlabs) > 1) "s",
+         " for ", length(leftcols), " column",
+         if (length(leftcols) > 1) "s",
+         ".",
+         call. = FALSE)
+  #
   leftcols <- setCol(leftcols, "Pscore")
-  leftlabs <- setLab(leftlabs, leftcols, "Pscore", "P-score")
-  ##
   leftcols <- setCol(leftcols, "SUCRA")
-  leftlabs <- setLab(leftlabs, leftcols, "SUCRA", "SUCRA")
-  ##
   leftcols <- setCol(leftcols, "n.trts")
-  leftlabs <- setLab(leftlabs, leftcols, "n.trts", "Number of\nParticipants")
-  ##
   leftcols <- setCol(leftcols, "k")
-  leftlabs <- setLab(leftlabs, leftcols, "k", "Direct\nComparisons")
-  ##
   leftcols <- setCol(leftcols, "prop.direct")
-  leftlabs <- setLab(leftlabs, leftcols, "prop.direct",
-                     "Direct Evidence\nProportion")
-  
+  #
+  if (missing.leftlabs || (length(leftlabs) < length(leftcols))) {
+    if (length(reference.group) > 1)
+      leftlabs[matchVar(leftcols, "studlab")] <- "Comparison"
+    else
+      leftlabs[matchVar(leftcols, "studlab")] <- "Treatment"
+    #
+    leftlabs <- setLab(leftlabs, leftcols, "Pscore", "P-score")
+    leftlabs <- setLab(leftlabs, leftcols, "SUCRA", "SUCRA")
+    leftlabs <- setLab(leftlabs, leftcols, "n.trts", "Number of\nParticipants")
+    leftlabs <- setLab(leftlabs, leftcols, "k", "Direct\nComparisons")
+    leftlabs <- setLab(leftlabs, leftcols, "prop.direct",
+                       "Direct Evidence\nProportion")
+  }
+  #
+  print(rightcols)
+  print(rightlabs)
+
   
   ##
   ##

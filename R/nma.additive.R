@@ -63,7 +63,11 @@ nma.additive <- function(TE, weights, studlab,
   }
   ##
   rownames(X.all) <- lab
-  ##
+  #
+  # Variance-covariance matrix for all comparisons
+  #
+  Cov <- X.all %*% Lplus %*% t(X.all)
+  #
   delta.all <- as.vector(X.all %*% beta)
   se.delta.all <- sqrt(diag(X.all %*% Lplus %*% t(X.all)))
   names(delta.all) <- names(se.delta.all)
@@ -161,7 +165,9 @@ nma.additive <- function(TE, weights, studlab,
               ##
               L.matrix = L,
               Lplus.matrix = Lplus,
-              H.matrix = H
+              H.matrix = H,
+              #
+              Cov = Cov
               )
   
   

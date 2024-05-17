@@ -32,8 +32,15 @@ discomb(
   sep.trts = ":",
   nchar.comps = 666,
   func.inverse = invmat,
+  n1 = NULL,
+  n2 = NULL,
+  event1 = NULL,
+  event2 = NULL,
+  incr = NULL,
   backtransf = gs("backtransf"),
+  na.unident = TRUE,
   title = "",
+  keepdata = gs("keepdata"),
   warn = TRUE,
   warn.deprecated = gs("warn.deprecated"),
   nchar.trts = nchar.comps,
@@ -126,13 +133,30 @@ Details).}
 \item{func.inverse}{R function used to calculate the pseudoinverse
 of the Laplacian matrix L (see \code{\link{netmeta}}).}
 
+\item{n1}{Number of observations in first treatment group.}
+
+\item{n2}{Number of observations in second treatment group.}
+
+\item{event1}{Number of events in first treatment group.}
+
+\item{event2}{Number of events in second treatment group.}
+
+\item{incr}{Numerical value added to cell frequencies (for details,
+see \code{\link{pairwise}}).}
+
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
 \code{backtransf = TRUE}, results for \code{sm = "OR"} are
 presented as odds ratios rather than log odds ratios, for
 example.}
 
+\item{na.unident}{A logical indicating whether unidentifiable
+components and combinations should be set to missing values.}
+
 \item{title}{Title of meta-analysis / systematic review.}
+
+\item{keepdata}{A logical indicating whether original data (set)
+should be kept in netmeta object.}
 
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded from meta-analysis due to zero

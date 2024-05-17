@@ -66,7 +66,7 @@ netmatrix <- function(x, var, levels, labels = levels,
                       func = "mode", ties.method = "random") {
   
   
-  chkclass(x, "netmeta")
+  chkclass(x, c("netmeta", "discomb"))
   ##
   func <- setchar(func,
                   c("mode", "min", "max", "mean", "median", "sum"))

@@ -74,6 +74,16 @@
 #'   Details).
 #' @param func.inverse R function used to calculate the pseudoinverse
 #'   of the Laplacian matrix L (see \code{\link{netmeta}}).
+#' @param n1 Number of observations in first treatment group.
+#' @param n2 Number of observations in second treatment group.
+#' @param event1 Number of events in first treatment group.
+#' @param event2 Number of events in second treatment group.
+#' @param incr Numerical value added to cell frequencies (for details,
+#'   see \code{\link{pairwise}}).
+#' @param na.unident A logical indicating whether unidentifiable
+#'   components and combinations should be set to missing values.
+#' @param keepdata A logical indicating whether original data (set)
+#'   should be kept in netmeta object.
 #' @param title Title of meta-analysis / systematic review.
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
@@ -400,12 +410,22 @@ discomb <- function(TE, seTE,
                     ##
                     sep.trts = ":",
                     nchar.comps = 666,
-                    ##
+                    #
                     func.inverse = invmat,
-                    ##
+                    #
+                    n1 = NULL,
+                    n2 = NULL,
+                    event1 = NULL,
+                    event2 = NULL,
+                    incr = NULL,
+                    #
                     backtransf = gs("backtransf"),
+                    #
+                    na.unident = TRUE,
                     ##
                     title = "",
+                    keepdata = gs("keepdata"),
+                    #
                     warn = TRUE, warn.deprecated = gs("warn.deprecated"),
                     nchar.trts = nchar.comps,
                     ...) {
@@ -437,8 +457,10 @@ discomb <- function(TE, seTE,
   chkchar(sep.trts)
   ##
   chklogical(backtransf)
+  chklogical(na.unident)
   ##
   chkchar(title)
+  chklogical(keepdata)
   chklogical(warn)
   ##
   ## Check for deprecated arguments in '...'
@@ -510,7 +532,18 @@ discomb <- function(TE, seTE,
     treat1 <- TE$treat1
     treat2 <- TE$treat2
     studlab <- TE$studlab
-    ##
+    #
+    if (!is.null(TE$n1))
+      n1 <- TE$n1
+    if (!is.null(TE$n2))
+      n2 <- TE$n2
+    if (!is.null(TE$event1))
+      event1 <- TE$event1
+    if (!is.null(TE$event2))
+      event2 <- TE$event2
+    if (!is.null(TE$incr))
+      incr <- TE$incr
+    #
     pairdata <- TE
     data <- TE
     ##
@@ -525,11 +558,26 @@ discomb <- function(TE, seTE,
         sm <- ""
     ##
     seTE <- catch("seTE", mc, data, sfsp)
+    #
     treat1 <- catch("treat1", mc, data, sfsp)
     treat2 <- catch("treat2", mc, data, sfsp)
+    #
     studlab <- catch("studlab", mc, data, sfsp)
+    #
+    n1 <- catch("n1", mc, data, sfsp)
+    n2 <- catch("n2", mc, data, sfsp)
+    #
+    event1 <- catch("event1", mc, data, sfsp)
+    event2 <- catch("event2", mc, data, sfsp)
+    #
+    incr <- catch("incr", mc, data, sfsp)
   }
-  ##
+  #
+  subset <- catch("subset", mc, data, sfsp)
+  missing.subset <- is.null(subset)
+  #
+  studlab <- as.character(studlab)
+  #
   chknumeric(TE)
   chknumeric(seTE)
   ##
@@ -552,14 +600,104 @@ discomb <- function(TE, seTE,
   ##
   treat1 <- rmSpace(rmSpace(treat1, end = TRUE))
   treat2 <- rmSpace(rmSpace(treat2, end = TRUE))
+  #
+  #
+  if (!is.null(event1) & !is.null(event2))
+    available.events <- TRUE
+  else
+    available.events <- FALSE
+  #
+  if (!is.null(n1) & !is.null(n2))
+    available.n <- TRUE
+  else
+    available.n <- FALSE
+  #
+  if (available.events & is.null(incr))
+    incr <- rep(0, length(event2))
+  #
+  # Store complete dataset in list object data
+  # (if argument keepdata is TRUE)
+  #
+  if (keepdata) {
+    if (nulldata & !is.pairwise)
+      data <- data.frame(.studlab = studlab, stringsAsFactors = FALSE)
+    else if (nulldata & is.pairwise) {
+      data <- pairdata
+      data$.studlab <- studlab
+    }
+    else
+      data$.studlab <- studlab
+    #
+    data$.order <- seq_along(studlab)
+    #
+    data$.treat1 <- treat1
+    data$.treat2 <- treat2
+    #
+    data$.TE <- TE
+    data$.seTE <- seTE
+    #
+    data$.event1 <- event1
+    data$.n1 <- n1
+    data$.event2 <- event2
+    data$.n2 <- n2
+    data$.incr <- incr
+    #
+    # Check for correct treatment order within comparison
+    #
+    wo <- data$.treat1 > data$.treat2
+    #
+    if (any(wo)) {
+      data$.TE[wo] <- -data$.TE[wo]
+      ttreat1 <- data$.treat1
+      data$.treat1[wo] <- data$.treat2[wo]
+      data$.treat2[wo] <- ttreat1[wo]
+      #
+      if (isCol(data, ".n1") & isCol(data, ".n2")) {
+        tn1 <- data$.n1
+        data$.n1[wo] <- data$.n2[wo]
+        data$.n2[wo] <- tn1[wo]
+      }
+      #
+      if (isCol(data, ".event1") & isCol(data, ".event2")) {
+        tevent1 <- data$.event1
+        data$.event1[wo] <- data$.event2[wo]
+        data$.event2[wo] <- tevent1[wo]
+      }
+      #
+      #if (isCol(data, ".mean1") & isCol(data, ".mean2")) {
+      #  tmean1 <- data$.mean1
+      #  data$.mean1[wo] <- data$.mean2[wo]
+      #  data$.mean2[wo] <- tmean1[wo]
+      #}
+      #
+      if (isCol(data, ".sd1") & isCol(data, ".sd2")) {
+        tsd1 <- data$.sd1
+        data$.sd1[wo] <- data$.sd2[wo]
+        data$.sd2[wo] <- tsd1[wo]
+      }
+      #
+      if (isCol(data, ".time1") & isCol(data, ".time2")) {
+        ttime1 <- data$.time1
+        data$.time1[wo] <- data$.time2[wo]
+        data$.time2[wo] <- ttime1[wo]
+      }
+    }
+    #
+    if (!missing.subset) {
+      if (length(subset) == dim(data)[1])
+        data$.subset <- subset
+      else {
+        data$.subset <- FALSE
+        data$.subset[subset] <- TRUE
+      }
+    }
+  }
   
   
   ##
   ##
   ## (3) Use subset for analysis
   ##
-  ##
-  subset <- catch("subset", mc, data, sfsp)
   ##
   if (!is.null(subset)) {
     if ((is.logical(subset) & (sum(subset) > k.Comp)) ||
@@ -571,32 +709,43 @@ discomb <- function(TE, seTE,
     treat1 <- treat1[subset]
     treat2 <- treat2[subset]
     studlab <- studlab[subset]
+    #
+    if (!is.null(n1))
+      n1 <- n1[subset]
+    if (!is.null(n2))
+      n2 <- n2[subset]
+    if (!is.null(event1))
+      event1 <- event1[subset]
+    if (!is.null(event2))
+      event2 <- event2[subset]
+    if (!is.null(incr))
+      incr <- incr[subset]
   }
   ##
-  labels <- sort(unique(c(treat1, treat2)))
+  trts <- sort(unique(c(treat1, treat2)))
   ##
-  if (compmatch(labels, sep.trts)) {
+  if (compmatch(trts, sep.trts)) {
     if (!missing.sep.trts)
       warning("Separator '", sep.trts, "' used in at least ",
               "one treatment label. Try to use predefined separators: ",
               "':', '-', '_', '/', '+', '.', '|', '*'.",
               call. = FALSE)
     ##
-    if (!compmatch(labels, ":"))
+    if (!compmatch(trts, ":"))
       sep.trts <- ":"
-    else if (!compmatch(labels, "-"))
+    else if (!compmatch(trts, "-"))
       sep.trts <- "-"
-    else if (!compmatch(labels, "_"))
+    else if (!compmatch(trts, "_"))
       sep.trts <- "_"
-    else if (!compmatch(labels, "/"))
+    else if (!compmatch(trts, "/"))
       sep.trts <- "/"
-    else if (!compmatch(labels, "+"))
+    else if (!compmatch(trts, "+"))
       sep.trts <- "+"
-    else if (!compmatch(labels, "."))
+    else if (!compmatch(trts, "."))
       sep.trts <- "-"
-    else if (!compmatch(labels, "|"))
+    else if (!compmatch(trts, "|"))
       sep.trts <- "|"
-    else if (!compmatch(labels, "*"))
+    else if (!compmatch(trts, "*"))
       sep.trts <- "*"
     else
       stop("All predefined separators ",
@@ -608,9 +757,9 @@ discomb <- function(TE, seTE,
   }
   ##
   if (!is.null(seq))
-    seq <- setseq(seq, labels)
+    seq <- setseq(seq, trts)
   else {
-    seq <- labels
+    seq <- trts
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
@@ -662,6 +811,9 @@ discomb <- function(TE, seTE,
   excl <- is.na(TE) | is.na(seTE) | seTE <= 0
   ##
   if (any(excl)) {
+    if (keepdata)
+      data$.excl <- excl
+    #
     dat.NAs <- data.frame(studlab = studlab[excl],
                           treat1 = treat1[excl],
                           treat2 = treat2[excl],
@@ -680,14 +832,25 @@ discomb <- function(TE, seTE,
              rowlab = rep("", sum(excl)))
     cat("\n")
     ##
-    studlab <- studlab[!(excl)]
-    treat1  <- treat1[!(excl)]
-    treat2  <- treat2[!(excl)]
-    TE      <- TE[!(excl)]
-    seTE    <- seTE[!(excl)]
-    ##
+    studlab <- studlab[!excl]
+    treat1  <- treat1[!excl]
+    treat2  <- treat2[!excl]
+    TE      <- TE[!excl]
+    seTE    <- seTE[!excl]
+    #
+    if (!is.null(n1))
+      n1 <- n1[!excl]
+    if (!is.null(n2))
+      n2 <- n2[!excl]
+    if (!is.null(event1))
+      event1 <- event1[!excl]
+    if (!is.null(event2))
+      event2 <- event2[!excl]
+    if (!is.null(incr))
+      incr <- incr[!excl]
+    #
     seq <- seq[seq %in% unique(c(treat1, treat2))]
-    labels <- labels[labels %in% unique(c(treat1, treat2))]
+    trts <- trts[trts %in% unique(c(treat1, treat2))]
   }
   ##
   ## Check for correct number of comparisons (after removing
@@ -721,15 +884,27 @@ discomb <- function(TE, seTE,
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]
     treat2[wo] <- ttreat1[wo]
+    #
+    if (available.n) {
+      tn1 <- n1
+      n1[wo] <- n2[wo]
+      n2[wo] <- tn1[wo]
+    }
+    #
+    if (available.events) {
+      tevent1 <- event1
+      event1[wo] <- event2[wo]
+      event2[wo] <- tevent1[wo]
+    }
   }
   ##
   ## Check value for reference group
   ##
   if (missing.reference.group | missing.reference.group.pairwise)
-    reference.group <- sort(labels)[1]
+    reference.group <- sort(trts)[1]
   ##
   if (reference.group != "")
-    reference.group <- setref(reference.group, labels)
+    reference.group <- setref(reference.group, trts)
   
   
   ##
@@ -742,7 +917,7 @@ discomb <- function(TE, seTE,
   if (missing(C.matrix)) {
     C.matrix <- createC(netc, sep.comps, inactive)
     inactive <- attr(C.matrix, "inactive")
-    C.matrix <- C.matrix[labels, , drop = FALSE]
+    C.matrix <- C.matrix[trts, , drop = FALSE]
   }
   else {
     ##
@@ -750,30 +925,30 @@ discomb <- function(TE, seTE,
       stop("Argument 'C.matrix' must be a matrix or data frame.", 
            call. = FALSE)
     ##
-    wrong.labels <- FALSE
+    wrong.trts <- FALSE
     if (is.null(rownames(C.matrix)))
-      wrong.labels <- TRUE
+      wrong.trts <- TRUE
     else {
-      if (length(unique(labels)) ==
-          length(unique(tolower(labels))) &&
+      if (length(unique(trts)) ==
+          length(unique(tolower(trts))) &&
           length(unique(rownames(C.matrix))) ==
           length(unique(tolower(rownames(C.matrix))))
           )
         idx <- charmatch(tolower(rownames(C.matrix)), 
-                         tolower(labels), nomatch = NA)
+                         tolower(trts), nomatch = NA)
       else
-        idx <- charmatch(rownames(C.matrix), labels, nomatch = NA)
+        idx <- charmatch(rownames(C.matrix), trts, nomatch = NA)
       ##
       if (any(is.na(idx)) || any(idx == 0)) 
-        wrong.labels <- TRUE
+        wrong.trts <- TRUE
     }
-    if (wrong.labels) 
+    if (wrong.trts) 
       stop(paste0("Row names of argument 'C.matrix' must be a ", 
                   "permutation of treatment names:\n  ",
-                  paste(paste0("'", labels, "'"), collapse = " - ")),
+                  paste(paste0("'", trts, "'"), collapse = " - ")),
            call. = FALSE)
     ##
-    C.matrix <- C.matrix[labels, , drop = FALSE]
+    C.matrix <- C.matrix[trts, , drop = FALSE]
   }
   if (is.data.frame(C.matrix))
     C.matrix <- as.matrix(C.matrix)
@@ -789,7 +964,7 @@ discomb <- function(TE, seTE,
   ##
   B.matrix <- createB(p0$treat1.pos[o], p0$treat2.pos[o])
   ##
-  colnames(B.matrix) <- labels
+  colnames(B.matrix) <- trts
   rownames(B.matrix) <- studlab
   ##
   ## Design matrix based on treatment components
@@ -801,12 +976,11 @@ discomb <- function(TE, seTE,
   #
   A.matrix <- diag(diag(t(B.matrix) %*% B.matrix)) - t(B.matrix) %*% B.matrix
   ##
-  sel.comps <- character(0)
+  comps.unident <- NULL
   ##
   if (qr(X.matrix)$rank < c) {
     sum.trts <- apply(abs(X.matrix), 2, sum)
-    sel.comps <- gsub("^\\s+|\\s+$", "",
-                      names(sum.trts)[sum.trts == 0])
+    comps.unident <- gsub("^\\s+|\\s+$", "", names(sum.trts)[sum.trts == 0])
     ##
     Xplus <- ginv(X.matrix)
     colnames(Xplus) <- rownames(X.matrix)
@@ -843,16 +1017,18 @@ discomb <- function(TE, seTE,
   ## (6) Conduct network meta-analyses
   ##
   ##
-  tdata <- data.frame(studies = p0$studlab[o], narms = p0$narms[o])
-  tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
-  ##
-  studies <- tdata$studies
-  narms <- tdata$narms
+  tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
+                      order = p0$order,
+                      stringsAsFactors = FALSE)
+  #
+  tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), , drop = FALSE]
+  studies <- tdata$studies[order(tdata$order)]
+  narms <- tdata$narms[order(tdata$order)]
   n.a <- sum(narms)  
   ##
   comps <- colnames(C.matrix) # treatment components
   ##
-  n <- length(labels)
+  n <- length(trts)
   m <- length(TE)
   k <- length(unique(studlab))
   ##
@@ -873,8 +1049,7 @@ discomb <- function(TE, seTE,
     df.Q.diff <- n - 1 - qr(X.matrix)$rank
   }
   else {
-    Q <- df.Q <- pval.Q <- NA
-    df.Q.diff <- NA
+    Q <- df.Q <- pval.Q <- df.Q.diff <- NA
   }
   ##  
   res.c <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
@@ -890,7 +1065,7 @@ discomb <- function(TE, seTE,
   else
     tau <- res.c$tau
   ##
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, invmat)
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, func.inverse)
   ##
   res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], level.ma,
@@ -922,10 +1097,11 @@ discomb <- function(TE, seTE,
               ##
               design = designs$design[o],
               ##
-              event1 = NA,
-              event2 = NA,
-              n1 = NA,
-              n2 = NA,
+              event1 = event1,
+              event2 = event2,
+              n1 = n1,
+              n2 = n2,
+              incr = incr,
               ##
               k = k,
               m = m,
@@ -934,16 +1110,16 @@ discomb <- function(TE, seTE,
               c = c,
               s = netc$n.subnets,
               ##
-              trts = labels,
+              trts = trts,
               k.trts = NA,
-              n.trts = NA,
-              events.trts = NA,
+              n.trts = if (available.n) NA else NULL,
+              events.trts = if (available.events) NA else NULL,
               ##
               n.arms = NA,
               multiarm = NA,
               ##
-              studies = names(n.comps),
-              narms = (1 + sqrt(8 * as.vector(n.comps)  + 1)) / 2,
+              studies = studies,
+              narms = narms,
               ##
               designs = unique(sort(designs$design)),
               ##
@@ -951,6 +1127,8 @@ discomb <- function(TE, seTE,
               k.comps = NA,
               n.comps = NA,
               events.comps = NA,
+              na.unident = na.unident,
+              comps.unident = comps.unident,
               ##
               TE.nma.common = NAs,
               seTE.nma.common = NAs,
@@ -1050,9 +1228,12 @@ discomb <- function(TE, seTE,
               H.matrix.common = res.c$H.matrix[o, o],
               H.matrix.random = res.r$H.matrix[o, o],
               ##
-              n.matrix = NA,
-              events.matrix = NA,
-              ##
+              n.matrix = NULL,
+              events.matrix = NULL,
+              #
+              Cov.common = res.c$Cov,
+              Cov.random = res.r$Cov,
+              #
               sm = sm,
               method = "Inverse",
               level = level,
@@ -1066,14 +1247,17 @@ discomb <- function(TE, seTE,
               seq = seq,
               ##
               tau.preset = tau.preset,
-              ##
+              #
+              tol.multiarm = tol.multiarm,
+              details.chkmultiarm = details.chkmultiarm,
+              #
               sep.trts = sep.trts,
               sep.comps = sep.comps,
               nchar.comps = nchar.comps,
-              ##
-              func.inverse = deparse(substitute(func.inverse)),
-              ##
+              #
               inactive = inactive,
+              #
+              func.inverse = deparse(substitute(func.inverse)),
               ##
               backtransf = backtransf, 
               ##
@@ -1082,9 +1266,11 @@ discomb <- function(TE, seTE,
               call = match.call(),
               version = packageDescription("netmeta")$Version
               )
-  ##
-  ## Add information on multi-arm studies
-  ##
+  #
+  class(res) <- c("discomb", "netcomb")
+  #
+  # Add information on multi-arm studies
+  #
   if (any(res$narms > 2)) {
     tdata1 <- data.frame(studlab = res$studlab,
                          .order = seq(along = res$studlab))
@@ -1104,9 +1290,9 @@ discomb <- function(TE, seTE,
   ##
   ## Remove estimates for inestimable combinations and components
   ##
-  if (length(sel.comps) > 0) {
+  if (na.unident & length(comps.unident) > 0) {
     ##
-    res$c <- res$c - length(sel.comps)
+    res$c <- res$c - length(comps.unident)
     ##
     ## Identify combinations
     ##
@@ -1115,7 +1301,7 @@ discomb <- function(TE, seTE,
     sel1 <- rep(NA, length(list.trts))
     ##
     for (i in seq_along(list.trts))
-      sel1[i] <- any(list.trts[[i]] %in% sel.comps)
+      sel1[i] <- any(list.trts[[i]] %in% comps.unident)
     ##
     res$Comb.common[sel1] <- NA
     res$seComb.common[sel1] <- NA
@@ -1166,7 +1352,7 @@ discomb <- function(TE, seTE,
     sel2 <- rep(NA, length(list.comps))
     ##
     for (i in seq_along(list.comps))
-      sel2[i] <- any(list.comps[[i]] %in% sel.comps)
+      sel2[i] <- any(list.comps[[i]] %in% comps.unident)
     ##
     res$Comp.common[sel2] <- NA
     res$seComp.common[sel2] <- NA
@@ -1181,6 +1367,70 @@ discomb <- function(TE, seTE,
     res$upper.Comp.random[sel2] <- NA
     res$statistic.Comp.random[sel2] <- NA
     res$pval.Comp.random[sel2] <- NA
+  }
+  #
+  # Additional assignments
+  #
+  l1 <- length(res$treat1)
+  tab.trts <-
+    table(longarm(res$treat1, res$treat2,
+                  rep(1, l1), rep(2, l1), rep(1, l1), rep(2, l1),
+                  studlab = res$studlab)$treat)
+  res$k.trts <- as.numeric(tab.trts)
+  names(res$k.trts) <- names(tab.trts)
+  #
+  if (keepdata) {
+    data$.design <- designs(data$.treat1, data$.treat2, data$.studlab,
+                            sep = sep.trts)$design
+    #
+    res$data <- merge(data,
+                      data.frame(.studlab = res$studies, .narms = res$narms),
+                      by = ".studlab",
+                      stringsAsFactors = FALSE)
+    #
+    # Store adjusted standard errors in data set
+    #
+    if (isCol(res$data, ".subset"))
+      sel.s <- res$data$.subset
+    else
+      sel.s <- rep(TRUE, nrow(res$data))
+    #
+    res$data$.seTE.adj.common <- NA
+    res$data$.seTE.adj.random <- NA
+    #
+    print(res$studlab)
+    print(res$data$.studlab)
+    res$data$.seTE.adj.common[sel.s] <- res$seTE.adj.common
+    res$data$.seTE.adj.random[sel.s] <- res$seTE.adj.random
+    #
+    res$data <- res$data[order(res$data$.order), ]
+    res$data$.order <- NULL
+  }
+  #
+  # Add information on events and sample sizes
+  #
+  if (available.n) {
+    res$n.matrix <- netmatrix(res, n1 + n2, func = "sum")
+    #
+    dat.n <- data.frame(studlab = c(studlab, studlab),
+                        treat = c(treat1, treat2),
+                        n = c(n1, n2))
+    dat.n <- dat.n[!duplicated(dat.n[, c("studlab", "treat")]), ]
+    dat.n <- by(dat.n$n, dat.n$treat, sum, na.rm = TRUE)
+    res$n.trts <- as.vector(dat.n[trts])
+    names(res$n.trts) <- trts
+  }
+  #
+  if (available.events) {
+    res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
+    #
+    dat.e <- data.frame(studlab = c(studlab, studlab),
+                        treat = c(treat1, treat2),
+                        n = c(event1, event2))
+    dat.e <- dat.e[!duplicated(dat.e[, c("studlab", "treat")]), ]
+    dat.e <- by(dat.e$n, dat.e$treat, sum, na.rm = TRUE)
+    res$events.trts <- as.vector(dat.e[trts])
+    names(res$events.trts) <- trts
   }
   ##
   ## Backward compatibility
@@ -1227,8 +1477,6 @@ discomb <- function(TE, seTE,
   res$L.matrix.fixed <- res$L.matrix.common
   res$Lplus.matrix.fixed <- res$Lplus.matrix.common
   res$H.matrix.fixed <- res$H.matrix.common        
-  ##
-  class(res) <- c("discomb", "netcomb")
   
   
   res

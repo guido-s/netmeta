@@ -434,8 +434,7 @@ object is a list containing the following components:
 \item{P.common, P.random}{\emph{n}x\emph{n} matrix with direct
   evidence proportions (common / random effects model).}
 \item{Cov.common}{Variance-covariance matrix (common effects model)}
-\item{Cov.random}{Variance-covariance matrix (random effects
-  model)}
+\item{Cov.random}{Variance-covariance matrix (random effects model)}
 \item{sm, level, level.ma}{As defined above.}
 \item{common, random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
