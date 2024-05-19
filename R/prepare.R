@@ -48,9 +48,6 @@ prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
 }
 
 
-
-
-
 prepare2 <- function(TE, seTE, treat1, treat2, studlab, correlated,
                      tau = 0, func.inverse) {
   

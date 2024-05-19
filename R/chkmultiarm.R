@@ -198,55 +198,62 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab, correlated,
       #
       # Check standard errors
       #
-      A <- abs(B)
-      #
-      sigma2 <- as.vector(ginv(A) %*% varTE.s)
-      #
-      varTE.diff <- varTE.s - A %*% sigma2
-      #
-      if (debug) {
-        cat("*** varTE.diff = varTE - A %*% sigma2 ***\n")
-        cat("*** with sigma2 = as.vector(ginv(A) %*% varTE) ***\n")
-        print(data.frame(varTE = varTE.s,
-                         varTE.calc = A %*% sigma2,
-                         varTE.diff))
-        print(data.frame(sigma2))
+      if (correlated.s) {
+        inconsistent.varTE[s.idx] <- 0
+        negative.sigma2[s.idx] <- 0
+        zero.sigma2[s.idx] <- 0
       }
-      #
-      if (!is.null(tol.multiarm.se))
-        inconsistent.varTE[s.idx] <- any(abs(varTE.diff) > tol.multiarm.se^2)
-      else
-        inconsistent.varTE <- rep_len(FALSE, length(inconsistent.varTE))
-      #
-      is.negative <- sigma2 < 0
-      negative.sigma2[s.idx] <- any(is.negative)
-      zero.sigma2[s.idx] <- any(is.zero(sigma2[!is.negative]))
-      #
-      if (!correlated.s && inconsistent.varTE[s.idx])
-        dat.varTE <- rbind(dat.varTE,
-                           data.frame(studlab = studlab.s,
-                                      treat1 = treat1.s,
-                                      treat2 = treat2.s,
-                                      varTE = round(varTE.s, 8),
-                                      resid.var = round(varTE.diff, 8),
-                                      seTE = round(sqrt(varTE.s), 8),
-                                      resid.se = sign(varTE.diff) *
-                                        round(sqrt(abs(varTE.diff)), 8),
-                                      stringsAsFactors = FALSE))
-      #
-      if (!correlated.s && negative.sigma2[s.idx])
-        dat.negative <- rbind(dat.negative,
-                              data.frame(studlab = studlab.s.arms,
-                                         treat = treats.s,
-                                         var.treat = sigma2,
-                                         stringsAsFactors = FALSE))
-      #
-      if (!correlated.s && zero.sigma2[s.idx])
-        dat.zero <- rbind(dat.zero,
-                          data.frame(studlab = studlab.s.arms,
-                                     treat = treats.s,
-                                     var.treat = round(sigma2, 8),
-                                     stringsAsFactors = FALSE))
+      else {
+        A <- abs(B)
+        #
+        sigma2 <- as.vector(ginv(A) %*% varTE.s)
+        #
+        varTE.diff <- varTE.s - A %*% sigma2
+        #
+        if (debug) {
+          cat("*** varTE.diff = varTE - A %*% sigma2 ***\n")
+          cat("*** with sigma2 = as.vector(ginv(A) %*% varTE) ***\n")
+          print(data.frame(varTE = varTE.s,
+                           varTE.calc = A %*% sigma2,
+                           varTE.diff))
+          print(data.frame(sigma2))
+        }
+        #
+        if (!is.null(tol.multiarm.se))
+          inconsistent.varTE[s.idx] <- any(abs(varTE.diff) > tol.multiarm.se^2)
+        else
+          inconsistent.varTE <- rep_len(FALSE, length(inconsistent.varTE))
+        #
+        is.negative <- sigma2 < 0
+        negative.sigma2[s.idx] <- any(is.negative)
+        zero.sigma2[s.idx] <- any(is.zero(sigma2[!is.negative]))
+        #
+        if (inconsistent.varTE[s.idx])
+          dat.varTE <- rbind(dat.varTE,
+                             data.frame(studlab = studlab.s,
+                                        treat1 = treat1.s,
+                                        treat2 = treat2.s,
+                                        varTE = round(varTE.s, 8),
+                                        resid.var = round(varTE.diff, 8),
+                                        seTE = round(sqrt(varTE.s), 8),
+                                        resid.se = sign(varTE.diff) *
+                                          round(sqrt(abs(varTE.diff)), 8),
+                                        stringsAsFactors = FALSE))
+        #
+        if (negative.sigma2[s.idx])
+          dat.negative <- rbind(dat.negative,
+                                data.frame(studlab = studlab.s.arms,
+                                           treat = treats.s,
+                                           var.treat = sigma2,
+                                           stringsAsFactors = FALSE))
+        #
+        if (zero.sigma2[s.idx])
+          dat.zero <- rbind(dat.zero,
+                            data.frame(studlab = studlab.s.arms,
+                                       treat = treats.s,
+                                       var.treat = round(sigma2, 8),
+                                       stringsAsFactors = FALSE))
+      }
     }
     #
     iTE <- sum(inconsistent.TE)
