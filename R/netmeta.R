@@ -1230,7 +1230,9 @@ netmeta <- function(TE, seTE,
   
   # Common effects model
   #
-  res.c <- nma_ruecker(dat.c$TE, W.matrix.common, sqrt(1 / dat.c$weights),
+  res.c <- nma_ruecker(dat.c$TE,
+                       as.matrix(W.matrix.common),
+                       sqrt(1 / dat.c$weights),
                        dat.c$treat1, dat.c$treat2,
                        dat.c$treat1.pos, dat.c$treat2.pos,
                        dat.c$narms, dat.c$studlab,
@@ -1371,7 +1373,9 @@ netmeta <- function(TE, seTE,
   W.matrix.random <- p1$W
   dat.r <- p1$data
   #
-  res.r <- nma_ruecker(dat.r$TE, W.matrix.random, sqrt(1 / dat.r$weights),
+  res.r <- nma_ruecker(dat.r$TE,
+                       as.matrix(W.matrix.random),
+                       sqrt(1 / dat.r$weights),
                        dat.r$treat1, dat.r$treat2,
                        dat.r$treat1.pos, dat.r$treat2.pos,
                        dat.r$narms, dat.r$studlab,

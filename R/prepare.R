@@ -147,7 +147,7 @@ covar_study <- function(v, studlab, correlated, func.inverse) {
       Cov[p, p] <- V[i, j]
     }
     #
-    W <- ginv(Cov)
+    W <- ginv(as.matrix(Cov))
   }
   else {
     if (length(v) > 1) {
@@ -161,5 +161,5 @@ covar_study <- function(v, studlab, correlated, func.inverse) {
     }
   }
   #
-  res <- list(v = v, n = n, m = m, Cov = as.matrix(Cov), W = as.matrix(W))
+  res <- list(v = v, n = n, m = m, Cov = as.matrix(Cov), W = W)
 }
