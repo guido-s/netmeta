@@ -407,6 +407,24 @@ forest.netmeta <- function(x,
     rightlabs <- setLab(rightlabs, rightcols, "prop.direct",
                         "Direct Evidence\nProportion")
   }
+  else if (length(rightlabs) == length(rightcols) && any(is.na(rightlabs))) {
+    if (naLab(rightlabs[matchVar(rightcols, "Pscore")]))
+      rightlabs <- setLab(rightlabs, rightcols, "Pscore", "P-score")
+    #
+    if (naLab(rightlabs[matchVar(rightcols, "SUCRA")]))
+      rightlabs <- setLab(rightlabs, rightcols, "SUCRA", "SUCRA")
+    
+    if (naLab(rightlabs[matchVar(rightcols, "n.trts")]))
+      rightlabs <- 
+        setLab(rightlabs, rightcols, "n.trts", "Number of\nParticipants")
+    #
+    if (naLab(rightlabs[matchVar(rightcols, "k")]))
+      rightlabs <- setLab(rightlabs, rightcols, "k", "Direct\nComparisons")
+    #
+    if (naLab(rightlabs[matchVar(rightcols, "prop.direct")]))
+      rightlabs <- setLab(rightlabs, rightcols, "prop.direct",
+                          "Direct Evidence\nProportion")
+  }
   #
   if (!missing.leftlabs && length(leftlabs) > length(leftcols))
     stop("Too many labels defined in argument 'leftlabs': ",
@@ -434,6 +452,31 @@ forest.netmeta <- function(x,
     leftlabs <- setLab(leftlabs, leftcols, "k", "Direct\nComparisons")
     leftlabs <- setLab(leftlabs, leftcols, "prop.direct",
                        "Direct Evidence\nProportion")
+  }
+  else if (length(leftlabs) == length(leftcols) && any(is.na(leftlabs))) {
+    if (is.na(leftlabs[matchVar(leftcols, "studlab")])) {
+      if (length(reference.group) > 1)
+        leftlabs[matchVar(leftcols, "studlab")] <- "Comparison"
+      else
+        leftlabs[matchVar(leftcols, "studlab")] <- "Treatment"
+    }
+    #
+    if (naLab(leftlabs[matchVar(leftcols, "Pscore")]))
+      leftlabs <- setLab(leftlabs, leftcols, "Pscore", "P-score")
+    #
+    if (naLab(leftlabs[matchVar(leftcols, "SUCRA")]))
+      leftlabs <- setLab(leftlabs, leftcols, "SUCRA", "SUCRA")
+    
+    if (naLab(leftlabs[matchVar(leftcols, "n.trts")]))
+      leftlabs <- 
+        setLab(leftlabs, leftcols, "n.trts", "Number of\nParticipants")
+    #
+    if (naLab(leftlabs[matchVar(leftcols, "k")]))
+      leftlabs <- setLab(leftlabs, leftcols, "k", "Direct\nComparisons")
+    #
+    if (naLab(leftlabs[matchVar(leftcols, "prop.direct")]))
+      leftlabs <- setLab(leftlabs, leftcols, "prop.direct",
+                         "Direct Evidence\nProportion")
   }
   
   

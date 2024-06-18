@@ -37,3 +37,11 @@ anyCol <- function(col, match) {
   idx <- charmatch(tolower(col), tolower(match), nomatch = NA)
   any(!is.na(idx) & idx == 1)
 }
+
+
+naLab <- function(x) {
+  if (length(x) == 0)
+    return(FALSE)
+  else
+    return(is.na(x))
+}  
