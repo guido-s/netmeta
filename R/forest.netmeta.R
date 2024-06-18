@@ -435,10 +435,7 @@ forest.netmeta <- function(x,
     leftlabs <- setLab(leftlabs, leftcols, "prop.direct",
                        "Direct Evidence\nProportion")
   }
-  #
-  print(rightcols)
-  print(rightlabs)
-
+  
   
   ##
   ##
