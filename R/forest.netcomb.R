@@ -4,7 +4,7 @@
 #' Draws a forest plot in the active graphics window (using grid
 #' graphics system).
 #'
-#' @aliases forest.netcomt plot.netcomb
+#' @aliases forest.netcomb plot.netcomb
 #' 
 #' @param x An object of class \code{netcomb}.
 #' @param reference.group Reference treatment(s).
