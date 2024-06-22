@@ -48,8 +48,8 @@ prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
 }
 
 
-prepare2 <- function(TE, seTE, treat1, treat2, studlab, correlated,
-                     tau = 0, func.inverse) {
+prepare2 <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
+                     correlated, func.inverse) {
   
   if (is.na(tau))
     tau <- 0
@@ -98,6 +98,7 @@ prepare2 <- function(TE, seTE, treat1, treat2, studlab, correlated,
     #
     W.list[[s]] <- res.s$W
     data$narms[sel.s] <- res.s$n
+    data$weights[sel.s] <- diag(res.s$W)
   }
   #
   res <- list(W = bdiag(W.list), data = data)

@@ -1398,8 +1398,6 @@ discomb <- function(TE, seTE,
     res$data$.seTE.adj.common <- NA
     res$data$.seTE.adj.random <- NA
     #
-    print(res$studlab)
-    print(res$data$.studlab)
     res$data$.seTE.adj.common[sel.s] <- res$seTE.adj.common
     res$data$.seTE.adj.random[sel.s] <- res$seTE.adj.random
     #
