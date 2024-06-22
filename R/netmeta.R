@@ -1436,7 +1436,7 @@ netmeta <- function(TE, seTE,
               seTE.adj = res.c$seTE[o],
               seTE.adj.common = res.c$seTE[o],
               seTE.adj.random = res.r$seTE[o],
-              correlated = res.c$correlated[o],
+              correlated = NA,
               #
               design = designs$design[o],
               #
@@ -1849,6 +1849,13 @@ netmeta <- function(TE, seTE,
     res$version.metafor <- packageDescription("metafor")$Version
   }
   
+  #
+  # Drop list element 'correlated' if no correlated outcomes are considered 
+  #
+  if (all(!correlated)) {
+    res$correlated <- NULL
+    res$data <- res$data[, names(res$data) != ".correlated"]
+  }
   
   #
   # Backward compatibility
