@@ -22,6 +22,8 @@
 #'   information.
 #' @param subset An optional vector specifying a subset of studies to
 #'   be used.
+#' @param correlated An optional logical vector specifying whether
+#'   treatment arms of a multi-arm study are correlated.
 #' @param sm A character string indicating underlying summary measure,
 #'   e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
 #'   \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.
@@ -505,6 +507,8 @@
 netmeta <- function(TE, seTE,
                     treat1, treat2, studlab,
                     data = NULL, subset = NULL,
+                    correlated,
+                    #
                     sm,
                     level = gs("level"),
                     level.ma = gs("level.ma"),
@@ -760,6 +764,16 @@ netmeta <- function(TE, seTE,
   subset <- catch("subset", mc, data, sfsp)
   missing.subset <- is.null(subset)
   #
+  correlated <- catch("correlated", mc, data, sfsp)
+  if (is.null(correlated))
+    correlated <- FALSE
+  if (!is.logical(correlated))
+    stop("Argument 'correlated' must be a logical vector.", call. = FALSE)
+  if (length(correlated) == 1)
+    correlated <- rep(correlated, length(TE))
+  else if (length(correlated) != length(TE))
+    stop("Different length for arguments 'TE' and 'correlated'.", call. = FALSE)
+  #
   if (!is.null(event1) & !is.null(event2))
     available.events <- TRUE
   else
@@ -812,6 +826,8 @@ netmeta <- function(TE, seTE,
     #
     data$.TE <- TE
     data$.seTE <- seTE
+    #
+    data$.correlated <- correlated
     #
     data$.event1 <- event1
     data$.n1 <- n1
@@ -895,6 +911,8 @@ netmeta <- function(TE, seTE,
     treat1 <- treat1[subset]
     treat2 <- treat2[subset]
     studlab <- studlab[subset]
+    #
+    correlated <- correlated[subset]
     #
     if (!is.null(n1))
       n1 <- n1[subset]
@@ -1177,22 +1195,27 @@ netmeta <- function(TE, seTE,
   #
   #
   #
-  # Generate ordered data set, with added numbers of arms per study
+  # Calculate weight matrix and generate ordered data set, with added numbers
+  # of arms per study
   #
-  p0 <- prepare(TE, seTE, treat1, treat2, studlab,
-                func.inverse = func.inverse)
+  p0 <- prepare2(TE, seTE, treat1, treat2, studlab, correlated,
+                 func.inverse = func.inverse)
+  #
+  W.matrix.common <- p0$W
+  dat.c <- p0$data
   #
   # Check consistency of treatment effects and standard errors in
   # multi-arm studies
   #
-  chkmultiarm(p0$TE, p0$seTE, p0$treat1, p0$treat2, p0$studlab,
+  chkmultiarm(dat.c$TE, dat.c$seTE, dat.c$treat1, dat.c$treat2, dat.c$studlab,
+              dat.c$correlated,
               tol.multiarm = tol.multiarm, tol.multiarm.se = tol.multiarm.se,
               details = details.chkmultiarm)
   #
   # Study overview
   #
-  tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
-                      order = p0$order,
+  tdata <- data.frame(studies = dat.c$studlab, narms = dat.c$narms,
+                      order = dat.c$order,
                       stringsAsFactors = FALSE)
   #
   tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), , drop = FALSE]
@@ -1204,16 +1227,18 @@ netmeta <- function(TE, seTE,
   #
   # (6) Conduct network meta-analysis
   #
-  #
+  
   # Common effects model
   #
-  res.c <- nma.ruecker(p0$TE, sqrt(1 / p0$weights),
-                       p0$treat1, p0$treat2,
-                       p0$treat1.pos, p0$treat2.pos,
-                       p0$narms, p0$studlab,
+  res.c <- nma_ruecker(dat.c$TE,
+                       as.matrix(W.matrix.common),
+                       sqrt(1 / dat.c$weights),
+                       dat.c$treat1, dat.c$treat2,
+                       dat.c$treat1.pos, dat.c$treat2.pos,
+                       dat.c$narms, dat.c$studlab,
                        sm,
                        level, level.ma,
-                       p0$seTE, 0, sep.trts,
+                       dat.c$seTE, 0, sep.trts,
                        method.tau,
                        func.inverse)
   #
@@ -1342,15 +1367,21 @@ netmeta <- function(TE, seTE,
   else
     tau <- tau.preset
   #
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, func.inverse)
+  p1 <- prepare2(TE, seTE, treat1, treat2, studlab, correlated, tau,
+                 func.inverse)
   #
-  res.r <- nma.ruecker(p1$TE, sqrt(1 / p1$weights),
-                       p1$treat1, p1$treat2,
-                       p1$treat1.pos, p1$treat2.pos,
-                       p1$narms, p1$studlab,
+  W.matrix.random <- p1$W
+  dat.r <- p1$data
+  #
+  res.r <- nma_ruecker(dat.r$TE,
+                       as.matrix(W.matrix.random),
+                       sqrt(1 / dat.r$weights),
+                       dat.r$treat1, dat.r$treat2,
+                       dat.r$treat1.pos, dat.r$treat2.pos,
+                       dat.r$narms, dat.r$studlab,
                        sm,
                        level, level.ma,
-                       p1$seTE, tau, sep.trts,
+                       dat.r$seTE, tau, sep.trts,
                        method.tau,
                        func.inverse)
   #
@@ -1384,10 +1415,16 @@ netmeta <- function(TE, seTE,
   # (7) Generate R object
   #
   #
-  o <- order(p0$order)
+  o <- order(dat.c$order)
   #
   designs <- designs(res.c$treat1, res.c$treat2, res.c$studlab,
                      sep.trts = sep.trts)
+  #
+  W.matrix.common <- W.matrix.common[o, o]
+  rownames(W.matrix.common) <- colnames(W.matrix.common) <- res.c$studlab[o]
+  #
+  W.matrix.random <- W.matrix.random[o, o]
+  rownames(W.matrix.random) <- colnames(W.matrix.random) <- res.c$studlab[o]
   #
   res <- list(studlab = res.c$studlab[o],
               treat1 = res.c$treat1[o],
@@ -1398,6 +1435,7 @@ netmeta <- function(TE, seTE,
               seTE.adj = res.c$seTE[o],
               seTE.adj.common = res.c$seTE[o],
               seTE.adj.random = res.r$seTE[o],
+              correlated = res.c$correlated[o],
               #
               design = designs$design[o],
               #
@@ -1526,6 +1564,9 @@ netmeta <- function(TE, seTE,
               pval.Q.inconsistency = NA,
               #
               Q.decomp = res.c$Q.decomp,
+              #
+              W.matrix.common = W.matrix.common,
+              W.matrix.random = W.matrix.random,
               #
               A.matrix = res.c$A.matrix,
               X.matrix = res.c$B.matrix[o, ],

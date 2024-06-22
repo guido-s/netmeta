@@ -247,6 +247,8 @@
 #'
 #' @importFrom MASS ginv
 #'
+#' @importFrom Matrix bdiag
+#'
 #' @importFrom ggplot2 ggplot aes theme_classic geom_tile xlab ylab
 #'   theme element_blank element_text scale_fill_gradient2 geom_text
 #'   ggtitle scale_x_discrete scale_y_discrete theme_dark

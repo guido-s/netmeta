@@ -2,16 +2,24 @@ nma.krahn <- function(x, reference.group = x$reference.group,
                       tau.preset = 0, sep.trts = x$sep.trts) {
   
   
-  chkclass(x, "netmeta")
+  mysolve <- function(x) {
+    res <- try(solve(x), silent = TRUE)
+    #
+    if (inherits(res, "try-error")) {
+      res <- x
+      res[!is.na(res)] <- NA
+    }
+    #
+    res
+  }
   
+  chkclass(x, "netmeta")
   
   if (is.na(tau.preset))
     tau.preset <- 0
   
-  
   if (is.null(sep.trts))
     sep.trts <- ":"
-  
   
   n <- x$n
 
@@ -74,6 +82,7 @@ nma.krahn <- function(x, reference.group = x$reference.group,
     ##
     TE.i <- studies$TE[studies$comparison == i]
     seTE.i <- studies$seTE[studies$comparison == i]
+    #
     m1 <-
       suppressWarnings(metagen(TE.i, seTE.i, sm = x$sm,
                                method.tau = "DL", method.tau.ci = "",
@@ -86,6 +95,7 @@ nma.krahn <- function(x, reference.group = x$reference.group,
     if (sum(studies$comparison == i & !selmulti) > 0) {
       TE.i   <- studies$TE[studies$comparison == i & studies$narms == 2]
       seTE.i <- studies$seTE[studies$comparison == i & studies$narms == 2]
+      #
       m2 <-
         suppressWarnings(metagen(TE.i, seTE.i, sm = x$sm,
                                  method.tau = "DL", method.tau.ci = "",
@@ -246,12 +256,12 @@ nma.krahn <- function(x, reference.group = x$reference.group,
     multicomp <- names(which(table(multistudies$design) > 0))
     V3.agg <- NA
     TE.agg <- NA
-    ##
+    #
     for (i in 1:length(multicomp)) {
       studlabM <-
         unique(multistudies$studlab[multistudies$design == multicomp[i]])
       ncovs <- covs[names(covs) %in% studlabM]
-      l <- sapply(ncovs, solve)
+      l <- sapply(ncovs, mysolve)
       dim <- multistudies$narms[multistudies$studlab == studlabM[1]][1] - 1
       covs3 <- solve(matrix(apply(l, 1, sum), nrow = dim))
       V3.agg <- adiag(V3.agg, covs3)
@@ -293,8 +303,8 @@ nma.krahn <- function(x, reference.group = x$reference.group,
     colnames(V.studies) <- rownames(V.studies) <-
       as.character(studies$comparison[!selmulti])
   }
-  ##
-  if (min(eigen(V, only.values = TRUE)$values)<0)
+  #
+  if (!all(is.na(V)) && min(eigen(V, only.values = TRUE)$values) < 0)
     stop("Covariance matrix is not non-negative definite.")
 
 
@@ -380,10 +390,10 @@ nma.krahn <- function(x, reference.group = x$reference.group,
 
   X.obs.studies <- X.full[comps, ]
 
-
+  
   H.studies <- X.full %*%
-    solve(t(X.obs.studies) %*% solve(V.studies) %*% X.obs.studies) %*%
-      t(X.obs.studies) %*% solve(V.studies)
+    solve(t(X.obs.studies) %*% mysolve(V.studies) %*% X.obs.studies) %*%
+      t(X.obs.studies) %*% mysolve(V.studies)
   ##
   colnames(H.studies) <- studlabs
 
