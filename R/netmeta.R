@@ -1421,10 +1421,10 @@ netmeta <- function(TE, seTE,
   designs <- designs(res.c$treat1, res.c$treat2, res.c$studlab,
                      sep.trts = sep.trts)
   #
-  W.matrix.common <- W.matrix.common[o, o]
+  W.matrix.common <- W.matrix.common[o, o, drop = FALSE]
   rownames(W.matrix.common) <- colnames(W.matrix.common) <- res.c$studlab[o]
   #
-  W.matrix.random <- W.matrix.random[o, o]
+  W.matrix.random <- W.matrix.random[o, o, drop = FALSE]
   rownames(W.matrix.random) <- colnames(W.matrix.random) <- res.c$studlab[o]
   #
   res <- list(studlab = res.c$studlab[o],
