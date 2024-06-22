@@ -2,7 +2,6 @@
 % Please edit documentation in R/forest.netcomb.R
 \name{forest.netcomb}
 \alias{forest.netcomb}
-\alias{forest.netcomt}
 \alias{plot.netcomb}
 \title{Forest plot for additive network meta-analysis}
 \usage{

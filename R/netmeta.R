@@ -1049,11 +1049,13 @@ netmeta <- function(TE, seTE,
       cat("\n")
     }
     #
-    studlab <- studlab[!(excl)]
-    treat1  <- treat1[!(excl)]
-    treat2  <- treat2[!(excl)]
-    TE      <- TE[!(excl)]
-    seTE    <- seTE[!(excl)]
+    studlab <- studlab[!excl]
+    treat1  <- treat1[!excl]
+    treat2  <- treat2[!excl]
+    TE      <- TE[!excl]
+    seTE    <- seTE[!excl]
+    #
+    correlated <- correlated[!excl]
     #
     if (!is.null(n1))
       n1 <- n1[!excl]
