@@ -148,7 +148,8 @@ createC.matrix <- function(x, comb.ia, inactive = NULL,
       i <- 1
       while (i <= ncol(x)) {
         if (all(unname(x[, i]) == unname(mat.int.i[, ncol(mat.int.i)]))) {
-          warning("Interaction is already part of the C matrix: column '",
+          warning("Information on interaction '", colnames(mat.int.i),
+                  "' is already available in column '",
                   colnames(x)[i], "'.")
           mat.int.i <- NULL
           i <- ncol(x) + 1
@@ -160,8 +161,10 @@ createC.matrix <- function(x, comb.ia, inactive = NULL,
     #
     if (!is.null(mat.int.i)) {
       if (apply(abs(mat.int.i), 2, sum) == 0) {
-        warning("Interaction '", colnames(mat.int.i),
-                "' is already part of the C matrix.",
+        warning("Interaction '",
+                colnames(mat.int.i),
+                "' is ignored as it is inestimable ",
+                "(column with zeros in C matrix).",
                 call. = FALSE)
         mat.int.i <- NULL
       }
