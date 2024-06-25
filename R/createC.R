@@ -1,125 +1,278 @@
-createC <- function(x,
-                    sep.comps = "+",
-                    inactive = NULL,
-                    ncol, ncomb = 1) {
-  
+#' Auxiliary functions for component network meta-analysis
+#' 
+#' @description
+#' Auxiliary functions to (i) create a combination / C matrix with information
+#' on treatment combinations and interaction terms and (ii) a vector with all
+#' combinations in a component network meta-analysis.
+#' 
+#' @param x A \code{\link{netcomb}}, \code{\link{netmeta}} or
+#'   \code{\link{netconnection}} object, a matrix or the number of components.
+#' @param inactive A character string defining the inactive treatment
+#'   component (see \code{\link{netcomb}}).
+#' @param comb.ia A character vector specifying treatment combinations which
+#'   will be considered as interactions.
+#' @param sep.comps A single character to define separator between
+#'   treatment components.
+#' @param sep.ia A single character to define separator for interactions.
+#' @param n A single number specifying the number of components in combinations.
+#' @param \dots Additional arguments.
+#'
+#' @return
+#' R function \code{createC} returns a combination matrix / C matrix with
+#' studies in rows and component and interaction terms in columns.
+#' 
+#' R function \code{combinations} returns a character vector with combinations.
+#' 
+#' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de},
+#'   Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
+#' 
+#' @seealso \code{\link{netcomb}}, \code{\link{discomb}}
+#' 
+#' @examples
+#' data(Linde2016)
+#'
+#' # Only consider studies including Face-to-face PST (to reduce
+#' # runtime of example)
+#' #
+#' face <- subset(Linde2016, id %in% c(16, 24, 49, 118))
+#'
+#' # Conduct random effects network meta-analysis
+#' #
+#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+#'   data = face, ref = "placebo", sm = "OR", common = FALSE)
+#'
+#' # Additive component network meta-analysis (with placebo as inactive
+#' # treatment)
+#' #
+#' nc1 <- netcomb(net1, inactive = "placebo")
+#'
+#' # Available combinations in CNMA
+#' combinations(nc1)
+#'
+#' # Create C matrix with all available interactions, i.e., one interaction
+#' # for each combination
+#' createC(nc1)
+#' 
+#' # Run interaction CNMA model with all available interactions
+#' # (same result as standard NMA)
+#' netcomb(net1, C.matrix = createC(nc1))
+#' 
+#' \dontrun{
+#' # Conduct random effects network meta-analysis on full data set
+#' #
+#' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
+#'   data = Linde2016, ref = "placebo", sm = "OR", common = FALSE)
+#'
+#' # Additive component network meta-analysis (with placebo as inactive
+#' # treatment)
+#' #
+#' nc2 <- netcomb(net2, inactive = "placebo")
+#'
+#' # Available combinations in CNMA
+#' combinations(nc2)
+#'
+#' # Create C matrix with all available interactions, i.e., one interaction
+#' # for each combination
+#' head(createC(nc2))
+#' 
+#' # Run interaction CNMA model with all available interactions
+#' # (same result as standard NMA)
+#' netcomb(net2, C.matrix = createC(nc2))
+#' }
+#' 
+#' @export createC
 
-  if (!missing(x)) {
-    chkclass(x, c("netconnection", "netmeta"))
-    ##
-    ## Set of all treatments
-    ##
-    if (inherits(x, "netconnection"))
-      trts <- rownames(x$D.matrix)
-    else
-      trts <- x$trts
-    ##
-    trts.all <- trts
-    ##
-    ## Set of all components
-    ##
-    components <- unique(sort(unlist(compsplit(trts, sep.comps))))
-    ##
-    ## Inactive treatment must be empty or one of the treatments
-    ##
-    inactive.given <- !is.null(inactive)
-    ##
-    if (inactive.given) {
-      inactive <- setchar(inactive, components)
-      ##
-      trts <- trts[trts != inactive]
-      ##
-      if (length(trts) == 0)
-        stop("All treatments equal to reference treatment ",
-             "(argument 'inactive')",
-             call. = FALSE)
-      ##
-      ## Remove inactive treatment from list of components
-      ##
-      components <- components[components != inactive]
-    }
-    
-    
-    ##
-    ## Create list with all treatment components
-    ##
-    components.list <- compsplit(trts, sep.comps)
-    ##
-    ## Remove blanks (at start and end)
-    ##
-    components.list <- lapply(components.list, rmSpace)
-    components.list <- lapply(components.list, rmSpace, end = TRUE)
-    
-    
-    ##
-    ## Create C matrix
-    ##
-    C <- matrix(NA, nrow = length(trts), ncol = length(components))
-    ##
-    ## Each list element
-    ## - corresponds to a treatment combination
-    ## - consists of a vector with treatment components
-    ##
-    equal <- function(x, pattern) x == pattern
-    ##
-    for (i in seq(along = components)) {
-      ## Logical grep whether components[i] is part of a treatment combination
-      C[, i] <- unlist(lapply(lapply(components.list, equal,
-                                     pattern = components[i]),
-                              sum)) > 0
-    }
-    ##
-    ## Add row for reference group (and convert to matrix with numeric values)
-    ##
-    if (inactive.given && inactive %in% trts.all)
-      C <- rbind(C, rep(0, length(components)))
-    else
-      C <- 1L * C
-    ##
-    ## Convert to data frame
-    ##
-    C <- data.frame(C)
-    names(C) <- components
-    ##
-    if (inactive.given && inactive %in% trts.all)
-      rownames(C) <- c(trts, inactive)
-    else
-      rownames(C) <- trts
+
+createC <- function(x, ...)
+  UseMethod("createC")
+
+
+#' @rdname createC
+#' @method createC matrix
+#' @export
+
+createC.matrix <- function(x, comb.ia, inactive = NULL,
+                           sep.comps = "+", sep.ia = "*", ...) {
+  if (!is.matrix(x))
+    stop("Argument 'x' must be a matrix.", call. = FALSE)
+  #
+  comps.all <- colnames(x)
+  comps <- comps.all[!grepl(sep.ia, comps.all, fixed = TRUE)]
+  #
+  chkchar(comb.ia)
+  #
+  if (!is.null(inactive)) {
+    inactive <- setchar(inactive, comps.all, stop.at.error = FALSE)
+    comps.all <- comps.all[!(comps.all %in% inactive)]
+    comps <- comps[!(comps %in% inactive)]
+    x <- x[, comps.all, drop = FALSE]
   }
-  else {
-    if (missing(ncol))
-      stop("Either argument 'x' or 'ncol' must be provided.",
-           call. = TRUE)
-    ##
-    chknumeric(ncomb, min = 1, max = ncol, length = 1)
-    ##
-    inactive <- NULL
-    ##
-    C <- createC.full(ncol, ncomb)
+  #
+  mat.int <- x
+  #
+  for (i in length(comb.ia)) {
+    comb.ia.i <- unlist(compsplit(comb.ia[i], sep.comps))
+    #
+    if (length(comb.ia.i) == 1)
+      stop("Entry ", i, " of argument 'comb.ia' contains a single component.")
+    #
+    if (any(grepl(sep.ia, comb.ia.i, fixed = TRUE)))
+      stop("Input for argument 'comb.ia' contains interaction separator '",
+           sep.ia, "'.")
+    #
+    comb.ia.i <- setchar(comb.ia.i, comps, name = "comb.ia",
+                         text = paste0("must be a combination of ",
+                                       paste0("'", comps, "'",
+                                              collapse = ", "),
+                                       "; separated by '", sep.comps,
+                                       "' (argument 'sep.comps')"))
+    #
+    if (length(comb.ia.i) != length(unique(comb.ia.i)))
+      stop("Identical components provided in argument 'comb.ia'.")
+    #
+    mat.int.i <- x[, comb.ia.i[1], drop = FALSE]
+    #
+    for (i in (1 + seq_len(length(comb.ia.i) - 1)))
+      mat.int.i <- mat.int.i * x[, comb.ia.i[i], drop = FALSE]
+    #
+    colnames(mat.int.i) <- paste(comb.ia.i, collapse = paste0(" ", sep.ia, " "))
+    #
+    if (colnames(mat.int.i) %in% comps.all) {
+      warning("Interaction '", colnames(mat.int.i),
+              "' is already part of the C matrix.",
+              call. = FALSE)
+      mat.int.i <- NULL
+    }
+    #
+    if (!is.null(mat.int.i)) {
+      i <- 1
+      while (i <= ncol(x)) {
+        if (all(unname(x[, i]) == unname(mat.int.i[, ncol(mat.int.i)]))) {
+          warning("Interaction is already part of the C matrix: column '",
+                  colnames(x)[i], "'.")
+          mat.int.i <- NULL
+          i <- ncol(x) + 1
+        }
+        else
+          i <- i + 1
+      }
+    }
+    #
+    if (!is.null(mat.int.i)) {
+      if (apply(abs(mat.int.i), 2, sum) == 0) {
+        warning("Interaction '", colnames(mat.int.i),
+                "' is already part of the C matrix.",
+                call. = FALSE)
+        mat.int.i <- NULL
+      }
+      #
+      mat.int <- cbind(mat.int, mat.int.i)
+    }
   }
-  
-  
-  attr(C, "inactive") <- inactive
-  ##
-  C
+  #
+  attr(mat.int, "inactive") <- inactive
+  #
+  mat.int
+}
+
+
+#' @rdname createC
+#' @method createC netcomb
+#' @export
+
+createC.netcomb <- function(x, comb.ia = NULL, inactive = NULL, sep.ia = "*",
+                            ...) {
+  chkclass(x, "netcomb")
+  #
+  C.matrix <- x$C.matrix
+  #
+  comps.all <- colnames(C.matrix)
+  comps <- comps.all[!grepl(sep.ia, comps.all, fixed = TRUE)]
+  #
+  if (is.null(comb.ia))
+    comb.ia <- combinations(x)
+  #
+  if (!is.null(inactive) & !is.null(x$inactive))
+    stop("Inactive treatment was already defined in component NMA provided in ",
+         "argument 'x'.",
+         call. = FALSE)
+  #
+  for (i in comb.ia)
+    C.matrix <- createC(C.matrix, i, sep.comps = x$sep.comps, sep.ia = "*",
+                        inactive = inactive)
+  #
+  C.matrix
+}
+
+
+#' @rdname createC
+#' @method createC netmeta
+#' @export
+
+createC.netmeta <- function(x, inactive = NULL, sep.comps = "+", ...) {
+  chkclass(x, "netmeta")
+  #
+  C.matrix <-
+    createC_trts_inactive(x$trts, inactive = inactive, sep.comps = sep.comps)
+  #
+  C.matrix
+}
+
+
+#' @rdname createC
+#' @method createC netconnection
+#' @export
+
+createC.netconnection <- function(x, inactive = NULL, sep.comps = "+", ...) {
+  chkclass(x, "netconnection")
+  #
+  C.matrix <-
+    createC_trts_inactive(rownames(x$D.matrix),
+                          inactive = inactive, sep.comps = sep.comps)
+  #
+  C.matrix
+}
+
+
+#' @rdname createC
+#' @method createC default
+#' @export
+
+createC.default <- function(x, n = 1, ...) {
+  if (missing(x))
+    stop("Argument 'x' must be provided.", call. = TRUE)
+  #
+  chknumeric(x, min = 1, length = 1)
+  chknumeric(n, min = 1, max = x, length = 1)
+  #
+  C.matrix <- createC_full(x, n)
+  #
+  C.matrix
 }
 
 
 
+#' @rdname createC
+#' @export combinations
 
-
-createC.full <- function(n, k) {
-  if (k > n)
-    stop("Error: k may not exceed n")
-  else if (k == 0)
-    res <- as.matrix(t(rep(0, n)))
-  else if (k == n)
-    res <- as.matrix(t(rep(1, n)))
-  else
-    res <- rbind(cbind(rep(1, choose(n - 1, k - 1)),
-                       createC.full(n - 1, k - 1)),
-                 cbind(rep(0, choose(n - 1, k)),
-                       createC.full(n - 1, k)))
-  ##
-  res
+combinations <- function(x, n = NULL) {
+  chkclass(x, "netcomb")
+  #
+  comps <- x$comps
+  trts <- x$trts
+  #
+  combs <- trts[!(trts %in% comps)]
+  #
+  if (!is.null(x$inactive))
+    combs <- combs[!(combs %in% x$inactive)]
+  
+  if (!is.null(n)) {
+    if (!is_wholenumber(n))
+      stop("Argument 'n' must be a whole number.")
+    sel <-
+      unlist(lapply(strsplit(combs, x$sep.comps, fixed = TRUE), length)) == n
+    combs <- combs[sel]
+  }
+  #
+  combs
 }

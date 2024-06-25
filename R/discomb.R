@@ -915,7 +915,7 @@ discomb <- function(TE, seTE,
   netc <- netconnection(treat1, treat2, studlab)
   ##
   if (missing(C.matrix)) {
-    C.matrix <- createC(netc, sep.comps, inactive)
+    C.matrix <- createC(netc, inactive = inactive, sep.comps = sep.comps)
     inactive <- attr(C.matrix, "inactive")
     C.matrix <- C.matrix[trts, , drop = FALSE]
   }

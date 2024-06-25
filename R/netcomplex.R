@@ -218,7 +218,7 @@ netcomplex <- function(x, complex,
   else if (is.numeric(complex)) {
     chknumeric(complex, min = 1, max = n.comps, length = 1)
     ##
-    C.matrix <- createC(ncol = n.comps, ncomb = complex)
+    C.matrix <- createC(n.comps, ncomb = complex)
     colnames(C.matrix) <- nam.comps <- x$comps
     rownames(C.matrix) <- paste0("...", seq_len(nrow(C.matrix)))
     ##

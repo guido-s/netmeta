@@ -413,14 +413,17 @@ netcomb <- function(x,
   ##
   ##
   if (missing(C.matrix)) {
-    ##
-    ## Create C-matrix from netmeta object
-    ##
+    #
+    # Create C-matrix from netmeta object
+    #
     if (sep.comps == "")
-      C.matrix <- createC(x, "...this_is_not_a_separator...", inactive)
+      C.matrix <-
+        createC(x, inactive = inactive,
+                sep.comps = "...this_is_not_a_separator...")
     else
-      C.matrix <- createC(x, sep.comps, inactive)
-    ##
+      C.matrix <-
+        createC(x, inactive = inactive, sep.comps = sep.comps)
+    #
     inactive <- attr(C.matrix, "inactive")
     C.matrix <- as.matrix(C.matrix)[x$trts, , drop = FALSE]
   }
