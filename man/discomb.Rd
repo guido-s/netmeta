@@ -155,7 +155,7 @@ components and combinations should be set to missing values.}
 
 \item{title}{Title of meta-analysis / systematic review.}
 
-\item{keepdata}{A logical indicating whether original data (set)
+\item{keepdata}{A logical indicating whether original data(set)
 should be kept in netmeta object.}
 
 \item{warn}{A logical indicating whether warnings should be printed

@@ -12,7 +12,7 @@ prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
                      TE, seTE, weights,
                      narms = NA, stringsAsFactors = FALSE)
   ##
-  ## Ordering data set
+  ## Ordering dataset
   ##
   o <- order(data$studlab, data$treat1, data$treat2)
   data <- data[o, ]
@@ -60,7 +60,7 @@ prepare2 <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
                      TE, seTE, weights = 1 / (seTE^2 + tau^2), correlated,
                      narms = NA, stringsAsFactors = FALSE)
   #
-  # Ordering data set
+  # Ordering dataset
   #
   o <- order(data$studlab, data$treat1, data$treat2)
   data <- data[o, ]

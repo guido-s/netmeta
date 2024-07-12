@@ -5,7 +5,7 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab, correlated,
   
   
   #
-  # Ordering data set (if necessary)
+  # Ordering dataset (if necessary)
   #
   o <- order(studlab, treat1, treat2)
   #

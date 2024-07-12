@@ -96,7 +96,7 @@
 #'   presented as odds ratios rather than log odds ratios, for
 #'   example.
 #' @param title Title of meta-analysis / systematic review.
-#' @param keepdata A logical indicating whether original data (set)
+#' @param keepdata A logical indicating whether original data(set)
 #'   should be kept in netmeta object.
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
@@ -288,7 +288,7 @@
 #' \item{details.chkmultiarm, details.chkdata}{As defined above.}
 #' \item{sep.trts, nchar.trts}{As defined above.}
 #' \item{backtransf, title, warn, warn.deprecated}{As defined above.}
-#' \item{data}{Data set (in contrast-based format).}
+#' \item{data}{Dataset (in contrast-based format).}
 #' \item{data.design}{List with data in arm-based format (each list
 #'   element corresponds to a single design).}
 #' \item{call}{Function call.}

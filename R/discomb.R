@@ -82,7 +82,7 @@
 #'   see \code{\link{pairwise}}).
 #' @param na.unident A logical indicating whether unidentifiable
 #'   components and combinations should be set to missing values.
-#' @param keepdata A logical indicating whether original data (set)
+#' @param keepdata A logical indicating whether original data(set)
 #'   should be kept in netmeta object.
 #' @param title Title of meta-analysis / systematic review.
 #' @param warn A logical indicating whether warnings should be printed
@@ -1388,7 +1388,7 @@ discomb <- function(TE, seTE,
                       by = ".studlab",
                       stringsAsFactors = FALSE)
     #
-    # Store adjusted standard errors in data set
+    # Store adjusted standard errors in dataset
     #
     if (isCol(res$data, ".subset"))
       sel.s <- res$data$.subset

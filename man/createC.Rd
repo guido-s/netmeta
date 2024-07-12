@@ -84,7 +84,7 @@ createC(nc1)
 netcomb(net1, C.matrix = createC(nc1))
 
 \dontrun{
-# Conduct random effects network meta-analysis on full data set
+# Conduct random effects network meta-analysis on full dataset
 #
 net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
   data = Linde2016, ref = "placebo", sm = "OR", common = FALSE)

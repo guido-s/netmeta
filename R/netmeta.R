@@ -95,7 +95,7 @@
 #' @param time1 Person time at risk in first treatment group.
 #' @param time2 Person time at risk in second treatment group.
 #' @param title Title of meta-analysis / systematic review.
-#' @param keepdata A logical indicating whether original data (set)
+#' @param keepdata A logical indicating whether original data(set)
 #'   should be kept in netmeta object.
 #' @param control An optional list to control the iterative process to
 #'   estimate the between-study variance \eqn{\tau^2}. This argument
@@ -239,7 +239,7 @@
 #' and \code{n2} (binary outcomes); \code{event1}, \code{event2},
 #' \code{time1}, and \code{time2} (incidence rates); \code{n1},
 #' \code{n2}, \code{sd1}, and \code{sd2} (mean difference) are
-#' provided. For data sets preprocessed with \code{\link{pairwise}}
+#' provided. For datasets preprocessed with \code{\link{pairwise}}
 #' the respective variables are selected automatically.
 #'
 #' @return
@@ -1197,7 +1197,7 @@ netmeta <- function(TE, seTE,
   #
   #
   #
-  # Calculate weight matrix and generate ordered data set, with added numbers
+  # Calculate weight matrix and generate ordered dataset, with added numbers
   # of arms per study
   #
   p0 <- prepare2(TE, seTE, treat1, treat2, studlab, correlated = correlated,
@@ -1796,7 +1796,7 @@ netmeta <- function(TE, seTE,
                       by = ".studlab",
                       stringsAsFactors = FALSE)
     #
-    # Store adjusted standard errors in data set
+    # Store adjusted standard errors in dataset
     #
     if (isCol(res$data, ".subset"))
       sel.s <- res$data$.subset

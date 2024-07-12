@@ -209,7 +209,7 @@ example.}
 
 \item{title}{Title of meta-analysis / systematic review.}
 
-\item{keepdata}{A logical indicating whether original data (set)
+\item{keepdata}{A logical indicating whether original data(set)
 should be kept in netmeta object.}
 
 \item{control}{An optional list to control the iterative process to
@@ -593,7 +593,7 @@ calculated if arguments \code{event1}, \code{event2}, \code{n1},
 and \code{n2} (binary outcomes); \code{event1}, \code{event2},
 \code{time1}, and \code{time2} (incidence rates); \code{n1},
 \code{n2}, \code{sd1}, and \code{sd2} (mean difference) are
-provided. For data sets preprocessed with \code{\link{pairwise}}
+provided. For datasets preprocessed with \code{\link{pairwise}}
 the respective variables are selected automatically.
 }
 \examples{

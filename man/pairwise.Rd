@@ -80,8 +80,8 @@ if argument is missing).}
 pairwise comparisons or only comparisons with the study-specific
 reference group should be kept ('basic parameters').}
 
-\item{append}{A logical indicating whether variables from data set
-provided in argument \code{data} are appended to data set with
+\item{append}{A logical indicating whether variables from the dataset
+provided in argument \code{data} are appended to the dataset with
 pairwise comparisons.}
 
 \item{warn}{A logical indicating whether warnings should be printed
@@ -255,7 +255,7 @@ In general, any variable names in the original dataset that are
 identical to the main variable names (i.e., "TE", "seTE", ...) will
 be renamed to variable names with ending ".orig".
 
-A reduced data set with basic comparisons (Rücker & Schwarzer,
+A reduced dataset with basic comparisons (Rücker & Schwarzer,
 2014) can be generated using argument \code{keep.all.comparisons =
 FALSE}. Furthermore, the reference group for the basic comparisons
 can be specified with argument \code{reference.group}.

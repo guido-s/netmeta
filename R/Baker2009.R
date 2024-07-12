@@ -2,7 +2,7 @@
 #' obstructive pulmonary disease
 #' 
 #' @description
-#' This data set comes from a systematic review of randomized
+#' This dataset comes from a systematic review of randomized
 #' controlled trials on pharmacologic treatments for chronic
 #' obstructive pulmonary disease (COPD) (Baker et al., 2009).
 #'

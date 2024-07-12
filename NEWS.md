@@ -5,11 +5,14 @@
 * discomb():
   - new arguments 'n1', 'n2', 'event1', 'event2', 'na.unident', 'keepdata'
 
+* New function summary.netconnection() to print list of studies in subnetworks
+
 ### Bug fixes
 
 * pairwise():
   - inconsistent values for Cohen's d if data was already provided in contrast
     based format
+  - argument 'append = FALSE' didn't work
 
 * netcomplex():
   - print correct component names for command *netcomplex(net1, 2)* etc.

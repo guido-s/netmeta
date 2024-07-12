@@ -26,7 +26,7 @@ Therapy},
 \bold{29}, 891--905
 }
 \description{
-This data set comes from a systematic review of randomized
+This dataset comes from a systematic review of randomized
 controlled trials on pharmacologic treatments for chronic
 obstructive pulmonary disease (COPD) (Baker et al., 2009).
 

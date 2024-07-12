@@ -45,8 +45,8 @@
 #' @param keep.all.comparisons A logical indicating whether all
 #'   pairwise comparisons or only comparisons with the study-specific
 #'   reference group should be kept ('basic parameters').
-#' @param append A logical indicating whether variables from data set
-#'   provided in argument \code{data} are appended to data set with
+#' @param append A logical indicating whether variables from the dataset
+#'   provided in argument \code{data} are appended to the dataset with
 #'   pairwise comparisons.
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded due to only providing a single
@@ -170,7 +170,7 @@
 #' identical to the main variable names (i.e., "TE", "seTE", ...) will
 #' be renamed to variable names with ending ".orig".
 #'
-#' A reduced data set with basic comparisons (Rücker & Schwarzer,
+#' A reduced dataset with basic comparisons (Rücker & Schwarzer,
 #' 2014) can be generated using argument \code{keep.all.comparisons =
 #' FALSE}. Furthermore, the reference group for the basic comparisons
 #' can be specified with argument \code{reference.group}.
@@ -398,7 +398,6 @@ pairwise <- function(treat,
   treat <- catch("treat", mc, data, sfsp)
   ##
   if (is.data.frame(treat) & !is.null(attr(treat, "pairwise"))) {
-    is.pairwise <- TRUE
     res <- treat
     ##
     if (missing.reference.group)
@@ -406,6 +405,7 @@ pairwise <- function(treat,
         reference.group <- attributes(treat)$reference.group
         missing.reference.group <- FALSE
       }
+    #
     if (missing(keep.all.comparisons)) {
       if (!is.null(attributes(treat)$keep.all.comparisons))
         keep.all.comparisons <- attributes(treat)$keep.all.comparisons
@@ -417,60 +417,70 @@ pairwise <- function(treat,
       warning("Argument 'event' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(n))
       warning("Argument 'n' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(mean))
       warning("Argument 'mean' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(sd))
       warning("Argument 'sd' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(TE))
       warning("Argument 'TE' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(seTE))
       warning("Argument 'seTE' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(time))
       warning("Argument 'time' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!nulldata)
       warning("Argument 'data' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(studlab))
       warning("Argument 'studlab' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(incr))
       warning("Argument 'incr' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(allincr))
       warning("Argument 'allincr' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(addincr))
       warning("Argument 'addincr' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
+    #
     if (!missing(allstudies))
       warning("Argument 'allstudies' ignored as ",
               "first argument is a pairwise object.",
               call. = FALSE)
-    ##
-    type <- "pairwise"
+    #
+    type <- attributes(res)$type
   }
   else {
-    is.pairwise <- FALSE
-    ##
     if (missing(keep.all.comparisons))
       keep.all.comparisons <- TRUE
     chklogical(keep.all.comparisons)
@@ -1747,6 +1757,18 @@ pairwise <- function(treat,
     #
     rownames(res) <- 1:nrow(res)
   }
+  #
+  # Only keep core variables
+  #
+  corevars <- c("TE", "seTE", "studlab", "treat1", "treat2",
+                "event1", "event2", "n1", "n2",
+                "mean1", "mean2", "sd1", "sd2",
+                "TE1", "TE2", "seTE1", "seTE2",
+                "time1", "time2",
+                ".seTE")
+  #
+  if (!append)
+    res <- res[, names(res) %in% corevars]
   
   
   ##
@@ -1820,7 +1842,7 @@ pairwise <- function(treat,
   attr(res, "type") <- type
   attr(res, "version") <- packageDescription("netmeta")$Version
   
-  class(res) <- c("pairwise", class(res))
+  class(res) <- unique(c("pairwise", class(res)))
   
   res
 }
