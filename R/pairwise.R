@@ -518,6 +518,9 @@ pairwise <- function(treat,
               call. = FALSE)
     #
     type <- attributes(res)$type
+    #
+    avail.treat <- TRUE
+    avail.agent <- avail.dose <- FALSE
   }
   else {
     if (missing(keep.all.comparisons))
