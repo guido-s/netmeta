@@ -940,38 +940,6 @@ netmeta <- function(TE, seTE,
   #
   labels <- sort(unique(c(treat1, treat2)))
   #
-  if (compmatch(labels, sep.trts)) {
-    if (!missing.sep.trts)
-      warning("Separator '", sep.trts,
-              "' used in at least one treatment label. ",
-              "Try to use predefined separators: ",
-              "':', '-', '_', '/', '+', '.', '|', '*'.",
-              call. = FALSE)
-    #
-    if (!compmatch(labels, ":"))
-      sep.trts <- ":"
-    else if (!compmatch(labels, "-"))
-      sep.trts <- "-"
-    else if (!compmatch(labels, "_"))
-      sep.trts <- "_"
-    else if (!compmatch(labels, "/"))
-      sep.trts <- "/"
-    else if (!compmatch(labels, "+"))
-      sep.trts <- "+"
-    else if (!compmatch(labels, "."))
-      sep.trts <- "-"
-    else if (!compmatch(labels, "|"))
-      sep.trts <- "|"
-    else if (!compmatch(labels, "*"))
-      sep.trts <- "*"
-    else
-      stop("All predefined separators (':', '-', '_', '/', '+', ",
-           "'.', '|', '*') are used in at least one treatment label.",
-           "\n   Please specify a different character that should be ",
-           "used as separator (argument 'sep.trts').",
-           call. = FALSE)
-  }
-  #
   if (!is.null(seq))
     seq <- setseq(seq, labels)
   else {
@@ -979,6 +947,8 @@ netmeta <- function(TE, seTE,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
+  #
+  sep.trts <- setsep(labels, sep.trts)
   
   
   #

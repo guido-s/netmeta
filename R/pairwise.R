@@ -25,6 +25,10 @@
 #'   treatment effect for individual treatment arms (see Details).
 #' @param time A list or vector with information on person time at
 #'   risk for individual treatment arms (see Details).
+#' @param agent A list or vector with agent information for
+#'   individual treatment arms (see Details).
+#' @param dose A list or vector with dose information for
+#'   individual treatment arms (see Details).
 #' @param data An optional data frame containing the study
 #'   information.
 #' @param studlab A vector with study labels (optional).
@@ -42,6 +46,8 @@
 #'   or \code{"OR"}).
 #' @param reference.group Reference treatment (first treatment is used
 #'   if argument is missing).
+#' @param sep.ag A character used as separator
+#'   between agent in dose to create treatment labels.
 #' @param keep.all.comparisons A logical indicating whether all
 #'   pairwise comparisons or only comparisons with the study-specific
 #'   reference group should be kept ('basic parameters').
@@ -99,7 +105,7 @@
 #' }
 #' 
 #' Argument \code{treat} is mandatory to identify the individual
-#' treatments.  The other arguments contain outcome specific
+#' treatments. The other arguments contain outcome specific
 #' data. These arguments must be either lists (wide arm-based format,
 #' i.e., one row per study) or vectors (long arm-based format,
 #' i.e., multiple rows per study) of the same length.
@@ -216,6 +222,10 @@
 #'   metainc).}
 #' \item{time2}{Person time at risk for second treatment arm (for
 #'   metainc).}
+#' \item{agent1}{First agent in comparison.}
+#' \item{agent2}{Second agent in comparison.}
+#' \item{dose1}{Dose of first agent in comparison.}
+#' \item{dose2}{Dose of second agent in comparison.}
 #' 
 #' All variables from the original dataset are also part of the output
 #' dataset; see Details.
@@ -354,12 +364,15 @@
 
 pairwise <- function(treat,
                      event, n, mean, sd, TE, seTE, time,
+                     agent, dose,
                      data = NULL, studlab,
                      incr = gs("incr"), allincr = gs("allincr"),
                      addincr = gs("addincr"), allstudies = gs("allstudies"),
                      ##
                      reference.group,
                      keep.all.comparisons,
+                     #
+                     sep.ag = "*",
                      ##
                      append = !is.null(data),
                      warn = FALSE,
@@ -377,6 +390,19 @@ pairwise <- function(treat,
   chklogical(allstudies)
   chklogical(append)
   chklogical(warn)
+  #
+  missing.sep.ag <- missing(sep.ag)
+  chkchar(sep.ag)
+  
+  
+  ##
+  ## Auxiliary functions
+  ##
+  sumzero <- function(x)
+    sum(x[!is.na(x)] == 0)
+  ##
+  anytrue <- function(x)
+    any(x == TRUE, na.rm = TRUE)
   
   
   ##
@@ -390,10 +416,13 @@ pairwise <- function(treat,
   ##
   if (nulldata)
     data <- sfsp
-  ##
+  #
+  args <- list(...)
+  nam.args <- names(args)
+  #
   missing.reference.group <- missing(reference.group)
   ##
-  ## Catch studlab, treat, event, n, mean, sd, time from data:
+  ## Catch studlab, treat, agent, dose, event, n, mean, sd, time from data:
   ##
   treat <- catch("treat", mc, data, sfsp)
   ##
@@ -448,6 +477,16 @@ pairwise <- function(treat,
               "first argument is a pairwise object.",
               call. = FALSE)
     #
+    if (!missing(agent))
+      warning("Argument 'agent' ignored as ",
+              "first argument is a pairwise object.",
+              call. = FALSE)
+    #
+    if (!missing(dose))
+      warning("Argument 'dose' ignored as ",
+              "first argument is a pairwise object.",
+              call. = FALSE)
+    #
     if (!nulldata)
       warning("Argument 'data' ignored as ",
               "first argument is a pairwise object.",
@@ -484,7 +523,10 @@ pairwise <- function(treat,
     if (missing(keep.all.comparisons))
       keep.all.comparisons <- TRUE
     chklogical(keep.all.comparisons)
-    ##
+    #
+    agent <- catch("agent", mc, data, sfsp)
+    dose <- catch("dose", mc, data, sfsp)
+    #
     studlab <- catch("studlab", mc, data, sfsp)
     event <- catch("event", mc, data, sfsp)
     n <- catch("n", mc, data, sfsp)
@@ -493,17 +535,31 @@ pairwise <- function(treat,
     TE <- catch("TE", mc, data, sfsp)
     seTE <- catch("seTE", mc, data, sfsp)
     time <- catch("time", mc, data, sfsp)
+    #
+    avail.treat <- !is.null(treat)
+    avail.agent <- !is.null(agent)
+    avail.dose <- !is.null(dose)
     
-    
-    args <- list(...)
-    nam.args <- names(args)
-    
-    
-    if (is.null(treat))
-      stop("Argument 'treat' mandatory.")
-    ##
-    if (is.list(treat))
-      chklist(treat)
+    if (!(avail.treat || (avail.agent & avail.dose)))
+      stop("Mandatory argument(s) are 'treat' or 'agent' and 'dose'.")
+    #
+    if (avail.treat & avail.agent & avail.dose)
+      stop("Either provide argument 'treat' or arguments 'agent' and 'dose'.")
+    #
+    if (!avail.treat & (avail.agent + avail.dose != 2))
+      stop("Mandatory arguments 'agent' and 'dose' for dose-response data.")
+    #
+    if (avail.treat)
+      if (is.list(treat))
+        chklist(treat)
+    #
+    if (avail.agent)
+      if (is.list(agent))
+        chklist(agent)
+    #
+    if (avail.dose)
+      if (is.list(dose))
+        chklist(dose)
     ##
     if (!is.null(event))
       if (is.list(event))
@@ -573,106 +629,373 @@ pairwise <- function(treat,
     #
     if (type == "generic") {
       if (is.list(TE) & is.list(seTE)) {
-        if (length(TE) == 1 & length(seTE) == 1 & length(treat) == 1) {
+        if (length(TE) == 1 & length(seTE) == 1 &
+            (length(treat) == 1 || (length(agent) == 1 & length(dose) == 1))) {
           data.format <- "long"
+          #
           TE <- unlist(TE)
           seTE <- unlist(seTE)
-          treat <- unlist(treat)
+          #
+          if (avail.treat)
+            treat <- unlist(treat)
+          else {
+            agent <- unlist(agent)
+            dose <- unlist(dose)
+            #
+            sep.ag <- setsep(agent, sep.ag, type = "agent")
+            #
+            treat <- paste(agent, dose, sep = sep.ag)
+          }
         }
-        else if (length(TE) == 2 & length(seTE) == 2 & length(treat) == 2 &
+        else if (length(TE) == 2 & length(seTE) == 2 &
+                 (length(treat) == 2 ||
+                  (length(agent) == 2 & length(dose) == 2)) &
                  any(table(studlab) > 1)) {
           data.format <- "comparison"
-          dat.studlab.treat <-
-            data.frame(studlab, treat1 = treat[[1]], treat2 = treat[[2]])
+          #
+          dat.st <- data.frame(studlab)
+          #
+          if (avail.treat) {
+            dat.st$treat1 <- treat[[1]]
+            dat.st$treat2 <- treat[[2]]
+          }
+          else {
+            dat.st$agent1 <- agent[[1]]
+            dat.st$dose1 <- dose[[1]]
+            #
+            dat.st$agent2 <- agent[[2]]
+            dat.st$dose2 <- dose[[2]]
+            #
+            sep.ag <-
+              setsep(c(dat.st$agent1, dat.st$agent2), sep.ag, type = "agent")
+            #
+            dat.st$treat1 <- paste(dat.st$agent1, dat.st$dose1, sep = sep.ag)
+            dat.st$treat2 <- paste(dat.st$agent2, dat.st$dose2, sep = sep.ag)
+          }
         }
-        else
+        else {
           data.format <- "wide"
+          #
+          if (!avail.treat) {
+            sep.ag <- setsep(unlist(agent), sep.ag, type = "agent")
+            agent.without.NA <- lapply(agent, replaceNA, replace = "")
+            dose.without.NA <- lapply(dose, replaceNA, replace = "")
+            #
+            treat.without.NA <-
+              mapply(paste,
+                     agent.without.NA, dose.without.NA,
+                     MoreArgs = list(sep = sep.ag),
+                     SIMPLIFY = FALSE)
+            #
+            treat <- lapply(treat.without.NA, meta:::replaceVal,
+                            old = sep.ag, new = NA)
+          }
+        }
       }
-      else
+      else {
         data.format <- "long"
+        #
+        if (!avail.treat) {
+          sep.ag <- setsep(agent, sep.ag, type = "agent")
+          treat <- paste(agent, dose, sep = sep.ag)
+        }
+      }
     }
     #
     else if (type == "binary") {
       if (is.list(event) & is.list(n)) {
-        if (length(event) == 1 & length(n) == 1 & length(treat) == 1) {
+        if (length(event) == 1 & length(n) == 1 &
+            (length(treat) == 1 || (length(agent) == 1 & length(dose) == 1))) {
           data.format <- "long"
+          #
           event <- unlist(event)
           n <- unlist(n)
-          treat <- unlist(treat)
+          #
+          if (avail.treat)
+            treat <- unlist(treat)
+          else {
+            agent <- unlist(agent)
+            dose <- unlist(dose)
+            #
+            sep.ag <- setsep(agent, sep.ag, type = "agent")
+            #
+            treat <- paste(agent, dose, sep = sep.ag)
+          }
         }
-        else if (length(event) == 2 & length(n) == 2 & length(treat) == 2 &
+        else if (length(event) == 2 & length(n) == 2 & 
+                 (length(treat) == 2 ||
+                  (length(agent) == 2 & length(dose) == 2)) &
                  any(table(studlab) > 1)) {
           data.format <- "comparison"
-          dat.studlab.treat <-
-            data.frame(studlab, treat1 = treat[[1]], treat2 = treat[[2]])
+          #
+          dat.st <- data.frame(studlab)
+          #
+          if (avail.treat) {
+            dat.st$treat1 <- treat[[1]]
+            dat.st$treat2 <- treat[[2]]
+          }
+          else {
+            dat.st$agent1 <- agent[[1]]
+            dat.st$dose1 <- dose[[1]]
+            #
+            dat.st$agent2 <- agent[[2]]
+            dat.st$dose2 <- dose[[2]]
+            #
+            sep.ag <-
+              setsep(c(dat.st$agent1, dat.st$agent2), sep.ag, type = "agent")
+            #
+            dat.st$treat1 <- paste(dat.st$agent1, dat.st$dose1, sep = sep.ag)
+            dat.st$treat2 <- paste(dat.st$agent2, dat.st$dose2, sep = sep.ag)
+          }
         }
-        else
+        else {
           data.format <- "wide"
+          #
+          if (!avail.treat) {
+            sep.ag <- setsep(unlist(agent), sep.ag, type = "agent")
+            agent.without.NA <- lapply(agent, replaceNA, replace = "")
+            dose.without.NA <- lapply(dose, replaceNA, replace = "")
+            #
+            treat.without.NA <-
+              mapply(paste,
+                     agent.without.NA, dose.without.NA,
+                     MoreArgs = list(sep = sep.ag),
+                     SIMPLIFY = FALSE)
+            #
+            treat <- lapply(treat.without.NA, meta:::replaceVal,
+                            old = sep.ag, new = NA)
+          }
+        }
       }
-      else
+      else {
         data.format <- "long"
+        #
+        if (!avail.treat) {
+          sep.ag <- setsep(agent, sep.ag, type = "agent")
+          treat <- paste(agent, dose, sep = sep.ag)
+        }
+      }
     }
     #
     else if (type == "continuous") {
       if (is.list(n) & is.list(mean) & is.list(sd)) {
         if (length(n) == 1 & length(mean) == 1 & length(sd) == 1 &
-            length(treat) == 1) {
+            (length(treat) == 1 || (length(agent) == 1 & length(dose) == 1))) {
           data.format <- "long"
+          #
           n <- unlist(n)
           mean <- unlist(mean)
           sd <- unlist(sd)
-          treat <- unlist(treat)
+          #
+          if (avail.treat)
+            treat <- unlist(treat)
+          else {
+            agent <- unlist(agent)
+            dose <- unlist(dose)
+            #
+            sep.ag <- setsep(agent, sep.ag, type = "agent")
+            #
+            treat <- paste(agent, dose, sep = sep.ag)
+          }
         }
         else if (length(n) == 2 & length(mean) == 2 & length(sd) == 2 &
-                 length(treat) == 2 & any(table(studlab) > 1)) {
+                 (length(treat) == 2 ||
+                  (length(agent) == 2 & length(dose) == 2)) &
+                 any(table(studlab) > 1)) {
           data.format <- "comparison"
-          dat.studlab.treat <-
-            data.frame(studlab, treat1 = treat[[1]], treat2 = treat[[2]])
+          #
+          dat.st <- data.frame(studlab)
+          #
+          if (avail.treat) {
+            dat.st$treat1 <- treat[[1]]
+            dat.st$treat2 <- treat[[2]]
+          }
+          else {
+            dat.st$agent1 <- agent[[1]]
+            dat.st$dose1 <- dose[[1]]
+            #
+            dat.st$agent2 <- agent[[2]]
+            dat.st$dose2 <- dose[[2]]
+            #
+            sep.ag <-
+              setsep(c(dat.st$agent1, dat.st$agent2), sep.ag, type = "agent")
+            #
+            dat.st$treat1 <- paste(dat.st$agent1, dat.st$dose1, sep = sep.ag)
+            dat.st$treat2 <- paste(dat.st$agent2, dat.st$dose2, sep = sep.ag)
+          }
         }
-        else
+        else {
           data.format <- "wide"
+          #
+          if (!avail.treat) {
+            sep.ag <- setsep(unlist(agent), sep.ag, type = "agent")
+            agent.without.NA <- lapply(agent, replaceNA, replace = "")
+            dose.without.NA <- lapply(dose, replaceNA, replace = "")
+            #
+            treat.without.NA <-
+              mapply(paste,
+                     agent.without.NA, dose.without.NA,
+                     MoreArgs = list(sep = sep.ag),
+                     SIMPLIFY = FALSE)
+            #
+            treat <- lapply(treat.without.NA, meta:::replaceVal,
+                            old = sep.ag, new = NA)
+          }
+        }
       }
-      else
+      else {
         data.format <- "long"
+        #
+        if (!avail.treat) {
+          sep.ag <- setsep(agent, sep.ag, type = "agent")
+          treat <- paste(agent, dose, sep = sep.ag)
+        }
+      }
     }
     #
     else if (type == "count") {
       if (is.list(event) & is.list(time)) {
-        if (length(event) == 1 & length(time) == 1 & length(treat) == 1) {
+        if (length(event) == 1 & length(time) == 1 &
+            (length(treat) == 1 || (length(agent) == 1 & length(dose) == 1))) {
           data.format <- "long"
+          #
           event <- unlist(event)
           time <- unlist(time)
-          treat <- unlist(treat)
+          #
+          if (avail.treat)
+            treat <- unlist(treat)
+          else {
+            agent <- unlist(agent)
+            dose <- unlist(dose)
+            #
+            sep.ag <- setsep(agent, sep.ag, type = "agent")
+            #
+            treat <- paste(agent, dose, sep = sep.ag)
+          }
         }
-        else if (length(event) == 2 & length(time) == 2 & length(treat) == 2 &
+        else if (length(event) == 2 & length(time) == 2 &
+                 (length(treat) == 2 ||
+                  (length(agent) == 2 & length(dose) == 2)) &
                  any(table(studlab) > 1)) {
           data.format <- "comparison"
-          dat.studlab.treat <-
-            data.frame(studlab, treat1 = treat[[1]], treat2 = treat[[2]])
+          #
+          dat.st <- data.frame(studlab)
+          #
+          if (avail.treat) {
+            dat.st$treat1 <- treat[[1]]
+            dat.st$treat2 <- treat[[2]]
+          }
+          else {
+            dat.st$agent1 <- agent[[1]]
+            dat.st$dose1 <- dose[[1]]
+            #
+            dat.st$agent2 <- agent[[2]]
+            dat.st$dose2 <- dose[[2]]
+            #
+            sep.ag <-
+              setsep(c(dat.st$agent1, dat.st$agent2), sep.ag, type = "agent")
+            #
+            dat.st$treat1 <- paste(dat.st$agent1, dat.st$dose1, sep = sep.ag)
+            dat.st$treat2 <- paste(dat.st$agent2, dat.st$dose2, sep = sep.ag)
+          }
         }
-        else
+        else {
           data.format <- "wide"
+          #
+          if (!avail.treat) {
+            sep.ag <- setsep(unlist(agent), sep.ag, type = "agent")
+            agent.without.NA <- lapply(agent, replaceNA, replace = "")
+            dose.without.NA <- lapply(dose, replaceNA, replace = "")
+            #
+            treat.without.NA <-
+              mapply(paste,
+                     agent.without.NA, dose.without.NA,
+                     MoreArgs = list(sep = sep.ag),
+                     SIMPLIFY = FALSE)
+            #
+            treat <- lapply(treat.without.NA, meta:::replaceVal,
+                            old = sep.ag, new = NA)
+          }
+        }
       }
-      else
+      else {
         data.format <- "long"
+        #
+        if (!avail.treat) {
+          sep.ag <- setsep(agent, sep.ag, type = "agent")
+          treat <- paste(agent, dose, sep = sep.ag)
+        }
+      }
     }
     #
     else if (type == "onlytreat") {
       if (is.list(treat)) {
-        if (length(treat) == 1) {
+        if ((length(treat) == 1 || (length(agent) == 1 & length(dose) == 1))) {
           data.format <- "long"
-          treat <- unlist(treat)
+          #
+          if (avail.treat)
+            treat <- unlist(treat)
+          else {
+            agent <- unlist(agent)
+            dose <- unlist(dose)
+            #
+            sep.ag <- setsep(agent, sep.ag, type = "agent")
+            #
+            treat <- paste(agent, dose, sep = sep.ag)
+          }
         }
-        else if (length(treat) == 2 & any(table(studlab) > 1)) {
+        else if ((length(treat) == 2 ||
+                  (length(agent) == 2 & length(dose) == 2)) &
+                 any(table(studlab) > 1)) {
           data.format <- "comparison"
-          dat.studlab.treat <-
-            data.frame(studlab, treat1 = treat[[1]], treat2 = treat[[2]])
+          #
+          dat.st <- data.frame(studlab)
+          #
+          if (avail.treat) {
+            dat.st$treat1 <- treat[[1]]
+            dat.st$treat2 <- treat[[2]]
+          }
+          else {
+            dat.st$agent1 <- agent[[1]]
+            dat.st$dose1 <- dose[[1]]
+            #
+            dat.st$agent2 <- agent[[2]]
+            dat.st$dose2 <- dose[[2]]
+            #
+            sep.ag <-
+              setsep(c(dat.st$agent1, dat.st$agent2), sep.ag, type = "agent")
+            #
+            dat.st$treat1 <- paste(dat.st$agent1, dat.st$dose1, sep = sep.ag)
+            dat.st$treat2 <- paste(dat.st$agent2, dat.st$dose2, sep = sep.ag)
+          }
         }
-        else
+        else {
           data.format <- "wide"
+          #
+          if (!avail.treat) {
+            sep.ag <- setsep(unlist(agent), sep.ag, type = "agent")
+            agent.without.NA <- lapply(agent, replaceNA, replace = "")
+            dose.without.NA <- lapply(dose, replaceNA, replace = "")
+            #
+            treat.without.NA <-
+              mapply(paste,
+                     agent.without.NA, dose.without.NA,
+                     MoreArgs = list(sep = sep.ag),
+                     SIMPLIFY = FALSE)
+            #
+            treat <- lapply(treat.without.NA, meta:::replaceVal,
+                            old = sep.ag, new = NA)
+          }
+        }
       }
-      else
+      else {
         data.format <- "long"
+        #
+        if (!avail.treat) {
+          sep.ag <- setsep(agent, sep.ag, type = "agent")
+          treat <- paste(agent, dose, sep = sep.ag)
+        }
+      }
     }
     
     
@@ -985,16 +1308,6 @@ pairwise <- function(treat,
 
     narms <- length(unique(treat))
     nstud <- length(unique(studlab))
-
-
-    ##
-    ## Auxiliary functions
-    ##
-    sumzero <- function(x)
-      sum(x[!is.na(x)] == 0)
-    ##
-    anytrue <- function(x)
-      any(x == TRUE, na.rm = TRUE)
 
 
     ##
@@ -1576,16 +1889,16 @@ pairwise <- function(treat,
     if (!nulldata & data.format == "comparison") {
       res$.order <- NULL
       res2 <- data.frame()
-      for (i in seq_len(nrow(dat.studlab.treat))) {
+      for (i in seq_len(nrow(dat.st))) {
         sel.i <-
-          res$studlab == dat.studlab.treat$studlab[i] &
-          res$treat1 == dat.studlab.treat$treat1[i] &
-          res$treat2 == dat.studlab.treat$treat2[i]
+          res$studlab == dat.st$studlab[i] &
+          res$treat1 == dat.st$treat1[i] &
+          res$treat2 == dat.st$treat2[i]
         #
         sel.wo.i <-
-          res$studlab == dat.studlab.treat$studlab[i] &
-          res$treat1 == dat.studlab.treat$treat2[i] &
-          res$treat2 == dat.studlab.treat$treat1[i]
+          res$studlab == dat.st$studlab[i] &
+          res$treat1 == dat.st$treat2[i] &
+          res$treat2 == dat.st$treat1[i]
         #
         if (any(sel.i))
           res2 <- rbind(res2, res[sel.i, ])
@@ -1835,12 +2148,39 @@ pairwise <- function(treat,
       res <- res[!drop, , drop = FALSE]
   }
   
+  if (!avail.treat) {
+    if (isCol(res, "agent1"))
+      names(res)[names(res) == "agent1"] <- "agent1.orig"
+    if (isCol(res, "dose1"))
+      names(res)[names(res) == "dose1"] <- "dose1.orig"
+    if (isCol(res, "agent2"))
+      names(res)[names(res) == "agent2"] <- "agent2.orig"
+    if (isCol(res, "dose2"))
+      names(res)[names(res) == "dose2"] <- "dose2.orig"
+    #
+    res$agent1 <- sapply(compsplit(res$treat1, sep.ag), first)
+    res$dose1 <- sapply(compsplit(res$treat1, sep.ag), second)
+    res$agent2 <- sapply(compsplit(res$treat2, sep.ag), first)
+    res$dose2 <- sapply(compsplit(res$treat2, sep.ag), second)
+    #
+    res$dose1 <- as.numeric(res$dose1)
+    res$dose2 <- as.numeric(res$dose2)
+    #
+    nam.res <- names(res)
+    nam1 <- c("TE", "seTE", "studlab")
+    nam2 <- c("agent1", "dose1", "agent2", "dose2")
+    #
+    res <- res[, c(nam1, nam2, nam.res[!nam.res %in% c(nam1, nam2)])]
+  }
   
   attr(res, "pairwise") <- TRUE
   attr(res, "reference.group") <- reference.group
   attr(res, "keep.all.comparisons") <- keep.all.comparisons
   attr(res, "type") <- type
   attr(res, "version") <- packageDescription("netmeta")$Version
+  #
+  if (is.null(attr(res, "sm")))
+    attr(res, "sm") <- if ("sm" %in% nam.args) args$sm else ""
   
   class(res) <- unique(c("pairwise", class(res)))
   

@@ -14,6 +14,8 @@ pairwise(
   TE,
   seTE,
   time,
+  agent,
+  dose,
   data = NULL,
   studlab,
   incr = gs("incr"),
@@ -22,6 +24,7 @@ pairwise(
   allstudies = gs("allstudies"),
   reference.group,
   keep.all.comparisons,
+  sep.ag = "*",
   append = !is.null(data),
   warn = FALSE,
   ...
@@ -52,6 +55,12 @@ treatment effect for individual treatment arms (see Details).}
 \item{time}{A list or vector with information on person time at
 risk for individual treatment arms (see Details).}
 
+\item{agent}{A list or vector with agent information for
+individual treatment arms (see Details).}
+
+\item{dose}{A list or vector with dose information for
+individual treatment arms (see Details).}
+
 \item{data}{An optional data frame containing the study
 information.}
 
@@ -79,6 +88,9 @@ if argument is missing).}
 \item{keep.all.comparisons}{A logical indicating whether all
 pairwise comparisons or only comparisons with the study-specific
 reference group should be kept ('basic parameters').}
+
+\item{sep.ag}{A character used as separator
+between agent in dose to create treatment labels.}
 
 \item{append}{A logical indicating whether variables from the dataset
 provided in argument \code{data} are appended to the dataset with
@@ -127,6 +139,10 @@ A data frame with the following columns:
   metainc).}
 \item{time2}{Person time at risk for second treatment arm (for
   metainc).}
+\item{agent1}{First agent in comparison.}
+\item{agent2}{Second agent in comparison.}
+\item{dose1}{Dose of first agent in comparison.}
+\item{dose2}{Dose of second agent in comparison.}
 
 All variables from the original dataset are also part of the output
 dataset; see Details.
@@ -184,7 +200,7 @@ following arguments are mandatory:
 }
 
 Argument \code{treat} is mandatory to identify the individual
-treatments.  The other arguments contain outcome specific
+treatments. The other arguments contain outcome specific
 data. These arguments must be either lists (wide arm-based format,
 i.e., one row per study) or vectors (long arm-based format,
 i.e., multiple rows per study) of the same length.

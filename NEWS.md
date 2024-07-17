@@ -1,6 +1,13 @@
-## netmeta, version 2.9-1 (2024-mm-dd)
+## netmeta, version 2.10-0 (2024-mm-dd)
+
+### Major changes
+
+* R function pairwise() can be used with dose-response data
 
 ### User-visible changes
+
+* pairwise():
+  - new arguments 'agent' and 'dose' to provide information for dose-response data
 
 * discomb():
   - new arguments 'n1', 'n2', 'event1', 'event2', 'na.unident', 'keepdata'

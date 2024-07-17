@@ -106,11 +106,9 @@ netmatrix <- function(x, var, levels, labels = levels,
                    ties.method = ties.method,
                    sep = x$sep.trts, long = FALSE)
   ##
-  selfirst <- function(x) x[1]
-  selsecond <- function(x) x[2]
   split <- strsplit(dat$indices, x$sep.trts)
-  dat$idx1 <- unlist(lapply(split, selfirst))
-  dat$idx2 <- unlist(lapply(split, selsecond))
+  dat$idx1 <- unlist(lapply(split, first))
+  dat$idx2 <- unlist(lapply(split, second))
   ##
   dat <- dat[, c("idx1", "idx2", func)]
   ##

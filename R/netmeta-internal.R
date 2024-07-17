@@ -106,3 +106,6 @@ setsv <- function(x) {
   ##
   setchar(res, c("desirable", "undesirable"))
 }
+
+first <- function(x) x[1]
+second <- function(x) x[2]
