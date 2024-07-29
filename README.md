@@ -1,9 +1,11 @@
 # netmeta: Network Meta-Analysis using Frequentist Methods
 Official Git repository of R package **netmeta**
 
-[![CRAN Version](http://www.r-pkg.org/badges/version/netmeta)](https://cran.r-project.org/package=netmeta)
-[![Monthly Downloads](http://cranlogs.r-pkg.org/badges/netmeta)](http://cranlogs.r-pkg.org/badges/netmeta)
-[![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)
+[![License: GPL (>=2)](https://img.shields.io/badge/license-GPL-blue)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+[![CRAN Version](https://www.r-pkg.org/badges/version/netmeta)](https://cran.r-project.org/package=netmeta)
+[![GitHub develop](https://img.shields.io/badge/develop-2.10--0-purple)](https://img.shields.io/badge/develop-2.10--0-purple)
+[![Monthly Downloads](https://cranlogs.r-pkg.org/badges/netmeta)](https://cranlogs.r-pkg.org/badges/netmeta)
+[![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/netmeta)](https://cranlogs.r-pkg.org/badges/grand-total/netmeta)
 
 
 ## Authors
@@ -94,7 +96,8 @@ R package **netmeta** ([Balduzzi et al., 2023](https://www.doi.org/10.18637/jss.
 install.packages("netmeta")
 ```
 
-### Current development version on GitHub:
+### Current [![GitHub develop](https://img.shields.io/badge/develop-2.10--0-purple)](https://img.shields.io/badge/develop-2.10--0-pu
+rple) release on GitHub:
 
 Installation using R package
 [**remotes**](https://cran.r-project.org/package=remotes):
