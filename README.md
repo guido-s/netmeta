@@ -96,8 +96,7 @@ R package **netmeta** ([Balduzzi et al., 2023](https://www.doi.org/10.18637/jss.
 install.packages("netmeta")
 ```
 
-### Current [![GitHub develop](https://img.shields.io/badge/develop-2.10--0-purple)](https://img.shields.io/badge/develop-2.10--0-pu
-rple) release on GitHub:
+### Current [![GitHub develop](https://img.shields.io/badge/develop-2.10--0-purple)](https://img.shields.io/badge/develop-2.10--0-purple) release on GitHub:
 
 Installation using R package
 [**remotes**](https://cran.r-project.org/package=remotes):
