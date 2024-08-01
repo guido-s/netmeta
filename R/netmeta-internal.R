@@ -11,9 +11,6 @@
 }
 
 
-.special.characters <- c("+", ".", "&", "$", "#", "|", "*", "^")
-
-
 calcV <- function(x, sm) {
   p2 <- (x$event2[1] + x$incr[1]) / (x$n2[1] + 2 * x$incr[1])
   n2 <- x$n2[1] + 2 * x$incr[1]

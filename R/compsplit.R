@@ -1,6 +1,6 @@
 compsplit <- function(x, split) {
   
-  if (split %in% .special.characters)
+  if (split %in% gs("special.characters"))
     split <- paste0("\\", split)
 
   res <- strsplit(x, split)

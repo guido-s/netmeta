@@ -228,7 +228,7 @@
 #'
 #' @keywords package
 #' 
-#' @importFrom meta baujat forest funnel radial trimfill longarm
+#' @importFrom meta baujat forest funnel radial trimfill pairwise longarm
 #'   metabias metabin metacont metagen metainc metacum metainf metareg
 #'   gs ci cilayout
 #'
