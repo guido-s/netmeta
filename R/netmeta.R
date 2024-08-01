@@ -664,7 +664,11 @@ netmeta <- function(TE, seTE,
            "'keep.all.comparisons = FALSE'.",
            call. = TRUE)
     #
-    seTE <- TE$seTE
+    if (is.null(attr(TE, "varnames")))
+      seTE <- TE$seTE
+    else
+      seTE <- TE[[attr(TE, "varnames")[2]]]
+    #
     treat1 <- TE$treat1
     treat2 <- TE$treat2
     studlab <- TE$studlab
@@ -695,7 +699,10 @@ netmeta <- function(TE, seTE,
     pairdata <- TE
     data <- TE
     #
-    TE <- TE$TE
+    if (is.null(attr(TE, "varnames")))
+      TE <- TE$TE
+    else
+      TE <- TE[[attr(TE, "varnames")[1]]]
   }
   else {
     is.pairwise <- FALSE

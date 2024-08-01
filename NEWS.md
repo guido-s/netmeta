@@ -14,6 +14,9 @@
 
 * New function summary.netconnection() to print list of studies in subnetworks
 
+* Do not print the start-up message concerning older version of R package
+  **netmeta** for readers of 'Meta-Analysis with R (Use R!)'
+
 ### Bug fixes
 
 * netcomplex():

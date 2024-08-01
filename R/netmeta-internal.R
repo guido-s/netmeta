@@ -3,10 +3,7 @@
     paste0("Loading 'netmeta' package (version ",
            packageDescription("netmeta")$Version,
            ").",
-           "\nType 'help(\"netmeta-package\")' for a brief overview.",
-           "\nReaders of 'Meta-Analysis with R (Use R!)' should install",
-           "\nolder version of 'netmeta' package: ",
-           "https://tinyurl.com/kyz6wjbb")
+           "\nType 'help(\"netmeta-package\")' for a brief overview.")
   packageStartupMessage(msg)
 }
 
