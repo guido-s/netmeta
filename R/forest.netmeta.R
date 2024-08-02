@@ -53,7 +53,7 @@
 #'   print in forest plot (see Details).
 #' @param drop.reference.group A logical indicating whether the
 #'   reference group should be printed in the forest plot.
-#' @param col.by The colour to print information on subgroups.
+#' @param col.subgroup The colour to print information on subgroups.
 #' @param print.subgroup.name A logical indicating whether the name of
 #'   the grouping variable should be printed in front of the group
 #'   labels.
@@ -214,7 +214,7 @@ forest.netmeta <- function(x,
                            add.data,
                            drop.reference.group = FALSE,
                            ##
-                           col.by = "black",
+                           col.subgroup = "black",
                            print.subgroup.name = FALSE,
                            ##
                            ...) {
@@ -644,7 +644,7 @@ forest.netmeta <- function(x,
          smlab = smlab,
          lab.NA = lab.NA,
          ##
-         col.by = col.by,
+         col.subgroup = col.subgroup,
          print.subgroup.name = print.subgroup.name,
          ##
          weight.study = if (equal.size) "same" else pooled,

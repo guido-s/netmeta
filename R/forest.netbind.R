@@ -83,7 +83,7 @@
 #'   col.study = c("red", "black"),
 #'   col.square = c("red", "black"))
 #' forest(nb1,
-#'   col.by = "black", addrow.subgroups = FALSE,
+#'   col.subgroup = "black", addrow.subgroups = FALSE,
 #'   fontsize = 10, spacing = 0.7, squaresize = 0.9,
 #'   label.left = "Favours Placebo",
 #'   label.right = "Favours other")

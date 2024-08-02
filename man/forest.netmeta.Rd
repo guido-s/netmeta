@@ -26,7 +26,7 @@
   lab.NA = ".",
   add.data,
   drop.reference.group = FALSE,
-  col.by = "black",
+  col.subgroup = "black",
   print.subgroup.name = FALSE,
   ...
 )
@@ -101,7 +101,7 @@ print in forest plot (see Details).}
 \item{drop.reference.group}{A logical indicating whether the
 reference group should be printed in the forest plot.}
 
-\item{col.by}{The colour to print information on subgroups.}
+\item{col.subgroup}{The colour to print information on subgroups.}
 
 \item{print.subgroup.name}{A logical indicating whether the name of
 the grouping variable should be printed in front of the group

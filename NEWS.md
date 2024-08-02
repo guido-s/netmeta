@@ -12,6 +12,9 @@
 * discomb():
   - new arguments 'n1', 'n2', 'event1', 'event2', 'na.unident', 'keepdata'
 
+* forest.netmeta():
+  - new argument 'col.subgroup' replaces argument 'col.by'
+
 * New function summary.netconnection() to print list of studies in subnetworks
 
 * Do not print the start-up message concerning older version of R package
