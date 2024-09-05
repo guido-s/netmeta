@@ -7,7 +7,21 @@
 
 * R function pairwise() can be used with dose-response data
 
+* R function netmeta() does not automatically return the R object created
+    with rma.mv() from **metafor** to calculate the between-study variance
+    for the REML or ML estimator of the between-study variance
+    (argument 'keeprma = FALSE')
+
 ### User-visible changes
+
+* netmeta():
+  - new argument 'keeprma' to return the R object created with rma.mv()
+    from **metafor** to calculate the between-study variance for the REML or
+    ML method
+  - only list element 'rma.tau' with the rma.mv() object is returned if
+    argument 'keeprma = TRUE' (instead of elements '.metafor', '.dat.tau',
+    '.V', '.formula.trts', 'version.metafor'); 'rma.tau' replaces '.metafor',
+    all other information is part of the R object created with rma.mv()
 
 * discomb():
   - new arguments 'n1', 'n2', 'event1', 'event2', 'na.unident', 'keepdata'
@@ -40,6 +54,11 @@
 ### Internal changes
 
 * Use backtransf() from R package **meta** to backtransform results
+
+#' \item{.dat.tau}{Data set used to calculate between-study variance.}
+#' \item{.V}{Covariance matrix.}
+#' \item{.formula.trts}{Formula object.}
+#' \item{version.metafor}{Version of R package \bold{metafor}.}
 
 
 ## netmeta, version 2.9-0 (2024-01-11)

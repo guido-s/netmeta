@@ -110,8 +110,6 @@
 #' The development version of \bold{netmeta} is available on GitHub
 #' \url{https://github.com/guido-s/netmeta}.
 #'
-#' _PACKAGE
-#' 
 #' @name netmeta-package
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Gerta
@@ -228,7 +226,7 @@
 #'
 #' @keywords package
 #' 
-#' @importFrom meta baujat forest funnel radial trimfill pairwise longarm
+#' @importFrom meta baujat forest funnel radial trimfill longarm
 #'   metabias metabin metacont metagen metainc metacum metainf metareg
 #'   gs ci cilayout
 #'
@@ -255,5 +253,6 @@
 #'
 #' @importFrom metafor bldiag contrmat rma.mv
 
+"_PACKAGE"
 
 NULL

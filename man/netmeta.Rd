@@ -47,6 +47,7 @@ netmeta(
   backtransf = gs("backtransf"),
   title = "",
   keepdata = gs("keepdata"),
+  keeprma = FALSE,
   control = NULL,
   warn = TRUE,
   warn.deprecated = gs("warn.deprecated"),
@@ -211,6 +212,9 @@ example.}
 
 \item{keepdata}{A logical indicating whether original data(set)
 should be kept in netmeta object.}
+
+\item{keeprma}{A logical indicating whether \code{\link[metafor]{rma.mv}}
+object should be stored.}
 
 \item{control}{An optional list to control the iterative process to
 estimate the between-study variance \eqn{\tau^2}. This argument
@@ -450,6 +454,11 @@ object is a list containing the following components:
 \item{backtransf, title, warn, warn.deprecated}{As defined above.}
 \item{call}{Function call.}
 \item{version}{Version of R package netmeta used to create object.}
+
+In addition, the following component is stored if \bold{metafor} is
+used to calculate the between-study variance and argument
+\code{keeprma = TRUE}:
+\item{rma.tau}{R object created with \code{\link[metafor]{rma.mv}}.}
 }
 \description{
 Network meta-analysis is a generalisation of pairwise meta-analysis

@@ -97,6 +97,8 @@
 #' @param title Title of meta-analysis / systematic review.
 #' @param keepdata A logical indicating whether original data(set)
 #'   should be kept in netmeta object.
+#' @param keeprma A logical indicating whether \code{\link[metafor]{rma.mv}}
+#'   object should be stored.
 #' @param control An optional list to control the iterative process to
 #'   estimate the between-study variance \eqn{\tau^2}. This argument
 #'   is passed on to \code{\link[metafor]{rma.mv}}.
@@ -417,6 +419,11 @@
 #' \item{backtransf, title, warn, warn.deprecated}{As defined above.}
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create object.}
+#'
+#' In addition, the following component is stored if \bold{metafor} is
+#' used to calculate the between-study variance and argument
+#' \code{keeprma = TRUE}:
+#' \item{rma.tau}{R object created with \code{\link[metafor]{rma.mv}}.}
 #' 
 #' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
@@ -553,6 +560,7 @@ netmeta <- function(TE, seTE,
                     #
                     title = "",
                     keepdata = gs("keepdata"),
+                    keeprma = FALSE,
                     control = NULL,
                     #
                     warn = TRUE, warn.deprecated = gs("warn.deprecated"),
@@ -597,6 +605,7 @@ netmeta <- function(TE, seTE,
   #
   chkchar(title)
   chklogical(keepdata)
+  chklogical(keeprma)
   chklogical(warn)
   #
   chklogical(baseline.reference)
@@ -1818,13 +1827,8 @@ netmeta <- function(TE, seTE,
   #
   # Add results from rma.mv()
   #
-  if (method.tau %in% c("ML", "REML")) {
-    res$.metafor <- rma1
-    res$.dat.tau <- dat.tau
-    res$.V <- V
-    res$.formula.trts <- formula.trts
-    res$version.metafor <- packageDescription("metafor")$Version
-  }
+  if (keeprma & method.tau %in% c("ML", "REML"))
+    res$rma.tau <- rma1
   
   #
   # Drop list element 'correlated' if no correlated outcomes are considered 
