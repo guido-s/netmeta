@@ -102,7 +102,7 @@ Installation using R package
 [**remotes**](https://cran.r-project.org/package=remotes):
 ```r
 install.packages("remotes")
-remotes::install_github("guido-s/netmeta", ref = "develop")
+remotes::install_github("guido-s/netmeta")
 ```
 
 
