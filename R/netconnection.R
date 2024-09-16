@@ -15,7 +15,8 @@
 #' the additive network meta-analysis model might be possible, see
 #' \link{discomb} function.
 #' 
-#' @aliases netconnection netconnection.default print.netconnection
+#' @aliases netconnection netconnection.default netconnection.pairwise
+#'   print.netconnection
 #' 
 #' @param data A data frame, e.g., created with
 #'   \code{\link{pairwise}}.
@@ -115,7 +116,7 @@
 #' 
 #' net2.1
 #' net2.2
-#' }  
+#' }
 #' 
 #' @rdname netconnection
 #' @method netconnection default
@@ -317,76 +318,96 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
   ##
   D2 <- D
   D2[is.infinite(D2)] <- maxdist
-  order.D <- hclust(dist(D2))$order
+  o <- hclust(dist(D2))$order
   ##
-  D <- D[order.D, order.D]
-  A <- A[order.D, order.D]
-  L <- L[order.D, order.D]
+  D <- D[o, o]
+  A <- A[o, o]
+  L <- L[o, o]
   ##
-  A.i <- A
-  D.i <- D
+  A.loop <- A
+  D.loop <- D
   id.treats <- character(0)
   id.subnets <- numeric(0)
   more.subnets <- TRUE
   subnet.i <- 0
-  res.i <- data.frame(subnet = numeric(0), comparison = character(0))
+  dat.subnet <- data.frame()
   ##
   while (more.subnets) {
     subnet.i <- subnet.i + 1
-    n.i <- seq_len(nrow(D.i))
-    next.subnet <- min(max(n.i) + 1, n.i[is.infinite(D.i[, 1])])
+    n.i <- seq_len(nrow(D.loop))
+    #
+    next.subnet <- min(max(n.i) + 1, n.i[is.infinite(D.loop[, 1])])
     sel.i <- seq_len(next.subnet - 1)
-    id.treats <- c(id.treats, rownames(D.i)[sel.i])
+    #
+    id.treats <- c(id.treats, rownames(D.loop)[sel.i])
     id.subnets <- c(id.subnets, rep(subnet.i, length(sel.i)))
-    D.i <- D.i[-seq_len(next.subnet - 1), -seq_len(next.subnet - 1)]
-    more.subnets <- nrow(D.i) > 0
     ##
-    A.subnet <- A.i[seq_len(next.subnet - 1), seq_len(next.subnet - 1)]
-    A.subnet <-
-      A.subnet[order(rownames(A.subnet)), order(colnames(A.subnet))]
+    A.i <- A.loop[sel.i, sel.i]
+    A.i <- A.i[order(rownames(A.i)), order(colnames(A.i))]
     ##
-    for (row.i in 1:(ncol(A.subnet) -1)) {
-      for (col.i in 2:ncol(A.subnet)) {
-        if (col.i > row.i)
-          if (A.subnet[row.i, col.i] > 0) {
-            comp.i <- paste(rownames(A.subnet)[row.i],
-                            colnames(A.subnet)[col.i],
-                            sep = sep.trts)
-            res.i <- rbind(res.i,
-                           data.frame(subnet = subnet.i,
-                                      comparison = comp.i))
+    for (row.i in 1:(ncol(A.i) - 1)) {
+      for (col.i in 2:ncol(A.i)) {
+        if (col.i > row.i) {
+          if (A.i[row.i, col.i] > 0) {
+            trt1.i <- rownames(A.i)[row.i]
+            trt2.i <- rownames(A.i)[col.i]
+            #
+            dat.subnet <-
+              rbind(
+                dat.subnet,
+                data.frame(subnet = subnet.i,
+                           comparison = paste(trt1.i, trt2.i, sep = sep.trts),
+                           treat1 = trt1.i, treat2 = trt2.i))
           }
+        }
       }
     }
-    ##
-    A.i <- A.i[-seq_len(next.subnet - 1), -seq_len(next.subnet - 1)]
+    #
+    A.loop <- A.loop[-sel.i, -sel.i]
+    D.loop <- D.loop[-sel.i, -sel.i]
+    #
+    more.subnets <- nrow(D.loop) > 0
   }
-  ##
+  #
+  # Order matrices within subnets by treatments
+  # (data frame 'dat.subnet' is already sorted by subnetwork and treatments)
+  #
+  seq <- NULL
+  for (i in unique(dat.subnet$subnet)) {
+    dat.i <- dat.subnet[dat.subnet$subnet == i, ]
+    seq <- c(seq, unique(c(dat.i$treat1, dat.i$treat2)))
+  }
+  #
+  A <- A[seq, seq]
+  D <- D[seq, seq]
+  L <- L[seq, seq]
+  #
+  # Add subnetwork number to comparisons
+  #
   subnet <- rep(NA, length(treat1))
-  ##
+  #
   for (i in seq_along(id.treats))
     subnet[treat1 == id.treats[i]] <- id.subnets[i]
   ##
-  comparisons <- res.i$comparison
-  subnet.comparisons <- res.i$subnet
-  
-  
+  comparisons <- dat.subnet$comparison
+  subnet.comparisons <- dat.subnet$subnet
+  #
   designs <- designs(treat1, treat2, studlab)
-  
   
   res <- list(treat1 = treat1,
               treat2 = treat2,
               studlab = studlab,
-              ##
               design = designs$design,
               subnet = subnet,
-              ##
+              #
               k = length(unique(studlab)),
               m = m,
               n = n,
               n.subnets = n.subsets,
               d = length(unique(designs$design)),
-              ##
+              #
+              seq = seq,
+              #
               D.matrix = D,
               A.matrix = A,
               L.matrix = L,
@@ -429,253 +450,143 @@ netconnection.pairwise <- function(data,
                                    warn = FALSE,
                                    ...) {
   
-  ##
-  ##
-  ## (1) Check arguments
-  ##
-  ##
+  #
+  #
+  # (1) Check arguments
+  #
+  #
   
   chkclass(data, "pairwise")
-  ##
+  #
   chklogical(warn)
-  ##
-  ## Arguments 'treat1', 'treat2' and 'studlab' ignored
-  ##
+  #
+  # Arguments 'treat1', 'treat2' and 'studlab' ignored
+  #
   if (warn) {
     if (!missing(treat1))
       warning("Argument 'treat1' ignored as argument 'data' is an ",
               "object created with pairwise().",
               call. = FALSE)
-    ##
+    #
     if (!missing(treat2))
       warning("Argument 'treat2' ignored as argument 'data' is an ",
               "object created with pairwise().",
               call. = FALSE)
-    ##
+    #
     if (!missing(studlab))
       warning("Argument 'studlab' ignored as argument 'data' is an ",
               "object created with pairwise().",
               call. = FALSE)
   }
-  ##
+  #
   treat1 <- data$treat1
   treat2 <- data$treat2
   studlab <- data$studlab
-  ##
+  #
   if (is.factor(treat1))
     treat1 <- as.character(treat1)
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
-  ##
+  #
   missing.subset <- missing(subset)
   if (!missing.subset) {
     sfsp <- sys.frame(sys.parent())
     mc <- match.call()
     subset <- catch("subset", mc, data, sfsp)
-    ##
+    #
     k.All <- length(treat1)
-    ##
+    #
     if ((is.logical(subset) & (sum(subset) > k.All)) ||
         (length(subset) > k.All))
       stop("Length of subset is larger than number of studies.")
-    ##
+    #
     treat1 <- treat1[subset]
     treat2 <- treat2[subset]
     studlab <- studlab[subset]
   }
-  ##
+  #
   chknumeric(nchar.trts, min = 1, length = 1)
-  ##
+  #
   chklogical(details.disconnected)
   
   
-  ##
-  ##
-  ## (2) Additional checks
-  ##
-  ##
+  #
+  #
+  # (2) Call netconnection.default()
+  #
+  #
   
-  if (any(treat1 == treat2))
-    stop("Treatments must be different (arguments 'treat1' and 'treat2').")
-  ##
-  ## Check for correct number of comparisons
-  ##
-  tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
-  ##
-  if (sum(sel.narms) == 1)
-    stop("Study '", names(tabnarms)[sel.narms],
-         "' has a wrong number of comparisons.",
-         "\n  Please provide data for all treatment comparisons ",
-         "(two-arm: 1; three-arm: 3; four-arm: 6, ...).")
-  if (sum(sel.narms) > 1)
-    stop("The following studies have a wrong number of comparisons: ",
-         paste(paste0("'", names(tabnarms)[sel.narms], "'"),
-               collapse = ", "),
-         "\n  Please provide data for all treatment comparisons ",
-         "(two-arm: 1; three-arm: 3; four-arm: 6, ...).")
-  ##
-  labels <- sort(unique(c(treat1, treat2)))
-  ##
-  if (compmatch(labels, sep.trts)) {
-    if (!missing(sep.trts))
-      warning("Separator '", sep.trts,
-              "' used in at least one treatment label. ",
-              "Try to use predefined separators: ",
-              "':', '-', '_', '/', '+', '.', '|', '*'.",
-              call. = FALSE)
-    ##
-    if (!compmatch(labels, ":"))
-      sep.trts <- ":"
-    else if (!compmatch(labels, "-"))
-      sep.trts <- "-"
-    else if (!compmatch(labels, "_"))
-      sep.trts <- "_"
-    else if (!compmatch(labels, "/"))
-      sep.trts <- "/"
-    else if (!compmatch(labels, "+"))
-      sep.trts <- "+"
-    else if (!compmatch(labels, "."))
-      sep.trts <- "-"
-    else if (!compmatch(labels, "|"))
-      sep.trts <- "|"
-    else if (!compmatch(labels, "*"))
-      sep.trts <- "*"
-    else
-      stop("All predefined separators (':', '-', '_', '/', '+', ",
-           "'.', '|', '*') are used in at least one treatment label.",
-           "\n   Please specify a different character that should be ",
-           "used as separator (argument 'sep.trts').",
-           call. = FALSE)
-  }
-  
-  
-  ##
-  ##
-  ## (3) Determine (sub)network(s)
-  ##
-  ##
-  
-  treats <- as.factor(c(as.character(treat1), as.character(treat2)))
-  trts <- levels(treats)
-  ##
-  n <- length(trts)   # Number of treatments
-  m <- length(treat1) # Number of comparisons
-  ##
-  ## Edge-vertex incidence matrix
-  ##
-  treat1.pos <- treats[1:m]
-  treat2.pos <- treats[(m + 1):(2 * m)]
-  B <- createB(treat1.pos, treat2.pos, ncol = n)
-  ##
-  rownames(B) <- studlab
-  colnames(B) <- trts
-  ##
-  L.mult <- t(B) %*% B             # Laplacian matrix with multiplicity
-  A <- diag(diag(L.mult)) - L.mult # Adjacency matrix
-  D <- netdistance(A)              # Distance matrix
-  L <- diag(rowSums(A)) - A        # Laplacian matrix without multiplicity
-  ##
-  n.subsets <- as.integer(table(round(eigen(L)$values, 10) == 0)[2])
-  ##
-  ## Block diagonal matrix in case of sub-networks
-  ##
-  maxdist <- dim(D)[1]
-  ##
-  D2 <- D
-  D2[is.infinite(D2)] <- maxdist
-  order.D <- hclust(dist(D2))$order
-  ##
-  D <- D[order.D, order.D]
-  A <- A[order.D, order.D]
-  L <- L[order.D, order.D]
-  ##
-  A.i <- A
-  D.i <- D
-  id.treats <- character(0)
-  id.subnets <- numeric(0)
-  more.subnets <- TRUE
-  subnet.i <- 0
-  res.i <- data.frame(subnet = numeric(0), comparison = character(0))
-  ##
-  while (more.subnets) {
-    subnet.i <- subnet.i + 1
-    n.i <- seq_len(nrow(D.i))
-    next.subnet <- min(max(n.i) + 1, n.i[is.infinite(D.i[, 1])])
-    sel.i <- seq_len(next.subnet - 1)
-    id.treats <- c(id.treats, rownames(D.i)[sel.i])
-    id.subnets <- c(id.subnets, rep(subnet.i, length(sel.i)))
-    D.i <- D.i[-seq_len(next.subnet - 1), -seq_len(next.subnet - 1)]
-    more.subnets <- nrow(D.i) > 0
-    ##
-    A.subnet <- A.i[seq_len(next.subnet - 1), seq_len(next.subnet - 1)]
-    A.subnet <-
-      A.subnet[order(rownames(A.subnet)), order(colnames(A.subnet))]
-    ##
-    for (row.i in 1:(ncol(A.subnet) -1)) {
-      for (col.i in 2:ncol(A.subnet)) {
-        if (col.i > row.i)
-          if (A.subnet[row.i, col.i] > 0) {
-            comp.i <- paste(rownames(A.subnet)[row.i],
-                            colnames(A.subnet)[col.i],
-                            sep = sep.trts)
-            res.i <- rbind(res.i,
-                           data.frame(subnet = subnet.i,
-                                      comparison = comp.i))
-          }
-      }
-    }
-    ##
-    A.i <- A.i[-seq_len(next.subnet - 1), -seq_len(next.subnet - 1)]
-  }
-  ##
-  subnet <- rep(NA, length(treat1))
-  ##
-  for (i in seq_along(id.treats))
-    subnet[treat1 == id.treats[i]] <- id.subnets[i]
-  ##
-  comparisons <- res.i$comparison
-  subnet.comparisons <- res.i$subnet
-  
-  
-  designs <- designs(treat1, treat2, studlab)
-  
-  
-  res <- list(treat1 = treat1,
-              treat2 = treat2,
-              studlab = studlab,
-              ##
-              design = designs$design,
-              subnet = subnet,
-              ##
-              k = length(unique(studlab)),
-              m = m,
-              n = n,
-              n.subnets = n.subsets,
-              d = length(unique(designs$design)),
-              ##
-              D.matrix = D,
-              A.matrix = A,
-              L.matrix = L,
-              ##
-              designs = unique(sort(designs$design)),
-              comparisons = comparisons,
-              subnet.comparisons = subnet.comparisons,
-              ##
-              nchar.trts = nchar.trts,
-              ##
-              title = title,
-              ##
-              details.disconnected = details.disconnected,
-              ##
-              warn = warn,
-              call = match.call(),
-              version = packageDescription("netmeta")$Version
-              )
-
-  class(res) <- "netconnection"
-
+  res <- netconnection(treat1 = treat1, treat2 = treat2,
+                       studlab = studlab,
+                       sep.trts = sep.trts, nchar.trts = nchar.trts,
+                       title = title,
+                       details.disconnected = details.disconnected,
+                       warn = warn,
+                       ...)
+  #
   res
+}
+
+
+
+
+
+#' @rdname netconnection
+#' @method netconnection netmeta
+#' @export
+
+netconnection.netmeta <- function(data,
+                                  sep.trts = data$sep.trts,
+                                  nchar.trts = data$nchar.trts,
+                                  title = data$title,
+                                  details.disconnected = FALSE,
+                                  warn = FALSE, ...) {
+  
+  chkclass(data, "netmeta")
+    
+  res <- netconnection(treat1 = data$treat1, treat2 = data$treat2,
+                       studlab = data$studlab,
+                       sep.trts = sep.trts, nchar.trts = nchar.trts,
+                       title = title)
+  #
+  res
+}
+
+
+
+
+
+#' @rdname netconnection
+#' @method netconnection netcomb
+#' @export
+
+netconnection.netcomb <- function(data,
+                                  sep.trts = data$sep.trts,
+                                  nchar.trts,
+                                  title = data$title,
+                                  details.disconnected = FALSE,
+                                  warn = FALSE, ...) {
+  
+  chkclass(data, "netcomb")
+  
+  if (inherits(data, "discomb")) {
+    if (missing(nchar.trts))
+      nchar.trts <- data$nchar.comps
+    #
+    return(netconnection(treat1 = data$treat1, treat2 = data$treat2,
+                         studlab = data$studlab,
+                         sep.trts = sep.trts, nchar.trts = nchar.trts,
+                         title = title))
+  }
+  else {
+    if (missing(nchar.trts))
+      nchar.trts <- data$nchar.trts
+    #
+    return(netconnection(treat1 = data$treat1, treat2 = data$treat2,
+                         studlab = data$studlab,
+                         sep.trts = sep.trts, nchar.trts = nchar.trts,
+                         title = title))
+  }
 }
 
 
@@ -774,7 +685,6 @@ print.netconnection <- function(x,
                rowlab = rep("", length(abbr)))
     }
   }
-  
   
   invisible(NULL)
 }

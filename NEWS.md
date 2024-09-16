@@ -31,6 +31,8 @@
 
 * New function summary.netconnection() to print list of studies in subnetworks
 
+* New function print.netdistance() to print distance matrix
+
 * Do not print the start-up message concerning older version of R package
   **netmeta** for readers of 'Meta-Analysis with R (Use R!)'
 
@@ -43,6 +45,9 @@
   - NA was calculated for comparisons containing inestimable components which
     canceled out, e.g., A + Z vs B + Z with inestimable Z
 
+* discomb():
+  - set study labels if argument 'studlab' is missing
+
 * print.netcomparison():
   - do not print information on abbreviated component label for inactive
     component if it isn't part of the comparison
@@ -53,12 +58,15 @@
 
 ### Internal changes
 
-* Use backtransf() from R package **meta** to backtransform results
+* New generic function netdistance() to calculate distance matrix
 
-#' \item{.dat.tau}{Data set used to calculate between-study variance.}
-#' \item{.V}{Covariance matrix.}
-#' \item{.formula.trts}{Formula object.}
-#' \item{version.metafor}{Version of R package \bold{metafor}.}
+* New functions netdistance.netmeta(), netdistance.netcomb(),
+  netdistance.netconnection(), netdistance.pairwise(), and netdistance.default()
+
+* New functions netconnection.netmeta(), netconnection.netcomb(),
+  netconnection.pairwise(), and netconnection.default()
+
+* Use backtransf() from R package **meta** to back-transform results
 
 
 ## netmeta, version 2.9-0 (2024-01-11)
@@ -1794,7 +1802,7 @@
 * Consider ordering of treatments in netrank() which is defined by
   argument seq in netmeta()
 
-* For multi-arm studoes, calculate pooled standard deviation in
+* For multi-arm studies, calculate pooled standard deviation in
   pairwise() if means and standard deviations are provided and
   summary measure is equal to "SMD"
 
@@ -2028,9 +2036,8 @@
 * Function netmeta:
   - implement a general check for correct number of comparisons for
     multi-arm studies
-  - use setseq function to check and set value of argument 'seq'
-  - use setref function to check and set value of argument
-    'reference.group'
+  - use setseq() to check and set value of argument 'seq'
+  - use setref() to check and set value of argument 'reference.group'
   - use chklevel function from R package **meta** to check levels of
     confidence intervals
   - consider attribute 'sm' from R objects generated with R function

@@ -4,9 +4,15 @@
 #' Calculate distance matrix for an adjacency matrix based on distance
 #' algorithm by Müller et al. (1987).
 #' 
-#' @param x Either a netmeta object or an adjacency matrix.
+#' @aliases netdistance netdistance.default netdistance.netmeta
+#'   netdistance.netcomb print.netdistance
+#' 
+#' @param x Either a netmeta or netcomb object or an adjacency matrix.
+#' @param lab.Inf A character string to label infinite values.
+#' @param \dots Additional arguments (ignored).
 #'
 #' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
+#'   Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netconnection}}
 #' 
@@ -36,32 +42,25 @@
 #' netdistance(net1$A.matrix)
 #' }
 #' 
-#' @export netdistance
+#' @rdname netdistance
+#' @method netdistance default
+#' @export
 
-
-netdistance <- function(x) {
+netdistance.default <- function(x) {
   
-  ## Calculate distance matrix D of adjacency matrix A based on
-  ## distance algorithm by Mueller et al. (1987) using triangle
-  ## inequality
+  # Calculate distance matrix D of adjacency matrix A based on
+  # distance algorithm by Mueller et al. (1987) using triangle
+  # inequality
   
-  if (inherits(x, c("netmeta", "discomb")))
-    A <- x$A.matrix
-  else
-    A <- x
+  chkclass(x, "matrix")
+  #
+  A <- x
   
-  
-  ## Check whether A is a matrix
-  ##
-  if (!is.matrix(A))
-    stop("Argument 'x' must be a netmeta object or a matrix.")
-  
-  
-  ## Starting value for D is sign(A), with 0 replaced by Inf
-  ##
+  # Starting value for D is sign(A), with 0 replaced by Inf
+  #
   n <- dim(A)[1] 
   D <- sign(A)
-  ##
+  #
   for (i in 1:(n - 1)) {
     for (j in (i + 1):n) {
       if (D[i, j] == 0) {
@@ -70,7 +69,7 @@ netdistance <- function(x) {
       }
     }
   }
-  ##
+  #
   for (d in 1:(n - 1)) {
     for (i in 1:n) {
       for (j in 1:n) {
@@ -82,7 +81,94 @@ netdistance <- function(x) {
         }
       }
     }
-  }  
+  }
   
+  class(D) <- c("netdistance", class(D))
   D
 }
+
+
+
+
+
+#' @rdname netdistance
+#' @method netdistance netmeta
+#' @export
+
+netdistance.netmeta <- function(x) {
+  
+  chkclass(x, "netmeta")
+
+  A <- x$A.matrix
+  seq <- netconnection(x$treat1, x$treat2)$seq
+  A <- A[seq, seq]
+  
+  netdistance(A)
+}
+
+
+
+
+
+#' @rdname netdistance
+#' @method netdistance netcomb
+#' @export
+
+netdistance.netcomb <- function(x) {
+  
+  chkclass(x, "netcomb")
+  
+  if (inherits(x, "discomb")) {
+    A <- x$A.matrix
+    seq <- netconnection(x$treat1, x$treat2)$seq
+  }
+  else {
+    A <- x$x$A.matrix
+    seq <- netconnection(x$x$treat1, x$x$treat2)$seq
+  }
+  #
+  A <- A[seq, seq]
+  
+  netdistance(A)
+}
+
+
+
+
+
+#' @rdname netdistance
+#' @method netdistance netconnection
+#' @export
+
+netdistance.netconnection <- function(x) {
+  
+  chkclass(x, "netconnection")
+    
+  netdistance(x$A.matrix)
+}
+
+
+
+
+
+#' @rdname netdistance
+#' @method print netdistance
+#' @export
+
+print.netdistance <- function(x, lab.Inf = ".", ...) {
+  x[is.infinite(x)] <- lab.Inf
+  prmatrix(x, quote = FALSE, right = TRUE)
+  #
+  invisible(NULL)
+}
+
+
+
+
+
+#' @rdname netdistance
+#' @export
+
+
+netdistance <- function(x)
+  UseMethod("netdistance")

@@ -571,6 +571,15 @@ discomb <- function(TE, seTE,
     #
     studlab <- catch("studlab", mc, data, sfsp)
     #
+    if (length(studlab) == 0) {
+      if (warn)
+        warning("No information given for argument 'studlab'. ",
+                "Assuming that comparisons are from independent studies.",
+                call. = FALSE)
+      studlab <- seq(along = TE)
+    }
+    studlab <- as.character(studlab)
+    #
     n1 <- catch("n1", mc, data, sfsp)
     n2 <- catch("n2", mc, data, sfsp)
     #

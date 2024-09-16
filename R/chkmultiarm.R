@@ -329,9 +329,10 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab, correlated,
         cat("\n")
         #
         warning(
-          paste0("Note, for the following multi-arm ",
-                 if (izero.sigma2 == 1) "study " else "studies ",
-                 "a zero treatment arm variance has been calculated: ",
+          paste0("Note, a zero treatment arm variance has been calculated ",
+                 "for the following multi-arm ",
+                 if (izero.sigma2 == 1) "study" else "studies",
+                 ": ",
                  paste(paste0("'", studlab.zero.sigma2, "'"), collapse = ", ")),
           call. = FALSE)
       }

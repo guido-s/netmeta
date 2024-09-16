@@ -3,8 +3,10 @@
 \name{netconnection.default}
 \alias{netconnection.default}
 \alias{netconnection}
-\alias{print.netconnection}
 \alias{netconnection.pairwise}
+\alias{print.netconnection}
+\alias{netconnection.netmeta}
+\alias{netconnection.netcomb}
 \title{Get information on network connectivity (number of subnetworks,
 distance matrix)}
 \usage{
@@ -31,6 +33,26 @@ distance matrix)}
   sep.trts = ":",
   nchar.trts = 666,
   title = "",
+  details.disconnected = FALSE,
+  warn = FALSE,
+  ...
+)
+
+\method{netconnection}{netmeta}(
+  data,
+  sep.trts = data$sep.trts,
+  nchar.trts = data$nchar.trts,
+  title = data$title,
+  details.disconnected = FALSE,
+  warn = FALSE,
+  ...
+)
+
+\method{netconnection}{netcomb}(
+  data,
+  sep.trts = data$sep.trts,
+  nchar.trts,
+  title = data$title,
   details.disconnected = FALSE,
   warn = FALSE,
   ...
@@ -167,7 +189,7 @@ net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6, subset = nc2$subnet == 2)
 
 net2.1
 net2.2
-}  
+}
 
 }
 \seealso{
