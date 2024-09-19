@@ -256,7 +256,7 @@
 
 netleague <- function(x, y,
                       common = x$common, random = x$random,
-                      seq = x$seq, ci = TRUE, backtransf = TRUE,
+                      seq = x$seq, ci = TRUE, backtransf = x$backtransf,
                       direct,
                       ##
                       digits = gs("digits"),
@@ -284,6 +284,7 @@ netleague <- function(x, y,
   ## (1) Check class and arguments
   ##
   ##
+  
   chkclass(x, c("netmeta", "netcomb"))
   x <- updateversion(x)
   #
@@ -329,6 +330,7 @@ netleague <- function(x, y,
   }
   ##
   chklogical(ci)
+  #
   chklogical(backtransf)
   #
   if (missing(direct)) {
@@ -345,7 +347,11 @@ netleague <- function(x, y,
     direct <- FALSE
   }
   #
-  #direct <- (direct & avail.y) || (direct & x.netcomb)
+  if (!direct && (inherits(x, "netmeta")) && !avail.y) {
+    warning(paste("Argument 'direct' set to TRUE for single object",
+                  "created with netmeta()."))
+    direct <- TRUE
+  }
   #
   chknumeric(digits, min = 0, length = 1)
   ##
@@ -428,7 +434,9 @@ netleague <- function(x, y,
     #
     txt.x <- paste(txt.x, "(column vs row)")
     txt.y <- paste(txt.y,
-                   if (!avail.y) "(row vs columns)"
+                   if (x.discomb & !avail.y)
+                     "(column vs row)"
+                   else if (!avail.y | (avail.y & !x.is.y)) "(row vs column)"
                    else "(column vs row)")
     #
     text.details <- paste0(txt.x, txt.y, "\n")
@@ -548,7 +556,7 @@ netleague <- function(x, y,
     }
   }
   #
-  if (x.is.y) {
+  if (x.is.y | (x.discomb & !avail.y)) {
     TE.common.y    <- t(TE.common.y)
     lower.common.y <- t(lower.common.y)
     upper.common.y <- t(upper.common.y)

@@ -78,8 +78,7 @@
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
 #' @param event2 Number of events in second treatment group.
-#' @param incr Numerical value added to cell frequencies (for details,
-#'   see \code{\link{pairwise}}).
+#' @param incr Numerical value added to cell frequencies.
 #' @param na.unident A logical indicating whether unidentifiable
 #'   components and combinations should be set to missing values.
 #' @param keepdata A logical indicating whether original data(set)
@@ -507,21 +506,22 @@ discomb <- function(TE, seTE,
   ##
   TE <- catch("TE", mc, data, sfsp)
   ##
-  missing.reference.group.pairwise <- FALSE
+  avail.reference.group.pairwise <- FALSE
   ##
   if (is.data.frame(TE) & !is.null(attr(TE, "pairwise"))) {
     is.pairwise <- TRUE
     ##
     sm <- attr(TE, "sm")
+    #
     if (missing.reference.group) {
-      missing.reference.group.pairwise <- TRUE
       reference.group <- attr(TE, "reference.group")
+      #
       if (is.null(reference.group))
         reference.group <- ""
       else
-        missing.reference.group <- FALSE
+        avail.reference.group.pairwise <- TRUE
     }
-    ##
+    #
     keep.all.comparisons <- attr(TE, "keep.all.comparisons")
     if (!is.null(keep.all.comparisons) && !keep.all.comparisons)
       stop("First argument is a pairwise object created with ",
@@ -913,12 +913,30 @@ discomb <- function(TE, seTE,
       event2[wo] <- tevent1[wo]
     }
   }
-  ##
-  ## Check value for reference group
-  ##
-  if (missing.reference.group | missing.reference.group.pairwise)
-    reference.group <- sort(trts)[1]
-  ##
+  #
+  # Set reference group
+  #
+  if (missing.reference.group & !avail.reference.group.pairwise) {
+    go.on <- TRUE
+    i <- 0
+    while (go.on) {
+      i <- i + 1
+      sel.i <-
+        !is.na(TE) & !is.na(seTE) &
+        (treat1 == trts[i] | treat2 == trts[i])
+      if (sum(sel.i) > 0) {
+        go.on <- FALSE
+        reference.group <- trts[i]
+      }
+      else if (i == length(trts)) {
+        go.on <- FALSE
+        reference.group <- ""
+      }
+    }
+  }
+  #
+  # Check reference group
+  #
   if (reference.group != "")
     reference.group <- setref(reference.group, trts)
   

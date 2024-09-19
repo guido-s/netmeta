@@ -2,8 +2,10 @@
 
 ### Major changes
 
+* Network meta-analysis of studies with correlated treatment arms implemented
+
 * R functions pairwise() and subset.pairwise() moved from R package
-  **netmeta** to **meta*
+  **netmeta** to **meta**
 
 * R function pairwise() can be used with dose-response data
 
@@ -12,9 +14,19 @@
     for the REML or ML estimator of the between-study variance
     (argument 'keeprma = FALSE')
 
+* Component network meta-analysis:
+  - numbers of events and sample sizes can be provided for disconnected networks
+  - node size and line width can be changed in network graphs of disconnected
+    networks
+  - league tables can be constructed for connected or disconnect networks
+  - auxiliary functions createC() and combinations() to fit interaction
+    CNMA models more easily
+
 ### User-visible changes
 
 * netmeta():
+  - new argument 'correlated' to conduct network meta-analysis of correlated
+    treatment arms
   - new argument 'keeprma' to return the R object created with rma.mv()
     from **metafor** to calculate the between-study variance for the REML or
     ML method
@@ -23,8 +35,17 @@
     '.V', '.formula.trts', 'version.metafor'); 'rma.tau' replaces '.metafor',
     all other information is part of the R object created with rma.mv()
 
+* netmetabin():
+  - new argument 'method.incr' indicating continuity correction method
+    (replaces deprecated arguments 'addincr' and 'allincr')
+
 * discomb():
-  - new arguments 'n1', 'n2', 'event1', 'event2', 'na.unident', 'keepdata'
+  - new arguments 'n1', 'n2', 'event1', 'event2', 'incr', 'na.unident', and
+    'keepdata'
+
+* netleague():
+  - new argument 'details' to control printing of details on comparisons in
+    lower and upper triangle
 
 * forest.netmeta():
   - new argument 'col.subgroup' replaces argument 'col.by'
@@ -37,6 +58,9 @@
   **netmeta** for readers of 'Meta-Analysis with R (Use R!)'
 
 ### Bug fixes
+
+* netmeta(), netmetabin(), discomb():
+  - consider value for argument 'reference.group' from pairwise() object
 
 * netcomplex():
   - print correct component names for command *netcomplex(net1, 2)* etc.
@@ -65,6 +89,14 @@
 
 * New functions netconnection.netmeta(), netconnection.netcomb(),
   netconnection.pairwise(), and netconnection.default()
+
+* New functions netconnection.netmeta(), netconnection.netcomb(),
+  netconnection.pairwise(), and netconnection.default()
+
+* R function netleague() can be used with netcomb() or discomb() objects
+
+* By default, R function netleague() uses the setting from argument 'x' as
+  the default for argument 'backtransf'
 
 * Use backtransf() from R package **meta** to back-transform results
 

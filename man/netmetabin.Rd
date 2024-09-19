@@ -18,8 +18,7 @@ netmetabin(
   method = "MH",
   cc.pooled = FALSE,
   incr,
-  allincr,
-  addincr,
+  method.incr,
   allstudies,
   level = gs("level"),
   level.ma = gs("level.ma"),
@@ -42,6 +41,8 @@ netmetabin(
   backtransf = gs("backtransf"),
   title = "",
   keepdata = gs("keepdata"),
+  addincr,
+  allincr,
   warn = TRUE,
   warn.deprecated = gs("warn.deprecated"),
   ...
@@ -85,16 +86,9 @@ i.e., to the numbers of events and non-events, of all treatment
 arms in studies with zero events or non-events in any of the
 treatment arms ("continuity correction").}
 
-\item{allincr}{A logical indicating whether \code{incr} should be
-added to each cell count of all studies if a continuity
-correction was used for at least one study (only considered if
-\code{method = "Inverse"}). If FALSE (default), \code{incr} is
-used as continuity correction only for studies with zero events
-or zero non-events in any of the treatment arms.}
-
-\item{addincr}{A logical indicating whether \code{incr} should be
-added to each cell count of all studies, irrespective of zero
-cell counts (only considered if \code{method = "Inverse"}).}
+\item{method.incr}{A character string indicating which continuity
+correction method should be used (\code{"only0"},
+\code{"if0all"}, or \code{"all"}), see \code{\link{metabin}}.}
 
 \item{allstudies}{A logical indicating whether studies with zero
 events or non-events in all treatment arms should be included in
@@ -177,6 +171,12 @@ example.}
 
 \item{keepdata}{A logical indicating whether original data(set)
 should be kept in netmeta object.}
+
+\item{addincr}{Deprecated argument (replaced by 'method.incr');
+see \code{\link{metabin}}.}
+
+\item{allincr}{Deprecated argument (replaced by 'method.incr');
+see \code{\link{metabin}}.}
 
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded from meta-analysis due to zero
@@ -281,8 +281,9 @@ following components:
 \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
   in direct comparisons.}
 \item{sm, method, level, level.ma}{As defined above.}
-\item{incr, allincr, addincr, allstudies, cc.pooled}{As defined
+\item{incr, method.incr, allstudies, cc.pooled}{As defined
   above.}
+\item{addincr, allincr}{As defined above.}
 \item{common, random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
 \item{reference.group, baseline.reference, all.treatments}{As

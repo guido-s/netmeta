@@ -228,7 +228,7 @@
 #' 
 #' @importFrom meta baujat forest funnel radial trimfill longarm
 #'   metabias metabin metacont metagen metainc metacum metainf metareg
-#'   gs ci cilayout
+#'   gs ci cilayout backtransf pairwise
 #'
 #' @importFrom magic adiag
 #'

@@ -652,19 +652,20 @@ netmeta <- function(TE, seTE,
   #
   TE <- catch("TE", mc, data, sfsp)
   #
-  missing.reference.group.pairwise <- FALSE
+  avail.reference.group.pairwise <- FALSE
   #
   if (is.data.frame(TE) & !is.null(attr(TE, "pairwise"))) {
     is.pairwise <- TRUE
     #
     sm <- attr(TE, "sm")
+    #
     if (missing.reference.group) {
-      missing.reference.group.pairwise <- TRUE
       reference.group <- attr(TE, "reference.group")
+      #
       if (is.null(reference.group))
         reference.group <- ""
       else
-        missing.reference.group <- FALSE
+        avail.reference.group.pairwise <- TRUE
     }
     #
     keep.all.comparisons <- attr(TE, "keep.all.comparisons")
@@ -1146,9 +1147,9 @@ netmeta <- function(TE, seTE,
     }
   }
   #
-  # Check value for reference group
+  # Set reference group
   #
-  if (missing.reference.group | missing.reference.group.pairwise) {
+  if (missing.reference.group & !avail.reference.group.pairwise) {
     go.on <- TRUE
     i <- 0
     while (go.on) {
@@ -1172,6 +1173,8 @@ netmeta <- function(TE, seTE,
       all.treatments <- TRUE
     else
       all.treatments <- FALSE
+  #
+  # Check reference group
   #
   if (reference.group != "")
     reference.group <- setref(reference.group, labels)

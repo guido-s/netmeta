@@ -141,8 +141,7 @@ of the Laplacian matrix L (see \code{\link{netmeta}}).}
 
 \item{event2}{Number of events in second treatment group.}
 
-\item{incr}{Numerical value added to cell frequencies (for details,
-see \code{\link{pairwise}}).}
+\item{incr}{Numerical value added to cell frequencies.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If

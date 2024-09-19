@@ -29,15 +29,9 @@
 #'   i.e., to the numbers of events and non-events, of all treatment
 #'   arms in studies with zero events or non-events in any of the
 #'   treatment arms ("continuity correction").
-#' @param allincr A logical indicating whether \code{incr} should be
-#'   added to each cell count of all studies if a continuity
-#'   correction was used for at least one study (only considered if
-#'   \code{method = "Inverse"}). If FALSE (default), \code{incr} is
-#'   used as continuity correction only for studies with zero events
-#'   or zero non-events in any of the treatment arms.
-#' @param addincr A logical indicating whether \code{incr} should be
-#'   added to each cell count of all studies, irrespective of zero
-#'   cell counts (only considered if \code{method = "Inverse"}).
+#' @param method.incr A character string indicating which continuity
+#'   correction method should be used (\code{"only0"},
+#'   \code{"if0all"}, or \code{"all"}), see \code{\link{metabin}}.
 #' @param allstudies A logical indicating whether studies with zero
 #'   events or non-events in all treatment arms should be included in
 #'   an inverse variance meta-analysis (applies only if \code{method =
@@ -98,6 +92,10 @@
 #' @param title Title of meta-analysis / systematic review.
 #' @param keepdata A logical indicating whether original data(set)
 #'   should be kept in netmeta object.
+#' @param addincr Deprecated argument (replaced by 'method.incr');
+#'   see \code{\link{metabin}}.
+#' @param allincr Deprecated argument (replaced by 'method.incr');
+#'   see \code{\link{metabin}}.
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
 #'   standard errors).
@@ -277,8 +275,9 @@
 #' \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
 #'   in direct comparisons.}
 #' \item{sm, method, level, level.ma}{As defined above.}
-#' \item{incr, allincr, addincr, allstudies, cc.pooled}{As defined
+#' \item{incr, method.incr, allstudies, cc.pooled}{As defined
 #'   above.}
+#' \item{addincr, allincr}{As defined above.}
 #' \item{common, random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
 #' \item{reference.group, baseline.reference, all.treatments}{As
@@ -381,7 +380,9 @@ netmetabin <- function(event1, n1, event2, n2,
                        sm,
                        method = "MH",
                        cc.pooled = FALSE,
-                       incr, allincr, addincr, allstudies,
+                       #
+                       incr, method.incr, allstudies,
+                       #
                        level = gs("level"),
                        level.ma = gs("level.ma"),
                        common = gs("common"),
@@ -412,6 +413,9 @@ netmetabin <- function(event1, n1, event2, n2,
                        ##
                        title = "",
                        keepdata = gs("keepdata"),
+                       #
+                       addincr, allincr,
+                       #
                        warn = TRUE, warn.deprecated = gs("warn.deprecated"),
                        ...) {
   
@@ -421,6 +425,20 @@ netmetabin <- function(event1, n1, event2, n2,
   ## (1) Check arguments
   ##
   ##
+  
+  missing.common <- missing(common)
+  missing.random <- missing(random)
+  #
+  missing.level.ma <- missing(level.ma)
+  missing.sep.trts <- missing(sep.trts)
+  #
+  missing.incr <- missing(incr)
+  missing.method.incr <- missing(method.incr)
+  missing.allstudies <- missing(allstudies)
+  #
+  missing.addincr <- missing(addincr)
+  missing.allincr <- missing(allincr)
+  #
   modtext <-
     paste0("must be equal to 'Inverse' (classic network meta-analysis), ",
            "'MH' (Mantel-Haenszel, the default) or ",
@@ -438,11 +456,10 @@ netmetabin <- function(event1, n1, event2, n2,
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  level.ma <- deprecated(level.ma, missing(level.ma), args, "level.comb",
+  level.ma <- deprecated(level.ma, missing.level.ma, args, "level.comb",
                          warn.deprecated)
   chklevel(level.ma)
   ##
-  missing.common <- missing(common)
   common <- deprecated(common, missing.common, args, "comb.fixed",
                        warn.deprecated)
   common <- deprecated(common, missing.common, args, "fixed",
@@ -450,7 +467,7 @@ netmetabin <- function(event1, n1, event2, n2,
   chklogical(common)
   ##
   random <-
-    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+    deprecated(random, missing.random, args, "comb.random", warn.deprecated)
   chklogical(random)
   ##
   if (method != "Inverse" & !common) {
@@ -488,7 +505,6 @@ netmetabin <- function(event1, n1, event2, n2,
   chklogical(details.chkmultiarm)
   chklogical(details.chkdata)
   ##
-  missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
   chknumeric(nchar.trts, min = 1, length = 1)
   ##
@@ -507,9 +523,7 @@ netmetabin <- function(event1, n1, event2, n2,
       all.treatments <- FALSE
   ##
   chklogical(baseline.reference)
-  ##
-  missing.incr <- missing(incr)
-  
+    
   
   ##
   ##
@@ -534,18 +548,16 @@ netmetabin <- function(event1, n1, event2, n2,
     is.pairwise <- TRUE
     ##
     if (missing.incr)
-      incr <-
-        replaceNULL(attr(event1, "incr"), gs("incr"))
-    if (missing(allincr))
-      allincr <-
-        replaceNULL(attr(event1, "allincr"), gs("allincr"))
-    if (missing(addincr))
-      addincr <-
-        replaceNULL(attr(event1, "addincr"), gs("addincr"))
+      incr <- replaceNULL(attr(event1, "incr"), gs("incr"))
+    if (missing.method.incr)
+      method.incr <- replaceNULL(attr(event1, "method.incr"), gs("method.incr"))
     if (missing(allstudies))
-      allstudies <-
-        replaceNULL(attr(event1, "allstudies"), gs("allstudies"))
-    ##
+      allstudies <- replaceNULL(attr(event1, "allstudies"), gs("allstudies"))
+    #
+    missing.incr <- FALSE
+    missing.method.incr <- FALSE
+    missing.allstudies <- FALSE
+    #
     if (missing(sm) & method == "Inverse")
       sm <- replaceNULL(attr(event1, "sm"), gs("smbin"))
     else if (method != "Inverse") {
@@ -579,13 +591,11 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     if (missing.incr)
       incr <- gs("incr")
-    if (missing(allincr))
-      allincr <- gs("allincr")
-    if (missing(addincr))
-      addincr <- gs("addincr")
+    if (missing(method.incr))
+      method.incr <- gs("method.incr")
     if (missing(allstudies))
       allstudies <- gs("allstudies")
-    ##
+    #
     if (missing(sm) & method == "Inverse") {
       if (!nulldata && !is.null(attr(data, "sm")))
         sm <- attr(data, "sm")
@@ -607,16 +617,43 @@ netmetabin <- function(event1, n1, event2, n2,
     treat2 <- catch("treat2", mc, data, sfsp)
     ##
     studlab <- catch("studlab", mc, data, sfsp)
-    ##
-    chknull(event1)
-    chknull(n1)
-    chknull(event2)
-    chknull(n2)
-    chknull(treat1)
-    chknull(treat2)
-    chknull(studlab)
+    #
+    if (!missing.incr)
+      incr <- catch("incr", mc, data, sfsp)
   }
-  ##
+  #
+  addincr <-
+    deprecated2(method.incr, missing.method.incr, addincr, missing.addincr,
+                warn.deprecated)
+  allincr <-
+    deprecated2(method.incr, missing.method.incr, allincr, missing.allincr,
+                warn.deprecated)
+  #
+  if (missing.method.incr) {
+    method.incr <- gs("method.incr")
+    ##
+    if (is.logical(addincr) && addincr)
+      method.incr <- "all"
+    else if (is.logical(allincr) && allincr)
+      method.incr <- "if0all"
+  }
+  #
+  addincr <- allincr <- FALSE
+  if (!(sm == "ASD" | method %in% c("Peto", "GLMM"))) {
+    if (method.incr == "all")
+      addincr <- TRUE
+    else if (method.incr == "if0all")
+      allincr <- TRUE
+  }
+  #
+  chknull(event1)
+  chknull(n1)
+  chknull(event2)
+  chknull(n2)
+  chknull(treat1)
+  chknull(treat2)
+  chknull(studlab)
+  #
   chknumeric(event1)
   chknumeric(n1)
   chknumeric(event2)
@@ -677,14 +714,12 @@ netmetabin <- function(event1, n1, event2, n2,
   }
   ##
   chklogical(incr)
-  chklogical(allincr)
-  chklogical(addincr)
   chklogical(allstudies)
   ##
   m.data <- metabin(event1, n1, event2, n2,
                     sm = sm, method = "Inverse",
-                    incr = incr, allincr = allincr,
-                    addincr = addincr, allstudies = allstudies,
+                    incr = incr, method.incr = method.incr,
+                    allstudies = allstudies,
                     method.tau = "DL", method.tau.ci = "",
                     warn = FALSE,
                     warn.deprecated = FALSE)
@@ -819,11 +854,7 @@ netmetabin <- function(event1, n1, event2, n2,
     stop(paste0("Network consists of ", n.subnets, " separate sub-networks.\n",
                 "  Use R function 'netconnection' to identify sub-networks."),
          call. = FALSE)
-  ##
-  ## Catch 'incr' from data:
-  ##
-  if (!missing.incr)
-    incr <- catch("incr", mc, data, sfsp)
+  #
   chknumeric(incr, min = 0)
   ##
   if (method != "Inverse" & length(incr) > 1) {
@@ -1288,7 +1319,7 @@ netmetabin <- function(event1, n1, event2, n2,
                    data = dat.iv,
                    sm = sm,
                    incr = incr.iv,
-                   allincr = allincr, addincr = addincr,
+                   method.incr = method.incr,
                    allstudies = allstudies.iv)
   ##
   net.iv <- netmeta(p.iv,
@@ -1829,7 +1860,8 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     m.i <- metabin(event1, n1, event2, n2, subset = selstud,
                    method = "MH", sm = "OR",
-                   incr = incr, allincr = allincr, addincr = addincr,
+                   incr = incr,
+                   method.incr = method.incr,
                    allstudies = allstudies, MH.exact = !cc.pooled,
                    method.tau = "DL", method.tau.ci = "",
                    Q.Cochrane = FALSE,
@@ -1987,8 +2019,7 @@ netmetabin <- function(event1, n1, event2, n2,
               method = method,
               ##
               incr = incr,
-              allincr = allincr,
-              addincr = addincr,
+              method.incr = method.incr,
               allstudies = allstudies,
               cc.pooled = cc.pooled,
               ##
@@ -2026,7 +2057,10 @@ netmetabin <- function(event1, n1, event2, n2,
               ##
               warn = warn,
               call = match.call(),
-              version = packageDescription("netmeta")$Version
+              version = packageDescription("netmeta")$Version,
+              #
+              addincr = addincr,
+              allincr = allincr
               )
   ##
   class(res) <- c("netmetabin", "netmeta")

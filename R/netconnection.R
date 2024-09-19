@@ -314,8 +314,7 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
   ##
   ## Block diagonal matrix in case of sub-networks
   ##
-  maxdist <- dim(D)[1]
-  ##
+  maxdist <- nrow(D)
   D2 <- D
   D2[is.infinite(D2)] <- maxdist
   o <- hclust(dist(D2))$order

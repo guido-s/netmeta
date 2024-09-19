@@ -58,7 +58,7 @@ netdistance.default <- function(x) {
   
   # Starting value for D is sign(A), with 0 replaced by Inf
   #
-  n <- dim(A)[1] 
+  n <- nrow(A)
   D <- sign(A)
   #
   for (i in 1:(n - 1)) {
@@ -82,8 +82,14 @@ netdistance.default <- function(x) {
       }
     }
   }
+  #
+  maxdist <- nrow(D)
+  D2 <- D
+  D2[is.infinite(D2)] <- maxdist
+  attr(D, "order") <- hclust(dist(D2))$order
   
   class(D) <- c("netdistance", class(D))
+  #
   D
 }
 
@@ -103,7 +109,10 @@ netdistance.netmeta <- function(x) {
   seq <- netconnection(x$treat1, x$treat2)$seq
   A <- A[seq, seq]
   
-  netdistance(A)
+  res <- netdistance(A)
+  attr(res, "order") <- NULL
+  #
+  res
 }
 
 
@@ -129,7 +138,10 @@ netdistance.netcomb <- function(x) {
   #
   A <- A[seq, seq]
   
-  netdistance(A)
+  res <- netdistance(A)
+  attr(res, "order") <- NULL
+  #
+  res
 }
 
 
@@ -156,7 +168,13 @@ netdistance.netconnection <- function(x) {
 #' @export
 
 print.netdistance <- function(x, lab.Inf = ".", ...) {
+  o <- attr(x, "order")
+  #
+  if (!is.null(o))
+    x <- x[o, o]
+  #
   x[is.infinite(x)] <- lab.Inf
+  #
   prmatrix(x, quote = FALSE, right = TRUE)
   #
   invisible(NULL)

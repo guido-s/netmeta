@@ -12,7 +12,7 @@ netleague(
   random = x$random,
   seq = x$seq,
   ci = TRUE,
-  backtransf = TRUE,
+  backtransf = x$backtransf,
   direct,
   digits = gs("digits"),
   big.mark = gs("big.mark"),
