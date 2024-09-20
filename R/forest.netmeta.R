@@ -44,6 +44,8 @@
 #'   indicating either common or random effects model is printed.
 #' @param sortvar An optional vector used to sort treatments (must be
 #'   of same length as the total number of treatments).
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in forest plots. If \code{backtransf = TRUE},
 #'   results for \code{sm = "OR"} are presented as odds ratios rather
@@ -51,6 +53,9 @@
 #' @param lab.NA A character string to label missing values.
 #' @param add.data An optional data frame with additional columns to
 #'   print in forest plot (see Details).
+#' @param addrows.below.overall A numeric value indicating how many
+#'   empty rows are printed between meta-analysis results and
+#'   heterogeneity statistics.
 #' @param drop.reference.group A logical indicating whether the
 #'   reference group should be printed in the forest plot.
 #' @param col.subgroup The colour to print information on subgroups.
@@ -209,9 +214,13 @@ forest.netmeta <- function(x,
                            digits.prop = 2,
                            smlab = NULL,
                            sortvar = x$seq,
+                           overall.hetstat = gs("overall.hetstat"),
                            backtransf = x$backtransf,
                            lab.NA = ".",
                            add.data,
+                           addrows.below.overall =
+                             if (x$overall.hetstat) 2 else
+                               gs("addrows.below.overall"),
                            drop.reference.group = FALSE,
                            ##
                            col.subgroup = "black",
@@ -261,7 +270,9 @@ forest.netmeta <- function(x,
   ##
   chklogical(drop.reference.group)
   chklogical(print.subgroup.name)
-  ##
+  #
+  overall.hetstat <- replaceNULL(overall.hetstat, FALSE)
+  #
   chklogical(backtransf)
   chkchar(lab.NA)
   ##
@@ -632,23 +643,36 @@ forest.netmeta <- function(x,
                                    studlab = labels, backtransf = backtransf,
                                    method.tau = "DL", method.tau.ci = "",
                                    warn = FALSE))
-  ##
+  #
+  m1$Q <- x$Q
+  m1$df.Q <- x$df.Q
+  m1$pval.Q <- x$pval.Q
+  #
+  m1$I2 <- x$I2
+  m1$tau <- x$tau
+  m1$tau2 <- x$tau2
+  #
   forest(m1,
          digits = digits,
+         #
          overall = FALSE, common = FALSE, random = FALSE,
-         hetstat = FALSE, test.subgroup = FALSE,
+         overall.hetstat = overall.hetstat,
+         test.subgroup = FALSE,
+         #
          leftcols = leftcols,
          leftlabs = leftlabs,
          rightcols = rightcols,
          rightlabs = rightlabs,
-         smlab = smlab,
-         lab.NA = lab.NA,
+         #
+         smlab = smlab, lab.NA = lab.NA,
          ##
          col.subgroup = col.subgroup,
          print.subgroup.name = print.subgroup.name,
          ##
          weight.study = if (equal.size) "same" else pooled,
-         ##
+         #
+         addrows.below.overall = addrows.below.overall,
+         #
          ...)
   
 

@@ -9,6 +9,8 @@
 #'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -100,6 +102,7 @@
 print.netcomb <- function(x,
                           common = x$common,
                           random = x$random,
+                          overall.hetstat = x$overall.hetstat,
                           backtransf = x$backtransf,
                           nchar.comps = x$nchar.comps,
                           ##
@@ -143,6 +146,7 @@ print.netcomb <- function(x,
   ## (2) Check other arguments
   ##
   ##
+  chklogical(overall.hetstat)
   chklogical(backtransf)
   ##
   chknumeric(digits, min = 0, length = 1)
@@ -552,46 +556,48 @@ print.netcomb <- function(x,
     ##
     ## (d) Heterogeneity / inconsistency
     ##
-    cat("Quantifying heterogeneity / inconsistency:\n",
-        formatPT(x$tau^2,
-                 lab = TRUE, labval = text.tau2,
-                 digits = digits.tau2,
-                 lab.NA = "NA", big.mark = big.mark),
-        "; ",
-        formatPT(x$tau,
-                 lab = TRUE, labval = text.tau,
-                 digits = digits.tau,
-                 lab.NA = "NA", big.mark = big.mark),
-        if (!is.na(I2))
-          paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
-        if (!(is.na(lower.I2) | is.na(upper.I2)))
-          pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
-        "\n\n",
-        sep = ""
-    )
-    ##
-    cat("Heterogeneity statistics:\n")
-    ##
-    hetdat <- 
-      data.frame(Q = formatN(c(x$Q.additive,
-                               x$Q.standard,
-                               x$Q.diff),
-                             digits.Q),
-                 df.Q = formatN(c(x$df.Q.additive,
-                                  x$df.Q.standard,
-                                  x$df.Q.diff), 0),
-                 pval = formatPT(c(x$pval.Q.additive,
-                                   x$pval.Q.standard,
-                                   x$pval.Q.diff),
-                                 digits = digits.pval.Q,
-                                 scientific = scientific.pval),
-                 row.names = c("Additive model", "Standard model",
-                               "Difference"))
-    ##
-    names(hetdat) <- c("Q", "df", "p-value")
-    ##
-    print(hetdat)
-    ##
+    if (overall.hetstat) {
+      cat("Quantifying heterogeneity / inconsistency:\n",
+          formatPT(x$tau^2,
+                   lab = TRUE, labval = text.tau2,
+                   digits = digits.tau2,
+                   lab.NA = "NA", big.mark = big.mark),
+          "; ",
+          formatPT(x$tau,
+                   lab = TRUE, labval = text.tau,
+                   digits = digits.tau,
+                   lab.NA = "NA", big.mark = big.mark),
+          if (!is.na(I2))
+            paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
+          if (!(is.na(lower.I2) | is.na(upper.I2)))
+            pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
+          "\n\n",
+          sep = ""
+      )
+      #
+      cat("Heterogeneity statistics:\n")
+      #
+      hetdat <- 
+        data.frame(Q = formatN(c(x$Q.additive,
+                                 x$Q.standard,
+                                 x$Q.diff),
+                               digits.Q),
+                   df.Q = formatN(c(x$df.Q.additive,
+                                    x$df.Q.standard,
+                                    x$df.Q.diff), 0),
+                   pval = formatPT(c(x$pval.Q.additive,
+                                     x$pval.Q.standard,
+                                     x$pval.Q.diff),
+                                   digits = digits.pval.Q,
+                                   scientific = scientific.pval),
+                   row.names = c("Additive model", "Standard model",
+                                 "Difference"))
+      #
+      names(hetdat) <- c("Q", "df", "p-value")
+      #
+      print(hetdat)
+    }
+    #
     if (legend) {
       diff.comps <- comps != comps.abbr
       if (any(diff.comps)) {

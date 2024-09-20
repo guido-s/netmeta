@@ -8,6 +8,8 @@
 #'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots.
 #' @param nchar.comps A numeric defining the minimum number of
@@ -15,16 +17,133 @@
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments (to catch deprecated arguments).
-#'
+#' 
 #' @return
-#' A list is returned with the same elements as a
-#' \code{\link{netcomb}} object.
 #'
+#' A list of class "summary.netcomb" is returned with the following elements:
+#' 
+#' \item{k}{Total number of studies.}
+#' \item{m}{Total number of pairwise comparisons.}
+#' \item{n}{Total number of treatments.}
+#' \item{d}{Total number of designs (corresponding to the unique set
+#'   of treatments compared within studies).}
+#' \item{c}{Total number of components.}
+#' \item{s}{Total number of subnetworks (for \code{\link{discomb}}).}
+#' 
+#' \item{trts}{Treatments included in network meta-analysis.}
+#' \item{k.trts}{Number of studies evaluating a treatment.}
+#' \item{n.trts}{Number of observations receiving a treatment (if
+#'   available).}
+#' \item{events.trts}{Number of events observed for a treatment (if
+#'   available).}
+#' 
+#' \item{studies}{Study labels coerced into a factor with its levels
+#'   sorted alphabetically.}
+#' \item{narms}{Number of arms for each study.}
+#' 
+#' \item{designs}{Vector with unique designs present in the network. A
+#'   design corresponds to the set of treatments compared within a
+#'   study.}
+#' 
+#' \item{comps}{Components included in network meta-analysis.}
+#' \item{k.comps}{Number of studies evaluating a component.}
+#' \item{n.comps}{Number of observations receiving a component (if
+#'   available).}
+#' \item{events.comps}{Number of events observed for a component (if
+#'   available).}
+#' 
+#' \item{comparison}{Results for pairwise comparisons (data frame with
+#'   columns studlab, treat1, treat2, TE, seTE, lower, upper, z, p).}
+#' \item{comparison.nma.common}{Results for pairwise comparisons based
+#'   on common effects NMA model (data frame with columns studlab, treat1,
+#'   treat2, TE, seTE, lower, upper, z, p, leverage).}
+#' \item{comparison.nma.random}{Results for pairwise comparisons based
+#'   on random effects NMA model (data frame with columns studlab, treat1,
+#'   treat2, TE, seTE, lower, upper, z, p).}
+#' \item{comparison.cnma.common}{Results for pairwise comparisons based
+#'   on common effects CNMA model (data frame with columns studlab, treat1,
+#'   treat2, TE, seTE, lower, upper, z, p, leverage).}
+#' \item{comparison.cnma.random}{Results for pairwise comparisons based
+#'   on random effects CNMA model (data frame with columns studlab, treat1,
+#'   treat2, TE, seTE, lower, upper, z, p).}
+#' 
+#' \item{components.common}{Results for components based
+#'   on common effects CNMA model (data frame with columns studlab, treat1,
+#'   treat2, TE, seTE, lower, upper, z, p, leverage).}
+#' \item{components.random}{Results for components based
+#'   on random effects CNMA model (data frame with columns studlab, treat1,
+#'   treat2, TE, seTE, lower, upper, z, p).}
+#' 
+#' \item{combinations.common}{Results for available combinations based
+#'   on common effects CNMA model (data frame with columns studlab, treat1,
+#'   treat2, TE, seTE, lower, upper, z, p, leverage).}
+#' \item{combinations.random}{Results for available combinations based
+#'   on random effects CNMA model (data frame with columns studlab, treat1,
+#'   treat2, TE, seTE, lower, upper, z, p).}
+#' 
+#' \item{common}{Results for common effects model (a list with elements
+#'   TE, seTE, lower, upper, z, p).}
+#' \item{random}{Results for random effects model (a list with
+#'   elements TE, seTE, lower, upper, z, p).}
+#' \item{predict}{Prediction intervals (a list with elements seTE,
+#'   lower, upper).}
+#' 
+#' \item{Q.additive}{Overall heterogeneity / inconsistency statistic.}
+#' \item{df.Q.additive}{Degrees of freedom for test of heterogeneity /
+#'   inconsistency.}
+#' \item{pval.Q.additive}{P-value for test of heterogeneity / inconsistency.}
+#' \item{I2, lower.I2, upper.I2}{I-squared, lower and upper confidence
+#'   limits.}
+#' \item{tau}{Square-root of between-study variance.}
+#' 
+#' \item{Q.additive}{Overall heterogeneity / inconsistency statistic (CNMA model).}
+#' \item{df.Q.additive}{Degrees of freedom for test of heterogeneity /
+#'   inconsistency (CNMA model).}
+#' \item{pval.Q.additive}{P-value for test of heterogeneity / inconsistency
+#'   (CNMA model).}
+#' 
+#' \item{Q.standard}{Overall heterogeneity statistic (NMA model).}
+#' \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
+#'   heterogeneity (NMA model).}
+#' \item{pval.Q.heterogeneity}{P-value for test of overall
+#'   heterogeneity (NMA model).}
+#' 
+#' \item{Q.diff}{Q statistic for difference between CNMA and NMA model.}
+#' \item{df.Q.diff, pval.Q.diff}{Corresponding degrees of freedom and p-value.}
+#'
+#' \item{sm}{A character string indicating underlying summary
+#'   measure.}
+#' \item{method}{A character string indicating which method is to be
+#'   used for pooling of studies.}
+#' \item{level}{The level used to calculate confidence intervals for
+#'   individual studies.}
+#' \item{level.ma}{The level used to calculate confidence intervals
+#'   for pooled estimates.}
+#' 
+#' \item{ci.lab}{Label for confidence interval.}
+#' 
+#' \item{reference.group, baseline.reference}{As defined above.}
+#' \item{all.treatments}{As defined above.}
+#' \item{seq}{A character specifying the sequence of treatments.}
+#' 
+#' \item{tau.preset}{An optional value for the square-root of the
+#'   between-study variance \eqn{\tau^2}.}
+#' 
+#' \item{sep.comps}{A character used in comparison names as separator
+#'   between component labels.}
+#' \item{nchar.comps}{A numeric defining the minimum number of
+#'   characters used to create unique component names.}
+#' 
+#' \item{overall.hetstat, backtransf}{As defined above.}
+#'  
+#' \item{title}{Title of meta-analysis / systematic review.}
+#' \item{x}{\code{\link{netmeta}} object (if available).}
+#' \item{call}{Function call.}
+#' \item{version}{Version of R package \bold{netmeta} used to create object.}
+#' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netcomb}}, \code{\link{discomb}}
-#' 
-#' @keywords print
 #' 
 #' @examples
 #' data(Linde2016)
@@ -67,6 +186,7 @@
 summary.netcomb <- function(object,
                             common = object$common,
                             random = object$random,
+                            overall.hetstat = object$overall.hetstat,
                             backtransf = object$backtransf,
                             nchar.comps = object$nchar.comps,
                             warn.deprecated = gs("warn.deprecated"),
@@ -86,6 +206,7 @@ summary.netcomb <- function(object,
   ## (2) Check other arguments
   ##
   ##
+  chklogical(overall.hetstat)
   chklogical(backtransf)
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
@@ -257,9 +378,9 @@ summary.netcomb <- function(object,
               Q.additive = object$Q.additive,
               df.Q.additive = object$df.Q.additive,
               pval.Q.additive = object$pval.Q.additive,
-              tau = object$tau,
               I2 = object$I2,
               lower.I2 = object$lower.I2, upper.I2 = object$upper.I2,
+              tau = object$tau,
               ##
               Q.standard = object$Q.standard,
               df.Q.standard = object$df.Q.standard,
@@ -287,10 +408,15 @@ summary.netcomb <- function(object,
               nchar.comps = nchar.comps,
               ##
               inactive = object$inactive,
-              sep.comps = object$sep.comps,
-              ##
+              #
+              incr = object$incr,
+              method.incr = object$method.incr,
+              allstudies = object$allstudies,
+              cc.pooled = object$cc.pooled,
+              #
+              overall.hetstat = overall.hetstat,
               backtransf = backtransf,
-              ##
+              #
               title = object$title,
               ##
               x = object,
@@ -298,10 +424,13 @@ summary.netcomb <- function(object,
               call = match.call(),
               version = packageDescription("netmeta")$Version
               )
-  ##
+  #
   res$x$common <- common
   res$x$random <- random
-  ##
+  res$x$overall.hetstat <- overall.hetstat
+  res$x$backtransf <- backtransf
+  res$x$nchar.comps <- nchar.comps
+  #
   class(res) <- c(if (inherits(object, "discomb")) "summary.discomb",
                   "summary.netcomb")
   

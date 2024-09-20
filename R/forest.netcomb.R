@@ -33,6 +33,8 @@
 #' @param sortvar An optional vector used to sort the individual
 #'   studies (must be of same length as the total number of
 #'   treatments).
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in forest plots. If \code{backtransf = TRUE},
 #'   results for \code{sm = "OR"} are presented as odds ratios rather
@@ -40,6 +42,9 @@
 #' @param lab.NA A character string to label missing values.
 #' @param add.data An optional data frame with additional columns to
 #'   print in forest plot (see Details).
+#' @param addrows.below.overall A numeric value indicating how many
+#'   empty rows are printed between meta-analysis results and
+#'   heterogeneity statistics.
 #' @param drop.reference.group A logical indicating whether the
 #'   reference group should be printed in the forest plot.
 #' @param weight.study A character string indicating weighting used to
@@ -142,9 +147,13 @@ forest.netcomb <- function(x,
                            digits = gs("digits.forest"),
                            smlab = NULL,
                            sortvar = x$seq,
+                           overall.hetstat = gs("overall.hetstat"),
                            backtransf = x$backtransf,
                            lab.NA = ".",
                            add.data,
+                           addrows.below.overall =
+                             if (x$overall.hetstat) 2 else
+                               gs("addrows.below.overall"),
                            drop.reference.group = FALSE,
                            weight.study = "same",
                            ...) {
@@ -168,6 +177,8 @@ forest.netcomb <- function(x,
   chklogical(baseline.reference)
   chklogical(drop.reference.group)
   ##
+  overall.hetstat <- replaceNULL(overall.hetstat, FALSE)
+  #
   chklogical(backtransf)
   chkchar(lab.NA)
   
@@ -330,15 +341,22 @@ forest.netcomb <- function(x,
   ##
   forest(m1,
          digits = digits,
-         common = FALSE, random = FALSE,
-         overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
+         #
+         overall = FALSE, common = FALSE, random = FALSE,
+         overall.hetstat = overall.hetstat,
+         test.subgroup = FALSE,
+         #
          leftcols = leftcols,
          leftlabs = leftlabs,
          rightcols = rightcols,
          rightlabs = rightlabs,
-         smlab = smlab,
-         lab.NA = lab.NA,
+         #
+         smlab = smlab, lab.NA = lab.NA,
+         #
          weight.study = weight.study,
+         #
+         addrows.below.overall = addrows.below.overall,
+         #
          ...)
   
   

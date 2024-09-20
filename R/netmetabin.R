@@ -84,6 +84,8 @@
 #'   characters used to create unique treatment names (see Details).
 #' @param func.inverse R function used to calculate the pseudoinverse
 #'   of the Laplacian matrix L (see \code{\link{netmeta}}).
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -285,7 +287,7 @@
 #' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
 #'   above.}
 #' \item{details.chkmultiarm, details.chkdata}{As defined above.}
-#' \item{sep.trts, nchar.trts}{As defined above.}
+#' \item{sep.trts, nchar.trts, overall.hetstat}{As defined above.}
 #' \item{backtransf, title, warn, warn.deprecated}{As defined above.}
 #' \item{data}{Dataset (in contrast-based format).}
 #' \item{data.design}{List with data in arm-based format (each list
@@ -409,6 +411,7 @@ netmetabin <- function(event1, n1, event2, n2,
                        ##
                        func.inverse = invmat,
                        ##
+                       overall.hetstat = gs("overall.hetstat"),
                        backtransf = gs("backtransf"),
                        ##
                        title = "",
@@ -507,9 +510,11 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   chkchar(sep.trts)
   chknumeric(nchar.trts, min = 1, length = 1)
-  ##
+  #
+  overall.hetstat <- replaceNULL(overall.hetstat, TRUE)
+  chklogical(overall.hetstat)
   chklogical(backtransf)
-  ##
+  #
   chkchar(title)
   chklogical(keepdata)
   chklogical(warn)
@@ -1336,6 +1341,7 @@ netmetabin <- function(event1, n1, event2, n2,
                     details.chkmultiarm = details.chkmultiarm,
                     sep.trts = sep.trts,
                     nchar.trts = nchar.trts,
+                    overall.hetstat = overall.hetstat,
                     backtransf = backtransf,
                     title = title,
                     keepdata = keepdata,
@@ -2047,9 +2053,10 @@ netmetabin <- function(event1, n1, event2, n2,
               nchar.trts = nchar.trts,
               ##
               func.inverse = deparse(substitute(func.inverse)),
-              ##
+              #
+              overall.hetstat = overall.hetstat,
               backtransf = backtransf,
-              ##
+              #
               title = title,
               ##
               data = if (keepdata) data else NULL,

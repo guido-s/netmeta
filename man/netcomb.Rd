@@ -15,6 +15,7 @@ netcomb(
   details.chkident = FALSE,
   nchar.comps = x$nchar.trts,
   func.inverse = invmat,
+  overall.hetstat = x$overall.hetstat,
   backtransf = x$backtransf,
   na.unident = TRUE,
   warn.deprecated = gs("warn.deprecated"),
@@ -50,6 +51,9 @@ Details).}
 
 \item{func.inverse}{R function used to calculate the pseudoinverse
 of the Laplacian matrix L (see \code{\link{netmeta}}).}
+
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots.}

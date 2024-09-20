@@ -12,6 +12,7 @@
   reference.group = object$reference.group,
   baseline.reference = object$baseline.reference,
   all.treatments = object$all.treatments,
+  overall.hetstat = object$overall.hetstat,
   backtransf = object$backtransf,
   nchar.trts = object$nchar.trts,
   warn.deprecated = gs("warn.deprecated"),
@@ -41,6 +42,9 @@ only considered if \code{reference.group} has been specified.}
 matrices with all treatment effects, and confidence limits will
 be printed.}
 
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
+
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots.}
 
@@ -53,7 +57,31 @@ be printed if deprecated arguments are used.}
 \item{\dots}{Additional arguments (to catch deprecated arguments).}
 }
 \value{
-A list is returned with the following elements:
+A list of class "summary.netmeta" is returned with the following elements:
+
+\item{k}{Total number of studies.}
+\item{m}{Total number of pairwise comparisons.}
+\item{n}{Total number of treatments.}
+\item{d}{Total number of designs (corresponding to the unique set
+  of treatments compared within studies).}
+
+\item{trts}{Treatments included in network meta-analysis.}
+\item{k.trts}{Number of studies evaluating a treatment.}
+\item{n.trts}{Number of observations receiving a treatment (if
+  available).}
+\item{events.trts}{Number of events observed for a treatment (if
+  available).}
+
+\item{studies}{Study labels coerced into a factor with its levels
+  sorted alphabetically.}
+\item{narms}{Number of arms for each study.}
+
+\item{designs}{Vector with unique designs present in the network. A
+  design corresponds to the set of treatments compared within a
+  study.}
+\item{comparisons}{Vector with unique direct comparisons present in the
+  network.}
+
 \item{comparison}{Results for pairwise comparisons (data frame with
   columns studlab, treat1, treat2, TE, seTE, lower, upper, z, p).}
 \item{comparison.nma.common}{Results for pairwise comparisons based
@@ -62,20 +90,14 @@ A list is returned with the following elements:
 \item{comparison.nma.random}{Results for pairwise comparisons based
   on random effects model (data frame with columns studlab, treat1,
   treat2, TE, seTE, lower, upper, z, p).}
+
 \item{common}{Results for common effects model (a list with elements
   TE, seTE, lower, upper, z, p).}
 \item{random}{Results for random effects model (a list with
   elements TE, seTE, lower, upper, z, p).}
 \item{predict}{Prediction intervals (a list with elements seTE,
   lower, upper).}
-\item{studies}{Study labels coerced into a factor with its levels
-  sorted alphabetically.}
-\item{narms}{Number of arms for each study.}
-\item{k}{Total number of studies.}
-\item{m}{Total number of pairwise comparisons.}
-\item{n}{Total number of treatments.}
-\item{d}{Total number of designs (corresponding to the unique set
-  of treatments compared within studies).}
+
 \item{Q}{Overall heterogeneity / inconsistency statistic.}
 \item{df.Q}{Degrees of freedom for test of heterogeneity /
   inconsistency.}
@@ -83,16 +105,23 @@ A list is returned with the following elements:
 \item{I2, lower.I2, upper.I2}{I-squared, lower and upper confidence
   limits.}
 \item{tau}{Square-root of between-study variance.}
+
 \item{Q.heterogeneity}{Overall heterogeneity statistic.}
 \item{df.Q.heterogeneity}{Degrees of freedom for test of overall
   heterogeneity.}
 \item{pval.Q.heterogeneity}{P-value for test of overall
   heterogeneity.}
+
 \item{Q.inconsistency}{Overall inconsistency statistic.}
 \item{df.Q.inconsistency}{Degrees of freedom for test of overall
   inconsistency.}
 \item{pval.Q.inconsistency}{P-value for test of overall
   inconsistency.}
+
+\item{Q.decomp}{Data frame with columns 'treat1', 'treat2', 'Q',
+  'df' and 'pval.Q', providing heterogeneity statistics for each
+  pairwise meta-analysis of direct comparisons.}
+
 \item{sm}{A character string indicating underlying summary
   measure.}
 \item{method}{A character string indicating which method is to be
@@ -101,21 +130,38 @@ A list is returned with the following elements:
   individual studies.}
 \item{level.ma}{The level used to calculate confidence intervals
   for pooled estimates.}
-\item{common, random}{As defined above.}
-\item{prediction, level.predict}{As defined above.}
-\item{reference.group, baseline.reference}{As defined above.}
-\item{all.treatments, backtransf}{As defined above.}
+\item{level.predict}{The level used to calculate prediction
+  intervals for a new study.}
+
 \item{ci.lab}{Label for confidence interval.}
+
+\item{incr}{Numerical value added to cell frequencies
+  (if applicable).}
+\item{method.incr}{A character string indicating which continuity
+  correction method was used (if applicable).}
+\item{allstudies}{A logical indicating whether studies with zero
+  events or non-events in all treatment arms should be included in
+  an inverse variance meta-analysis (if applicable).}
+\item{cc.pooled}{A logical indicating whether \code{incr} should be
+  used as a continuity correction (if applicable).}
+
+\item{reference.group, baseline.reference}{As defined above.}
+\item{all.treatments}{As defined above.}
 \item{seq}{A character specifying the sequence of treatments.}
+
 \item{tau.preset}{An optional value for the square-root of the
   between-study variance \eqn{\tau^2}.}
+
 \item{sep.trts}{A character used in comparison names as separator
   between treatment labels.}
 \item{nchar.trts}{A numeric defining the minimum number of
   characters used to create unique treatment names.}
+
+\item{prediction, overall.hetstat, backtransf}{As defined above.}
+ 
 \item{title}{Title of meta-analysis / systematic review.}
 \item{call}{Function call.}
-\item{version}{Version of R package netmeta used to create object.}
+\item{version}{Version of R package \bold{netmeta} used to create object.}
 }
 \description{
 Summary method for objects of class \code{netmeta}.

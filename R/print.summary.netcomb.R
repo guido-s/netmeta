@@ -8,6 +8,8 @@
 #'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf=TRUE}, results for \code{sm="OR"} are presented
@@ -71,6 +73,7 @@
 print.summary.netcomb <- function(x,
                                   common = x$x$common,
                                   random = x$x$random,
+                                  overall.hetstat = x$overall.hetstat,
                                   backtransf = x$backtransf,
                                   nchar.comps = x$nchar.comps,
                                   ##
@@ -186,6 +189,7 @@ print.summary.netcomb <- function(x,
     print.netcomb(x$x,
                   common = common,
                   random = random,
+                  overall.hetstat = overall.hetstat,
                   backtransf = backtransf,
                   nchar.comps = nchar.comps,
                   ##

@@ -24,6 +24,8 @@
 #'   individual studies should be printed.
 #' @param nma A logical indicating whether summary results of network
 #'   meta-analysis should be printed.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -131,6 +133,7 @@ print.summary.netmeta <- function(x,
                                   all.treatments = x$all.treatments,
                                   details = TRUE, nma = TRUE,
                                   ##
+                                  overall.hetstat = x$overall.hetstat,
                                   backtransf = x$backtransf,
                                   nchar.trts = x$nchar.trts,
                                   nchar.studlab = x$nchar.studlab,
@@ -244,7 +247,9 @@ print.summary.netmeta <- function(x,
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
   chklogical(random)
-  ##
+  #
+  chklogical(overall.hetstat)
+  #
   backtransf <-
     deprecated(backtransf, missing(backtransf), args, "logscale")
   if (is.untransformed(x$sm))
@@ -463,6 +468,7 @@ print.summary.netmeta <- function(x,
                   common = common, random = random,
                   prediction = prediction,
                   backtransf = backtransf,
+                  overall.hetstat = overall.hetstat,
                   reference.group = reference.group,
                   baseline.reference = baseline.reference,
                   all.treatments = all.treatments,

@@ -64,6 +64,8 @@
 #'   unidentifiable components should be printed.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -418,6 +420,7 @@ discomb <- function(TE, seTE,
                     event2 = NULL,
                     incr = NULL,
                     #
+                    overall.hetstat = gs("overall.hetstat"),
                     backtransf = gs("backtransf"),
                     #
                     na.unident = TRUE,
@@ -454,7 +457,9 @@ discomb <- function(TE, seTE,
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
-  ##
+  #
+  overall.hetstat <- replaceNULL(overall.hetstat, TRUE)
+  chklogical(overall.hetstat)
   chklogical(backtransf)
   chklogical(na.unident)
   ##
@@ -1292,7 +1297,8 @@ discomb <- function(TE, seTE,
               inactive = inactive,
               #
               func.inverse = deparse(substitute(func.inverse)),
-              ##
+              #
+              overall.hetstat = overall.hetstat,
               backtransf = backtransf, 
               ##
               title = title,

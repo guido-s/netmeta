@@ -8,6 +8,7 @@
   x,
   common = x$common,
   random = x$random,
+  overall.hetstat = x$overall.hetstat,
   backtransf = x$backtransf,
   nchar.comps = x$nchar.comps,
   digits = gs("digits"),
@@ -39,6 +40,9 @@ effects model should be printed.}
 
 \item{random}{A logical indicating whether results for the random
 effects model should be printed.}
+
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If

@@ -73,6 +73,8 @@
 #'   printed.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -275,7 +277,7 @@
 #' \item{designs}{Vector with unique designs present in the network. A
 #'   design corresponds to the set of treatments compared within a
 #'   study.}
-#' \item{designs}{Vector with unique direct comparisons present in the
+#' \item{comparisons}{Vector with unique direct comparisons present in the
 #'   network.}
 #' \item{TE.nma.common, TE.nma.random}{A vector of length \emph{m} of
 #'   consistent treatment effects estimated by network meta-analysis
@@ -556,6 +558,7 @@ netmeta <- function(TE, seTE,
                     time1 = NULL,
                     time2 = NULL,
                     #
+                    overall.hetstat = gs("overall.hetstat"),
                     backtransf = gs("backtransf"),
                     #
                     title = "",
@@ -601,6 +604,8 @@ netmeta <- function(TE, seTE,
   chkchar(sep.trts)
   chknumeric(nchar.studlab, length = 1)
   #
+  overall.hetstat <- replaceNULL(overall.hetstat, TRUE)
+  chklogical(overall.hetstat)
   chklogical(backtransf)
   #
   chkchar(title)
@@ -1614,6 +1619,7 @@ netmeta <- function(TE, seTE,
               nchar.trts = nchar.trts,
               nchar.studlab = nchar.studlab,
               #
+              overall.hetstat = overall.hetstat,
               backtransf = backtransf,
               #
               title = title,

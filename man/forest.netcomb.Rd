@@ -17,9 +17,11 @@
   digits = gs("digits.forest"),
   smlab = NULL,
   sortvar = x$seq,
+  overall.hetstat = gs("overall.hetstat"),
   backtransf = x$backtransf,
   lab.NA = ".",
   add.data,
+  addrows.below.overall = if (x$overall.hetstat) 2 else gs("addrows.below.overall"),
   drop.reference.group = FALSE,
   weight.study = "same",
   ...
@@ -66,6 +68,9 @@ indicating either common or random effects model is printed.}
 studies (must be of same length as the total number of
 treatments).}
 
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
+
 \item{backtransf}{A logical indicating whether results should be
 back transformed in forest plots. If \code{backtransf = TRUE},
 results for \code{sm = "OR"} are presented as odds ratios rather
@@ -75,6 +80,10 @@ than log odds ratios, for example.}
 
 \item{add.data}{An optional data frame with additional columns to
 print in forest plot (see Details).}
+
+\item{addrows.below.overall}{A numeric value indicating how many
+empty rows are printed between meta-analysis results and
+heterogeneity statistics.}
 
 \item{drop.reference.group}{A logical indicating whether the
 reference group should be printed in the forest plot.}

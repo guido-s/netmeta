@@ -37,6 +37,7 @@ discomb(
   event1 = NULL,
   event2 = NULL,
   incr = NULL,
+  overall.hetstat = gs("overall.hetstat"),
   backtransf = gs("backtransf"),
   na.unident = TRUE,
   title = "",
@@ -142,6 +143,9 @@ of the Laplacian matrix L (see \code{\link{netmeta}}).}
 \item{event2}{Number of events in second treatment group.}
 
 \item{incr}{Numerical value added to cell frequencies.}
+
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If

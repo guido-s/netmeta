@@ -4,6 +4,14 @@
 
 * Network meta-analysis of studies with correlated treatment arms implemented
 
+* Component network meta-analysis:
+  - numbers of events and sample sizes can be provided for disconnected networks
+  - node size and line width can be changed in network graphs of disconnected
+    networks
+  - league tables can be constructed for connected or disconnect networks
+  - auxiliary functions createC() and combinations() to fit interaction
+    CNMA models more easily
+
 * R functions pairwise() and subset.pairwise() moved from R package
   **netmeta** to **meta**
 
@@ -14,15 +22,15 @@
     for the REML or ML estimator of the between-study variance
     (argument 'keeprma = FALSE')
 
-* Component network meta-analysis:
-  - numbers of events and sample sizes can be provided for disconnected networks
-  - node size and line width can be changed in network graphs of disconnected
-    networks
-  - league tables can be constructed for connected or disconnect networks
-  - auxiliary functions createC() and combinations() to fit interaction
-    CNMA models more easily
-
 ### User-visible changes
+
+* netmeta(), netmetabin(), discomb(), netcomb(),
+  summary.netmeta(), summary.netcomb(),
+  print.netmeta(), print.netcomb(),
+  print.summary.netmeta(), print.summary.netcomb(),
+  forest.netmeta(), forest.netcomb():
+  - new argument 'overall.hetstat' to specify whether to print heterogeneity
+    information
 
 * netmeta():
   - new argument 'correlated' to conduct network meta-analysis of correlated
@@ -49,6 +57,9 @@
 
 * forest.netmeta():
   - new argument 'col.subgroup' replaces argument 'col.by'
+
+* print.netmeta(), print.netcomb():
+  - new default for 
 
 * New function summary.netconnection() to print list of studies in subnetworks
 

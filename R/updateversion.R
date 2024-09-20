@@ -32,6 +32,7 @@ updateversion <- function(x, verbose = FALSE) {
   update.2.5.0 <- update_needed(x$version, 2, 5, verbose)
   update.2.8.0 <- update_needed(x$version, 2, 8, verbose)
   update.2.9.0 <- update_needed(x$version, 2, 9, verbose)
+  update.3.0.0 <- update_needed(x$version, 3, 0, verbose)
   
   
   ##
@@ -188,7 +189,20 @@ updateversion <- function(x, verbose = FALSE) {
         x$data$.seTE.adj.random[sel.s] <- x$seTE.adj.random
       }
     }
-    ##
+    #
+    if (update.3.0.0) {
+      x$overall.hetstat <- TRUE
+      #
+      if (inherits(x, "netmetabin")) {
+        x$method.incr <- "only0"
+        #
+        if (is.logical(x$addincr) && x$addincr)
+          method.incr <- "all"
+        else if (is.logical(x$allincr) && x$allincr)
+          method.incr <- "if0all"
+      }
+    }
+    #
     return(x)
   }
   
@@ -212,7 +226,20 @@ updateversion <- function(x, verbose = FALSE) {
     ##
     if (update.2.8.0)
       x$x$small.values <- setsv(x$x$small.values)
-    ##
+    #
+    if (update.3.0.0) {
+      x$x$overall.hetstat <- TRUE
+      #
+      if (inherits(x, "summary.netmetabin")) {
+        x$method.incr <- "only0"
+        #
+        if (is.logical(x$addincr) && x$addincr)
+          method.incr <- "all"
+        else if (is.logical(x$allincr) && x$allincr)
+          method.incr <- "if0all"
+      }
+    }
+    #
     return(x)
   }
   
@@ -295,7 +322,10 @@ updateversion <- function(x, verbose = FALSE) {
     ##
     if (update.2.8.0)
       x$x$small.values <- setsv(x$x$small.values)
-    ##
+    #
+    if (update.3.0.0)
+      x$overall.hetstat <- TRUE
+    #
     return(x)
   }
   
@@ -375,7 +405,10 @@ updateversion <- function(x, verbose = FALSE) {
       x$Lplus.matrix.common <- x$Lplus.matrix.fixed
       x$H.matrix.common <- x$H.matrix.fixed        
     }
-    ##
+    #
+    if (update.3.0.0)
+      x$overall.hetstat <- TRUE
+    #
     return(x)
   }
   

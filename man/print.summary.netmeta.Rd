@@ -15,6 +15,7 @@
   all.treatments = x$all.treatments,
   details = TRUE,
   nma = TRUE,
+  overall.hetstat = x$overall.hetstat,
   backtransf = x$backtransf,
   nchar.trts = x$nchar.trts,
   nchar.studlab = x$nchar.studlab,
@@ -64,6 +65,9 @@ individual studies should be printed.}
 
 \item{nma}{A logical indicating whether summary results of network
 meta-analysis should be printed.}
+
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If

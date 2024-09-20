@@ -38,6 +38,7 @@ netmetabin(
   sep.trts = ":",
   nchar.trts = 666,
   func.inverse = invmat,
+  overall.hetstat = gs("overall.hetstat"),
   backtransf = gs("backtransf"),
   title = "",
   keepdata = gs("keepdata"),
@@ -160,6 +161,9 @@ characters used to create unique treatment names (see Details).}
 
 \item{func.inverse}{R function used to calculate the pseudoinverse
 of the Laplacian matrix L (see \code{\link{netmeta}}).}
+
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
@@ -291,7 +295,7 @@ following components:
 \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
   above.}
 \item{details.chkmultiarm, details.chkdata}{As defined above.}
-\item{sep.trts, nchar.trts}{As defined above.}
+\item{sep.trts, nchar.trts, overall.hetstat}{As defined above.}
 \item{backtransf, title, warn, warn.deprecated}{As defined above.}
 \item{data}{Dataset (in contrast-based format).}
 \item{data.design}{List with data in arm-based format (each list

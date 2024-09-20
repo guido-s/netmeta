@@ -20,6 +20,8 @@
 #'   meta-analysis should be conducted.
 #' @param tau.preset An optional value for the square-root of the
 #'   between-study variance \eqn{\tau^2}.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots.
 #' @param details.chkident A logical indicating whether details on
@@ -363,6 +365,7 @@ netcomb <- function(x,
                     nchar.comps = x$nchar.trts,
                     ##
                     func.inverse = invmat,
+                    overall.hetstat = x$overall.hetstat,
                     backtransf = x$backtransf,
                     ##
                     na.unident = TRUE,
@@ -387,6 +390,7 @@ netcomb <- function(x,
   chklogical(details.chkident)
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
+  chklogical(overall.hetstat)
   chklogical(backtransf)
   chklogical(na.unident)
   ##
@@ -768,9 +772,10 @@ netcomb <- function(x,
               inactive = inactive,
               ##
               func.inverse = deparse(substitute(func.inverse)),
-              ##
+              #
+              overall.hetstat = overall.hetstat,
               backtransf = backtransf,
-              ##
+              #
               title = x$title,
               ##
               x = x,
