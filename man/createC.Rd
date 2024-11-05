@@ -12,13 +12,20 @@
 \usage{
 createC(x, ...)
 
-\method{createC}{matrix}(x, comb.ia, inactive = NULL, sep.comps = "+", sep.ia = "*", ...)
+\method{createC}{matrix}(
+  x,
+  comb.ia,
+  inactive = NULL,
+  sep.comps = gs("sep.comps"),
+  sep.ia = gs("sep.ia"),
+  ...
+)
 
-\method{createC}{netcomb}(x, comb.ia = NULL, inactive = NULL, sep.ia = "*", ...)
+\method{createC}{netcomb}(x, comb.ia = NULL, inactive = NULL, sep.ia = x$sep.ia, ...)
 
-\method{createC}{netmeta}(x, inactive = NULL, sep.comps = "+", ...)
+\method{createC}{netmeta}(x, inactive = NULL, sep.comps = gs("sep.comps"), ...)
 
-\method{createC}{netconnection}(x, inactive = NULL, sep.comps = "+", ...)
+\method{createC}{netconnection}(x, inactive = NULL, sep.comps = gs("sep.comps"), ...)
 
 \method{createC}{default}(x, n = 1, ...)
 

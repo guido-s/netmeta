@@ -29,6 +29,7 @@
 #' @param nchar.comps A numeric defining the minimum number of
 #'   characters used to create unique names for components (see
 #'   Details).
+#' @param sep.ia A single character to define separator for interactions.
 #' @param func.inverse R function used to calculate the pseudoinverse
 #'   of the Laplacian matrix L (see \code{\link{netmeta}}).
 #' @param na.unident A logical indicating whether unidentifiable
@@ -257,7 +258,7 @@
 #'   between treatment labels.}
 #' \item{nchar.comps}{A numeric defining the minimum number of
 #'   characters used to create unique component names.}
-#' \item{inactive, sep.comps}{As defined above.}
+#' \item{inactive, sep.comps, sep.ia}{As defined above.}
 #' \item{backtransf}{A logical indicating whether results should be
 #'   back transformed in printouts and forest plots.}
 #' \item{title}{Title of meta-analysis / systematic review.}
@@ -356,19 +357,21 @@
 
 netcomb <- function(x,
                     inactive = NULL,
-                    sep.comps = "+",
+                    sep.comps = gs("sep.comps"),
                     C.matrix,
                     common = x$common,
                     random = x$random | !is.null(tau.preset),
                     tau.preset = NULL,
                     details.chkident = FALSE,
                     nchar.comps = x$nchar.trts,
-                    ##
+                    #
+                    sep.ia = gs("sep.ia"),
+                    #
                     func.inverse = invmat,
                     overall.hetstat = x$overall.hetstat,
                     backtransf = x$backtransf,
                     ##
-                    na.unident = TRUE,
+                    na.unident = gs("na.unident"),
                     warn.deprecated = gs("warn.deprecated"),
                     ...) {
   
@@ -390,6 +393,10 @@ netcomb <- function(x,
   chklogical(details.chkident)
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
+  #
+  missing.sep.ia <- missing(sep.ia)
+  chkchar(sep.ia, nchar = 0:1, length = 1)
+  #
   chklogical(overall.hetstat)
   chklogical(backtransf)
   chklogical(na.unident)
@@ -402,8 +409,7 @@ netcomb <- function(x,
   missing.common <- missing(common)
   common <- deprecated(common, missing.common, args, "comb.fixed",
                        warn.deprecated)
-  common <- deprecated(common, missing.common, args, "fixed",
-                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed", warn.deprecated)
   chklogical(common)
   ##
   random <-
@@ -594,6 +600,14 @@ netcomb <- function(x,
   ##
   if (length(comps.unident) == 0)
     comps.unident <- NULL
+  #
+  comps <- names(res.c$components$TE)
+  #
+  if (sep.comps == sep.ia)
+    stop("Input for arguments 'sep.comps' and 'sep.ia' must be different.",
+         call. = FALSE)
+  #
+  sep.ia <- setsep(comps, sep.ia, missing = missing.sep.ia)
   
   
   ##
@@ -638,7 +652,7 @@ netcomb <- function(x,
               ##
               designs = x$designs,
               ##
-              comps = names(res.c$components$TE),
+              comps = comps,
               k.comps = NA,
               n.comps = NA,
               events.comps = NA,
@@ -768,7 +782,8 @@ netcomb <- function(x,
               sep.trts = x$sep.trts,
               sep.comps = sep.comps,
               nchar.comps = nchar.comps,
-              ##
+              sep.ia = sep.ia,
+              #
               inactive = inactive,
               ##
               func.inverse = deparse(substitute(func.inverse)),

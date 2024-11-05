@@ -49,7 +49,7 @@ netmetabin(p1, ref = "plac")
 }
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{metabin}},
+\code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmetabin}}
 }
 \keyword{datasets}

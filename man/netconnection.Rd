@@ -71,16 +71,16 @@ netconnection(data, ...)
 }
 \arguments{
 \item{data}{A data frame, e.g., created with
-\code{\link{pairwise}}.}
+\code{\link[meta]{pairwise}}.}
 
 \item{treat1}{Label / number for first treatment (ignored if
-\code{data} was created with \code{\link{pairwise}}).}
+\code{data} was created with \code{\link[meta]{pairwise}}).}
 
 \item{treat2}{Label / number for second treatment (ignored if
-\code{data} was created with \code{\link{pairwise}}).}
+\code{data} was created with \code{\link[meta]{pairwise}}).}
 
 \item{studlab}{Study labels (ignored if \code{data} was created
-with \code{\link{pairwise}}).}
+with \code{\link[meta]{pairwise}}).}
 
 \item{subset}{An optional vector specifying a subset of studies to
 be used.}

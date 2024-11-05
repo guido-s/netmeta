@@ -29,18 +29,16 @@
 
 as.data.frame.netconnection <- function(x, ...){
   
-  
   chkclass(x, "netconnection")
   
-  
-  ## Drop unnecessary list elements
-  ## 
+  # Only keep relevant list elements
+  #
   res <- data.frame(treat1 = x$treat1,
                     treat2 = x$treat2,
                     studlab = x$studlab,
                     design = x$design,
                     subnet = x$subnet)
-  ##
+  #
   attr(res, "version") <- x$version
   
   res

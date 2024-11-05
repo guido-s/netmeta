@@ -80,7 +80,7 @@ plot.rankogram <- function(x,
   chkclass(x, c("rankogram"))
   x <- updateversion(x)
   ##
-  is.installed.package("gridExtra")
+  is_installed_package("gridExtra")
   
   
   type <- setchar(type, c("bar", "line", "step"))

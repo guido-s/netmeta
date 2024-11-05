@@ -8,7 +8,7 @@
 \method{forest}{netbind}(
   x,
   pooled = ifelse(x$x$random, "random", "common"),
-  equal.size = TRUE,
+  equal.size = gs("equal.size"),
   leftcols = "studlab",
   leftlabs = "Treatment",
   rightcols = c("effect", "ci"),
@@ -17,7 +17,7 @@
   digits = gs("digits.forest"),
   digits.prop = max(gs("digits.pval") - 2, 2),
   backtransf = x$backtransf,
-  lab.NA = "",
+  lab.NA = gs("lab.NA"),
   smlab,
   ...
 )
@@ -66,7 +66,7 @@ than log odds ratios, for example.}
 \item{smlab}{A label printed at top of figure. By default, text
 indicating either common or random effects model is printed.}
 
-\item{\dots}{Additional arguments for \code{\link{forest.meta}}
+\item{\dots}{Additional arguments for \code{\link[meta]{forest.meta}}
 function.}
 }
 \description{
@@ -82,7 +82,7 @@ specify columns which are plotted on the left and right side of the
 forest plot, respectively. If argument \code{rightcols} is
 \code{FALSE}, no columns will be plotted on the right side.
 
-For more information see help page of \code{\link{forest.meta}}
+For more information see help page of \code{\link[meta]{forest.meta}}
 function.
 }
 \examples{
@@ -120,7 +120,7 @@ forest(nb1,
 }
 \seealso{
 \code{\link{netbind}}, \code{\link{netcomb}},
-  \code{\link{forest.meta}}
+  \code{\link[meta]{forest.meta}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

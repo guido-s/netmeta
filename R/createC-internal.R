@@ -6,10 +6,9 @@ createC_full <- function(n, k) {
   else if (k == n)
     res <- as.matrix(t(rep(1, n)))
   else
-    res <- rbind(cbind(rep(1, choose(n - 1, k - 1)),
-                       createC_full(n - 1, k - 1)),
-                 cbind(rep(0, choose(n - 1, k)),
-                       createC_full(n - 1, k)))
+    res <-
+      rbind(cbind(rep(1, choose(n - 1, k - 1)), createC_full(n - 1, k - 1)),
+            cbind(rep(0, choose(n - 1, k)), createC_full(n - 1, k)))
   #
   res
 }
@@ -82,6 +81,7 @@ createC_trts_inactive <- function(trts, inactive = NULL, sep.comps) {
     rownames(C.matrix) <- trts
   #
   attr(C.matrix, "inactive") <- inactive
+  attr(C.matrix, "sep.comps") <- sep.comps
   #
   C.matrix
 }

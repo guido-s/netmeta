@@ -273,7 +273,7 @@ netleague <- function(x, y,
                       path = "leaguetable.xlsx",
                       overwrite = FALSE,
                       #
-                      details = TRUE,
+                      details = gs("details.netmeta"),
                       #
                       warn.deprecated = gs("warn.deprecated"),
                       ...) {
@@ -764,7 +764,7 @@ netleague <- function(x, y,
       return(invisible(NULL))
     }
     ##
-    if (!is.installed.package("writexl", stop = FALSE))
+    if (!is_installed_package("writexl", stop = FALSE))
       stop(paste0("Package 'writexl' missing.",
                   "\n  ",
                   "Please use the following R command for installation:",

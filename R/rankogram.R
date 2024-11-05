@@ -84,7 +84,7 @@
 #' @export rankogram
 
 
-rankogram <- function(x, nsim = 1000,
+rankogram <- function(x, nsim = gs("nsim.netmeta"),
                       common = x$common, random = x$random,
                       small.values = x$small.values,
                       cumulative.rankprob = FALSE,
@@ -100,7 +100,7 @@ rankogram <- function(x, nsim = 1000,
   chkclass(x, "netmeta")
   x <- updateversion(x)
   ##
-  is.installed.package("mvtnorm")
+  is_installed_package("mvtnorm")
   
   
   ##

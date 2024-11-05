@@ -471,7 +471,7 @@ nettable <- function(...,
       return(invisible(NULL))
     }
     ##
-    if (!is.installed.package("writexl", stop = FALSE))
+    if (!is_installed_package("writexl", stop = FALSE))
       stop(paste0("Package 'writexl' missing.",
                   "\n  ",
                   "Please use the following R command for installation:",

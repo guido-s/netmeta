@@ -11,23 +11,23 @@
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
   labels = x$trts,
-  equal.size = TRUE,
+  equal.size = gs("equal.size"),
   leftcols = "studlab",
   leftlabs,
   rightcols = c("effect", "ci"),
   rightlabs,
   digits = gs("digits.forest"),
   small.values = x$small.values,
-  nsim = 1000,
+  nsim = gs("nsim.netmeta"),
   digits.prop = 2,
   smlab = NULL,
   sortvar = x$seq,
   overall.hetstat = gs("overall.hetstat"),
   backtransf = x$backtransf,
-  lab.NA = ".",
+  lab.NA = gs("lab.NA"),
   add.data,
   addrows.below.overall = if (x$overall.hetstat) 2 else gs("addrows.below.overall"),
-  drop.reference.group = FALSE,
+  drop.reference.group = gs("drop.reference.group"),
   col.subgroup = "black",
   print.subgroup.name = FALSE,
   ...
@@ -116,7 +116,7 @@ reference group should be printed in the forest plot.}
 the grouping variable should be printed in front of the group
 labels.}
 
-\item{\dots}{Additional arguments for \code{\link{forest.meta}}
+\item{\dots}{Additional arguments for \code{\link[meta]{forest.meta}}
 function.}
 }
 \description{
@@ -166,7 +166,7 @@ forest plot, respectively. The following columns are available:
 
 As a sidenote, the rather odd column name \code{"studlab"} to
 describe the treatment comparisons comes from internally calling
-\code{\link{forest.meta}} which uses study labels as the essential
+\code{\link[meta]{forest.meta}} which uses study labels as the essential
 information.
 
 Argument \code{add.data} can be used to add additional columns to
@@ -174,7 +174,7 @@ the forest plot. This argument must be a data frame with row names
 equal to the treatment names in R object \code{x}, i.e.,
 \code{x$trts}.
 
-See help page of \code{\link{forest.meta}} for more information on
+See help page of \code{\link[meta]{forest.meta}} for more information on
 the generation of forest plots and additional arguments.
 }
 \examples{
@@ -248,7 +248,7 @@ forest(net3, xlim = c(-1.5, 1), ref = "plac",
 
 }
 \seealso{
-\code{\link{forest.meta}}
+\code{\link[meta]{forest.meta}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

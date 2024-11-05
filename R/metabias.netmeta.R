@@ -80,7 +80,7 @@
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{funnel.netmeta}},
-#'   \code{\link{metabias}}
+#'   \code{\link[meta]{metabias}}
 #' 
 #' @references
 #' Chaimani A & Salanti G (2012):
@@ -130,7 +130,7 @@ metabias.netmeta <- function(x,
                              order,
                              pooled = ifelse(x$random, "random", "common"),
                              method.bias = "Egger",
-                             lump.comparator = FALSE,
+                             lump.comparator = gs("lump.comparator"),
                              ...) {
   
   

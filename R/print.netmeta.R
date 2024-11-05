@@ -56,6 +56,8 @@
 #'   root of the between-study variance \eqn{\tau^2}.
 #' @param text.I2 Text printed to identify heterogeneity statistic
 #'   I\eqn{^2}.
+#' @param details.methods A logical specifying whether details on statistical
+#'   methods should be printed.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -92,9 +94,10 @@ print.netmeta <- function(x,
                           text.tau2 = gs("text.tau2"),
                           text.tau = gs("text.tau"),
                           text.I2 = gs("text.I2"),
-                          ##
-                          legend = TRUE,
-                          ##
+                          #
+                          details.methods = gs("details.netmeta"),
+                          legend = gs("legend.netmeta"),
+                          #
                           warn.deprecated = gs("warn.deprecated"),
                           ##
                           ...) {
@@ -146,6 +149,7 @@ print.netmeta <- function(x,
   chkchar(text.tau)
   chkchar(text.I2)
   ##
+  chklogical(details.methods)
   chklogical(legend)
   ##
   ## Check for deprecated arguments in '...'
@@ -767,21 +771,18 @@ print.netmeta <- function(x,
         }
       }
     }
-    ##
-    if (!is.null(x$tau.preset)) {
-      cat("\nDetails:")
-      ##
-      tau2 <- x$tau.preset^2
-      tau2 <- formatPT(tau2, lab = TRUE, labval = text.tau2,
-                       digits = digits.tau2,
-                       lab.NA = "NA", big.mark = big.mark)
-      ##
-      cat("\n- Preset between-study variance: ", tau2, "\n", sep = "")
-    }
   }
-  ##
-  ## Add legend with abbreviated treatment labels
-  ##
+  #
+  # Print details of network meta-analysis methods
+  #
+  if (details.methods) {
+    text.details <- catmeth(x, random, text.tau2, digits.tau2, big.mark)
+    #
+    cat(text.details)
+  }
+  #
+  # Add legend with abbreviated treatment labels
+  #
   legendabbr(unique(rownames(TE.common)),
              treats(TE.common, nchar.trts),
              legend)

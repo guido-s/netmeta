@@ -9,7 +9,7 @@
   order,
   pooled = ifelse(x$random, "random", "common"),
   method.bias = "Egger",
-  lump.comparator = FALSE,
+  lump.comparator = gs("lump.comparator"),
   ...
 )
 }
@@ -138,7 +138,7 @@ PLOS ONE,
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{funnel.netmeta}},
-  \code{\link{metabias}}
+  \code{\link[meta]{metabias}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

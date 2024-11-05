@@ -17,7 +17,7 @@
 #' \bold{\emph{randomized}}\tab number of individuals in treatment arm
 #' }
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{metabin}},
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
 #'   \code{\link{netmetabin}}
 #' 
 #' @source
@@ -33,21 +33,21 @@
 #' @examples
 #' data(Dong2013)
 #' 
-#' # Only consider first ten studies (to reduce runtime of example)
-#' #
-#' first10 <- subset(Dong2013, id <= 10)
-#' 
 #' # Transform data from long arm-based format to contrast-based
 #' # format. Argument 'sm' has to be used for odds ratio as summary
 #' # measure; by default the risk ratio is used in the metabin
 #' # function called internally.
 #' #
 #' p1 <- pairwise(treatment, death, randomized, studlab = id,
-#'   data = first10, sm = "OR")
+#'   data = Dong2013, sm = "OR")
+#' 
+#' # Only consider first ten studies (to reduce runtime of example)
+#' #
+#' p1.10 <- subset(p1, id <= 10)
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis
 #' #
-#' netmetabin(p1, ref = "plac")
+#' netmetabin(p1.10, ref = "plac")
 #' 
 #' \dontrun{
 #' # Conduct Mantel-Haenszel network meta-analysis for the whole

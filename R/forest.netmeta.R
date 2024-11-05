@@ -62,7 +62,7 @@
 #' @param print.subgroup.name A logical indicating whether the name of
 #'   the grouping variable should be printed in front of the group
 #'   labels.
-#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#' @param \dots Additional arguments for \code{\link[meta]{forest.meta}}
 #'   function.
 #' 
 #' @details
@@ -108,7 +108,7 @@
 #'
 #' As a sidenote, the rather odd column name \code{"studlab"} to
 #' describe the treatment comparisons comes from internally calling
-#' \code{\link{forest.meta}} which uses study labels as the essential
+#' \code{\link[meta]{forest.meta}} which uses study labels as the essential
 #' information.
 #' 
 #' Argument \code{add.data} can be used to add additional columns to
@@ -116,12 +116,12 @@
 #' equal to the treatment names in R object \code{x}, i.e.,
 #' \code{x$trts}.
 #' 
-#' See help page of \code{\link{forest.meta}} for more information on
+#' See help page of \code{\link[meta]{forest.meta}} for more information on
 #' the generation of forest plots and additional arguments.
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{forest.meta}}
+#' @seealso \code{\link[meta]{forest.meta}}
 #' 
 #' @keywords hplot
 #' 
@@ -203,25 +203,25 @@ forest.netmeta <- function(x,
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
                            labels = x$trts,
-                           equal.size = TRUE,
+                           equal.size = gs("equal.size"),
                            leftcols = "studlab",
                            leftlabs,
                            rightcols = c("effect", "ci"),
                            rightlabs,
                            digits = gs("digits.forest"),
                            small.values = x$small.values,
-                           nsim = 1000,
+                           nsim = gs("nsim.netmeta"),
                            digits.prop = 2,
                            smlab = NULL,
                            sortvar = x$seq,
                            overall.hetstat = gs("overall.hetstat"),
                            backtransf = x$backtransf,
-                           lab.NA = ".",
+                           lab.NA = gs("lab.NA"),
                            add.data,
                            addrows.below.overall =
                              if (x$overall.hetstat) 2 else
                                gs("addrows.below.overall"),
-                           drop.reference.group = FALSE,
+                           drop.reference.group = gs("drop.reference.group"),
                            ##
                            col.subgroup = "black",
                            print.subgroup.name = FALSE,
@@ -644,13 +644,10 @@ forest.netmeta <- function(x,
                                    method.tau = "DL", method.tau.ci = "",
                                    warn = FALSE))
   #
-  m1$Q <- x$Q
-  m1$df.Q <- x$df.Q
-  m1$pval.Q <- x$pval.Q
-  #
-  m1$I2 <- x$I2
-  m1$tau <- x$tau
-  m1$tau2 <- x$tau2
+  m1 <- setHet(m1, x)
+  m1$.text.details.methods <-
+    catmeth(x, pooled == "random", gs("text.tau2"), gs("digits.tau2"),
+            gs("big.mark"))
   #
   forest(m1,
          digits = digits,
@@ -675,12 +672,11 @@ forest.netmeta <- function(x,
          #
          ...)
   
-
   rownames(dat.out) <- seq_len(nrow(dat.out))
-  ##
+  #
   attr(dat.out, "pooled") <- pooled
   attr(dat.out, "small.values") <- small.values
-  ##
+  #
   invisible(dat.out)
 }
 

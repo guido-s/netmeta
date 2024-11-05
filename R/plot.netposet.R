@@ -275,7 +275,7 @@ plot.netposet <- function(x,
       sel.z <- as.numeric(setchar(sel.z, seq_len(n.outcomes)))
   }
   ##
-  if (is_3d & !is.installed.package("rgl", stop = FALSE)) {
+  if (is_3d & !is_installed_package("rgl", stop = FALSE)) {
     warning(paste0("2-D plot generated as package 'rgl' is missing.",
                    "\n  ",
                    "Please install package 'rgl' in order to ",

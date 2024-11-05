@@ -39,7 +39,7 @@
 #' \bold{\emph{n3}}\tab Sample size arm 3
 #' }
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{metacont}},
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metacont}},
 #'   \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 #' 
 #' @source

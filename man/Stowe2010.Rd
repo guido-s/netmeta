@@ -64,7 +64,7 @@ net1 <- netmeta(p1, ref = "plac")
 net1
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{metacont}},
+\code{\link[meta]{pairwise}}, \code{\link[meta]{metacont}},
   \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 }
 \keyword{datasets}

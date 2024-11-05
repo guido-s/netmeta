@@ -54,7 +54,7 @@
 netgraph.netconnection <- function(x, seq,
                                    col = seq_len(x$n.subnets),
                                    reference.group = NULL,
-                                   plastic = FALSE,
+                                   plastic = gs("plastic"),
                                    ...) {
   
   

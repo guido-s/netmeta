@@ -83,7 +83,7 @@ print(net1, digits = 2)
 }
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{metabin}},
+\code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmeta}}, \code{\link{netposet}}
 }
 \keyword{datasets}

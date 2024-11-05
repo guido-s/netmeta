@@ -144,8 +144,8 @@ show funnel plot, radial plot or conduct test for funnel plot
 asymmetry.}
 }
 \value{
-Either a single \code{\link{metagen}} object with pairwise
-comparisons as subgroups or a list with \code{\link{metagen}}
+Either a single \code{\link[meta]{metagen}} object with pairwise
+comparisons as subgroups or a list with \code{\link[meta]{metagen}}
 objects for each direct pairwise comparison.
 }
 \description{
@@ -159,10 +159,10 @@ evidence in a network meta-analysis. In contrast to
 standard errors are used in the calculations and the between-study
 heterogeneity variance is allowed to differ between comparisons.
 
-The R function \code{\link{metagen}} is called internally.
+The R function \code{\link[meta]{metagen}} is called internally.
 }
 \note{
-This function must not be confused with \code{\link{pairwise}}
+This function must not be confused with \code{\link[meta]{pairwise}}
 which can be used as a pre-processing step to convert data from
 arm-based to contrast-based format by calculating all pairwise
 comparisons within a study.
@@ -220,7 +220,7 @@ settings.meta(oldsets)
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netsplit}},
-  \code{\link{pairwise}}
+  \code{\link[meta]{pairwise}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

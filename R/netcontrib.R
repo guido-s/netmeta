@@ -192,7 +192,7 @@ netcontrib <- function(x,
   chkclass(x, "netmeta")
   x <- updateversion(x)
   ##
-  is.installed.package("igraph")
+  is_installed_package("igraph")
   
   
   ##
@@ -210,7 +210,7 @@ netcontrib <- function(x,
   }
   ##
   if (method == "cccp")
-    is.installed.package("cccp")
+    is_installed_package("cccp")
   
   chknumeric(nchar.trts, min = 1, length = 1)
   chklogical(verbose)

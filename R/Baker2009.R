@@ -30,7 +30,7 @@
 #' \bold{\emph{total}}\tab number of individuals in treatment arm
 #' }
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{metabin}},
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
 #'   \code{\link{netmetabin}}
 #' 
 #' @source

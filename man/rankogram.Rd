@@ -7,7 +7,7 @@
 \usage{
 rankogram(
   x,
-  nsim = 1000,
+  nsim = gs("nsim.netmeta"),
   common = x$common,
   random = x$random,
   small.values = x$small.values,

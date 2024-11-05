@@ -13,9 +13,9 @@
   srt.labels = 0,
   offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
   scale = 1.1,
-  col = if (iterate) "slateblue" else "black",
-  plastic = !(iterate & allfigures),
-  thickness = "number.of.studies",
+  col = gs("col.netgraph"),
+  plastic = gs("plastic"),
+  thickness = gs("thickness"),
   lwd = 5,
   lwd.min = lwd/2.5,
   lwd.max,
@@ -25,7 +25,7 @@
   highlight = NULL,
   col.highlight = "red2",
   scale.highlight = 1,
-  multiarm = FALSE,
+  multiarm = gs("multiarm"),
   col.multiarm = NULL,
   alpha.transparency = 0.5,
   points = !missing(cex.points),
@@ -36,7 +36,7 @@
   points.min,
   points.max,
   rescale.pointsize,
-  number.of.studies = FALSE,
+  number.of.studies = gs("number.of.studies"),
   cex.number.of.studies = cex,
   col.number.of.studies = "white",
   bg.number.of.studies = "black",
@@ -238,7 +238,8 @@ provided by argument \code{seq}.}
 \item{figure}{A logical indicating whether network graph should be
 shown.}
 
-\item{\dots}{Additional graphical arguments.}
+\item{\dots}{Additional graphical arguments (passed on to
+\code{\link{plot.default}}).}
 }
 \value{
 A list containing two data frames with information on nodes and
@@ -286,7 +287,8 @@ This function generates a graph of the evidence network.
 }
 \details{
 This function generates a network graph for an R object created
-with \code{\link{netmeta}}.
+with \code{\link{netmeta}}. R function \code{\link{plot.default}} is used
+to create the network graph.
 
 \subsection{Layout of network graph}{
 The network is laid out in the plane, where the nodes in the graph

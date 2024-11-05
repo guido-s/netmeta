@@ -24,12 +24,13 @@ netmetabin(
   level.ma = gs("level.ma"),
   common = gs("common"),
   random = method == "Inverse" & (gs("random") | !is.null(tau.preset)),
-  prediction = FALSE,
+  prediction = gs("prediction"),
   level.predict = gs("level.predict"),
   reference.group = "",
-  baseline.reference = TRUE,
-  all.treatments = NULL,
-  seq = NULL,
+  baseline.reference = gs("baseline.reference"),
+  small.values = gs("small.values"),
+  all.treatments = gs("all.treatments"),
+  seq = gs("seq"),
   tau.preset = NULL,
   tol.multiarm = 0.001,
   tol.multiarm.se = NULL,
@@ -40,11 +41,11 @@ netmetabin(
   func.inverse = invmat,
   overall.hetstat = gs("overall.hetstat"),
   backtransf = gs("backtransf"),
-  title = "",
+  title = gs("title"),
   keepdata = gs("keepdata"),
   addincr,
   allincr,
-  warn = TRUE,
+  warn = gs("warn"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -89,7 +90,7 @@ treatment arms ("continuity correction").}
 
 \item{method.incr}{A character string indicating which continuity
 correction method should be used (\code{"only0"},
-\code{"if0all"}, or \code{"all"}), see \code{\link{metabin}}.}
+\code{"if0all"}, or \code{"all"}), see \code{\link[meta]{metabin}}.}
 
 \item{allstudies}{A logical indicating whether studies with zero
 events or non-events in all treatment arms should be included in
@@ -123,6 +124,11 @@ interval for a new study (only considered if \code{method =
 should be expressed as comparisons of other treatments versus the
 reference treatment (default) or vice versa. This argument is
 only considered if \code{reference.group} has been specified.}
+
+\item{small.values}{A character string specifying whether small
+treatment effects indicate a beneficial (\code{"desirable"}) or
+harmful (\code{"undesirable"}) effect (passed on to
+\code{\link{netrank}}, can be abbreviated.}
 
 \item{all.treatments}{A logical or \code{"NULL"}. If \code{TRUE},
 matrices with all treatment effects, and confidence limits will
@@ -177,10 +183,10 @@ example.}
 should be kept in netmeta object.}
 
 \item{addincr}{Deprecated argument (replaced by 'method.incr');
-see \code{\link{metabin}}.}
+see \code{\link[meta]{metabin}}.}
 
 \item{allincr}{Deprecated argument (replaced by 'method.incr');
-see \code{\link{metabin}}.}
+see \code{\link[meta]{metabin}}.}
 
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded from meta-analysis due to zero
@@ -279,7 +285,7 @@ following components:
 \item{pval.Q.inconsistency}{P-value for test of overall
   inconsistency.}
 \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
-\item{H.matrix}{Hat matrix (\emph{m}x\emph{m})}
+\item{H.matrix.common}{Hat matrix (\emph{m}x\emph{m})}
 \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
   observations in direct comparisons.}
 \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
@@ -290,7 +296,7 @@ following components:
 \item{addincr, allincr}{As defined above.}
 \item{common, random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
-\item{reference.group, baseline.reference, all.treatments}{As
+\item{reference.group, baseline.reference, small.values, all.treatments}{As
   defined above.}
 \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
   above.}
@@ -333,9 +339,9 @@ comparison between two treatments (arguments \code{treat1},
 \code{treat2}, \code{event1}, \code{n1}, \code{event2}, and
 \code{n2}). If data are provided in \emph{arm-based} format, that
 is, number of events and participants are given for each treatment
-arm separately, function \code{\link{pairwise}} can be used to
+arm separately, function \code{\link[meta]{pairwise}} can be used to
 transform the data to \emph{contrast-based} format (see help page
-of function \code{\link{pairwise}}).
+of function \code{\link[meta]{pairwise}}).
 
 Note, all pairwise comparisons must be provided for a multi-arm
 study. Consider a multi-arm study of \emph{p} treatments with known
@@ -344,7 +350,7 @@ must be provided for each treatment, for each of \emph{p}(\emph{p}
 - 1) / 2 possible comparisons in separate lines in the data. For
 instance, a three-arm study contributes three pairwise comparisons,
 a four-arm study even six pairwise comparisons. Function
-\code{\link{pairwise}} automatically calculates all pairwise
+\code{\link[meta]{pairwise}} automatically calculates all pairwise
 comparisons for multi-arm studies.
 
 For \code{method = "Inverse"}, both common and random effects
@@ -461,7 +467,7 @@ data.
 \bold{29}, 3046--67
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{netmeta}}
+\code{\link[meta]{pairwise}}, \code{\link{netmeta}}
 }
 \author{
 Orestis Efthimiou \email{oremiou@gmail.com}, Guido

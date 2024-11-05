@@ -10,12 +10,12 @@
   number.of.studies = TRUE,
   main,
   sub,
-  multiarm = FALSE,
+  multiarm = gs("multiarm"),
   col.multiarm = NULL,
   alpha.transparency = 0.5,
   col.ignore.multiarm = "transparent",
   col = "black",
-  plastic = FALSE,
+  plastic = gs("plastic"),
   ...
 )
 }

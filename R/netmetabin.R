@@ -31,7 +31,7 @@
 #'   treatment arms ("continuity correction").
 #' @param method.incr A character string indicating which continuity
 #'   correction method should be used (\code{"only0"},
-#'   \code{"if0all"}, or \code{"all"}), see \code{\link{metabin}}.
+#'   \code{"if0all"}, or \code{"all"}), see \code{\link[meta]{metabin}}.
 #' @param allstudies A logical indicating whether studies with zero
 #'   events or non-events in all treatment arms should be included in
 #'   an inverse variance meta-analysis (applies only if \code{method =
@@ -56,6 +56,10 @@
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa. This argument is
 #'   only considered if \code{reference.group} has been specified.
+#' @param small.values A character string specifying whether small
+#'   treatment effects indicate a beneficial (\code{"desirable"}) or
+#'   harmful (\code{"undesirable"}) effect (passed on to
+#'   \code{\link{netrank}}, can be abbreviated.
 #' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
 #'   matrices with all treatment effects, and confidence limits will
 #'   be printed.
@@ -95,9 +99,9 @@
 #' @param keepdata A logical indicating whether original data(set)
 #'   should be kept in netmeta object.
 #' @param addincr Deprecated argument (replaced by 'method.incr');
-#'   see \code{\link{metabin}}.
+#'   see \code{\link[meta]{metabin}}.
 #' @param allincr Deprecated argument (replaced by 'method.incr');
-#'   see \code{\link{metabin}}.
+#'   see \code{\link[meta]{metabin}}.
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
 #'   standard errors).
@@ -130,9 +134,9 @@
 #' \code{treat2}, \code{event1}, \code{n1}, \code{event2}, and
 #' \code{n2}). If data are provided in \emph{arm-based} format, that
 #' is, number of events and participants are given for each treatment
-#' arm separately, function \code{\link{pairwise}} can be used to
+#' arm separately, function \code{\link[meta]{pairwise}} can be used to
 #' transform the data to \emph{contrast-based} format (see help page
-#' of function \code{\link{pairwise}}).
+#' of function \code{\link[meta]{pairwise}}).
 #' 
 #' Note, all pairwise comparisons must be provided for a multi-arm
 #' study. Consider a multi-arm study of \emph{p} treatments with known
@@ -141,7 +145,7 @@
 #' - 1) / 2 possible comparisons in separate lines in the data. For
 #' instance, a three-arm study contributes three pairwise comparisons,
 #' a four-arm study even six pairwise comparisons. Function
-#' \code{\link{pairwise}} automatically calculates all pairwise
+#' \code{\link[meta]{pairwise}} automatically calculates all pairwise
 #' comparisons for multi-arm studies.
 #' 
 #' For \code{method = "Inverse"}, both common and random effects
@@ -271,7 +275,7 @@
 #' \item{pval.Q.inconsistency}{P-value for test of overall
 #'   inconsistency.}
 #' \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
-#' \item{H.matrix}{Hat matrix (\emph{m}x\emph{m})}
+#' \item{H.matrix.common}{Hat matrix (\emph{m}x\emph{m})}
 #' \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
 #'   observations in direct comparisons.}
 #' \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
@@ -282,7 +286,7 @@
 #' \item{addincr, allincr}{As defined above.}
 #' \item{common, random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
-#' \item{reference.group, baseline.reference, all.treatments}{As
+#' \item{reference.group, baseline.reference, small.values, all.treatments}{As
 #'   defined above.}
 #' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
 #'   above.}
@@ -298,7 +302,7 @@
 #' @author Orestis Efthimiou \email{oremiou@@gmail.com}, Guido
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{netmeta}}
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link{netmeta}}
 #' 
 #' @references
 #' Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
@@ -391,14 +395,15 @@ netmetabin <- function(event1, n1, event2, n2,
                        random = method == "Inverse" &
                          (gs("random") | !is.null(tau.preset)),
                        ##
-                       prediction = FALSE,
+                       prediction = gs("prediction"),
                        level.predict = gs("level.predict"),
                        ##
                        reference.group = "",
-                       baseline.reference = TRUE,
-                       all.treatments = NULL,
-                       seq = NULL,
-                       ##
+                       baseline.reference = gs("baseline.reference"),
+                       small.values = gs("small.values"),
+                       all.treatments = gs("all.treatments"),
+                       seq = gs("seq"),
+                       #
                        tau.preset = NULL,
                        ##
                        tol.multiarm = 0.001,
@@ -414,12 +419,13 @@ netmetabin <- function(event1, n1, event2, n2,
                        overall.hetstat = gs("overall.hetstat"),
                        backtransf = gs("backtransf"),
                        ##
-                       title = "",
+                       title = gs("title"),
                        keepdata = gs("keepdata"),
                        #
                        addincr, allincr,
                        #
-                       warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                       warn = gs("warn"),
+                       warn.deprecated = gs("warn.deprecated"),
                        ...) {
   
   
@@ -493,12 +499,20 @@ netmetabin <- function(event1, n1, event2, n2,
             call. = FALSE)
     prediction <- FALSE
   }
-  ##
+  #
+  chkchar(reference.group, length = 1)
   chklogical(baseline.reference)
-  ##
+  small.values <- setsv(small.values)
+  #
   if (!is.null(all.treatments))
     chklogical(all.treatments)
-  ##
+  else {
+    if (reference.group == "")
+      all.treatments <- TRUE
+    else
+      all.treatments <- FALSE
+  }
+  #
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
   ##
@@ -518,17 +532,7 @@ netmetabin <- function(event1, n1, event2, n2,
   chkchar(title)
   chklogical(keepdata)
   chklogical(warn)
-  ##
-  ## Check value for reference group
-  ##
-  if (is.null(all.treatments))
-    if (reference.group == "")
-      all.treatments <- TRUE
-    else
-      all.treatments <- FALSE
-  ##
-  chklogical(baseline.reference)
-    
+  
   
   ##
   ##
@@ -1809,6 +1813,8 @@ netmetabin <- function(event1, n1, event2, n2,
       for (j in 1:(n.treat - 1))
         H[i + n.treat - 1, j] <- -(h1[i, 1] == j + 1) + (h1[i, 2] == j + 1)
   }
+  #
+  colnames(H) <- trts[-1]
   ##
   ## Common effects matrix
   ##
@@ -1906,6 +1912,19 @@ netmetabin <- function(event1, n1, event2, n2,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
+  
+  secondfirst <- function(x, sep)
+    paste0(x[2], sep, x[1])
+  #
+  trts.list <- lapply(compsplit(rownames( net.iv$Cov.common), sep.trts),
+                      secondfirst, sep = sep.trts)
+  #
+  rn <- rep_len("", nrow(H))
+  #
+  for (i in seq_along(trts.list))
+    rn[i] <- trts.list[[i]]
+  #
+  rownames(H) <- rn
   
   
   res <- list(studlab = studlab,
@@ -2010,7 +2029,8 @@ netmetabin <- function(event1, n1, event2, n2,
               Q.decomp = NA,
               ##
               A.matrix = A,
-              H.matrix = H,
+              H.matrix.common = H,
+              H.matrix.random = NA,
               ##
               n.matrix = NA,
               events.matrix = NA,
@@ -2039,6 +2059,7 @@ netmetabin <- function(event1, n1, event2, n2,
               ##
               reference.group = reference.group,
               baseline.reference = baseline.reference,
+              small.values = small.values,
               all.treatments = all.treatments,
               seq = seq,
               ##

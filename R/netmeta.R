@@ -12,7 +12,7 @@
 #' @param TE Estimate of treatment effect, i.e. difference between
 #'   first and second treatment (e.g. log odds ratio, mean difference,
 #'   or log hazard ratio). Or an R object created with
-#'   \code{\link{pairwise}}.
+#'   \code{\link[meta]{pairwise}}.
 #' @param seTE Standard error of treatment estimate.
 #' @param treat1 Label/Number for first treatment.
 #' @param treat2 Label/Number for second treatment.
@@ -91,7 +91,9 @@
 #' @param event1 Number of events in first treatment group.
 #' @param event2 Number of events in second treatment group.
 #' @param incr Numerical value added to cell frequencies (for details,
-#'   see \code{\link{pairwise}}).
+#'   see \code{\link[meta]{pairwise}}).
+#' @param mean1 Mean in first treatment group.
+#' @param mean2 Mean in second treatment group.
 #' @param sd1 Standard deviation in first treatment group.
 #' @param sd2 Standard deviation in second treatment group.
 #' @param time1 Person time at risk in first treatment group.
@@ -162,21 +164,21 @@
 #' that is, data are given as contrasts (differences) between two
 #' treatments (argument \code{TE}) with standard error (argument
 #' \code{seTE}). In principle, meta-analysis functions from R package
-#' \bold{meta}, e.g. \code{\link{metabin}} for binary outcomes or
-#' \code{\link{metacont}} for continuous outcomes, can be used to
+#' \bold{meta}, e.g. \code{\link[meta]{metabin}} for binary outcomes or
+#' \code{\link[meta]{metacont}} for continuous outcomes, can be used to
 #' calculate treatment effects separately for each treatment
 #' comparison which is a rather tedious enterprise. If data are
 #' provided in \emph{arm-based} format, that is, data are given for
 #' each treatment arm separately (e.g. number of events and
 #' participants for binary outcomes), a much more convenient way to
 #' transform data into contrast-based form is available. Function
-#' \code{\link{pairwise}} can automatically transform data with binary
-#' outcomes (using the \code{\link{metabin}} function from R package
-#' \bold{meta}), continuous outcomes (\code{\link{metacont}}
-#' function), incidence rates (\code{\link{metainc}} function), and
-#' generic outcomes (\code{\link{metagen}} function). Additional
+#' \code{\link[meta]{pairwise}} can automatically transform data with binary
+#' outcomes (using the \code{\link[meta]{metabin}} function from R package
+#' \bold{meta}), continuous outcomes (\code{\link[meta]{metacont}}
+#' function), incidence rates (\code{\link[meta]{metainc}} function), and
+#' generic outcomes (\code{\link[meta]{metagen}} function). Additional
 #' arguments of these functions can be provided (see help page of
-#' function \code{\link{pairwise}}).
+#' function \code{\link[meta]{pairwise}}).
 #' 
 #' Note, all pairwise comparisons must be provided for a multi-arm
 #' study. Consider a multi-arm study of \emph{p} treatments with known
@@ -184,7 +186,7 @@
 #' must be provided for each of \emph{p}(\emph{p} - 1) / 2 possible
 #' comparisons. For instance, a three-arm study contributes three
 #' pairwise comparisons, a four-arm study even six pairwise
-#' comparisons. Function \code{\link{pairwise}} automatically
+#' comparisons. Function \code{\link[meta]{pairwise}} automatically
 #' calculates all pairwise comparisons for multi-arm studies.
 #' 
 #' A simple random effects model assuming that a constant
@@ -243,7 +245,7 @@
 #' and \code{n2} (binary outcomes); \code{event1}, \code{event2},
 #' \code{time1}, and \code{time2} (incidence rates); \code{n1},
 #' \code{n2}, \code{sd1}, and \code{sd2} (mean difference) are
-#' provided. For datasets preprocessed with \code{\link{pairwise}}
+#' provided. For datasets preprocessed with \code{\link[meta]{pairwise}}
 #' the respective variables are selected automatically.
 #'
 #' @return
@@ -430,8 +432,8 @@
 #' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{forest.netmeta}},
-#'   \code{\link{netrank}}, \code{\link{metagen}}
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link{forest.netmeta}},
+#'   \code{\link{netrank}}, \code{\link[meta]{metagen}}
 #' 
 #' @references
 #' Jackson D, White IR, Riley RD (2012):
@@ -524,25 +526,25 @@ netmeta <- function(TE, seTE,
                     common = gs("common"),
                     random = gs("random") | !is.null(tau.preset),
                     #
-                    prediction = FALSE,
+                    prediction = gs("prediction"),
                     level.predict = gs("level.predict"),
                     #
                     reference.group,
-                    baseline.reference = TRUE,
-                    small.values = "desirable",
-                    all.treatments = NULL,
-                    seq = NULL,
+                    baseline.reference = gs("baseline.reference"),
+                    small.values = gs("small.values"),
+                    all.treatments = gs("all.treatments"),
+                    seq = gs("seq"),
                     #
-                    method.tau = "DL",
+                    method.tau = gs("method.tau.netmeta"),
                     tau.preset = NULL,
                     #
-                    tol.multiarm = 0.001,
-                    tol.multiarm.se = NULL,
-                    details.chkmultiarm = FALSE,
+                    tol.multiarm = gs("tol.multiarm"),
+                    tol.multiarm.se = gs("tol.multiarm.se"),
+                    details.chkmultiarm = gs("details.chkmultiarm"),
                     #
-                    sep.trts = ":",
-                    nchar.trts = 666,
-                    nchar.studlab = 666,
+                    sep.trts = gs("sep.trts"),
+                    nchar.trts = gs("nchar.trts"),
+                    nchar.studlab = gs("nchar.studlab"),
                     #
                     func.inverse = invmat,
                     #
@@ -551,8 +553,8 @@ netmeta <- function(TE, seTE,
                     event1 = NULL,
                     event2 = NULL,
                     incr = NULL,
-                    #mean1 = NULL,
-                    #mean2 = NULL,
+                    mean1 = NULL,
+                    mean2 = NULL,
                     sd1 = NULL,
                     sd2 = NULL,
                     time1 = NULL,
@@ -561,12 +563,12 @@ netmeta <- function(TE, seTE,
                     overall.hetstat = gs("overall.hetstat"),
                     backtransf = gs("backtransf"),
                     #
-                    title = "",
+                    title = gs("title"),
                     keepdata = gs("keepdata"),
-                    keeprma = FALSE,
+                    keeprma = gs("keeprma"),
                     control = NULL,
                     #
-                    warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                    warn = gs("warn"), warn.deprecated = gs("warn.deprecated"),
                     #
                     nchar = nchar.trts,
                     ...) {
@@ -583,9 +585,11 @@ netmeta <- function(TE, seTE,
   chklogical(prediction)
   #
   missing.reference.group <- missing(reference.group)
+  #
+  baseline.reference <- replaceNULL(baseline.reference, TRUE)
   chklogical(baseline.reference)
   #
-  small.values <- setsv(small.values)
+  small.values <- setsv(replaceNULL(small.values, "desirable"))
   #
   if (!is.null(all.treatments))
     chklogical(all.treatments)
@@ -595,13 +599,19 @@ netmeta <- function(TE, seTE,
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
   #
+  tol.multiarm <- replaceNULL(tol.multiarm, 0.001)
   chknumeric(tol.multiarm, min = 0, length = 1)
   if (!is.null(tol.multiarm.se))
     chknumeric(tol.multiarm.se, min = 0, length = 1)
+  #
+  details.chkmultiarm <- replaceNULL(details.chkmultiarm, FALSE)
   chklogical(details.chkmultiarm)
   #
   missing.sep.trts <- missing(sep.trts)
-  chkchar(sep.trts)
+  sep.trts <- replaceNULL(sep.trts, ":")
+  chkchar(sep.trts, length = 1)
+  #
+  nchar.studlab <- replaceNULL(nchar.studlab, 666)
   chknumeric(nchar.studlab, length = 1)
   #
   overall.hetstat <- replaceNULL(overall.hetstat, TRUE)
@@ -635,8 +645,10 @@ netmeta <- function(TE, seTE,
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
   #
+  missing.nchar.trts <- missing(nchar.trts)
+  nchar.trts <- replaceNULL(nchar.trts, 666)
   nchar.trts <-
-    deprecated2(nchar.trts, missing(nchar.trts), nchar, missing(nchar),
+    deprecated2(nchar.trts, missing.nchar.trts, nchar, missing(nchar),
                 warn.deprecated)
   chknumeric(nchar.trts, min = 1, length = 1)
   
@@ -698,10 +710,10 @@ netmeta <- function(TE, seTE,
       event2 <- TE$event2
     if (!is.null(TE$incr))
       incr <- TE$incr
-    #if (!is.null(TE$mean1))
-    #  mean1 <- TE$mean1
-    #if (!is.null(TE$mean2))
-    #  mean2 <- TE$mean2
+    if (!is.null(TE$mean1))
+      mean1 <- TE$mean1
+    if (!is.null(TE$mean2))
+      mean2 <- TE$mean2
     if (!is.null(TE$sd1))
       sd1 <- TE$sd1
     if (!is.null(TE$sd2))
@@ -742,9 +754,8 @@ netmeta <- function(TE, seTE,
     #
     incr <- catch("incr", mc, data, sfsp)
     #
-    #mean1 <- catch("mean1", mc, data, sfsp)
-    #
-    #mean2 <- catch("mean2", mc, data, sfsp)
+    mean1 <- catch("mean1", mc, data, sfsp)
+    mean2 <- catch("mean2", mc, data, sfsp)
     #
     sd1 <- catch("sd1", mc, data, sfsp)
     sd2 <- catch("sd2", mc, data, sfsp)
@@ -809,10 +820,10 @@ netmeta <- function(TE, seTE,
   if (available.events & is.null(incr))
     incr <- rep(0, length(event2))
   #
-  #if (!is.null(mean1) & !is.null(mean2))
-  #  available.means <- TRUE
-  #else
-  available.means <- FALSE
+  if (!is.null(mean1) & !is.null(mean2))
+    available.means <- TRUE
+  else
+    available.means <- FALSE
   #
   if (!is.null(sd1) & !is.null(sd2))
     available.sds <- TRUE
@@ -857,9 +868,9 @@ netmeta <- function(TE, seTE,
     data$.n2 <- n2
     data$.incr <- incr
     #
-    #data$.mean1 <- mean1
+    data$.mean1 <- mean1
     data$.sd1 <- sd1
-    #data$.mean2 <- mean2
+    data$.mean2 <- mean2
     data$.sd2 <- sd2
     #
     data$.time1 <- time1
@@ -887,11 +898,11 @@ netmeta <- function(TE, seTE,
         data$.event2[wo] <- tevent1[wo]
       }
       #
-      #if (isCol(data, ".mean1") & isCol(data, ".mean2")) {
-      #  tmean1 <- data$.mean1
-      #  data$.mean1[wo] <- data$.mean2[wo]
-      #  data$.mean2[wo] <- tmean1[wo]
-      #}
+      if (isCol(data, ".mean1") & isCol(data, ".mean2")) {
+        tmean1 <- data$.mean1
+        data$.mean1[wo] <- data$.mean2[wo]
+        data$.mean2[wo] <- tmean1[wo]
+      }
       #
       if (isCol(data, ".sd1") & isCol(data, ".sd2")) {
         tsd1 <- data$.sd1
@@ -946,10 +957,10 @@ netmeta <- function(TE, seTE,
       event2 <- event2[subset]
     if (!is.null(incr))
       incr <- incr[subset]
-    #if (!is.null(mean1))
-    #  mean1 <- mean1[subset]
-    #if (!is.null(mean2))
-    #  mean2 <- mean2[subset]
+    if (!is.null(mean1))
+      mean1 <- mean1[subset]
+    if (!is.null(mean2))
+      mean2 <- mean2[subset]
     if (!is.null(sd1))
       sd1 <- sd1[subset]
     if (!is.null(sd2))
@@ -970,7 +981,7 @@ netmeta <- function(TE, seTE,
       seq <- as.character(seq)
   }
   #
-  sep.trts <- setsep(labels, sep.trts)
+  sep.trts <- setsep(labels, sep.trts, missing = missing.sep.trts)
   
   
   #
@@ -1059,10 +1070,10 @@ netmeta <- function(TE, seTE,
       event2 <- event2[!excl]
     if (!is.null(incr))
       incr <- incr[!excl]
-    #if (!is.null(mean1))
-    #  mean1 <- mean1[!excl]
-    #if (!is.null(mean2))
-    #  mean2 <- mean2[!excl]
+    if (!is.null(mean1))
+      mean1 <- mean1[!excl]
+    if (!is.null(mean2))
+      mean2 <- mean2[!excl]
     if (!is.null(sd1))
       sd1 <- sd1[!excl]
     if (!is.null(sd2))
@@ -1301,21 +1312,21 @@ netmeta <- function(TE, seTE,
         t2.i <- dat.tau$treat2
         e2.i <- dat.tau$event2
         n2.i <- dat.tau$n2
-        #mean2.i <- dat.tau$mean2
+        mean2.i <- dat.tau$mean2
         sd2.i <- dat.tau$sd2
         time2.i <- dat.tau$time2
         #
         dat.tau$treat2[wo] <- dat.tau$treat1[wo]
         dat.tau$event2[wo] <- dat.tau$event1[wo]
         dat.tau$n2[wo] <- dat.tau$n1[wo]
-        #dat.tau$mean2[wo] <- dat.tau$mean1[wo]
+        dat.tau$mean2[wo] <- dat.tau$mean1[wo]
         dat.tau$sd2[wo] <- dat.tau$sd1[wo]
         dat.tau$time2[wo] <- dat.tau$time2[wo]
         #
         dat.tau$treat1[wo] <- t2.i[wo]
         dat.tau$event1[wo] <- e2.i[wo]
         dat.tau$n1[wo] <- n2.i[wo]
-        #dat.tau$mean1[wo] <- mean2.i[wo]
+        dat.tau$mean1[wo] <- mean2.i[wo]
         dat.tau$sd1[wo] <- sd2.i[wo]
         dat.tau$time1[wo] <- time2.i[wo]
       }
@@ -1440,8 +1451,8 @@ netmeta <- function(TE, seTE,
               n2 = n2,
               incr = incr,
               #
-              #mean1 = mean1,
-              #mean2 = mean2,
+              mean1 = mean1,
+              mean2 = mean2,
               sd1 = sd1,
               sd2 = sd2,
               #
@@ -1831,7 +1842,6 @@ netmeta <- function(TE, seTE,
     res$events.trts <- as.vector(dat.e[trts])
     names(res$events.trts) <- trts
   }
-  
   
   #
   # Add results from rma.mv()

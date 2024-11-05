@@ -40,8 +40,11 @@
 #' @param show A character string indicating which comparisons should
 #'   be printed (see Details).
 #' @param overall A logical indicating whether estimates from network
-#'   meta-analyis should be printed in addition to direct and indirect
-#'   estimates.
+#'   meta-analysis should be printed.
+#' @param direct A logical indicating whether direct estimates should
+#'   be printed.
+#' @param indirect A logical indicating whether indirect estimates
+#'   should be printed.
 #' @param ci A logical indicating whether confidence intervals should
 #'   be printed in addition to treatment estimates.
 #' @param test A logical indicating whether results of a test
@@ -244,6 +247,15 @@ netsplit <- function(x, method,
                      upper = TRUE,
                      reference.group = x$reference.group,
                      baseline.reference = x$baseline.reference,
+                     #
+                     show = gs("show.netsplit"),
+                     overall = TRUE,
+                     direct = TRUE,
+                     indirect = TRUE,
+                     only.reference = FALSE,
+                     ci = FALSE,
+                     test = show %in% c("all", "with.direct", "both"),
+                     #
                      order = NULL,
                      sep.trts = x$sep.trts, quote.trts = "",
                      tol.direct = 0.0005,
@@ -264,7 +276,7 @@ netsplit <- function(x, method,
   ##
   is.bin <- inherits(x, "netmetabin")
   ##
-  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
+  is.tictoc <- is_installed_package("tictoc", stop = FALSE)
   
   
   ##
@@ -289,7 +301,17 @@ netsplit <- function(x, method,
     baseline.reference <- FALSE
     reference.group <- ""
   }
-  ##
+  #
+  show <- setchar(show, c("all", "both", "with.direct",
+                          "direct.only", "indirect.only",
+                          "reference.only"))
+  chklogical(overall)
+  chklogical(direct)
+  chklogical(indirect)
+  chklogical(ci)
+  chklogical(test)
+  chklogical(only.reference)
+  #
   chkchar(sep.trts)
   chkchar(quote.trts)
   chknumeric(tol.direct, min = 0, length = 1)
@@ -377,11 +399,19 @@ netsplit <- function(x, method,
   ##
   ##
   res <- list(comparison = dat.trts$comparison,
-              ##
+              #
               k = m2d.f$k,
-              ##
+              #
+              show = show,
+              overall = overall,
+              direct = direct,
+              indirect = indirect,
+              ci = ci,
+              test = test,
+              only.reference = only.reference,
+              #
               prop.common = prop.common,
-              ##
+              #
               common = m2d.f$nma,
               direct.common = m2d.f$direct,
               indirect.common = m2d.f$indirect,
@@ -411,7 +441,7 @@ netsplit <- function(x, method,
               sep.trts = sep.trts,
               quote.trts = quote.trts,
               nchar.trts = x$nchar.trts,
-              ##
+              #
               tol.direct = tol.direct,
               backtransf = backtransf,
               ##
@@ -452,12 +482,14 @@ print.netsplit <- function(x,
                            common = x$x$common,
                            random = x$x$random,
                            ##
-                           show = "all",
-                           overall = TRUE,
-                           ci = FALSE,
-                           test = show %in% c("all", "with.direct", "both"),
-                           only.reference = FALSE,
-                           ##
+                           show = x$show,
+                           overall = x$overall,
+                           direct = x$direct,
+                           indirect = x$indirect,
+                           ci = x$ci,
+                           test = x$test,
+                           only.reference = x$only.reference,
+                           #
                            sortvar = NULL,
                            subset = NULL,
                            ##
@@ -468,11 +500,11 @@ print.netsplit <- function(x,
                            digits.pval = gs("digits.pval"),
                            digits.prop = max(gs("digits.pval") - 2, 2),
                            ##
-                           text.NA = ".",
+                           text.NA = gs("lab.NA"),
                            backtransf = x$backtransf,
                            scientific.pval = gs("scientific.pval"),
                            big.mark = gs("big.mark"),
-                           legend = TRUE,
+                           legend = gs("legend"),
                            ##
                            indent = TRUE,
                            warn.deprecated = gs("warn.deprecated"),
@@ -525,6 +557,8 @@ print.netsplit <- function(x,
   }
   ##
   chklogical(overall)
+  chklogical(direct)
+  chklogical(indirect)
   chklogical(ci)
   chklogical(test)
   ##
@@ -817,32 +851,36 @@ print.netsplit <- function(x,
       names.common <- c(names.common, ci.lab)
     }
   }
-  ##
-  common$TE.direct.common <-
-    formatN(TE.direct.common, digits, text.NA = text.NA,
-            big.mark = big.mark)
-  names.common <- c(names.common, "direct")
-  if (ci) {
-    common$ci.direct.common <-
-      formatCI(round(lower.direct.common, digits),
-               round(upper.direct.common, digits))
-    common$ci.direct.common[is.na(common$ci.direct.common)] <- text.NA
-    names.common <- c(names.common, ci.lab)
+  #
+  if (direct) {
+    common$TE.direct.common <-
+      formatN(TE.direct.common, digits, text.NA = text.NA,
+              big.mark = big.mark)
+    names.common <- c(names.common, "direct")
+    if (ci) {
+      common$ci.direct.common <-
+        formatCI(round(lower.direct.common, digits),
+                 round(upper.direct.common, digits))
+      common$ci.direct.common[is.na(common$ci.direct.common)] <- text.NA
+      names.common <- c(names.common, ci.lab)
+    }
   }
-  ##
-  common$TE.indirect.common <-
-    formatN(TE.indirect.common, digits,
-            text.NA = text.NA, big.mark = big.mark)
-  names.common <- c(names.common, "indir.")
-  ##
-  if (ci) {
-    common$ci.indirect.common <-
-      formatCI(round(lower.indirect.common, digits),
-               round(upper.indirect.common, digits))
-    common$ci.indirect.common[is.na(common$ci.indirect.common)] <- text.NA
-    names.common <- c(names.common, ci.lab)
+  #
+  if (indirect) {
+    common$TE.indirect.common <-
+      formatN(TE.indirect.common, digits,
+              text.NA = text.NA, big.mark = big.mark)
+    names.common <- c(names.common, "indir.")
+    #
+    if (ci) {
+      common$ci.indirect.common <-
+        formatCI(round(lower.indirect.common, digits),
+                 round(upper.indirect.common, digits))
+      common$ci.indirect.common[is.na(common$ci.indirect.common)] <- text.NA
+      names.common <- c(names.common, ci.lab)
+    }
   }
-  ##
+  #
   if (test) {
     common$diff <- formatN(TE.compare.common, digits, text.NA = text.NA,
                            big.mark = big.mark)
@@ -863,6 +901,7 @@ print.netsplit <- function(x,
     common$p[rmSpace(common$p) == "--"] <- text.NA
     names.common <- c(names.common, c("z", "p-value"))
   }
+  #
   common <- as.data.frame(common)
   names(common) <- names.common
   
@@ -884,30 +923,34 @@ print.netsplit <- function(x,
         names.random <- c(names.random, ci.lab)
       }
     }
-    ##
-    random$TE.direct.random <- formatN(TE.direct.random, digits,
-                                       text.NA = text.NA,
-                                       big.mark = big.mark)
-    names.random <- c(names.random, "direct")
-    if (ci) {
-      random$ci.direct.random <- formatCI(round(lower.direct.random, digits),
-                                          round(upper.direct.random, digits))
-      random$ci.direct.random[is.na(random$ci.direct.random)] <- text.NA
-      names.random <- c(names.random, ci.lab)
-    }
-    ##
-    random$TE.indirect.random <- formatN(TE.indirect.random, digits,
+    #
+    if (direct) {
+      random$TE.direct.random <- formatN(TE.direct.random, digits,
                                          text.NA = text.NA,
                                          big.mark = big.mark)
-    names.random <- c(names.random, "indir.")
-    if (ci) {
-      random$ci.indirect.random <-
-        formatCI(round(lower.indirect.random, digits),
-                 round(upper.indirect.random, digits))
-      random$ci.indirect.random[is.na(random$ci.indirect.random)] <- text.NA
-      names.random <- c(names.random, ci.lab)
+      names.random <- c(names.random, "direct")
+      if (ci) {
+        random$ci.direct.random <- formatCI(round(lower.direct.random, digits),
+                                            round(upper.direct.random, digits))
+        random$ci.direct.random[is.na(random$ci.direct.random)] <- text.NA
+        names.random <- c(names.random, ci.lab)
+      }
     }
-    ##
+    #
+    if (indirect) {
+      random$TE.indirect.random <- formatN(TE.indirect.random, digits,
+                                           text.NA = text.NA,
+                                           big.mark = big.mark)
+      names.random <- c(names.random, "indir.")
+      if (ci) {
+        random$ci.indirect.random <-
+          formatCI(round(lower.indirect.random, digits),
+                   round(upper.indirect.random, digits))
+        random$ci.indirect.random[is.na(random$ci.indirect.random)] <- text.NA
+        names.random <- c(names.random, ci.lab)
+      }
+    }
+    #
     if (test) {
       random$diff <- formatN(TE.compare.random, digits, text.NA = text.NA,
                              big.mark = big.mark)

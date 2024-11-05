@@ -29,7 +29,8 @@
   big.mark = gs("big.mark"),
   truncate,
   text.truncate = "*** Output truncated ***",
-  legend = TRUE,
+  details.methods = gs("details.netmeta"),
+  legend = gs("legend.netmeta"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -112,6 +113,9 @@ length corresponding to the number of pairwise comparisons
 
 \item{text.truncate}{A character string printed if study results
 were truncated from the printout.}
+
+\item{details.methods}{A logical specifying whether details on statistical
+methods should be printed.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}

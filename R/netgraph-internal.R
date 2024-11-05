@@ -33,7 +33,7 @@ multicols <- function(studies, narms, missing.col.multiarm,
       csfun <- function(fcall, fname) {
         is.cs <- length(grep(fname, fcall)) > 0
         if (is.cs)
-          is.installed.package("colorspace")
+          is_installed_package("colorspace")
         is.cs
       }
       ##

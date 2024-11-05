@@ -100,7 +100,7 @@ hasse <- function(x,
   pooled <- setchar(pooled, c("common", "random", "fixed"))
   pooled[pooled == "fixed"] <- "common"
   
-  if (!is.installed.package("hasseDiagram", stop = FALSE))
+  if (!is_installed_package("hasseDiagram", stop = FALSE))
     stop(paste0("Package 'hasseDiagram' missing.",
                 "\n  ",
                 "Please use the following R commands for installation:",

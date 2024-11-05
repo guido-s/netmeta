@@ -101,7 +101,7 @@ netgraph.discomb <- function(x,
   #
   class(y) <- "netmeta"
   
-  res <- netgraph(y, seq = y$seq, iterate = FALSE,# plastic = plastic,
+  res <- netgraph(y, seq = y$seq, iterate = FALSE,
                   #
                   labels = labels,
                   adj = adj,

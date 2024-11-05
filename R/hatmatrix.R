@@ -245,9 +245,10 @@ hatmatrix <- function(x, method = "Ruecker", type,
   res$x$random <- random
   res$x$nchar.trts <- nchar.trts
   res$x$nchar.studlab <- nchar.studlab
-  ##
+  #
+  res$call <- match.call()
   res$version <- packageDescription("netmeta")$Version
-  ##
+  #
   class(res) <- "hatmatrix"
   ##
   res
@@ -268,7 +269,7 @@ print.hatmatrix <- function(x,
                             nchar.trts = x$x$nchar.trts,
                             nchar.studlab = x$x$nchar.studlab,
                             digits = gs("digits"),
-                            legend = TRUE,
+                            legend = gs("legend"),
                             legend.studlab = TRUE,
                             ...) {
   
@@ -516,6 +517,9 @@ hatmatrix.aggr <- function(x, model, type) {
     else if (type == "full")
       rownames(H) <- colnames(H) <- allcomps
   }
+  #
+  attr(H, "model") <- model
+  attr(H, "type") <- type
   
   H
 }
@@ -539,10 +543,12 @@ hatmatrix.F1000 <- function(x, model) {
   Vd <- diag(direct$seTE^2,
              nrow = length(direct$seTE),
              ncol = length(direct$seTE))
+  
   H <-
     X.full %*% solve(t(X) %*% solve(Vd) %*% X) %*% t(X) %*% solve(Vd)
-  ##
+  #
   colnames(H) <- rownames(X)
-  ##
+  attr(H, "model") <- model
+  
   H
 }

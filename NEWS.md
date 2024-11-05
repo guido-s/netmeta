@@ -2,6 +2,8 @@
 
 ### Major changes
 
+* Network meta-regression implemented
+
 * Network meta-analysis of studies with correlated treatment arms implemented
 
 * Component network meta-analysis:
@@ -12,10 +14,19 @@
   - auxiliary functions createC() and combinations() to fit interaction
     CNMA models more easily
 
+* New R function settings.netmeta() to define and print default settings
+  for network meta-analyses in R package **netmeta**
+
+* By default, no reference group line is displayed in the forest plot
+  (argument 'drop.reference.group')
+
 * R functions pairwise() and subset.pairwise() moved from R package
   **netmeta** to **meta**
 
 * R function pairwise() can be used with dose-response data
+
+* In R function netsplit(), only show results for pairwise comparisons
+  providing both direct and indirect evidence by default
 
 * R function netmeta() does not automatically return the R object created
     with rma.mv() from **metafor** to calculate the between-study variance
@@ -24,13 +35,7 @@
 
 ### User-visible changes
 
-* netmeta(), netmetabin(), discomb(), netcomb(),
-  summary.netmeta(), summary.netcomb(),
-  print.netmeta(), print.netcomb(),
-  print.summary.netmeta(), print.summary.netcomb(),
-  forest.netmeta(), forest.netcomb():
-  - new argument 'overall.hetstat' to specify whether to print heterogeneity
-    information
+* New R function netmetareg() to conduct network meta-regression
 
 * netmeta():
   - new argument 'correlated' to conduct network meta-analysis of correlated
@@ -51,6 +56,14 @@
   - new arguments 'n1', 'n2', 'event1', 'event2', 'incr', 'na.unident', and
     'keepdata'
 
+* netmeta(), netmetabin(), discomb(), netcomb(),
+  summary.netmeta(), summary.netcomb(),
+  print.netmeta(), print.netcomb(),
+  print.summary.netmeta(), print.summary.netcomb(),
+  forest.netmeta(), forest.netcomb():
+  - new argument 'overall.hetstat' to specify whether to print heterogeneity
+    information
+
 * netleague():
   - new argument 'details' to control printing of details on comparisons in
     lower and upper triangle
@@ -60,6 +73,9 @@
 
 * print.netmeta(), print.netcomb():
   - new default for 
+
+* print.netmeta(), print.summary.netmeta():
+  - new argument 'details.methods'
 
 * New function summary.netconnection() to print list of studies in subnetworks
 

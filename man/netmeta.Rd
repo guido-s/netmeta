@@ -19,38 +19,40 @@ netmeta(
   level.ma = gs("level.ma"),
   common = gs("common"),
   random = gs("random") | !is.null(tau.preset),
-  prediction = FALSE,
+  prediction = gs("prediction"),
   level.predict = gs("level.predict"),
   reference.group,
-  baseline.reference = TRUE,
-  small.values = "desirable",
-  all.treatments = NULL,
-  seq = NULL,
-  method.tau = "DL",
+  baseline.reference = gs("baseline.reference"),
+  small.values = gs("small.values"),
+  all.treatments = gs("all.treatments"),
+  seq = gs("seq"),
+  method.tau = gs("method.tau.netmeta"),
   tau.preset = NULL,
-  tol.multiarm = 0.001,
-  tol.multiarm.se = NULL,
-  details.chkmultiarm = FALSE,
-  sep.trts = ":",
-  nchar.trts = 666,
-  nchar.studlab = 666,
+  tol.multiarm = gs("tol.multiarm"),
+  tol.multiarm.se = gs("tol.multiarm.se"),
+  details.chkmultiarm = gs("details.chkmultiarm"),
+  sep.trts = gs("sep.trts"),
+  nchar.trts = gs("nchar.trts"),
+  nchar.studlab = gs("nchar.studlab"),
   func.inverse = invmat,
   n1 = NULL,
   n2 = NULL,
   event1 = NULL,
   event2 = NULL,
   incr = NULL,
+  mean1 = NULL,
+  mean2 = NULL,
   sd1 = NULL,
   sd2 = NULL,
   time1 = NULL,
   time2 = NULL,
   overall.hetstat = gs("overall.hetstat"),
   backtransf = gs("backtransf"),
-  title = "",
+  title = gs("title"),
   keepdata = gs("keepdata"),
-  keeprma = FALSE,
+  keeprma = gs("keeprma"),
   control = NULL,
-  warn = TRUE,
+  warn = gs("warn"),
   warn.deprecated = gs("warn.deprecated"),
   nchar = nchar.trts,
   ...
@@ -81,7 +83,8 @@ netmeta(
   text.tau2 = gs("text.tau2"),
   text.tau = gs("text.tau"),
   text.I2 = gs("text.I2"),
-  legend = TRUE,
+  details.methods = gs("details.netmeta"),
+  legend = gs("legend.netmeta"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -90,7 +93,7 @@ netmeta(
 \item{TE}{Estimate of treatment effect, i.e. difference between
 first and second treatment (e.g. log odds ratio, mean difference,
 or log hazard ratio). Or an R object created with
-\code{\link{pairwise}}.}
+\code{\link[meta]{pairwise}}.}
 
 \item{seTE}{Standard error of treatment estimate.}
 
@@ -194,7 +197,11 @@ of the Laplacian matrix L (see Details).}
 \item{event2}{Number of events in second treatment group.}
 
 \item{incr}{Numerical value added to cell frequencies (for details,
-see \code{\link{pairwise}}).}
+see \code{\link[meta]{pairwise}}).}
+
+\item{mean1}{Mean in first treatment group.}
+
+\item{mean2}{Mean in second treatment group.}
 
 \item{sd1}{Standard deviation in first treatment group.}
 
@@ -280,6 +287,9 @@ root of the between-study variance \eqn{\tau^2}.}
 
 \item{text.I2}{Text printed to identify heterogeneity statistic
 I\eqn{^2}.}
+
+\item{details.methods}{A logical specifying whether details on statistical
+methods should be printed.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}
@@ -526,21 +536,21 @@ Data entry for this function is in \emph{contrast-based} format,
 that is, data are given as contrasts (differences) between two
 treatments (argument \code{TE}) with standard error (argument
 \code{seTE}). In principle, meta-analysis functions from R package
-\bold{meta}, e.g. \code{\link{metabin}} for binary outcomes or
-\code{\link{metacont}} for continuous outcomes, can be used to
+\bold{meta}, e.g. \code{\link[meta]{metabin}} for binary outcomes or
+\code{\link[meta]{metacont}} for continuous outcomes, can be used to
 calculate treatment effects separately for each treatment
 comparison which is a rather tedious enterprise. If data are
 provided in \emph{arm-based} format, that is, data are given for
 each treatment arm separately (e.g. number of events and
 participants for binary outcomes), a much more convenient way to
 transform data into contrast-based form is available. Function
-\code{\link{pairwise}} can automatically transform data with binary
-outcomes (using the \code{\link{metabin}} function from R package
-\bold{meta}), continuous outcomes (\code{\link{metacont}}
-function), incidence rates (\code{\link{metainc}} function), and
-generic outcomes (\code{\link{metagen}} function). Additional
+\code{\link[meta]{pairwise}} can automatically transform data with binary
+outcomes (using the \code{\link[meta]{metabin}} function from R package
+\bold{meta}), continuous outcomes (\code{\link[meta]{metacont}}
+function), incidence rates (\code{\link[meta]{metainc}} function), and
+generic outcomes (\code{\link[meta]{metagen}} function). Additional
 arguments of these functions can be provided (see help page of
-function \code{\link{pairwise}}).
+function \code{\link[meta]{pairwise}}).
 
 Note, all pairwise comparisons must be provided for a multi-arm
 study. Consider a multi-arm study of \emph{p} treatments with known
@@ -548,7 +558,7 @@ variances. For this study, treatment effects and standard errors
 must be provided for each of \emph{p}(\emph{p} - 1) / 2 possible
 comparisons. For instance, a three-arm study contributes three
 pairwise comparisons, a four-arm study even six pairwise
-comparisons. Function \code{\link{pairwise}} automatically
+comparisons. Function \code{\link[meta]{pairwise}} automatically
 calculates all pairwise comparisons for multi-arm studies.
 
 A simple random effects model assuming that a constant
@@ -607,7 +617,7 @@ calculated if arguments \code{event1}, \code{event2}, \code{n1},
 and \code{n2} (binary outcomes); \code{event1}, \code{event2},
 \code{time1}, and \code{time2} (incidence rates); \code{n1},
 \code{n2}, \code{sd1}, and \code{sd2} (mean difference) are
-provided. For datasets preprocessed with \code{\link{pairwise}}
+provided. For datasets preprocessed with \code{\link[meta]{pairwise}}
 the respective variables are selected automatically.
 }
 \examples{
@@ -689,8 +699,8 @@ Conducting Meta-Analyses in R with the metafor Package.
 \bold{36}, 1--48
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{forest.netmeta}},
-  \code{\link{netrank}}, \code{\link{metagen}}
+\code{\link[meta]{pairwise}}, \code{\link{forest.netmeta}},
+  \code{\link{netrank}}, \code{\link[meta]{metagen}}
 }
 \author{
 Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido

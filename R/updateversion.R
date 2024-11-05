@@ -458,6 +458,15 @@ updateversion <- function(x, verbose = FALSE) {
     if (update.2.8.0)
       x$x$small.values <- setsv(x$x$small.values)
     ##
+    if (update.3.0.0) {
+      x$overall <- TRUE
+      x$direct <- TRUE
+      x$indirect <- TRUE
+      #
+      x$show <- gs("show.netsplit")
+      x$only.reference <- FALSE
+    }
+    ##
     return(x)
   }
   

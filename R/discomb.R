@@ -13,7 +13,7 @@
 #' @param TE Estimate of treatment effect, i.e. difference between
 #'   first and second treatment (e.g. log odds ratio, mean difference,
 #'   or log hazard ratio). Or an R object created with
-#'   \code{\link{pairwise}}.
+#'   \code{\link[meta]{pairwise}}.
 #' @param seTE Standard error of treatment estimate.
 #' @param treat1 Label/Number for first treatment.
 #' @param treat2 Label/Number for second treatment.
@@ -74,6 +74,7 @@
 #' @param nchar.comps A numeric defining the minimum number of
 #'   characters used to create unique names for components (see
 #'   Details).
+#' @param sep.ia A single character to define separator for interactions.
 #' @param func.inverse R function used to calculate the pseudoinverse
 #'   of the Laplacian matrix L (see \code{\link{netmeta}}).
 #' @param n1 Number of observations in first treatment group.
@@ -388,7 +389,7 @@ discomb <- function(TE, seTE,
                     studlab, data = NULL, subset = NULL,
                     ##
                     inactive = NULL,
-                    sep.comps = "+", 
+                    sep.comps = gs("sep.comps"),
                     C.matrix,
                     ##
                     sm,
@@ -398,19 +399,21 @@ discomb <- function(TE, seTE,
                     random = gs("random") | !is.null(tau.preset),
                     ##
                     reference.group,
-                    baseline.reference = TRUE,
-                    seq = NULL,
+                    baseline.reference = gs("baseline.reference"),
+                    seq = gs("sep"),
                     ##
                     tau.preset = NULL,
                     ##
-                    tol.multiarm = 0.001,
-                    tol.multiarm.se = NULL,
-                    details.chkmultiarm = FALSE,
+                    tol.multiarm = gs("tol.multiarm"),
+                    tol.multiarm.se = gs("tol.multiarm.se"),
+                    details.chkmultiarm = gs("details.chkmultiarm"),
                     ##
                     details.chkident = FALSE,
                     ##
-                    sep.trts = ":",
-                    nchar.comps = 666,
+                    sep.trts = gs("sep.trts"),
+                    nchar.comps = gs("nchar.comps"),
+                    #
+                    sep.ia = gs("sep.ia"),
                     #
                     func.inverse = invmat,
                     #
@@ -423,12 +426,12 @@ discomb <- function(TE, seTE,
                     overall.hetstat = gs("overall.hetstat"),
                     backtransf = gs("backtransf"),
                     #
-                    na.unident = TRUE,
+                    na.unident = gs("na.unident"),
                     ##
-                    title = "",
+                    title = gs("title"),
                     keepdata = gs("keepdata"),
                     #
-                    warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                    warn = gs("warn"), warn.deprecated = gs("warn.deprecated"),
                     nchar.trts = nchar.comps,
                     ...) {
   
@@ -493,6 +496,9 @@ discomb <- function(TE, seTE,
                 warn.deprecated)
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
+  #
+  missing.sep.ia <- missing(sep.ia)
+  chkchar(sep.ia, nchar = 0:1, length = 1)
   
   
   ##
@@ -1049,7 +1055,7 @@ discomb <- function(TE, seTE,
       }
     }
   }
-  
+    
   
   ##
   ##
@@ -1096,6 +1102,14 @@ discomb <- function(TE, seTE,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
+  #
+  comps <- names(res.c$components$TE)
+  #
+  if (sep.comps == sep.ia)
+    stop("Input for arguments 'sep.comps' and 'sep.ia' must be different.",
+         call. = FALSE)
+  #
+  sep.ia <- setsep(comps, sep.ia, missing = missing.sep.ia)
   ##
   ## Random effects models
   ##
@@ -1162,7 +1176,7 @@ discomb <- function(TE, seTE,
               ##
               designs = unique(sort(designs$design)),
               ##
-              comps = names(res.c$components$TE),
+              comps = comps,
               k.comps = NA,
               n.comps = NA,
               events.comps = NA,
@@ -1293,6 +1307,7 @@ discomb <- function(TE, seTE,
               sep.trts = sep.trts,
               sep.comps = sep.comps,
               nchar.comps = nchar.comps,
+              sep.ia = sep.ia,
               #
               inactive = inactive,
               #

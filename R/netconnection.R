@@ -19,13 +19,13 @@
 #'   print.netconnection
 #' 
 #' @param data A data frame, e.g., created with
-#'   \code{\link{pairwise}}.
+#'   \code{\link[meta]{pairwise}}.
 #' @param treat1 Label / number for first treatment (ignored if
-#'   \code{data} was created with \code{\link{pairwise}}).
+#'   \code{data} was created with \code{\link[meta]{pairwise}}).
 #' @param treat2 Label / number for second treatment (ignored if
-#'   \code{data} was created with \code{\link{pairwise}}).
+#'   \code{data} was created with \code{\link[meta]{pairwise}}).
 #' @param studlab Study labels (ignored if \code{data} was created
-#'   with \code{\link{pairwise}}).
+#'   with \code{\link[meta]{pairwise}}).
 #' @param subset An optional vector specifying a subset of studies to
 #'   be used.
 #' @param title Title of meta-analysis / systematic review.

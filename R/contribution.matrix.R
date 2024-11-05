@@ -162,7 +162,7 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
   colnames(weights) <- seq_len(dims[2])
   
   
-  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
+  is.tictoc <- is_installed_package("tictoc", stop = FALSE)
   ## rows of comparison matrix
   comparisons <- unlist(lapply(rownames(H), unlist))
   ##
@@ -192,7 +192,7 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
   model <- setchar(model, c("common", "random"))
   chklogical(verbose)
   ##
-  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
+  is.tictoc <- is_installed_package("tictoc", stop = FALSE)
   
   
   ##
@@ -361,7 +361,7 @@ contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
   model <- setchar(model, c("common", "random"))
   chklogical(verbose)
   ##
-  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
+  is.tictoc <- is_installed_package("tictoc", stop = FALSE)
   
   
   H.full <- hatmatrix.aggr(x, model, type = "full")
@@ -538,7 +538,7 @@ contribution.matrix.ruecker.pseudoinv <- function (x, model, verbose = FALSE) {
   model <- setchar(model, c("common", "random"))
   chklogical(verbose)
   ##
-  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
+  is.tictoc <- is_installed_package("tictoc", stop = FALSE)
   
   
   ##

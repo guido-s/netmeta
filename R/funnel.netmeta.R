@@ -58,7 +58,7 @@
 #' @param rank Deprecated argument (replaced by \code{method.bias}).
 #' @param mm Deprecated argument (replaced by \code{method.bias}).
 #' @param \dots Additional graphical arguments passed as arguments to
-#'   \code{\link{funnel.meta}}.
+#'   \code{\link[meta]{funnel.meta}}.
 #' 
 #' @details
 #' A \sQuote{comparison-adjusted} funnel plot (Chaimani & Salanti,
@@ -108,8 +108,8 @@
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{netmeta}}, \code{\link{funnel.meta}},
-#'   \code{\link{metabias}}
+#' @seealso \code{\link{netmeta}}, \code{\link[meta]{funnel.meta}},
+#'   \code{\link[meta]{metabias}}
 #' 
 #' @references
 #' Chaimani A & Salanti G (2012):

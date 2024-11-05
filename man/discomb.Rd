@@ -14,7 +14,7 @@ discomb(
   data = NULL,
   subset = NULL,
   inactive = NULL,
-  sep.comps = "+",
+  sep.comps = gs("sep.comps"),
   C.matrix,
   sm,
   level = gs("level"),
@@ -22,15 +22,16 @@ discomb(
   common = gs("common"),
   random = gs("random") | !is.null(tau.preset),
   reference.group,
-  baseline.reference = TRUE,
-  seq = NULL,
+  baseline.reference = gs("baseline.reference"),
+  seq = gs("sep"),
   tau.preset = NULL,
-  tol.multiarm = 0.001,
-  tol.multiarm.se = NULL,
-  details.chkmultiarm = FALSE,
+  tol.multiarm = gs("tol.multiarm"),
+  tol.multiarm.se = gs("tol.multiarm.se"),
+  details.chkmultiarm = gs("details.chkmultiarm"),
   details.chkident = FALSE,
-  sep.trts = ":",
-  nchar.comps = 666,
+  sep.trts = gs("sep.trts"),
+  nchar.comps = gs("nchar.comps"),
+  sep.ia = gs("sep.ia"),
   func.inverse = invmat,
   n1 = NULL,
   n2 = NULL,
@@ -39,10 +40,10 @@ discomb(
   incr = NULL,
   overall.hetstat = gs("overall.hetstat"),
   backtransf = gs("backtransf"),
-  na.unident = TRUE,
-  title = "",
+  na.unident = gs("na.unident"),
+  title = gs("title"),
   keepdata = gs("keepdata"),
-  warn = TRUE,
+  warn = gs("warn"),
   warn.deprecated = gs("warn.deprecated"),
   nchar.trts = nchar.comps,
   ...
@@ -52,7 +53,7 @@ discomb(
 \item{TE}{Estimate of treatment effect, i.e. difference between
 first and second treatment (e.g. log odds ratio, mean difference,
 or log hazard ratio). Or an R object created with
-\code{\link{pairwise}}.}
+\code{\link[meta]{pairwise}}.}
 
 \item{seTE}{Standard error of treatment estimate.}
 
@@ -130,6 +131,8 @@ between treatment labels.}
 \item{nchar.comps}{A numeric defining the minimum number of
 characters used to create unique names for components (see
 Details).}
+
+\item{sep.ia}{A single character to define separator for interactions.}
 
 \item{func.inverse}{R function used to calculate the pseudoinverse
 of the Laplacian matrix L (see \code{\link{netmeta}}).}

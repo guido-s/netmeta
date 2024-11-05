@@ -34,7 +34,7 @@
 #' @param lab.NA A character string to label missing values.
 #' @param smlab A label printed at top of figure. By default, text
 #'   indicating either common or random effects model is printed.
-#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#' @param \dots Additional arguments for \code{\link[meta]{forest.meta}}
 #'   function.
 #' 
 #' @details
@@ -46,13 +46,13 @@
 #' forest plot, respectively. If argument \code{rightcols} is
 #' \code{FALSE}, no columns will be plotted on the right side.
 #' 
-#' For more information see help page of \code{\link{forest.meta}}
+#' For more information see help page of \code{\link[meta]{forest.meta}}
 #' function.
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netbind}}, \code{\link{netcomb}},
-#'   \code{\link{forest.meta}}
+#'   \code{\link[meta]{forest.meta}}
 #' 
 #' @keywords hplot
 #' 
@@ -95,7 +95,7 @@
 forest.netbind <- function(x,
                            pooled = ifelse(x$x$random, "random", "common"),
                            ##
-                           equal.size = TRUE,
+                           equal.size = gs("equal.size"),
                            ##
                            leftcols = "studlab",
                            leftlabs = "Treatment",
@@ -108,7 +108,7 @@ forest.netbind <- function(x,
                            digits.prop = max(gs("digits.pval") - 2, 2),
                            ##
                            backtransf = x$backtransf,
-                           lab.NA = "",
+                           lab.NA = gs("lab.NA"),
                            smlab,
                            ...) {
   

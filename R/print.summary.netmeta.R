@@ -57,6 +57,8 @@
 #'   \code{x$TE} or contain numerical values).
 #' @param text.truncate A character string printed if study results
 #'   were truncated from the printout.
+#' @param details.methods A logical specifying whether details on statistical
+#'   methods should be printed.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -147,9 +149,10 @@ print.summary.netmeta <- function(x,
                                   big.mark = gs("big.mark"),
                                   truncate,
                                   text.truncate = "*** Output truncated ***",
-                                  ##
-                                  legend = TRUE,
-                                  ##
+                                  #
+                                  details.methods = gs("details.netmeta"),
+                                  legend = gs("legend.netmeta"),
+                                  #
                                   warn.deprecated = gs("warn.deprecated"),
                                   ##
                                   ...) {
@@ -189,6 +192,7 @@ print.summary.netmeta <- function(x,
   chklogical(scientific.pval)
   ##
   chklogical(nma)
+  chklogical(details.methods)
   chklogical(legend)
   ##
   sfsp <- sys.frame(sys.parent())
@@ -481,7 +485,8 @@ print.summary.netmeta <- function(x,
                   digits.I2 = digits.I2,
                   scientific.pval = scientific.pval,
                   big.mark = big.mark,
-                  ##
+                  #
+                  details.methods = details.methods,
                   legend = legend)
   }
   else {

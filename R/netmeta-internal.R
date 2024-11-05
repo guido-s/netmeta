@@ -8,6 +8,57 @@
 }
 
 
+.onLoad <- function(libname, pkgname) {
+  #
+  # Default settings for R package netmeta
+  #
+  argslist <- c("baseline.reference", "small.values",
+                "all.treatments", "seq",
+                "method.tau.netmeta",
+                "drop.reference.group", "equal.size",
+                "show.netsplit",
+                #
+                "nsim.netmeta", "lump.comparator",
+                #
+                "plastic", "col.netgraph",
+                "number.of.studies", "thickness",
+                "multiarm",
+                #
+                "tol.multiarm", "tol.multiarm.se",
+                "details.chkmultiarm",
+                #
+                "na.unident",
+                "sep.trts", "sep.comps", "sep.ia",
+                "nchar.trts", "nchar.studlab",
+                #
+                "details.netmeta", "legend.netmeta")
+  #
+  suppressWarnings(
+    settings.meta(baseline.reference = TRUE, small.values = "desirable",
+                  all.treatments = NULL, seq = NULL,
+                  method.tau.netmeta = "DL",
+                  drop.reference.group = TRUE, equal.size = TRUE,
+                  show.netsplit = "both",
+                  #
+                  nsim.netmeta = 1000, lump.comparator = FALSE,
+                  #
+                  plastic = FALSE, col.netgraph = NULL,
+                  number.of.studies = TRUE, thickness = "number.of.studies",
+                  multiarm = FALSE,
+                  #
+                  tol.multiarm = 0.001, tol.multiarm.se = NULL,
+                  details.chkmultiarm = FALSE,
+                  #
+                  na.unident = TRUE,
+                  sep.trts = ":", sep.comps = "+", sep.ia = "*",
+                  nchar.trts = 666, nchar.studlab = 666,
+                  #
+                  details.netmeta = TRUE, legend.netmeta = TRUE,
+                  #
+                  .argslist.netmeta = argslist))
+}
+
+
 calcV <- function(x, sm) {
   p2 <- (x$event2[1] + x$incr[1]) / (x$n2[1] + 2 * x$incr[1])
   n2 <- x$n2[1] + 2 * x$incr[1]
@@ -103,3 +154,57 @@ setsv <- function(x) {
 
 first <- function(x) x[1]
 second <- function(x) x[2]
+
+
+setHet <- function(meta, netmeta) {
+  #
+  meta$method.tau <- netmeta$method.tau
+  meta$tau2 <- netmeta$tau2
+  meta$se.tau2 <- NA
+  meta$lower.tau2 <- NA
+  meta$upper.tau2 <- NA
+  #
+  meta$tau <- netmeta$tau
+  meta$lower.tau <- NA
+  meta$upper.tau <- NA
+  #
+  meta$method.tau.ci <- ""
+  meta$sign.lower.tau <- ""
+  meta$sign.upper.tau <- ""
+  #
+  meta$Q <- netmeta$Q
+  meta$df.Q <- netmeta$df.Q
+  meta$pval.Q <- netmeta$pval.Q
+  #
+  meta$method.I2 <- "Q"
+  meta$I2 <- netmeta$I2
+  meta$lower.I2 <- netmeta$.lower.I2
+  meta$upper.I2 <- netmeta$.upper.I2
+  #
+  meta$H <- netmeta$H
+  meta$lower.H <- netmeta$.lower.H
+  meta$upper.H <- netmeta$.upper.H
+  #
+  meta$tau2.resid <- NA
+  meta$se.tau2.resid <- NA
+  meta$lower.tau2.resid <- NA
+  meta$upper.tau2.resid <- NA
+  #
+  meta$tau.resid <- NA
+  meta$lower.tau.resid <- NA
+  meta$upper.tau.resid <- NA
+  #
+  meta$Q.resid <- netmeta$Q.resid
+  meta$df.Q.resid <- netmeta$df.Q.resid
+  meta$pval.Q.resid <- netmeta$pval.Q.resid
+  #
+  meta$H.resid <- netmeta$H.resid
+  meta$lower.H.resid <- netmeta$.lower.H.resid
+  meta$upper.H.resid <- netmeta$.upper.H.resid
+  #
+  meta$I2.resid <- netmeta$I2.resid
+  meta$lower.I2.resid <- netmeta$.lower.I2.resid
+  meta$upper.I2.resid <- netmeta$.upper.I2.resid
+  #
+  meta
+}

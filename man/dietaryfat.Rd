@@ -70,7 +70,7 @@ netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25,
   labels = c("Control","Diet", "Diet 2"))
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{metainc}},
+\code{\link[meta]{pairwise}}, \code{\link[meta]{metainc}},
 \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 }
 \keyword{datasets}

@@ -139,7 +139,8 @@
 netmeasures <- function(x,
                         random = x$random | !missing(tau.preset),
                         tau.preset = x$tau.preset,
-                        warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                        warn = gs("warn"),
+                        warn.deprecated = gs("warn.deprecated"),
                         ...) {
   
   ##

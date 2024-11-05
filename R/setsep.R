@@ -1,13 +1,12 @@
-setsep <- function(x, sep, type = "treatment",
+setsep <- function(x, sep, type = "treatment label",
                    argname = deparse(substitute(sep)),
-                   missing.sep) {
+                   missing = TRUE) {
   labels <- sort(unique(x))
   #
   if (compmatch(labels, sep)) {
-    if (!missing.sep)
-      warning("Separator '", sep,
-              "' used in at least one ",
-              type, " label. ",
+    if (!missing)
+      warning("Argument '", argname, "': ",
+              "separator '", sep, "' used in at least one ", type, ". ",
               "Trying to use predefined separators: ",
               "':', '-', '_', '/', '+', '.', '|', '*'.",
               call. = FALSE)
@@ -23,15 +22,14 @@ setsep <- function(x, sep, type = "treatment",
     else if (!compmatch(labels, "+"))
       sep <- "+"
     else if (!compmatch(labels, "."))
-      sep <- "-"
+      sep <- "."
     else if (!compmatch(labels, "|"))
       sep <- "|"
     else if (!compmatch(labels, "*"))
       sep <- "*"
     else
       stop("All predefined separators (':', '-', '_', '/', '+', ",
-           "'.', '|', '*') are used in at least one ",
-           type, " label. ",
+           "'.', '|', '*') are used in at least one ", type, ". ",
            "Please specify a different character that should be ",
            "used as separator (argument '", argname, "').",
            call. = FALSE)

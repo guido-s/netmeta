@@ -92,14 +92,15 @@ createC <- function(x, ...)
 #' @export
 
 createC.matrix <- function(x, comb.ia, inactive = NULL,
-                           sep.comps = "+", sep.ia = "*", ...) {
+                           sep.comps = gs("sep.comps"),
+                           sep.ia = gs("sep.ia"), ...) {
   if (!is.matrix(x))
     stop("Argument 'x' must be a matrix.", call. = FALSE)
   #
   comps.all <- colnames(x)
   comps <- comps.all[!grepl(sep.ia, comps.all, fixed = TRUE)]
   #
-  chkchar(comb.ia)
+  chkchar(comb.ia, length = 1)
   #
   if (!is.null(inactive)) {
     inactive <- setchar(inactive, comps.all, stop.at.error = FALSE)
@@ -107,6 +108,13 @@ createC.matrix <- function(x, comb.ia, inactive = NULL,
     comps <- comps[!(comps %in% inactive)]
     x <- x[, comps.all, drop = FALSE]
   }
+  #
+  missing.sep.ia <- missing(sep.ia)
+  chkchar(sep.ia, nchar = 0:1, length = 1)
+  if (sep.comps == sep.ia)
+    stop("Input for arguments 'sep.comps' and 'sep.ia' must be different.",
+         call. = FALSE)
+  sep.ia <- setsep(comps, sep.ia, missing = missing.sep.ia)
   #
   mat.int <- x
   #
@@ -174,6 +182,8 @@ createC.matrix <- function(x, comb.ia, inactive = NULL,
   }
   #
   attr(mat.int, "inactive") <- inactive
+  attr(mat.int, "sep.comps") <- sep.comps
+  attr(mat.int, "sep.ia") <- sep.ia
   #
   mat.int
 }
@@ -183,9 +193,11 @@ createC.matrix <- function(x, comb.ia, inactive = NULL,
 #' @method createC netcomb
 #' @export
 
-createC.netcomb <- function(x, comb.ia = NULL, inactive = NULL, sep.ia = "*",
+createC.netcomb <- function(x, comb.ia = NULL, inactive = NULL,
+                            sep.ia = x$sep.ia,
                             ...) {
   chkclass(x, "netcomb")
+  x <- updateversion(x)
   #
   C.matrix <- x$C.matrix
   #
@@ -200,8 +212,15 @@ createC.netcomb <- function(x, comb.ia = NULL, inactive = NULL, sep.ia = "*",
          "argument 'x'.",
          call. = FALSE)
   #
+  missing.sep.ia <- missing(sep.ia)
+  chkchar(sep.ia, nchar = 0:1, length = 1)
+  if (x$sep.comps == sep.ia)
+    stop("Input for argument 'sep.ia' identical to separator for components",
+         call. = FALSE)
+  sep.ia <- setsep(comps, sep.ia, missing = missing.sep.ia)
+  #
   for (i in comb.ia)
-    C.matrix <- createC(C.matrix, i, sep.comps = x$sep.comps, sep.ia = "*",
+    C.matrix <- createC(C.matrix, i, sep.comps = x$sep.comps, sep.ia = sep.ia,
                         inactive = inactive)
   #
   C.matrix
@@ -212,8 +231,11 @@ createC.netcomb <- function(x, comb.ia = NULL, inactive = NULL, sep.ia = "*",
 #' @method createC netmeta
 #' @export
 
-createC.netmeta <- function(x, inactive = NULL, sep.comps = "+", ...) {
+createC.netmeta <- function(x, inactive = NULL,
+                            sep.comps = gs("sep.comps"), ...) {
   chkclass(x, "netmeta")
+  #
+  chkchar(sep.comps, length = 1)
   #
   C.matrix <-
     createC_trts_inactive(x$trts, inactive = inactive, sep.comps = sep.comps)
@@ -226,8 +248,11 @@ createC.netmeta <- function(x, inactive = NULL, sep.comps = "+", ...) {
 #' @method createC netconnection
 #' @export
 
-createC.netconnection <- function(x, inactive = NULL, sep.comps = "+", ...) {
+createC.netconnection <- function(x, inactive = NULL,
+                                  sep.comps = gs("sep.comps"), ...) {
   chkclass(x, "netconnection")
+  #
+  chkchar(sep.comps, length = 1)
   #
   C.matrix <-
     createC_trts_inactive(rownames(x$D.matrix),

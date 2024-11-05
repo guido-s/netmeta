@@ -22,7 +22,7 @@ hatmatrix(
   nchar.trts = x$x$nchar.trts,
   nchar.studlab = x$x$nchar.studlab,
   digits = gs("digits"),
-  legend = TRUE,
+  legend = gs("legend"),
   legend.studlab = TRUE,
   ...
 )

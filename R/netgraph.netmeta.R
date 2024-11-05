@@ -133,11 +133,13 @@
 #' @param zpos Vector (\emph{n}) of z coordinates.
 #' @param figure A logical indicating whether network graph should be
 #'   shown.
-#' @param \dots Additional graphical arguments.
+#' @param \dots Additional graphical arguments (passed on to
+#'   \code{\link{plot.default}}).
 #' 
 #' @details
 #' This function generates a network graph for an R object created
-#' with \code{\link{netmeta}}.
+#' with \code{\link{netmeta}}. R function \code{\link{plot.default}} is used
+#' to create the network graph.
 #'
 #' \subsection{Layout of network graph}{
 #' The network is laid out in the plane, where the nodes in the graph
@@ -458,9 +460,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
                                  0.0175,
                              scale = 1.10,
                              ##
-                             col = if (iterate) "slateblue" else "black",
-                             plastic = !(iterate & allfigures),
-                             thickness = "number.of.studies",
+                             col = gs("col.netgraph"),
+                             plastic = gs("plastic"),
+                             thickness = gs("thickness"),
                              lwd = 5, lwd.min = lwd / 2.5, lwd.max,
                              rescale.thickness,
                              ##
@@ -470,7 +472,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              highlight = NULL, col.highlight = "red2",
                              scale.highlight = 1,
                              ##
-                             multiarm = FALSE,
+                             multiarm = gs("multiarm"),
                              col.multiarm = NULL,
                              alpha.transparency = 0.5,
                              ##
@@ -482,8 +484,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
                                  "black" else "red",
                              bg.points = "red",
                              points.min, points.max, rescale.pointsize,
-                             ##
-                             number.of.studies = FALSE,
+                             #
+                             number.of.studies = gs("number.of.studies"),
                              cex.number.of.studies = cex,
                              col.number.of.studies = "white",
                              bg.number.of.studies = "black",
@@ -554,7 +556,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
   is_2d <- dim == "2d"
   is_3d <- !is_2d
   ##
-  if (is_3d & !is.installed.package("rgl", stop = FALSE)) {
+  if (is_3d & !is_installed_package("rgl", stop = FALSE)) {
     warning(paste0("2-D plot generated as package 'rgl' is missing.",
                    "\n  ",
                    "Please install package 'rgl' in order to ",
@@ -618,7 +620,10 @@ netgraph.netmeta <- function(x, seq = x$seq,
             call. = FALSE)
     iterate <- FALSE
   }
-  ##
+  #
+  col <- replaceNULL(col, if (iterate) "slateblue" else "black")
+  #
+  plastic <- replaceNULL(plastic, !(iterate & allfigures))
   chklogical(plastic)
   ##
   if (!missing(labels)) {
