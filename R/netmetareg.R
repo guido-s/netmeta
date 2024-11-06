@@ -228,6 +228,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   V <- bldiag(lapply(split(dat, dat$studlab), calcV, sm = sm))
   
+  
   if (consistency) {
     if (assumption == "independent")
       formula.nmr <-
@@ -238,8 +239,10 @@ netmetareg.netmeta <- function(x, covar = NULL,
                          " - 1"))
     else {
       covar.pre <- dat[[covar.name]]
-      dat[[covar.name]] <-
-        ifelse(dat[[reference.group]] == 0, 0, dat[[covar.name]])
+      #
+      if (is.numeric(dat[[covar.name]]))
+        dat[[covar.name]] <-
+          ifelse(dat[[reference.group]] == 0, 0, dat[[covar.name]])
       #
       formula.nmr <-
         as.formula(paste("~ ",
