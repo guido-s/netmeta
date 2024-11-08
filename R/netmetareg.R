@@ -117,6 +117,9 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   covar.name <- gsub("\"", "", deparse(substitute(covar)), fixed = TRUE)
   covar.name <- gsub("$", ".", covar.name, fixed = TRUE)
+  covar.name <- gsub("+", "_", covar.name, fixed = TRUE)
+  covar.name <- gsub("-", "_", covar.name, fixed = TRUE)
+  covar.name <- gsub(":", "_", covar.name, fixed = TRUE)
   #
   covar <- catch("covar", mc, data, sfsp)
   #
@@ -218,35 +221,30 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   dat <- dat[order(dat$studlab), ]
   #
-  trts.tau.all <- varnames
-  trts.tau <- varnames[-length(varnames)]
-  #
-  formula.trts <-
-    as.formula(paste("~ ", paste(trts.tau, collapse = " + "), " - 1"))
+  trts.all <- varnames
+  trts <- varnames[-length(varnames)]
   #
   # Calculate Variance-Covariance matrix
   #
   V <- bldiag(lapply(split(dat, dat$studlab), calcV, sm = sm))
-  
-  
+    
   if (consistency) {
-    if (assumption == "independent")
+    if (assumption == "independent") {
       formula.nmr <-
         as.formula(paste("~ ",
-                         paste(trts.tau, collapse = " + "), " + ",
-                         paste(paste0(trts.tau, ":", covar.name),
+                         paste(trts, collapse = " + "), " + ",
+                         paste(paste0(trts, ":", covar.name),
                                collapse = " + "),
                          " - 1"))
+    }
     else {
-      covar.pre <- dat[[covar.name]]
-      #
       if (is.numeric(dat[[covar.name]]))
         dat[[covar.name]] <-
           ifelse(dat[[reference.group]] == 0, 0, dat[[covar.name]])
       #
       formula.nmr <-
         as.formula(paste("~ ",
-                         paste(trts.tau, collapse = " + "), " + ",
+                         paste(trts, collapse = " + "), " + ",
                          covar.name,
                          " - 1"))
     }
@@ -275,8 +273,51 @@ netmetareg.netmeta <- function(x, covar = NULL,
                rho = 0.5,
                method = method.tau, ...))
   #
+  # Get categories for pairwise comparisons
+  #
+  if (!is.numeric(dat[[covar.name]])) {
+    cnames <- names(coef(res))
+    cnames <- unique(sapply(strsplit(cnames[grepl(":", cnames)], ":"), first))
+    #
+    reflev <- levels(dat[[covar.name]])[1]
+    refdat <- data.frame()
+    #
+    for (i in seq_along(cnames)) {
+      trt.i <- cnames[i]
+      sub.i <- subset(dat, treat1 == trt.i | treat2 == trt.i)
+      #
+      for (j in unique(sub.i$comparison)) {
+        sub.ij <- droplevels(subset(sub.i, comparison == j))
+        levs.ij <- levels(sub.ij[[covar.name]])
+        #
+        #if (length(levs.ij) > 1)
+          refdat <- rbind(refdat, data.frame(comparison = j, ref = levs.ij))
+      }
+    }
+    #
+    refdat <- unique(refdat)
+    refdat$ref <- factor(refdat$ref, levels = levels(dat[[covar.name]]))
+    refdat <- refdat[order(refdat$ref), ]
+  }
+  else
+    refdat <- NULL
+  #
+  # Identify column in design matrix for reference group
+  #
+  if (!is.numeric(dat[[covar.name]])) {
+    X <- res$X
+    rownames(X) <- dat$studlab
+    X <- X[rownames(unique(X)), , drop = FALSE]
+    X <- X[rev(do.call(order, as.data.frame(X))), , drop = FALSE]
+    beta.ref <- colnames(X)[apply(abs(X), 2, sum) == 0]
+  }
+  else
+    beta.ref <- NULL
+  #
   res$.netmeta <- list(x = ..x,
                        covar = covar,
+                       refdat = refdat,
+                       beta.ref = beta.ref,
                        consistency = consistency,
                        assumption = assumption,
                        method.tau = method.tau,
@@ -340,6 +381,23 @@ print.netmetareg <- function(x, details = TRUE, ...) {
       cat("- Independent slopes\n")
     else
       cat("- Constant slope\n")
+    #
+    if (!is.null(x$.netmeta$beta.ref))
+      cat("- Intercept of categorical covariate:", x$.netmeta$beta.ref, "\n")
+    #
+    if (!is.null(x$.netmeta$refdat)) {
+      refdat <- x$.netmeta$refdat
+      #
+      cat("- Covariate categories available for pairwise comparisons:\n")
+      #
+      for (i in sort(unique(refdat$comparison))) {
+        refdat.i <- subset(refdat, comparison == i)
+        #
+        cat(paste0("  ", i, " (",
+                   paste(refdat.i$ref, collapse = ", "),
+                   ")\n"))
+      }
+    }
   }
   #
   invisible(NULL)
