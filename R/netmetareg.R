@@ -302,22 +302,9 @@ netmetareg.netmeta <- function(x, covar = NULL,
   else
     refdat <- NULL
   #
-  # Identify column in design matrix for reference group
-  #
-  if (!is.numeric(dat[[covar.name]])) {
-    X <- res$X
-    rownames(X) <- dat$studlab
-    X <- X[rownames(unique(X)), , drop = FALSE]
-    X <- X[rev(do.call(order, as.data.frame(X))), , drop = FALSE]
-    beta.ref <- colnames(X)[apply(abs(X), 2, sum) == 0]
-  }
-  else
-    beta.ref <- NULL
-  #
   res$.netmeta <- list(x = ..x,
                        covar = covar,
                        refdat = refdat,
-                       beta.ref = beta.ref,
                        consistency = consistency,
                        assumption = assumption,
                        method.tau = method.tau,
@@ -381,9 +368,6 @@ print.netmetareg <- function(x, details = TRUE, ...) {
       cat("- Independent slopes\n")
     else
       cat("- Constant slope\n")
-    #
-    if (!is.null(x$.netmeta$beta.ref))
-      cat("- Intercept of categorical covariate:", x$.netmeta$beta.ref, "\n")
     #
     if (!is.null(x$.netmeta$refdat)) {
       refdat <- x$.netmeta$refdat
