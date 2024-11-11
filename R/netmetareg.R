@@ -254,6 +254,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
     return(NULL)
   }
   
+  # Get rid of warning 'Undefined global functions or variables'
+  treat1 <- treat2 <-  comparison <- NULL
   
   #
   # Covariate 'x' makes problems without removing network meta-analysis object x
@@ -280,7 +282,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     cnames <- unique(sapply(strsplit(cnames[grepl(":", cnames)], ":"), first))
     #
     reflev <- levels(dat[[covar.name]])[1]
-    refdat <- data.frame()
+    refdat <- NULL
     #
     for (i in seq_along(cnames)) {
       trt.i <- cnames[i]
@@ -364,6 +366,8 @@ print.netmetareg <- function(x, details = TRUE, ...) {
   class(x) <- class(x)[class(x) != "netmetareg"]
   #
   print(x, ...)
+  # Get rid of warning 'Undefined global functions or variables'
+  comparison <- NULL
   #
   if (details) {
     cat("Details on network meta-regression methods:\n")

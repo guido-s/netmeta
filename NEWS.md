@@ -2,7 +2,7 @@
 
 ### Major changes
 
-* Network meta-regression implemented
+* Network meta-regression and subgroup network meta-analysis implemented
 
 * Network meta-analysis of studies with correlated treatment arms implemented
 
@@ -36,6 +36,9 @@
 ### User-visible changes
 
 * New R function netmetareg() to conduct network meta-regression
+
+* New R functions subgroup.netmeta() and forest.subgroup.netmeta() to conduct
+  subgroup meta-analysis
 
 * netmeta():
   - new argument 'correlated' to conduct network meta-analysis of correlated

@@ -635,7 +635,6 @@ forest.netsplit <- function(x,
       if (overall) dat.overall,
       if (prediction) dat.predict
     )
-    print(dat)
     ##
     if (nrow(dat) == 0) {
       warning("No comparison(s) selected. Consider using argument ",

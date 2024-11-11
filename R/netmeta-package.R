@@ -238,7 +238,7 @@
 #'   text strheight strwidth title
 #'
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
-#'   prcomp relevel reshape rnorm sd
+#'   prcomp relevel reshape rnorm sd coef
 #'
 #' @importFrom utils installed.packages packageDescription capture.output
 #'   packageVersion
@@ -252,6 +252,8 @@
 #'   ggtitle scale_x_discrete scale_y_discrete theme_dark
 #'
 #' @importFrom metafor bldiag contrmat rma.mv
+#' 
+#' @importFrom dplyr %>% filter select
 
 "_PACKAGE"
 
