@@ -302,9 +302,14 @@ netmetareg.netmeta <- function(x, covar = NULL,
   else
     refdat <- NULL
   #
+  X <- res$X
+  rownames(X) <- dat$studlab
+  X <- X[rev(do.call(order, as.data.frame(X))), , drop = FALSE]
+  #
   res$.netmeta <- list(x = ..x,
                        covar = covar,
                        refdat = refdat,
+                       X = X,
                        consistency = consistency,
                        assumption = assumption,
                        method.tau = method.tau,
