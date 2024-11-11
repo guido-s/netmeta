@@ -227,7 +227,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   # Calculate Variance-Covariance matrix
   #
   V <- bldiag(lapply(split(dat, dat$studlab), calcV, sm = sm))
-    
+  
   if (consistency) {
     if (assumption == "independent") {
       formula.nmr <-
@@ -302,7 +302,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   else
     refdat <- NULL
   #
-  X <- res$X
+  X <- res$X.f
   rownames(X) <- dat$studlab
   X <- X[rev(do.call(order, as.data.frame(X))), , drop = FALSE]
   #
