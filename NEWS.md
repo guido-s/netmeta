@@ -14,6 +14,8 @@
   - auxiliary functions createC() and combinations() to fit interaction
     CNMA models more easily
 
+* Rankograms can be constructed from samples
+
 * New R function settings.netmeta() to define and print default settings
   for network meta-analyses in R package **netmeta**
 
@@ -39,6 +41,11 @@
 
 * New R functions subgroup.netmeta() and forest.subgroup.netmeta() to conduct
   subgroup meta-analysis
+
+* New generic function rankogram() to calculate rankograms
+
+* New functions rankogram.netmeta(), replacing the older rankogram(),
+  and rankogram.default()
 
 * netmeta():
   - new argument 'correlated' to conduct network meta-analysis of correlated
