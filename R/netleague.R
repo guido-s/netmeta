@@ -273,7 +273,7 @@ netleague <- function(x, y,
                       path = "leaguetable.xlsx",
                       overwrite = FALSE,
                       #
-                      details = gs("details.netmeta"),
+                      details = gs("details"),
                       #
                       warn.deprecated = gs("warn.deprecated"),
                       ...) {

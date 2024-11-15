@@ -19,14 +19,20 @@
   digits.tau2 = gs("digits.tau2"),
   digits.tau = gs("digits.tau"),
   digits.I2 = gs("digits.I2"),
+  big.mark = gs("big.mark"),
   scientific.pval = gs("scientific.pval"),
   zero.pval = gs("zero.pval"),
   JAMA.pval = gs("JAMA.pval"),
-  big.mark = gs("big.mark"),
+  print.tau2 = gs("print.tau2"),
+  print.tau = gs("print.tau"),
+  print.Q = gs("print.Q"),
+  print.I2 = gs("print.I2"),
+  print.I2.ci = gs("print.I2.ci"),
   text.tau2 = gs("text.tau2"),
   text.tau = gs("text.tau"),
   text.I2 = gs("text.I2"),
-  legend = TRUE,
+  details.methods = gs("details"),
+  legend = gs("legend"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -77,6 +83,8 @@ root of between-study variance, see \code{print.default}.}
 \item{digits.I2}{Minimal number of significant digits for I-squared
 statistic, see \code{print.default}.}
 
+\item{big.mark}{A character used as thousands separator.}
+
 \item{scientific.pval}{A logical specifying whether p-values should
 be printed in scientific notation, e.g., 1.2345e-01 instead of
 0.12345.}
@@ -85,10 +93,24 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 printed with a leading zero.}
 
 \item{JAMA.pval}{A logical specifying whether p-values for test of
-component or combination effect should be printed according to
-JAMA reporting standards.}
+overall effect should be printed according to JAMA reporting
+standards.}
 
-\item{big.mark}{A character used as thousands separator.}
+\item{print.tau2}{A logical specifying whether between-study
+variance \eqn{\tau^2} should be printed.}
+
+\item{print.tau}{A logical specifying whether \eqn{\tau}, the
+square root of the between-study variance \eqn{\tau^2}, should be
+printed.}
+
+\item{print.Q}{A logical value indicating whether to print the
+results of the test of heterogeneity.}
+
+\item{print.I2}{A logical specifying whether heterogeneity
+statistic I\eqn{^2} should be printed.}
+
+\item{print.I2.ci}{A logical specifying whether confidence interval for
+heterogeneity statistic I\eqn{^2} should be printed.}
 
 \item{text.tau2}{Text printed to identify between-study variance
 \eqn{\tau^2}.}
@@ -98,6 +120,9 @@ root of the between-study variance \eqn{\tau^2}.}
 
 \item{text.I2}{Text printed to identify heterogeneity statistic
 I\eqn{^2}.}
+
+\item{details.methods}{A logical specifying whether details on statistical
+methods should be printed.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}

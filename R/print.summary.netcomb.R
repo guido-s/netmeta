@@ -26,14 +26,28 @@
 #'   p-value of heterogeneity tests, see \code{print.default}.
 #' @param digits.Q Minimal number of significant digits for
 #'   heterogeneity statistics, see \code{print.default}.
+#' @param big.mark A character used as thousands separator.
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
 #' @param zero.pval A logical specifying whether p-values should be
 #'   printed with a leading zero.
 #' @param JAMA.pval A logical specifying whether p-values for test of
-#'   effects should be printed according to JAMA reporting standards.
-#' @param big.mark A character used as thousands separator.
+#'   overall effect should be printed according to JAMA reporting
+#'   standards.
+#' @param print.tau2 A logical specifying whether between-study
+#'   variance \eqn{\tau^2} should be printed.
+#' @param print.tau A logical specifying whether \eqn{\tau}, the
+#'   square root of the between-study variance \eqn{\tau^2}, should be
+#'   printed.
+#' @param print.Q A logical value indicating whether to print the
+#'   results of the test of heterogeneity.
+#' @param print.I2 A logical specifying whether heterogeneity
+#'   statistic I\eqn{^2} should be printed.
+#' @param print.I2.ci A logical specifying whether confidence interval for
+#'   heterogeneity statistic I\eqn{^2} should be printed.
+#' @param details.methods A logical specifying whether details on statistical
+#'   methods should be printed.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -82,14 +96,20 @@ print.summary.netcomb <- function(x,
                                   digits.pval = gs("digits.pval"),
                                   digits.pval.Q = max(gs("digits.pval.Q"), 2),
                                   digits.Q = gs("digits.Q"),
-                                  ##
+                                  #
+                                  big.mark = gs("big.mark"),
                                   scientific.pval = gs("scientific.pval"),
                                   zero.pval = gs("zero.pval"),
                                   JAMA.pval = gs("JAMA.pval"),
-                                  ##
-                                  big.mark = gs("big.mark"),
-                                  ##
-                                  legend = TRUE,
+                                  #
+                                  print.tau2 = gs("print.tau2"),
+                                  print.tau = gs("print.tau"),
+                                  print.Q = gs("print.Q"),
+                                  print.I2 = gs("print.I2"),
+                                  print.I2.ci = gs("print.I2.ci"),
+                                  #
+                                  details.methods = gs("details"),
+                                  legend = gs("legend"),
                                   ##
                                   warn.deprecated = gs("warn.deprecated"),
                                   ##
@@ -115,11 +135,19 @@ print.summary.netcomb <- function(x,
   chknumeric(digits.pval, min = 1, length = 1)
   chknumeric(digits.pval.Q, min = 1, length = 1)
   chknumeric(digits.Q, min = 0, length = 1)
-  ##
+  #
+  chkchar(big.mark, length = 1)
   chklogical(scientific.pval)
   chklogical(zero.pval)
   chklogical(JAMA.pval)
-  ##
+  #
+  chklogical(print.tau2)
+  chklogical(print.tau)
+  chklogical(print.Q)
+  chklogical(print.I2)
+  chklogical(print.I2.ci)
+  #
+  chklogical(details.methods)
   chklogical(legend)
   ##
   ##
@@ -198,20 +226,25 @@ print.summary.netcomb <- function(x,
                   digits.pval = digits.pval,
                   digits.pval.Q = digits.pval.Q,
                   digits.Q = digits.Q,
-                  ##
+                  #
+                  big.mark = big.mark,
                   scientific.pval = scientific.pval,
                   zero.pval = zero.pval,
                   JAMA.pval = JAMA.pval,
-                  ##
-                  big.mark = big.mark,
-                  ##
+                  #
+                  print.tau2 = print.tau2,
+                  print.tau = print.tau,
+                  print.Q = print.Q,
+                  print.I2 = print.I2,
+                  print.I2.ci = print.I2.ci,
+                  #
+                  details.methods = details.methods,
                   legend = legend,
                   ##
                   ...)
   else
     cat("Please use argument 'common = TRUE' or 'random = TRUE'",
-        "to print network meta-analysis results.\n")
-  
+        "to print component network meta-analysis results.\n")
   
   invisible(NULL)
 }

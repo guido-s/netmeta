@@ -9,6 +9,8 @@ netimpact(
   x,
   seTE.ignore = 100 * max(x$seTE, na.rm = TRUE),
   event.ignore = 0.01,
+  nchar.trts = x$nchar.trts,
+  nchar.studlab = x$nchar.studlab,
   verbose = FALSE
 )
 }
@@ -22,6 +24,12 @@ meta-analysis (ignored for \code{\link{netmetabin}} objects).}
 \item{event.ignore}{Assumed event number mimicking the removal of
 individual studies from the network meta-analysis (considered for
 \code{\link{netmetabin}} objects).}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names (see Details).}
+
+\item{nchar.studlab}{A numeric defining the minimum number of
+characters used to create unique study labels.}
 
 \item{verbose}{A logical indicating whether information on the
 estimation progress should be printed.}

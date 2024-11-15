@@ -46,10 +46,26 @@
 #'   root of between-study variance, see \code{print.default}.
 #' @param digits.I2 Minimal number of significant digits for I-squared
 #'   statistic, see \code{print.default}.
+#' @param big.mark A character used as thousands separator.
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
-#' @param big.mark A character used as thousands separator.
+#' @param zero.pval A logical specifying whether p-values should be
+#'   printed with a leading zero.
+#' @param JAMA.pval A logical specifying whether p-values for test of
+#'   overall effect should be printed according to JAMA reporting
+#'   standards.
+#' @param print.tau2 A logical specifying whether between-study
+#'   variance \eqn{\tau^2} should be printed.
+#' @param print.tau A logical specifying whether \eqn{\tau}, the
+#'   square root of the between-study variance \eqn{\tau^2}, should be
+#'   printed.
+#' @param print.Q A logical value indicating whether to print the
+#'   results of the test of heterogeneity.
+#' @param print.I2 A logical specifying whether heterogeneity
+#'   statistic I\eqn{^2} should be printed.
+#' @param print.I2.ci A logical specifying whether confidence interval for
+#'   heterogeneity statistic I\eqn{^2} should be printed.
 #' @param text.tau2 Text printed to identify between-study variance
 #'   \eqn{\tau^2}.
 #' @param text.tau Text printed to identify \eqn{\tau}, the square
@@ -88,15 +104,24 @@ print.netmeta <- function(x,
                           digits.tau2 = gs("digits.tau2"),
                           digits.tau = gs("digits.tau"),
                           digits.I2 = gs("digits.I2"),
-                          scientific.pval = gs("scientific.pval"),
+                          #
                           big.mark = gs("big.mark"),
-                          ##
+                          scientific.pval = gs("scientific.pval"),
+                          zero.pval = gs("zero.pval"),
+                          JAMA.pval = gs("JAMA.pval"),
+                          #
+                          print.tau2 = gs("print.tau2"),
+                          print.tau = gs("print.tau"),
+                          print.Q = gs("print.Q"),
+                          print.I2 = gs("print.I2"),
+                          print.I2.ci = gs("print.I2.ci"),
+                          #
                           text.tau2 = gs("text.tau2"),
                           text.tau = gs("text.tau"),
                           text.I2 = gs("text.I2"),
                           #
-                          details.methods = gs("details.netmeta"),
-                          legend = gs("legend.netmeta"),
+                          details.methods = gs("details"),
+                          legend = gs("legend"),
                           #
                           warn.deprecated = gs("warn.deprecated"),
                           ##
@@ -143,8 +168,18 @@ print.netmeta <- function(x,
   chknumeric(digits.tau2, min = 0, length = 1)
   chknumeric(digits.tau, min = 0, length = 1)
   chknumeric(digits.I2, min = 0, length = 1)
+  #
+  chkchar(big.mark, length = 1)
   chklogical(scientific.pval)
-  ##
+  chklogical(zero.pval)
+  chklogical(JAMA.pval)
+  #
+  chklogical(print.tau2)
+  chklogical(print.tau)
+  chklogical(print.Q)
+  chklogical(print.I2)
+  chklogical(print.I2.ci)
+  #
   chkchar(text.tau2)
   chkchar(text.tau)
   chkchar(text.I2)
@@ -469,9 +504,9 @@ print.netmeta <- function(x,
                                       digits, "NA", big.mark = big.mark)),
                      formatN(statistic.common.b, digits.stat, text.NA = "NA",
                              big.mark = big.mark),
-                     formatPT(pval.common.b,
-                              digits = digits.pval,
-                              scientific = scientific.pval)
+                     formatPT(pval.common.b, digits = digits.pval,
+                              scientific = scientific.pval,
+                              zero = zero.pval, JAMA = JAMA.pval)
                      )
         dimnames(res) <-
           list(colnames(TE.common), c(sm.lab, ci.lab, "z", "p-value"))
@@ -626,9 +661,9 @@ print.netmeta <- function(x,
                                       digits, "NA", big.mark = big.mark)),
                      formatN(statistic.random.b, digits.stat, text.NA = "NA",
                              big.mark = big.mark),
-                     formatPT(pval.random.b,
-                              digits = digits.pval,
-                              scientific = scientific.pval)
+                     formatPT(pval.random.b, digits = digits.pval,
+                              scientific = scientific.pval,
+                              zero = zero.pval, JAMA = JAMA.pval)
                      )
         dimnames(res) <-
           list(colnames(TE.random), c(sm.lab, ci.lab, "z", "p-value"))
@@ -684,57 +719,81 @@ print.netmeta <- function(x,
       tau <- x$tau.preset
     else
       tau <- x$tau
-    ##
+    #
     if (overall.hetstat) {
+      #
       if (is.bin)
-        hi.txt <- "inconsistency (between designs)"
+        txt.hetinc <- "inconsistency (between designs)"
       else if (x$d == 1)
-        hi.txt <- "heterogeneity"
+        txt.hetinc <- "heterogeneity"
       else
-        hi.txt <- "heterogeneity / inconsistency"
-      ##
-      if (!is.bin)
-        cat("\nQuantifying ", hi.txt, ":\n",
+        txt.hetinc <- "heterogeneity / inconsistency"
+      #
+      if (!is.bin & (print.tau2 | print.tau | print.I2)) {
+        print.I2.ci <- print.I2.ci & print.I2
+        #
+        text.hetstat <- paste0("\nQuantifying ", txt.hetinc, ":\n")
+        #
+        if (print.tau2)
+          text.hetstat <- paste0(
+            text.hetstat,
             formatPT(tau^2,
                      lab = TRUE, labval = text.tau2,
                      digits = digits.tau2,
-                     lab.NA = "NA", big.mark = big.mark),
-            "; ",
+                     lab.NA = "NA", big.mark = big.mark))
+        #
+        if (print.tau)
+          text.hetstat <- paste0(
+            text.hetstat,
+            if (print.tau2) "; ",
             formatPT(tau,
                      lab = TRUE, labval = text.tau,
                      digits = digits.tau,
-                     lab.NA = "NA", big.mark = big.mark),
+                     lab.NA = "NA", big.mark = big.mark))
+        #
+        if (print.I2)
+          text.hetstat <- paste0(
+            text.hetstat,
+            if (print.tau2 | print.tau) "; ",
             if (!is.na(I2))
-              paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
-            if (!(is.na(lower.I2) | is.na(upper.I2)))
+              paste0(text.I2, " = ", round(I2, digits.I2), "%"),
+            if (print.I2.ci & (!(is.na(lower.I2) | is.na(upper.I2))))
               pasteCI(lower.I2, upper.I2,
-                      digits.I2, big.mark, unit = "%"),
-            "\n",
-            sep = ""
-        )
-      ##
-      if (m > 1) {
+                      digits.I2, big.mark, unit = "%"))
+        #
+        text.hetstat <- paste0(text.hetstat, "\n")
+        #
+        cat(text.hetstat)
+      }
+      #
+      if (print.Q & m > 1) {
         if (is.bin) {
           Q.overall <- x$Q.inconsistency
           df.Q.overall <- x$df.Q.inconsistency
-          pval.Q.overall <- formatPT(x$pval.Q.inconsistency,
-                                     digits = digits.pval.Q,
-                                     scientific = scientific.pval)
+          pval.Q.overall <-
+            formatPT(x$pval.Q.inconsistency,
+                     digits = digits.pval.Q,
+                     scientific = scientific.pval,
+                     zero = zero.pval, JAMA = JAMA.pval)
         }
         else {
           Q.overall <- x$Q
           if (oldversion) {
             df.Q.overall <- x$df
-            pval.Q.overall <- ifelse(df.Q.overall == 0, "--",
-                                     formatPT(x$pval.Q,
-                                              digits = digits.pval.Q,
-                                              scientific = scientific.pval))
+            pval.Q.overall <-
+              ifelse(df.Q.overall == 0, "--",
+                     formatPT(x$pval.Q,
+                              digits = digits.pval.Q,
+                              scientific = scientific.pval,
+                              zero = zero.pval, JAMA = JAMA.pval))
           }
           else {
             df.Q.overall <- x$df.Q
-            pval.Q.overall <- formatPT(x$pval.Q,
-                                       digits = digits.pval.Q,
-                                       scientific = scientific.pval)
+            pval.Q.overall <-
+              formatPT(x$pval.Q,
+                       digits = digits.pval.Q,
+                       scientific = scientific.pval,
+                       zero = zero.pval, JAMA = JAMA.pval)
           }
         }
         ##
@@ -747,15 +806,17 @@ print.netmeta <- function(x,
           ##
           dimnames(Qdata) <- list("", c("Q", "d.f.", "p-value"))
           ##
-          cat("\nTest of ", hi.txt, ":\n", sep = "")
+          cat("\nTest of ", txt.hetinc, ":\n", sep = "")
           prmatrix(Qdata, quote = FALSE, right = TRUE, ...)
         }
         else {
           Qs <- c(x$Q, x$Q.heterogeneity, x$Q.inconsistency)
           df.Qs <- c(x$df.Q, x$df.Q.heterogeneity, x$df.Q.inconsistency)
           pval.Qs <- c(x$pval.Q, x$pval.Q.heterogeneity, x$pval.Q.inconsistency)
-          pval.Qs <- formatPT(pval.Qs, digits = digits.pval.Q,
-                              scientific = scientific.pval)
+          pval.Qs <- formatPT(pval.Qs,
+                              digits = digits.pval.Q,
+                              scientific = scientific.pval,
+                              zero = zero.pval, JAMA = JAMA.pval)
           cat("\nTests of heterogeneity (within designs) and inconsistency",
               if (options()$width < 77) "\n" else " ",
               "(between designs):\n",
@@ -775,11 +836,12 @@ print.netmeta <- function(x,
   #
   # Print details of network meta-analysis methods
   #
-  if (details.methods) {
-    text.details <- catmeth(x, random, text.tau2, digits.tau2, big.mark)
-    #
-    cat(text.details)
-  }
+  if (details.methods)
+    cat(textmeth(x, random,
+                 overall.hetstat & print.tau2, overall.hetstat & print.tau,
+                 text.tau2, text.tau, digits.tau2, digits.tau,
+                 overall.hetstat & print.I2, text.I2,
+                 big.mark))
   #
   # Add legend with abbreviated treatment labels
   #

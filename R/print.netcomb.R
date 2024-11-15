@@ -34,21 +34,34 @@
 #'   root of between-study variance, see \code{print.default}.
 #' @param digits.I2 Minimal number of significant digits for I-squared
 #'   statistic, see \code{print.default}.
+#' @param big.mark A character used as thousands separator.
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
 #' @param zero.pval A logical specifying whether p-values should be
 #'   printed with a leading zero.
 #' @param JAMA.pval A logical specifying whether p-values for test of
-#'   component or combination effect should be printed according to
-#'   JAMA reporting standards.
-#' @param big.mark A character used as thousands separator.
+#'   overall effect should be printed according to JAMA reporting
+#'   standards.
+#' @param print.tau2 A logical specifying whether between-study
+#'   variance \eqn{\tau^2} should be printed.
+#' @param print.tau A logical specifying whether \eqn{\tau}, the
+#'   square root of the between-study variance \eqn{\tau^2}, should be
+#'   printed.
+#' @param print.Q A logical value indicating whether to print the
+#'   results of the test of heterogeneity.
+#' @param print.I2 A logical specifying whether heterogeneity
+#'   statistic I\eqn{^2} should be printed.
+#' @param print.I2.ci A logical specifying whether confidence interval for
+#'   heterogeneity statistic I\eqn{^2} should be printed.
 #' @param text.tau2 Text printed to identify between-study variance
 #'   \eqn{\tau^2}.
 #' @param text.tau Text printed to identify \eqn{\tau}, the square
 #'   root of the between-study variance \eqn{\tau^2}.
 #' @param text.I2 Text printed to identify heterogeneity statistic
 #'   I\eqn{^2}.
+#' @param details.methods A logical specifying whether details on statistical
+#'   methods should be printed.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -114,18 +127,24 @@ print.netcomb <- function(x,
                           digits.tau2 = gs("digits.tau2"),
                           digits.tau = gs("digits.tau"),
                           digits.I2 = gs("digits.I2"),
-                          ##
+                          #
+                          big.mark = gs("big.mark"),
                           scientific.pval = gs("scientific.pval"),
                           zero.pval = gs("zero.pval"),
                           JAMA.pval = gs("JAMA.pval"),
-                          ##
-                          big.mark = gs("big.mark"),
-                          ##
+                          #
+                          print.tau2 = gs("print.tau2"),
+                          print.tau = gs("print.tau"),
+                          print.Q = gs("print.Q"),
+                          print.I2 = gs("print.I2"),
+                          print.I2.ci = gs("print.I2.ci"),
+                          #
                           text.tau2 = gs("text.tau2"),
                           text.tau = gs("text.tau"),
                           text.I2 = gs("text.I2"),
-                          ##
-                          legend = TRUE,
+                          #
+                          details.methods = gs("details"),
+                          legend = gs("legend"),
                           ##
                           warn.deprecated = gs("warn.deprecated"),
                           ##
@@ -157,15 +176,23 @@ print.netcomb <- function(x,
   chknumeric(digits.tau2, min = 0, length = 1)
   chknumeric(digits.tau, min = 0, length = 1)
   chknumeric(digits.I2, min = 0, length = 1)
-  ##
+  #
+  chkchar(big.mark, length = 1)
   chklogical(scientific.pval)
   chklogical(zero.pval)
   chklogical(JAMA.pval)
-  ##
+  #
+  chklogical(print.tau2)
+  chklogical(print.tau)
+  chklogical(print.Q)
+  chklogical(print.I2)
+  chklogical(print.I2.ci)
+  #
   chkchar(text.tau2)
   chkchar(text.tau)
   chkchar(text.I2)
-  ##
+  #
+  chklogical(details.methods)
   chklogical(legend)
   ##
   ## Check for deprecated arguments in '...'
@@ -353,9 +380,9 @@ print.netcomb <- function(x,
                                digits, "NA", big.mark = big.mark)),
               formatN(statistic.common.b, digits.stat, text.NA = "NA",
                       big.mark = big.mark),
-              formatPT(pval.common.b,
-                       digits = digits.pval,
-                       scientific = scientific.pval)
+              formatPT(pval.common.b, digits = digits.pval,
+                       scientific = scientific.pval,
+                       zero = zero.pval, JAMA = JAMA.pval)
               )
       ##
       dat1.c[trts == reference.group, ] <- rep(".", ncol(dat1.c))
@@ -399,9 +426,9 @@ print.netcomb <- function(x,
                                digits, "NA", big.mark = big.mark)),
               formatN(statistic.random.b, digits.stat, text.NA = "NA",
                       big.mark = big.mark),
-              formatPT(pval.random.b,
-                       digits = digits.pval,
-                       scientific = scientific.pval)
+              formatPT(pval.random.b, digits = digits.pval,
+                       scientific = scientific.pval,
+                       zero = zero.pval, JAMA = JAMA.pval)
               )
       ##
       dat1.r[trts == reference.group, ] <- rep(".", ncol(dat1.r))
@@ -526,10 +553,11 @@ print.netcomb <- function(x,
       ##
       cat("Incremental effect for components:\n")
       print(dat3.c)
-      cat("\n")
     }
     ##
     if (random) {
+      if (common)
+        cat("\n")
       if (reference.group != "") {
         cat("Random effects model",
             if (!is.null(x$inactive))
@@ -551,52 +579,88 @@ print.netcomb <- function(x,
       ##
       cat("Incremental effect for components:\n")
       print(dat3.r)
-      cat("\n")
     }
     ##
     ## (d) Heterogeneity / inconsistency
     ##
     if (overall.hetstat) {
-      cat("Quantifying heterogeneity / inconsistency:\n",
-          formatPT(x$tau^2,
-                   lab = TRUE, labval = text.tau2,
-                   digits = digits.tau2,
-                   lab.NA = "NA", big.mark = big.mark),
-          "; ",
-          formatPT(x$tau,
-                   lab = TRUE, labval = text.tau,
-                   digits = digits.tau,
-                   lab.NA = "NA", big.mark = big.mark),
-          if (!is.na(I2))
-            paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
-          if (!(is.na(lower.I2) | is.na(upper.I2)))
-            pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
-          "\n\n",
-          sep = ""
-      )
+      if (print.tau2 | print.tau | print.I2 | print.Q)
+        cat("\n")
       #
-      cat("Heterogeneity statistics:\n")
+      if (print.tau2 | print.tau | print.I2) {
+        print.I2.ci <- print.I2.ci & print.I2
+        #
+        text.hetstat <- "Quantifying heterogeneity / inconsistency:\n"
+        #
+        if (print.tau2)
+          text.hetstat <- paste0(
+            text.hetstat,
+            formatPT(x$tau^2,
+                     lab = TRUE, labval = text.tau2,
+                     digits = digits.tau2,
+                     lab.NA = "NA", big.mark = big.mark))
+        #
+        if (print.tau)
+          text.hetstat <- paste0(
+            text.hetstat,
+            if (print.tau2) "; ",
+            formatPT(x$tau,
+                     lab = TRUE, labval = text.tau,
+                     digits = digits.tau,
+                     lab.NA = "NA", big.mark = big.mark))
+        #
+        if (print.I2)
+          text.hetstat <- paste0(
+            text.hetstat,
+            if (print.tau2 | print.tau) "; ",
+            if (!is.na(I2))
+              paste0(text.I2, " = ", round(I2, digits.I2), "%"),
+            if (print.I2.ci & (!(is.na(lower.I2) | is.na(upper.I2))))
+              pasteCI(lower.I2, upper.I2,
+                      digits.I2, big.mark, unit = "%"))
+        #
+        text.hetstat <- paste0(text.hetstat, "\n")
+        #
+        cat(text.hetstat)
+      }
       #
-      hetdat <- 
-        data.frame(Q = formatN(c(x$Q.additive,
-                                 x$Q.standard,
-                                 x$Q.diff),
-                               digits.Q),
-                   df.Q = formatN(c(x$df.Q.additive,
-                                    x$df.Q.standard,
-                                    x$df.Q.diff), 0),
-                   pval = formatPT(c(x$pval.Q.additive,
-                                     x$pval.Q.standard,
-                                     x$pval.Q.diff),
-                                   digits = digits.pval.Q,
-                                   scientific = scientific.pval),
-                   row.names = c("Additive model", "Standard model",
-                                 "Difference"))
-      #
-      names(hetdat) <- c("Q", "df", "p-value")
-      #
-      print(hetdat)
+      if (print.Q) {
+        if (print.tau2 | print.tau | print.I2)
+          cat("\n")
+        #
+        cat("Heterogeneity statistics:\n")
+        #
+        hetdat <- 
+          data.frame(Q = formatN(c(x$Q.additive,
+                                   x$Q.standard,
+                                   x$Q.diff),
+                                 digits.Q),
+                     df.Q = formatN(c(x$df.Q.additive,
+                                      x$df.Q.standard,
+                                      x$df.Q.diff), 0),
+                     pval = formatPT(c(x$pval.Q.additive,
+                                       x$pval.Q.standard,
+                                       x$pval.Q.diff),
+                                     digits = digits.pval.Q,
+                                     scientific = scientific.pval,
+                                     zero = zero.pval, JAMA = JAMA.pval),
+                     row.names = c("Additive model", "Standard model",
+                                   "Difference"))
+        #
+        names(hetdat) <- c("Q", "df", "p-value")
+        #
+        print(hetdat)
+      }
     }
+    #
+    # Print details of component network meta-analysis methods
+    #
+    if (details.methods)
+      cat(textmeth(x, random, print.tau2, print.tau,
+                   text.tau2, text.tau, digits.tau2, digits.tau,
+                   print.I2, text.I2, big.mark))
+    #
+    # Add legend with abbreviated component labels
     #
     if (legend) {
       diff.comps <- comps != comps.abbr

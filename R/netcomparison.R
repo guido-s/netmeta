@@ -442,7 +442,7 @@ print.netcomparison <- function(x,
                                 JAMA.pval = gs("JAMA.pval"),
                                 big.mark = gs("big.mark"),
                                 ##
-                                legend = TRUE,
+                                legend = gs("legend"),
                                 warn.deprecated = gs("warn.deprecated"),
                                 ...) {
   

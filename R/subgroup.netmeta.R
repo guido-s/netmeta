@@ -32,10 +32,22 @@
 #' @param digits.tau Minimal number of significant digits for
 #'   \eqn{\tau}, the square root of the between-study variance
 #'   \eqn{\tau^2}.
+#' @param big.mark A character used as thousands separator.
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
-#' @param big.mark A character used as thousands separator.
+#' @param zero.pval A logical specifying whether p-values should be
+#'   printed with a leading zero.
+#' @param JAMA.pval A logical specifying whether p-values for test of
+#'   overall effect should be printed according to JAMA reporting
+#'   standards.
+#' @param print.tau2 A logical specifying whether between-study
+#'   variance \eqn{\tau^2} should be printed.
+#' @param print.tau A logical specifying whether \eqn{\tau}, the
+#'   square root of the between-study variance \eqn{\tau^2}, should be
+#'   printed.
+#' @param print.Q A logical value indicating whether to print the
+#'   results of the test of heterogeneity.
 #' @param text.tau2 Text printed to identify between-study variance
 #'   \eqn{\tau^2}.
 #' @param text.tau Text printed to identify \eqn{\tau}, the square
@@ -223,7 +235,12 @@ subgroup.netmeta <- function(x, subgroup, only.connected = FALSE,
               tau2.matrix = tau2.matrix, tau.matrix = tau.matrix,
               A.matrix = A.matrix,
               networks = networks,
-              x = x)
+              #
+              tau.preset = x$tau.preset,
+              method.tau = x$method.tau,
+              x = x,
+              call = match.call(),
+              version = packageDescription("netmeta")$Version)
   #
   class(res) <- "subgroup.netmeta"
   #
@@ -255,14 +272,20 @@ print.subgroup.netmeta <- function(x,
                                    digits.tau2 = gs("digits.tau2"),
                                    digits.tau = gs("digits.tau"),
                                    #
-                                   scientific.pval = gs("scientific.pval"),
                                    big.mark = gs("big.mark"),
+                                   scientific.pval = gs("scientific.pval"),
+                                   zero.pval = gs("zero.pval"),
+                                   JAMA.pval = gs("JAMA.pval"),
+                                   #
+                                   print.tau2 = gs("print.tau2"),
+                                   print.tau = gs("print.tau"),
+                                   print.Q = gs("print.Q"),
                                    #
                                    text.tau2 = gs("text.tau2"),
                                    text.tau = gs("text.tau"),
                                    #
-                                   details.methods = gs("details.netmeta"),
-                                   legend = gs("legend.netmeta"),
+                                   details.methods = gs("details"),
+                                   legend = gs("legend"),
                                    #
                                    ...) {
   
@@ -283,7 +306,14 @@ print.subgroup.netmeta <- function(x,
   chknumeric(digits.tau2, min = 0, length = 1)
   chknumeric(digits.tau, min = 0, length = 1)
   #
+  chkchar(big.mark, length = 1)
   chklogical(scientific.pval)
+  chklogical(zero.pval)
+  chklogical(JAMA.pval)
+  #
+  chklogical(print.tau2)
+  chklogical(print.tau)
+  chklogical(print.Q)
   #
   chkchar(text.tau2)
   chkchar(text.tau)
@@ -305,9 +335,13 @@ print.subgroup.netmeta <- function(x,
     #
     common$TE <- formatN(common$TE, digits = digits, text.NA = ".")
     common$seTE <- formatN(common$seTE, digits = digits.se, text.NA = ".")
-    common$Q <- formatN(common$Q, digits = digits.Q, text.NA = ".")
-    common$df.Q <- formatN(common$df.Q, digits = 0, text.NA = ".")
-    common$pval.Q <- formatPT(common$pval.Q, digits = digits.pval.Q)
+    if (print.Q) {
+      common$Q <- formatN(common$Q, digits = digits.Q, text.NA = ".")
+      common$df.Q <- formatN(common$df.Q, digits = 0, text.NA = ".")
+      common$pval.Q <- formatPT(common$pval.Q, digits = digits.pval.Q,
+                                scientific = scientific.pval,
+                                zero = zero.pval, JAMA = JAMA.pval)
+    }
     #
     if (any(trts != trts.abbr)) {
       common$treat1 <- factor(common$treat1, levels = trts, labels = trts.abbr)
@@ -332,16 +366,23 @@ print.subgroup.netmeta <- function(x,
                          big.mark = big.mark)
     random$seTE <- formatN(random$seTE, digits = digits.se, text.NA = ".",
                            big.mark = big.mark)
-    random$Q <- formatN(random$Q, digits = digits.Q, text.NA = ".",
-                        big.mark = big.mark)
-    random$df.Q <- formatN(random$df.Q, digits = 0, text.NA = ".",
-                           big.mark = big.mark)
-    random$pval.Q <- formatPT(random$pval.Q, digits = digits.pval.Q,
-                              scientific = scientific.pval)
-    random$tau2 <- formatPT(random$tau2, digits = digits.tau2,
-                            big.mark = big.mark)
-    random$tau <- formatPT(random$tau, digits = digits.tau,
-                           big.mark = big.mark)
+    if (print.Q) {
+      random$Q <- formatN(random$Q, digits = digits.Q, text.NA = ".",
+                          big.mark = big.mark)
+      random$df.Q <- formatN(random$df.Q, digits = 0, text.NA = ".",
+                             big.mark = big.mark)
+      random$pval.Q <- formatPT(random$pval.Q,
+                                digits = digits.pval.Q,
+                                scientific = scientific.pval,
+                                zero = zero.pval, JAMA = JAMA.pval)
+    }
+    #
+    if (print.tau2)
+      random$tau2 <- formatPT(random$tau2, digits = digits.tau2,
+                              big.mark = big.mark)
+    if (print.tau2)
+      random$tau <- formatPT(random$tau, digits = digits.tau,
+                             big.mark = big.mark)
     #
     if (any(trts != trts.abbr)) {
       random$treat1 <- factor(random$treat1, levels = trts, labels = trts.abbr)
@@ -357,7 +398,10 @@ print.subgroup.netmeta <- function(x,
   # Print details of network meta-analysis methods
   #
   if (details.methods) {
-    text.details <- catmeth(x, random, text.tau2, digits.tau2, big.mark)
+    text.details <-
+      textmeth(x, random, print.tau2, print.tau,
+               text.tau2, text.tau, digits.tau2, digits.tau,
+               big.mark = big.mark)
     #
     cat(text.details)
   }

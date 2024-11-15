@@ -23,7 +23,7 @@ netcontrib(
   random = x$x$random,
   digits = 4,
   nchar.trts = x$nchar.trts,
-  legend = TRUE,
+  legend = gs("legend"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )

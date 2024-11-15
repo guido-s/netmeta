@@ -47,6 +47,10 @@
 * New functions rankogram.netmeta(), replacing the older rankogram(),
   and rankogram.default()
 
+* print.rankogram():
+  - by default, sort treatments by SUCRAs
+  - new logical argument 'sort' to sort treatments by SUCRA values
+
 * netmeta():
   - new argument 'correlated' to conduct network meta-analysis of correlated
     treatment arms
@@ -80,12 +84,25 @@
 
 * forest.netmeta():
   - new argument 'col.subgroup' replaces argument 'col.by'
+  - new arguments 'print.tau2' and 'print.tau'
 
-* print.netmeta(), print.netcomb():
-  - new default for 
+* print.rankogram():
+  - new argument 'sort' to return rankings sorted by SUCRA values
 
 * print.netmeta(), print.summary.netmeta():
-  - new argument 'details.methods'
+  - new arguments 'zero.pval', 'JAMA.pval', 'print.tau2', 'print,tau',
+    'print.Q', 'print.I2', 'print.I2.ci', 'details.methods'
+
+* print.netcomb(), print.summary.netcomb():
+  - new arguments 'print.tau2', 'print,tau', 'print.Q', 'print.I2',
+    'print.I2.ci', 'details.methods'
+
+* netimpact():
+  - new arguments 'nchar.trts' and 'nchar.studlab'
+
+* print.netimpact():
+  - new arguments 'nchar.trts', 'nchar.studlab', 'details.methods',
+    'legend.studlab'
 
 * New function summary.netconnection() to print list of studies in subnetworks
 
@@ -98,6 +115,9 @@
 
 * netmeta(), netmetabin(), discomb():
   - consider value for argument 'reference.group' from pairwise() object
+
+* netcomb():
+  - input for arguments 'common' and 'random' was ignored
 
 * netcomplex():
   - print correct component names for command *netcomplex(net1, 2)* etc.

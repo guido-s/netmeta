@@ -251,3 +251,23 @@ chkdeprecated <- function(x, new, old, warn = TRUE) {
             call. = FALSE)
   invisible(depr)
 }
+
+chksuitable <- function(x, method,
+                        classes = "netmetabin",
+                        addtext = "",
+                        stop = TRUE,
+                        status = "implemented") {
+  func <- if (stop) base::stop else base::warning
+  #
+  for (i in seq_along(classes)) {
+    if (inherits(x, classes[i])) {
+      func(method, " not ", status, " for an object of class \"",
+           classes[i], "\"", addtext[i], ".",
+           call. = FALSE)
+      #
+      return(FALSE)
+    }
+  }
+  #
+  return(TRUE)
+}

@@ -46,6 +46,13 @@
 #'   of same length as the total number of treatments).
 #' @param overall.hetstat A logical indicating whether to print heterogeneity
 #'   measures.
+#' @param print.tau2 A logical value indicating whether to print the
+#'   value of the between-study variance \eqn{\tau^2}.
+#' @param print.tau A logical value indicating whether to print
+#'   \eqn{\tau}, the square root of the between-study variance
+#'   \eqn{\tau^2}.
+#' @param print.I2 A logical value indicating whether to print the
+#'   value of the I-squared statistic.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in forest plots. If \code{backtransf = TRUE},
 #'   results for \code{sm = "OR"} are presented as odds ratios rather
@@ -215,6 +222,9 @@ forest.netmeta <- function(x,
                            smlab = NULL,
                            sortvar = x$seq,
                            overall.hetstat = gs("overall.hetstat"),
+                           print.tau2 = gs("forest.tau2"),
+                           print.tau = gs("forest.tau"),
+                           print.I2 = gs("forest.I2"),
                            backtransf = x$backtransf,
                            lab.NA = gs("lab.NA"),
                            add.data,
@@ -272,6 +282,16 @@ forest.netmeta <- function(x,
   chklogical(print.subgroup.name)
   #
   overall.hetstat <- replaceNULL(overall.hetstat, FALSE)
+  print.tau2 <- replaceNULL(print.tau2, overall.hetstat)
+  print.tau <- replaceNULL(print.tau, overall.hetstat)
+  print.I2 <- replaceNULL(print.I2, overall.hetstat)
+  #
+  chklogical(print.tau2)
+  chklogical(print.tau)
+  chklogical(print.I2)
+  #
+  if (print.tau)
+    print.tau2 <- FALSE
   #
   chklogical(backtransf)
   chkchar(lab.NA)
@@ -646,14 +666,18 @@ forest.netmeta <- function(x,
   #
   m1 <- setHet(m1, x)
   m1$.text.details.methods <-
-    catmeth(x, pooled == "random", gs("text.tau2"), gs("digits.tau2"),
-            gs("big.mark"))
+    textmeth(x, pooled == "random", print.tau2, print.tau,
+             "", "", gs("digits.tau2"), gs("digits.tau"),
+             print.I2, gs("text.I2"),
+             big.mark = gs("big.mark"), forest = TRUE)
   #
   forest(m1,
          digits = digits,
          #
          overall = FALSE, common = FALSE, random = FALSE,
          overall.hetstat = overall.hetstat,
+         print.tau2 = print.tau2, print.tau = print.tau,
+         print.I2 = print.I2,
          test.subgroup = FALSE,
          #
          leftcols = leftcols,

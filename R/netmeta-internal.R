@@ -31,7 +31,7 @@
                 "sep.trts", "sep.comps", "sep.ia",
                 "nchar.trts", "nchar.studlab",
                 #
-                "details.netmeta", "legend.netmeta")
+                "legend")
   #
   suppressWarnings(
     settings.meta(baseline.reference = TRUE, small.values = "desirable",
@@ -53,7 +53,7 @@
                   sep.trts = ":", sep.comps = "+", sep.ia = "*",
                   nchar.trts = 666, nchar.studlab = 666,
                   #
-                  details.netmeta = TRUE, legend.netmeta = TRUE,
+                  legend = TRUE,
                   #
                   .argslist.netmeta = argslist))
 }

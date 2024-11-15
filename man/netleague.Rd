@@ -24,7 +24,7 @@ netleague(
   writexl = !missing(path),
   path = "leaguetable.xlsx",
   overwrite = FALSE,
-  details = gs("details.netmeta"),
+  details = gs("details"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )

@@ -30,12 +30,17 @@ subgroup(x, ...)
   digits.pval.Q = gs("digits.pval.Q"),
   digits.tau2 = gs("digits.tau2"),
   digits.tau = gs("digits.tau"),
-  scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
+  scientific.pval = gs("scientific.pval"),
+  zero.pval = gs("zero.pval"),
+  JAMA.pval = gs("JAMA.pval"),
+  print.tau2 = gs("print.tau2"),
+  print.tau = gs("print.tau"),
+  print.Q = gs("print.Q"),
   text.tau2 = gs("text.tau2"),
   text.tau = gs("text.tau"),
-  details.methods = gs("details.netmeta"),
-  legend = gs("legend.netmeta"),
+  details.methods = gs("details"),
+  legend = gs("legend"),
   ...
 )
 }
@@ -84,11 +89,28 @@ between-study variance \eqn{\tau^2}, see \code{print.default}.}
 \eqn{\tau}, the square root of the between-study variance
 \eqn{\tau^2}.}
 
+\item{big.mark}{A character used as thousands separator.}
+
 \item{scientific.pval}{A logical specifying whether p-values should
 be printed in scientific notation, e.g., 1.2345e-01 instead of
 0.12345.}
 
-\item{big.mark}{A character used as thousands separator.}
+\item{zero.pval}{A logical specifying whether p-values should be
+printed with a leading zero.}
+
+\item{JAMA.pval}{A logical specifying whether p-values for test of
+overall effect should be printed according to JAMA reporting
+standards.}
+
+\item{print.tau2}{A logical specifying whether between-study
+variance \eqn{\tau^2} should be printed.}
+
+\item{print.tau}{A logical specifying whether \eqn{\tau}, the
+square root of the between-study variance \eqn{\tau^2}, should be
+printed.}
+
+\item{print.Q}{A logical value indicating whether to print the
+results of the test of heterogeneity.}
 
 \item{text.tau2}{Text printed to identify between-study variance
 \eqn{\tau^2}.}

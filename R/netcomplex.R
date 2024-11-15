@@ -360,7 +360,7 @@ print.netcomplex <- function(x,
                              ##
                              big.mark = gs("big.mark"),
                              ##
-                             legend = TRUE,
+                             legend = gs("legend"),
                              warn.deprecated = gs("warn.deprecated"),
                              ##
                              ...) {

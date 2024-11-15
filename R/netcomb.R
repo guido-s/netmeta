@@ -766,14 +766,15 @@ netcomb <- function(x,
               method = "Inverse",
               level = x$level,
               level.ma = x$level.ma,
-              common = x$common,
-              random = x$random,
+              common = common,
+              random = random,
               ##
               reference.group = x$reference.group,
               baseline.reference = x$baseline.reference,
               all.treatments = NULL,
               seq = x$seq,
-              ##
+              #
+              method.tau = x$method.tau,
               tau.preset = tau.preset,
               ##
               tol.multiarm = x$tol.multiarm,

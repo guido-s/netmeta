@@ -47,10 +47,26 @@
 #'   between-study variance, see \code{print.default}.
 #' @param digits.I2 Minimal number of significant digits for I-squared
 #'   statistic, see \code{print.default}.
+#' @param big.mark A character used as thousands separator.
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
-#' @param big.mark A character used as thousands separator.
+#' @param zero.pval A logical specifying whether p-values should be
+#'   printed with a leading zero.
+#' @param JAMA.pval A logical specifying whether p-values for test of
+#'   overall effect should be printed according to JAMA reporting
+#'   standards.
+#' @param print.tau2 A logical specifying whether between-study
+#'   variance \eqn{\tau^2} should be printed.
+#' @param print.tau A logical specifying whether \eqn{\tau}, the
+#'   square root of the between-study variance \eqn{\tau^2}, should be
+#'   printed.
+#' @param print.Q A logical value indicating whether to print the
+#'   results of the test of heterogeneity.
+#' @param print.I2 A logical specifying whether heterogeneity
+#'   statistic I\eqn{^2} should be printed.
+#' @param print.I2.ci A logical specifying whether confidence interval for
+#'   heterogeneity statistic I\eqn{^2} should be printed.
 #' @param truncate An optional vector used to truncate the printout of
 #'   results for individual studies (must be a logical vector of
 #'   length corresponding to the number of pairwise comparisons
@@ -145,13 +161,23 @@ print.summary.netmeta <- function(x,
                                   digits.Q = gs("digits.Q"),
                                   digits.tau2 = gs("digits.tau2"),
                                   digits.I2 = gs("digits.I2"),
-                                  scientific.pval = gs("scientific.pval"),
+                                  #
                                   big.mark = gs("big.mark"),
+                                  scientific.pval = gs("scientific.pval"),
+                                  zero.pval = gs("zero.pval"),
+                                  JAMA.pval = gs("JAMA.pval"),
+                                  #
+                                  print.tau2 = gs("print.tau2"),
+                                  print.tau = gs("print.tau"),
+                                  print.Q = gs("print.Q"),
+                                  print.I2 = gs("print.I2"),
+                                  print.I2.ci = gs("print.I2.ci"),
+                                  #
                                   truncate,
                                   text.truncate = "*** Output truncated ***",
                                   #
-                                  details.methods = gs("details.netmeta"),
-                                  legend = gs("legend.netmeta"),
+                                  details.methods = gs("details"),
+                                  legend = gs("legend"),
                                   #
                                   warn.deprecated = gs("warn.deprecated"),
                                   ##
@@ -188,9 +214,18 @@ print.summary.netmeta <- function(x,
   chknumeric(digits.Q, min = 0, length = 1)
   chknumeric(digits.tau2, min = 0, length = 1)
   chknumeric(digits.I2, min = 0, length = 1)
-  ##
+  #
+  chkchar(big.mark, length = 1)
   chklogical(scientific.pval)
-  ##
+  chklogical(zero.pval)
+  chklogical(JAMA.pval)
+  #
+  chklogical(print.tau2)
+  chklogical(print.tau)
+  chklogical(print.Q)
+  chklogical(print.I2)
+  chklogical(print.I2.ci)
+  #
   chklogical(nma)
   chklogical(details.methods)
   chklogical(legend)
@@ -483,8 +518,17 @@ print.summary.netmeta <- function(x,
                   digits.Q = digits.Q,
                   digits.tau2 = digits.tau2,
                   digits.I2 = digits.I2,
-                  scientific.pval = scientific.pval,
+                  #
                   big.mark = big.mark,
+                  scientific.pval = scientific.pval,
+                  zero.pval = zero.pval,
+                  JAMA.pval = JAMA.pval,
+                  #
+                  print.tau2 = print.tau2,
+                  print.tau = print.tau,
+                  print.Q = print.Q,
+                  print.I2 = print.I2,
+                  print.I2.ci = print.I2.ci,
                   #
                   details.methods = details.methods,
                   legend = legend)

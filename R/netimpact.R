@@ -13,6 +13,10 @@
 #' @param event.ignore Assumed event number mimicking the removal of
 #'   individual studies from the network meta-analysis (considered for
 #'   \code{\link{netmetabin}} objects).
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names (see Details).
+#' @param nchar.studlab A numeric defining the minimum number of
+#'   characters used to create unique study labels.
 #' @param verbose A logical indicating whether information on the
 #'   estimation progress should be printed.
 #' 
@@ -70,6 +74,8 @@
 netimpact <- function(x,
                       seTE.ignore = 100 * max(x$seTE, na.rm = TRUE),
                       event.ignore = 0.01,
+                      nchar.trts = x$nchar.trts,
+                      nchar.studlab = x$nchar.studlab,
                       verbose = FALSE) {
   
   
@@ -79,6 +85,9 @@ netimpact <- function(x,
   ##
   chknumeric(seTE.ignore, min = 0, zero = TRUE, length = 1)
   chknumeric(event.ignore, min = 0, zero = TRUE, length = 1)
+  #
+  chknumeric(nchar.trts, min = 1, length = 1)
+  chknumeric(nchar.studlab, min = 1, length = 1)
   
   
   studlab <- x$studlab
@@ -170,8 +179,14 @@ netimpact <- function(x,
               impact.random = t(impact.random),
               ignored.comparisons = ignored,
               seTE.ignore = seTE.ignore,
+              #
               x = x,
               nets = nets,
+              method.tau = x$method.tau,
+              nchar.trts = nchar.trts,
+              nchar.studlab = nchar.studlab,
+              #
+              call = match.call(),
               version = packageDescription("netmeta")$Version)
   ##
   ## Backward compatibility

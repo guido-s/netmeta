@@ -62,7 +62,7 @@ print.decomp.design <- function(x,
                                 big.mark = gs("big.mark"),
                                 nchar.trts = x$nchar.trts,
                                 sort = TRUE,
-                                legend = TRUE,
+                                legend = gs("legend"),
                                 ...) {
   
   
@@ -196,7 +196,7 @@ print.decomp.design <- function(x,
       "a full design-by-treatment interaction random effects model\n\n",
       sep = "")
   print(Q.inc.random)
-  
+    
   
   ##
   ## Add legend with abbreviated treatment labels

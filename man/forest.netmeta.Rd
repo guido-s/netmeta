@@ -23,6 +23,9 @@
   smlab = NULL,
   sortvar = x$seq,
   overall.hetstat = gs("overall.hetstat"),
+  print.tau2 = gs("forest.tau2"),
+  print.tau = gs("forest.tau"),
+  print.I2 = gs("forest.I2"),
   backtransf = x$backtransf,
   lab.NA = gs("lab.NA"),
   add.data,
@@ -92,6 +95,16 @@ of same length as the total number of treatments).}
 
 \item{overall.hetstat}{A logical indicating whether to print heterogeneity
 measures.}
+
+\item{print.tau2}{A logical value indicating whether to print the
+value of the between-study variance \eqn{\tau^2}.}
+
+\item{print.tau}{A logical value indicating whether to print
+\eqn{\tau}, the square root of the between-study variance
+\eqn{\tau^2}.}
+
+\item{print.I2}{A logical value indicating whether to print the
+value of the I-squared statistic.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in forest plots. If \code{backtransf = TRUE},

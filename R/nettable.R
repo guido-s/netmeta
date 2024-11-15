@@ -563,7 +563,7 @@ nettable <- function(...,
 
 
 print.nettable <- function(x, common = x$x$common, random = x$x$random,
-                           legend = TRUE, ...) {
+                           legend = gs("legend"), ...) {
   
   ##
   ##

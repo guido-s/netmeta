@@ -1,4 +1,3 @@
-#' Additive network meta-analysis for combinations of treatments
 #' (disconnected networks)
 #' 
 #' @description
@@ -1299,6 +1298,7 @@ discomb <- function(TE, seTE,
               all.treatments = NULL,
               seq = seq,
               ##
+              method.tau = "DL",
               tau.preset = tau.preset,
               #
               tol.multiarm = tol.multiarm,

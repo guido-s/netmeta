@@ -37,7 +37,7 @@ nettable(
   verbose = FALSE
 )
 
-\method{print}{nettable}(x, common = x$x$common, random = x$x$random, legend = TRUE, ...)
+\method{print}{nettable}(x, common = x$x$common, random = x$x$random, legend = gs("legend"), ...)
 }
 \arguments{
 \item{\dots}{Any number of network meta-analysis objects or a

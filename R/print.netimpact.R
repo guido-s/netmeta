@@ -9,8 +9,16 @@
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
 #' @param digits Minimal number of significant digits.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names (see Details).
+#' @param nchar.studlab A numeric defining the minimum number of
+#'   characters used to create unique study labels.
+#' @param details.methods A logical specifying whether details on statistical
+#'   methods should be printed.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
+#' @param legend.studlab A logical indicating whether a legend should
+#'   be printed for abbreviated study labels.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments (to catch deprecated arguments).
@@ -44,9 +52,15 @@
 print.netimpact <- function(x,
                             common = x$x$common,
                             random = x$x$random,
+                            #
                             digits = gs("digits.prop"),
-                            ##
-                            legend = TRUE,
+                            #
+                            nchar.trts = x$nchar.trts,
+                            nchar.studlab = x$nchar.studlab,
+                            #
+                            details.methods = gs("details"),
+                            legend = gs("legend"),
+                            legend.studlab = TRUE,
                             warn.deprecated = gs("warn.deprecated"),
                             ##
                             ...) {
@@ -66,7 +80,9 @@ print.netimpact <- function(x,
   ##
   ##
   chknumeric(digits, min = 0, length = 1)
+  chklogical(details.methods)
   chklogical(legend)
+  chklogical(legend.studlab)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -101,9 +117,9 @@ print.netimpact <- function(x,
   trts <- x$x$trts
   ##
   treat1 <- as.character(factor(treat1.long, levels = trts,
-                                labels = treats(trts, x$x$nchar.trts)))
+                                labels = treats(trts, nchar.trts)))
   treat2 <- as.character(factor(treat2.long, levels = trts,
-                                labels = treats(trts, x$x$nchar.trts)))
+                                labels = treats(trts, nchar.trts)))
   
   
   ##
@@ -114,6 +130,11 @@ print.netimpact <- function(x,
   if (common) {
     cat("Common effects model: \n\n")
     impact.common <- formatN(x$impact.common, digits = digits)
+    #
+    studlab <- rownames(impact.common)
+    studlab.abbr <- treats(studlab, nchar.studlab)
+    rownames(impact.common) <- studlab.abbr
+    #
     colnames(impact.common) <- paste(treat1, treat2, sep = sep.trts)
     ##
     prmatrix(impact.common, quote = FALSE, right = TRUE)
@@ -126,15 +147,31 @@ print.netimpact <- function(x,
   if (random) {
     cat("Random effects model: \n\n")
     impact.random <- formatN(x$impact.random, digits = digits)
+    #
+    studlab <- rownames(impact.random)
+    studlab.abbr <- treats(studlab, nchar.studlab)
+    rownames(impact.random) <- studlab.abbr
+    #
     colnames(impact.random) <- paste(treat1, treat2, sep = sep.trts)
     ##
     prmatrix(impact.random, quote = FALSE, right = TRUE)
   }
+  #
+  # Print details of network meta-analysis methods
+  #
+  if (details.methods & (common | random))
+    cat(textmeth(x, random))
   ##
   ## Add legend with abbreviated treatment labels
   ##
-  if (common | random)
-    legendabbr(trts, treats(trts, x$x$nchar.trts), legend)
+  if (legend & (common | random))
+    legendabbr(trts, treats(trts, nchar.trts), legend)
+  #
+  # Add legend with abbreviated study labels
+  #
+  if (legend.studlab & (common | random))
+    legendabbr(studlab, studlab.abbr, TRUE, "Study label",
+               if (legend) "\n" else "\nLegend:\n")
   
   
   invisible(NULL)

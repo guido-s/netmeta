@@ -323,8 +323,10 @@ updateversion <- function(x, verbose = FALSE) {
     if (update.2.8.0)
       x$x$small.values <- setsv(x$x$small.values)
     #
-    if (update.3.0.0)
+    if (update.3.0.0) {
       x$overall.hetstat <- TRUE
+      x$method.tau <- x$x$method.tau
+    }
     #
     return(x)
   }
@@ -547,6 +549,12 @@ updateversion <- function(x, verbose = FALSE) {
     ##
     if (update.2.8.0)
       x$x$small.values <- setsv(x$x$small.values)
+    ##
+    if (update.3.0.0) {
+      x$method.tau <- x$x$method.tau
+      x$nchar.trts <- x$x$nchar.trts
+      x$nchar.studlab <- x$x$nchar.studlab
+    }
     ##
     return(x)
   }

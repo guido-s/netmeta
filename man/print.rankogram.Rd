@@ -9,9 +9,10 @@
   common = x$common,
   random = x$random,
   cumulative.rankprob = x$cumulative.rankprob,
+  sort = TRUE,
   nchar.trts = x$nchar.trts,
   digits = gs("digits.prop"),
-  legend = TRUE,
+  legend = gs("legend"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -27,6 +28,9 @@ and SUCRAs for the random effects model.}
 
 \item{cumulative.rankprob}{A logical indicating whether cumulative
 ranking probabilities should be printed.}
+
+\item{sort}{A logical indicating whether treatments should be
+sorted by decreasing SUCRAs.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}

@@ -10,6 +10,8 @@
 #'   and SUCRAs for the random effects model.
 #' @param cumulative.rankprob A logical indicating whether cumulative
 #'   ranking probabilities should be printed.
+#' @param sort A logical indicating whether treatments should be
+#'   sorted by decreasing SUCRAs.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
@@ -49,9 +51,10 @@ print.rankogram <- function(x,
                             common = x$common,
                             random = x$random,
                             cumulative.rankprob = x$cumulative.rankprob,
+                            sort = TRUE,
                             nchar.trts = x$nchar.trts,
                             digits = gs("digits.prop"),
-                            legend = TRUE,
+                            legend = gs("legend"),
                             warn.deprecated = gs("warn.deprecated"),
                             ...) {
   
@@ -72,6 +75,7 @@ print.rankogram <- function(x,
   #
   
   chklogical(cumulative.rankprob)
+  chklogical(sort)
   #
   chknumeric(nchar.trts, length = 1)
   #
@@ -115,6 +119,10 @@ print.rankogram <- function(x,
       rank.common <- x$ranking.matrix.common
     rownames(rank.common) <- treats(rank.common, nchar.trts)
     #
+    if (sort)
+      rank.common <-
+      rank.common[rev(order(x$ranking.common)), , drop = FALSE]
+    #
     cat("Common effects model: \n\n")
     prmatrix(formatN(rank.common, digits), quote = FALSE, right = TRUE, ...)
     if (random)
@@ -128,6 +136,10 @@ print.rankogram <- function(x,
       rank.random <- x$ranking.matrix.random
     rownames(rank.random) <-
       treats(rank.random, nchar.trts)
+    #
+    if (sort)
+      rank.random <-
+      rank.random[rev(order(x$ranking.random)), , drop = FALSE]
     #
     cat("Random effects model: \n\n")
     prmatrix(formatN(rank.random, digits), quote = FALSE, right = TRUE, ...)
