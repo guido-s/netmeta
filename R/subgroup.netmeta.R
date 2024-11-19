@@ -62,8 +62,7 @@
 #' An object of class \code{"subgroup.netmeta"} with corresponding \code{print}
 #'   and \code{forest} function.
 #'
-#' @seealso \code{\link{forest.subgroup.netmeta}}, \code{\link{netmetareg}},
-#'   \code{\link{forest.netmeta}}
+#' @seealso \code{\link{forest.subgroup.netmeta}}, \code{\link{forest.netmeta}}
 #'
 #' @examples
 #' \dontrun{

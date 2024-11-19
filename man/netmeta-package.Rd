@@ -66,6 +66,7 @@ Available functions to evaluate network inconsistency:
 
 Additional methods and functions:
 \itemize{
+\item subgroup network meta-analysis (\code{\link{subgroup.netmeta}});
 \item information on network connectivity
   (\code{\link{netconnection}});
 \item contribution of direct comparisons to network estimates

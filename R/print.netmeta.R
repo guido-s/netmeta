@@ -720,6 +720,8 @@ print.netmeta <- function(x,
     else
       tau <- x$tau
     #
+    print.I2 <- print.I2 & !is.na(I2)
+    #
     if (overall.hetstat) {
       #
       if (is.bin)
@@ -755,8 +757,7 @@ print.netmeta <- function(x,
           text.hetstat <- paste0(
             text.hetstat,
             if (print.tau2 | print.tau) "; ",
-            if (!is.na(I2))
-              paste0(text.I2, " = ", round(I2, digits.I2), "%"),
+            paste0(text.I2, " = ", round(I2, digits.I2), "%"),
             if (print.I2.ci & (!(is.na(lower.I2) | is.na(upper.I2))))
               pasteCI(lower.I2, upper.I2,
                       digits.I2, big.mark, unit = "%"))

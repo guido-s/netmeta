@@ -40,7 +40,8 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - measures characterizing the flow of evidence between two treatments by König et al. (2013) <doi:10.1002/sim.6001>;
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <doi:10.1002/jrsm.1143>;
  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <doi:10.1002/cem.2569>; (Rücker & Schwarzer, 2017) <doi:10.1002/jrsm.1270>;
- - contribution matrix as described in Papakonstantinou et al. (2018) <doi:10.12688/f1000research.14770.3> and Davies et al. (2022) <doi:10.1002/sim.9346>.
+ - contribution matrix as described in Papakonstantinou et al. (2018) <doi:10.12688/f1000research.14770.3> and Davies et al. (2022) <doi:10.1002/sim.9346>;
+ - subgroup network meta-analysis.
 License: GPL (>= 2)
 Encoding: UTF-8
 VignetteBuilder: R.rsp

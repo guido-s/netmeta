@@ -150,6 +150,5 @@ subgroup(net, rob, common = FALSE)
 
 }
 \seealso{
-\code{\link{forest.subgroup.netmeta}}, \code{\link{netmetareg}},
-  \code{\link{forest.netmeta}}
+\code{\link{forest.subgroup.netmeta}}, \code{\link{forest.netmeta}}
 }
