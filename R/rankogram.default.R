@@ -96,6 +96,9 @@ rankogram.default <- function(x, pooled = "unspecified",
     stop("Argument 'x' must be a matrix or data frame.",
          call. = FALSE)
   #
+  if (is.data.frame(x))
+    x <- as.matrix(x)
+  #
   if (any(!is.numeric(x)))
     stop("Input for argument 'x' must contain numeric values.",
          call. = FALSE)

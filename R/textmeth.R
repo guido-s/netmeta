@@ -108,6 +108,15 @@ textmeth <- function(x, random = FALSE, print.tau2 = FALSE, print.tau = FALSE,
     }
   }
   else if (inherits(x, "rankogram")) {
+    if (x$small.values == "desirable")
+      text.details <-
+        paste0(text.details,
+               "- Small outcome values indicate a beneficial effect\n")
+    else if (x$small.values == "undesirable")
+      text.details <-
+        paste0(text.details,
+               "- Small outcome values indicate a harmful effect\n")
+    #
     if (random && !is.null(x$x)) {
       if (!is.null(x$x$tau.preset)) {
           tau2 <- formatPT(x$x$tau.preset^2,
