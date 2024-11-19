@@ -1,4 +1,4 @@
-#' Calculate rankogram from samples
+#' Calculate rankogram from treatment effect samples
 #'
 #' @description
 #' This function calculates the probabilities of each treatment being
@@ -6,14 +6,14 @@
 #' RAnking curve) from a sample of treatment estimates in network
 #' meta-analysis.
 #'
-#' @param x A matrix or data frame with samples.
+#' @param x A matrix or data frame with treatment effects in columns and
+#'  samples in rows.
 #' @param pooled A character string indicating whether samples come from
 #'   a common (\code{"common"}), random effects (\code{"random"}), or
 #'   \code{"unspecified"} model, can be abbreviated.
 #' @param small.values An optional character string specifying whether small
-#'   treatment effects indicate a beneficial (\code{"desirable"}),
-#'   harmful (\code{"undesirable"}) effect, or \code{"unspecified"} effect,
-#'   can be abbreviated.
+#'   treatment effects indicate a beneficial (\code{"desirable"}) or
+#'   harmful (\code{"undesirable"}) effect, can be abbreviated.
 #' @param cumulative.rankprob A logical indicating whether cumulative
 #'   ranking probabilities should be printed.
 #' @param keep.samples A logical indicating whether to keep the generated
@@ -27,6 +27,9 @@
 #' at each possible rank. To this aim, we use samples and
 #' summarise them using the ranking metric SUCRAs (Surface Under
 #' the Cumulative RAnking curve).
+#' 
+#' The matrix / data frame in argument \code{x} must contain the sampled
+#' effects for each treatment.
 #'
 #' @return
 #' An object of class \code{rankogram} with corresponding \code{print}
@@ -68,11 +71,32 @@
 #'                data = Woods2010, sm = "OR")
 #' net1 <- netmeta(p1, small.values = "desirable")
 #'
+#' set.seed(1909) # get reproducible results
 #' ran1 <- rankogram(net1, nsim = 100, common = FALSE,
 #'   keep.samples = TRUE)
 #' ran1
 #' 
 #' rankogram(ran1$samples.random, pooled = "random")
+#' 
+#' \dontrun{
+#' data(Linde2015)
+#' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+#'   studlab = id, data = Linde2015, sm = "OR")
+#' #
+#' net2 <- netmeta(p2, common = FALSE, ref = "Placebo", small = "undesirable")
+#' 
+#' ran2 <- rankogram(net2, nsim = 100, common = FALSE,
+#'   keep.samples = TRUE)
+#' ran2
+#' 
+#' # Wrong ranking due to using the default,
+#' # i.e., argument 'small.values = "desirable".
+#' rankogram(ran2$samples.random, pooled = "random")
+#' # Correct ranking 
+#' rankogram(ran2$samples.random, pooled = "random",
+#'   small.values = "undesirable")
+#' }
 #'
 #' @rdname rankogram.default
 #' @method rankogram default
@@ -80,7 +104,7 @@
 
 
 rankogram.default <- function(x, pooled = "unspecified",
-                              small.values = "unspecified",
+                              small.values = "desirable",
                               cumulative.rankprob = FALSE,
                               keep.samples = FALSE,
                               nchar.trts = gs("nchar.trts"),
@@ -102,7 +126,7 @@ rankogram.default <- function(x, pooled = "unspecified",
   if (any(!is.numeric(x)))
     stop("Input for argument 'x' must contain numeric values.",
          call. = FALSE)
-
+  
   
   #
   #
@@ -111,7 +135,7 @@ rankogram.default <- function(x, pooled = "unspecified",
   #
   
   pooled <- setchar(pooled, c("common", "random", "unspecified"))
-  small.values <- setsv(small.values, add = "unspecified")
+  small.values <- setsv(small.values)
   chklogical(cumulative.rankprob)
   chklogical(keep.samples)
   #
@@ -130,6 +154,9 @@ rankogram.default <- function(x, pooled = "unspecified",
   #
   #
   
+  if (small.values == "undesirable")
+    x <- -x
+  #
   sucras.common  <- ranking.matrix.common  <- cumrank.matrix.common  <- NULL
   sucras.random <- ranking.matrix.random <- rank.cum.random <- NULL
   #

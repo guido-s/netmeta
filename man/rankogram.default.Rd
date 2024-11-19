@@ -2,12 +2,12 @@
 % Please edit documentation in R/rankogram.default.R
 \name{rankogram.default}
 \alias{rankogram.default}
-\title{Calculate rankogram from samples}
+\title{Calculate rankogram from treatment effect samples}
 \usage{
 \method{rankogram}{default}(
   x,
   pooled = "unspecified",
-  small.values = "unspecified",
+  small.values = "desirable",
   cumulative.rankprob = FALSE,
   keep.samples = FALSE,
   nchar.trts = gs("nchar.trts"),
@@ -15,16 +15,16 @@
 )
 }
 \arguments{
-\item{x}{A matrix or data frame with samples.}
+\item{x}{A matrix or data frame with treatment effects in columns and
+samples in rows.}
 
 \item{pooled}{A character string indicating whether samples come from
 a common (\code{"common"}), random effects (\code{"random"}), or
 \code{"unspecified"} model, can be abbreviated.}
 
 \item{small.values}{An optional character string specifying whether small
-treatment effects indicate a beneficial (\code{"desirable"}),
-harmful (\code{"undesirable"}) effect, or \code{"unspecified"} effect,
-can be abbreviated.}
+treatment effects indicate a beneficial (\code{"desirable"}) or
+harmful (\code{"undesirable"}) effect, can be abbreviated.}
 
 \item{cumulative.rankprob}{A logical indicating whether cumulative
 ranking probabilities should be printed.}
@@ -69,6 +69,9 @@ We derive a matrix showing the probability of each treatment being
 at each possible rank. To this aim, we use samples and
 summarise them using the ranking metric SUCRAs (Surface Under
 the Cumulative RAnking curve).
+
+The matrix / data frame in argument \code{x} must contain the sampled
+effects for each treatment.
 }
 \examples{
 data(Woods2010)
@@ -76,11 +79,32 @@ p1 <- pairwise(treatment, event = r, n = N, studlab = author,
                data = Woods2010, sm = "OR")
 net1 <- netmeta(p1, small.values = "desirable")
 
+set.seed(1909) # get reproducible results
 ran1 <- rankogram(net1, nsim = 100, common = FALSE,
   keep.samples = TRUE)
 ran1
 
 rankogram(ran1$samples.random, pooled = "random")
+
+\dontrun{
+data(Linde2015)
+p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+  event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+  studlab = id, data = Linde2015, sm = "OR")
+#
+net2 <- netmeta(p2, common = FALSE, ref = "Placebo", small = "undesirable")
+
+ran2 <- rankogram(net2, nsim = 100, common = FALSE,
+  keep.samples = TRUE)
+ran2
+
+# Wrong ranking due to using the default,
+# i.e., argument 'small.values = "desirable".
+rankogram(ran2$samples.random, pooled = "random")
+# Correct ranking 
+rankogram(ran2$samples.random, pooled = "random",
+  small.values = "undesirable")
+}
 
 }
 \references{

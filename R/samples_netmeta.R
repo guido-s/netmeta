@@ -1,9 +1,8 @@
-samples_netmeta <- function(x, nsim, pooled, small.values) {
+samples_netmeta <- function(x, nsim, pooled) {
   
   chkclass(x, "netmeta")
   #
   pooled <- setchar(pooled, c("common", "random"))
-  small.values <- setsv(small.values)
   #
   if (pooled == "common") {
     TE.pooled <- x$TE.common
@@ -14,10 +13,7 @@ samples_netmeta <- function(x, nsim, pooled, small.values) {
     Cov.pooled <- x$Cov.random
   }
   #
-  if (small.values == "desirable")
-    theta <- TE.pooled[, 1]
-  else
-    theta <- TE.pooled[1, ]
+  theta <- TE.pooled[, 1]
   
   compMatrix <- matrix(0, nrow = nrow(Cov.pooled), ncol = length(x$trts))
   rownames(compMatrix) <- rownames(Cov.pooled)

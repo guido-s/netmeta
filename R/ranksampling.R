@@ -2,18 +2,28 @@ ranksampling <- function(x, nsim,
                          pooled = "random", small.values = "desirable",
                          keep.samples = FALSE) {
   
+  chknumeric(nsim, min = 1, length = 1)
+  pooled <- setchar(pooled, c("common", "random"))
+  small.values <- setsv(small.values)
+  chklogical(keep.samples)
+  
+  
   #
   # Generate samples
   #
   
-  samples <- samples_netmeta(x, nsim, pooled, small.values)
+  samples <- samples_netmeta(x, nsim, pooled)
   
   
   #
   # Calculate rankings
   #
   
-  rankings <- rankings(samples$samples)
+  if (small.values == "desirable")
+    rankings <- rankings(samples$samples)
+  else
+    rankings <- rankings(-samples$samples)
+  
   
   #
   # Return results
