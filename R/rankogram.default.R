@@ -8,11 +8,12 @@
 #'
 #' @param x A matrix or data frame with samples.
 #' @param pooled A character string indicating whether samples come from
-#'   a common (\code{"common"}) or random effects model (\code{"random"}).
-#'   Can be abbreviated.
+#'   a common (\code{"common"}), random effects (\code{"random"}), or
+#'   \code{"unspecified"} model, can be abbreviated.
 #' @param small.values An optional character string specifying whether small
-#'   treatment effects indicate a beneficial (\code{"desirable"}) or
-#'   harmful (\code{"undesirable"}) effect, can be abbreviated.
+#'   treatment effects indicate a beneficial (\code{"desirable"}),
+#'   harmful (\code{"undesirable"}) effect, or \code{"unspecified"} effect,
+#'   can be abbreviated.
 #' @param cumulative.rankprob A logical indicating whether cumulative
 #'   ranking probabilities should be printed.
 #' @param keep.samples A logical indicating whether to keep the generated
@@ -71,16 +72,15 @@
 #'   keep.samples = TRUE)
 #' ran1
 #' 
-#' rankogram(ran1$samples.random,
-#'   pooled = "random", small.values = "d")
+#' rankogram(ran1$samples.random, pooled = "random")
 #'
 #' @rdname rankogram.default
 #' @method rankogram default
 #' @export
 
 
-rankogram.default <- function(x, pooled,
-                              small.values = "",
+rankogram.default <- function(x, pooled = "unspecified",
+                              small.values = "unspecified",
                               cumulative.rankprob = FALSE,
                               keep.samples = FALSE,
                               nchar.trts = gs("nchar.trts"),
@@ -107,8 +107,8 @@ rankogram.default <- function(x, pooled,
   #
   #
   
-  pooled <- setchar(pooled, c("common", "random"))
-  small.values <- setsv(small.values)
+  pooled <- setchar(pooled, c("common", "random", "unspecified"))
+  small.values <- setsv(small.values, add = "unspecified")
   chklogical(cumulative.rankprob)
   chklogical(keep.samples)
   #
@@ -173,6 +173,7 @@ rankogram.default <- function(x, pooled,
               #
               nsim = nsim,
               #
+              pooled = pooled,
               common = common,
               random = random,
               small.values = small.values,

@@ -66,11 +66,24 @@
 #'   \code{\link{forest.netmeta}}
 #'
 #' @examples
-#' # Add examples
+#' \dontrun{
+#' data("Senn2013")
+#' # Add variable with (fictitious) risk of bias values
+#' Senn2013$rob <- NA
+#' set.seed(1909)
+#' for (i in unique(Senn2013$studlab))
+#'   Senn2013$rob[Senn2013$studlab == i] <- sample(1:3, 1)
+#' Senn2013$rob <- factor(Senn2013$rob, levels = 1:3,
+#'   labels = c("low", "moderate", "high"))
+#' # Conduct network meta-analysis
+#' net <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
+#'   data = Senn2013, sm = "MD", reference = "plac", nchar.trts = 4)
+#' # Conduct subgroup network meta-analysis
+#' subgroup(net, rob, common = FALSE)
+#' }
 #'
 #' @method subgroup netmeta
 #' @export
-
 
 subgroup.netmeta <- function(x, subgroup, only.connected = FALSE,
                              common = x$common, random = x$random,
@@ -97,6 +110,7 @@ subgroup.netmeta <- function(x, subgroup, only.connected = FALSE,
   subgroup.name <- deparse(substitute(subgroup))
   #
   subgroup <- catch("subgroup", match.call(), x$data, sys.frame(sys.parent()))
+  chknull(subgroup)
   levs <- sort(unique(subgroup))
   #
   matNA <- x$TE.common[x$seq, x$seq]
@@ -139,10 +153,13 @@ subgroup.netmeta <- function(x, subgroup, only.connected = FALSE,
         for (j in net.ks$trts) {
           TE.common[i, j, k] <- net.ks$TE.common[i, j]
           seTE.common[i, j, k] <- net.ks$seTE.common[i, j]
+          #
           TE.random[i, j, k] <- net.ks$TE.random[i, j]
           seTE.random[i, j, k] <- net.ks$seTE.random[i, j]
+          #
           tau2.matrix[i, j, k] <- net.ks$tau2
           tau.matrix[i, j, k] <- net.ks$tau
+          #
           A.matrix[i, j, k] <- net.ks$A.matrix[i, j]
         }
       }
@@ -331,25 +348,34 @@ print.subgroup.netmeta <- function(x,
   if (common) {
     cat("Common effects model: \n\n")
     #
-    common <- x$common %>% filter(is.na(df.Q) | df.Q > 0)
+    dat.common <- x$common %>% filter(is.na(df.Q) | df.Q > 0)
     #
-    common$TE <- formatN(common$TE, digits = digits, text.NA = ".")
-    common$seTE <- formatN(common$seTE, digits = digits.se, text.NA = ".")
+    dat.common$TE <-
+      formatN(dat.common$TE, digits = digits, text.NA = ".")
+    dat.common$seTE <-
+      formatN(dat.common$seTE, digits = digits.se, text.NA = ".")
     if (print.Q) {
-      common$Q <- formatN(common$Q, digits = digits.Q, text.NA = ".")
-      common$df.Q <- formatN(common$df.Q, digits = 0, text.NA = ".")
-      common$pval.Q <- formatPT(common$pval.Q, digits = digits.pval.Q,
-                                scientific = scientific.pval,
-                                zero = zero.pval, JAMA = JAMA.pval)
+      dat.common$Q <-
+        formatN(dat.common$Q, digits = digits.Q, text.NA = ".")
+      dat.common$df.Q <-
+        formatN(dat.common$df.Q, digits = 0, text.NA = ".")
+      dat.common$pval.Q <-
+        formatPT(dat.common$pval.Q,
+                 digits = digits.pval.Q, scientific = scientific.pval,
+                 zero = zero.pval, JAMA = JAMA.pval)
     }
     #
     if (any(trts != trts.abbr)) {
-      common$treat1 <- factor(common$treat1, levels = trts, labels = trts.abbr)
-      common$treat2 <- factor(common$treat2, levels = trts, labels = trts.abbr)
+      dat.common$treat1 <-
+        factor(dat.common$treat1, levels = trts, labels = trts.abbr)
+      dat.common$treat2 <-
+        factor(dat.common$treat2, levels = trts, labels = trts.abbr)
     }
     #
-    prmatrix(common %>% select(-treat1, -treat2), quote = FALSE, right = TRUE,
-             rowlab = paste(common$treat1, common$treat2, sep = x$x$sep.trts))
+    prmatrix(dat.common %>% select(-treat1, -treat2),
+             quote = FALSE, right = TRUE,
+             rowlab =
+               paste(dat.common$treat1, dat.common$treat2, sep = x$x$sep.trts))
     #
     if (random)
       cat("\n")
@@ -360,39 +386,45 @@ print.subgroup.netmeta <- function(x,
   if (random) {
     cat("Random effects model: \n\n")
     #
-    random <- x$random %>% filter(is.na(df.Q) | df.Q > 0)
+    dat.random <- x$random %>% filter(is.na(df.Q) | df.Q > 0)
     #
-    random$TE <- formatN(random$TE, digits = digits, text.NA = ".",
-                         big.mark = big.mark)
-    random$seTE <- formatN(random$seTE, digits = digits.se, text.NA = ".",
-                           big.mark = big.mark)
+    dat.random$TE <-
+      formatN(dat.random$TE, digits = digits, text.NA = ".",
+              big.mark = big.mark)
+    dat.random$seTE <-
+      formatN(dat.random$seTE, digits = digits.se, text.NA = ".",
+              big.mark = big.mark)
     if (print.Q) {
-      random$Q <- formatN(random$Q, digits = digits.Q, text.NA = ".",
-                          big.mark = big.mark)
-      random$df.Q <- formatN(random$df.Q, digits = 0, text.NA = ".",
-                             big.mark = big.mark)
-      random$pval.Q <- formatPT(random$pval.Q,
-                                digits = digits.pval.Q,
-                                scientific = scientific.pval,
-                                zero = zero.pval, JAMA = JAMA.pval)
+      dat.random$Q <-
+        formatN(dat.random$Q, digits = digits.Q, text.NA = ".",
+                big.mark = big.mark)
+      dat.random$df.Q <-
+        formatN(dat.random$df.Q, digits = 0, text.NA = ".",
+                big.mark = big.mark)
+      dat.random$pval.Q <-
+        formatPT(dat.random$pval.Q,
+                 digits = digits.pval.Q, scientific = scientific.pval,
+                 zero = zero.pval, JAMA = JAMA.pval)
     }
     #
     if (print.tau2)
-      random$tau2 <- formatPT(random$tau2, digits = digits.tau2,
-                              big.mark = big.mark)
+      dat.random$tau2 <-
+      formatPT(dat.random$tau2, digits = digits.tau2, big.mark = big.mark)
     if (print.tau2)
-      random$tau <- formatPT(random$tau, digits = digits.tau,
-                             big.mark = big.mark)
+      dat.random$tau <-
+      formatPT(dat.random$tau, digits = digits.tau, big.mark = big.mark)
     #
     if (any(trts != trts.abbr)) {
-      random$treat1 <- factor(random$treat1, levels = trts, labels = trts.abbr)
-      random$treat2 <- factor(random$treat2, levels = trts, labels = trts.abbr)
+      dat.random$treat1 <-
+        factor(dat.random$treat1, levels = trts, labels = trts.abbr)
+      dat.random$treat2 <-
+        factor(dat.random$treat2, levels = trts, labels = trts.abbr)
     }
     #
-    prmatrix(random %>% select(-treat1, -treat2), quote = FALSE, right = TRUE,
-             rowlab = paste(random$treat1,
-                            random$treat2,
-                            sep = x$x$sep.trts))
+    prmatrix(dat.random %>% select(-treat1, -treat2),
+             quote = FALSE, right = TRUE,
+             rowlab =
+               paste(dat.random$treat1, dat.random$treat2, sep = x$x$sep.trts))
   }
   #
   # Print details of network meta-analysis methods

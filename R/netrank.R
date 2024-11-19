@@ -189,7 +189,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
            call. = FALSE)
     else if (inherits(x, "netmeta")) {
       if (missing(nsim))
-        nsim <- gs("nsim.netmeta")
+        nsim <- gs("nsim")
       ##
       rnk <- rankogram(x,
                        nsim = nsim,

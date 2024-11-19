@@ -6,7 +6,7 @@
 \usage{
 \method{rankogram}{netmeta}(
   x,
-  nsim = gs("nsim.netmeta"),
+  nsim = gs("nsim"),
   common = x$common,
   random = x$random,
   small.values = x$small.values,

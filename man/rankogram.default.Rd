@@ -6,8 +6,8 @@
 \usage{
 \method{rankogram}{default}(
   x,
-  pooled,
-  small.values = "",
+  pooled = "unspecified",
+  small.values = "unspecified",
   cumulative.rankprob = FALSE,
   keep.samples = FALSE,
   nchar.trts = gs("nchar.trts"),
@@ -18,12 +18,13 @@
 \item{x}{A matrix or data frame with samples.}
 
 \item{pooled}{A character string indicating whether samples come from
-a common (\code{"common"}) or random effects model (\code{"random"}).
-Can be abbreviated.}
+a common (\code{"common"}), random effects (\code{"random"}), or
+\code{"unspecified"} model, can be abbreviated.}
 
 \item{small.values}{An optional character string specifying whether small
-treatment effects indicate a beneficial (\code{"desirable"}) or
-harmful (\code{"undesirable"}) effect, can be abbreviated.}
+treatment effects indicate a beneficial (\code{"desirable"}),
+harmful (\code{"undesirable"}) effect, or \code{"unspecified"} effect,
+can be abbreviated.}
 
 \item{cumulative.rankprob}{A logical indicating whether cumulative
 ranking probabilities should be printed.}
@@ -79,8 +80,7 @@ ran1 <- rankogram(net1, nsim = 100, common = FALSE,
   keep.samples = TRUE)
 ran1
 
-rankogram(ran1$samples.random,
-  pooled = "random", small.values = "d")
+rankogram(ran1$samples.random, pooled = "random")
 
 }
 \references{

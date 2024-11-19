@@ -18,7 +18,7 @@
                 "drop.reference.group", "equal.size",
                 "show.netsplit",
                 #
-                "nsim.netmeta", "lump.comparator",
+                "nsim", "lump.comparator",
                 #
                 "plastic", "col.netgraph",
                 "number.of.studies", "thickness",
@@ -40,7 +40,7 @@
                   drop.reference.group = TRUE, equal.size = TRUE,
                   show.netsplit = "both",
                   #
-                  nsim.netmeta = 1000, lump.comparator = FALSE,
+                  nsim = 1000, lump.comparator = FALSE,
                   #
                   plastic = FALSE, col.netgraph = NULL,
                   number.of.studies = TRUE, thickness = "number.of.studies",
@@ -137,7 +137,7 @@ legendabbr <- function(full, abbr, condition,
 }
 
 
-setsv <- function(x) {
+setsv <- function(x, add = NULL) {
   if (is.null(x))
     res <- "desirable"
   else {
@@ -149,13 +149,15 @@ setsv <- function(x) {
       res <- x
   }
   ##
-  setchar(res, c("desirable", "undesirable"))
+  setchar(res, c("desirable", "undesirable", add))
 }
 
 first <- function(x) x[1]
 second <- function(x) x[2]
 
 
+# For forest plots
+#
 setHet <- function(meta, netmeta) {
   #
   meta$method.tau <- netmeta$method.tau

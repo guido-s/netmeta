@@ -18,7 +18,7 @@
   rightlabs,
   digits = gs("digits.forest"),
   small.values = x$small.values,
-  nsim = gs("nsim.netmeta"),
+  nsim = gs("nsim"),
   digits.prop = 2,
   smlab = NULL,
   sortvar = x$seq,

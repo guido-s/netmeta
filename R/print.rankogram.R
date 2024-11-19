@@ -141,17 +141,31 @@ print.rankogram <- function(x,
       rank.random <-
       rank.random[rev(order(x$ranking.random)), , drop = FALSE]
     #
-    cat("Random effects model: \n\n")
+    if (is.null(x$pooled) || x$pooled != "unspecified")
+      cat("Random effects model: \n\n")
+    else
+      random <- FALSE
+    #
     prmatrix(formatN(rank.random, digits), quote = FALSE, right = TRUE, ...)
+  }
+  #
+  # Print details of network meta-analysis methods
+  #
+  details.methods <- TRUE
+  if (details.methods) {
+    text.details <-
+      textmeth(x, random, TRUE)
+    #
+    cat(text.details)
   }
   #
   # Add legend with abbreviated treatment labels
   #
   if ((common | random) & legend) {
-    if (common)
-      trts <- rownames(x$ranking.matrix.common)
-    else if (random)
+    if (random)
       trts <- rownames(x$ranking.matrix.random)
+    else
+      trts <- rownames(x$ranking.matrix.common)
     #
     legendabbr(trts, treats(trts, nchar.trts), TRUE)
   }

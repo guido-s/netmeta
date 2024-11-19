@@ -1,9 +1,9 @@
 textmeth <- function(x, random = FALSE, print.tau2 = FALSE, print.tau = FALSE,
-                     text.tau2 = "tau^2", text.tau = "tau",
+                     text.tau2 = gs("text.tau2"), text.tau = gs("text.tau"),
                      digits.tau2 = gs("digits.tau2"),
                      digits.tau = gs("digits.tau"),
-                     print.I2 = FALSE, text.I2 = "",
-                     big.mark = "", forest = FALSE) {
+                     print.I2 = FALSE, text.I2 = gs("text.I2"),
+                     big.mark = gs("big.mark"), forest = FALSE) {
   text.details <- ""
   #
   if (print.tau2 & print.tau)
@@ -107,25 +107,52 @@ textmeth <- function(x, random = FALSE, print.tau2 = FALSE, print.tau = FALSE,
         paste0(text.details, "- Calculation of ", text.I2, " based on Q\n")
     }
   }
+  else if (inherits(x, "rankogram")) {
+    if (random && !is.null(x$x)) {
+      if (!is.null(x$x$tau.preset)) {
+          tau2 <- formatPT(x$x$tau.preset^2,
+                           lab = TRUE, labval = text.tau2,
+                           digits = digits.tau2,
+                           lab.NA = "NA", big.mark = big.mark)
+          #
+          text.details <-
+            paste0(text.details,
+                   "- Preset between-study variance: ", tau2, "\n")
+      }
+      else {
+        text.details <-
+          paste0(text.details,
+                 if (x$x$method.tau == "DL")
+                   "- DerSimonian-Laird estimator"
+                 #
+                 else if (x$x$method.tau == "REML")
+                   "- Restricted maximum-likelihood estimator"
+                 ##
+                 else if (x$x$method.tau == "ML")
+                   "- Maximum-likelihood estimator")
+        #
+        text.details <-
+          paste0(text.details, " for ",
+                 if (print.tau) text.tau else text.tau2, "\n")
+      }
+    }
+  }
   else if (inherits(x, "subgroup.netmeta")) {
-    text.details <-
-      paste0(text.details,
-             if (x$method.tau == "DL")
-               "- DerSimonian-Laird estimator"
-             #
-             else if (x$method.tau == "REML")
-               "- Restricted maximum-likelihood estimator"
-             ##
-             else if (x$method.tau == "ML")
-               "- Maximum-likelihood estimator")
-    #
-    text.details <-
-      paste0(text.details, " for ",
-             if (print.tau) text.tau else text.tau2, "\n")
-    #
-    if (print.I2) {
+    if (random) {
       text.details <-
-        paste0(text.details, "- Calculation of ", text.I2, " based on Q\n")
+        paste0(text.details,
+               if (x$method.tau == "DL")
+                 "- DerSimonian-Laird estimator"
+               #
+               else if (x$method.tau == "REML")
+                 "- Restricted maximum-likelihood estimator"
+               ##
+               else if (x$method.tau == "ML")
+                 "- Maximum-likelihood estimator")
+      #
+      text.details <-
+        paste0(text.details, " for ",
+               if (print.tau) text.tau else text.tau2, "\n")
     }
   }
   #

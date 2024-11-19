@@ -184,7 +184,7 @@ funnel(net1, order = "pl")
 funnel(net1, order = "pl", method.bias = "Egger",
   digits.pval = 2)
 
-# (Non-sensical) alphabetic order of treatments with placebo as
+# (Nonsensical) alphabetic order of treatments with placebo as
 # last treatment
 #
 ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")

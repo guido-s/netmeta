@@ -488,6 +488,7 @@ netconnection.pairwise <- function(data,
     treat2 <- as.character(treat2)
   #
   missing.subset <- missing(subset)
+  #
   if (!missing.subset) {
     sfsp <- sys.frame(sys.parent())
     mc <- match.call()
@@ -498,11 +499,13 @@ netconnection.pairwise <- function(data,
     if ((is.logical(subset) & (sum(subset) > k.All)) ||
         (length(subset) > k.All))
       stop("Length of subset is larger than number of studies.")
-    #
-    treat1 <- treat1[subset]
-    treat2 <- treat2[subset]
-    studlab <- studlab[subset]
   }
+  else
+    subset <- !is.na(data$TE) & !(is.na(data$seTE) | data$seTE == 0)
+  #
+  treat1 <- treat1[subset]
+  treat2 <- treat2[subset]
+  studlab <- studlab[subset]
   #
   chknumeric(nchar.trts, min = 1, length = 1)
   #

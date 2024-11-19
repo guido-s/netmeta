@@ -83,7 +83,7 @@
 #' @export
 
 
-rankogram.netmeta <- function(x, nsim = gs("nsim.netmeta"),
+rankogram.netmeta <- function(x, nsim = gs("nsim"),
                               common = x$common, random = x$random,
                               small.values = x$small.values,
                               cumulative.rankprob = FALSE,
