@@ -210,3 +210,9 @@ setHet <- function(meta, netmeta) {
   #
   meta
 }
+
+
+is_identical <- function(x) {
+  duplicated(as.data.frame(t(x))) |
+    duplicated(as.data.frame(t(x)), fromLast = TRUE)
+}

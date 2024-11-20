@@ -1053,6 +1053,37 @@ discomb <- function(TE, seTE,
         prmatrix(M, quote = FALSE, right = TRUE)
       }
     }
+    #
+    Xid <- X.matrix[, is_identical(X.matrix), drop = FALSE]
+    #
+    ncols <- ncol(Xid)
+    list.id <- vector("list")
+    j <- 0
+    #
+    while (ncols > 1) {
+      sel.i <- vector()
+      for (i in 1 + seq_len(ncols - 1)) {
+        if (all.equal(Xid[, 1], Xid[, i]))
+          sel.i <- c(sel.i, i)
+      }
+      #
+      if (length(sel.i) > 0) {
+        j <- j + 1
+        list.id[[j]] <- colnames(Xid[, c(1, sel.i), drop = FALSE])
+        Xid <- Xid[, -c(1, sel.i), drop = FALSE]
+        ncols <- ncol(Xid)
+      }
+    }
+    #
+    if (length(list.id) > 0)
+      warning(
+        paste0("The following components are not uniquely identifiable as ",
+               "they always appear together in a treatment: ",
+               paste0("'", lapply(list.id, paste, collapse = " + "),
+                      "'", collapse = "; "),
+               "\nThe combined effect of these components is identifiable ",
+               "by creating a combined component."),
+        call. = FALSE)
   }
     
   
