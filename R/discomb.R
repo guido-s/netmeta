@@ -1063,7 +1063,7 @@ discomb <- function(TE, seTE,
     while (ncols > 1) {
       sel.i <- vector()
       for (i in 1 + seq_len(ncols - 1)) {
-        if (all.equal(Xid[, 1], Xid[, i]))
+        if (all(Xid[, 1] == Xid[, i]))
           sel.i <- c(sel.i, i)
       }
       #
