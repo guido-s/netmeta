@@ -13,6 +13,8 @@
   - league tables can be constructed for connected or disconnect networks
   - auxiliary functions createC() and combinations() to fit interaction
     CNMA models more easily
+  - warn / inform about unidentifiable components that could be merge to make
+    them identifiable
 
 * Rankograms can be constructed from samples
 

@@ -48,6 +48,10 @@ merge.pairwise <- function(x, y, all.x = TRUE, ...) {
   attribs[["names"]] <- NULL
   attribs[["row.names"]] <- NULL
   #
+  # Get rid of warning "no visible binding for global variable"
+  #
+  subnet <- design <- NULL
+  #
   if (inherits(y, "netconnection")) {
     if (isCol(xdat, "subnet"))
       xdat <- rename(xdat, subnet.orig = subnet)

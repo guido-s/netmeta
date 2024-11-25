@@ -254,7 +254,7 @@
 #'
 #' @importFrom metafor bldiag contrmat rma.mv
 #' 
-#' @importFrom dplyr %>% filter select
+#' @importFrom dplyr %>% filter select rename
 
 "_PACKAGE"
 

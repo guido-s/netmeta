@@ -1019,72 +1019,14 @@ discomb <- function(TE, seTE,
   rownames(X.matrix) <- studlab
   #
   A.matrix <- diag(diag(t(B.matrix) %*% B.matrix)) - t(B.matrix) %*% B.matrix
-  ##
-  comps.unident <- NULL
-  ##
-  if (qr(X.matrix)$rank < c) {
-    sum.trts <- apply(abs(X.matrix), 2, sum)
-    comps.unident <- gsub("^\\s+|\\s+$", "", names(sum.trts)[sum.trts == 0])
-    ##
-    Xplus <- ginv(X.matrix)
-    colnames(Xplus) <- rownames(X.matrix)
-    rownames(Xplus) <- colnames(X.matrix)
-    e <- eigen(Xplus %*% X.matrix)$values
-    E <- eigen(Xplus %*% X.matrix)$vectors
-    rownames(E) <- rownames(Xplus %*% X.matrix)
-    M <- as.matrix(E[, is.zero(e, n = 100)])
-    ##
-    if (dim(M)[2] > 0) {
-      sel.ident <- character(0)
-      for (i in 1:dim(M)[2])
-        sel.ident <- c(sel.ident, names(M[, i])[!is.zero(M[, i], n = 100)])
-      ##
-      sel.ident <- unique(sort(sel.ident))
-      warning(paste0("The following component",
-                     if (length(sel.ident) > 1)
-                       "s are " else " is ",
-                     "not identifiable: ",
-                     paste(paste0("'", sel.ident, "'"),
-                           collapse = ", ")),
-              call. = FALSE)
-      ##
-      if (details.chkident) {
-        M[is.zero(M, n = 100)] <- 0
-        prmatrix(M, quote = FALSE, right = TRUE)
-      }
-    }
-    #
-    Xid <- X.matrix[, is_identical(X.matrix), drop = FALSE]
-    #
-    ncols <- ncol(Xid)
-    list.id <- vector("list")
-    j <- 0
-    #
-    while (ncols > 1) {
-      sel.i <- vector()
-      for (i in 1 + seq_len(ncols - 1)) {
-        if (all(Xid[, 1] == Xid[, i]))
-          sel.i <- c(sel.i, i)
-      }
-      #
-      if (length(sel.i) > 0) {
-        j <- j + 1
-        list.id[[j]] <- colnames(Xid[, c(1, sel.i), drop = FALSE])
-        Xid <- Xid[, -c(1, sel.i), drop = FALSE]
-        ncols <- ncol(Xid)
-      }
-    }
-    #
-    if (length(list.id) > 0)
-      warning(
-        paste0("The following components are not uniquely identifiable as ",
-               "they always appear together in a treatment: ",
-               paste0("'", lapply(list.id, paste, collapse = " + "),
-                      "'", collapse = "; "),
-               "\nThe combined effect of these components is identifiable ",
-               "by creating a combined component."),
-        call. = FALSE)
-  }
+  #
+  # Identify and warn about not uniquely identifiable components
+  #
+  if (qr(X.matrix)$rank < c)
+    comps.unident <- get_unident(X.matrix, details.chkident)
+  else
+    comps.unident <- NULL
+  
     
   
   ##
