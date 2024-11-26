@@ -42,7 +42,7 @@ get_unident <- function(X.matrix, details.chkident) {
     }
   }
   #
-  if (length(list.id) > 0) {
+  if (length(list.id) > 0)
     warning(
       paste0("The following components are not uniquely identifiable as ",
              "they always appear together in a treatment: ",
@@ -51,30 +51,29 @@ get_unident <- function(X.matrix, details.chkident) {
              ". The combined effect of these components is identifiable ",
              "by creating a combined component."),
       call. = FALSE)
+  #
+  # Warn about remaining unidentifiable components
+  #
+  if (dim(M)[2] > 0) {
+    if (length(list.id) == 0)
+      comps.unident.rest <- comps.unident
+    else
+      comps.unident.rest <-
+        comps.unident[!(comps.unident %in% unique(unlist(list.id)))]
     #
-    # Warn about remaining unidentifiable components
+    if (length(comps.unident.rest) > 0)
+      warning(paste0("The following component",
+                     if (length(comps.unident.rest) > 1)
+                       "s are " else " is ",
+                     if (length(list.id) > 0) "also ",
+                     "not uniquely identifiable: ",
+                     paste(paste0("'", comps.unident.rest, "'"),
+                           collapse = ", ")),
+              call. = FALSE)
     #
-    if (dim(M)[2] > 0) {
-      if (length(list.id) == 0)
-        comps.unident.rest <- comps.unident
-      else
-        comps.unident.rest <-
-          comps.unident[!(comps.unident %in% unique(unlist(list.id)))]
-      #
-      if (length(comps.unident.rest) > 0)
-        warning(paste0("The following component",
-                       if (length(comps.unident.rest) > 1)
-                         "s are " else " is ",
-                       if (length(list.id) > 0) "also ",
-                       "not uniquely identifiable: ",
-                       paste(paste0("'", comps.unident.rest, "'"),
-                             collapse = ", ")),
-                call. = FALSE)
-      #
-      if (details.chkident) {
-        M[is.zero(M, n = 100)] <- 0
-        prmatrix(M, quote = FALSE, right = TRUE)
-      }
+    if (details.chkident) {
+      M[is.zero(M, n = 100)] <- 0
+      prmatrix(M, quote = FALSE, right = TRUE)
     }
   }
   #

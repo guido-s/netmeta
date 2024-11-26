@@ -1804,16 +1804,21 @@ netmeta <- function(TE, seTE,
     #
     # Store adjusted standard errors in dataset
     #
-    if (isCol(res$data, ".subset"))
-      sel.s <- res$data$.subset
-    else
-      sel.s <- rep(TRUE, nrow(res$data))
+    res$data <- merge(res$data,
+                      data.frame(.studlab = res.c$studlab,
+                                 .treat1 = res.c$treat1,
+                                 .treat2 = res.c$treat2,
+                                 .seTE.adj.common = res.c$seTE),
+                      by = c(".studlab", ".treat1", ".treat2"),
+                      stringsAsFactors = FALSE)
     #
-    res$data$.seTE.adj.common <- NA
-    res$data$.seTE.adj.random <- NA
-    #
-    res$data$.seTE.adj.common[sel.s] <- res.c$seTE
-    res$data$.seTE.adj.random[sel.s] <- res.r$seTE
+    res$data <- merge(res$data,
+                      data.frame(.studlab = res.r$studlab,
+                                 .treat1 = res.r$treat1,
+                                 .treat2 = res.r$treat2,
+                                 .seTE.adj.random = res.r$seTE),
+                      by = c(".studlab", ".treat1", ".treat2"),
+                      stringsAsFactors = FALSE)
     #
     res$data <- res$data[order(res$data$.order), ]
     res$data$.order <- NULL
