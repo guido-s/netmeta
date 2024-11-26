@@ -1073,14 +1073,6 @@ discomb <- function(TE, seTE,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
-  #
-  comps <- names(res.c$components$TE)
-  #
-  if (sep.comps == sep.ia)
-    stop("Input for arguments 'sep.comps' and 'sep.ia' must be different.",
-         call. = FALSE)
-  #
-  sep.ia <- setsep(comps, sep.ia, missing = missing.sep.ia)
   ##
   ## Random effects models
   ##
@@ -1096,6 +1088,34 @@ discomb <- function(TE, seTE,
                         X.matrix, C.matrix, B.matrix,
                         Q, df.Q.additive, df.Q.diff,
                         n, sep.trts)
+  #
+  # Set unidentifiable components and combinations to NA
+  #
+  if (na.unident & length(comps.unident) > 0) {
+    trts <- names(res.c$combinations$TE)
+    unident.pattern <- paste0("^", comps.unident, "$", collapse = "|")
+    unident.combs <-
+      trts[unlist(lapply(lapply(compsplit(trts, sep.comps),
+                                grepl,
+                                pattern = unident.pattern), any))]
+    ##
+    res.c$components <- lapply(res.c$components, setNA, comps.unident)
+    res.c$combinations <- lapply(res.c$combinations, setNA, unident.combs)
+    ##
+    res.r$components <- lapply(res.r$components, setNA, comps.unident)
+    res.r$combinations <- lapply(res.r$combinations, setNA, unident.combs)
+  }
+  ##
+  if (length(comps.unident) == 0)
+    comps.unident <- NULL
+  #
+  comps <- names(res.c$components$TE)
+  #
+  if (sep.comps == sep.ia)
+    stop("Input for arguments 'sep.comps' and 'sep.ia' must be different.",
+         call. = FALSE)
+  #
+  sep.ia <- setsep(comps, sep.ia, missing = missing.sep.ia)
   
   
   ##
@@ -1313,87 +1333,6 @@ discomb <- function(TE, seTE,
   else {
     res$n.arms <- rep(2, length(res$studlab))
     res$multiarm <- rep(FALSE, length(res$studlab))
-  }
-  ##
-  ## Remove estimates for inestimable combinations and components
-  ##
-  if (na.unident & length(comps.unident) > 0) {
-    ##
-    res$c <- res$c - length(comps.unident)
-    ##
-    ## Identify combinations
-    ##
-    list.trts <- lapply(compsplit(res$trts, sep.comps),
-                        gsub, pattern = "^\\s+|\\s+$", replacement = "")
-    sel1 <- rep(NA, length(list.trts))
-    ##
-    for (i in seq_along(list.trts))
-      sel1[i] <- any(list.trts[[i]] %in% comps.unident)
-    ##
-    res$Comb.common[sel1] <- NA
-    res$seComb.common[sel1] <- NA
-    res$lower.Comb.common[sel1] <- NA
-    res$upper.Comb.common[sel1] <- NA
-    res$statistic.Comb.common[sel1] <- NA
-    res$pval.Comb.common[sel1] <- NA
-    ##
-    res$Comb.random[sel1] <- NA
-    res$seComb.random[sel1] <- NA
-    res$lower.Comb.random[sel1] <- NA
-    res$upper.Comb.random[sel1] <- NA
-    res$statistic.Comb.random[sel1] <- NA
-    res$pval.Comb.random[sel1] <- NA
-    ##
-    res$TE.common[sel1, ] <- NA
-    res$seTE.common[sel1, ] <- NA
-    res$lower.common[sel1, ] <- NA
-    res$upper.common[sel1, ] <- NA
-    res$statistic.common[sel1, ] <- NA
-    res$pval.common[sel1, ] <- NA
-    ##
-    res$TE.common[, sel1] <- NA
-    res$seTE.common[, sel1] <- NA
-    res$lower.common[, sel1] <- NA
-    res$upper.common[, sel1] <- NA
-    res$statistic.common[, sel1] <- NA
-    res$pval.common[, sel1] <- NA
-    ##
-    res$TE.random[sel1, ] <- NA
-    res$seTE.random[sel1, ] <- NA
-    res$lower.random[sel1, ] <- NA
-    res$upper.random[sel1, ] <- NA
-    res$statistic.random[sel1, ] <- NA
-    res$pval.random[sel1, ] <- NA
-    ##
-    res$TE.random[, sel1] <- NA
-    res$seTE.random[, sel1] <- NA
-    res$lower.random[, sel1] <- NA
-    res$upper.random[, sel1] <- NA
-    res$statistic.random[, sel1] <- NA
-    res$pval.random[, sel1] <- NA
-    ##
-    ## Identify components
-    ##
-    list.comps <- lapply(compsplit(res$comps, sep.comps),
-                         gsub, pattern = "^\\s+|\\s+$", replacement = "")
-    sel2 <- rep(NA, length(list.comps))
-    ##
-    for (i in seq_along(list.comps))
-      sel2[i] <- any(list.comps[[i]] %in% comps.unident)
-    ##
-    res$Comp.common[sel2] <- NA
-    res$seComp.common[sel2] <- NA
-    res$lower.Comp.common[sel2] <- NA
-    res$upper.Comp.common[sel2] <- NA
-    res$statistic.Comp.common[sel2] <- NA
-    res$pval.Comp.common[sel2] <- NA
-    ##
-    res$Comp.random[sel2] <- NA
-    res$seComp.random[sel2] <- NA
-    res$lower.Comp.random[sel2] <- NA
-    res$upper.Comp.random[sel2] <- NA
-    res$statistic.Comp.random[sel2] <- NA
-    res$pval.Comp.random[sel2] <- NA
   }
   #
   # Additional assignments

@@ -551,11 +551,6 @@ netcomb <- function(x,
   ## Set unidentifiable components and combinations to NA
   ##
   if (na.unident & length(comps.unident) > 0) {
-    setNA <- function(x, select) {
-      x[names(x) %in% select] <- NA
-      x
-    }
-    ##
     trts <- names(res.c$combinations$TE)
     unident.pattern <- paste0("^", comps.unident, "$", collapse = "|")
     unident.combs <-
