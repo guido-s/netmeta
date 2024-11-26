@@ -17,7 +17,8 @@
 #' \bold{\emph{randomized}}\tab number of individuals in treatment arm
 #' }
 #' 
-#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
+#' @seealso \code{\link[metadat]{dat.dong2013}},
+#'   \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
 #'   \code{\link{netmetabin}}
 #' 
 #' @source
@@ -31,7 +32,7 @@
 #' @keywords datasets
 #' 
 #' @examples
-#' data(Dong2013)
+#' Dong2013 <- dat.dong2013
 #' 
 #' # Transform data from long arm-based format to contrast-based
 #' # format. Argument 'sm' has to be used for odds ratio as summary
@@ -57,6 +58,5 @@
 #'   data = Dong2013, sm = "OR")
 #' netmetabin(p2, ref = "plac")
 #' }
-
 
 NULL

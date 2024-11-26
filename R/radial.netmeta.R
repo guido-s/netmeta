@@ -165,7 +165,6 @@
 #' @method radial netmeta
 #' @export
 
-
 radial.netmeta <- function(x,
                            order,
                            pooled = ifelse(x$random, "random", "common"),

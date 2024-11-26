@@ -127,7 +127,8 @@
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netsplit}}, \code{\link{netmeta}},
-#'   \code{\link{netmetabin}}, \code{\link{netmeasures}}
+#'   \code{\link{netmetabin}}, \code{\link{netmeasures}},
+#'   \code{\link[metadat]{dat.woods2010}}
 #' 
 #' @references
 #' Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
@@ -154,10 +155,8 @@
 #' \bold{349}, g5630
 #' 
 #' @examples
-#' data(Woods2010)
-#' #
 #' p1 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = dat.woods2010, sm = "OR")
 #' #
 #' net1 <- netmeta(p1)
 #' #
@@ -183,7 +182,6 @@
 #' 
 #' @rdname nettable
 #' @export nettable
-
 
 nettable <- function(...,
                      name = NULL,
@@ -554,13 +552,9 @@ nettable <- function(...,
 }
 
 
-
-
-
 #' @rdname nettable
 #' @method print nettable
 #' @export
-
 
 print.nettable <- function(x, common = x$x$common, random = x$x$random,
                            legend = gs("legend"), ...) {

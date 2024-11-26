@@ -128,7 +128,6 @@
 #' @rdname netpairwise
 #' @export
 
-
 netpairwise <- function(x,
                         separate = FALSE,
                         common = x$common,
@@ -366,13 +365,9 @@ netpairwise <- function(x,
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method print netpairwise
 #' @export
-
 
 print.netpairwise <- function(x, ...) {
   
@@ -395,13 +390,9 @@ print.netpairwise <- function(x, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method summary netpairwise
 #' @export
-
 
 summary.netpairwise <- function(object, ...) {
   
@@ -422,13 +413,9 @@ summary.netpairwise <- function(object, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method print summary.netpairwise
 #' @export
-
 
 print.summary.netpairwise <- function(x, ...) {
   
@@ -451,13 +438,9 @@ print.summary.netpairwise <- function(x, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method forest netpairwise
 #' @export
-
 
 forest.netpairwise <- function(x, ...) {
   
@@ -478,9 +461,6 @@ forest.netpairwise <- function(x, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method plot netpairwise
 #' @export
@@ -489,13 +469,9 @@ plot.netpairwise <- function(x, ...)
   forest(x, ...)
 
 
-
-
-
 #' @rdname netpairwise
 #' @method funnel netpairwise
 #' @export
-
 
 funnel.netpairwise <- function(x, k.min = 3, ...) {
   
@@ -519,13 +495,9 @@ funnel.netpairwise <- function(x, k.min = 3, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method radial netpairwise
 #' @export
-
 
 radial.netpairwise <- function(x, k.min = 3, ...) {
   
@@ -549,13 +521,9 @@ radial.netpairwise <- function(x, k.min = 3, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method baujat netpairwise
 #' @export
-
 
 baujat.netpairwise <- function(x, k.min = 3, ...) {
   
@@ -579,13 +547,9 @@ baujat.netpairwise <- function(x, k.min = 3, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method metabias netpairwise
 #' @export
-
 
 metabias.netpairwise <- function(x, k.min = 10, ...) {
   
@@ -619,13 +583,9 @@ metabias.netpairwise <- function(x, k.min = 10, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method print metabias.netpairwise
 #' @export
-
 
 print.metabias.netpairwise <- function(x, ...) {
   
@@ -643,13 +603,9 @@ print.metabias.netpairwise <- function(x, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method trimfill netpairwise
 #' @export
-
 
 trimfill.netpairwise <- function(x, k.min = 3, ...) {
   
@@ -683,13 +639,9 @@ trimfill.netpairwise <- function(x, k.min = 3, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method print trimfill.netpairwise
 #' @export
-
 
 print.trimfill.netpairwise <- function(x, ...) {
   
@@ -707,13 +659,9 @@ print.trimfill.netpairwise <- function(x, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method metainf netpairwise
 #' @export
-
 
 metainf.netpairwise <- function(x, k.min = 2, ...) {
   
@@ -748,13 +696,9 @@ metainf.netpairwise <- function(x, k.min = 2, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method print metainf.netpairwise
 #' @export
-
 
 print.metainf.netpairwise <- function(x, ...) {
   
@@ -772,13 +716,9 @@ print.metainf.netpairwise <- function(x, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method metacum netpairwise
 #' @export
-
 
 metacum.netpairwise <- function(x, k.min = 2, ...) {
   
@@ -812,13 +752,9 @@ metacum.netpairwise <- function(x, k.min = 2, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method print metacum.netpairwise
 #' @export
-
 
 print.metacum.netpairwise <- function(x, ...) {
   
@@ -836,13 +772,9 @@ print.metacum.netpairwise <- function(x, ...) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method metareg netpairwise
 #' @export
-
 
 metareg.netpairwise <- function(x, ..., k.min = 2) {
   
@@ -876,13 +808,9 @@ metareg.netpairwise <- function(x, ..., k.min = 2) {
 }
 
 
-
-
-
 #' @rdname netpairwise
 #' @method print metareg.netpairwise
 #' @export
-
 
 print.metareg.netpairwise <- function(x, ...) {
   

@@ -61,7 +61,6 @@
 #' 
 #' @export netmatrix
 
-
 netmatrix <- function(x, var, levels, labels = levels,
                       func = "mode", ties.method = "random") {
   

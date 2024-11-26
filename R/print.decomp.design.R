@@ -52,7 +52,6 @@
 #' @method print decomp.design
 #' @export
 
-
 print.decomp.design <- function(x,
                                 digits.Q = gs("digits.Q"),
                                 showall = FALSE,

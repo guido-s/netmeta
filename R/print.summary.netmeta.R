@@ -140,7 +140,6 @@
 #' @method print summary.netmeta
 #' @export
 
-
 print.summary.netmeta <- function(x,
                                   sortvar,
                                   common = x$x$common,

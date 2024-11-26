@@ -138,7 +138,6 @@
 #' 
 #' @export decomp.design
 
-
 decomp.design <- function(x, tau.preset = x$tau.preset, warn = gs("warn"),
                           nchar.trts = x$nchar.trts) {
   

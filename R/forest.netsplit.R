@@ -162,7 +162,6 @@
 #' @method forest netsplit
 #' @export
 
-
 forest.netsplit <- function(x,
                             pooled = ifelse(x$x$random, "random", "common"),
                             show = x$show,
@@ -804,12 +803,9 @@ forest.netsplit <- function(x,
 }
 
 
-
-
 #' @rdname forest.netsplit
 #' @method plot netsplit
 #' @export
-#'
 
 plot.netsplit <- function(x, ...)
   forest(x, ...)

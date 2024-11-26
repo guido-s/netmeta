@@ -88,7 +88,6 @@
 #' @method forest netcomparison
 #' @export
 
-
 forest.netcomparison <- function(x,
                                  pooled =
                                    ifelse(x$random, "random", "common"),
@@ -230,13 +229,9 @@ forest.netcomparison <- function(x,
 }
 
 
-
-
-
 #' @rdname forest.netcomparison
 #' @method plot netcomparison
 #' @export
-#'
 
 plot.netcomparison <- function(x, ...)
   forest(x, ...)

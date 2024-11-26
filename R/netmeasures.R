@@ -135,7 +135,6 @@
 #' 
 #' @export netmeasures
 
-
 netmeasures <- function(x,
                         random = x$random | !missing(tau.preset),
                         tau.preset = x$tau.preset,

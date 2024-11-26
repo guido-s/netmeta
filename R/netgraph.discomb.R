@@ -62,7 +62,6 @@
 #' @method netgraph discomb
 #' @export
 
-
 netgraph.discomb <- function(x,
                              labels = x$trts,
                              adj = NULL,

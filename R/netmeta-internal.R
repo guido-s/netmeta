@@ -16,7 +16,7 @@
                 "all.treatments", "seq",
                 "method.tau.netmeta",
                 "drop.reference.group", "equal.size",
-                "show.netsplit",
+                "show",
                 #
                 "nsim", "lump.comparator",
                 #
@@ -38,7 +38,7 @@
                   all.treatments = NULL, seq = NULL,
                   method.tau.netmeta = "DL",
                   drop.reference.group = TRUE, equal.size = TRUE,
-                  show.netsplit = "both",
+                  show = "both",
                   #
                   nsim = 1000, lump.comparator = FALSE,
                   #

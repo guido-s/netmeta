@@ -89,7 +89,6 @@
 #' @method forest netcomplex
 #' @export
 
-
 forest.netcomplex <- function(x,
                               pooled = ifelse(x$random, "random", "common"),
                               leftcols = "studlab",
@@ -210,13 +209,9 @@ forest.netcomplex <- function(x,
 }
 
 
-
-
-
 #' @rdname forest.netcomplex
 #' @method plot netcomplex
 #' @export
-#'
 
 plot.netcomplex <- function(x, ...)
   forest(x, ...)

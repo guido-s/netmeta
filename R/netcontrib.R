@@ -140,7 +140,7 @@
 #' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Annabel
 #'   Davies \email{annabel.davies@@manchester.ac.uk}
 #' 
-#' @seealso \code{\link{netmeta}}
+#' @seealso \code{\link{netmeta}}, \code{\link[metadat]{dat.woods2010}}
 #' 
 #' @references
 #' Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
@@ -160,9 +160,8 @@
 #' @examples
 #' # Use the Woods dataset
 #' #
-#' data("Woods2010")
 #' p1 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = dat.woods2010, sm = "OR")
 #' 
 #' net1 <- netmeta(p1)
 #' cm <- netcontrib(net1)
@@ -172,7 +171,6 @@
 #' 
 #' @rdname netcontrib
 #' @export netcontrib
-
 
 netcontrib <- function(x,
                        method = "shortestpath",
@@ -269,15 +267,11 @@ netcontrib <- function(x,
 }
 
 
-
-
-
 #' @rdname netcontrib
 #' 
 #' @method print netcontrib
 #' 
 #' @export
-
 
 print.netcontrib <- function(x,
                              common = x$x$common,

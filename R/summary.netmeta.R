@@ -173,7 +173,6 @@
 #' @method summary netmeta
 #' @export
 
-
 summary.netmeta <- function(object,
                             common = object$common,
                             random = object$random,

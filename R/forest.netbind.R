@@ -91,7 +91,6 @@
 #' @method forest netbind
 #' @export
 
-
 forest.netbind <- function(x,
                            pooled = ifelse(x$x$random, "random", "common"),
                            ##
@@ -265,13 +264,9 @@ forest.netbind <- function(x,
 }
 
 
-
-
-
 #' @rdname forest.netbind
 #' @method plot netbind
 #' @export
-#'
 
 plot.netbind <- function(x, ...)
   forest(x, ...)

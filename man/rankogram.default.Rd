@@ -74,9 +74,8 @@ The matrix / data frame in argument \code{x} must contain the sampled
 effects for each treatment.
 }
 \examples{
-data(Woods2010)
 p1 <- pairwise(treatment, event = r, n = N, studlab = author,
-               data = Woods2010, sm = "OR")
+  data = dat.woods2010, sm = "OR")
 net1 <- netmeta(p1, small.values = "desirable")
 
 set.seed(1909) # get reproducible results
@@ -87,10 +86,9 @@ ran1
 rankogram(ran1$samples.random, pooled = "random")
 
 \dontrun{
-data(Linde2015)
 p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, common = FALSE, ref = "Placebo", small = "undesirable")
 
@@ -116,7 +114,9 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netrank}},
-  \code{\link{plot.rankogram}}
+  \code{\link{plot.rankogram}},
+  \code{\link[metadat]{dat.woods2010}},
+  \code{\link[metadat]{dat.linde2015}}
 }
 \author{
 Theodoros Papakonstantinou \email{dev@tpapak.com}, Guido

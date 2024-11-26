@@ -354,7 +354,6 @@
 #' 
 #' @export netcomb
 
-
 netcomb <- function(x,
                     inactive = NULL,
                     sep.comps = gs("sep.comps"),

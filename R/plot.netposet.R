@@ -90,7 +90,8 @@
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netposet}}, \code{\link{hasse}},
-#'   \code{\link{netrank}}, \code{\link{netmeta}}
+#'   \code{\link{netrank}}, \code{\link{netmeta}},
+#'   \code{\link[metadat]{dat.linde2015}}
 #'   
 #' @references
 #' Carlsen L, Bruggemann R (2014):
@@ -108,9 +109,7 @@
 #' 
 #' @examples
 #' \dontrun{
-#' data(Linde2015)
-#' 
-#' # Define order of treatments
+#' # Define order of treatments in depression data set dat.linde2015
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
 #'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -123,7 +122,7 @@
 #' #
 #' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "undesirable")
@@ -132,7 +131,7 @@
 #' #
 #' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "undesirable")
@@ -160,7 +159,7 @@
 #' #
 #' p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net3 <- netmeta(p3, common = FALSE,
 #'   seq = trts, ref = "Placebo", small.values = "desirable")
@@ -185,7 +184,6 @@
 #' 
 #' @method plot netposet
 #' @export
-
 
 plot.netposet <- function(x,
                           plottype = "scatter",

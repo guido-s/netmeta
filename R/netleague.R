@@ -122,7 +122,9 @@
 #'   Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netcomb}},
-#'   \code{\link{discomb}}, \code{\link{netposet}}, \code{\link{netrank}}
+#'   \code{\link{discomb}}, \code{\link{netposet}}, \code{\link{netrank}},
+#'   \code{\link[metadat]{dat.woods2010}},
+#'   \code{\link[metadat]{dat.linde2015}}
 #'
 #' 
 #' @references
@@ -138,10 +140,8 @@
 #' @examples
 #' # Network meta-analysis of count mortality statistics
 #' #
-#' data(Woods2010)
-#' 
 #' p0 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = dat.woods2010, sm = "OR")
 #' net0 <- netmeta(p0)
 #' 
 #' oldopts <- options(width = 100)
@@ -179,11 +179,7 @@
 #' }
 #' 
 #' \donttest{
-#' # Use depression dataset
-#' #
-#' data(Linde2015)
-#' 
-#' # Define order of treatments
+#' # Define order of treatments in depression dataset dat.linde2015
 #' #
 #' trts <- c("TCA", "SSRI", "SNRI", "NRI",
 #'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -196,7 +192,7 @@
 #' #
 #' p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net1 <- netmeta(p1, common = FALSE,
 #'                 seq = trts, ref = "Placebo", small = "undesirable")
@@ -205,7 +201,7 @@
 #' #
 #' p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 #'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-#'   studlab = id, data = Linde2015, sm = "OR")
+#'   studlab = id, data = dat.linde2015, sm = "OR")
 #' #
 #' net2 <- netmeta(p2, common = FALSE,
 #'                 seq = trts, ref = "Placebo", small = "undesirable")
@@ -252,7 +248,6 @@
 #' 
 #' @rdname netleague
 #' @export netleague
-
 
 netleague <- function(x, y,
                       common = x$common, random = x$random,
@@ -817,13 +812,9 @@ netleague <- function(x, y,
 }
 
 
-
-
-
 #' @rdname netleague
 #' @method print netleague
 #' @export
-
 
 print.netleague <- function(x,
                             common = x$x$common,

@@ -122,7 +122,6 @@
 #' @method netconnection default
 #' @export
 
-
 netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
                                   subset = NULL,
                                   sep.trts = ":",
@@ -432,13 +431,9 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
 }
 
 
-
-
-
 #' @rdname netconnection
 #' @method netconnection pairwise
 #' @export
-
 
 netconnection.pairwise <- function(data,
                                    treat1, treat2, studlab = NULL,
@@ -530,9 +525,6 @@ netconnection.pairwise <- function(data,
 }
 
 
-
-
-
 #' @rdname netconnection
 #' @method netconnection netmeta
 #' @export
@@ -553,9 +545,6 @@ netconnection.netmeta <- function(data,
   #
   res
 }
-
-
-
 
 
 #' @rdname netconnection
@@ -592,13 +581,9 @@ netconnection.netcomb <- function(data,
 }
 
 
-
-
-
 #' @rdname netconnection
 #' @method print netconnection
 #' @export
-
 
 print.netconnection <- function(x,
                                 digits = max(4, .Options$digits - 3),
@@ -692,12 +677,8 @@ print.netconnection <- function(x,
 }
 
 
-
-
-
 #' @rdname netconnection
 #' @export
-
 
 netconnection <- function(data, ...)
   UseMethod("netconnection")

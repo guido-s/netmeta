@@ -449,7 +449,6 @@
 #' @method netgraph netmeta
 #' @export
 
-
 netgraph.netmeta <- function(x, seq = x$seq,
                              labels = x$trts,
                              cex = 1, adj = NULL, srt.labels = 0,

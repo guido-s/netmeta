@@ -58,7 +58,6 @@
 #' @method heatplot netmeta
 #' @export
 
-
 heatplot.netmeta <- function(x,
                              pooled = ifelse(x$random, "random", "common"),
                              seq = x$seq,
@@ -194,9 +193,6 @@ heatplot.netmeta <- function(x,
   
   return(hplot)
 }
-
-
-
 
 
 heattrts <- function(x) {

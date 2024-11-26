@@ -169,7 +169,6 @@
 #' @export
 #' @export netcomplex
 
-
 netcomplex <- function(x, complex,
                        common = x$common,
                        random = x$random,

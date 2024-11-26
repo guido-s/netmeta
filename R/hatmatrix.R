@@ -127,7 +127,7 @@
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netcontrib}},
-#'   \code{\link{netheat}}
+#'   \code{\link{netheat}}, \code{\link[metadat]{dat.dong2013}}
 #' 
 #' @references
 #' Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
@@ -147,9 +147,8 @@
 #' \bold{3}, 312--24
 #' 
 #' @examples
-#' data(Dong2013)
 #' # Only consider first ten studies for concise output
-#' first10 <- subset(Dong2013, id <= 10)
+#' first10 <- subset(dat.dong2013, id <= 10)
 #' p1 <- pairwise(treatment, death, randomized, studlab = id,
 #'   data = first10, sm = "OR")
 #' net1 <- netmeta(p1, common = FALSE)
@@ -162,7 +161,6 @@
 #' hatmatrix(net1, method = "d", type = "full")
 #' 
 #' @export hatmatrix
-
 
 hatmatrix <- function(x, method = "Ruecker", type,
                       common = x$common,
@@ -255,13 +253,9 @@ hatmatrix <- function(x, method = "Ruecker", type,
 }
 
 
-
-
-
 #' @rdname hatmatrix
 #' @method print hatmatrix
 #' @export
-
 
 print.hatmatrix <- function(x,
                             common = x$x$common,
@@ -400,9 +394,6 @@ print.hatmatrix <- function(x,
 }
 
 
-
-
-
 hatmatrix.aggr <- function(x, model, type) {
   
   model <- setchar(model, c("common", "random"))
@@ -523,9 +514,6 @@ hatmatrix.aggr <- function(x, model, type) {
   
   H
 }
-
-
-
 
 
 hatmatrix.F1000 <- function(x, model) {

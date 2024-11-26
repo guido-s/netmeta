@@ -26,7 +26,6 @@
 #' @method summary netconnection 
 #' @export
 
-
 summary.netconnection <- function(object, ...) {
   
   chkclass(object, "netconnection")

@@ -111,7 +111,6 @@
 #' @method print netcomb
 #' @export
 
-
 print.netcomb <- function(x,
                           common = x$common,
                           random = x$random,

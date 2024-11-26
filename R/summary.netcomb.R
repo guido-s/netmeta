@@ -182,7 +182,6 @@
 #' @method summary netcomb
 #' @export
 
-
 summary.netcomb <- function(object,
                             common = object$common,
                             random = object$random,

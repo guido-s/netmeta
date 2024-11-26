@@ -184,7 +184,6 @@
 #' @method funnel netmeta
 #' @export
 
-
 funnel.netmeta <- function(x,
                            order,
                            pooled = ifelse(x$random, "random", "common"),

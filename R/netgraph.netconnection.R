@@ -50,7 +50,6 @@
 #' @method netgraph netconnection
 #' @export
 
-
 netgraph.netconnection <- function(x, seq,
                                    col = seq_len(x$n.subnets),
                                    reference.group = NULL,

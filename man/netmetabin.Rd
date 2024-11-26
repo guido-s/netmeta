@@ -393,11 +393,9 @@ treatment labels, a corresponding error message is printed asking
 the user to specify a different separator.
 }
 \examples{
-data(Dong2013)
-
 # Only consider first ten studies (to reduce runtime of example)
 #
-first10 <- subset(Dong2013, id <= 10)
+first10 <- subset(dat.dong2013, id <= 10)
 
 # Transform data from long arm-based format to contrast-based
 # format. Argument 'sm' has to be used for odds ratio as summary
@@ -422,7 +420,7 @@ netleague(nb1)
 # dataset
 #
 p2 <- pairwise(treatment, death, randomized, studlab = id,
-  data = Dong2013, sm = "OR")
+  data = dat.dong2013, sm = "OR")
 netmetabin(p2, ref = "plac")
   
 # Conduct network meta-analysis using the non-central
@@ -435,10 +433,8 @@ netmetabin(p2, ref = "plac", method = "NCH")
 #
 netmetabin(p2, ref = "plac", cc.pooled = TRUE)
 
-data(Gurusamy2011)
-
 p3 <- pairwise(treatment, death, n, studlab = study,
-  data = Gurusamy2011, sm = "OR")
+  data = dat.gurusamy2011, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis (without continuity
 # correction)
@@ -467,7 +463,9 @@ data.
 \bold{29}, 3046--67
 }
 \seealso{
-\code{\link[meta]{pairwise}}, \code{\link{netmeta}}
+\code{\link[meta]{pairwise}}, \code{\link{netmeta}},
+  \code{\link[metadat]{dat.gurusamy2011}},
+  \code{\link[metadat]{dat.dong2013}}
 }
 \author{
 Orestis Efthimiou \email{oremiou@gmail.com}, Guido

@@ -34,11 +34,7 @@ i.e., function \code{hasse} can only be used if R package
 }
 \examples{
 \dontrun{
-# Use depression dataset
-#
-data(Linde2015)
-
-# Define order of treatments
+# Define order of treatments in depression dataset dat.linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -52,7 +48,7 @@ outcomes <- c("Early response", "Early remission")
 p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3),
   n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net1 <- netmeta(p1, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "undesirable")
@@ -62,7 +58,7 @@ net1 <- netmeta(p1, common = FALSE,
 p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3),
   n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "undesirable")
@@ -91,7 +87,8 @@ Partial ordering of treatments.
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netposet}},
-  \code{\link{netrank}}, \code{\link{plot.netrank}}
+  \code{\link{netrank}}, \code{\link{plot.netrank}},
+  \code{\link[metadat]{dat.linde2015}}
 }
 \author{
 Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido

@@ -112,7 +112,6 @@
 #'
 #' @export netheat
 
-
 netheat <- function(x, random = FALSE, tau.preset = NULL,
                     showall = TRUE,
                     nchar.trts = x$nchar.trts,

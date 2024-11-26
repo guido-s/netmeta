@@ -26,7 +26,6 @@
 #' @method as.data.frame netconnection 
 #' @export
 
-
 as.data.frame.netconnection <- function(x, ...){
   
   chkclass(x, "netconnection")

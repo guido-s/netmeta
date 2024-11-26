@@ -125,7 +125,6 @@
 #' @method metabias netmeta
 #' @export
 
-
 metabias.netmeta <- function(x,
                              order,
                              pooled = ifelse(x$random, "random", "common"),

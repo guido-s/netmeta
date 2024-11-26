@@ -43,7 +43,7 @@
 #' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Guido
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{rankogram}}
+#' @seealso \code{\link{rankogram}}, \code{\link[metadat]{dat.woods2010}}
 #'
 #' @references 
 #' Salanti G, Ades AE, Ioannidis JP (2011):
@@ -53,11 +53,11 @@
 #' \bold{64}, 163--71
 #' 
 #' @examples
-#' data(Woods2010)
 #' p1 <- pairwise(treatment, event = r, n = N, studlab = author,
-#'   data = Woods2010, sm = "OR")
+#'   data = dat.woods2010, sm = "OR")
 #' net1 <- netmeta(p1, small.values = "good")
 #'
+#' set.seed(1909) # get reproducible results
 #' ran1 <- rankogram(net1, nsim = 100)
 #' ran1
 #'
@@ -67,7 +67,6 @@
 #' 
 #' @method plot rankogram
 #' @export
-
 
 plot.rankogram <- function(x,
                            type = if (cumulative.rankprob) "step" else "bar",

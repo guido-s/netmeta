@@ -140,11 +140,7 @@ to specify a differenct treatment order.
 }
 \examples{
 \dontrun{
-# Use depression dataset
-#
-data(Linde2015)
-
-# Define order of treatments
+# Define order of treatments in depression dataset dat.linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -157,7 +153,7 @@ outcomes <- c("Early response", "Early remission")
 #
 p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net1 <- netmeta(p1, common = FALSE,
   seq = trts, ref = "Placebo")
@@ -166,7 +162,7 @@ net1 <- netmeta(p1, common = FALSE,
 #
 p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, common = FALSE,
   seq = trts, ref = "Placebo")
@@ -188,7 +184,7 @@ outcomes <- c("Early response", "Early remission",
 #
 p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net3 <- netmeta(p3, common = FALSE, seq = trts, ref = "Placebo")
 
@@ -196,7 +192,7 @@ net3 <- netmeta(p3, common = FALSE, seq = trts, ref = "Placebo")
 #
 p4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
-  studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
+  studlab = id, data = subset(dat.linde2015, id != 55), sm = "OR")
 #
 net4 <- netmeta(p4, common = FALSE, seq = trts, ref = "Placebo")
 
@@ -204,7 +200,7 @@ net4 <- netmeta(p4, common = FALSE, seq = trts, ref = "Placebo")
 #
 p5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net5 <- netmeta(p5, common = FALSE, seq = trts, ref = "Placebo")
 
@@ -231,7 +227,8 @@ acamprosate, baclofen and topiramate.
 }
 \seealso{
 \code{\link{netrank}}, \code{\link{netmeta}},
-  \code{\link{netposet}}, \code{\link{hasse}}
+  \code{\link{netposet}}, \code{\link{hasse}},
+  \code{\link[metadat]{dat.linde2015}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Clément

@@ -84,7 +84,6 @@
 #' 
 #' @export netbind
 
-
 netbind <- function(..., name,
                     common, random,
                     ##

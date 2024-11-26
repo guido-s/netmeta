@@ -133,7 +133,6 @@
 #' @rdname netrank
 #' @export netrank
 
-
 netrank <- function(x, small.values = x$small.values, method, nsim,
                     common = x$common, random = x$random,
                     warn.deprecated = gs("warn.deprecated"),
@@ -303,13 +302,9 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
 }
 
 
-
-
-
 #' @rdname netrank
 #' @method print netrank
 #' @export
-
 
 print.netrank <- function(x,
                           common = x$common,

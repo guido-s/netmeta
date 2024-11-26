@@ -57,7 +57,7 @@
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #'
 #' @seealso \code{\link{netmeta}}, \code{\link{netrank}},
-#'   \code{\link{plot.rankogram}}
+#'   \code{\link{plot.rankogram}}, \code{\link[metadat]{dat.woods2010}}
 #'
 #' @references
 #' Salanti G, Ades AE, Ioannidis JP (2011):
@@ -67,11 +67,11 @@
 #' \bold{64}, 163--71
 #'
 #' @examples
-#' data(Woods2010)
 #' p1 <- pairwise(treatment, event = r, n = N, studlab = author,
-#'                data = Woods2010, sm = "OR")
+#'   data = dat.woods2010, sm = "OR")
 #' net1 <- netmeta(p1, small.values = "desirable")
 #'
+#' set.seed(1909) # get reproducible results
 #' ran1 <- rankogram(net1, nsim = 100)
 #' ran1
 #' print(ran1, cumulative.rankprob = TRUE)
@@ -81,7 +81,6 @@
 #' @rdname rankogram.netmeta
 #' @method rankogram netmeta
 #' @export
-
 
 rankogram.netmeta <- function(x, nsim = gs("nsim"),
                               common = x$common, random = x$random,

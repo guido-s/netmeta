@@ -177,10 +177,8 @@ rows and columns in the league table (see examples).
 \examples{
 # Network meta-analysis of count mortality statistics
 #
-data(Woods2010)
-
 p0 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = dat.woods2010, sm = "OR")
 net0 <- netmeta(p0)
 
 oldopts <- options(width = 100)
@@ -218,11 +216,7 @@ netleague(net0, digits = 2, bracket = "(", separator = " to ",
 }
 
 \donttest{
-# Use depression dataset
-#
-data(Linde2015)
-
-# Define order of treatments
+# Define order of treatments in depression dataset dat.linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -235,7 +229,7 @@ outcomes <- c("Early response", "Early remission")
 #
 p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net1 <- netmeta(p1, common = FALSE,
                 seq = trts, ref = "Placebo", small = "undesirable")
@@ -244,7 +238,7 @@ net1 <- netmeta(p1, common = FALSE,
 #
 p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, common = FALSE,
                 seq = trts, ref = "Placebo", small = "undesirable")
@@ -300,7 +294,9 @@ Checklist and Explanations.
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netcomb}},
-  \code{\link{discomb}}, \code{\link{netposet}}, \code{\link{netrank}}
+  \code{\link{discomb}}, \code{\link{netposet}}, \code{\link{netrank}},
+  \code{\link[metadat]{dat.woods2010}},
+  \code{\link[metadat]{dat.linde2015}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Gerta

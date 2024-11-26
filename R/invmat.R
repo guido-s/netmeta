@@ -51,7 +51,6 @@
 #' 
 #' @export invmat
 
-
 invmat <- function(X) {
   n <- nrow(X)
   m <- ncol(X)

@@ -204,7 +204,6 @@
 #' @method forest netmeta
 #' @export
 
-
 forest.netmeta <- function(x,
                            pooled = ifelse(x$random, "random", "common"),
                            reference.group = x$reference.group,
@@ -705,13 +704,9 @@ forest.netmeta <- function(x,
 }
 
 
-
-
-
 #' @rdname forest.netmeta
 #' @method plot netmeta
 #' @export
-#'
 
 plot.netmeta <- function(x, ...)
   forest(x, ...)

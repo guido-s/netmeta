@@ -382,7 +382,6 @@
 #' 
 #' @export discomb
 
-
 discomb <- function(TE, seTE,
                     treat1, treat2,
                     studlab, data = NULL, subset = NULL,

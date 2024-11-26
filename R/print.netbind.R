@@ -51,7 +51,6 @@
 #' @method print netbind
 #' @export
 
-
 print.netbind <- function(x,
                           common = x$x$common,
                           random = x$x$random,

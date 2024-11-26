@@ -151,9 +151,7 @@ Window System must be available (see
 }
 \examples{
 \dontrun{
-data(Linde2015)
-
-# Define order of treatments
+# Define order of treatments in depression data set dat.linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -166,7 +164,7 @@ outcomes <- c("Early response", "Early remission")
 #
 p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net1 <- netmeta(p1, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "undesirable")
@@ -175,7 +173,7 @@ net1 <- netmeta(p1, common = FALSE,
 #
 p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "undesirable")
@@ -203,7 +201,7 @@ outcomes <- c("Early response", "Early remission", "Lost to follow-up")
 #
 p3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net3 <- netmeta(p3, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "desirable")
@@ -241,7 +239,8 @@ principal component analysis.
 }
 \seealso{
 \code{\link{netposet}}, \code{\link{hasse}},
-  \code{\link{netrank}}, \code{\link{netmeta}}
+  \code{\link{netrank}}, \code{\link{netmeta}},
+  \code{\link[metadat]{dat.linde2015}}
 }
 \author{
 Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido

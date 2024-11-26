@@ -71,7 +71,6 @@
 #' @method forest subgroup.netmeta
 #' @export
 
-
 forest.subgroup.netmeta <- function(x,
                                     pooled =
                                       ifelse(x$x$random, "random", "common"),
@@ -228,13 +227,9 @@ forest.subgroup.netmeta <- function(x,
 }
 
 
-
-
-
 #' @rdname forest.subgroup.netmeta
 #' @method plot subgroup.netmeta
 #' @export
-#'
 
 plot.subgroup.netmeta <- function(x, ...)
   forest(x, ...)

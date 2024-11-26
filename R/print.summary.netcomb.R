@@ -83,7 +83,6 @@
 #' @method print summary.netcomb
 #' @export
 
-
 print.summary.netcomb <- function(x,
                                   common = x$x$common,
                                   random = x$x$random,

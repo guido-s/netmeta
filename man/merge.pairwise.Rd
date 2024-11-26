@@ -25,15 +25,13 @@ Merge pairwise object with additional data, e.g., information on
 network connectivity.
 }
 \examples{
-data(Woods2010)
-
 # Transform data from long arm-based format to contrast-based
 # format Argument 'sm' has to be used for odds ratio as summary
 # measure; by default the risk ratio is used in the metabin
 # function called internally.
 #
 p1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = dat.woods2010, sm = "OR")
 head(p1)
 
 # Add information on network connectivity
@@ -43,7 +41,8 @@ head(p1nc1)
 
 }
 \seealso{
-\code{\link[meta]{pairwise}}, \code{\link{netconnection}}
+\code{\link[meta]{pairwise}}, \code{\link{netconnection}},
+  \code{\link[metadat]{dat.woods2010}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

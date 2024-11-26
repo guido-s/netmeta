@@ -82,7 +82,6 @@
 #' 
 #' @export createC
 
-
 createC <- function(x, ...)
   UseMethod("createC")
 
@@ -226,7 +225,6 @@ createC.netcomb <- function(x, comb.ia = NULL, inactive = NULL,
   C.matrix
 }
 
-
 #' @rdname createC
 #' @method createC netmeta
 #' @export
@@ -277,7 +275,6 @@ createC.default <- function(x, n = 1, ...) {
   #
   C.matrix
 }
-
 
 
 #' @rdname createC

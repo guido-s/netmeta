@@ -15,18 +15,17 @@
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link[meta]{pairwise}}, \code{\link{netconnection}}
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link{netconnection}},
+#'   \code{\link[metadat]{dat.woods2010}}
 #' 
 #' @examples
-#' data(Woods2010)
-#' 
 #' # Transform data from long arm-based format to contrast-based
 #' # format Argument 'sm' has to be used for odds ratio as summary
 #' # measure; by default the risk ratio is used in the metabin
 #' # function called internally.
 #' #
 #' p1 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = dat.woods2010, sm = "OR")
 #' head(p1)
 #' 
 #' # Add information on network connectivity
@@ -36,7 +35,6 @@
 #'
 #' @method merge pairwise
 #' @export
-
 
 merge.pairwise <- function(x, y, all.x = TRUE, ...) {
   chkclass(x, "pairwise")

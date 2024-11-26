@@ -94,9 +94,6 @@ netdistance.default <- function(x) {
 }
 
 
-
-
-
 #' @rdname netdistance
 #' @method netdistance netmeta
 #' @export
@@ -114,9 +111,6 @@ netdistance.netmeta <- function(x) {
   #
   res
 }
-
-
-
 
 
 #' @rdname netdistance
@@ -145,9 +139,6 @@ netdistance.netcomb <- function(x) {
 }
 
 
-
-
-
 #' @rdname netdistance
 #' @method netdistance netconnection
 #' @export
@@ -158,9 +149,6 @@ netdistance.netconnection <- function(x) {
     
   netdistance(x$A.matrix)
 }
-
-
-
 
 
 #' @rdname netdistance
@@ -181,12 +169,8 @@ print.netdistance <- function(x, lab.Inf = ".", ...) {
 }
 
 
-
-
-
 #' @rdname netdistance
 #' @export
-
 
 netdistance <- function(x)
   UseMethod("netdistance")

@@ -84,7 +84,6 @@
 #' @method print netmeta
 #' @export
 
-
 print.netmeta <- function(x,
                           common = x$common,
                           random = x$random,

@@ -136,7 +136,6 @@
 #' @method forest netcomb
 #' @export
 
-
 forest.netcomb <- function(x,
                            pooled = ifelse(x$random, "random", "common"),
                            reference.group = x$reference.group,
@@ -365,13 +364,9 @@ forest.netcomb <- function(x,
 }
 
 
-
-
-
 #' @rdname forest.netcomb
 #' @method plot netcomb
 #' @export
-#'
 
 plot.netcomb <- function(x, ...)
   forest(x, ...)

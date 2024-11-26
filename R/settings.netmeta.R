@@ -169,7 +169,7 @@ settings.netmeta <- function(..., quietly = TRUE) {
                   all.treatments = NULL, seq = NULL,
                   method.tau.netmeta = "DL",
                   drop.reference.group = TRUE, equal.size = TRUE,
-                  show.netsplit = "both",
+                  show = "both",
                   #
                   nsim = 1000, lump.comparator = FALSE,
                   #
@@ -198,31 +198,46 @@ settings.netmeta <- function(..., quietly = TRUE) {
                utils::packageDescription("netmeta")$Version,
                ") **\n\n"))
     #
+    cat(paste0("* General settings *\n"))
     catarg("baseline.reference   ")
     catarg("small.values         ")
     catarg("all.treatments       ")
     catarg("seq                  ")
     catarg("method.tau.netmeta   ")
+    catarg("tol.multiarm         ")
+    catarg("tol.multiarm.se      ")
+    catarg("details.chkmultiarm  ")
+    catarg("nchar.studlab        ")
+    catarg("legend               ")
+    #
+    cat("\n* Additional settings for network meta-analysis *\n")
+    catarg("sep.trts             ")
+    catarg("nchar.trts           ")
+    #
+    cat("\n* Additional settings for component network meta-analysis *\n")
+    catarg("sep.comps            ")
+    catarg("sep.ia               ")
+    catarg("na.unident           ")
+    #
+    cat("\n* Additional settings for forest plots *\n")
     catarg("drop.reference.group ")
     catarg("equal.size           ")
-    catarg("show.netsplit        ")
-    catarg("nsim                 ")
-    catarg("lump.comparator      ")
+    #
+    cat("\n* Additional settings for network graphs *\n")
     catarg("plastic              ")
     catarg("col.netgraph         ")
     catarg("number.of.studies    ")
     catarg("thickness            ")
     catarg("multiarm             ")
-    catarg("tol.multiarm         ")
-    catarg("tol.multiarm.se      ")
-    catarg("details.chkmultiarm  ")
-    catarg("na.unident           ")
-    catarg("sep.trts             ")
-    catarg("sep.comps            ")
-    catarg("sep.ia               ")
-    catarg("nchar.trts           ")
-    catarg("nchar.studlab        ")
-    catarg("legend               ")
+    #
+    cat("\n* Additional setting for netsplit() *\n")
+    catarg("show                 ")
+    #
+    cat("\n* Additional setting to evaluate small study effects *\n")
+    catarg("lump.comparator      ")
+    #
+    cat("\n* Number of samples to calculate ranking metrics *\n")
+    catarg("nsim                 ")
     #
     return(invisible(oldset))
   }
@@ -240,7 +255,7 @@ settings.netmeta <- function(..., quietly = TRUE) {
     setcharacter("method.tau.netmeta", args.netmeta, c("DL", "REML", "ML"))
     setlogical("drop.reference.group", args.netmeta)
     setlogical("equal.size", args.netmeta)
-    setcharacter("show.netsplit", args.netmeta,
+    setcharacter("show", args.netmeta,
                  c("all", "both", "with.direct", "direct.only", "indirect.only"))
     setnumeric("nsim", args.netmeta)
     setlogical("lump.comparator", args.netmeta)

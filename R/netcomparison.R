@@ -174,7 +174,6 @@
 #' @export
 #' @export netcomparison
 
-
 netcomparison <- function(x, treat1, treat2,
                           common = x$common,
                           random = x$random,
@@ -416,9 +415,6 @@ netcomparison <- function(x, treat1, treat2,
   
   res
 }
-
-
-
 
 
 #' @rdname netcomparison
@@ -664,7 +660,6 @@ print.netcomparison <- function(x,
                rowlab = rep("", length(comps.abbr))) 
     }
   }
-  
   
   invisible(NULL)
 }

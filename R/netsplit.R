@@ -169,7 +169,9 @@
 #'   \email{oremiou@@gmail.com}
 #' 
 #' @seealso \code{\link{forest.netsplit}}, \code{\link{netmeta}},
-#'   \code{\link{netmetabin}}, \code{\link{netmeasures}}
+#'   \code{\link{netmetabin}}, \code{\link{netmeasures}},
+#'   \code{\link[metadat]{dat.woods2010}}, \code{\link{Senn2013}},
+#'   \code{\link[metadat]{dat.dong2013}}
 #' 
 #' @references
 #' Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
@@ -196,10 +198,8 @@
 #' \bold{349}, g5630
 #' 
 #' @examples
-#' data(Woods2010)
-#' #
 #' p1 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = dat.woods2010, sm = "OR")
 #' #
 #' net1 <- netmeta(p1)
 #' #
@@ -232,9 +232,8 @@
 #' # Layout of Puhan et al. (2014), Table 1
 #' print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
 #' 
-#' data(Dong2013)
 #' p3 <- pairwise(treatment, death, randomized, studlab = id,
-#'   data = Dong2013, sm = "OR")
+#'   data = dat.dong2013, sm = "OR")
 #' net3 <- netmetabin(p3)
 #' netsplit(net3)
 #' }
@@ -242,13 +241,12 @@
 #' @rdname netsplit
 #' @export netsplit
 
-
 netsplit <- function(x, method,
                      upper = TRUE,
                      reference.group = x$reference.group,
                      baseline.reference = x$baseline.reference,
                      #
-                     show = gs("show.netsplit"),
+                     show = gs("show"),
                      overall = TRUE,
                      direct = TRUE,
                      indirect = TRUE,
@@ -470,13 +468,9 @@ netsplit <- function(x, method,
 }
 
 
-
-
-
 #' @rdname netsplit
 #' @method print netsplit
 #' @export
-
 
 print.netsplit <- function(x,
                            common = x$x$common,
