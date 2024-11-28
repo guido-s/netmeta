@@ -4,6 +4,8 @@
 #' This function generates a Hasse diagram for a partial order of
 #' treatment ranks in a network meta-analysis.
 #' 
+#' @aliases hasse hasse.netposet
+#' 
 #' @param x An object of class \code{netposet} (mandatory).
 #' @param pooled A character string indicating whether Hasse diagram
 #'   show be drawn for common (\code{"common"}) or random effects model
@@ -11,6 +13,7 @@
 #' @param newpage A logical value indicating whether a new figure
 #'   should be printed in an existing graphics window. Otherwise, the
 #'   Hasse diagram is added to the existing figure.
+#' @param \dots Additional arguments (ignored).
 #' 
 #' @details
 #' Generate a Hasse diagram (Carlsen & Bruggemann, 2014) for a partial
@@ -41,6 +44,8 @@
 #' Partial ordering of treatments.
 #' \emph{Research Synthesis Methods},
 #' \bold{8}, 526--36
+#' 
+#' @name hasse.netposet
 #' 
 #' @keywords plot
 #' 
@@ -84,11 +89,13 @@
 #' hasse(po)
 #' }
 #' 
-#' @export hasse
+#' @method hasse netposet
+#' @export
 
-hasse <- function(x,
-                  pooled = ifelse(x$random, "random", "common"),
-                  newpage = TRUE) {
+hasse.netposet <- function(x,
+                           pooled = ifelse(x$random, "random", "common"),
+                           newpage = TRUE,
+                           ...) {
   
   chkclass(x, "netposet")
   x <- updateversion(x)
@@ -120,3 +127,10 @@ hasse <- function(x,
   
   invisible()
 }
+
+
+#' @rdname hasse.netposet
+#' @export
+
+hasse <- function(x, ...)
+  UseMethod("hasse")

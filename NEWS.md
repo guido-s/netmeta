@@ -108,6 +108,10 @@
 
 * New function print.netdistance() to print distance matrix
 
+* New generic function hasse() for Hasse diagrams
+
+* New functions hasse.netposet() replacing the older hasse()
+
 * Do not print the start-up message concerning older version of R package
   **netmeta** for readers of 'Meta-Analysis with R (Use R!)'
 
