@@ -44,7 +44,7 @@ updateversion <- function(x, verbose = FALSE) {
       x$prediction <- FALSE
       x$df.Q <- x$df
       ##
-      x$d <- nma.krahn(x)$d
+      x$d <- nma_krahn(x)$d
       if (is.null(x$d))
         x$d <- 1
       ##

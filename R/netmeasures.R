@@ -220,7 +220,7 @@ netmeasures <- function(x,
     x$reference.group <- ""
     ##
     if (random == FALSE & length(tau.preset) == 0) {
-      nmak <- nma.krahn(x)
+      nmak <- nma_krahn(x)
       if (nmak$n == 2) {
         prop <- mpath <- 1
         names(prop) <- names(mpath) <- x$designs
@@ -238,7 +238,7 @@ netmeasures <- function(x,
     }
     ##                                                             
     if (length(tau.preset) == 1) {
-      nmak <- nma.krahn(x, tau.preset = tau.preset)
+      nmak <- nma_krahn(x, tau.preset = tau.preset)
       if (nmak$n == 2) {
         prop <- mpath <- 1
         names(prop) <- names(mpath) <- x$designs
@@ -256,7 +256,7 @@ netmeasures <- function(x,
     }
     ##
     if (random == TRUE & length(tau.preset) == 0) {
-      nmak <- nma.krahn(x, tau.preset = x$tau)
+      nmak <- nma_krahn(x, tau.preset = x$tau)
       if (nmak$n == 2) {
         prop <- mpath <- 1
         names(prop) <- names(mpath) <- x$designs

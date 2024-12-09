@@ -1,4 +1,4 @@
-nma.krahn <- function(x, reference.group = x$reference.group,
+nma_krahn <- function(x, reference.group = x$reference.group,
                       tau.preset = 0, sep.trts = x$sep.trts) {
   
   
@@ -192,7 +192,7 @@ nma.krahn <- function(x, reference.group = x$reference.group,
   if (length(unique(studies$comparison)) == 1) {
     res <- list(n = 2)
     ##
-    class(res) <- "nma.krahn"
+    class(res) <- "nma_krahn"
     ##
     return(res)
   }
@@ -518,7 +518,7 @@ nma.krahn <- function(x, reference.group = x$reference.group,
               H.studies = H.studies,
               sep.trts = sep.trts)
 
-  class(res) <- "nma.krahn"
+  class(res) <- "nma_krahn"
 
   res
 }

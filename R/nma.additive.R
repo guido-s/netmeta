@@ -1,9 +1,8 @@
-nma.additive <- function(TE, weights, studlab,
+nma_additive <- function(TE, weights, studlab,
                          treat1, treat2,
                          level,
                          X, C.matrix, B.matrix,
-                         Q, df.Q.additive, df.Q.diff,
-                         n, sep.trts) {
+                         df.Q.additive, n, sep.trts) {
   
   
   m <- length(TE)
@@ -109,17 +108,6 @@ nma.additive <- function(TE, weights, studlab,
   else
     pval.Q.additive <- 1 - pchisq(Q.additive, df.Q.additive)
   ##
-  ## Difference to standard network meta-analysis model
-  ##
-  Q.diff <- Q.additive - Q
-  if (!is.na(Q.diff) && abs(Q.diff) < .Machine$double.eps^0.75)
-    Q.diff <- 0
-  ##
-  if (is.na(df.Q.diff) | df.Q.diff == 0)
-    pval.Q.diff <- NA
-  else
-    pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)
-  ##
   ## Heterogeneity variance
   ##
   I <- diag(m)
@@ -155,10 +143,6 @@ nma.additive <- function(TE, weights, studlab,
               Q.additive = Q.additive,
               df.Q.additive = df.Q.additive,
               pval.Q.additive = pval.Q.additive,
-              ##
-              Q.diff = Q.diff,
-              df.Q.diff = df.Q.diff,
-              pval.Q.diff = pval.Q.diff,
               ##
               tau = tau,
               I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2,

@@ -162,14 +162,14 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   
   if (random == FALSE & length(tau.preset) == 0) {
-    nmak <- nma.krahn(x)
+    nmak <- nma_krahn(x)
     decomp <- decomp.design(x)
     residuals <- decomp$residuals.inc.detach
     Q.inc.design <- decomp$Q.inc.design
   }
   ##
   if (length(tau.preset) == 1) {
-    nmak <- nma.krahn(x, tau.preset = tau.preset)
+    nmak <- nma_krahn(x, tau.preset = tau.preset)
     decomp <- decomp.design(x, tau.preset = tau.preset)
     residuals <- decomp$residuals.inc.detach.random.preset
     Q.inc.design <- decomp$Q.inc.design.random.preset
@@ -177,7 +177,7 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   ##
   if (random == TRUE & length(tau.preset) == 0) {
     tau.within <- tau.within(x)
-    nmak <- nma.krahn(x, tau.preset = tau.within)
+    nmak <- nma_krahn(x, tau.preset = tau.within)
     decomp <- decomp.design(x, tau.preset = tau.within)
     residuals <- decomp$residuals.inc.detach.random.preset
     Q.inc.design <- decomp$Q.inc.design.random.preset

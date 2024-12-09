@@ -685,7 +685,8 @@ print.netsplit <- function(x,
     sel <- is.na(x$direct.common$TE) & !is.na(x$common$TE)
   ##
   if (sum(sel) == 0) {
-    warning("No results for argument 'show = ", show, "'.",
+    warning("No comparisons selected with argument 'show = ", show, "'. ",
+            "You could use 'show = \"all\" to show all comparisons.",
             call. = FALSE)
     return(invisible(NULL))
   }

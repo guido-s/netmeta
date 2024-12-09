@@ -4,7 +4,7 @@ tau.within <- function(x) {
   chkclass(x, "netmeta")
   
   
-  nmak <- nma.krahn(x)
+  nmak <- nma_krahn(x)
   ##
   if (nmak$n == 2)
     return(NA)

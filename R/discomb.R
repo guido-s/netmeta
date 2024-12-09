@@ -1067,12 +1067,11 @@ discomb <- function(TE, seTE,
   else {
     Q <- df.Q <- pval.Q <- df.Q.diff <- NA
   }
-  ##  
-  res.c <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
+  ##
+  res.c <- nma_additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], level.ma,
                         X.matrix, C.matrix, B.matrix,
-                        Q, df.Q.additive, df.Q.diff,
-                        n, sep.trts)
+                        df.Q.additive, n, sep.trts)
   ##
   ## Random effects models
   ##
@@ -1083,11 +1082,22 @@ discomb <- function(TE, seTE,
   ##
   p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, func.inverse)
   ##
-  res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
+  res.r <- nma_additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], level.ma,
                         X.matrix, C.matrix, B.matrix,
-                        Q, df.Q.additive, df.Q.diff,
+                        df.Q.additive,
                         n, sep.trts)
+  #
+  # Difference to standard network meta-analysis model
+  #
+  Q.diff <- res.c$Q.additive - Q
+  if (!is.na(Q.diff) && abs(Q.diff) < .Machine$double.eps^0.75)
+    Q.diff <- 0
+  #
+  if (is.na(df.Q.diff) | df.Q.diff == 0)
+    pval.Q.diff <- NA
+  else
+    pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)
   #
   # Set unidentifiable components and combinations to NA
   #
@@ -1255,9 +1265,9 @@ discomb <- function(TE, seTE,
               df.Q.standard = df.Q,
               pval.Q.standard = pval.Q, 
               ##
-              Q.diff = res.c$Q.diff,
+              Q.diff = Q.diff,
               df.Q.diff = df.Q.diff,
-              pval.Q.diff = res.c$pval.Q.diff, 
+              pval.Q.diff = pval.Q.diff, 
               ##
               A.matrix = A.matrix,
               X.matrix = X.matrix,

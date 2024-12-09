@@ -116,7 +116,6 @@ covar_study <- function(v, studlab, correlated, func.inverse) {
     V <- diag(diag(t(B) %*% diag(v, nrow = m) %*% B)) - t(B) %*%
       diag(v, nrow = m) %*% B
     #
-    dm <- choose(m, 2)
     Cov <- matrix(0, nrow = m, ncol = m)
     edges <- matrix(nrow = m, ncol = 2)
     #
@@ -147,9 +146,10 @@ covar_study <- function(v, studlab, correlated, func.inverse) {
       #
       Cov[p, p] <- V[i, j]
     }
-    #
-    W <- ginv(as.matrix(Cov))
   }
+  #
+  if (correlated && qr(Cov)$rank == n - 1)
+    W <- ginv(as.matrix(Cov))
   else {
     if (length(v) > 1) {
       v <- multiarm(v, studlab, func.inverse)$v

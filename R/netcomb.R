@@ -518,11 +518,10 @@ netcomb <- function(x,
   ##
   ## Common effects models
   ##
-  res.c <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
+  res.c <- nma_additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], x$level.ma,
                         X.matrix, C.matrix, x$B.matrix,
-                        x$Q, df.Q.additive, df.Q.diff,
-                        x$n, x$sep.trts)
+                        df.Q.additive, x$n, x$sep.trts)
   ##
   ## Calculate heterogeneity statistics (additive model)
   ##
@@ -542,11 +541,21 @@ netcomb <- function(x,
   p1 <- prepare(x$TE, x$seTE, x$treat1, x$treat2, x$studlab,
                 if (is.na(tau)) 0 else tau, invmat)
   ##
-  res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
+  res.r <- nma_additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], x$level.ma,
                         X.matrix, C.matrix, x$B.matrix,
-                        x$Q, df.Q.additive, df.Q.diff,
-                        x$n, x$sep.trts)
+                        df.Q.additive, x$n, x$sep.trts)
+  #
+  # Difference to standard network meta-analysis model
+  #
+  Q.diff <- res.c$Q.additive - x$Q
+  if (!is.na(Q.diff) && abs(Q.diff) < .Machine$double.eps^0.75)
+    Q.diff <- 0
+  #
+  if (is.na(df.Q.diff) | df.Q.diff == 0)
+    pval.Q.diff <- NA
+  else
+    pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)
   ##
   ## Set unidentifiable components and combinations to NA
   ##
@@ -706,9 +715,9 @@ netcomb <- function(x,
               df.Q.standard = x$df.Q,
               pval.Q.standard = x$pval.Q,
               ##
-              Q.diff = res.c$Q.diff,
+              Q.diff = Q.diff,
               df.Q.diff = df.Q.diff,
-              pval.Q.diff = res.c$pval.Q.diff, 
+              pval.Q.diff = pval.Q.diff, 
               ##
               A.matrix = x$A.matrix,
               X.matrix = X.matrix,

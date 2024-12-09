@@ -13,24 +13,26 @@
   - league tables can be constructed for connected or disconnect networks
   - auxiliary functions createC() and combinations() to fit interaction
     CNMA models more easily
-  - warn / inform about unidentifiable components that could be merge to make
-    them identifiable
+  - warn / inform about unidentifiable components only appearing together which
+    could be merged to make the combination identifiable
 
 * Rankograms can be constructed from samples
-
-* New R function settings.netmeta() to define and print default settings
-  for network meta-analyses in R package **netmeta**
-
-* By default, no reference group line is displayed in the forest plot
-  (argument 'drop.reference.group')
 
 * R functions pairwise() and subset.pairwise() moved from R package
   **netmeta** to **meta**
 
 * R function pairwise() can be used with dose-response data
 
+* New R function settings.netmeta() to define and print default settings
+  for network meta-analyses in R package **netmeta**
+
+* By default, no reference group line is displayed in forest plots
+  (argument 'drop.reference.group = TRUE' instead of
+  'drop.reference.group = FALSE')
+
 * In R function netsplit(), only show results for pairwise comparisons
   providing both direct and indirect evidence by default
+  (argument 'show = "both"' instead of 'show = "all"')
 
 * R function netmeta() does not automatically return the R object created
     with rma.mv() from **metafor** to calculate the between-study variance
@@ -160,6 +162,14 @@
   the default for argument 'backtransf'
 
 * Use backtransf() from R package **meta** to back-transform results
+
+* New internal function nma_ruecker() allowing for correlated treatment arms
+  (R function nma.ruecker() still available)
+
+* R functions nma.additive() and nma.krahn() renamed to nma_additive() and
+  nma_krahn()
+
+* Do not calculate Q.diff within nma_additive() but netcomb() and discomb()
 
 
 ## netmeta, version 2.9-0 (2024-01-11)

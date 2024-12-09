@@ -222,12 +222,12 @@ hatmatrix <- function(x, method = "Ruecker", type,
   }
   else if (method == "Krahn") {
     if (type == "design") {
-      res$common <- nma.krahn(x)$H
-      res$random <- nma.krahn(x, tau.preset = x$tau)$H
+      res$common <- nma_krahn(x)$H
+      res$random <- nma_krahn(x, tau.preset = x$tau)$H
     }
     else if (type == "studies") {
-      res$common <- nma.krahn(x)$H.studies
-      res$random <- nma.krahn(x, tau.preset = x$tau)$H.studies
+      res$common <- nma_krahn(x)$H.studies
+      res$random <- nma_krahn(x, tau.preset = x$tau)$H.studies
     }
   }
   else if (method == "Davies") {
@@ -521,9 +521,9 @@ hatmatrix.F1000 <- function(x, model) {
   ## H matrix
   ##
   if (model == "common")
-    krahn <- nma.krahn(x)
+    krahn <- nma_krahn(x)
   else if (model == "random")
-    krahn <- nma.krahn(x, tau.preset = x$tau)
+    krahn <- nma_krahn(x, tau.preset = x$tau)
   ##
   X.full <- krahn$X.full
   direct <- krahn$direct

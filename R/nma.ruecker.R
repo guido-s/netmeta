@@ -380,9 +380,6 @@ nma.ruecker <- function(TE, W, seTE,
 }
 
 
-
-
-
 nma_ruecker <- function(TE, W, seTE,
                         treat1, treat2,
                         treat1.pos, treat2.pos,

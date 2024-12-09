@@ -943,7 +943,7 @@ netmetabin <- function(event1, n1, event2, n2,
     if (net1$n == 2)
       res <- data.frame(studlab = net1$studlab, design = net1$designs)
     else
-      res <- nma.krahn(net1)$studies[, c("studlab", "design")]
+      res <- nma_krahn(net1)$studies[, c("studlab", "design")]
     ##
     res$design <- as.character(res$design)
     res <- unique(res)

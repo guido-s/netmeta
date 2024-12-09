@@ -1,7 +1,7 @@
 decomp.tau <- function(x, tau.preset = 0, warn = TRUE) {
   
   
-  nmak <- nma.krahn(x, tau.preset = tau.preset)
+  nmak <- nma_krahn(x, tau.preset = tau.preset)
   ##
   if (nmak$n == 2) {
     res <- list(d = 1, n = 2)
