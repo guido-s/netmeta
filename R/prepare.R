@@ -146,10 +146,20 @@ covar_study <- function(v, studlab, correlated, func.inverse) {
       #
       Cov[p, p] <- V[i, j]
     }
+    #
+    if (qr(Cov)$rank == n - 1)
+      W <- ginv(as.matrix(Cov))
+    else {
+      if (length(v) > 1) {
+        Cov <- diag(v)
+        W <- diag(1 / v)
+      }
+      else {
+        Cov <- matrix(v)
+        W <- 1 / Cov
+      }
+    }
   }
-  #
-  if (correlated && qr(Cov)$rank == n - 1)
-    W <- ginv(as.matrix(Cov))
   else {
     if (length(v) > 1) {
       v <- multiarm(v, studlab, func.inverse)$v

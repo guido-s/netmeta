@@ -1440,7 +1440,7 @@ netmeta <- function(TE, seTE,
               seTE.adj = res.c$seTE[o],
               seTE.adj.common = res.c$seTE[o],
               seTE.adj.random = res.r$seTE[o],
-              correlated = NA,
+              correlated = correlated,
               #
               design = designs$design[o],
               #

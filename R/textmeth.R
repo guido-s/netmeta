@@ -83,6 +83,17 @@ textmeth <- function(x, random = FALSE, print.tau2 = FALSE, print.tau = FALSE,
           paste0(text.details, "- Calculation of ", text.I2, " based on Q\n")
       }
     }
+    #
+    if (!is.null(x$correlated) && any(x$correlated)) {
+      studies.c <- sort(unique(x$studlab[x$correlated]))
+      #
+      text.details <-
+        paste0(text.details,
+               "- ", if (length(studies.c) == 1) "Study" else "Studies",
+               " with correlated study arms: ",
+               paste0("'", studies.c, "'", collapse = ", "),
+               "\n")
+    }
   }
   else if (inherits(x, "netimpact")) {
     text.details <- "- Frequentist graph-theoretical approach\n"
