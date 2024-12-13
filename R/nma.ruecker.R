@@ -388,7 +388,8 @@ nma_ruecker <- function(TE, W, seTE,
                         level, level.ma,
                         seTE.orig, tau.direct = 0, sep.trts = ":",
                         method.tau = "DL",
-                        func.inverse) {
+                        func.inverse,
+                        Cov0) {
   
   
   w.pooled <- 1 / seTE^2
@@ -400,6 +401,9 @@ nma_ruecker <- function(TE, W, seTE,
   # Drop Matrix attributes
   W <- as.matrix(W)
   class(W) <- "matrix"
+  #
+  Cov0 <- as.matrix(Cov0)
+  class(Cov0) <- "matrix"
   
   ##
   ## B is the edge-vertex incidence matrix (m x n)
@@ -420,7 +424,7 @@ nma_ruecker <- function(TE, W, seTE,
   ## L is the weighted Laplacian (Kirchhoff) matrix (n x n)
   ## Lplus is its Moore-Penrose pseudoinverse
   ##
-  L <- t(B) %*% W %*% B
+  L <- t(B) %*% ginv(Cov0) %*% B
   Lplus <- do.call(func.inverse, list(X = L))
   Lplus[is.zero(Lplus)] <- 0
   ##

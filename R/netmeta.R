@@ -1246,7 +1246,7 @@ netmeta <- function(TE, seTE,
                        level, level.ma,
                        dat.c$seTE, 0, sep.trts,
                        method.tau,
-                       func.inverse)
+                       func.inverse, Cov0 = p0$Cov)
   trts <- rownames(res.c$A.matrix)
   #
   #
@@ -1388,7 +1388,7 @@ netmeta <- function(TE, seTE,
                        level, level.ma,
                        dat.r$seTE, tau, sep.trts,
                        method.tau,
-                       func.inverse)
+                       func.inverse, Cov0 = p1$Cov)
   #
   TE.random <- res.r$TE.pooled
   seTE.random <- res.r$seTE.pooled

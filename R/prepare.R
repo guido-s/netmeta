@@ -80,8 +80,12 @@ prepare2 <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
   W.list <- vector("list", length(sl))
   names(W.list) <- sl
   #
-  # Determining number of arms and adjusting weights of
-  # multi-arm studies
+  # List with covariance matrices
+  #
+  C.list <- vector("list", length(sl))
+  names(C.list) <- sl
+  #
+  # Determining number of arms and adjusting weights of multi-arm studies
   #
   for (s in sl) {
     sel.s <- data$studlab == s
@@ -97,11 +101,13 @@ prepare2 <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
     res.s <- covar_study(1 / data$weights[sel.s], s, correlated.s, func.inverse)
     #
     W.list[[s]] <- res.s$W
+    C.list[[s]] <- res.s$Cov
+    #
     data$narms[sel.s] <- res.s$n
     data$weights[sel.s] <- diag(res.s$W)
   }
   #
-  res <- list(W = bdiag(W.list), data = data)
+  res <- list(W = bdiag(W.list), Cov = bdiag(C.list), data = data)
   #
   res
 }
@@ -150,10 +156,8 @@ covar_study <- function(v, studlab, correlated, func.inverse) {
     if (qr(Cov)$rank == n - 1)
       W <- ginv(as.matrix(Cov))
     else {
-      if (length(v) > 1) {
-        Cov <- diag(v)
+      if (length(v) > 1)
         W <- diag(1 / v)
-      }
       else {
         Cov <- matrix(v)
         W <- 1 / Cov
