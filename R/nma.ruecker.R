@@ -424,16 +424,20 @@ nma_ruecker <- function(TE, W, seTE,
   ## L is the weighted Laplacian (Kirchhoff) matrix (n x n)
   ## Lplus is its Moore-Penrose pseudoinverse
   ##
-  L <- t(B) %*% ginv(Cov0) %*% B
+  L <- t(B) %*% W %*% B
   Lplus <- do.call(func.inverse, list(X = L))
   Lplus[is.zero(Lplus)] <- 0
-  ##
-  ## R resistance distance (variance) matrix (n x n)
-  ##
+  #
+  L1 <- t(B) %*% ginv(Cov0) %*% B
+  Lplus1 <- do.call(func.inverse, list(X = L1))
+  Lplus1[is.zero(Lplus1)] <- 0
+  #
+  # R resistance distance (variance) matrix (n x n)
+  #
   R <- matrix(0, nrow = n, ncol = n) 
   for (i in 1:n) {
     for (j in 1:n) {
-      R[i, j] <- Lplus[i, i] + Lplus[j, j] - 2 * Lplus[i, j]
+      R[i, j] <- Lplus1[i, i] + Lplus1[j, j] - 2 * Lplus1[i, j]
     }
   }
   ##
@@ -458,7 +462,7 @@ nma_ruecker <- function(TE, W, seTE,
   ##
   ## Variance-covariance matrix for all comparisons
   ##
-  Cov <- B.full %*% Lplus %*% t(B.full)
+  Cov <- B.full %*% Lplus1 %*% t(B.full)
   ##
   ## Resulting effects and variances at numbered edges
   ##

@@ -1,4 +1,4 @@
-## netmeta, version 3.0-0 (2024-mm-dd)
+## netmeta, version 3.0-0 (2025-mm-dd)
 
 ### Major changes
 
