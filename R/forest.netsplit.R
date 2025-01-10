@@ -254,9 +254,9 @@ forest.netsplit <- function(x,
       ## Set proportions to 0 or 1
       ##
       if (is.numeric(sortvar)) {
-        sortvar[is.zero(abs(sortvar), n = 1000)] <- 0
-        sortvar[is.zero(1 - abs(sortvar), n = 1000)] <-
-          1 * sign(sortvar)[is.zero(1 - abs(sortvar), n = 1000)]
+        sortvar[is_zero(abs(sortvar), n = 1000)] <- 0
+        sortvar[is_zero(1 - abs(sortvar), n = 1000)] <-
+          1 * sign(sortvar)[is_zero(1 - abs(sortvar), n = 1000)]
       }
       sortvar <- order(do.call(order, as.list(as.data.frame(sortvar))))
     }

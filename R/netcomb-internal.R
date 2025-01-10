@@ -7,14 +7,14 @@ get_unident <- function(X.matrix, details.chkident) {
   e <- eigen(Xplus %*% X.matrix)$values
   E <- eigen(Xplus %*% X.matrix)$vectors
   rownames(E) <- rownames(Xplus %*% X.matrix)
-  M <- as.matrix(E[, is.zero(e, n = 100)])
+  M <- as.matrix(E[, is_zero(e, n = 100)])
   #
   # Identify all unidentifiable components
   #
   if (dim(M)[2] > 0) {
     for (i in 1:dim(M)[2])
       comps.unident <-
-        c(comps.unident, names(M[, i])[!is.zero(M[, i], n = 100)])
+        c(comps.unident, names(M[, i])[!is_zero(M[, i], n = 100)])
     #
     comps.unident <- unique(sort(comps.unident))
   }
@@ -72,7 +72,7 @@ get_unident <- function(X.matrix, details.chkident) {
               call. = FALSE)
     #
     if (details.chkident) {
-      M[is.zero(M, n = 100)] <- 0
+      M[is_zero(M, n = 100)] <- 0
       prmatrix(M, quote = FALSE, right = TRUE)
     }
   }

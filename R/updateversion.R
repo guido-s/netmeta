@@ -192,6 +192,7 @@ updateversion <- function(x, verbose = FALSE) {
     #
     if (update.3.0.0) {
       x$overall.hetstat <- TRUE
+      x$method.predict <- "V"
       #
       if (inherits(x, "netmetabin")) {
         x$method.incr <- "only0"
@@ -229,6 +230,7 @@ updateversion <- function(x, verbose = FALSE) {
     #
     if (update.3.0.0) {
       x$x$overall.hetstat <- TRUE
+      x$x$method.predict <- "V"
       #
       if (inherits(x, "summary.netmetabin")) {
         x$method.incr <- "only0"

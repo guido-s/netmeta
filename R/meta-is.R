@@ -15,7 +15,7 @@ is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) {
   ##
   res
 }
-is.zero <- function(x, n = 10)
+is_zero <- function(x, n = 10)
   abs(x) < n * .Machine$double.eps
 is_wholenumber <- function(x, tol = .Machine$double.eps^0.5) {
   if (is.numeric(x))

@@ -272,7 +272,7 @@ netsplit <- function(x, method,
   chkclass(x, "netmeta")
   x <- updateversion(x)
   ##
-  is.bin <- inherits(x, "netmetabin")
+  is.mh.nch <- inherits(x, "netmetabin") && x$method %in% c("MH", "NCH")
   ##
   is.tictoc <- is_installed_package("tictoc", stop = FALSE)
   
@@ -285,7 +285,7 @@ netsplit <- function(x, method,
   if (!missing(method))
     method <- setchar(method, c("Back-calculation", "SIDDE"))
   else {
-    if (is.bin)
+    if (is.mh.nch)
       method <- "SIDDE"
     else
       method <- "Back-calculation"
@@ -352,7 +352,7 @@ netsplit <- function(x, method,
   ## (4) Change order of prop.direct.common and prop.direct.random
   ##
   ##
-  if (!(is.bin & method == "SIDDE")) {
+  if (!(is.mh.nch & method == "SIDDE")) {
     prop.common <- sortprop(x$prop.direct.common, dat.trts, x$sep.trts)
     prop.random <- sortprop(x$prop.direct.random, dat.trts, x$sep.trts)
   }
@@ -373,7 +373,7 @@ netsplit <- function(x, method,
     x.direct.indirect$TE.indirect.common <- ind$TE.indirect.common
     x.direct.indirect$seTE.indirect.common <- ind$seTE.indirect.common
     ##
-    if (!is.bin) {
+    if (!is.mh.nch) {
       x.direct.indirect$TE.indirect.random <- ind$TE.indirect.random
       x.direct.indirect$seTE.indirect.random <- ind$seTE.indirect.random
     }
@@ -461,7 +461,7 @@ netsplit <- function(x, method,
   ##
   class(res) <-
     c("netsplit",
-      if (is.bin & method == "SIDDE")
+      if (is.mh.nch & method == "SIDDE")
         "netsplit.netmetabin")
   
   res
@@ -514,7 +514,7 @@ print.netsplit <- function(x,
   x <- updateversion(x)
   ##
   is.bin <- inherits(x, "netsplit.netmetabin")
-  ##  
+  ##
   ## All individual results in a single row - be on the save side:
   ##
   oldopts <- options(width = 200)
@@ -579,9 +579,9 @@ print.netsplit <- function(x,
       ## Set proportions to 0 or 1
       ##
       if (is.numeric(sortvar)) {
-        sortvar[is.zero(abs(sortvar), n = 1000)] <- 0
-        sortvar[is.zero(1 - abs(sortvar), n = 1000)] <-
-          1 * sign(sortvar)[is.zero(1 - abs(sortvar), n = 1000)]
+        sortvar[is_zero(abs(sortvar), n = 1000)] <- 0
+        sortvar[is_zero(1 - abs(sortvar), n = 1000)] <-
+          1 * sign(sortvar)[is_zero(1 - abs(sortvar), n = 1000)]
       }
       sortvar <- order(do.call(order, as.list(as.data.frame(sortvar))))
     }

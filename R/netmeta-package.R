@@ -239,7 +239,8 @@
 #'   text strheight strwidth title
 #'
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
-#'   prcomp relevel reshape rnorm sd coef
+#'   prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted
+#'   residuals
 #'
 #' @importFrom utils installed.packages packageDescription capture.output
 #'   packageVersion

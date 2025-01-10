@@ -16,7 +16,7 @@ nma_additive <- function(TE, weights, studlab,
   L <- t(X) %*% W %*% X
   ##
   Lplus <- ginv(L) # = Cov matrix of beta (components)
-  Lplus[is.zero(Lplus)] <- 0
+  Lplus[is_zero(Lplus)] <- 0
   colnames(Lplus) <- colnames(L)
   rownames(Lplus) <- rownames(L)
   ##

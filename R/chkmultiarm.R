@@ -226,7 +226,7 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab, correlated,
         #
         is.negative <- sigma2 < 0
         negative.sigma2[s.idx] <- any(is.negative)
-        zero.sigma2[s.idx] <- any(is.zero(sigma2[!is.negative]))
+        zero.sigma2[s.idx] <- any(is_zero(sigma2[!is.negative]))
         #
         if (inconsistent.varTE[s.idx])
           dat.varTE <- rbind(dat.varTE,

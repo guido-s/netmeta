@@ -38,7 +38,7 @@ nma.ruecker <- function(TE, W, seTE,
   ##
   L <- t(B) %*% W %*% B
   Lplus <- do.call(func.inverse, list(X = L))
-  Lplus[is.zero(Lplus)] <- 0
+  Lplus[is_zero(Lplus)] <- 0
   ##
   ## R resistance distance (variance) matrix (n x n)
   ##
@@ -426,11 +426,11 @@ nma_ruecker <- function(TE, W, seTE,
   ##
   L <- t(B) %*% W %*% B
   Lplus <- do.call(func.inverse, list(X = L))
-  Lplus[is.zero(Lplus)] <- 0
+  Lplus[is_zero(Lplus)] <- 0
   #
   L1 <- t(B) %*% ginv(Cov0) %*% B
   Lplus1 <- do.call(func.inverse, list(X = L1))
-  Lplus1[is.zero(Lplus1)] <- 0
+  Lplus1[is_zero(Lplus1)] <- 0
   #
   # R resistance distance (variance) matrix (n x n)
   #

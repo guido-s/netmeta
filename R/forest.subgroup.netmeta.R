@@ -43,7 +43,7 @@
 #' @param smlab A label printed at top of figure. By default, text
 #'   indicating either common or random effects model is printed.
 #' @param col.subgroup The colour to print information on subgroups.
-#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#' @param \dots Additional arguments for \code{\link[meta]{forest.meta}}
 #'   function.
 #' 
 #' @details
@@ -55,13 +55,13 @@
 #' forest plot, respectively. If argument \code{rightcols} is
 #' \code{FALSE}, no columns will be plotted on the right side.
 #' 
-#' For more information see help page of \code{\link{forest.meta}}
+#' For more information see help page of \code{\link[meta]{forest.meta}}
 #' function.
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{subgroup.netmeta}}, \code{\link{netmeta}},
-#'   \code{\link{forest.meta}}
+#'   \code{\link[meta]{forest.meta}}
 #' 
 #' @keywords hplot
 #' 

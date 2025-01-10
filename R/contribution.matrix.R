@@ -173,7 +173,7 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
   
   colnames(weights) <- directs
   ##
-  weights[is.zero(weights)] <- 0
+  weights[is_zero(weights)] <- 0
   ##
   attr(weights, "model") <- model
   attr(weights, "hatmatrix.F1000") <- old
@@ -280,7 +280,7 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
       P[t2, ] <- rep(0, n)
       P[t2, t2] <- 1
       ##
-      P[is.zero(P, n = 1000)] <- 0
+      P[is_zero(P, n = 1000)] <- 0
       ##
       ## Find all possible paths
       ##
@@ -335,7 +335,7 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
     }
   }
   ##
-  weights[is.zero(weights)] <- 0
+  weights[is_zero(weights)] <- 0
   ##
   weights <- weights[, apply(weights, 2, sum) > 0, drop = FALSE]
   ##
@@ -442,7 +442,7 @@ contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
       P <- MASS::ginv(diag(rowSums(Q))) %*% Q # Transition matrix
       P[t2, ] <- rep(0, n)
       P[t2, t2] <- 1
-      P[is.zero(P, n = 1000)] <- 0
+      P[is_zero(P, n = 1000)] <- 0
       Pgraph <-
         igraph::graph_from_adjacency_matrix(
                   P, "directed", weighted = TRUE, diag = FALSE)
@@ -518,7 +518,7 @@ contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
   }
   ##
   w <- weights
-  weights[is.zero(weights)] <- 0
+  weights[is_zero(weights)] <- 0
   weights <- weights[, apply(weights, 2, sum) > 0, drop = FALSE]
   attr(weights, "model") <- model
   
@@ -639,7 +639,7 @@ contribution.matrix.ruecker.pseudoinv <- function (x, model, verbose = FALSE) {
       P[t2, ] <- rep(0, n)
       P[t2, t2] <- 1
       ##
-      P[is.zero(P, n = 1000)] <- 0
+      P[is_zero(P, n = 1000)] <- 0
       ##
       ## Find all possible paths
       ##
@@ -702,7 +702,7 @@ contribution.matrix.ruecker.pseudoinv <- function (x, model, verbose = FALSE) {
   }
   ##  
   w <- weights
-  weights[is.zero(weights)] <- 0
+  weights[is_zero(weights)] <- 0
   weights <- weights[, apply(weights, 2, sum) > 0, drop = FALSE]
   attr(weights, "model") <- model
   

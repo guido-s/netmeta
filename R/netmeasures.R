@@ -165,7 +165,7 @@ netmeasures <- function(x,
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
   ##
-  if (is.bin & random) {
+  if (is.bin && random && x$method != "LRP") {
     txt <-
       paste0("Argument 'random' set to FALSE for ",
              if (x$method == "MH")

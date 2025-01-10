@@ -4,7 +4,8 @@ Version: 3.0-0
 Date: 2025-01-07
 Depends: R (>= 4.0.0), meta (>= 8.0-1)
 Imports: magic, MASS, ggplot2 (>= 3.0.0), metafor, Matrix, dplyr
-Suggests: colorspace, rgl, hasseDiagram (>= 0.1.3), grid, mvtnorm, gridExtra, igraph (>= 1.0.1), tictoc, writexl, cccp, R.rsp
+Suggests: colorspace, rgl, hasseDiagram (>= 0.1.3), grid, mvtnorm, gridExtra,
+  igraph (>= 1.0.1), tictoc, writexl, cccp, R.rsp, brglm2
 Authors@R: c(person("Gerta", "Rücker",
                     role = "aut",
                     comment = c(ORCID = "0000-0002-2192-2560")),
@@ -26,7 +27,7 @@ Authors@R: c(person("Gerta", "Rücker",
                     role = c("aut", "cre"),
                     email = "guido.schwarzer@uniklinik-freiburg.de",
                     comment = c(ORCID = "0000-0001-6214-9087")))
-URL: https://github.com/guido-s/netmeta https://link.springer.com/book/10.1007/978-3-319-21416-0
+URL: https://github.com/guido-s/netmeta
 Description: A comprehensive set of functions providing frequentist methods for network meta-analysis (Balduzzi et al., 2023) <doi:10.18637/jss.v106.i02> and supporting Schwarzer et al. (2015) <doi:10.1007/978-3-319-21416-0>, Chapter 8 "Network Meta-Analysis":
  - frequentist network meta-analysis following Rücker (2012) <doi:10.1002/jrsm.1058>;
  - additive network meta-analysis for combinations of treatments (Rücker et al., 2020) <doi:10.1002/bimj.201800167>;

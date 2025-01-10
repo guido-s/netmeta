@@ -30,6 +30,14 @@ textmeth <- function(x, random = FALSE, print.tau2 = FALSE, print.tau = FALSE,
       else if (x$method == "NCH")
         text.details <-
           "- Based on the non-central hypergeometric distribution"
+      else if (x$method == "LRP") {
+        text.details <- "- Penalised logistic regression model"
+        #
+        if (random)
+          text.details <-
+            paste0(text.details, " (sqrt(phi) = ", round(sqrt(x$phi), 4), ")",
+                   "\n")
+      }
     }
     else {
       text.details <- "- Frequentist graph-theoretical approach\n"

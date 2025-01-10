@@ -2,6 +2,8 @@
 % Please edit documentation in R/netpairwise.R
 \name{netpairwise}
 \alias{netpairwise}
+\alias{netpairwise.netmeta}
+\alias{netpairwise.netmetabin}
 \alias{print.netpairwise}
 \alias{summary.netpairwise}
 \alias{print.summary.netpairwise}
@@ -23,7 +25,9 @@
 \title{Conduct pairwise meta-analyses for all comparisons with direct
 evidence in a network meta-analysis}
 \usage{
-netpairwise(
+netpairwise(x, ...)
+
+\method{netpairwise}{netmeta}(
   x,
   separate = FALSE,
   common = x$common,
@@ -34,6 +38,30 @@ netpairwise(
   level.predict = x$level.predict,
   reference.group = if (missing(order)) x$reference.group else "",
   baseline.reference = x$baseline.reference,
+  method.tau = x$method.tau,
+  order = NULL,
+  sep.trts = x$sep.trts,
+  nchar.trts = x$nchar.trts,
+  backtransf = x$backtransf,
+  warn.deprecated = gs("warn.deprecated"),
+  ...
+)
+
+\method{netpairwise}{netmetabin}(
+  x,
+  separate = FALSE,
+  common = x$common,
+  random = x$random,
+  level = x$level,
+  level.ma = x$level.ma,
+  prediction = x$prediction,
+  level.predict = x$level.predict,
+  reference.group = if (missing(order)) x$reference.group else "",
+  baseline.reference = x$baseline.reference,
+  method = x$method,
+  incr = x$incr,
+  method.incr = x$method.incr,
+  allstudies = x$allstudies,
   method.tau = x$method.tau,
   order = NULL,
   sep.trts = x$sep.trts,
@@ -81,6 +109,9 @@ netpairwise(
 }
 \arguments{
 \item{x}{An object of class \code{netmeta} or \code{netpairwise}.}
+
+\item{\dots}{Additional arguments (passed on to \code{metagen} or
+print functions and to catch deprecated arguments).}
 
 \item{separate}{A logical indicating whether results for pairwise
 comparisons should be printed as separate meta-analyses or as
@@ -134,8 +165,19 @@ example.}
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
 
-\item{\dots}{Additional arguments (passed on to \code{metagen} or
-print functions and to catch deprecated arguments).}
+\item{method}{A character string indicating which method is to be
+used for pooling of studies, see \code{\link[meta]{metabin}}.}
+
+\item{incr}{A numerical value which is added to cell counts,
+see \code{\link[meta]{metabin}}.}
+
+\item{method.incr}{A character string indicating which continuity
+correction method should be used (\code{"only0"},
+\code{"if0all"}, or \code{"all"}), see \code{\link[meta]{metabin}}.}
+
+\item{allstudies}{A logical indicating whether studies with zero
+events or non-events in all treatment arms should be included in
+the meta-analysis, see \code{\link[meta]{metabin}}.}
 
 \item{object}{An object of class \code{netpairwise}.}
 

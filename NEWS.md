@@ -6,6 +6,9 @@
 
 * Network meta-analysis of studies with correlated treatment arms implemented
 
+* Logistic regression with penalised likelihood implemented for network
+  meta-analysis of rare events
+
 * Component network meta-analysis:
   - numbers of events and sample sizes can be provided for disconnected networks
   - node size and line width can be changed in network graphs of disconnected
@@ -49,6 +52,12 @@
 * New functions rankogram.netmeta(), replacing the older rankogram(),
   and rankogram.default()
 
+* New generic function netpairwise() to conduct pairwise meta-analyses for all
+  comparisons with direct evidence
+
+* New functions netpairwise.netmeta(), replacing the older netpairwise(),
+  and netpairwise.netmetabin()
+
 * print.rankogram():
   - by default, sort treatments by SUCRAs
   - new logical argument 'sort' to sort treatments by SUCRA values
@@ -67,6 +76,7 @@
 * netmetabin():
   - new argument 'method.incr' indicating continuity correction method
     (replaces deprecated arguments 'addincr' and 'allincr')
+  - argument 'method = "LRP"' can be used for penalized logistic regression
 
 * discomb():
   - new arguments 'n1', 'n2', 'event1', 'event2', 'incr', 'na.unident', and

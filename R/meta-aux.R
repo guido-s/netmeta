@@ -167,3 +167,106 @@ runNN <- function(func, args, warn = TRUE) {
   else
     suppressWarnings(do.call(func, args))
 }
+
+# Estimate the heterogeneity parameter phi using the
+# modified version of Pearson's statistic.
+#
+phi <- function(x) {
+  # Extract number of trials
+  n.trials <- x$prior.weights
+  #
+  if (identical(unique(n.trials), 1))
+    stop("The number of successes must be summarized for valid computation of ",
+         "c-hat.")
+  
+  # Pearson chi-square
+  chisq <- sum(residuals(x, type = "pearson")^2)
+  
+  # Extract raw residuals
+  raw.res <- residuals(x, type = "response")
+  
+  # Extract fitted values
+  fit.vals <- fitted(x)
+  
+  # Estimate s.bar
+  s.bar <- mean((1 - 2 * fit.vals) / ((n.trials * fit.vals) * (1 - fit.vals)))
+  
+  # Calculate estimate based on Fletcher estimator
+  phi <- (chisq / x$df.residual) / (1 + s.bar)
+  
+  # Set phi = 1 if phi < 1 to remain consistent with common effect model
+  phi <- max(phi, 1)
+  
+  phi
+}
+
+# Gets as arguments
+# - 'trts' = treatment names,
+# - 'TE.basic' = basic treatment effect estimates,
+# - 'vcov.basic' = variance-covariance matrix of the estimates.
+#
+# Returns all NMA estimates (basic + functional) and their standard errors.
+
+basic2all <- function(trts, TE.basic, vcov.basic) {
+  
+  n.trts <- length(trts)
+  
+  # Get rid of warning 'no visible binding for global variable'
+  treat1 <- treat2 <- NULL
+  
+  # Identify all comparisons
+  #
+  comps <- expand.grid(treat1 = seq_len(n.trts), treat2 = seq_len(n.trts))
+  comps <- subset(comps, treat2 < treat1)
+  #
+  comps.basic <- subset(comps, treat2 == 1)
+  comps.other <- subset(comps, treat2 > 1)
+  #
+  n.comps.basic <- nrow(comps.basic)
+  n.comps.other <- nrow(comps.other)
+  
+  # Construct X matrix, i.e., the treatment comparison matrix
+  #
+  X.basic <- matrix(0, nrow = n.comps.other, ncol = n.comps.basic)
+  #
+  for (i in seq_len(n.comps.other)) {
+    for (j in seq_len(n.comps.basic)) {
+      if (comps.other$treat1[i] == comps.basic$treat1[j])
+        X.basic[i, j] <- 1
+      #
+      if (comps.other$treat2[i] == comps.basic$treat1[j])
+        X.basic[i, j] <- -1
+    }
+  }
+  
+  dat.basic <-
+    data.frame(comps.basic,
+               TE = TE.basic,
+               seTE = sqrt(diag(vcov.basic)))
+  #
+  dat.other <-
+    data.frame(comps.other,
+               TE = X.basic %*% TE.basic,
+               seTE = sqrt(diag(X.basic %*% vcov.basic %*% t(X.basic))))
+  #
+  dat.comps <- rbind(dat.basic, dat.other)
+  
+  TEs <- matrix(NA, ncol = n.trts, nrow = n.trts)
+  seTEs <- matrix(NA, ncol = n.trts, nrow = n.trts)
+  #
+  for (i in seq_len(nrow(dat.comps))) {
+    TEs[dat.comps$treat1[i], dat.comps$treat2[i]] <-  dat.comps$TE[i]
+    TEs[dat.comps$treat2[i], dat.comps$treat1[i]] <- -dat.comps$TE[i]
+    #
+    seTEs[dat.comps$treat1[i], dat.comps$treat2[i]] <- dat.comps$seTE[i]
+    seTEs[dat.comps$treat2[i], dat.comps$treat1[i]] <- dat.comps$seTE[i]
+  }
+  
+  diag(TEs) <- diag(seTEs) <- 0
+  #
+  rownames(TEs) <- rownames(seTEs) <- colnames(TEs) <- colnames(seTEs) <- trts
+  
+  res <- list(TEs = TEs, seTEs = seTEs)
+  #
+  res
+}

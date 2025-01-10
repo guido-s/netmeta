@@ -135,7 +135,7 @@ print.netmeta <- function(x,
   chkclass(x, "netmeta")
   x <- updateversion(x)
   ##
-  is.bin <- inherits(x, "netmetabin")
+  is.mh.nch <- inherits(x, "netmetabin") && x$method %in% c("MH", "NCH")
   ##  
   if (is.null(x$df.Q))
     oldversion <- TRUE
@@ -721,16 +721,16 @@ print.netmeta <- function(x,
     #
     print.I2 <- print.I2 & !is.na(I2)
     #
-    if (overall.hetstat) {
+    if (overall.hetstat & !x$method == "LRP") {
       #
-      if (is.bin)
+      if (is.mh.nch)
         txt.hetinc <- "inconsistency (between designs)"
       else if (x$d == 1)
         txt.hetinc <- "heterogeneity"
       else
         txt.hetinc <- "heterogeneity / inconsistency"
       #
-      if (!is.bin & (print.tau2 | print.tau | print.I2)) {
+      if (!is.mh.nch & (print.tau2 | print.tau | print.I2)) {
         print.I2.ci <- print.I2.ci & print.I2
         #
         text.hetstat <- paste0("\nQuantifying ", txt.hetinc, ":\n")
@@ -767,7 +767,7 @@ print.netmeta <- function(x,
       }
       #
       if (print.Q & m > 1) {
-        if (is.bin) {
+        if (is.mh.nch) {
           Q.overall <- x$Q.inconsistency
           df.Q.overall <- x$df.Q.inconsistency
           pval.Q.overall <-
@@ -797,9 +797,9 @@ print.netmeta <- function(x,
           }
         }
         ##
-        if (is.bin & x$d == 1)
+        if (is.mh.nch & x$d == 1)
           cat("")
-        else if (x$d == 1 | is.bin |
+        else if (x$d == 1 | is.mh.nch |
                  is.na(x$Q.heterogeneity) | is.na(x$Q.inconsistency)) {
           Qdata <- cbind(round(Q.overall, digits.Q), df.Q.overall,
                          pval.Q.overall)

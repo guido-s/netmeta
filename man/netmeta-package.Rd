@@ -227,7 +227,7 @@ Springer International Publishing, Switzerland.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/guido-s/netmeta https://link.springer.com/book/10.1007/978-3-319-21416-0}
+  \item \url{https://github.com/guido-s/netmeta}
 }
 
 }

@@ -1562,18 +1562,18 @@ netgraph.netmeta <- function(x, seq = x$seq,
   }
   
   
-  dat.nodes$xpos[is.zero(dat.nodes$xpos)] <- 0
-  dat.nodes$ypos[is.zero(dat.nodes$ypos)] <- 0
+  dat.nodes$xpos[is_zero(dat.nodes$xpos)] <- 0
+  dat.nodes$ypos[is_zero(dat.nodes$ypos)] <- 0
   ##
   if (!is_2d) {
-    dat.nodes$zpos[is.zero(dat.nodes$zpos)] <- 0
+    dat.nodes$zpos[is_zero(dat.nodes$zpos)] <- 0
     ##
     dat.nodes$xpos.labels <- NULL
     dat.nodes$ypos.labels <- NULL
   }
   else {
-    dat.nodes$xpos.labels[is.zero(dat.nodes$xpos.labels)] <- 0
-    dat.nodes$ypos.labels[is.zero(dat.nodes$ypos.labels)] <- 0
+    dat.nodes$xpos.labels[is_zero(dat.nodes$xpos.labels)] <- 0
+    dat.nodes$ypos.labels[is_zero(dat.nodes$ypos.labels)] <- 0
   }
   ##
   dat.nodes$zpos.labels <- NULL
@@ -1582,8 +1582,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   rownames(dat.edges) <-
     paste(dat.edges$treat1, dat.edges$treat2, sep = highlight.split)
   ##  
-  dat.edges$xpos[is.zero(dat.edges$xpos)] <- 0
-  dat.edges$ypos[is.zero(dat.edges$ypos)] <- 0
+  dat.edges$xpos[is_zero(dat.edges$xpos)] <- 0
+  dat.edges$ypos[is_zero(dat.edges$ypos)] <- 0
 
   res <- list(nodes = dat.nodes, edges = dat.edges)
   ##

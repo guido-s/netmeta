@@ -1401,7 +1401,7 @@ netmeta <- function(TE, seTE,
   #
   if (df.Q >= 2) {
     seTE.predict <- sqrt(seTE.random^2 + tau^2)
-    ci.p <- ci(TE.random, seTE.predict, level.predict, df.Q - 1)
+    ci.p <- ci(TE.random, seTE.predict, level.predict, df.Q)
     p.lower <- ci.p$lower
     p.upper <- ci.p$upper
     diag(p.lower) <- 0
@@ -1514,6 +1514,7 @@ netmeta <- function(TE, seTE,
               seTE.predict = seTE.predict,
               lower.predict = p.lower,
               upper.predict = p.upper,
+              method.predict = "V",
               #
               prop.direct.common = NA,
               prop.direct.random = NA,
@@ -1658,7 +1659,7 @@ netmeta <- function(TE, seTE,
     res$prop.direct.random <- as.numeric(res$prop.direct.random)
   #
   res$comparisons <-
-    names(res$prop.direct.random)[!is.zero(res$prop.direct.random)]
+    names(res$prop.direct.random)[!is_zero(res$prop.direct.random)]
   #
   # Add P.common and P.random
   #

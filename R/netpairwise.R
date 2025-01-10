@@ -31,6 +31,16 @@
 #'   used to estimate the between-study variance \eqn{\tau^2} and its
 #'   square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
 #'   \code{"ML"}, can be abbreviated.
+#' @param method A character string indicating which method is to be
+#'   used for pooling of studies, see \code{\link[meta]{metabin}}.
+#' @param incr A numerical value which is added to cell counts,
+#'   see \code{\link[meta]{metabin}}.
+#' @param method.incr A character string indicating which continuity
+#'   correction method should be used (\code{"only0"},
+#'   \code{"if0all"}, or \code{"all"}), see \code{\link[meta]{metabin}}.
+#' @param allstudies A logical indicating whether studies with zero
+#'   events or non-events in all treatment arms should be included in
+#'   the meta-analysis, see \code{\link[meta]{metabin}}.
 #' @param order An optional character or numerical vector specifying
 #'   the order of treatments.
 #' @param sep.trts A character used in comparison names as separator
@@ -126,26 +136,34 @@
 #' settings.meta(oldsets)
 #' 
 #' @rdname netpairwise
+#' @export netpairwise
+
+netpairwise <- function(x, ...)
+  UseMethod("netpairwise")
+
+
+#' @rdname netpairwise
+#' @method netpairwise netmeta
 #' @export
 
-netpairwise <- function(x,
-                        separate = FALSE,
-                        common = x$common,
-                        random = x$random,
-                        level = x$level,
-                        level.ma = x$level.ma,
-                        prediction = x$prediction,
-                        level.predict = x$level.predict,
-                        reference.group =
-                          if (missing(order)) x$reference.group else "",
-                        baseline.reference = x$baseline.reference,
-                        method.tau = x$method.tau,
-                        order = NULL,
-                        sep.trts = x$sep.trts,
-                        nchar.trts = x$nchar.trts,
-                        backtransf = x$backtransf,
-                        warn.deprecated = gs("warn.deprecated"),
-                        ...) {
+netpairwise.netmeta <- function(x,
+                                separate = FALSE,
+                                common = x$common,
+                                random = x$random,
+                                level = x$level,
+                                level.ma = x$level.ma,
+                                prediction = x$prediction,
+                                level.predict = x$level.predict,
+                                reference.group =
+                                  if (missing(order)) x$reference.group else "",
+                                baseline.reference = x$baseline.reference,
+                                method.tau = x$method.tau,
+                                order = NULL,
+                                sep.trts = x$sep.trts,
+                                nchar.trts = x$nchar.trts,
+                                backtransf = x$backtransf,
+                                warn.deprecated = gs("warn.deprecated"),
+                                ...) {
   
   
   ##
@@ -358,6 +376,277 @@ netpairwise <- function(x,
     attr(res, "order") <- order
     attr(res, "version") <- packageDescription("netmeta")$Version
     ##
+    class(res) <- "netpairwise"
+  }
+  
+  res
+}
+
+
+#' @rdname netpairwise
+#' @method netpairwise netmetabin
+#' @export
+
+netpairwise.netmetabin <- function(x,
+                                   separate = FALSE,
+                                   common = x$common,
+                                   random = x$random,
+                                   level = x$level,
+                                   level.ma = x$level.ma,
+                                   prediction = x$prediction,
+                                   level.predict = x$level.predict,
+                                   reference.group =
+                                     if (missing(order))
+                                       x$reference.group else "",
+                                   baseline.reference = x$baseline.reference,
+                                   #
+                                   method = x$method,
+                                   incr = x$incr,
+                                   method.incr = x$method.incr,
+                                   allstudies = x$allstudies,
+                                   #
+                                   method.tau = x$method.tau,
+                                   #
+                                   order = NULL,
+                                   sep.trts = x$sep.trts,
+                                   nchar.trts = x$nchar.trts,
+                                   backtransf = x$backtransf,
+                                   warn.deprecated = gs("warn.deprecated"),
+                                   ...) {
+  
+  
+  #
+  #
+  # (1) Check and set arguments
+  #
+  #
+  
+  chkclass(x, "netmetabin")
+  x <- updateversion(x)
+  #
+  chklogical(separate)
+  #
+  args  <- list(...)
+  chklogical(warn.deprecated)
+  common <- deprecated(common, missing(common), args, "fixed",
+                       warn.deprecated)
+  chklogical(common)
+  #
+  chklogical(random)
+  chklogical(prediction)
+  #
+  chklevel(level)
+  chklevel(level.ma)
+  chklevel(level.predict)
+  #
+  reference.group <- setref(reference.group, c(x$trts, ""))
+  chklogical(baseline.reference)
+  #
+  method <- setchar(method, c("MH", "NCH", "LRP"))
+  if (method == "NCH")
+    method <- "MH"
+  #
+  method.tau <- setchar(method.tau, c("DL", "ML", "REML"))
+  #
+  sfsp <- sys.frame(sys.parent())
+  mc <- match.call()
+  #
+  if (!missing(order)) {
+    order <- catch("order", mc, x, sfsp)
+    #
+    if (length(order) != length(x$trts))
+      order <- setchar(order, x$trts)
+    else
+      order <- setseq(order, x$trts)
+  }
+  #
+  if (is.null(order))
+    order <- x$trts
+  #
+  chkchar(sep.trts)
+  chknumeric(nchar.trts, min = 1, length = 1)
+  chklogical(backtransf)
+  
+  
+  #
+  #
+  # (2) Get data
+  #
+  #
+  
+  studlab <- x$data$.studlab
+  #
+  event1 <- x$data$.event1
+  event2 <- x$data$.event2
+  #
+  n1 <- x$data$.n1
+  n2 <- x$data$.n2
+  #
+  treat1 <- x$data$.treat1
+  treat2 <- x$data$.treat2
+  #
+  comparison <- paste(treat1, treat2, sep = sep.trts)
+  comparison21 <- paste(treat2, treat1, sep = sep.trts)
+  #
+  treat1.pos <- as.numeric(factor(treat1, levels = order))
+  treat2.pos <- as.numeric(factor(treat2, levels = order))
+  #
+  trts.abbr <- treats(x$trts, nchar.trts)
+  trt1 <- as.character(factor(treat1, levels = x$trts, labels = trts.abbr))
+  trt2 <- as.character(factor(treat2, levels = x$trts, labels = trts.abbr))
+  #
+  comp <- paste(trt1, trt2, sep = sep.trts)
+  comp21 <- paste(trt2, trt1, sep = sep.trts)
+  #
+  wo <- treat1.pos > treat2.pos
+  #
+  if (any(wo)) {
+    ttreat1.pos <- treat1.pos
+    treat1.pos[wo] <- treat2.pos[wo]
+    treat2.pos[wo] <- ttreat1.pos[wo]
+    #
+    tevent1 <- event1
+    event1[wo] <- event2[wo]
+    event2[wo] <- tevent1[wo]
+    #
+    tn1 <- n1
+    n1[wo] <- n2[wo]
+    n2[wo] <- tn1[wo]
+    #
+    ttreat1 <- treat1
+    treat1[wo] <- treat2[wo]
+    treat2[wo] <- ttreat1[wo]
+    #
+    comparison[wo] <- comparison21[wo]
+    #
+    ttrt1 <- trt1
+    trt1[wo] <- trt2[wo]
+    trt2[wo] <- ttrt1[wo]
+    #
+    comp[wo] <- comp21[wo]
+  }
+  #
+  o <- order(treat1.pos, treat2.pos)
+  #
+  studlab <- studlab[o]
+  #
+  event1 <- event1[o]
+  event2 <- event2[o]
+  #
+  n1 <- n1[o]
+  n2 <- n2[o]
+  #
+  treat1 <- treat1[o]
+  treat2 <- treat2[o]
+  comparison <- comparison[o]
+  #
+  trt1 <- trt1[o]
+  trt2 <- trt2[o]
+  comp <- comp[o]
+  #
+  if (reference.group != "") {
+    if (baseline.reference) {
+      wo1 <- trt1 == reference.group
+      if (any(wo1)) {
+        ttrt1 <- trt1
+        trt1[wo1] <- trt2[wo1]
+        trt2[wo1] <- ttrt1[wo1]
+        #
+        tevent1 <- event1
+        event1[wo1] <- event2[wo1]
+        event2[wo1] <- tevent1[wo1]
+        #
+        tn1 <- n1
+        n1[wo1] <- n2[wo1]
+        n2[wo1] <- tn1[wo1]
+      }
+    }
+    else {
+      wo2 <- trt2 == reference.group
+      if (any(wo2)) {
+        ttrt1 <- trt1
+        trt1[wo2] <- trt2[wo2]
+        trt2[wo2] <- ttrt1[wo2]
+        #
+        tevent1 <- event1
+        event1[wo2] <- event2[wo2]
+        event2[wo2] <- tevent1[wo2]
+        #
+        tn1 <- n1
+        n1[wo2] <- n2[wo2]
+        n2[wo2] <- tn1[wo2]
+      }
+    }
+  }
+  
+  
+  #
+  #
+  # (3) Run pairwise meta-analyses
+  #
+  #
+  if (!separate) {
+    res <- metabin(event1, n1, event2, n2, studlab = studlab,
+                   method = method, sm = x$sm,
+                   incr = incr, method.incr = method.incr,
+                   allstudies = allstudies,
+                   subgroup = paste0(trt1, sep.trts, trt2),
+                   subgroup.name = "comparison",
+                   print.subgroup.name = FALSE,
+                   common = common,
+                   random = random,
+                   level = level,
+                   level.ma = level.ma,
+                   prediction = prediction,
+                   level.predict = level.predict,
+                   method.tau = method.tau,
+                   overall = FALSE, overall.hetstat = FALSE,
+                   test.subgroup = FALSE,
+                   warn = FALSE,
+                   warn.deprecated = FALSE,
+                   ...)
+    #
+    res$k.study <- x$k
+    res$k <- x$m
+    res$w.common[!is.na(res$w.common)] <- NA
+    res$w.random[!is.na(res$w.random)] <- NA
+    #
+    res$order <- order
+    #
+    class(res) <- c(class(res), "netpairwise")
+  }
+  else {
+    comps <- unique(data.frame(trt1, trt2))
+    comps <- comps[order(comps$trt1, comps$trt2), ]
+    n.comps <- nrow(comps)
+    #
+    res <- vector("list", length = n.comps)
+    #
+    for (i in seq_len(n.comps)) {
+      comp.i <- paste0(comps$trt1[i], sep.trts, comps$trt2[i])
+      res[[i]] <-
+        metabin(event1, n1, event2, n2, studlab = studlab,
+                method = method, sm = x$sm,
+                incr = incr, method.incr = method.incr,
+                allstudies = allstudies,
+                subset = trt1 == comps$trt1[i] & trt2 == comps$trt2[i],
+                complab = comp.i,
+                common = common,
+                random = random,
+                level = level,
+                level.ma = level.ma,
+                prediction = prediction,
+                level.predict = level.predict,
+                method.tau = method.tau,
+                label.e = comps$trt1[i], label.c = comps$trt2[i],
+                warn = FALSE,
+                warn.deprecated = FALSE,
+                ...)
+    }
+    #
+    attr(res, "order") <- order
+    attr(res, "version") <- packageDescription("netmeta")$Version
+    #
     class(res) <- "netpairwise"
   }
   

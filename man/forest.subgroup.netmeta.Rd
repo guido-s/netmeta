@@ -86,7 +86,7 @@ indicating either common or random effects model is printed.}
 
 \item{col.subgroup}{The colour to print information on subgroups.}
 
-\item{\dots}{Additional arguments for \code{\link{forest.meta}}
+\item{\dots}{Additional arguments for \code{\link[meta]{forest.meta}}
 function.}
 }
 \description{
@@ -101,7 +101,7 @@ specify columns which are plotted on the left and right side of the
 forest plot, respectively. If argument \code{rightcols} is
 \code{FALSE}, no columns will be plotted on the right side.
 
-For more information see help page of \code{\link{forest.meta}}
+For more information see help page of \code{\link[meta]{forest.meta}}
 function.
 }
 \examples{
@@ -110,7 +110,7 @@ function.
 }
 \seealso{
 \code{\link{subgroup.netmeta}}, \code{\link{netmeta}},
-  \code{\link{forest.meta}}
+  \code{\link[meta]{forest.meta}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

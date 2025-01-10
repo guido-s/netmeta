@@ -23,7 +23,7 @@ netmetabin(
   level = gs("level"),
   level.ma = gs("level.ma"),
   common = gs("common"),
-  random = method == "Inverse" & (gs("random") | !is.null(tau.preset)),
+  random = method \%in\% c("Inverse", "LRP") & (gs("random") | !is.null(tau.preset)),
   prediction = gs("prediction"),
   level.predict = gs("level.predict"),
   reference.group = "",
@@ -77,7 +77,7 @@ i.e., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"}.}
 
 \item{method}{A character string indicating which method is to be
 used for pooling of studies. One of \code{"Inverse"},
-\code{"MH"}, or \code{"NCH"}, can be abbreviated.}
+\code{"MH"}, \code{"NCH"}, or \code{"LRP"}, can be abbreviated.}
 
 \item{cc.pooled}{A logical indicating whether \code{incr} should be
 used as a continuity correction, when calculating the network
@@ -315,7 +315,7 @@ Provides three models for the network meta-analysis of binary data
 distribution, and the inverse variance method).
 }
 \details{
-This function implements three models for the network meta-analysis
+This function implements four models for the network meta-analysis
 of binary data:
 \itemize{
 \item The Mantel-Haenszel network meta-analysis model, as described
@@ -323,6 +323,8 @@ of binary data:
 \item a network meta-analysis model using the non-central
   hypergeometric distribution with the Breslow approximation, as
   described in Stijnen et al. (2010) (\code{method = "NCH"});
+\item a logistic regression with penalised likelihood
+  (\code{method = "LRP"});
 \item the inverse variance method for network meta-analysis
   (\code{method = "Inverse"}), also provided by
   \code{\link{netmeta}}.
