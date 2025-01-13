@@ -31,6 +31,8 @@
 #' @param title Title of meta-analysis / systematic review.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
+#' @param drop.NA A logical indicating whether comparisons with missing
+#'   treatment estimates or standard errors should be considered.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param warn A logical indicating whether warnings should be
@@ -439,6 +441,7 @@ netconnection.pairwise <- function(data,
                                    treat1, treat2, studlab = NULL,
                                    subset = NULL,
                                    sep.trts = ":",
+                                   drop.NA = TRUE,
                                    nchar.trts = 666,
                                    title = "", details.disconnected = FALSE,
                                    warn = FALSE,
@@ -452,6 +455,7 @@ netconnection.pairwise <- function(data,
   
   chkclass(data, "pairwise")
   #
+  chklogical(drop.NA)
   chklogical(warn)
   #
   # Arguments 'treat1', 'treat2' and 'studlab' ignored
@@ -490,13 +494,32 @@ netconnection.pairwise <- function(data,
     subset <- catch("subset", mc, data, sfsp)
     #
     k.All <- length(treat1)
-    #
-    if ((is.logical(subset) & (sum(subset) > k.All)) ||
-        (length(subset) > k.All))
+    if  (length(subset) > k.All)
       stop("Length of subset is larger than number of studies.")
+    #
+    #if ((is.logical(subset) & (sum(subset) > k.All)) ||
+    #    (length(subset) > k.All))
+    #  stop("Length of subset is larger than number of studies.")
+    #
+    if (is.numeric(subset)) {
+      if (any(is.na(subset)))
+        stop("No missing values allowed in argument 'subset'.")
+      if (length(subset) != length(unique(subset)))
+        stop("Duplicate values in argument 'subset'.")
+      if (any(subset > k.All | subset <= 0))
+        stop("Numerical values in argument 'subset' must be between 1 and ",
+             k.All, ".")
+      #
+      subset1 <- rep_len(FALSE, k.All)
+      subset1[subset] <- TRUE
+      subset <- subset1
+    }
   }
   else
-    subset <- !is.na(data$TE) & !(is.na(data$seTE) | data$seTE == 0)
+    subset <- rep_len(TRUE, length(treat1))
+  #
+  if (drop.NA)
+    subset <- subset & (!is.na(data$TE) & !(is.na(data$seTE) | data$seTE == 0))
   #
   treat1 <- treat1[subset]
   treat2 <- treat2[subset]

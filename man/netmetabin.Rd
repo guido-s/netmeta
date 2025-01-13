@@ -76,8 +76,8 @@ be used.}
 i.e., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"}.}
 
 \item{method}{A character string indicating which method is to be
-used for pooling of studies. One of \code{"Inverse"},
-\code{"MH"}, \code{"NCH"}, or \code{"LRP"}, can be abbreviated.}
+used for pooling of studies. One of \code{"MH"},
+\code{"NCH"}, \code{"LRP"}, or \code{"Inverse"}, can be abbreviated.}
 
 \item{cc.pooled}{A logical indicating whether \code{incr} should be
 used as a continuity correction, when calculating the network
@@ -310,9 +310,10 @@ following components:
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
-Provides three models for the network meta-analysis of binary data
+Provides four models for the network meta-analysis of binary data
 (Mantel-Haenszel method, based on the non-central hypergeometric
-distribution, and the inverse variance method).
+distribution, penalised logistic regression, and the
+inverse variance method).
 }
 \details{
 This function implements four models for the network meta-analysis
@@ -323,8 +324,8 @@ of binary data:
 \item a network meta-analysis model using the non-central
   hypergeometric distribution with the Breslow approximation, as
   described in Stijnen et al. (2010) (\code{method = "NCH"});
-\item a logistic regression with penalised likelihood
-  (\code{method = "LRP"});
+\item a logistic regression with penalised likelihood, as described
+  in Evrenoglou et al. (2022) (\code{method = "LRP"});
 \item the inverse variance method for network meta-analysis
   (\code{method = "Inverse"}), also provided by
   \code{\link{netmeta}}.
@@ -452,6 +453,11 @@ A Mantel-Haenszel model for network meta-analysis of rare events.
 \emph{Statistics in Medicine},
 \bold{38}, 2992--3012
 
+Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
+Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+\emph{Statistics in Medicine},
+\bold{41}, 5203--19.
+
 Senn S, Gavini F, Magrez D, Scheen A (2013):
 Issues in performing a network meta-analysis.
 \emph{Statistical Methods in Medical Research},
@@ -471,5 +477,6 @@ data.
 }
 \author{
 Orestis Efthimiou \email{oremiou@gmail.com}, Guido
-  Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
+  Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de},
+  Theodoros Evrenoglou \email{theodoros.evrenoglou@uniklinik-freiburg.de}
 }

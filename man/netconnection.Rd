@@ -31,6 +31,7 @@ distance matrix)}
   studlab = NULL,
   subset = NULL,
   sep.trts = ":",
+  drop.NA = TRUE,
   nchar.trts = 666,
   title = "",
   details.disconnected = FALSE,
@@ -100,6 +101,9 @@ more details for disconnected networks.}
 printed.}
 
 \item{\dots}{Additional arguments (ignored at the moment)}
+
+\item{drop.NA}{A logical indicating whether comparisons with missing
+treatment estimates or standard errors should be considered.}
 
 \item{x}{An object of class \code{netconnection}.}
 

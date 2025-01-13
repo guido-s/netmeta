@@ -2,12 +2,13 @@
 
 ### Major changes
 
-* Subgroup network meta-analysis implemented
-
 * Network meta-analysis of studies with correlated treatment arms implemented
 
 * Logistic regression with penalised likelihood implemented for network
   meta-analysis of rare events
+  [(Evrenoglou et al., 2022)](https://doi.org/10.1002/sim.9562)
+
+* Subgroup network meta-analysis implemented
 
 * Component network meta-analysis:
   - numbers of events and sample sizes can be provided for disconnected networks
@@ -115,6 +116,11 @@
 * print.netimpact():
   - new arguments 'nchar.trts', 'nchar.studlab', 'details.methods',
     'legend.studlab'
+
+* netconnection.pairwise():
+  - new argument 'drop.NA' to consider comparisons with missing estimates or
+    standard errors (e.g., to generate network graph for comparisons
+    with missing estimates or standard errors)
 
 * New function summary.netconnection() to print list of studies in subnetworks
 

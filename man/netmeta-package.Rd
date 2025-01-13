@@ -24,7 +24,7 @@ providing the following network meta-analysis models:
 \item network meta-analysis of binary data
   (\code{\link{netmetabin}}) using the Mantel-Haenszel or
   non-central hypergeometric distribution method (Efthimiou et al.,
-  2019).
+  2019), or penalised logistic regression (Evrenoglou et al., 2022).
 }
 
 The following methods are available to present results of a network
@@ -150,6 +150,11 @@ Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
 A Mantel-Haenszel model for network meta-analysis of rare events.
 \emph{Statistics in Medicine},
 \bold{38}, 2992--3012
+
+Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
+Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+\emph{Statistics in Medicine},
+\bold{41}, 5203--19.
 
 König J, Krahn U, Binder H (2013):
 Visualizing the flow of evidence in network meta-analysis and

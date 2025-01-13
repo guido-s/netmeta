@@ -1,9 +1,10 @@
 #' Network meta-analysis of binary outcome data
 #' 
 #' @description
-#' Provides three models for the network meta-analysis of binary data
+#' Provides four models for the network meta-analysis of binary data
 #' (Mantel-Haenszel method, based on the non-central hypergeometric
-#' distribution, and the inverse variance method).
+#' distribution, penalised logistic regression, and the
+#' inverse variance method).
 #' 
 #' @param event1 Number of events (first treatment).
 #' @param n1 Number of observations (first treatment).
@@ -20,8 +21,8 @@
 #' @param sm A character string indicating underlying summary measure,
 #'   i.e., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"}.
 #' @param method A character string indicating which method is to be
-#'   used for pooling of studies. One of \code{"Inverse"},
-#'   \code{"MH"}, \code{"NCH"}, or \code{"LRP"}, can be abbreviated.
+#'   used for pooling of studies. One of \code{"MH"},
+#'   \code{"NCH"}, \code{"LRP"}, or \code{"Inverse"}, can be abbreviated.
 #' @param cc.pooled A logical indicating whether \code{incr} should be
 #'   used as a continuity correction, when calculating the network
 #'   meta-analysis estimates.
@@ -118,8 +119,8 @@
 #' \item a network meta-analysis model using the non-central
 #'   hypergeometric distribution with the Breslow approximation, as
 #'   described in Stijnen et al. (2010) (\code{method = "NCH"});
-#' \item a logistic regression with penalised likelihood
-#'   (\code{method = "LRP"});
+#' \item a logistic regression with penalised likelihood, as described
+#'   in Evrenoglou et al. (2022) (\code{method = "LRP"});
 #' \item the inverse variance method for network meta-analysis
 #'   (\code{method = "Inverse"}), also provided by
 #'   \code{\link{netmeta}}.
@@ -302,7 +303,8 @@
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
 #' @author Orestis Efthimiou \email{oremiou@@gmail.com}, Guido
-#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
+#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de},
+#'   Theodoros Evrenoglou \email{theodoros.evrenoglou@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link[meta]{pairwise}}, \code{\link{netmeta}},
 #'   \code{\link[metadat]{dat.gurusamy2011}},
@@ -315,6 +317,11 @@
 #' \emph{Statistics in Medicine},
 #' \bold{38}, 2992--3012
 #' 
+#' Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
+#' Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+#' \emph{Statistics in Medicine},
+#' \bold{41}, 5203--19.
+#' 
 #' Senn S, Gavini F, Magrez D, Scheen A (2013):
 #' Issues in performing a network meta-analysis.
 #' \emph{Statistical Methods in Medical Research},
@@ -326,6 +333,7 @@
 #' data.
 #' \emph{Statistics in Medicine},
 #' \bold{29}, 3046--67
+
 
 #' @examples
 #' # Only consider first ten studies (to reduce runtime of example)
@@ -448,10 +456,10 @@ netmetabin <- function(event1, n1, event2, n2,
   missing.allincr <- missing(allincr)
   #
   modtext <-
-    paste0("must be equal to 'Inverse' (classic network meta-analysis), ",
-           "'MH' (Mantel-Haenszel, the default), ",
-           "'NCH' (common-effects non-central hypergeometric), or",
-           "'LRP' (penalized logistic regression).")
+    paste0("must be equal to 'MH' (Mantel-Haenszel, the default), ",
+           "'NCH' (common-effects non-central hypergeometric),",
+           "'LRP' (penalized logistic regression), or",
+           "'Inverse' (classic network meta-analysis).")
   method <- setchar(method, c("Inverse", "MH", "NCH", "LRP"), modtext)
   is.mh.nch <- !(method %in% c("Inverse", "LRP"))
   is.lrp <- method == "LRP"
