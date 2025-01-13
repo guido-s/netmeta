@@ -205,11 +205,40 @@ netmeasures <- function(x,
     ## Direct evidence proportion
     ## (Rücker et al. 2020, BMC Med Res Meth, equation 7)
     ##
-    se.direct  <- uppertri(x$seTE.direct.common)
-    se.network <- uppertri(x$seTE.common)
+    if (!random) {
+      se.direct  <- uppertri(x$seTE.direct.common)
+      se.network <- uppertri(x$seTE.common)
+      #
+      nam <- rep_len("", length(se.direct))
+      idx <- 0
+      for (i in seq_len(ncol(x$seTE.common)))
+        for (j in seq_len(nrow(x$seTE.common)))
+          if (i < j) {
+            idx <- idx + 1
+            nam[idx] <- paste(rownames(x$seTE.direct.common)[i],
+                              colnames(x$seTE.direct.common)[j],
+                              sep = x$sep.trts)
+          }
+    }
+    else {
+      se.direct  <- uppertri(x$seTE.direct.random)
+      se.network <- uppertri(x$seTE.random)
+      #
+      nam <- rep_len("", length(se.direct))
+      idx <- 0
+      for (i in seq_len(ncol(x$seTE.random)))
+        for (j in seq_len(nrow(x$seTE.random)))
+          if (i < j) {
+            idx <- idx + 1
+            nam[idx] <- paste(rownames(x$seTE.direct.random)[i],
+                              colnames(x$seTE.direct.random)[j],
+                              sep = x$sep.trts)
+          }
+    }
+    #
     proportion <- se.network^2 / se.direct^2
     proportion[is.na(proportion)] <- 0
-    names(proportion) <- rownames(x$Cov.common)
+    names(proportion) <- nam
     ##
     meanpath <- NA
     minpar <- NA

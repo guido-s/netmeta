@@ -1808,10 +1808,10 @@ netmetabin <- function(event1, n1, event2, n2,
     if (length(unique(dat.long$studlab)) > 1)
       text.formula <- paste(text.formula, "+ as.factor(studlab)")
     #
-    fit.glm <- glm(as.formula(text.formula), data = dat.long,
-                   family = binomial(link = "logit"), method = "glm.fit")
-    #
-    res.lrp <- update(fit.glm, method = brglm2::brglmFit, type = "MPL_Jeffreys")
+    res.lrp <- glm(as.formula(text.formula), data = dat.long,
+                   family = binomial(link = "logit"),
+                   method = brglm2::brglmFit, type = "MPL_Jeffreys",
+                   ...)
     #
     if (length(unique(dat.long$studlab)) > 1)
       phi <- phi(res.lrp)
@@ -1963,7 +1963,7 @@ netmetabin <- function(event1, n1, event2, n2,
     else
       m.i <- metabin(event1, n1, event2, n2, subset = selstud,
                      method = "LRP",
-                     warn.deprecated = FALSE)
+                     warn.deprecated = FALSE, ...)
     #
     TE.direct.common[sel.treat1, sel.treat2]   <- m.i$TE.common
     seTE.direct.common[sel.treat1, sel.treat2] <- m.i$seTE.common
@@ -2012,7 +2012,7 @@ netmetabin <- function(event1, n1, event2, n2,
   secondfirst <- function(x, sep)
     paste0(x[2], sep, x[1])
   #
-  trts.list <- lapply(compsplit(rownames( net.iv$Cov.common), sep.trts),
+  trts.list <- lapply(compsplit(rownames(net.iv$Cov.common), sep.trts),
                       secondfirst, sep = sep.trts)
   #
   rn <- rep_len("", nrow(H))
@@ -2209,6 +2209,16 @@ netmetabin <- function(event1, n1, event2, n2,
       netmeasures(res, random = TRUE, warn = warn)$proportion
     if (is.logical(res$prop.direct.random))
       res$prop.direct.random <- as.numeric(res$prop.direct.random)
+    #
+    res$Cov.common <- matrix(NA, nrow = length(res$prop.direct.common),
+                             ncol = length(res$prop.direct.common))
+    res$Cov.random <- matrix(NA, nrow = length(res$prop.direct.random),
+                             ncol = length(res$prop.direct.random))
+    #
+    rownames(res$Cov.common) <- colnames(res$Cov.common) <-
+      names(res$prop.direct.common)
+    rownames(res$Cov.random) <- colnames(res$Cov.random) <-
+      names(res$prop.direct.random)
   }
   #
   P.common <- P.random <- matrix(NA, n, n)
