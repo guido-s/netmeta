@@ -1821,7 +1821,7 @@ netmetabin <- function(event1, n1, event2, n2,
     ests.lrp <- summary(res.lrp)$coefficients
     ests.lrp <-
       ests.lrp[grepl("as.factor(treat)", rownames(ests.lrp), fixed = TRUE), ]
-    rownames(ests.lrp) <- 
+    rownames(ests.lrp) <-
       gsub("as.factor(treat)", "", rownames(ests.lrp), fixed = TRUE)
     #
     trts.basic <- rownames(ests.lrp)
@@ -1981,10 +1981,10 @@ netmetabin <- function(event1, n1, event2, n2,
     #
     if (is.lrp) {
       TE.direct.random[sel.treat1, sel.treat2]   <- m.i$TE.random
-      seTE.direct.random[sel.treat1, sel.treat2] <- m.i$seTE.random
+      seTE.direct.random[sel.treat1, sel.treat2] <- sqrt(phi) * m.i$seTE.common
       #
       TE.direct.random[sel.treat2, sel.treat1]   <- -m.i$TE.random
-      seTE.direct.random[sel.treat2, sel.treat1] <- m.i$seTE.random
+      seTE.direct.random[sel.treat2, sel.treat1] <- sqrt(phi) * m.i$seTE.common
       #
       phi.direct[sel.treat1, sel.treat2] <- m.i$phi
       phi.direct[sel.treat2, sel.treat1] <- m.i$phi
