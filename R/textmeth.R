@@ -39,6 +39,12 @@ textmeth <- function(x, random = FALSE, print.tau2 = FALSE, print.tau = FALSE,
                    "\n")
       }
     }
+    else if (inherits(x, "crossnma")) {
+      text.details <- "- Bayesian network meta-analysis with crossnma\n"
+    }
+    else if (inherits(x, "multinma")) {
+      text.details <- "- Bayesian network meta-analysis with multinma\n"
+    }
     else {
       text.details <- "- Frequentist graph-theoretical approach\n"
       if (inherits(x, "netcomb"))

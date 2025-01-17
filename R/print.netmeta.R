@@ -766,7 +766,11 @@ print.netmeta <- function(x,
         cat(text.hetstat)
       }
       #
-      if (print.Q & m > 1) {
+      print.Q <- print.Q &
+        ((is.mh.nch & !is.na(x$Q.inconsistency)) |
+           (!is.mh.nch & !is.na(x$Q)))
+      #
+      if (print.Q && m > 1) {
         if (is.mh.nch) {
           Q.overall <- x$Q.inconsistency
           df.Q.overall <- x$df.Q.inconsistency
