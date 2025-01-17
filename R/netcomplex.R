@@ -408,7 +408,7 @@ print.netcomplex <- function(x,
   
   sm <- sm.lab <- x$x$sm
   ##
-  relative <- is.relative.effect(sm) | sm == "VE"
+  relative <- is_relative_effect(sm) | sm == "VE"
   ##
   if (sm != "") {
     sm.lab <- paste0("i", sm)

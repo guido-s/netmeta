@@ -649,7 +649,7 @@ print.netsplit <- function(x,
   ##
   sm <- sm.lab <- x$sm
   #
-  relative <- is.relative.effect(sm) | sm == "VE"
+  relative <- is_relative_effect(sm) | sm == "VE"
   ##
   if (!backtransf & relative)
     sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)

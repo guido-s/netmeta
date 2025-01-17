@@ -206,7 +206,7 @@ print.netmeta <- function(x,
   #
   backtransf <-
     deprecated(backtransf, missing(backtransf), args, "logscale")
-  if (is.untransformed(x$sm))
+  if (is_untransformed(x$sm))
     backtransf <- TRUE
   backtransf <- replaceNULL(backtransf, TRUE)
   chklogical(backtransf)
@@ -222,7 +222,7 @@ print.netmeta <- function(x,
   n <- x$n
   sm <- sm.lab <- x$sm
   #
-  if (!backtransf & (is.relative.effect(sm) | sm == "VE"))
+  if (!backtransf & (is_relative_effect(sm) | sm == "VE"))
     sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##
   ci.lab <- paste0(round(100 * x$level.ma, 1), "%-CI")
@@ -271,7 +271,7 @@ print.netmeta <- function(x,
     }
   }
   ##  
-  noeffect <- 1L * (backtransf & is.relative.effect(sm))
+  noeffect <- 1L * (backtransf & is_relative_effect(sm))
   #
   if (backtransf) {
     TE.common    <- backtransf(TE.common, sm)

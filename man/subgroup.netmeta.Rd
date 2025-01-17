@@ -13,6 +13,8 @@
   common = x$common,
   random = x$random,
   method.tau = x$method.tau,
+  level.ma = x$level.ma,
+  backtransf = x$backtransf,
   nchar.trts = x$nchar.trts,
   ...
 )
@@ -23,6 +25,7 @@ subgroup(x, ...)
   x,
   common = x$x$common,
   random = x$x$random,
+  backtransf = x$x$backtransf,
   nchar.trts = x$x$nchar.trts,
   digits = gs("digits"),
   digits.se = gs("digits.se"),
@@ -34,6 +37,7 @@ subgroup(x, ...)
   scientific.pval = gs("scientific.pval"),
   zero.pval = gs("zero.pval"),
   JAMA.pval = gs("JAMA.pval"),
+  print.se = !backtransf,
   print.tau2 = gs("print.tau2"),
   print.tau = gs("print.tau"),
   print.Q = gs("print.Q"),
@@ -63,6 +67,15 @@ effects subgroup network meta-analysis should be printed.}
 used to estimate the between-study variance \eqn{\tau^2} and its
 square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
 \code{"ML"}, can be abbreviated.}
+
+\item{level.ma}{The level used to calculate confidence intervals
+for network estimates.}
+
+\item{backtransf}{A logical indicating whether results should be
+back transformed in printouts and forest plots. If
+\code{backtransf = TRUE}, results for \code{sm = "OR"} are
+presented as odds ratios rather than log odds ratios, for
+example.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names
@@ -101,6 +114,9 @@ printed with a leading zero.}
 \item{JAMA.pval}{A logical specifying whether p-values for test of
 overall effect should be printed according to JAMA reporting
 standards.}
+
+\item{print.se}{A logical specifying whether standard errors should be
+printed.}
 
 \item{print.tau2}{A logical specifying whether between-study
 variance \eqn{\tau^2} should be printed.}

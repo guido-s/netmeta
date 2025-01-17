@@ -78,6 +78,7 @@
   - new argument 'method.incr' indicating continuity correction method
     (replaces deprecated arguments 'addincr' and 'allincr')
   - argument 'method = "LRP"' can be used for penalized logistic regression
+  - argument 'reference.group' uses setting from pairwise object
 
 * discomb():
   - new arguments 'n1', 'n2', 'event1', 'event2', 'incr', 'na.unident', and
@@ -98,6 +99,9 @@
 * forest.netmeta():
   - new argument 'col.subgroup' replaces argument 'col.by'
   - new arguments 'print.tau2' and 'print.tau'
+  - print text 'Common Effects Model' for Mantel-Haenszel and non-central
+    hypergeometrical model as details can be printed in forest plots using
+    argument 'details.methods = TRUE'
 
 * print.rankogram():
   - new argument 'sort' to return rankings sorted by SUCRA values
@@ -137,6 +141,10 @@
 
 * netmeta(), netmetabin(), discomb():
   - consider value for argument 'reference.group' from pairwise() object
+
+* netmeta():
+  - set between-study variance to NA for single study if argument
+    'method.tau = "REML"' or 'method.tau = "ML"'
 
 * netcomb():
   - input for arguments 'common' and 'random' was ignored

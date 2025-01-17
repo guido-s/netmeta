@@ -245,7 +245,7 @@ print.netcomb <- function(x,
     comps.abbr <- treats(comps, nchar.comps)
     sep.comps <- x$sep.comps
     ##
-    if (!backtransf & (is.relative.effect(sm) | sm == "VE"))
+    if (!backtransf & (is_relative_effect(sm) | sm == "VE"))
       sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
     else
       sm.lab <- sm
@@ -312,7 +312,7 @@ print.netcomb <- function(x,
                            else
                              "other treatments")
       ##
-      noeffect <- 1L * (backtransf & is.relative.effect(sm))
+      noeffect <- 1L * (backtransf & is_relative_effect(sm))
       #
       if (backtransf) {
         TE.common    <- backtransf(TE.common, sm)

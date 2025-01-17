@@ -88,7 +88,7 @@ heatplot.netmeta <- function(x,
   ##
   chknumeric(digits, min = 0, length = 1)
   ##
-  if (is.untransformed(sm))
+  if (is_untransformed(sm))
     backtransf <- TRUE
   backtransf <- replaceNULL(backtransf, TRUE)
   chklogical(backtransf)
@@ -116,7 +116,7 @@ heatplot.netmeta <- function(x,
     upper.nma <- x$upper.random[seq1, seq1]
   }
   ##
-  noeffect <- 1L * (backtransf & is.relative.effect(sm))
+  noeffect <- 1L * (backtransf & is_relative_effect(sm))
   #
   if (backtransf) {
     TE.nma    <- backtransf(TE.nma, sm)

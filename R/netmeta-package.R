@@ -258,9 +258,11 @@
 #'   theme element_blank element_text scale_fill_gradient2 geom_text
 #'   ggtitle scale_x_discrete scale_y_discrete theme_dark
 #'
-#' @importFrom metafor bldiag contrmat rma.mv
+#' @importFrom metafor bldiag contrmat rma.mv rma.uni
 #' 
 #' @importFrom dplyr %>% filter select rename
+#' 
+#' @importFrom magrittr %<>%
 
 "_PACKAGE"
 

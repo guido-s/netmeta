@@ -170,6 +170,9 @@ forest.netbind <- function(x,
     m$col.inside <- x$common$col.inside[sel]
     ##
     text.pooled <- "Common Effects Model"
+    #
+    if (!is.null(x$common$method))
+      x$method <- unique(x$common$method[sel])
   }
   else {
     if (!missing(subset.treatments)) {
@@ -204,6 +207,9 @@ forest.netbind <- function(x,
     m$col.inside <- x$random$col.inside[sel]
     ##
     text.pooled <- "Random Effects Model"
+    #
+    if (!is.null(x$random$method))
+      x$method <- unique(x$random$method[sel])
   }
   ##
   if (missing(smlab))
@@ -217,6 +223,12 @@ forest.netbind <- function(x,
                       x$reference.group, "' vs other\n(",
                       text.pooled,
                       ")")
+  #
+  m$.text.details.methods <-
+    textmeth(x, pooled == pooled, FALSE, FALSE,
+             "", "", gs("digits.tau2"), gs("digits.tau"),
+             FALSE, gs("text.I2"),
+             big.mark = gs("big.mark"), forest = TRUE)
   
   
   ##

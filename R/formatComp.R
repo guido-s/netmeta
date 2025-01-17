@@ -6,7 +6,7 @@ formatComp <- function(x,
                        big.mark) {
   
   
-  relative <- is.relative.effect(sm)
+  relative <- is_relative_effect(sm)
   
   
   sm.lab <- sm

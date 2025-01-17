@@ -670,7 +670,9 @@ netmeta <- function(TE, seTE,
   #
   avail.reference.group.pairwise <- FALSE
   #
-  if (is.data.frame(TE) & !is.null(attr(TE, "pairwise"))) {
+  if (is.data.frame(TE) &&
+      (!is.null(attr(TE, "pairwise")) ||
+       inherits(TE, "pairwise"))) {
     is.pairwise <- TRUE
     #
     sm <- attr(TE, "sm")
@@ -995,7 +997,7 @@ netmeta <- function(TE, seTE,
   # Check for correct number of comparisons
   #
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   #
   if (sum(sel.narms) == 1)
     stop("Study '", names(tabnarms)[sel.narms],
@@ -1090,7 +1092,7 @@ netmeta <- function(TE, seTE,
   # comparisons with missing data)
   #
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   #
   if (sum(sel.narms) == 1)
     stop("After removing comparisons with missing treatment effects",
@@ -1355,16 +1357,24 @@ netmeta <- function(TE, seTE,
       dat.tau.TE <- dat.tau$TE
       dat.tau$comparison <- paste(dat.tau$treat1, dat.tau$treat2, sep = " vs ")
       #
-      rma1 <-
-        runNN(rma.mv,
-              list(yi = dat.tau.TE, V = V,
-                   data = dat.tau,
-                   mods = formula.trts,
-                   random = as.call(~ factor(comparison) | studlab),
-                   rho = 0.5,
-                   method = method.tau, control = control))
-      #
-      tau <- sqrt(rma1$tau2)
+      if (length(dat.tau.TE) == 1) {
+        rma1 <- runNN(rma.uni,
+                      list(yi = dat.tau.TE, vi = V, data = dat.tau,
+                           method = method.tau, control = control))
+        #
+        tau <- NA
+      }
+      else {
+        rma1 <- runNN(rma.mv,
+                      list(yi = dat.tau.TE, V = V,
+                           data = dat.tau,
+                           mods = formula.trts,
+                           random = as.call(~ factor(comparison) | studlab),
+                           rho = 0.5,
+                           method = method.tau, control = control))
+        #
+        tau <- sqrt(rma1$tau2)
+      }
     }
     else
       tau <- res.c$tau

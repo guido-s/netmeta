@@ -236,7 +236,7 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
   ## Check for correct number of comparisons
   ##
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
     stop("Study '", names(tabnarms)[sel.narms],

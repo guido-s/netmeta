@@ -206,9 +206,6 @@ netpairwise.netmeta <- function(x,
       order <- setseq(order, x$trts)
   }
   ##
-  if (is.null(order))
-    order <- x$trts
-  ##
   chkchar(sep.trts)
   chknumeric(nchar.trts, min = 1, length = 1)
   chklogical(backtransf)
@@ -228,6 +225,11 @@ netpairwise.netmeta <- function(x,
   ##
   treat1 <- x$data$.treat1
   treat2 <- x$data$.treat2
+  #
+  trts <-  unique(sort(c(treat1, treat2)))
+  #
+  if (is.null(order))
+    order <- trts
   ##
   comparison <- paste(treat1, treat2, sep = sep.trts)
   comparison21 <- paste(treat2, treat1, sep = sep.trts)
@@ -235,9 +237,9 @@ netpairwise.netmeta <- function(x,
   treat1.pos <- as.numeric(factor(treat1, levels = order))
   treat2.pos <- as.numeric(factor(treat2, levels = order))
   ##
-  trts.abbr <- treats(x$trts, nchar.trts)
-  trt1 <- as.character(factor(treat1, levels = x$trts, labels = trts.abbr))
-  trt2 <- as.character(factor(treat2, levels = x$trts, labels = trts.abbr))
+  trts.abbr <- treats(trts, nchar.trts)
+  trt1 <- as.character(factor(treat1, levels = trts, labels = trts.abbr))
+  trt2 <- as.character(factor(treat2, levels = trts, labels = trts.abbr))
   ##
   comp <- paste(trt1, trt2, sep = sep.trts)
   comp21 <- paste(trt2, trt1, sep = sep.trts)
@@ -287,7 +289,7 @@ netpairwise.netmeta <- function(x,
   ##
   if (reference.group != "") {
     if (baseline.reference) {
-      wo1 <- trt1 == reference.group
+      wo1 <- trt1 == reference.group & !is.na(TE)
       if (any(wo1)) {
         TE[wo1] <- -TE[wo1]
         ttrt1 <- trt1
@@ -299,7 +301,7 @@ netpairwise.netmeta <- function(x,
       }
     }
     else {
-      wo2 <- trt2 == reference.group
+      wo2 <- trt2 == reference.group & !is.na(TE)
       if (any(wo2)) {
         TE[wo2] <- -TE[wo2]
         ttrt1 <- trt1
@@ -460,9 +462,6 @@ netpairwise.netmetabin <- function(x,
       order <- setseq(order, x$trts)
   }
   #
-  if (is.null(order))
-    order <- x$trts
-  #
   chkchar(sep.trts)
   chknumeric(nchar.trts, min = 1, length = 1)
   chklogical(backtransf)
@@ -485,15 +484,20 @@ netpairwise.netmetabin <- function(x,
   treat1 <- x$data$.treat1
   treat2 <- x$data$.treat2
   #
+  trts <-  unique(sort(c(treat1, treat2)))
+  #
+  if (is.null(order))
+    order <- trts
+  #
   comparison <- paste(treat1, treat2, sep = sep.trts)
   comparison21 <- paste(treat2, treat1, sep = sep.trts)
   #
   treat1.pos <- as.numeric(factor(treat1, levels = order))
   treat2.pos <- as.numeric(factor(treat2, levels = order))
   #
-  trts.abbr <- treats(x$trts, nchar.trts)
-  trt1 <- as.character(factor(treat1, levels = x$trts, labels = trts.abbr))
-  trt2 <- as.character(factor(treat2, levels = x$trts, labels = trts.abbr))
+  trts.abbr <- treats(trts, nchar.trts)
+  trt1 <- as.character(factor(treat1, levels = trts, labels = trts.abbr))
+  trt2 <- as.character(factor(treat2, levels = trts, labels = trts.abbr))
   #
   comp <- paste(trt1, trt2, sep = sep.trts)
   comp21 <- paste(trt2, trt1, sep = sep.trts)

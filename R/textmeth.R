@@ -103,6 +103,24 @@ textmeth <- function(x, random = FALSE, print.tau2 = FALSE, print.tau = FALSE,
                "\n")
     }
   }
+  else if (inherits(x, "netbind")) {
+    text.details <- ""
+    #
+    if ("Inverse" %in% x$method)
+      text.details <- paste0(text.details, "- Inverse variance method\n")
+    #
+    if ("MH" %in% x$method)
+      text.details <- paste0(text.details, "- Mantel-Haenszel method\n")
+    #
+    if ("NCH" %in% x$method)
+      text.details <-
+        paste0(text.details,
+               "- Based on the non-central hypergeometric distribution\n")
+    #
+    if ("LRP" %in% x$method)
+      text.details <-
+        paste0(text.details, "- Penalised logistic regression model\n")
+  }
   else if (inherits(x, "netimpact")) {
     text.details <- "- Frequentist graph-theoretical approach\n"
     #

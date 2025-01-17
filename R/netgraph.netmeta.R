@@ -1148,7 +1148,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
            "number of treatments.",
            eval. = FALSE)
     if (is.null(names(srt.labels))) {
-      if (is.wholenumber(rotn) & abs(rotn) < x$n) {
+      if (is_wholenumber(rotn) & abs(rotn) < x$n) {
         srt1 <- seq_len(x$n)
         srt1 <- srt1 - rotn
         srt1[srt1 > x$n] <- srt1[srt1 > x$n] - x$n

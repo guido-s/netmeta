@@ -405,7 +405,7 @@ netmetabin <- function(event1, n1, event2, n2,
                        prediction = gs("prediction"),
                        level.predict = gs("level.predict"),
                        ##
-                       reference.group = "",
+                       reference.group,
                        baseline.reference = gs("baseline.reference"),
                        small.values = gs("small.values"),
                        all.treatments = gs("all.treatments"),
@@ -457,8 +457,8 @@ netmetabin <- function(event1, n1, event2, n2,
   #
   modtext <-
     paste0("must be equal to 'MH' (Mantel-Haenszel, the default), ",
-           "'NCH' (common-effects non-central hypergeometric),",
-           "'LRP' (penalized logistic regression), or",
+           "'NCH' (common-effects non-central hypergeometric), ",
+           "'LRP' (penalized logistic regression), or ",
            "'Inverse' (classic network meta-analysis).")
   method <- setchar(method, c("Inverse", "MH", "NCH", "LRP"), modtext)
   is.mh.nch <- !(method %in% c("Inverse", "LRP"))
@@ -470,6 +470,13 @@ netmetabin <- function(event1, n1, event2, n2,
   chklevel(level.predict)
   ##
   chklogical(prediction)
+  #
+  missing.reference.group <- missing(reference.group)
+  #
+  baseline.reference <- replaceNULL(baseline.reference, TRUE)
+  chklogical(baseline.reference)
+  #
+  small.values <- setsv(small.values)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -511,19 +518,6 @@ netmetabin <- function(event1, n1, event2, n2,
     prediction <- FALSE
   }
   #
-  chkchar(reference.group, length = 1)
-  chklogical(baseline.reference)
-  small.values <- setsv(small.values)
-  #
-  if (!is.null(all.treatments))
-    chklogical(all.treatments)
-  else {
-    if (reference.group == "")
-      all.treatments <- TRUE
-    else
-      all.treatments <- FALSE
-  }
-  #
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
   ##
@@ -561,7 +555,9 @@ netmetabin <- function(event1, n1, event2, n2,
   ## 'studlab' from data:
   ##
   event1 <- catch("event1", mc, data, sfsp)
-  ##
+  #
+  avail.reference.group.pairwise <- FALSE
+  #
   if (is.data.frame(event1)  &&
       (!is.null(attr(event1, "pairwise")) ||
        inherits(event1, "pairwise"))) {
@@ -585,7 +581,22 @@ netmetabin <- function(event1, n1, event2, n2,
         warning("Argument 'sm' set to 'OR'.", call. = FALSE)
       sm <- "OR"
     }
-    ##
+    #
+    if (missing.reference.group) {
+      reference.group <- attr(event1, "reference.group")
+      #
+      if (is.null(reference.group))
+        reference.group <- ""
+      else
+        avail.reference.group.pairwise <- TRUE
+    }
+    #
+    keep.all.comparisons <- attr(event1, "keep.all.comparisons")
+    if (!is.null(keep.all.comparisons) && !keep.all.comparisons)
+      stop("First argument is a pairwise object created with ",
+           "'keep.all.comparisons = FALSE'.",
+           call. = TRUE)
+    #
     n1 <- event1$n1
     event2 <- event1$event2
     n2 <- event1$n2
@@ -821,10 +832,39 @@ netmetabin <- function(event1, n1, event2, n2,
            " as separator (argument 'sep.trts').",
            call. = FALSE)
   }
-  ##
+  #
+  # Set reference group
+  #
+  if (missing.reference.group & !avail.reference.group.pairwise) {
+    go.on <- TRUE
+    i <- 0
+    while (go.on) {
+      i <- i + 1
+      sel.i <-
+        !is.na(TE) & !is.na(seTE) &
+        (treat1 == labels[i] | treat2 == labels[i])
+      if (sum(sel.i) > 0) {
+        go.on <- FALSE
+        reference.group <- labels[i]
+      }
+      else if (i == length(labels)) {
+        go.on <- FALSE
+        reference.group <- ""
+      }
+    }
+  }
+  #
+  if (is.null(all.treatments))
+    if (reference.group == "")
+      all.treatments <- TRUE
+  else
+    all.treatments <- FALSE
+  #
+  # Check reference group
+  #
   if (reference.group != "")
     reference.group <- setref(reference.group, labels)
-  ##
+  #
   rm(labels)
 
 
@@ -850,7 +890,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ## Check for correct number of comparisons
   ##
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
     stop(paste0("Study '", names(tabnarms)[sel.narms],

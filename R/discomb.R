@@ -817,7 +817,7 @@ discomb <- function(TE, seTE,
   ## Check for correct number of comparisons
   ##
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
     stop(paste0("Study '", names(tabnarms)[sel.narms],
@@ -882,7 +882,7 @@ discomb <- function(TE, seTE,
   ## comparisons with missing data)
   ##
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
     stop(paste0("After removing comparisons with missing treatment effects",

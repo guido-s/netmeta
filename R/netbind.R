@@ -397,18 +397,7 @@ netbind <- function(..., name,
   
   
   common.nma <- common
-  common <- data.frame(name = character(0),
-                       treat = character(0),
-                       TE = numeric(0), seTE = numeric(0),
-                       lower = numeric(0), upper = numeric(0),
-                       statistic = numeric(0), pval = numeric(0),
-                       ##
-                       col.study = character(0),
-                       col.square = character(0),
-                       col.square.lines = character(0),
-                       col.inside = character(0),
-                       ##
-                       stringsAsFactors = FALSE)
+  common <- NULL
   ##
   for (i in n.i) {
     ##
@@ -438,7 +427,9 @@ netbind <- function(..., name,
                                  upper = upper.i[, selc],
                                  statistic = statistic.i[, selc],
                                  pval = pval.i[, selc],
-                                 ##
+                                 #
+                                 method = args[[i]]$method[1],
+                                 #
                                  col.study = col.study[i],
                                  col.square = col.square[i],
                                  col.square.lines = col.square.lines[i],
@@ -458,7 +449,9 @@ netbind <- function(..., name,
                                  upper = upper.i[selr, ],
                                  statistic = statistic.i[selr, ],
                                  pval = pval.i[selr, ],
-                                 ##
+                                 #
+                                 method = args[[i]]$method[1],
+                                 #
                                  col.study = col.study[i],
                                  col.square = col.square[i],
                                  col.square.lines = col.square.lines[i],
@@ -473,19 +466,7 @@ netbind <- function(..., name,
   
   
   random.nma <- random
-  random <- data.frame(name = character(0),
-                       treat = character(0),
-                       ##
-                       TE = numeric(0), seTE = numeric(0),
-                       lower = numeric(0), upper = numeric(0),
-                       statistic = numeric(0), pval = numeric(0),
-                       ##
-                       col.study = character(0),
-                       col.square = character(0),
-                       col.square.lines = character(0),
-                       col.inside = character(0),
-                       ##
-                       stringsAsFactors = FALSE)
+  random <- NULL
   ##
   for (i in n.i) {
     ##
@@ -515,7 +496,9 @@ netbind <- function(..., name,
                                  upper = upper.i[, selc],
                                  statistic = statistic.i[, selc],
                                  pval = pval.i[, selc],
-                                 ##
+                                 #
+                                 method = args[[i]]$method[1],
+                                 #
                                  col.study = col.study[i],
                                  col.square = col.square[i],
                                  col.square.lines = col.square.lines[i],
@@ -535,7 +518,9 @@ netbind <- function(..., name,
                                  upper = upper.i[selr, ],
                                  statistic = statistic.i[selr, ],
                                  pval = pval.i[selr, ],
-                                 ##
+                                 #
+                                 method = args[[i]]$method[1],
+                                 #
                                  col.study = col.study[i],
                                  col.square = col.square[i],
                                  col.square.lines = col.square.lines[i],

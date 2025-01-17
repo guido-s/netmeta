@@ -93,18 +93,28 @@ print.netbind <- function(x,
   ## (3) Print results
   ##
   ##
+  
+  nam <- c("name", "treat",
+           "TE", "seTE", "lower", "upper", "statistic", "pval")
+  #
   if (common) {
+    cnames <- nam
+    if (!is.null(x$common$method) && length(unique(x$common$method)) > 1)
+      cnames <- c(cnames, "method")
+    #
     cat("Common effects model\n\n")
-    print(x$common[, c("name", "treat",
-                       "TE", "seTE", "lower", "upper", "statistic", "pval")])
+    print(x$common[, cnames])
     if (random)
       cat("\n")
   }
   ##
   if (random) {
+    rnames <- nam
+    if (!is.null(x$random$method) && length(unique(x$random$method)) > 1)
+      rnames <- c(rnames, "method")
+    #
     cat("Random effects model\n\n")
-    print(x$random[, c("name", "treat",
-                       "TE", "seTE", "lower", "upper", "statistic", "pval")])
+    print(x$random[, rnames])
   }
   
   invisible(NULL)

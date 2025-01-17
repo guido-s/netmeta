@@ -369,11 +369,6 @@ forest.netmeta <- function(x,
     }
     ##
     text.pooled <- "Common Effects Model"
-    ##
-    if (x$method == "MH")
-      text.pooled <- "Mantel-Haenszel Method"
-    else if (x$method == "NCH")
-      text.pooled <- "Non-Central Hypergeometric"
   }
   ##
   if (pooled == "random") {

@@ -600,7 +600,7 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random,
         if (n.netmeta > 1 & length(x$sm) != 1)
           outcome.txt <-
             paste0(outcome.txt," (sm = '",
-                   if (is.relative.effect(x$sm[i]) & !backtransf[i]) "log",
+                   if (is_relative_effect(x$sm[i]) & !backtransf[i]) "log",
                    x$sm[i], "')")
         cat(outcome.txt, "\n", sep = "")
         prmatrix(mat.i,
@@ -639,7 +639,7 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random,
         if (n.netmeta > 1 & length(x$sm) != 1)
           outcome.txt <-
             paste0(outcome.txt," (sm = '",
-                   if (is.relative.effect(x$sm[i]) & !backtransf[i]) "log",
+                   if (is_relative_effect(x$sm[i]) & !backtransf[i]) "log",
                    x$sm[i], "')")
         cat(outcome.txt, "\n", sep = "")
         prmatrix(mat.i,

@@ -290,7 +290,7 @@ print.summary.netmeta <- function(x,
   #
   backtransf <-
     deprecated(backtransf, missing(backtransf), args, "logscale")
-  if (is.untransformed(x$sm))
+  if (is_untransformed(x$sm))
     backtransf <- TRUE
   chklogical(backtransf)
   
@@ -311,7 +311,7 @@ print.summary.netmeta <- function(x,
     ##
     sm <- sm.lab <- x$sm
     #
-    if (!backtransf & (is.relative.effect(sm) | sm == "VE"))
+    if (!backtransf & (is_relative_effect(sm) | sm == "VE"))
       sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
     ##    
     trts <- x$x$trts
