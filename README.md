@@ -34,7 +34,9 @@ R package **netmeta** ([Balduzzi et al., 2023](https://www.doi.org/10.18637/jss.
   - network meta-analysis of binary data using the Mantel-Haenszel
     method or the non-central hypergeometric distribution ([Efthimiou
     et al.,
-    2019](https://scholar.google.com/scholar?q=Efthimiou+Rücker+Schwarzer+Higgins+Egger+Salanti+2019+Mantel-Haenszel+model)).
+    2019](https://scholar.google.com/scholar?q=Efthimiou+Rücker+Schwarzer+Higgins+Egger+Salanti+2019+Mantel-Haenszel+model)),
+    or penalised logistic regression ([Evrenoglou et al.,
+    2022](https://doi.org/10.1002/sim.9562)).
 
 
 ### Methods to present results of a network meta-analysis
