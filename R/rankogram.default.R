@@ -160,14 +160,14 @@ rankogram.default <- function(x, pooled = "unspecified",
   sucras.random <- ranking.matrix.random <- rank.cum.random <- NULL
   #
   if (common) {
-    res.f <- rankings(x)
+    res.c <- rankings(x)
     #
-    sucras.common <- res.f$sucras
-    ranking.matrix.common <- res.f$rankogram
-    cumrank.matrix.common <- res.f$cumrank
+    sucras.common <- res.c$sucras
+    ranking.matrix.common <- res.c$rankogram
+    cumrank.matrix.common <- res.c$cumrank
     #
     samples.common <- x
-    nsim <- res.f$nsim
+    nsim <- res.c$nsim
   }
   #
   if (random) {

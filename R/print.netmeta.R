@@ -226,6 +226,8 @@ print.netmeta <- function(x,
     sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##
   ci.lab <- paste0(round(100 * x$level.ma, 1), "%-CI")
+  #
+  zlab <- "z"
   
   
   ##
@@ -343,16 +345,21 @@ print.netmeta <- function(x,
   ##  
   if (common | random) {
     cat("Number of studies: k = ", k, "\n", sep = "")
-    cat("Number of pairwise comparisons: m = ", m, "\n", sep = "")
+    #
+    if (!is.na(m))
+      cat("Number of pairwise comparisons: m = ", m, "\n", sep = "")
+    #
     if (!is.null(x$n.trts))
       cat("Number of observations: o = ",
           round(sum(x$n.trts, na.rm = TRUE), 1),
           "\n",
           sep = "")
+    #
     cat("Number of treatments: n = ", n, "\n", sep = "")
+    #
     if (!oldversion)
       cat("Number of designs: d = ", x$d, "\n", sep = "")
-    ##
+    #
     if (reference.group != "") {
       if (baseline.reference)
         comptext <-
@@ -437,7 +444,7 @@ print.netmeta <- function(x,
         ##
         ## Print prediction intervals
         ##
-        if (!random && prediction & x$df.Q >= 2) {
+        if (!random && prediction & x$df.Q >= 1) {
           cat("\nPrediction intervals\n")
           ##
           cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n",
@@ -501,18 +508,25 @@ print.netmeta <- function(x,
                                       digits, "NA", big.mark = big.mark),
                               formatN(round(uppTE.common.b, digits),
                                       digits, "NA", big.mark = big.mark)),
-                     formatN(statistic.common.b, digits.stat, text.NA = "NA",
-                             big.mark = big.mark),
-                     formatPT(pval.common.b, digits = digits.pval,
+                     if (!all(is.na(statistic.common.b)))
+                       formatN(statistic.common.b, digits.stat, text.NA = "NA",
+                               big.mark = big.mark),
+                     if (!all(is.na(pval.common.b)))
+                       formatPT(pval.common.b, digits = digits.pval,
                               scientific = scientific.pval,
                               zero = zero.pval, JAMA = JAMA.pval)
                      )
         dimnames(res) <-
-          list(colnames(TE.common), c(sm.lab, ci.lab, "z", "p-value"))
+          list(colnames(TE.common),
+               c(sm.lab, ci.lab,
+                 if (!all(is.na(statistic.common.b)))
+                   zlab,
+                 if (!all(is.na(pval.common.b)))
+                   "p-value"))
         ##
         ## Add prediction interval (or not)
         ##
-        if (!random && prediction & x$df.Q >= 2) {
+        if (!random && prediction & x$df.Q >= 1) {
           if (baseline.reference) {
             lower.predict.b <-
               lower.predict[, colnames(lower.predict) == reference.group]
@@ -592,7 +606,7 @@ print.netmeta <- function(x,
         ##
         ## Print prediction intervals
         ##
-        if (prediction & x$df.Q >= 2) {
+        if (prediction & x$df.Q >= 1) {
           cat("\nPrediction intervals\n")
           ##
           cat("\nLower ", 100 * x$level.predict, "%-prediction limit:\n",
@@ -658,18 +672,25 @@ print.netmeta <- function(x,
                                       digits, "NA", big.mark = big.mark),
                               formatN(round(uppTE.random.b, digits),
                                       digits, "NA", big.mark = big.mark)),
-                     formatN(statistic.random.b, digits.stat, text.NA = "NA",
+                     if (!all(is.na(statistic.random.b)))
+                       formatN(statistic.random.b, digits.stat, text.NA = "NA",
                              big.mark = big.mark),
-                     formatPT(pval.random.b, digits = digits.pval,
+                     if (!all(is.na(pval.random.b)))
+                       formatPT(pval.random.b, digits = digits.pval,
                               scientific = scientific.pval,
                               zero = zero.pval, JAMA = JAMA.pval)
                      )
         dimnames(res) <-
-          list(colnames(TE.random), c(sm.lab, ci.lab, "z", "p-value"))
+          list(colnames(TE.random),
+               c(sm.lab, ci.lab,
+                 if (!all(is.na(statistic.random.b)))
+                   zlab,
+                 if (!all(is.na(pval.random.b)))
+                   "p-value"))
         ##
         ## Add prediction interval (or not)
         ##
-        if (prediction & x$df.Q >= 2) {
+        if (prediction & x$df.Q >= 1) {
           if (baseline.reference) {
             lower.predict.b <-
               lower.predict[, colnames(lower.predict) == reference.group]
@@ -711,9 +732,7 @@ print.netmeta <- function(x,
         prmatrix(res, quote = FALSE, right = TRUE)
       }
     }
-    ##
-    zlab <- "z"
-    ##
+    #
     if (!is.null(x$tau.preset))
       tau <- x$tau.preset
     else

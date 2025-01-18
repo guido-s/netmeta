@@ -184,6 +184,8 @@ settings.netmeta <- function(..., quietly = TRUE) {
                   sep.trts = ":", sep.comps = "+", sep.ia = "*",
                   nchar.trts = 666, nchar.studlab = 666,
                   #
+                  sort.distance = TRUE,
+                  #
                   legend = TRUE)
   }
   
@@ -239,6 +241,9 @@ settings.netmeta <- function(..., quietly = TRUE) {
     cat("\n* Number of samples to calculate ranking metrics *\n")
     catarg("nsim                 ")
     #
+    cat("\n* Additional setting for netdistance() *\n")
+    catarg("sort.distance        ")
+    #
     return(invisible(oldset))
   }
   
@@ -273,6 +278,7 @@ settings.netmeta <- function(..., quietly = TRUE) {
     setcharacter("sep.ia", args.netmeta)
     setnumeric("nchar.trts", args.netmeta)
     setnumeric("nchar.studlab", args.netmeta)
+    setlogical("sort.distance", args.netmeta)
     setlogical("legend", args.netmeta)
   }
   

@@ -152,14 +152,18 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
   ## (2) Check other arguments
   ##
   ##
-  if (missing(method))
-    if (inherits(x, c("netmeta", "netcomb")))
+  if (missing(method)) {
+    if (inherits(x, "netcomb"))
+      method <- "P-score"
+    else if (inherits(x, "netmeta") &
+             !inherits(x, c("netmeta.crossnma", "netmeta.multinma")))
       method <- "P-score"
     else
       method <- "SUCRA"
+  }
   else
     method <- setchar(method, c("P-score", "SUCRA"))
-  ##
+  #
   small.values <- setsv(small.values)
   ##
   ## Check for deprecated arguments in '...'
@@ -177,6 +181,36 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
   chklogical(random)
+  #
+  # Additional checks for crossnma and multinma objects
+  #
+  if (inherits(x, c("netmeta.crossnma", "netmeta.multinma"))) {
+    if (method == "P-score")
+      warning("Argument 'method = \"SUCRA\"' for netmeta.", x$method,
+              " object.",
+              call. = FALSE)
+    #
+    if (common != x$common)
+      warning("Argument 'common = ", x$common, "' as netmeta.", x$method,
+              " object is based on ", if (x$common) "common" else "random",
+              " effects model.",
+              call. = FALSE)
+    #
+    if (random != x$random)
+      warning("Argument 'random = ", x$random, "' as netmeta.", x$method,
+              " object is based on ", if (x$random) "random" else "common",
+              " effects model.",
+              call. = FALSE)
+    #
+    #
+    if (!missing(nsim) & x$keep.samples)
+      warning("Argument 'nsim' ignored for netmeta.", x$method, " object.",
+              call. = FALSE)
+    #
+    method <- "SUCRA"
+    common <- x$common
+    random <- x$random
+  }
   
   
   if (method == "SUCRA") {
@@ -187,13 +221,28 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
       stop("netcomb object is not compatible with SUCRAs.",
            call. = FALSE)
     else if (inherits(x, "netmeta")) {
-      if (missing(nsim))
-        nsim <- gs("nsim")
-      ##
-      rnk <- rankogram(x,
-                       nsim = nsim,
-                       small.values = small.values,
-                       common = common, random = random)
+      if (inherits(x, c("netmeta.crossnma", "netmeta.multinma")) &&
+          x$keep.samples) {
+        rnk <- rankogram(x$samples$d,
+                         pooled = if (common) "common" else "random",
+                         small.values = small.values)
+        #
+        nsim <- rnk$nsim
+        #
+        if (common)
+          rnk$ranking.random <- setNA(rnk$ranking.common)
+        else
+          rnk$ranking.common <- setNA(rnk$ranking.random)
+      }
+      else {
+        if (missing(nsim))
+          nsim <- gs("nsim")
+        ##
+        rnk <- rankogram(x,
+                         nsim = nsim,
+                         small.values = small.values,
+                         common = common, random = random)
+      }
     }
     else {
       if (!missing(nsim))

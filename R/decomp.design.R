@@ -143,6 +143,8 @@ decomp.design <- function(x, tau.preset = x$tau.preset, warn = gs("warn"),
   
   
   chkclass(x, "netmeta")
+  chksuitable(x, "Decomposition of designs",
+              classes = c("netmeta.crossnma", "netmeta.multinma"))
   ##
   if (x$n == 2) {
     warning("No decomposition possible for network meta-analysis ",

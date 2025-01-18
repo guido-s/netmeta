@@ -148,6 +148,8 @@ netmeasures <- function(x,
   ##
   ##
   chkclass(x, "netmeta")
+  chksuitable(x, "Network measures",
+              classes = c("netmeta.crossnma", "netmeta.multinma"))
   x <- updateversion(x)
   ##
   is.bin <- inherits(x, "netmetabin")

@@ -31,6 +31,8 @@
                 "sep.trts", "sep.comps", "sep.ia",
                 "nchar.trts", "nchar.studlab",
                 #
+                "sort.distance",
+                #
                 "legend")
   #
   suppressWarnings(
@@ -52,6 +54,8 @@
                   na.unident = TRUE,
                   sep.trts = ":", sep.comps = "+", sep.ia = "*",
                   nchar.trts = 666, nchar.studlab = 666,
+                  #
+                  sort.distance = TRUE,
                   #
                   legend = TRUE,
                   #

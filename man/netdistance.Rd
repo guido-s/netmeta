@@ -9,24 +9,27 @@
 \alias{netdistance.netconnection}
 \title{Calculate distance matrix for an adjacency matrix}
 \usage{
-\method{netdistance}{default}(x)
+\method{netdistance}{default}(x, ...)
 
-\method{netdistance}{netmeta}(x)
+\method{netdistance}{netmeta}(x, sort = gs("sort.distance"), ...)
 
-\method{netdistance}{netcomb}(x)
+\method{netdistance}{netcomb}(x, sort = gs("sort.distance"), ...)
 
-\method{netdistance}{netconnection}(x)
+\method{netdistance}{netconnection}(x, ...)
 
 \method{print}{netdistance}(x, lab.Inf = ".", ...)
 
-netdistance(x)
+netdistance(x, ...)
 }
 \arguments{
 \item{x}{Either a netmeta or netcomb object or an adjacency matrix.}
 
-\item{lab.Inf}{A character string to label infinite values.}
+\item{\dots}{Additional arguments.}
 
-\item{\dots}{Additional arguments (ignored).}
+\item{sort}{A logical indicating whether to sort within (sub)networks by
+treatment names.}
+
+\item{lab.Inf}{A character string to label infinite values.}
 }
 \description{
 Calculate distance matrix for an adjacency matrix based on distance

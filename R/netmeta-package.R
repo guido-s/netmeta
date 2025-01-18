@@ -245,7 +245,7 @@
 #'
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
 #'   prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted
-#'   residuals
+#'   residuals quantile
 #'
 #' @importFrom utils installed.packages packageDescription capture.output
 #'   packageVersion
@@ -260,7 +260,7 @@
 #'
 #' @importFrom metafor bldiag contrmat rma.mv rma.uni
 #' 
-#' @importFrom dplyr %>% filter select rename
+#' @importFrom dplyr %>% filter select rename starts_with
 #' 
 #' @importFrom magrittr %<>%
 

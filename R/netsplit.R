@@ -270,6 +270,8 @@ netsplit <- function(x, method,
   ##
   ##
   chkclass(x, "netmeta")
+  chksuitable(x, "Methods to split network estimates",
+              classes = c("netmeta.crossnma", "netmeta.multinma"))
   x <- updateversion(x)
   ##
   is.mh.nch <- inherits(x, "netmetabin") && x$method %in% c("MH", "NCH")

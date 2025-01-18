@@ -119,6 +119,8 @@ netheat <- function(x, random = FALSE, tau.preset = NULL,
   
   
   chkclass(x, "netmeta")
+  chksuitable(x, "Net heat plot",
+              classes = c("netmeta.crossnma", "netmeta.multinma"))
   x <- updateversion(x)
   ##
   if (x$d <= 2) {

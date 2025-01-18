@@ -1109,11 +1109,11 @@ discomb <- function(TE, seTE,
                                 grepl,
                                 pattern = unident.pattern), any))]
     ##
-    res.c$components <- lapply(res.c$components, setNA, comps.unident)
-    res.c$combinations <- lapply(res.c$combinations, setNA, unident.combs)
+    res.c$components <- lapply(res.c$components, setNA_vars, comps.unident)
+    res.c$combinations <- lapply(res.c$combinations, setNA_vars, unident.combs)
     ##
-    res.r$components <- lapply(res.r$components, setNA, comps.unident)
-    res.r$combinations <- lapply(res.r$combinations, setNA, unident.combs)
+    res.r$components <- lapply(res.r$components, setNA_vars, comps.unident)
+    res.r$combinations <- lapply(res.r$combinations, setNA_vars, unident.combs)
   }
   ##
   if (length(comps.unident) == 0)

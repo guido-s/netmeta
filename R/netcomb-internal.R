@@ -79,8 +79,3 @@ get_unident <- function(X.matrix, details.chkident) {
   #
   comps.unident
 }
-
-setNA <- function(x, select) {
-  x[names(x) %in% select] <- NA
-  x
-}

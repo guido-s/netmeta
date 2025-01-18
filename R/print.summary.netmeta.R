@@ -354,16 +354,22 @@ print.summary.netmeta <- function(x,
           seTE.adj <- x$x$seTE.adj
         else
           seTE.adj <- x$x$seTE.adj.common
-        ##
+        #
         if (common & random & !is.null(x$x$seTE.adj.random)) {
-          res$seTE.adj.c <- format(round(seTE.adj, digits.se))
-          res$seTE.adj.r <- format(round(x$x$seTE.adj.random, digits.se))
+          if (!all(is.na(seTE.adj)))
+            res$seTE.adj.c <- format(round(seTE.adj, digits.se))
+          if (!all(is.na(x$x$seTE.adj.random)))
+            res$seTE.adj.r <- format(round(x$x$seTE.adj.random, digits.se))
         }
-        else if (common)
-          res$seTE.adj <- format(round(seTE.adj, digits.se))
-        else if (random & !is.null(x$x$seTE.adj.random))
-          res$seTE.adj <- format(round(x$x$seTE.adj.random, digits.se))
-        ##
+        else if (common) {
+          if (!all(is.na(seTE.adj)))
+            res$seTE.adj <- format(round(seTE.adj, digits.se))
+        }
+        else if (random & !is.null(x$x$seTE.adj.random)) {
+          if (!all(is.na(x$x$seTE.adj.random)))
+            res$seTE.adj <- format(round(x$x$seTE.adj.random, digits.se))
+        }
+        #
         res$narms <- x$x$n.arms
         res$multiarm <- ifelse(x$x$multiarm, "*", "")
       }

@@ -8,8 +8,10 @@
 #'   netdistance.netcomb print.netdistance
 #' 
 #' @param x Either a netmeta or netcomb object or an adjacency matrix.
+#' @param sort A logical indicating whether to sort within (sub)networks by
+#'   treatment names.
 #' @param lab.Inf A character string to label infinite values.
-#' @param \dots Additional arguments (ignored).
+#' @param \dots Additional arguments.
 #'
 #' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
 #'   Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
@@ -46,7 +48,7 @@
 #' @method netdistance default
 #' @export
 
-netdistance.default <- function(x) {
+netdistance.default <- function(x, ...) {
   
   # Calculate distance matrix D of adjacency matrix A based on
   # distance algorithm by Mueller et al. (1987) using triangle
@@ -98,16 +100,22 @@ netdistance.default <- function(x) {
 #' @method netdistance netmeta
 #' @export
 
-netdistance.netmeta <- function(x) {
+netdistance.netmeta <- function(x, sort = gs("sort.distance"), ...) {
   
   chkclass(x, "netmeta")
-
+  chklogical(sort)
+  
   A <- x$A.matrix
-  seq <- netconnection(x$treat1, x$treat2)$seq
-  A <- A[seq, seq]
+  #
+  if (sort) {
+    seq <- netconnection(x$treat1, x$treat2)$seq
+    A <- A[seq, seq]
+  }
   
   res <- netdistance(A)
-  attr(res, "order") <- NULL
+  #
+  if (sort)
+    attr(res, "order") <- NULL
   #
   res
 }
@@ -117,23 +125,31 @@ netdistance.netmeta <- function(x) {
 #' @method netdistance netcomb
 #' @export
 
-netdistance.netcomb <- function(x) {
+netdistance.netcomb <- function(x, sort = gs("sort.distance"), ...) {
   
   chkclass(x, "netcomb")
+  chklogical(sort)
   
   if (inherits(x, "discomb")) {
     A <- x$A.matrix
-    seq <- netconnection(x$treat1, x$treat2)$seq
+    #
+    if (sort)
+      seq <- netconnection(x$treat1, x$treat2)$seq
   }
   else {
     A <- x$x$A.matrix
-    seq <- netconnection(x$x$treat1, x$x$treat2)$seq
+    #
+    if (sort)
+      seq <- netconnection(x$x$treat1, x$x$treat2)$seq
   }
   #
-  A <- A[seq, seq]
+  if (sort)
+    A <- A[seq, seq]
   
   res <- netdistance(A)
-  attr(res, "order") <- NULL
+  #
+  if (sort)
+    attr(res, "order") <- NULL
   #
   res
 }
@@ -143,7 +159,7 @@ netdistance.netcomb <- function(x) {
 #' @method netdistance netconnection
 #' @export
 
-netdistance.netconnection <- function(x) {
+netdistance.netconnection <- function(x, ...) {
   
   chkclass(x, "netconnection")
     
@@ -172,5 +188,5 @@ print.netdistance <- function(x, lab.Inf = ".", ...) {
 #' @rdname netdistance
 #' @export
 
-netdistance <- function(x)
+netdistance <- function(x, ...)
   UseMethod("netdistance")

@@ -841,7 +841,7 @@ netmetabin <- function(event1, n1, event2, n2,
     while (go.on) {
       i <- i + 1
       sel.i <-
-        !is.na(TE) & !is.na(seTE) &
+        !is.na(event1) & !is.na(n1) & !is.na(event2) & !is.na(n2) &
         (treat1 == labels[i] | treat2 == labels[i])
       if (sum(sel.i) > 0) {
         go.on <- FALSE

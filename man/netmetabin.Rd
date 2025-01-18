@@ -26,7 +26,7 @@ netmetabin(
   random = method \%in\% c("Inverse", "LRP") & (gs("random") | !is.null(tau.preset)),
   prediction = gs("prediction"),
   level.predict = gs("level.predict"),
-  reference.group = "",
+  reference.group,
   baseline.reference = gs("baseline.reference"),
   small.values = gs("small.values"),
   all.treatments = gs("all.treatments"),

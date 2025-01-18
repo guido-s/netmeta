@@ -30,6 +30,9 @@
 * New R function settings.netmeta() to define and print default settings
   for network meta-analyses in R package **netmeta**
 
+* New R function crossnma2netmeta() to create a netmeta object from a
+  crossnma object
+
 * By default, no reference group line is displayed in forest plots
   (argument 'drop.reference.group = TRUE' instead of
   'drop.reference.group = FALSE')
@@ -125,6 +128,9 @@
   - new argument 'drop.NA' to consider comparisons with missing estimates or
     standard errors (e.g., to generate network graph for comparisons
     with missing estimates or standard errors)
+
+* netdistance.netmeta(), netdistance.netcomb():
+  - new argument 'sort' to sort (sub)networks by treatment names
 
 * New function summary.netconnection() to print list of studies in subnetworks
 

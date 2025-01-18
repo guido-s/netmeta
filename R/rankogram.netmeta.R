@@ -98,7 +98,7 @@ rankogram.netmeta <- function(x, nsim = gs("nsim"),
   #
   
   chkclass(x, "netmeta")
-  chksuitable(x, "Rankograms")
+  chksuitable(x, "Rankograms", "netmetabin")
   x <- updateversion(x)
   #
   is_installed_package("mvtnorm")
@@ -136,25 +136,62 @@ rankogram.netmeta <- function(x, nsim = gs("nsim"),
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
+  #
+  # Additional checks for crossnma and multinma objects (and return results)
+  #
+  if (inherits(x, c("netmeta.crossnma", "netmeta.multinma"))) {
+    if (!x$keep.samples)
+      stop("Input for argument 'x' is a netmeta.", x$method,
+           " object without samples; recreate ", x$method,
+           " object with argument 'keep.samples = TRUE'.",
+           call. = FALSE)
+    #
+    if (common != x$common)
+      warning("Argument 'common = ", x$common, "' as netmeta.", x$method,
+              " object is based on ", if (x$common) "common" else "random",
+              " effects model.",
+              call. = FALSE)
+    #
+    if (random != x$random)
+      warning("Argument 'random = ", x$random, "' as netmeta.", x$method,
+              " object is based on ", if (x$random) "random" else "common",
+              " effects model.",
+              call. = FALSE)
+    #
+    #
+    if (!missing(nsim) & x$keep.samples)
+      warning("Argument 'nsim' ignored for netmeta.", x$method, " object.",
+              call. = FALSE)
+    #
+    common <- x$common
+    random <- x$random
+    #
+    return(rankogram(x$samples$d,
+                     pooled = if (common) "common" else "random",
+                     small.values = small.values,
+                     cumulative.rankprob = cumulative.rankprob,
+                     keep.samples = keep.samples,
+                     nchar.trts = nchar.trts))
+  }
   
   
   #
   #
-  # (3) Resampling to calculate ranking probabilites and SUCRAs
+  # (3) Resampling to calculate ranking probabilities and SUCRAs
   #
   #
-  
+    
   sucras.common  <- ranking.matrix.common  <- cumrank.matrix.common  <- NULL
   sucras.random <- ranking.matrix.random <- rank.cum.random <- NULL
   #
   if (common) {
-    res.f <- ranksampling(x, nsim, "common", small.values, keep.samples)
+    res.c <- ranksampling(x, nsim, "common", small.values, keep.samples)
     #
-    sucras.common <- res.f$sucras
-    ranking.matrix.common <- res.f$rankogram
-    cumrank.matrix.common <- res.f$cumrank
+    sucras.common <- res.c$sucras
+    ranking.matrix.common <- res.c$rankogram
+    cumrank.matrix.common <- res.c$cumrank
     #
-    samples.common <- res.f$samples
+    samples.common <- res.c$samples
   }
   #
   if (random) {

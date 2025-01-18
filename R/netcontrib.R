@@ -288,6 +288,8 @@ print.netcontrib <- function(x,
   ##
   ##
   chkclass(x, "netcontrib")
+  chksuitable(x, "Network contributions",
+              classes = c("netmeta.crossnma", "netmeta.multinma"))
   x <- updateversion(x)
   
   
