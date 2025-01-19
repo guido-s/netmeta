@@ -386,7 +386,13 @@ chkmultiarm <- function(TE, seTE, treat1, treat2, studlab, correlated,
                  "with negative treatment arm variance: ",
                  paste(paste0("'", studlab.negative.sigma2, "'"),
                        collapse = ", "),
-                 "\n")
+                 "\n",
+                 "    Potential solutions:\n",
+                 "    1. Use argument 'func.inverse' to specify a different ",
+                 "function for matrix inversion;\n",
+                 "    2. Use argument 'correlated' to identify studies with ",
+                 "correlated treatment arms, e.g., due to body-split design;\n",
+                 "    3. Fix data errors.\n")
       else
         msgsigma2 <- ""
       #

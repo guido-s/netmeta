@@ -37,21 +37,7 @@ multiarm <- function(r, studlab, func.inverse) {
   ## (i.e., if an absolute negative weight contributes less than 0.1%)
   ##
   W[W < 0 & (abs(W) / sum(abs(W)[lower.tri(W)])) < 0.001] <- 0
-  if (any(W < 0))
-    if (deparse(substitute(func.inverse)) == "ginv" ||
-        deparse(substitute(func.inverse)) == "MASS::ginv")
-      warning(paste0("Matrix inversion resulted in negative variances ",
-                     "for multi-arm study '", studlab, "'. \n",
-                     "Consider using different function for matrix inversion ",
-                     "(see argument 'func.inverse')."),
-              call. = FALSE)
-    else
-      warning(paste0("Matrix inversion resulted in negative variances ",
-                     "for multi-arm study '", studlab, "'. \n",
-                     "Consider changing argument 'func.inverse', e.g., ",
-                     "ginv() from MASS package."),
-              call. = FALSE)
-  ##
+  #
   V <- 1 / W
   ##
   ## Compute original variance vector v from V

@@ -7,7 +7,9 @@
 #' meta-analysis uses methods that were originally developed in
 #' electrical network theory. It has been found to be equivalent to
 #' the frequentist approach to network meta-analysis which is based on
-#' weighted least squares regression (Rücker, 2012).
+#' weighted least squares regression (Rücker, 2012). An extension for
+#' multi-arm studies with correlated treatment arms is also implemented
+#' (Rücker & Schwarzer, 2025, unpublished).
 #' 
 #' @param TE Estimate of treatment effect, i.e. difference between
 #'   first and second treatment (e.g. log odds ratio, mean difference,
@@ -23,7 +25,7 @@
 #' @param subset An optional vector specifying a subset of studies to
 #'   be used.
 #' @param correlated An optional logical vector specifying whether
-#'   treatment arms of a multi-arm study are correlated.
+#'   treatment arms of a multi-arm study are correlated (see Details).
 #' @param sm A character string indicating underlying summary measure,
 #'   e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
 #'   \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.
@@ -118,6 +120,7 @@
 #' Network meta-analysis using R package \bold{netmeta} is described
 #' in detail in Schwarzer et al. (2015), Chapter 8.
 #' 
+#' \subsection{Network meta-analysis model}{
 #' Let \emph{n} be the number of different treatments (nodes,
 #' vertices) in a network and let \emph{m} be the number of existing
 #' comparisons (edges) between the treatments. If there are only
@@ -144,6 +147,22 @@
 #' parts for each pairwise meta-analysis and a part for remaining
 #' inconsistency between comparisons.
 #' 
+#' A simple random effects model assuming that a constant
+#' heterogeneity variance is added to each comparison of the network
+#' can be defined via a generalised methods of moments estimate of the
+#' between-studies variance \eqn{\tau^2} (Jackson et al., 2012). This
+#' is added to the observed sampling variance \code{seTE^2} of each
+#' comparison in the network (before appropriate adjustment for
+#' multi-arm studies). Then, as in standard pairwise meta-analysis,
+#' the procedure is repeated with the resulting enlarged standard
+#' errors.
+#' 
+#' For the random-effects model, the direct treatment estimates are
+#' based on the common between-study variance \eqn{\tau^2} from the
+#' network meta-analysis.
+#' }
+#' 
+#' \subsection{Multi-arm studies}{
 #' Often multi-arm studies are included in a network meta-analysis.
 #' In multi-arm studies, the treatment effects on different
 #' comparisons are not independent, but correlated. This is accounted
@@ -160,6 +179,35 @@
 #' within-study correlation by reweighting all comparisons of each
 #' multi-arm study.
 #' 
+#' Note, all pairwise comparisons must be provided for a multi-arm
+#' study. Consider a multi-arm study of \emph{p} treatments with known
+#' variances. For this study, treatment effects and standard errors
+#' must be provided for each of \emph{p}(\emph{p} - 1) / 2 possible
+#' comparisons. For instance, a three-arm study contributes three
+#' pairwise comparisons, a four-arm study even six pairwise
+#' comparisons. Function \code{\link[meta]{pairwise}} automatically
+#' calculates all pairwise comparisons for multi-arm studies.
+#' }
+#' 
+#' \subsection{Studies with correlated treatment arms}{
+#' The network meta-analysis method described in Rücker (2012) assumes that the
+#' treatment arms of a study are independent. This assumption is justified for
+#' parallel design trials and leads to variance consistency in multi-arm trials.
+#' However, this assumption is violated for trials with correlated arms, for
+#' example, split-body trials. For these trials, the variance of a contrast is
+#' not the sum of the arm-based variances, but comes with a correlation term
+#' which may lead to the violation of variance consistency. Using argument
+#' \code{correlated}, an alternative method is used for studies with correlated
+#' treatment arms (Rücker & Schwarzer, 2025, unpublished).
+#' 
+#' Argument \code{correlated}, which must be of the same length as arguments
+#' \code{TE}, \code{seTE}, etc., is a logical vector which must be TRUE for
+#' trials with correlated arms and FALSE otherwise. This can be easily done
+#' using a variable with design information like
+#' \code{correlated = design != "Parallel"}.
+#' }
+#' 
+#' \subsection{Data formats}{
 #' Data entry for this function is in \emph{contrast-based} format,
 #' that is, data are given as contrasts (differences) between two
 #' treatments (argument \code{TE}) with standard error (argument
@@ -179,32 +227,11 @@
 #' generic outcomes (\code{\link[meta]{metagen}} function). Additional
 #' arguments of these functions can be provided (see help page of
 #' function \code{\link[meta]{pairwise}}).
+#' }
 #' 
-#' Note, all pairwise comparisons must be provided for a multi-arm
-#' study. Consider a multi-arm study of \emph{p} treatments with known
-#' variances. For this study, treatment effects and standard errors
-#' must be provided for each of \emph{p}(\emph{p} - 1) / 2 possible
-#' comparisons. For instance, a three-arm study contributes three
-#' pairwise comparisons, a four-arm study even six pairwise
-#' comparisons. Function \code{\link[meta]{pairwise}} automatically
-#' calculates all pairwise comparisons for multi-arm studies.
-#' 
-#' A simple random effects model assuming that a constant
-#' heterogeneity variance is added to each comparison of the network
-#' can be defined via a generalised methods of moments estimate of the
-#' between-studies variance \eqn{\tau^2} (Jackson et al., 2012). This
-#' is added to the observed sampling variance \code{seTE^2} of each
-#' comparison in the network (before appropriate adjustment for
-#' multi-arm studies). Then, as in standard pairwise meta-analysis,
-#' the procedure is repeated with the resulting enlarged standard
-#' errors.
-#' 
-#' For the random-effects model, the direct treatment estimates are
-#' based on the common between-study variance \eqn{\tau^2} from the
-#' network meta-analysis.
-#' 
+#' \subsection{Additional comments}{
 #' Internally, both common and random effects models are calculated
-#' regardless of values choosen for arguments \code{common} and
+#' regardless of values chosen for arguments \code{common} and
 #' \code{random}. Accordingly, the network estimates for the random
 #' effects model can be extracted from component \code{TE.random} of
 #' an object of class \code{"netmeta"} even if argument \code{random =
@@ -234,6 +261,7 @@
 #' \code{"|"}, and \code{"*"}. If all of these characters are used in
 #' treatment labels, a corresponding error message is printed asking
 #' the user to specify a different separator.
+#' }
 #'
 #' @note
 #' R function \code{\link[metafor]{rma.mv}} from R package
@@ -334,19 +362,13 @@
 #'   matrix with estimated standard errors from direct evidence (common
 #'   effects / random effects model).}
 #' \item{lower.direct.common, upper.direct.common, lower.direct.random,
-#'   }{\emph{n}x\emph{n} matrices with lower and upper confidence
-#'   interval limits from direct evidence (common / random
+#'   upper.direct.random}{\emph{n}x\emph{n} matrices with lower and upper
+#'   confidence interval limits from direct evidence (common / random
 #'   effects model).}
-#' \item{upper.direct.random}{\emph{n}x\emph{n} matrices with lower
-#'   and upper confidence interval limits from direct evidence (common
-#'   effects / random effects model).}
-#' \item{statistic.direct.common, pval.direct.common,
-#'   statistic.direct.random, }{\emph{n}x\emph{n} matrices with
-#'   z-value and p-value for test of overall treatment effect from
-#'   direct evidence (common / random effects model).}
-#' \item{pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
-#'   and p-value for test of overall treatment effect from direct
-#'   evidence (common / random effects model).}
+#' \item{statistic.direct.common, pval.direct.common, statistic.direct.random,
+#'   pval.direct.random}{
+#'   \emph{n}x\emph{n} matrices with z-value and p-value for test of overall
+#'   treatment effect from direct evidence (common / random effects model).}
 #' \item{TE.indirect.common, TE.indirect.random}{\emph{n}x\emph{n}
 #'   matrix with estimated treatment effects from indirect evidence
 #'   (common / random effects model).}
@@ -354,19 +376,13 @@
 #'   matrix with estimated standard errors from indirect evidence
 #'   (common / random effects model).}
 #' \item{lower.indirect.common, upper.indirect.common,
-#'   lower.indirect.random, }{\emph{n}x\emph{n} matrices with lower
-#'   and upper confidence interval limits from indirect evidence
-#'   (common / random effects model).}
-#' \item{upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
-#'   and upper confidence interval limits from indirect evidence
-#'   (common / random effects model).}
+#'   lower.indirect.random, upper.indirect.random}{
+#'   \emph{n}x\emph{n} matrices with lower and upper confidence interval limits
+#'   from indirect evidence (common / random effects model).}
 #' \item{statistic.indirect.common, pval.indirect.common,
-#'   statistic.indirect.random, }{\emph{n}x\emph{n} matrices with
-#'   z-value and p-value for test of overall treatment effect from
-#'   indirect evidence (common / random effects model).}
-#' \item{pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value
-#'   and p-value for test of overall treatment effect from indirect
-#'   evidence (common / random effects model).}
+#'   statistic.indirect.random, pval.indirect.random}{
+#'   \emph{n}x\emph{n} matrices with z-value and p-value for test of overall
+#'   treatment effect from indirect evidence (common / random effects model).}
 #' \item{Q}{Overall heterogeneity / inconsistency statistic.}
 #' \item{df.Q}{Degrees of freedom for test of heterogeneity /
 #'   inconsistency.}

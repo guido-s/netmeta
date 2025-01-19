@@ -152,7 +152,7 @@
 #' comparisons for multi-arm studies.
 #' 
 #' For \code{method = "Inverse"}, both common and random effects
-#' models are calculated regardless of values choosen for arguments
+#' models are calculated regardless of values chosen for arguments
 #' \code{common} and \code{random}. Accordingly, the network estimates
 #' for the random effects model can be extracted from component
 #' \code{TE.random} of an object of class \code{"netmeta"} even if

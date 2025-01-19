@@ -80,7 +80,6 @@
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments.
 #' 
-#' @rdname netmeta
 #' @method print netmeta
 #' @export
 
