@@ -20,7 +20,7 @@
 #' \item network meta-analysis of binary data
 #'   (\code{\link{netmetabin}}) using the Mantel-Haenszel or
 #'   non-central hypergeometric distribution method (Efthimiou et al.,
-#'   2019).
+#'   2019), or penalised logistic regression (Evrenoglou et al., 2022).
 #' }
 #'
 #' The following methods are available to present results of a network
@@ -62,6 +62,7 @@
 #' 
 #' Additional methods and functions:
 #' \itemize{
+#' \item subgroup network meta-analysis (\code{\link{subgroup.netmeta}});
 #' \item information on network connectivity
 #'   (\code{\link{netconnection}});
 #' \item contribution of direct comparisons to network estimates
@@ -109,10 +110,8 @@
 #' 
 #' The development version of \bold{netmeta} is available on GitHub
 #' \url{https://github.com/guido-s/netmeta}.
-#' 
+#'
 #' @name netmeta-package
-#' 
-#' @docType package
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}, Gerta
 #'   Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
@@ -152,6 +151,11 @@
 #' A Mantel-Haenszel model for network meta-analysis of rare events.
 #' \emph{Statistics in Medicine},
 #' \bold{38}, 2992--3012
+#' 
+#' Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
+#' Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+#' \emph{Statistics in Medicine},
+#' \bold{41}, 5203--19.
 #' 
 #' König J, Krahn U, Binder H (2013):
 #' Visualizing the flow of evidence in network meta-analysis and
@@ -230,7 +234,7 @@
 #' 
 #' @importFrom meta baujat forest funnel radial trimfill longarm
 #'   metabias metabin metacont metagen metainc metacum metainf metareg
-#'   gs ci cilayout
+#'   gs ci cilayout backtransf pairwise settings.meta
 #'
 #' @importFrom magic adiag
 #'
@@ -240,18 +244,26 @@
 #'   text strheight strwidth title
 #'
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
-#'   prcomp relevel reshape rnorm sd
+#'   prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted
+#'   residuals quantile
 #'
 #' @importFrom utils installed.packages packageDescription capture.output
 #'   packageVersion
 #'
 #' @importFrom MASS ginv
 #'
+#' @importFrom Matrix bdiag
+#'
 #' @importFrom ggplot2 ggplot aes theme_classic geom_tile xlab ylab
 #'   theme element_blank element_text scale_fill_gradient2 geom_text
 #'   ggtitle scale_x_discrete scale_y_discrete theme_dark
 #'
-#' @importFrom metafor bldiag contrmat rma.mv
+#' @importFrom metafor bldiag contrmat rma.mv rma.uni
+#' 
+#' @importFrom dplyr %>% filter select rename starts_with
+#' 
+#' @importFrom magrittr %<>%
 
+"_PACKAGE"
 
 NULL

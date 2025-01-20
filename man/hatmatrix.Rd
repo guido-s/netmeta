@@ -22,7 +22,7 @@ hatmatrix(
   nchar.trts = x$x$nchar.trts,
   nchar.studlab = x$x$nchar.studlab,
   digits = gs("digits"),
-  legend = TRUE,
+  legend = gs("legend"),
   legend.studlab = TRUE,
   ...
 )
@@ -163,9 +163,8 @@ is used to calculate the transition matrices for the random walk in
 }
 }
 \examples{
-data(Dong2013)
 # Only consider first ten studies for concise output
-first10 <- subset(Dong2013, id <= 10)
+first10 <- subset(dat.dong2013, id <= 10)
 p1 <- pairwise(treatment, death, randomized, studlab = id,
   data = first10, sm = "OR")
 net1 <- netmeta(p1, common = FALSE)
@@ -197,7 +196,7 @@ Network meta-analysis, electrical networks and graph theory.
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netcontrib}},
-  \code{\link{netheat}}
+  \code{\link{netheat}}, \code{\link[metadat]{dat.dong2013}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

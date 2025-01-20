@@ -2,105 +2,34 @@
 % Please edit documentation in R/rankogram.R
 \name{rankogram}
 \alias{rankogram}
-\alias{print.rankogram}
-\title{Calculate rankogram}
+\title{Generic function for rankograms}
 \usage{
-rankogram(
-  x,
-  nsim = 1000,
-  common = x$common,
-  random = x$random,
-  small.values = x$small.values,
-  cumulative.rankprob = FALSE,
-  nchar.trts = x$nchar.trts,
-  warn.deprecated = gs("warn.deprecated"),
-  ...
-)
-
-\method{print}{rankogram}(
-  x,
-  common = x$common,
-  random = x$random,
-  cumulative.rankprob = x$cumulative.rankprob,
-  nchar.trts = x$nchar.trts,
-  digits = gs("digits.prop"),
-  legend = TRUE,
-  warn.deprecated = gs("warn.deprecated"),
-  ...
-)
+rankogram(x, ...)
 }
 \arguments{
-\item{x}{An object of class \code{\link{netmeta}}.}
+\item{x}{An R object.}
 
-\item{nsim}{Number of simulations.}
-
-\item{common}{A logical indicating to compute ranking probabilities
-and SUCRAs for the common effects model.}
-
-\item{random}{A logical indicating to compute ranking probabilities
-and SUCRAs for the random effects model.}
-
-\item{small.values}{A character string specifying whether small
-treatment effects indicate a beneficial (\code{"desirable"}) or
-harmful (\code{"undesirable"}) effect, can be abbreviated.}
-
-\item{cumulative.rankprob}{A logical indicating whether cumulative
-ranking probabilites should be printed.}
-
-\item{nchar.trts}{A numeric defining the minimum number of
-characters used to create unique treatment names.}
-
-\item{warn.deprecated}{A logical indicating whether warnings should
-be printed if deprecated arguments are used.}
-
-\item{\dots}{Additional arguments for printing.}
-
-\item{digits}{Minimal number of significant digits, see
-\code{\link{print.default}}.}
-
-\item{legend}{A logical indicating whether a legend should be
-printed.}
-}
-\value{
-An object of class \code{rankogram} with corresponding \code{print}
-and \code{plot} function. The object is a list containing the
-following components:
-\item{ranking.matrix.common}{Numeric matrix giving the probability
-  of each treatment being at each possible rank for the common
-  effects model.}
-\item{ranking.common}{SUCRA values for the common effects model.}
-\item{ranking.matrix.random}{Numeric matrix giving the probability
-  of each treatment being at each possible rank for the random
-  effects model.}
-\item{ranking.random}{SUCRA values for the random effects model.}
-\item{cumrank.matrix.common}{Numeric matrix giving the cumulative
-  ranking probability of each treatment for the
-  common effects model.}
-\item{cumrank.matrix.random}{Numeric matrix giving the cumulative
-  ranking probability of each treatment for the random effects
-  model.}
-\item{nsim, common, random}{As defined above},
-\item{small.values, x}{As defined above},
+\item{\dots}{Additional arguments.}
 }
 \description{
-This function calculates the probabilities of each treatment being
+Generic function to calculate the probabilities of each treatment being
 at each possible rank and the SUCRAs (Surface Under the Cumulative
-RAnking curve) in frequentist network meta-analysis.
+RAnking curve) in network meta-analysis.
 }
 \details{
-We derive a matrix showing the probability of each treatment being
-at each possible rank. To this aim, we use resampling from a
-multivariate normal distribution with estimated network effects as
-means and corresponding estimated variance covariance matrix. We
-then summarise them using the ranking metric SUCRAs (Surface Under
-the Cumulative RAnking curve).
+For more details, look at the following functions to generate
+rankograms:
+\itemize{
+\item \code{\link{rankogram.netmeta}}
+\item \code{\link{rankogram.default}}
+}
 }
 \examples{
-data(Woods2010)
 p1 <- pairwise(treatment, event = r, n = N, studlab = author,
-               data = Woods2010, sm = "OR")
+  data = dat.woods2010, sm = "OR")
 net1 <- netmeta(p1, small.values = "desirable")
 
+set.seed(1909) # get reproducible results
 ran1 <- rankogram(net1, nsim = 100)
 ran1
 print(ran1, cumulative.rankprob = TRUE)
@@ -117,9 +46,8 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netrank}},
-  \code{\link{plot.rankogram}}
+  \code{\link{plot.rankogram}}, \code{\link[metadat]{dat.woods2010}}
 }
 \author{
-Theodoros Papakonstantinou \email{dev@tpapak.com}, Guido
-  Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

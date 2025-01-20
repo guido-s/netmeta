@@ -127,7 +127,8 @@
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netsplit}}, \code{\link{netmeta}},
-#'   \code{\link{netmetabin}}, \code{\link{netmeasures}}
+#'   \code{\link{netmetabin}}, \code{\link{netmeasures}},
+#'   \code{\link[metadat]{dat.woods2010}}
 #' 
 #' @references
 #' Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
@@ -154,10 +155,8 @@
 #' \bold{349}, g5630
 #' 
 #' @examples
-#' data(Woods2010)
-#' #
 #' p1 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = dat.woods2010, sm = "OR")
 #' #
 #' net1 <- netmeta(p1)
 #' #
@@ -183,7 +182,6 @@
 #' 
 #' @rdname nettable
 #' @export nettable
-
 
 nettable <- function(...,
                      name = NULL,
@@ -471,7 +469,7 @@ nettable <- function(...,
       return(invisible(NULL))
     }
     ##
-    if (!is.installed.package("writexl", stop = FALSE))
+    if (!is_installed_package("writexl", stop = FALSE))
       stop(paste0("Package 'writexl' missing.",
                   "\n  ",
                   "Please use the following R command for installation:",
@@ -554,16 +552,12 @@ nettable <- function(...,
 }
 
 
-
-
-
 #' @rdname nettable
 #' @method print nettable
 #' @export
 
-
 print.nettable <- function(x, common = x$x$common, random = x$x$random,
-                           legend = TRUE, ...) {
+                           legend = gs("legend"), ...) {
   
   ##
   ##
@@ -591,8 +585,7 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random,
   ##
   ##
   if (common) {
-    cat(paste0("Network table (", gs("text.w.common"),
-               ") effects model):\n"))
+    cat("Network table (", gs("text.w.common"), ") effects model):\n", sep = "")
     ##
     if (isCol(x$common, "Outcome")) {
       outcomes <- unique(x$common$Outcome)
@@ -607,9 +600,9 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random,
         if (n.netmeta > 1 & length(x$sm) != 1)
           outcome.txt <-
             paste0(outcome.txt," (sm = '",
-                   if (is.relative.effect(x$sm[i]) & !backtransf[i]) "log",
+                   if (is_relative_effect(x$sm[i]) & !backtransf[i]) "log",
                    x$sm[i], "')")
-        cat(paste0(outcome.txt, "\n"))
+        cat(outcome.txt, "\n", sep = "")
         prmatrix(mat.i,
                  quote = FALSE, right = TRUE,
                  rowlab = rep("", nrow(mat.i)), ...)
@@ -631,8 +624,7 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random,
   ##
   ##
   if (random) {
-    cat(paste0("Network table (", gs("text.w.random"),
-               ") effects model):\n"))
+    cat("Network table (", gs("text.w.random"), ") effects model):\n", sep = "")
     ##
     if (isCol(x$random, "Outcome")) {
       outcomes <- unique(x$random$Outcome)
@@ -647,9 +639,9 @@ print.nettable <- function(x, common = x$x$common, random = x$x$random,
         if (n.netmeta > 1 & length(x$sm) != 1)
           outcome.txt <-
             paste0(outcome.txt," (sm = '",
-                   if (is.relative.effect(x$sm[i]) & !backtransf[i]) "log",
+                   if (is_relative_effect(x$sm[i]) & !backtransf[i]) "log",
                    x$sm[i], "')")
-        cat(paste0(outcome.txt, "\n"))
+        cat(outcome.txt, "\n", sep = "")
         prmatrix(mat.i,
                  quote = FALSE, right = TRUE,
                  rowlab = rep("", nrow(mat.i)), ...)

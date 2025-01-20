@@ -8,13 +8,13 @@
 \method{forest}{netsplit}(
   x,
   pooled = ifelse(x$x$random, "random", "common"),
-  show = "both",
+  show = x$show,
   subgroup = "comparison",
-  overall = TRUE,
-  direct = TRUE,
-  indirect = TRUE,
+  overall = x$overall,
+  direct = x$direct,
+  indirect = x$indirect,
   prediction = x$prediction,
-  only.reference = FALSE,
+  only.reference = x$only.reference,
   sortvar = NULL,
   subset = NULL,
   text.overall = "Network estimate",
@@ -31,6 +31,7 @@
   col.diamond.lines = "black",
   col.predict = "red",
   col.predict.lines = "black",
+  col.subgroup = "black",
   equal.size = TRUE,
   leftcols,
   leftlabs,
@@ -123,6 +124,9 @@ confidence limits are completely within squares squares.}
 \item{col.predict.lines}{Colour of outer lines of prediction
 intervals.}
 
+\item{col.subgroup}{The colour to print information on subgroups, i.e.,
+pairwise comparisons.}
+
 \item{equal.size}{A logical indicating whether all squares should
 be of equal size. Otherwise, the square size is proportional to
 the precision of estimates.}
@@ -155,7 +159,7 @@ than log odds ratios, for example.}
 \item{smlab}{A label printed at top of figure. By default, text
 indicating either common or random effects model is printed.}
 
-\item{\dots}{Additional arguments for \code{\link{forest.meta}}
+\item{\dots}{Additional arguments for \code{\link[meta]{forest.meta}}
 function.}
 }
 \description{
@@ -175,7 +179,7 @@ forest plot, respectively. If argument \code{rightcols} is
 If direct estimates are included in the forest plot (\code{direct =
 TRUE}, default), the following columns will be printed on the left
 side of the forest plot: the comparisons (column \code{"studlab"}
-in \code{\link{forest.meta}}), number of pairwise comparisons
+in \code{\link[meta]{forest.meta}}), number of pairwise comparisons
 (\code{"k"}), direct evidence proportion (\code{"k"}), and
 I\eqn{^2} from pairwise comparison (\code{"I2"}).
 
@@ -183,7 +187,7 @@ If direct estimates are not included in the forest plot
 (\code{direct = FALSE}), only the comparisons (\code{"studlab"})
 are printed on the left side of the forest plot.
 
-For more information see help page of \code{\link{forest.meta}}
+For more information see help page of \code{\link[meta]{forest.meta}}
 function.
 
 Argument \code{show} determines which comparisons are printed:
@@ -233,7 +237,7 @@ forest(ns1, fontsize = 8, spacing = 0.75, show = "all",
 
 }
 \seealso{
-\code{\link{forest.meta}}
+\code{\link[meta]{forest.meta}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

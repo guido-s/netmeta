@@ -49,7 +49,7 @@
 #' @param rank Deprecated argument (replaced by \code{method.bias}).
 #' @param mm Deprecated argument (replaced by \code{method.bias}).
 #' @param \dots Additional graphical arguments passed as arguments to
-#'   \code{\link{radial.meta}}.
+#'   \code{\link[meta]{radial.meta}}.
 #' 
 #' @details
 #' 
@@ -95,8 +95,8 @@
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{netmeta}}, \code{\link{radial.meta}},
-#'   \code{\link{funnel.meta}}, \code{\link{metabias}}
+#' @seealso \code{\link{netmeta}}, \code{\link[meta]{radial.meta}},
+#'   \code{\link[meta]{funnel.meta}}, \code{\link[meta]{metabias}}
 #' 
 #' @references
 #' Chaimani A & Salanti G (2012):
@@ -164,7 +164,6 @@
 #'
 #' @method radial netmeta
 #' @export
-
 
 radial.netmeta <- function(x,
                            order,

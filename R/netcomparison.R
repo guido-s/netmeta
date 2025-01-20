@@ -174,7 +174,6 @@
 #' @export
 #' @export netcomparison
 
-
 netcomparison <- function(x, treat1, treat2,
                           common = x$common,
                           random = x$random,
@@ -280,14 +279,20 @@ netcomparison <- function(x, treat1, treat2,
   for (i in seq_len(n.comparisons)) {
     sel1.i <- !comps1.list[[i]] %in% comps2.list[[i]]
     sel2.i <- !comps2.list[[i]] %in% comps1.list[[i]]
-    ##
-    if (any(sel1.i) | any(sel2.i))
-      comparison[i] <-
-        paste0(paste(comps1.list[[i]][sel1.i],
-                     collapse = paste0(add1[i], x$sep.comps, add1[i])),
-               x$sep.trts,
-               paste(comps2.list[[i]][sel2.i],
-                     collapse = paste0(add2[i], x$sep.comps, add2[i])))
+    #
+    if (any(sel1.i) | any(sel2.i)) {
+      comb1 <- paste(comps1.list[[i]][sel1.i],
+                     collapse = paste0(add1[i], x$sep.comps, add1[i]))
+      comb2 <- paste(comps2.list[[i]][sel2.i],
+                     collapse = paste0(add2[i], x$sep.comps, add2[i]))
+      #
+      if (comb1 == "")
+        comparison[i] <- comb2
+      else if (comb2 == "")
+        comparison[i] <- comb1
+      else
+        comparison[i] <- paste0(comb1, x$sep.trts, comb2)
+    }
   }
   
   
@@ -323,15 +328,33 @@ netcomparison <- function(x, treat1, treat2,
   ## Calculate estimates for comparisons
   ##
   X.matrix <- B.matrix %*% C.matrix
-  ##
-  TE.common <- as.vector(X.matrix %*% x$Comp.common)
+  #
+  # Identify inestimable components and drop them from the design matrix
+  #
+  compNA <- is.na(x$Comp.common)
+  inestimable <- apply(abs(X.matrix[, compNA, drop = FALSE]), 1, sum) > 0
+  X.matrix <- X.matrix[, !compNA, drop = FALSE]
+  #
+  TE.common <- as.vector(X.matrix %*% x$Comp.common[!compNA])
   seTE.common <-
-    sqrt(diag(X.matrix %*% x$Lplus.matrix.common %*% t(X.matrix)))
-  ##
-  TE.random <- as.vector(X.matrix %*% x$Comp.random)
+    sqrt(
+      diag(X.matrix %*% x$Lplus.matrix.common[!compNA, !compNA] %*%
+             t(X.matrix)))
+  #
+  TE.random <- as.vector(X.matrix %*% x$Comp.random[!compNA])
   seTE.random <-
-    sqrt(diag(X.matrix %*% x$Lplus.matrix.random %*% t(X.matrix)))
-  ##
+    sqrt(diag(X.matrix %*% x$Lplus.matrix.random[!compNA, !compNA] %*%
+                t(X.matrix)))
+  #
+  # Set comparisons with inestimable components to NA
+  #
+  TE.common[inestimable] <- NA
+  seTE.common[inestimable] <- NA
+  TE.random[inestimable] <- NA
+  seTE.random[inestimable] <- NA
+  #
+  # Calculate confidence intervals
+  #
   ci.f <- ci(TE.common, seTE.common, level = level)
   ci.r <- ci(TE.random, seTE.random, level = level)
   
@@ -394,9 +417,6 @@ netcomparison <- function(x, treat1, treat2,
 }
 
 
-
-
-
 #' @rdname netcomparison
 #' @method print netcomparison
 #' @export
@@ -418,7 +438,7 @@ print.netcomparison <- function(x,
                                 JAMA.pval = gs("JAMA.pval"),
                                 big.mark = gs("big.mark"),
                                 ##
-                                legend = TRUE,
+                                legend = gs("legend"),
                                 warn.deprecated = gs("warn.deprecated"),
                                 ...) {
   
@@ -454,7 +474,9 @@ print.netcomparison <- function(x,
   treat2 <- rep("", n.comparisons)
   ##
   if (common | random) {
-    comps <- c(x$comps, x$inactive)
+    comps <- x$comps
+    if (!is.null(x$inactive) && any(grepl(x$inactive, x$comparison)))
+      comps <- c(comps, x$inactive)
     comps.abbr <- treats(comps, nchar.comps)
     ##
     for (i in seq_len(n.comparisons))
@@ -478,23 +500,29 @@ print.netcomparison <- function(x,
       sel1.i <- !comps1.list[[i]] %in% comps2.list[[i]]
       sel2.i <- !comps2.list[[i]] %in% comps1.list[[i]]
       ##
-      if (any(sel1.i) | any(sel2.i))
-        comparison[i] <-
-          paste0(paste(comps1.list[[i]][sel1.i],
-                       collapse = paste0(x$add1[i], x$x$sep.comps, x$add1[i])),
-                 x$x$sep.trts,
-                 paste(comps2.list[[i]][sel2.i],
-                       collapse = paste0(x$add2[i], x$x$sep.comps, x$add2[i])))
+      if (any(sel1.i) | any(sel2.i)) {
+        comb1 <- paste(comps1.list[[i]][sel1.i],
+                       collapse = paste0(x$add1[i], x$x$sep.comps, x$add1[i]))
+        comb2 <- paste(comps2.list[[i]][sel2.i],
+                       collapse = paste0(x$add2[i], x$x$sep.comps, x$add2[i]))
+        #
+        if (comb1 == "")
+          comparison[i] <- comb2
+        else if (comb2 == "")
+          comparison[i] <- comb1
+        else
+          comparison[i] <- paste0(comb1, x$x$sep.trts, comb2)
+      }
     }
   }
   
   
-  sm.lab <- x$x$sm
+  sm <- sm.lab <- x$x$sm
   ##
-  relative <- is.relative.effect(x$x$sm)
-  ##
+  relative <- is_relative_effect(sm) | sm == "VE"
+  #
   if (!backtransf & relative)
-    sm.lab <- paste0("log", x$x$sm)
+    sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##  
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
   
@@ -504,10 +532,19 @@ print.netcomparison <- function(x,
     lower.common <- x$lower.common
     upper.common <- x$upper.common
     ##
-    if (backtransf & relative) {
-      TE.common <- exp(TE.common)
-      lower.common <- exp(lower.common)
-      upper.common <- exp(upper.common)
+    if (backtransf) {
+      TE.common <- backtransf(TE.common, sm)
+      lower.common <- backtransf(lower.common, sm)
+      upper.common <- backtransf(upper.common, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lower.common
+        lower.common <- upper.common
+        upper.common <- tmp.l
+      }
     }
   }
   ##
@@ -516,10 +553,19 @@ print.netcomparison <- function(x,
     lower.random <- x$lower.random
     upper.random <- x$upper.random
     ##
-    if (backtransf & relative) {
-      TE.random <- exp(TE.random)
-      lower.random <- exp(lower.random)
-      upper.random <- exp(upper.random)
+    if (backtransf) {
+      TE.random <- backtransf(TE.random, sm)
+      lower.random <- backtransf(lower.random, sm)
+      upper.random <- backtransf(upper.random, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lower.random
+        lower.random <- upper.random
+        upper.random <- tmp.l
+      }
     }
   }
   
@@ -552,8 +598,8 @@ print.netcomparison <- function(x,
     ##
     res.c[res.c[, "treat1"] == res.c[, "treat2"], 4:7] <- "."
     ##
-    cat(paste0("Results for comparisons (additive CNMA model, ",
-               "common effects model):\n\n"))
+    cat("Results for comparisons (additive CNMA model,",
+        "common effects model):\n\n")
     ##
     prmatrix(res.c, quote = FALSE, right = TRUE, na.print = "--")
     ##
@@ -591,8 +637,8 @@ print.netcomparison <- function(x,
     ##
     res.r[res.r[, "treat1"] == res.r[, "treat2"], 4:7] <- "."
     ##
-    cat(paste0("Results for comparisons (additive CNMA model, ",
-               "random effects model):\n\n"))
+    cat("Results for comparisons (additive CNMA model,",
+        "random effects model):\n\n")
     ##
     prmatrix(res.r, quote = FALSE, right = TRUE, na.print = "--")
   }
@@ -614,7 +660,6 @@ print.netcomparison <- function(x,
                rowlab = rep("", length(comps.abbr))) 
     }
   }
-  
   
   invisible(NULL)
 }

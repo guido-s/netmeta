@@ -88,7 +88,6 @@
 #' 
 #' @export treats
 
-
 treats <- function(x, nchar.trts = 8, row = TRUE) {
   
   chknumeric(nchar.trts, min = 1, length = 1)
@@ -116,13 +115,9 @@ treats <- function(x, nchar.trts = 8, row = TRUE) {
 }
 
 
-
-
-
 #' @rdname treats
 #' 
 #' @export comps
-
 
 comps <- function(x, trts, sep.trts, nchar.trts = 8, row = TRUE) {
   

@@ -37,7 +37,6 @@
 #' @method netgraph netcomb
 #' @export
 
-
 netgraph.netcomb <- function(x, ...) {
   
   

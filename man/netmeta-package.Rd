@@ -24,7 +24,7 @@ providing the following network meta-analysis models:
 \item network meta-analysis of binary data
   (\code{\link{netmetabin}}) using the Mantel-Haenszel or
   non-central hypergeometric distribution method (Efthimiou et al.,
-  2019).
+  2019), or penalised logistic regression (Evrenoglou et al., 2022).
 }
 
 The following methods are available to present results of a network
@@ -66,6 +66,7 @@ Available functions to evaluate network inconsistency:
 
 Additional methods and functions:
 \itemize{
+\item subgroup network meta-analysis (\code{\link{subgroup.netmeta}});
 \item information on network connectivity
   (\code{\link{netconnection}});
 \item contribution of direct comparisons to network estimates
@@ -150,6 +151,11 @@ A Mantel-Haenszel model for network meta-analysis of rare events.
 \emph{Statistics in Medicine},
 \bold{38}, 2992--3012
 
+Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
+Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+\emph{Statistics in Medicine},
+\bold{41}, 5203--19.
+
 König J, Krahn U, Binder H (2013):
 Visualizing the flow of evidence in network meta-analysis and
 characterizing mixed treatment comparisons.
@@ -222,6 +228,13 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 Schwarzer G, Carpenter JR and Rücker G (2015):
 \emph{Meta-Analysis with R (Use R!)}.
 Springer International Publishing, Switzerland.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/guido-s/netmeta}
+}
+
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Gerta

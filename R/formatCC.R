@@ -6,17 +6,17 @@ formatCC <- function(x,
                      big.mark) {
   
   
-  relative <- is.relative.effect(sm)
+  relative <- is_relative_effect(sm)
   
   sm.lab <- sm
   ##
   if (sm != "") {
-    sm.lab <- paste0("i", sm)
+    sm.lab <- paste0("i", if (sm == "VE") "VR" else sm)
     if (!backtransf & relative)
       sm.lab <- paste0("log(", sm.lab, ")")
   }
   ##  
-  ci.lab <- paste(round(100 * level, 1), "%-CI", sep = "")
+  ci.lab <- paste0(round(100 * level, 1), "%-CI")
   
   
   ## First column contains row names
@@ -25,10 +25,19 @@ formatCC <- function(x,
   ##
   rownames(res) <- compos(rownames(res), comps, comps.abbr, sep.comps)
   ##
-  if (backtransf & relative) {
-    res$TE <- exp(res$TE)
-    res$lower <- exp(res$lower)
-    res$upper <- exp(res$upper)
+  if (backtransf) {
+    res$TE <- backtransf(res$TE, sm)
+    res$lower <- backtransf(res$lower, sm)
+    res$upper <- backtransf(res$upper, sm)
+    #
+    # Switch lower and upper limit for VE if results have been
+    # backtransformed
+    #
+    if (sm == "VE") {
+      tmp.l <- res$lower
+      res$lower <- res$upper
+      res$upper <- tmp.l
+    }
   }
   ##
   res$TE <- formatN(res$TE, digits, "NA", big.mark)

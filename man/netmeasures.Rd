@@ -8,7 +8,7 @@ netmeasures(
   x,
   random = x$random | !missing(tau.preset),
   tau.preset = x$tau.preset,
-  warn = TRUE,
+  warn = gs("warn"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )

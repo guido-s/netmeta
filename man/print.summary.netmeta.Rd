@@ -15,6 +15,7 @@
   all.treatments = x$all.treatments,
   details = TRUE,
   nma = TRUE,
+  overall.hetstat = x$overall.hetstat,
   backtransf = x$backtransf,
   nchar.trts = x$nchar.trts,
   nchar.studlab = x$nchar.studlab,
@@ -24,11 +25,19 @@
   digits.Q = gs("digits.Q"),
   digits.tau2 = gs("digits.tau2"),
   digits.I2 = gs("digits.I2"),
-  scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
+  scientific.pval = gs("scientific.pval"),
+  zero.pval = gs("zero.pval"),
+  JAMA.pval = gs("JAMA.pval"),
+  print.tau2 = gs("print.tau2"),
+  print.tau = gs("print.tau"),
+  print.Q = gs("print.Q"),
+  print.I2 = gs("print.I2"),
+  print.I2.ci = gs("print.I2.ci"),
   truncate,
   text.truncate = "*** Output truncated ***",
-  legend = TRUE,
+  details.methods = gs("details"),
+  legend = gs("legend"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -65,6 +74,9 @@ individual studies should be printed.}
 \item{nma}{A logical indicating whether summary results of network
 meta-analysis should be printed.}
 
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
+
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
 \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -95,11 +107,34 @@ between-study variance, see \code{print.default}.}
 \item{digits.I2}{Minimal number of significant digits for I-squared
 statistic, see \code{print.default}.}
 
+\item{big.mark}{A character used as thousands separator.}
+
 \item{scientific.pval}{A logical specifying whether p-values should
 be printed in scientific notation, e.g., 1.2345e-01 instead of
 0.12345.}
 
-\item{big.mark}{A character used as thousands separator.}
+\item{zero.pval}{A logical specifying whether p-values should be
+printed with a leading zero.}
+
+\item{JAMA.pval}{A logical specifying whether p-values for test of
+overall effect should be printed according to JAMA reporting
+standards.}
+
+\item{print.tau2}{A logical specifying whether between-study
+variance \eqn{\tau^2} should be printed.}
+
+\item{print.tau}{A logical specifying whether \eqn{\tau}, the
+square root of the between-study variance \eqn{\tau^2}, should be
+printed.}
+
+\item{print.Q}{A logical value indicating whether to print the
+results of the test of heterogeneity.}
+
+\item{print.I2}{A logical specifying whether heterogeneity
+statistic I\eqn{^2} should be printed.}
+
+\item{print.I2.ci}{A logical specifying whether confidence interval for
+heterogeneity statistic I\eqn{^2} should be printed.}
 
 \item{truncate}{An optional vector used to truncate the printout of
 results for individual studies (must be a logical vector of
@@ -108,6 +143,9 @@ length corresponding to the number of pairwise comparisons
 
 \item{text.truncate}{A character string printed if study results
 were truncated from the printout.}
+
+\item{details.methods}{A logical specifying whether details on statistical
+methods should be printed.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}

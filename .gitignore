@@ -8,3 +8,4 @@ symbols.rds
 roxygen2-*.R
 .DS_Store
 cran-comments.md
+*.Rproj

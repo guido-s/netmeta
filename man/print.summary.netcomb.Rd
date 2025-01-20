@@ -8,6 +8,7 @@
   x,
   common = x$x$common,
   random = x$x$random,
+  overall.hetstat = x$overall.hetstat,
   backtransf = x$backtransf,
   nchar.comps = x$nchar.comps,
   digits = gs("digits"),
@@ -15,11 +16,17 @@
   digits.pval = gs("digits.pval"),
   digits.pval.Q = max(gs("digits.pval.Q"), 2),
   digits.Q = gs("digits.Q"),
+  big.mark = gs("big.mark"),
   scientific.pval = gs("scientific.pval"),
   zero.pval = gs("zero.pval"),
   JAMA.pval = gs("JAMA.pval"),
-  big.mark = gs("big.mark"),
-  legend = TRUE,
+  print.tau2 = gs("print.tau2"),
+  print.tau = gs("print.tau"),
+  print.Q = gs("print.Q"),
+  print.I2 = gs("print.I2"),
+  print.I2.ci = gs("print.I2.ci"),
+  details.methods = gs("details"),
+  legend = gs("legend"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -32,6 +39,9 @@ effects model should be printed.}
 
 \item{random}{A logical indicating whether results for the random
 effects model should be printed.}
+
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
@@ -56,6 +66,8 @@ p-value of heterogeneity tests, see \code{print.default}.}
 \item{digits.Q}{Minimal number of significant digits for
 heterogeneity statistics, see \code{print.default}.}
 
+\item{big.mark}{A character used as thousands separator.}
+
 \item{scientific.pval}{A logical specifying whether p-values should
 be printed in scientific notation, e.g., 1.2345e-01 instead of
 0.12345.}
@@ -64,9 +76,27 @@ be printed in scientific notation, e.g., 1.2345e-01 instead of
 printed with a leading zero.}
 
 \item{JAMA.pval}{A logical specifying whether p-values for test of
-effects should be printed according to JAMA reporting standards.}
+overall effect should be printed according to JAMA reporting
+standards.}
 
-\item{big.mark}{A character used as thousands separator.}
+\item{print.tau2}{A logical specifying whether between-study
+variance \eqn{\tau^2} should be printed.}
+
+\item{print.tau}{A logical specifying whether \eqn{\tau}, the
+square root of the between-study variance \eqn{\tau^2}, should be
+printed.}
+
+\item{print.Q}{A logical value indicating whether to print the
+results of the test of heterogeneity.}
+
+\item{print.I2}{A logical specifying whether heterogeneity
+statistic I\eqn{^2} should be printed.}
+
+\item{print.I2.ci}{A logical specifying whether confidence interval for
+heterogeneity statistic I\eqn{^2} should be printed.}
+
+\item{details.methods}{A logical specifying whether details on statistical
+methods should be printed.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}

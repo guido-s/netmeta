@@ -72,18 +72,34 @@ mat2dat.table <- function(x, pooled = "common", dat.trts,
              zero = zero.pval, JAMA = JAMA.pval,
              lab.NA = text.NA)
   ##
-  if (backtransf & is.relative.effect(x$x$sm)) {
-    res$TE.nma <- exp(res$TE.nma)
-    res$lower.nma <- exp(res$lower.nma)
-    res$upper.nma <- exp(res$upper.nma)
-    ##
-    res$TE.direct <- exp(res$TE.direct)
-    res$lower.direct <- exp(res$lower.direct)
-    res$upper.direct <- exp(res$upper.direct)
-    ##
-    res$TE.indirect <- exp(res$TE.indirect)
-    res$lower.indirect <- exp(res$lower.indirect)
-    res$upper.indirect <- exp(res$upper.indirect)
+  if (backtransf) {
+    sm <- x$x$sm
+    #
+    res$TE.nma <- backtransf(res$TE.nma, sm)
+    res$lower.nma <- backtransf(res$lower.nma, sm)
+    res$upper.nma <- backtransf(res$upper.nma, sm)
+    #
+    res$TE.direct <- backtransf(res$TE.direct, sm)
+    res$lower.direct <- backtransf(res$lower.direct, sm)
+    res$upper.direct <- backtransf(res$upper.direct, sm)
+    #
+    res$TE.indirect <- backtransf(res$TE.indirect, sm)
+    res$lower.indirect <- backtransf(res$lower.indirect, sm)
+    res$upper.indirect <- backtransf(res$upper.indirect, sm)
+    #
+    if (sm == "VE") {
+      tmp.l <- res$lower.nma
+      res$lower.nma <- res$upper.nma
+      res$upper.nma <- tmp.l
+      #
+      tmp.l <- res$lower.direct
+      res$lower.direct <- res$upper.direct
+      res$upper.direct <- tmp.l
+      #
+      tmp.l <- res$lower.indirect
+      res$lower.indirect <- res$upper.indirect
+      res$upper.indirect <- tmp.l
+    }
   }
   ##
   ## Round and round ...

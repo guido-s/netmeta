@@ -1,9 +1,10 @@
 #' Network meta-analysis of binary outcome data
 #' 
 #' @description
-#' Provides three models for the network meta-analysis of binary data
+#' Provides four models for the network meta-analysis of binary data
 #' (Mantel-Haenszel method, based on the non-central hypergeometric
-#' distribution, and the inverse variance method).
+#' distribution, penalised logistic regression, and the
+#' inverse variance method).
 #' 
 #' @param event1 Number of events (first treatment).
 #' @param n1 Number of observations (first treatment).
@@ -20,8 +21,8 @@
 #' @param sm A character string indicating underlying summary measure,
 #'   i.e., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"}.
 #' @param method A character string indicating which method is to be
-#'   used for pooling of studies. One of \code{"Inverse"},
-#'   \code{"MH"}, or \code{"NCH"}, can be abbreviated.
+#'   used for pooling of studies. One of \code{"MH"},
+#'   \code{"NCH"}, \code{"LRP"}, or \code{"Inverse"}, can be abbreviated.
 #' @param cc.pooled A logical indicating whether \code{incr} should be
 #'   used as a continuity correction, when calculating the network
 #'   meta-analysis estimates.
@@ -29,15 +30,9 @@
 #'   i.e., to the numbers of events and non-events, of all treatment
 #'   arms in studies with zero events or non-events in any of the
 #'   treatment arms ("continuity correction").
-#' @param allincr A logical indicating whether \code{incr} should be
-#'   added to each cell count of all studies if a continuity
-#'   correction was used for at least one study (only considered if
-#'   \code{method = "Inverse"}). If FALSE (default), \code{incr} is
-#'   used as continuity correction only for studies with zero events
-#'   or zero non-events in any of the treatment arms.
-#' @param addincr A logical indicating whether \code{incr} should be
-#'   added to each cell count of all studies, irrespective of zero
-#'   cell counts (only considered if \code{method = "Inverse"}).
+#' @param method.incr A character string indicating which continuity
+#'   correction method should be used (\code{"only0"},
+#'   \code{"if0all"}, or \code{"all"}), see \code{\link[meta]{metabin}}.
 #' @param allstudies A logical indicating whether studies with zero
 #'   events or non-events in all treatment arms should be included in
 #'   an inverse variance meta-analysis (applies only if \code{method =
@@ -62,6 +57,10 @@
 #'   should be expressed as comparisons of other treatments versus the
 #'   reference treatment (default) or vice versa. This argument is
 #'   only considered if \code{reference.group} has been specified.
+#' @param small.values A character string specifying whether small
+#'   treatment effects indicate a beneficial (\code{"desirable"}) or
+#'   harmful (\code{"undesirable"}) effect (passed on to
+#'   \code{\link{netrank}}, can be abbreviated.
 #' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
 #'   matrices with all treatment effects, and confidence limits will
 #'   be printed.
@@ -90,14 +89,20 @@
 #'   characters used to create unique treatment names (see Details).
 #' @param func.inverse R function used to calculate the pseudoinverse
 #'   of the Laplacian matrix L (see \code{\link{netmeta}}).
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
 #'   presented as odds ratios rather than log odds ratios, for
 #'   example.
 #' @param title Title of meta-analysis / systematic review.
-#' @param keepdata A logical indicating whether original data (set)
+#' @param keepdata A logical indicating whether original data(set)
 #'   should be kept in netmeta object.
+#' @param addincr Deprecated argument (replaced by 'method.incr');
+#'   see \code{\link[meta]{metabin}}.
+#' @param allincr Deprecated argument (replaced by 'method.incr');
+#'   see \code{\link[meta]{metabin}}.
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
 #'   standard errors).
@@ -106,7 +111,7 @@
 #' @param \dots Additional arguments (to catch deprecated arguments).
 #' 
 #' @details
-#' This function implements three models for the network meta-analysis
+#' This function implements four models for the network meta-analysis
 #' of binary data:
 #' \itemize{
 #' \item The Mantel-Haenszel network meta-analysis model, as described
@@ -114,6 +119,8 @@
 #' \item a network meta-analysis model using the non-central
 #'   hypergeometric distribution with the Breslow approximation, as
 #'   described in Stijnen et al. (2010) (\code{method = "NCH"});
+#' \item a logistic regression with penalised likelihood, as described
+#'   in Evrenoglou et al. (2022) (\code{method = "LRP"});
 #' \item the inverse variance method for network meta-analysis
 #'   (\code{method = "Inverse"}), also provided by
 #'   \code{\link{netmeta}}.
@@ -130,9 +137,9 @@
 #' \code{treat2}, \code{event1}, \code{n1}, \code{event2}, and
 #' \code{n2}). If data are provided in \emph{arm-based} format, that
 #' is, number of events and participants are given for each treatment
-#' arm separately, function \code{\link{pairwise}} can be used to
+#' arm separately, function \code{\link[meta]{pairwise}} can be used to
 #' transform the data to \emph{contrast-based} format (see help page
-#' of function \code{\link{pairwise}}).
+#' of function \code{\link[meta]{pairwise}}).
 #' 
 #' Note, all pairwise comparisons must be provided for a multi-arm
 #' study. Consider a multi-arm study of \emph{p} treatments with known
@@ -141,11 +148,11 @@
 #' - 1) / 2 possible comparisons in separate lines in the data. For
 #' instance, a three-arm study contributes three pairwise comparisons,
 #' a four-arm study even six pairwise comparisons. Function
-#' \code{\link{pairwise}} automatically calculates all pairwise
+#' \code{\link[meta]{pairwise}} automatically calculates all pairwise
 #' comparisons for multi-arm studies.
 #' 
 #' For \code{method = "Inverse"}, both common and random effects
-#' models are calculated regardless of values choosen for arguments
+#' models are calculated regardless of values chosen for arguments
 #' \code{common} and \code{random}. Accordingly, the network estimates
 #' for the random effects model can be extracted from component
 #' \code{TE.random} of an object of class \code{"netmeta"} even if
@@ -271,33 +278,37 @@
 #' \item{pval.Q.inconsistency}{P-value for test of overall
 #'   inconsistency.}
 #' \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
-#' \item{H.matrix}{Hat matrix (\emph{m}x\emph{m})}
+#' \item{H.matrix.common}{Hat matrix (\emph{m}x\emph{m})}
 #' \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
 #'   observations in direct comparisons.}
 #' \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
 #'   in direct comparisons.}
 #' \item{sm, method, level, level.ma}{As defined above.}
-#' \item{incr, allincr, addincr, allstudies, cc.pooled}{As defined
+#' \item{incr, method.incr, allstudies, cc.pooled}{As defined
 #'   above.}
+#' \item{addincr, allincr}{As defined above.}
 #' \item{common, random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
-#' \item{reference.group, baseline.reference, all.treatments}{As
+#' \item{reference.group, baseline.reference, small.values, all.treatments}{As
 #'   defined above.}
 #' \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
 #'   above.}
 #' \item{details.chkmultiarm, details.chkdata}{As defined above.}
-#' \item{sep.trts, nchar.trts}{As defined above.}
+#' \item{sep.trts, nchar.trts, overall.hetstat}{As defined above.}
 #' \item{backtransf, title, warn, warn.deprecated}{As defined above.}
-#' \item{data}{Data set (in contrast-based format).}
+#' \item{data}{Dataset (in contrast-based format).}
 #' \item{data.design}{List with data in arm-based format (each list
 #'   element corresponds to a single design).}
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 
 #' @author Orestis Efthimiou \email{oremiou@@gmail.com}, Guido
-#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
+#'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de},
+#'   Theodoros Evrenoglou \email{theodoros.evrenoglou@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{netmeta}}
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link{netmeta}},
+#'   \code{\link[metadat]{dat.gurusamy2011}},
+#'   \code{\link[metadat]{dat.dong2013}}
 #' 
 #' @references
 #' Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
@@ -305,6 +316,11 @@
 #' A Mantel-Haenszel model for network meta-analysis of rare events.
 #' \emph{Statistics in Medicine},
 #' \bold{38}, 2992--3012
+#' 
+#' Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
+#' Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+#' \emph{Statistics in Medicine},
+#' \bold{41}, 5203--19.
 #' 
 #' Senn S, Gavini F, Magrez D, Scheen A (2013):
 #' Issues in performing a network meta-analysis.
@@ -318,12 +334,11 @@
 #' \emph{Statistics in Medicine},
 #' \bold{29}, 3046--67
 
+
 #' @examples
-#' data(Dong2013)
-#' 
 #' # Only consider first ten studies (to reduce runtime of example)
 #' #
-#' first10 <- subset(Dong2013, id <= 10)
+#' first10 <- subset(dat.dong2013, id <= 10)
 #' 
 #' # Transform data from long arm-based format to contrast-based
 #' # format. Argument 'sm' has to be used for odds ratio as summary
@@ -348,7 +363,7 @@
 #' # dataset
 #' #
 #' p2 <- pairwise(treatment, death, randomized, studlab = id,
-#'   data = Dong2013, sm = "OR")
+#'   data = dat.dong2013, sm = "OR")
 #' netmetabin(p2, ref = "plac")
 #'   
 #' # Conduct network meta-analysis using the non-central
@@ -361,10 +376,8 @@
 #' #
 #' netmetabin(p2, ref = "plac", cc.pooled = TRUE)
 #' 
-#' data(Gurusamy2011)
-#' 
 #' p3 <- pairwise(treatment, death, n, studlab = study,
-#'   data = Gurusamy2011, sm = "OR")
+#'   data = dat.gurusamy2011, sm = "OR")
 #' 
 #' # Conduct Mantel-Haenszel network meta-analysis (without continuity
 #' # correction)
@@ -374,28 +387,30 @@
 #' 
 #' @export netmetabin
 
-
 netmetabin <- function(event1, n1, event2, n2,
                        treat1, treat2, studlab,
                        data = NULL, subset = NULL,
                        sm,
                        method = "MH",
                        cc.pooled = FALSE,
-                       incr, allincr, addincr, allstudies,
+                       #
+                       incr, method.incr, allstudies,
+                       #
                        level = gs("level"),
                        level.ma = gs("level.ma"),
                        common = gs("common"),
-                       random = method == "Inverse" &
+                       random = method %in% c("Inverse", "LRP") &
                          (gs("random") | !is.null(tau.preset)),
                        ##
-                       prediction = FALSE,
+                       prediction = gs("prediction"),
                        level.predict = gs("level.predict"),
                        ##
-                       reference.group = "",
-                       baseline.reference = TRUE,
-                       all.treatments = NULL,
-                       seq = NULL,
-                       ##
+                       reference.group,
+                       baseline.reference = gs("baseline.reference"),
+                       small.values = gs("small.values"),
+                       all.treatments = gs("all.treatments"),
+                       seq = gs("seq"),
+                       #
                        tau.preset = NULL,
                        ##
                        tol.multiarm = 0.001,
@@ -408,11 +423,16 @@ netmetabin <- function(event1, n1, event2, n2,
                        ##
                        func.inverse = invmat,
                        ##
+                       overall.hetstat = gs("overall.hetstat"),
                        backtransf = gs("backtransf"),
                        ##
-                       title = "",
+                       title = gs("title"),
                        keepdata = gs("keepdata"),
-                       warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                       #
+                       addincr, allincr,
+                       #
+                       warn = gs("warn"),
+                       warn.deprecated = gs("warn.deprecated"),
                        ...) {
   
   
@@ -421,28 +441,52 @@ netmetabin <- function(event1, n1, event2, n2,
   ## (1) Check arguments
   ##
   ##
+  
+  missing.common <- missing(common)
+  missing.random <- missing(random)
+  #
+  missing.level.ma <- missing(level.ma)
+  missing.sep.trts <- missing(sep.trts)
+  #
+  missing.incr <- missing(incr)
+  missing.method.incr <- missing(method.incr)
+  missing.allstudies <- missing(allstudies)
+  #
+  missing.addincr <- missing(addincr)
+  missing.allincr <- missing(allincr)
+  #
   modtext <-
-    paste0("must be equal to 'Inverse' (classic network meta-analysis), ",
-           "'MH' (Mantel-Haenszel, the default) or ",
-           "'NCH' (common-effects non-central hypergeometric).")
-  method <- setchar(method, c("Inverse", "MH", "NCH"), modtext)
+    paste0("must be equal to 'MH' (Mantel-Haenszel, the default), ",
+           "'NCH' (common-effects non-central hypergeometric), ",
+           "'LRP' (penalized logistic regression), or ",
+           "'Inverse' (classic network meta-analysis).")
+  method <- setchar(method, c("Inverse", "MH", "NCH", "LRP"), modtext)
+  is.mh.nch <- !(method %in% c("Inverse", "LRP"))
+  is.lrp <- method == "LRP"
+  #
   chklogical(cc.pooled)
   ##
   chklevel(level)
   chklevel(level.predict)
   ##
   chklogical(prediction)
+  #
+  missing.reference.group <- missing(reference.group)
+  #
+  baseline.reference <- replaceNULL(baseline.reference, TRUE)
+  chklogical(baseline.reference)
+  #
+  small.values <- setsv(small.values)
   ##
   ## Check for deprecated arguments in '...'
   ##
   args  <- list(...)
   chklogical(warn.deprecated)
   ##
-  level.ma <- deprecated(level.ma, missing(level.ma), args, "level.comb",
+  level.ma <- deprecated(level.ma, missing.level.ma, args, "level.comb",
                          warn.deprecated)
   chklevel(level.ma)
   ##
-  missing.common <- missing(common)
   common <- deprecated(common, missing.common, args, "comb.fixed",
                        warn.deprecated)
   common <- deprecated(common, missing.common, args, "fixed",
@@ -450,35 +494,30 @@ netmetabin <- function(event1, n1, event2, n2,
   chklogical(common)
   ##
   random <-
-    deprecated(random, missing(random), args, "comb.random", warn.deprecated)
+    deprecated(random, missing.random, args, "comb.random", warn.deprecated)
   chklogical(random)
   ##
-  if (method != "Inverse" & !common) {
+  if (is.mh.nch & !common) {
     warning("Argument 'common' set to TRUE for Mantel-Haenszel ",
             "method and non-central hypergeometric distribution.",
             call. = FALSE)
     common <- TRUE
   }
   ##
-  if (method != "Inverse" & random) {
+  if (is.mh.nch & random) {
     warning("Argument 'random' set to FALSE for Mantel-Haenszel ",
             "method and non-central hypergeometric distribution.",
             call. = FALSE)
     random <- FALSE
   }
   ##
-  if (method != "Inverse" & prediction) {
+  if (is.mh.nch & prediction) {
     warning("Argument 'prediction' set to FALSE for Mantel-Haenszel ",
             "method and non-central hypergeometric distribution.",
             call. = FALSE)
     prediction <- FALSE
   }
-  ##
-  chklogical(baseline.reference)
-  ##
-  if (!is.null(all.treatments))
-    chklogical(all.treatments)
-  ##
+  #
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
   ##
@@ -488,27 +527,16 @@ netmetabin <- function(event1, n1, event2, n2,
   chklogical(details.chkmultiarm)
   chklogical(details.chkdata)
   ##
-  missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
   chknumeric(nchar.trts, min = 1, length = 1)
-  ##
+  #
+  overall.hetstat <- replaceNULL(overall.hetstat, TRUE)
+  chklogical(overall.hetstat)
   chklogical(backtransf)
-  ##
+  #
   chkchar(title)
   chklogical(keepdata)
   chklogical(warn)
-  ##
-  ## Check value for reference group
-  ##
-  if (is.null(all.treatments))
-    if (reference.group == "")
-      all.treatments <- TRUE
-    else
-      all.treatments <- FALSE
-  ##
-  chklogical(baseline.reference)
-  ##
-  missing.incr <- missing(incr)
   
   
   ##
@@ -527,25 +555,25 @@ netmetabin <- function(event1, n1, event2, n2,
   ## 'studlab' from data:
   ##
   event1 <- catch("event1", mc, data, sfsp)
-  ##
+  #
+  avail.reference.group.pairwise <- FALSE
+  #
   if (is.data.frame(event1)  &&
       (!is.null(attr(event1, "pairwise")) ||
        inherits(event1, "pairwise"))) {
     is.pairwise <- TRUE
     ##
     if (missing.incr)
-      incr <-
-        replaceNULL(attr(event1, "incr"), gs("incr"))
-    if (missing(allincr))
-      allincr <-
-        replaceNULL(attr(event1, "allincr"), gs("allincr"))
-    if (missing(addincr))
-      addincr <-
-        replaceNULL(attr(event1, "addincr"), gs("addincr"))
+      incr <- replaceNULL(attr(event1, "incr"), gs("incr"))
+    if (missing.method.incr)
+      method.incr <- replaceNULL(attr(event1, "method.incr"), gs("method.incr"))
     if (missing(allstudies))
-      allstudies <-
-        replaceNULL(attr(event1, "allstudies"), gs("allstudies"))
-    ##
+      allstudies <- replaceNULL(attr(event1, "allstudies"), gs("allstudies"))
+    #
+    missing.incr <- FALSE
+    missing.method.incr <- FALSE
+    missing.allstudies <- FALSE
+    #
     if (missing(sm) & method == "Inverse")
       sm <- replaceNULL(attr(event1, "sm"), gs("smbin"))
     else if (method != "Inverse") {
@@ -553,7 +581,22 @@ netmetabin <- function(event1, n1, event2, n2,
         warning("Argument 'sm' set to 'OR'.", call. = FALSE)
       sm <- "OR"
     }
-    ##
+    #
+    if (missing.reference.group) {
+      reference.group <- attr(event1, "reference.group")
+      #
+      if (is.null(reference.group))
+        reference.group <- ""
+      else
+        avail.reference.group.pairwise <- TRUE
+    }
+    #
+    keep.all.comparisons <- attr(event1, "keep.all.comparisons")
+    if (!is.null(keep.all.comparisons) && !keep.all.comparisons)
+      stop("First argument is a pairwise object created with ",
+           "'keep.all.comparisons = FALSE'.",
+           call. = TRUE)
+    #
     n1 <- event1$n1
     event2 <- event1$event2
     n2 <- event1$n2
@@ -579,13 +622,11 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     if (missing.incr)
       incr <- gs("incr")
-    if (missing(allincr))
-      allincr <- gs("allincr")
-    if (missing(addincr))
-      addincr <- gs("addincr")
+    if (missing(method.incr))
+      method.incr <- gs("method.incr")
     if (missing(allstudies))
       allstudies <- gs("allstudies")
-    ##
+    #
     if (missing(sm) & method == "Inverse") {
       if (!nulldata && !is.null(attr(data, "sm")))
         sm <- attr(data, "sm")
@@ -607,16 +648,43 @@ netmetabin <- function(event1, n1, event2, n2,
     treat2 <- catch("treat2", mc, data, sfsp)
     ##
     studlab <- catch("studlab", mc, data, sfsp)
-    ##
-    chknull(event1)
-    chknull(n1)
-    chknull(event2)
-    chknull(n2)
-    chknull(treat1)
-    chknull(treat2)
-    chknull(studlab)
+    #
+    if (!missing.incr)
+      incr <- catch("incr", mc, data, sfsp)
   }
-  ##
+  #
+  addincr <-
+    deprecated2(method.incr, missing.method.incr, addincr, missing.addincr,
+                warn.deprecated)
+  allincr <-
+    deprecated2(method.incr, missing.method.incr, allincr, missing.allincr,
+                warn.deprecated)
+  #
+  if (missing.method.incr) {
+    method.incr <- gs("method.incr")
+    ##
+    if (is.logical(addincr) && addincr)
+      method.incr <- "all"
+    else if (is.logical(allincr) && allincr)
+      method.incr <- "if0all"
+  }
+  #
+  addincr <- allincr <- FALSE
+  if (!(sm == "ASD" | method %in% c("Peto", "GLMM"))) {
+    if (method.incr == "all")
+      addincr <- TRUE
+    else if (method.incr == "if0all")
+      allincr <- TRUE
+  }
+  #
+  chknull(event1)
+  chknull(n1)
+  chknull(event2)
+  chknull(n2)
+  chknull(treat1)
+  chknull(treat2)
+  chknull(studlab)
+  #
   chknumeric(event1)
   chknumeric(n1)
   chknumeric(event2)
@@ -677,14 +745,12 @@ netmetabin <- function(event1, n1, event2, n2,
   }
   ##
   chklogical(incr)
-  chklogical(allincr)
-  chklogical(addincr)
   chklogical(allstudies)
   ##
   m.data <- metabin(event1, n1, event2, n2,
                     sm = sm, method = "Inverse",
-                    incr = incr, allincr = allincr,
-                    addincr = addincr, allstudies = allstudies,
+                    incr = incr, method.incr = method.incr,
+                    allstudies = allstudies,
                     method.tau = "DL", method.tau.ci = "",
                     warn = FALSE,
                     warn.deprecated = FALSE)
@@ -766,10 +832,39 @@ netmetabin <- function(event1, n1, event2, n2,
            " as separator (argument 'sep.trts').",
            call. = FALSE)
   }
-  ##
+  #
+  # Set reference group
+  #
+  if (missing.reference.group & !avail.reference.group.pairwise) {
+    go.on <- TRUE
+    i <- 0
+    while (go.on) {
+      i <- i + 1
+      sel.i <-
+        !is.na(event1) & !is.na(n1) & !is.na(event2) & !is.na(n2) &
+        (treat1 == labels[i] | treat2 == labels[i])
+      if (sum(sel.i) > 0) {
+        go.on <- FALSE
+        reference.group <- labels[i]
+      }
+      else if (i == length(labels)) {
+        go.on <- FALSE
+        reference.group <- ""
+      }
+    }
+  }
+  #
+  if (is.null(all.treatments))
+    if (reference.group == "")
+      all.treatments <- TRUE
+  else
+    all.treatments <- FALSE
+  #
+  # Check reference group
+  #
   if (reference.group != "")
     reference.group <- setref(reference.group, labels)
-  ##
+  #
   rm(labels)
 
 
@@ -795,7 +890,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ## Check for correct number of comparisons
   ##
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
     stop(paste0("Study '", names(tabnarms)[sel.narms],
@@ -819,14 +914,10 @@ netmetabin <- function(event1, n1, event2, n2,
     stop(paste0("Network consists of ", n.subnets, " separate sub-networks.\n",
                 "  Use R function 'netconnection' to identify sub-networks."),
          call. = FALSE)
-  ##
-  ## Catch 'incr' from data:
-  ##
-  if (!missing.incr)
-    incr <- catch("incr", mc, data, sfsp)
+  #
   chknumeric(incr, min = 0)
   ##
-  if (method != "Inverse" & length(incr) > 1) {
+  if (is.mh.nch & length(incr) > 1) {
     warning("Argument 'incr' must be a single value for ",
             "Mantel-Haenszel and common-effects non-central ",
             "hypergeometric method. Set to zero (default).",
@@ -834,7 +925,7 @@ netmetabin <- function(event1, n1, event2, n2,
     incr <- 0
   }
   ##
-  if (all(incr == 0) & method != "Inverse" & cc.pooled == TRUE)
+  if (all(incr == 0) & is.mh.nch & cc.pooled == TRUE)
     cc.pooled <- FALSE
   ##
   lengthunique <- function(x) length(unique(x))
@@ -906,7 +997,7 @@ netmetabin <- function(event1, n1, event2, n2,
     if (net1$n == 2)
       res <- data.frame(studlab = net1$studlab, design = net1$designs)
     else
-      res <- nma.krahn(net1)$studies[, c("studlab", "design")]
+      res <- nma_krahn(net1)$studies[, c("studlab", "design")]
     ##
     res$design <- as.character(res$design)
     res <- unique(res)
@@ -963,7 +1054,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ## Step i. Remove all-zero or all-event studies (only MH and NCH methods)
   ##
-  if (method != "Inverse") {
+  if (is.mh.nch) {
     events.study <- with(dat.long, tapply(event, studlab, sum))
     nonevents.study <- with(dat.long, tapply(n - event, studlab, sum))
     ##
@@ -1031,7 +1122,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##           increment if argument 'cc.pooled' is TRUE and argument
   ##           'incr' is larger than zero
   ##
-  if (method != "Inverse") {
+  if (is.mh.nch) {
     ##
     events.arm <- with(dat.long, tapply(event, list(design, treat), sum))
     nonevents.arm <- with(dat.long, tapply(n - event, list(design, treat), sum))
@@ -1171,7 +1262,7 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   ## Step iv. Remove designs with single treatment arm from dataset
   ##
-  if (method != "Inverse") {
+  if (is.mh.nch) {
     d.single <- with(dat.long, tapply(treat, design, lengthunique))
     ##
     if (any(d.single == 1, na.rm = TRUE)) {
@@ -1257,6 +1348,10 @@ netmetabin <- function(event1, n1, event2, n2,
   TE.common <- seTE.common <- NAmatrix
   TE.direct.common <- seTE.direct.common <- NAmatrix
   Q.direct <- tau2.direct <- I2.direct <- NAmatrix
+  #
+  if (is.lrp) {
+    TE.direct.random <- seTE.direct.random <- phi.direct <- NAmatrix
+  }
   
   
   ##
@@ -1288,7 +1383,7 @@ netmetabin <- function(event1, n1, event2, n2,
                    data = dat.iv,
                    sm = sm,
                    incr = incr.iv,
-                   allincr = allincr, addincr = addincr,
+                   method.incr = method.incr,
                    allstudies = allstudies.iv)
   ##
   net.iv <- netmeta(p.iv,
@@ -1305,6 +1400,7 @@ netmetabin <- function(event1, n1, event2, n2,
                     details.chkmultiarm = details.chkmultiarm,
                     sep.trts = sep.trts,
                     nchar.trts = nchar.trts,
+                    overall.hetstat = overall.hetstat,
                     backtransf = backtransf,
                     title = title,
                     keepdata = keepdata,
@@ -1748,55 +1844,131 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     TE.basic <- -(opt$par)[2:n.treat]
   }
-  ##
-  ## Define H matrix
-  ##
-  H <- matrix(0,
-              nrow = n.treat * ((n.treat - 1) / 2),
-              ncol = n.treat - 1)
-  ##
-  diag(H) <- 1
-  ##
-  if (n.treat > 2) {
-    t1 <- c()
-    t2 <- c()
-    for (i in 2:(n.treat - 1))
-      for (j in (i + 1):(n.treat)) {
-        t1 <- rbind(t1, i)
-        t2 <- rbind(t2, j)
-      }
-    ##
-    h1 <- matrix(c(t1, t2), nrow = nrow(t1))
-    ##
-    for (i in 1:((n.treat - 1) * (n.treat - 2) / 2))
-      for (j in 1:(n.treat - 1))
-        H[i + n.treat - 1, j] <- -(h1[i, 1] == j + 1) + (h1[i, 2] == j + 1)
+  else if (is.lrp) {
+    #
+    # Penalized logistic regression
+    #
+    is_installed_package("brglm2", "netmetabin", "method", " = \"LRP\"")
+    #
+    phi <- 1
+    text.formula <- "cbind(event, non.event) ~ as.factor(treat)"
+    #
+    if (length(unique(dat.long$studlab)) > 1)
+      text.formula <- paste(text.formula, "+ as.factor(studlab)")
+    #
+    res.lrp <- glm(as.formula(text.formula), data = dat.long,
+                   family = binomial(link = "logit"),
+                   method = brglm2::brglmFit, type = "MPL_Jeffreys",
+                   ...)
+    #
+    if (length(unique(dat.long$studlab)) > 1)
+      phi <- phi(res.lrp)
+    #
+    # Basic estimates (all treats vs reference)
+    #
+    ests.lrp <- summary(res.lrp)$coefficients
+    ests.lrp <-
+      ests.lrp[grepl("as.factor(treat)", rownames(ests.lrp), fixed = TRUE), ]
+    rownames(ests.lrp) <-
+      gsub("as.factor(treat)", "", rownames(ests.lrp), fixed = TRUE)
+    #
+    trts.basic <- rownames(ests.lrp)
+    #
+    # Get the variance-covariance matrix for the basic estimates
+    #
+    var_cov_common <- vcov(res.lrp)
+    var_cov_common <-
+      var_cov_common[
+        grepl("as.factor(treat)", rownames(var_cov_common), fixed = TRUE),
+        grepl("as.factor(treat)", colnames(var_cov_common), fixed = TRUE)]
+    #
+    rownames(var_cov_common) <-
+      gsub("as.factor(treat)", "", rownames(var_cov_common), fixed = TRUE)
+    colnames(var_cov_common) <-
+      gsub("as.factor(treat)", "", colnames(var_cov_common), fixed = TRUE)
+    #
+    # Inflate the elements of the whole variance covariance matrix from the
+    # common effect model to get the respective matrix for the random effects
+    # model
+    #
+    var_cov_random <- var_cov_common * phi
+    #
+    TE.basic <- ests.lrp[, 1]
+    #
+    # Use the basic2all() function to calculate the functional parameters using
+    # the basic parameters
+    #
+    all_ests_common <- basic2all(trts, TE.basic, var_cov_common)
+    #
+    all_ests_random <- basic2all(trts, TE.basic, phi * var_cov_common)
+    #
+    TE.common <- all_ests_common$TEs
+    seTE.common <- all_ests_common$seTEs
+    #
+    TE.random <- all_ests_random$TEs
+    seTE.random <- all_ests_random$seTE
   }
-  ##
-  ## Common effects matrix
-  ##
-  d.hat <- H %*% TE.basic
-  ##
-  TE.common[lower.tri(TE.common, diag = FALSE)] <-  d.hat
-  TE.common <- t(TE.common)
-  TE.common[lower.tri(TE.common, diag = FALSE)] <- -d.hat
-  diag(TE.common) <- 0
-  ##
-  ## Matrix with standard errors
-  ##
-  if (method == "MH")
-    cov.d.hat <- H %*% solve(t(X) %*% W %*% X) %*% t(H)
+  #
+  if (!is.lrp) {
+    #
+    # Define H matrix
+    #
+    H <- matrix(0,
+                nrow = n.treat * ((n.treat - 1) / 2),
+                ncol = n.treat - 1)
+    #
+    diag(H) <- 1
+    #
+    if (n.treat > 2) {
+      t1 <- c()
+      t2 <- c()
+      for (i in 2:(n.treat - 1))
+        for (j in (i + 1):(n.treat)) {
+          t1 <- rbind(t1, i)
+          t2 <- rbind(t2, j)
+        }
+      #
+      h1 <- matrix(c(t1, t2), nrow = nrow(t1))
+      #
+      for (i in 1:((n.treat - 1) * (n.treat - 2) / 2))
+        for (j in 1:(n.treat - 1))
+          H[i + n.treat - 1, j] <- -(h1[i, 1] == j + 1) + (h1[i, 2] == j + 1)
+    }
+    #
+    colnames(H) <- trts[-1]
+    #
+    # Common effects matrix
+    #
+    d.hat <- H %*% TE.basic
+    #
+    TE.common[lower.tri(TE.common, diag = FALSE)] <-  d.hat
+    TE.common <- t(TE.common)
+    TE.common[lower.tri(TE.common, diag = FALSE)] <- -d.hat
+    diag(TE.common) <- 0
+    #
+    # Matrix with standard errors
+    #
+    if (method == "MH")
+      cov.d.hat <- H %*% solve(t(X) %*% W %*% X) %*% t(H)
+    else
+      cov.d.hat <- H %*% W %*% t(H)
+    ##
+    seTE.common[lower.tri(seTE.common, diag = FALSE)] <- sqrt(diag(cov.d.hat))
+    seTE.common <- t(seTE.common)
+    seTE.common[lower.tri(seTE.common, diag = FALSE)] <- sqrt(diag(cov.d.hat))
+    diag(seTE.common) <- 0
+  }
   else
-    cov.d.hat <- H %*% W %*% t(H)
-  ##
-  seTE.common[lower.tri(seTE.common, diag = FALSE)] <- sqrt(diag(cov.d.hat))
-  seTE.common <- t(seTE.common)
-  seTE.common[lower.tri(seTE.common, diag = FALSE)] <- sqrt(diag(cov.d.hat))
-  diag(seTE.common) <- 0
-  ##
-  ## Confidence intervals
-  ##
+    H <- matrix(NA,
+                nrow = n.treat * ((n.treat - 1) / 2),
+                ncol = n.treat - 1)
+  #
+  # Confidence intervals
+  #
   ci.f <- ci(TE.common, seTE.common, level = level.ma)
+  #
+  if (is.lrp)
+    ci.r <- ci(TE.random, seTE.random, level = level.ma)
   ##
   ## Inconsistency global
   ##
@@ -1827,36 +1999,52 @@ netmetabin <- function(event1, n1, event2, n2,
     sel.treat2 <- colnames(B.matrix)[B.matrix[i, ] == -1]
     selstud <- treat1 == sel.treat1 & treat2 == sel.treat2
     ##
-    m.i <- metabin(event1, n1, event2, n2, subset = selstud,
-                   method = "MH", sm = "OR",
-                   incr = incr, allincr = allincr, addincr = addincr,
-                   allstudies = allstudies, MH.exact = !cc.pooled,
-                   method.tau = "DL", method.tau.ci = "",
-                   Q.Cochrane = FALSE,
-                   warn.deprecated = FALSE)
-    ##
-    TE.i   <- m.i$TE.common
-    seTE.i <- m.i$seTE.common
-    Q.i <- m.i$Q
-    tau2.i <- m.i$tau2
-    I2.i <- m.i$I2
-    ##
-    TE.direct.common[sel.treat1, sel.treat2]   <- TE.i
-    seTE.direct.common[sel.treat1, sel.treat2] <- seTE.i
-    Q.direct[sel.treat1, sel.treat2] <- Q.i
-    tau2.direct[sel.treat1, sel.treat2] <- tau2.i
-    I2.direct[sel.treat1, sel.treat2] <- I2.i
-    ##
-    TE.direct.common[sel.treat2, sel.treat1]   <- -TE.i
-    seTE.direct.common[sel.treat2, sel.treat1] <- seTE.i
-    Q.direct[sel.treat2, sel.treat1] <- Q.i
-    tau2.direct[sel.treat2, sel.treat1] <- tau2.i
-    I2.direct[sel.treat2, sel.treat1] <- I2.i
+    if (!is.lrp)
+      m.i <- metabin(event1, n1, event2, n2, subset = selstud,
+                     method = "MH", sm = "OR",
+                     incr = incr,
+                     method.incr = method.incr,
+                     allstudies = allstudies, MH.exact = !cc.pooled,
+                     method.tau = "DL", method.tau.ci = "",
+                     Q.Cochrane = FALSE,
+                     warn.deprecated = FALSE)
+    else
+      m.i <- metabin(event1, n1, event2, n2, subset = selstud,
+                     method = "LRP",
+                     warn.deprecated = FALSE, ...)
+    #
+    TE.direct.common[sel.treat1, sel.treat2]   <- m.i$TE.common
+    seTE.direct.common[sel.treat1, sel.treat2] <- m.i$seTE.common
+    #
+    TE.direct.common[sel.treat2, sel.treat1]   <- -m.i$TE.common
+    seTE.direct.common[sel.treat2, sel.treat1] <- m.i$seTE.common
+    #
+    Q.direct[sel.treat1, sel.treat2] <- m.i$Q
+    tau2.direct[sel.treat1, sel.treat2] <- m.i$tau2
+    I2.direct[sel.treat1, sel.treat2] <- m.i$I2
+    #
+    Q.direct[sel.treat2, sel.treat1] <- m.i$Q
+    tau2.direct[sel.treat2, sel.treat1] <- m.i$tau2
+    I2.direct[sel.treat2, sel.treat1] <- m.i$I2
+    #
+    if (is.lrp) {
+      TE.direct.random[sel.treat1, sel.treat2]   <- m.i$TE.random
+      seTE.direct.random[sel.treat1, sel.treat2] <- sqrt(phi) * m.i$seTE.common
+      #
+      TE.direct.random[sel.treat2, sel.treat1]   <- -m.i$TE.random
+      seTE.direct.random[sel.treat2, sel.treat1] <- sqrt(phi) * m.i$seTE.common
+      #
+      phi.direct[sel.treat1, sel.treat2] <- m.i$phi
+      phi.direct[sel.treat2, sel.treat1] <- m.i$phi
+    }
   }
-  ##
-  rm(sel.treat1, sel.treat2, selstud, m.i, TE.i, seTE.i)
-  ##
-  ci.d <- ci(TE.direct.common, seTE.direct.common, level = level.ma)
+  #
+  rm(sel.treat1, sel.treat2, selstud, m.i)
+  #
+  ci.direct.c <- ci(TE.direct.common, seTE.direct.common, level = level.ma)
+  #
+  if (is.lrp)
+    ci.direct.r <- ci(TE.direct.random, seTE.direct.random, level = level.ma)
   
   
   labels <- sort(unique(c(treat1, treat2)))
@@ -1868,6 +2056,19 @@ netmetabin <- function(event1, n1, event2, n2,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
+  
+  secondfirst <- function(x, sep)
+    paste0(x[2], sep, x[1])
+  #
+  trts.list <- lapply(compsplit(rownames(net.iv$Cov.common), sep.trts),
+                      secondfirst, sep = sep.trts)
+  #
+  rn <- rep_len("", nrow(H))
+  #
+  for (i in seq_along(trts.list))
+    rn[i] <- trts.list[[i]]
+  #
+  rownames(H) <- rn
   
   
   res <- list(studlab = studlab,
@@ -1909,39 +2110,44 @@ netmetabin <- function(event1, n1, event2, n2,
               statistic.common = ci.f$statistic,
               pval.common = ci.f$p,
               ##
-              TE.random = NAmatrix,
-              seTE.random = NAmatrix,
-              lower.random = NAmatrix,
-              upper.random = NAmatrix,
-              statistic.random = NAmatrix,
-              pval.random = NAmatrix,
+              TE.random = if (is.lrp) TE.random else NAmatrix,
+              seTE.random = if (is.lrp) seTE.random else NAmatrix,
+              lower.random = if (is.lrp) ci.r$lower else NAmatrix,
+              upper.random = if (is.lrp) ci.r$upper else NAmatrix,
+              statistic.random = if (is.lrp) ci.r$statistic else NAmatrix,
+              pval.random = if (is.lrp) ci.r$p else NAmatrix,
               ##
               seTE.predict = NAmatrix,
               lower.predict = NAmatrix,
               upper.predict = NAmatrix,
+              method.predict = "V",
               ##
               prop.direct.common = NA,
               prop.direct.random = NA,
               ##
               TE.direct.common = TE.direct.common,
               seTE.direct.common = seTE.direct.common,
-              lower.direct.common = ci.d$lower,
-              upper.direct.common = ci.d$upper,
-              statistic.direct.common = ci.d$statistic,
-              pval.direct.common = ci.d$p,
+              lower.direct.common = ci.direct.c$lower,
+              upper.direct.common = ci.direct.c$upper,
+              statistic.direct.common = ci.direct.c$statistic,
+              pval.direct.common = ci.direct.c$p,
               ##
-              TE.direct.random = NAmatrix,
-              seTE.direct.random = NAmatrix,
-              lower.direct.random = NAmatrix,
-              upper.direct.random = NAmatrix,
-              statistic.direct.random = NAmatrix,
-              pval.direct.random = NAmatrix,
-              ##
+              TE.direct.random = if (is.lrp) TE.direct.random else NAmatrix,
+              seTE.direct.random = if (is.lrp) seTE.direct.random else NAmatrix,
+              lower.direct.random = if (is.lrp) ci.direct.c$lower else NAmatrix,
+              upper.direct.random = if (is.lrp) ci.direct.c$upper else NAmatrix,
+              statistic.direct.random =
+                if (is.lrp) ci.direct.c$statistic else NAmatrix,
+              pval.direct.random = if (is.lrp) ci.direct.c$p else NAmatrix,
+              #
               Q.direct = Q.direct,
               tau.direct = sqrt(tau2.direct),
               tau2.direct = tau2.direct,
               I2.direct = I2.direct,
-              ##
+              #
+              phi = if (is.lrp) phi else NA,
+              phi.direct = if (is.lrp) phi.direct else NAmatrix,
+              #
               TE.indirect.common = NA,
               seTE.indirect.common = NA,
               lower.indirect.common = NA,
@@ -1972,7 +2178,8 @@ netmetabin <- function(event1, n1, event2, n2,
               Q.decomp = NA,
               ##
               A.matrix = A,
-              H.matrix = H,
+              H.matrix.common = H,
+              H.matrix.random = NA,
               ##
               n.matrix = NA,
               events.matrix = NA,
@@ -1987,8 +2194,7 @@ netmetabin <- function(event1, n1, event2, n2,
               method = method,
               ##
               incr = incr,
-              allincr = allincr,
-              addincr = addincr,
+              method.incr = method.incr,
               allstudies = allstudies,
               cc.pooled = cc.pooled,
               ##
@@ -2002,9 +2208,11 @@ netmetabin <- function(event1, n1, event2, n2,
               ##
               reference.group = reference.group,
               baseline.reference = baseline.reference,
+              small.values = small.values,
               all.treatments = all.treatments,
               seq = seq,
               ##
+              method.tau = "DL",
               tau.preset = tau.preset,
               ##
               tol.multiarm = tol.multiarm,
@@ -2016,9 +2224,10 @@ netmetabin <- function(event1, n1, event2, n2,
               nchar.trts = nchar.trts,
               ##
               func.inverse = deparse(substitute(func.inverse)),
-              ##
+              #
+              overall.hetstat = overall.hetstat,
               backtransf = backtransf,
-              ##
+              #
               title = title,
               ##
               data = if (keepdata) data else NULL,
@@ -2026,7 +2235,10 @@ netmetabin <- function(event1, n1, event2, n2,
               ##
               warn = warn,
               call = match.call(),
-              version = packageDescription("netmeta")$Version
+              version = packageDescription("netmeta")$Version,
+              #
+              addincr = addincr,
+              allincr = allincr
               )
   ##
   class(res) <- c("netmetabin", "netmeta")
@@ -2039,7 +2251,24 @@ netmetabin <- function(event1, n1, event2, n2,
     netmeasures(res, random = FALSE, warn = warn)$proportion
   if (is.logical(res$prop.direct.common))
     res$prop.direct.common <- as.numeric(res$prop.direct.common)
-  ##
+  #
+  if (is.lrp) {
+    res$prop.direct.random <-
+      netmeasures(res, random = TRUE, warn = warn)$proportion
+    if (is.logical(res$prop.direct.random))
+      res$prop.direct.random <- as.numeric(res$prop.direct.random)
+    #
+    res$Cov.common <- matrix(NA, nrow = length(res$prop.direct.common),
+                             ncol = length(res$prop.direct.common))
+    res$Cov.random <- matrix(NA, nrow = length(res$prop.direct.random),
+                             ncol = length(res$prop.direct.random))
+    #
+    rownames(res$Cov.common) <- colnames(res$Cov.common) <-
+      names(res$prop.direct.common)
+    rownames(res$Cov.random) <- colnames(res$Cov.random) <-
+      names(res$prop.direct.random)
+  }
+  #
   P.common <- P.random <- matrix(NA, n, n)
   colnames(P.common) <- rownames(P.common) <-
     colnames(P.random) <- rownames(P.random) <- trts
@@ -2053,6 +2282,14 @@ netmetabin <- function(event1, n1, event2, n2,
     ##
     sel <- row(P.common) != col(P.common)
     P.common[sel] <- 1
+    #
+    if (is.lrp) {
+      res$prop.direct.random <- 1
+      names(res$prop.direct.random) <- paste(labels, collapse = sep.trts)
+      ##
+      sel <- row(P.random) != col(P.random)
+      P.random[sel] <- 1
+    }
   }
   else {
     k <- 0
@@ -2060,6 +2297,9 @@ netmetabin <- function(event1, n1, event2, n2,
       for (j in (i + 1):n) {
         k <- k + 1
         P.common[i, j] <- P.common[j, i] <- res$prop.direct.common[k]
+        #
+        if (is.lrp)
+          P.random[i, j] <- P.random[j, i] <- res$prop.direct.random[k]
       }
     }
   }
@@ -2069,40 +2309,70 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   TE.direct.common <- res$TE.direct.common
   ##
-  TE.direct.common[abs(P.common) < .Machine$double.eps^0.5] <- 0
+  TE.direct.common[is_zero(P.common)] <- 0
   ##
   ## Indirect estimate is NA if only direct evidence is available
   ##
   res$P.common <- P.common
   ##
-  P.common[abs(P.common - 1) < .Machine$double.eps^0.5] <- NA
+  P.common[is_zero(P.common - 1)] <- NA
   P.common[P.common > 1] <- NA
+  #
+  if (is.lrp) {
+    TE.direct.random <- res$TE.direct.random
+    TE.direct.random[is_zero(P.random)] <- 0
+    #
+    # Indirect estimate is NA if only direct evidence is available
+    #
+    res$P.random <- P.random
+    #
+    P.random[is_zero(P.random - 1)] <- NA
+    P.random[P.random > 1] <- NA
+  }
   ##
   ## Common effects model
   ##
-  ci.if <- ci((res$TE.common - P.common * TE.direct.common) / (1 - P.common),
-              sqrt(res$seTE.common^2 / (1 - P.common)),
-              level = level)
+  ci.indirect.c <-
+    ci((res$TE.common - P.common * TE.direct.common) / (1 - P.common),
+       sqrt(res$seTE.common^2 / (1 - P.common)), level = level)
   ##
-  res$TE.indirect.common   <- ci.if$TE
-  res$seTE.indirect.common <- ci.if$seTE
+  res$TE.indirect.common   <- ci.indirect.c$TE
+  res$seTE.indirect.common <- ci.indirect.c$seTE
   ##
-  res$lower.indirect.common <- ci.if$lower
-  res$upper.indirect.common <- ci.if$upper
+  res$lower.indirect.common <- ci.indirect.c$lower
+  res$upper.indirect.common <- ci.indirect.c$upper
   ##
-  res$statistic.indirect.common <- ci.if$statistic
-  res$pval.indirect.common <- ci.if$p
+  res$statistic.indirect.common <- ci.indirect.c$statistic
+  res$pval.indirect.common <- ci.indirect.c$p
   ##
-  ## No results for random effects model
+  ## Random effects model
   ##
-  res$prop.direct.random <- res$prop.direct.common
-  res$prop.direct.random[!is.na(res$prop.direct.random)] <- NA
-  res$P.random <- P.random
-  ##
-  res$TE.indirect.random <- res$seTE.indirect.random <-
-    res$lower.indirect.random <- res$upper.indirect.random <-
+  if (!is.lrp) {
+    res$prop.direct.random <- res$prop.direct.common
+    res$prop.direct.random[!is.na(res$prop.direct.random)] <- NA
+    res$P.random <- P.random
+    ##
+    res$TE.indirect.random <- res$seTE.indirect.random <-
+      res$lower.indirect.random <- res$upper.indirect.random <-
       res$statistic.indirect.random <- res$pval.indirect.random <-
-        NAmatrix
+      NAmatrix
+  }
+  else {
+    ci.indirect.r <-
+      ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
+         sqrt(res$seTE.random^2 / (1 - P.random)), level = level)
+    ##
+    res$TE.indirect.random   <- ci.indirect.r$TE
+    res$seTE.indirect.random <- ci.indirect.r$seTE
+    ##
+    res$lower.indirect.random <- ci.indirect.r$lower
+    res$upper.indirect.random <- ci.indirect.r$upper
+    ##
+    res$statistic.indirect.random <- ci.indirect.r$statistic
+    res$pval.indirect.random <- ci.indirect.r$p
+    #
+    res$P.random <- P.random
+  }
   
   
   ##
@@ -2192,7 +2462,6 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   res$P.fixed <- res$P.common
   res$Cov.fixed <- res$Cov.common               
-  
   
   res
 }

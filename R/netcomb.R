@@ -20,6 +20,8 @@
 #'   meta-analysis should be conducted.
 #' @param tau.preset An optional value for the square-root of the
 #'   between-study variance \eqn{\tau^2}.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots.
 #' @param details.chkident A logical indicating whether details on
@@ -27,6 +29,7 @@
 #' @param nchar.comps A numeric defining the minimum number of
 #'   characters used to create unique names for components (see
 #'   Details).
+#' @param sep.ia A single character to define separator for interactions.
 #' @param func.inverse R function used to calculate the pseudoinverse
 #'   of the Laplacian matrix L (see \code{\link{netmeta}}).
 #' @param na.unident A logical indicating whether unidentifiable
@@ -255,7 +258,7 @@
 #'   between treatment labels.}
 #' \item{nchar.comps}{A numeric defining the minimum number of
 #'   characters used to create unique component names.}
-#' \item{inactive, sep.comps}{As defined above.}
+#' \item{inactive, sep.comps, sep.ia}{As defined above.}
 #' \item{backtransf}{A logical indicating whether results should be
 #'   back transformed in printouts and forest plots.}
 #' \item{title}{Title of meta-analysis / systematic review.}
@@ -351,21 +354,23 @@
 #' 
 #' @export netcomb
 
-
 netcomb <- function(x,
                     inactive = NULL,
-                    sep.comps = "+",
+                    sep.comps = gs("sep.comps"),
                     C.matrix,
                     common = x$common,
                     random = x$random | !is.null(tau.preset),
                     tau.preset = NULL,
                     details.chkident = FALSE,
                     nchar.comps = x$nchar.trts,
-                    ##
+                    #
+                    sep.ia = gs("sep.ia"),
+                    #
                     func.inverse = invmat,
+                    overall.hetstat = x$overall.hetstat,
                     backtransf = x$backtransf,
                     ##
-                    na.unident = TRUE,
+                    na.unident = gs("na.unident"),
                     warn.deprecated = gs("warn.deprecated"),
                     ...) {
   
@@ -376,6 +381,8 @@ netcomb <- function(x,
   ##
   ##
   chkclass(x, "netmeta")
+  chksuitable(x, "Component network meta-analysis",
+              classes = c("netmeta.crossnma", "netmeta.multinma"))
   ##
   x <- updateversion(x)
   ##
@@ -387,6 +394,11 @@ netcomb <- function(x,
   chklogical(details.chkident)
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
+  #
+  missing.sep.ia <- missing(sep.ia)
+  chkchar(sep.ia, nchar = 0:1, length = 1)
+  #
+  chklogical(overall.hetstat)
   chklogical(backtransf)
   chklogical(na.unident)
   ##
@@ -398,8 +410,7 @@ netcomb <- function(x,
   missing.common <- missing(common)
   common <- deprecated(common, missing.common, args, "comb.fixed",
                        warn.deprecated)
-  common <- deprecated(common, missing.common, args, "fixed",
-                       warn.deprecated)
+  common <- deprecated(common, missing.common, args, "fixed", warn.deprecated)
   chklogical(common)
   ##
   random <-
@@ -413,14 +424,17 @@ netcomb <- function(x,
   ##
   ##
   if (missing(C.matrix)) {
-    ##
-    ## Create C-matrix from netmeta object
-    ##
+    #
+    # Create C-matrix from netmeta object
+    #
     if (sep.comps == "")
-      C.matrix <- createC(x, "...this_is_not_a_separator...", inactive)
+      C.matrix <-
+        createC(x, inactive = inactive,
+                sep.comps = "...this_is_not_a_separator...")
     else
-      C.matrix <- createC(x, sep.comps, inactive)
-    ##
+      C.matrix <-
+        createC(x, inactive = inactive, sep.comps = sep.comps)
+    #
     inactive <- attr(C.matrix, "inactive")
     C.matrix <- as.matrix(C.matrix)[x$trts, , drop = FALSE]
   }
@@ -459,10 +473,10 @@ netcomb <- function(x,
     }
     ##
     if (wrong.labels)
-      stop(paste("Row names of argument 'C.matrix' must be a ",
-                 "permutation of treatment names:\n  ",
-                 paste(paste("'", x$trts, "'", sep = ""),
-                       collapse = " - "), sep = ""),
+      stop("Row names of argument 'C.matrix' must be a ",
+           "permutation of treatment names:\n  ",
+           paste(paste0("'", x$trts, "'"),
+                 collapse = " - "),
            call. = FALSE)
     ##
     C.matrix <- C.matrix[x$trts, , drop = FALSE]
@@ -482,40 +496,13 @@ netcomb <- function(x,
   X.matrix <- x$B.matrix %*% C.matrix
   colnames(X.matrix) <- colnames(C.matrix)
   rownames(X.matrix) <- x$studlab
-  ##
-  ## Check for and warn about not uniquely identifiable components
-  ##
-  comps.unident <- character(0)
-  ##
-  if (qr(X.matrix)$rank < c) {
-    Xplus <- ginv(X.matrix)
-    colnames(Xplus) <- rownames(X.matrix)
-    rownames(Xplus) <- colnames(X.matrix)
-    e <- eigen(Xplus %*% X.matrix)$values
-    E <- eigen(Xplus %*% X.matrix)$vectors
-    rownames(E) <- rownames(Xplus %*% X.matrix)
-    M <- as.matrix(E[, is.zero(e, n = 100)])
-    ##
-    if (dim(M)[2] > 0) {
-      for (i in 1:dim(M)[2])
-        comps.unident <-
-          c(comps.unident, names(M[, i])[!is.zero(M[, i], n = 100)])
-      ##
-      comps.unident <- unique(sort(comps.unident))
-      warning(paste0("The following component",
-                     if (length(comps.unident) > 1)
-                       "s are " else " is ",
-                     "not uniquely identifiable: ",
-                     paste(paste0("'", comps.unident, "'"),
-                           collapse = ", ")),
-              call. = FALSE)
-      ##
-      if (details.chkident) {
-        M[is.zero(M, n = 100)] <- 0
-        prmatrix(M, quote = FALSE, right = TRUE)
-      }
-    }
-  }
+  #
+  # Identify and warn about not uniquely identifiable components
+  #
+  if (qr(X.matrix)$rank < c)
+    comps.unident <- get_unident(X.matrix, details.chkident)
+  else
+    comps.unident <- NULL
   
   
   ##
@@ -533,11 +520,10 @@ netcomb <- function(x,
   ##
   ## Common effects models
   ##
-  res.c <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
+  res.c <- nma_additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], x$level.ma,
                         X.matrix, C.matrix, x$B.matrix,
-                        x$Q, df.Q.additive, df.Q.diff,
-                        x$n, x$sep.trts)
+                        df.Q.additive, x$n, x$sep.trts)
   ##
   ## Calculate heterogeneity statistics (additive model)
   ##
@@ -557,20 +543,25 @@ netcomb <- function(x,
   p1 <- prepare(x$TE, x$seTE, x$treat1, x$treat2, x$studlab,
                 if (is.na(tau)) 0 else tau, invmat)
   ##
-  res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
+  res.r <- nma_additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], x$level.ma,
                         X.matrix, C.matrix, x$B.matrix,
-                        x$Q, df.Q.additive, df.Q.diff,
-                        x$n, x$sep.trts)
+                        df.Q.additive, x$n, x$sep.trts)
+  #
+  # Difference to standard network meta-analysis model
+  #
+  Q.diff <- res.c$Q.additive - x$Q
+  if (!is.na(Q.diff) && abs(Q.diff) < .Machine$double.eps^0.75)
+    Q.diff <- 0
+  #
+  if (is.na(df.Q.diff) | df.Q.diff == 0)
+    pval.Q.diff <- NA
+  else
+    pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)
   ##
   ## Set unidentifiable components and combinations to NA
   ##
   if (na.unident & length(comps.unident) > 0) {
-    setNA <- function(x, select) {
-      x[names(x) %in% select] <- NA
-      x
-    }
-    ##
     trts <- names(res.c$combinations$TE)
     unident.pattern <- paste0("^", comps.unident, "$", collapse = "|")
     unident.combs <-
@@ -578,15 +569,23 @@ netcomb <- function(x,
                                 grepl,
                                 pattern = unident.pattern), any))]
     ##
-    res.c$components <- lapply(res.c$components, setNA, comps.unident)
-    res.c$combinations <- lapply(res.c$combinations, setNA, unident.combs)
+    res.c$components <- lapply(res.c$components, setNA_vars, comps.unident)
+    res.c$combinations <- lapply(res.c$combinations, setNA_vars, unident.combs)
     ##
-    res.r$components <- lapply(res.r$components, setNA, comps.unident)
-    res.r$combinations <- lapply(res.r$combinations, setNA, unident.combs)
+    res.r$components <- lapply(res.r$components, setNA_vars, comps.unident)
+    res.r$combinations <- lapply(res.r$combinations, setNA_vars, unident.combs)
   }
   ##
   if (length(comps.unident) == 0)
     comps.unident <- NULL
+  #
+  comps <- names(res.c$components$TE)
+  #
+  if (sep.comps == sep.ia)
+    stop("Input for arguments 'sep.comps' and 'sep.ia' must be different.",
+         call. = FALSE)
+  #
+  sep.ia <- setsep(comps, sep.ia, missing = missing.sep.ia)
   
   
   ##
@@ -598,11 +597,11 @@ netcomb <- function(x,
               treat1 = x$treat1,
               treat2 = x$treat2,
               ##
-              TE = x$TE,
-              seTE = x$seTE,
-              seTE.adj = x$seTE.adj,
-              seTE.adj.common = x$seTE.adj.common,
-              seTE.adj.random = x$seTE.adj.random,
+              TE = p0$TE[o],
+              seTE = p0$seTE[o],
+              seTE.adj = sqrt(1 / p0$weights[o]),
+              seTE.adj.common = sqrt(1 / p0$weights[o]),
+              seTE.adj.random = sqrt(1 / p1$weights[o]),
               ##
               design = x$design,
               ##
@@ -610,6 +609,7 @@ netcomb <- function(x,
               event2 = x$event2,
               n1 = x$n1,
               n2 = x$n2,
+              incr = x$incr,
               ##
               k = x$k,
               m = x$m,
@@ -630,7 +630,7 @@ netcomb <- function(x,
               ##
               designs = x$designs,
               ##
-              comps = names(res.c$components$TE),
+              comps = comps,
               k.comps = NA,
               n.comps = NA,
               events.comps = NA,
@@ -717,9 +717,9 @@ netcomb <- function(x,
               df.Q.standard = x$df.Q,
               pval.Q.standard = x$pval.Q,
               ##
-              Q.diff = res.c$Q.diff,
+              Q.diff = Q.diff,
               df.Q.diff = df.Q.diff,
-              pval.Q.diff = res.c$pval.Q.diff, 
+              pval.Q.diff = pval.Q.diff, 
               ##
               A.matrix = x$A.matrix,
               X.matrix = X.matrix,
@@ -737,21 +737,22 @@ netcomb <- function(x,
               n.matrix = x$n.matrix,
               events.matrix = x$events.matrix,
               ##
-              Cov.common = x$Cov.common,
-              Cov.random = x$Cov.random,
+              Cov.common = res.c$Cov,
+              Cov.random = res.r$Cov,
               ##
               sm = x$sm,
               method = "Inverse",
               level = x$level,
               level.ma = x$level.ma,
-              common = x$common,
-              random = x$random,
+              common = common,
+              random = random,
               ##
               reference.group = x$reference.group,
               baseline.reference = x$baseline.reference,
               all.treatments = NULL,
               seq = x$seq,
-              ##
+              #
+              method.tau = x$method.tau,
               tau.preset = tau.preset,
               ##
               tol.multiarm = x$tol.multiarm,
@@ -760,19 +761,24 @@ netcomb <- function(x,
               sep.trts = x$sep.trts,
               sep.comps = sep.comps,
               nchar.comps = nchar.comps,
-              ##
+              sep.ia = sep.ia,
+              #
               inactive = inactive,
               ##
               func.inverse = deparse(substitute(func.inverse)),
-              ##
+              #
+              overall.hetstat = overall.hetstat,
               backtransf = backtransf,
-              ##
+              #
               title = x$title,
               ##
               x = x,
               call = match.call(),
               version = packageDescription("netmeta")$Version
               )
+  #
+  if (!is.null(x$data))
+    res$data <- x$data
   ##
   ## Backward compatibility
   ##

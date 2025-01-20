@@ -135,11 +135,11 @@
 #' 
 #' @export netmeasures
 
-
 netmeasures <- function(x,
                         random = x$random | !missing(tau.preset),
                         tau.preset = x$tau.preset,
-                        warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                        warn = gs("warn"),
+                        warn.deprecated = gs("warn.deprecated"),
                         ...) {
   
   ##
@@ -148,6 +148,8 @@ netmeasures <- function(x,
   ##
   ##
   chkclass(x, "netmeta")
+  chksuitable(x, "Network measures",
+              classes = c("netmeta.crossnma", "netmeta.multinma"))
   x <- updateversion(x)
   ##
   is.bin <- inherits(x, "netmetabin")
@@ -165,7 +167,7 @@ netmeasures <- function(x,
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
   ##
-  if (is.bin & random) {
+  if (is.bin && random && x$method != "LRP") {
     txt <-
       paste0("Argument 'random' set to FALSE for ",
              if (x$method == "MH")
@@ -205,11 +207,40 @@ netmeasures <- function(x,
     ## Direct evidence proportion
     ## (Rücker et al. 2020, BMC Med Res Meth, equation 7)
     ##
-    se.direct  <- uppertri(x$seTE.direct.common)
-    se.network <- uppertri(x$seTE.common)
+    if (!random) {
+      se.direct  <- uppertri(x$seTE.direct.common)
+      se.network <- uppertri(x$seTE.common)
+      #
+      nam <- rep_len("", length(se.direct))
+      idx <- 0
+      for (i in seq_len(ncol(x$seTE.common)))
+        for (j in seq_len(nrow(x$seTE.common)))
+          if (i < j) {
+            idx <- idx + 1
+            nam[idx] <- paste(rownames(x$seTE.direct.common)[i],
+                              colnames(x$seTE.direct.common)[j],
+                              sep = x$sep.trts)
+          }
+    }
+    else {
+      se.direct  <- uppertri(x$seTE.direct.random)
+      se.network <- uppertri(x$seTE.random)
+      #
+      nam <- rep_len("", length(se.direct))
+      idx <- 0
+      for (i in seq_len(ncol(x$seTE.random)))
+        for (j in seq_len(nrow(x$seTE.random)))
+          if (i < j) {
+            idx <- idx + 1
+            nam[idx] <- paste(rownames(x$seTE.direct.random)[i],
+                              colnames(x$seTE.direct.random)[j],
+                              sep = x$sep.trts)
+          }
+    }
+    #
     proportion <- se.network^2 / se.direct^2
     proportion[is.na(proportion)] <- 0
-    names(proportion) <- rownames(x$Cov.common)
+    names(proportion) <- nam
     ##
     meanpath <- NA
     minpar <- NA
@@ -220,7 +251,7 @@ netmeasures <- function(x,
     x$reference.group <- ""
     ##
     if (random == FALSE & length(tau.preset) == 0) {
-      nmak <- nma.krahn(x)
+      nmak <- nma_krahn(x)
       if (nmak$n == 2) {
         prop <- mpath <- 1
         names(prop) <- names(mpath) <- x$designs
@@ -238,7 +269,7 @@ netmeasures <- function(x,
     }
     ##                                                             
     if (length(tau.preset) == 1) {
-      nmak <- nma.krahn(x, tau.preset = tau.preset)
+      nmak <- nma_krahn(x, tau.preset = tau.preset)
       if (nmak$n == 2) {
         prop <- mpath <- 1
         names(prop) <- names(mpath) <- x$designs
@@ -256,7 +287,7 @@ netmeasures <- function(x,
     }
     ##
     if (random == TRUE & length(tau.preset) == 0) {
-      nmak <- nma.krahn(x, tau.preset = x$tau)
+      nmak <- nma_krahn(x, tau.preset = x$tau)
       if (nmak$n == 2) {
         prop <- mpath <- 1
         names(prop) <- names(mpath) <- x$designs

@@ -53,7 +53,7 @@
 #'   (treatment 3) 
 #' }
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{metabin}},
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
 #'   \code{\link{netmeta}}, \code{\link{netposet}}
 #' 
 #' @source

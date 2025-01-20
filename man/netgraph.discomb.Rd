@@ -4,16 +4,42 @@
 \alias{netgraph.discomb}
 \title{Network graph for objects of class discomb}
 \usage{
-\method{netgraph}{discomb}(x, plastic = FALSE, ...)
+\method{netgraph}{discomb}(
+  x,
+  labels = x$trts,
+  adj = NULL,
+  offset = if (!is.null(adj) && all(unique(adj) == 0.5)) 0 else 0.0175,
+  rotate = 0,
+  points = !missing(cex.points),
+  cex.points = 1,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{discomb}.}
 
-\item{plastic}{A logical indicating whether the appearance of the
-comparisons should be in '3D look'.}
+\item{labels}{An optional vector with treatment labels.}
+
+\item{adj}{One, two, or three values in [0, 1] (or a vector /
+matrix with length / number of rows equal to the number of
+treatments) specifying the x (and optionally y and z) adjustment
+for treatment labels.}
+
+\item{offset}{Distance between edges (i.e. treatments) in graph and
+treatment labels for 2-D plots (value of 0.0175 corresponds to a
+difference of 1.75\% of the range on x- and y-axis).}
+
+\item{rotate}{A single numeric with value between -180 and 180
+specifying the angle to rotate nodes in a circular network.}
+
+\item{points}{A logical indicating whether points should be printed
+at nodes (i.e. treatments) of the network graph.}
+
+\item{cex.points}{Corresponding point size. Can be a vector with length
+equal to the number of treatments.}
 
 \item{\dots}{Additional arguments passed on to
-\code{\link{netgraph.netmeta}} (see Details).}
+\code{\link{netgraph.netmeta}}.}
 }
 \description{
 This function generates a graph of the evidence network.

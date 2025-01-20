@@ -58,6 +58,8 @@
 #' @param col.predict Background colour of prediction intervals.
 #' @param col.predict.lines Colour of outer lines of prediction
 #'   intervals.
+#' @param col.subgroup The colour to print information on subgroups, i.e.,
+#'   pairwise comparisons.
 #' @param equal.size A logical indicating whether all squares should
 #'   be of equal size. Otherwise, the square size is proportional to
 #'   the precision of estimates.
@@ -80,7 +82,7 @@
 #' @param lab.NA A character string to label missing values.
 #' @param smlab A label printed at top of figure. By default, text
 #'   indicating either common or random effects model is printed.
-#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#' @param \dots Additional arguments for \code{\link[meta]{forest.meta}}
 #'   function.
 #' 
 #' @details
@@ -95,7 +97,7 @@
 #' If direct estimates are included in the forest plot (\code{direct =
 #' TRUE}, default), the following columns will be printed on the left
 #' side of the forest plot: the comparisons (column \code{"studlab"}
-#' in \code{\link{forest.meta}}), number of pairwise comparisons
+#' in \code{\link[meta]{forest.meta}}), number of pairwise comparisons
 #' (\code{"k"}), direct evidence proportion (\code{"k"}), and
 #' I\eqn{^2} from pairwise comparison (\code{"I2"}).
 #' 
@@ -103,7 +105,7 @@
 #' (\code{direct = FALSE}), only the comparisons (\code{"studlab"})
 #' are printed on the left side of the forest plot.
 #' 
-#' For more information see help page of \code{\link{forest.meta}}
+#' For more information see help page of \code{\link[meta]{forest.meta}}
 #' function.
 #' 
 #' Argument \code{show} determines which comparisons are printed:
@@ -120,7 +122,7 @@
 #'
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{forest.meta}}
+#' @seealso \code{\link[meta]{forest.meta}}
 #' 
 #' @keywords hplot
 #' 
@@ -160,20 +162,20 @@
 #' @method forest netsplit
 #' @export
 
-
 forest.netsplit <- function(x,
                             pooled = ifelse(x$x$random, "random", "common"),
-                            show = "both",
-                            ##
+                            show = x$show,
+                            #
                             subgroup = "comparison",
-                            ##
-                            overall = TRUE,
-                            direct = TRUE,
-                            indirect = TRUE,
+                            #
+                            overall = x$overall,
+                            direct = x$direct,
+                            indirect = x$indirect,
                             prediction = x$prediction,
-                            ##
-                            only.reference = FALSE,
-                            ##
+                            #
+                            #test = x$test,
+                            only.reference = x$only.reference,
+                            #
                             sortvar = NULL,
                             subset = NULL,
                             ##
@@ -193,6 +195,7 @@ forest.netsplit <- function(x,
                             col.diamond.lines = "black",
                             col.predict = "red",
                             col.predict.lines = "black",
+                            col.subgroup = "black",
                             ##
                             equal.size = TRUE,
                             ##
@@ -251,9 +254,9 @@ forest.netsplit <- function(x,
       ## Set proportions to 0 or 1
       ##
       if (is.numeric(sortvar)) {
-        sortvar[is.zero(abs(sortvar), n = 1000)] <- 0
-        sortvar[is.zero(1 - abs(sortvar), n = 1000)] <-
-          1 * sign(sortvar)[is.zero(1 - abs(sortvar), n = 1000)]
+        sortvar[is_zero(abs(sortvar), n = 1000)] <- 0
+        sortvar[is_zero(1 - abs(sortvar), n = 1000)] <-
+          1 * sign(sortvar)[is_zero(1 - abs(sortvar), n = 1000)]
       }
       sortvar <- order(do.call(order, as.list(as.data.frame(sortvar))))
     }
@@ -298,13 +301,14 @@ forest.netsplit <- function(x,
   else
     type.indirect <- setchar(type.indirect, c("diamond", "square"))
   ##
-  chkchar(col.square)
-  chkchar(col.square.lines)
-  chkchar(col.inside)
-  chkchar(col.diamond)
-  chkchar(col.diamond.lines)
-  chkchar(col.predict)
-  chkchar(col.predict.lines)
+  chkcolor(col.square)
+  chkcolor(col.square.lines)
+  chkcolor(col.inside)
+  chkcolor(col.diamond)
+  chkcolor(col.diamond.lines)
+  chkcolor(col.predict)
+  chkcolor(col.predict.lines)
+  chkcolor(col.subgroup)
   ##
   chklogical(equal.size)
   ##
@@ -357,8 +361,8 @@ forest.netsplit <- function(x,
   if (missing(text.predict))
     if (!(length(x$level.predict) == 0) &&
         x$level.ma != x$level.predict)
-      text.predict <- paste(text.predict, " (",
-                            round(x$level.predict * 100), "%-PI)", sep = "")
+      text.predict <- paste0(text.predict, " (",
+                             round(x$level.predict * 100), "%-PI)")
   ##
   if (overall & n.subgroup > 1) {
     if (text.overall == text.predict)
@@ -467,16 +471,15 @@ forest.netsplit <- function(x,
   }
   ##
   if (missing.smlab & n.subgroup == 1)
-    smlab <- paste(if (direct)
-                     paste(text.direct, "\n", sep = ""),
-                   if (indirect)
-                     paste(text.indirect, "\n", sep = ""),
-                   if (overall)
-                     paste(text.overall, "\n", sep = ""),
-                   "(",
-                   tolower(smlab),
-                   ")",
-                   sep = "")
+    smlab <- paste0(if (direct)
+      paste0(text.direct, "\n"),
+      if (indirect)
+        paste0(text.indirect, "\n"),
+      if (overall)
+        paste0(text.overall, "\n"),
+      "(",
+      tolower(smlab),
+      ")")
   ##
   dat.predict <- x$predict
   ##
@@ -789,6 +792,7 @@ forest.netsplit <- function(x,
                 col.diamond.lines = col.diamond.lines,
                 col.predict = col.predict,
                 col.predict.lines = col.predict.lines,
+                col.subgroup = col.subgroup,
                 equal.size = equal.size,
                 digits = digits,
                 digits.prop = digits.prop)
@@ -799,12 +803,9 @@ forest.netsplit <- function(x,
 }
 
 
-
-
 #' @rdname forest.netsplit
 #' @method plot netsplit
 #' @export
-#'
 
 plot.netsplit <- function(x, ...)
   forest(x, ...)

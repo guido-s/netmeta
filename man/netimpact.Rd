@@ -9,6 +9,8 @@ netimpact(
   x,
   seTE.ignore = 100 * max(x$seTE, na.rm = TRUE),
   event.ignore = 0.01,
+  nchar.trts = x$nchar.trts,
+  nchar.studlab = x$nchar.studlab,
   verbose = FALSE
 )
 }
@@ -22,6 +24,12 @@ meta-analysis (ignored for \code{\link{netmetabin}} objects).}
 \item{event.ignore}{Assumed event number mimicking the removal of
 individual studies from the network meta-analysis (considered for
 \code{\link{netmetabin}} objects).}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names (see Details).}
+
+\item{nchar.studlab}{A numeric defining the minimum number of
+characters used to create unique study labels.}
 
 \item{verbose}{A logical indicating whether information on the
 estimation progress should be printed.}
@@ -48,15 +56,13 @@ network meta-analysis by the reduction of the precision if the
 study is removed / ignored from the network (Rücker et al., 2020).
 }
 \examples{
-data(Franchini2012)
-
 # Only consider first two studies (to reduce runtime of example)
 #
-studies <- unique(Franchini2012$Study)
+studies <- unique(dat.franchini2012$Study)
 p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
   n = list(n1, n2, n3),
   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-  data = subset(Franchini2012, Study \%in\% studies[1:2]),
+  data = subset(dat.franchini2012, Study \%in\% studies[1:2]),
   studlab = Study)
 
 net1 <- netmeta(p1)
@@ -76,7 +82,8 @@ estimate.
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netmetabin}},
-  \code{\link{netgraph.netimpact}}, \code{\link{print.netimpact}}
+  \code{\link{netgraph.netimpact}}, \code{\link{print.netimpact}},
+  \code{\link[metadat]{dat.franchini2012}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de},

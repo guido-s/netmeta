@@ -1,9 +1,8 @@
-nma.additive <- function(TE, weights, studlab,
+nma_additive <- function(TE, weights, studlab,
                          treat1, treat2,
                          level,
                          X, C.matrix, B.matrix,
-                         Q, df.Q.additive, df.Q.diff,
-                         n, sep.trts) {
+                         df.Q.additive, n, sep.trts) {
   
   
   m <- length(TE)
@@ -17,7 +16,7 @@ nma.additive <- function(TE, weights, studlab,
   L <- t(X) %*% W %*% X
   ##
   Lplus <- ginv(L) # = Cov matrix of beta (components)
-  Lplus[is.zero(Lplus)] <- 0
+  Lplus[is_zero(Lplus)] <- 0
   colnames(Lplus) <- colnames(L)
   rownames(Lplus) <- rownames(L)
   ##
@@ -63,7 +62,11 @@ nma.additive <- function(TE, weights, studlab,
   }
   ##
   rownames(X.all) <- lab
-  ##
+  #
+  # Variance-covariance matrix for all comparisons
+  #
+  Cov <- X.all %*% Lplus %*% t(X.all)
+  #
   delta.all <- as.vector(X.all %*% beta)
   se.delta.all <- sqrt(diag(X.all %*% Lplus %*% t(X.all)))
   names(delta.all) <- names(se.delta.all)
@@ -105,17 +108,6 @@ nma.additive <- function(TE, weights, studlab,
   else
     pval.Q.additive <- 1 - pchisq(Q.additive, df.Q.additive)
   ##
-  ## Difference to standard network meta-analysis model
-  ##
-  Q.diff <- Q.additive - Q
-  if (!is.na(Q.diff) && abs(Q.diff) < .Machine$double.eps^0.75)
-    Q.diff <- 0
-  ##
-  if (is.na(df.Q.diff) | df.Q.diff == 0)
-    pval.Q.diff <- NA
-  else
-    pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)
-  ##
   ## Heterogeneity variance
   ##
   I <- diag(m)
@@ -152,16 +144,14 @@ nma.additive <- function(TE, weights, studlab,
               df.Q.additive = df.Q.additive,
               pval.Q.additive = pval.Q.additive,
               ##
-              Q.diff = Q.diff,
-              df.Q.diff = df.Q.diff,
-              pval.Q.diff = pval.Q.diff,
-              ##
               tau = tau,
               I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2,
               ##
               L.matrix = L,
               Lplus.matrix = Lplus,
-              H.matrix = H
+              H.matrix = H,
+              #
+              Cov = Cov
               )
   
   

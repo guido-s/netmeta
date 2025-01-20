@@ -26,27 +26,27 @@ crtitle <- function(x) {
     if (x$title != "") {
       newline <- TRUE
       if (nchar(x$title) <= tl)
-        cat(paste0("Review:     ", x$title, "\n"))
+        cat("Review:     ", x$title, "\n", sep = "")
       else
-        cat(paste0("Review:     ", substring(x$title, 1, tl - 4), " ...\n"))
+        cat("Review:     ", substring(x$title, 1, tl - 4), " ...\n", sep = "")
     }
   }
   if (!is.null(x$complab)) {
     if (x$complab != "") {
       newline <- TRUE
       if (nchar(x$complab) <= tl)
-        cat(paste0("Comparison: ", x$complab, "\n"))
+        cat("Comparison: ", x$complab, "\n", sep = "")
       else
-        cat(paste0("Comparison: ", substring(x$complab, 1, tl - 4), " ...\n"))
+        cat("Comparison: ", substring(x$complab, 1, tl - 4), " ...\n", sep = "")
     }
   }
   if (!is.null(x$outclab)) {
     if (x$outclab != "") {
       newline <- TRUE
       if (nchar(x$outclab) <= tl)
-        cat(paste0("Outcome:    ", x$outclab, "\n"))
+        cat("Outcome:    ", x$outclab, "\n", sep = "")
       else
-        cat(paste0("Outcome:    ", substring(x$outclab, 1, tl - 4), " ...\n"))
+        cat("Outcome:    ", substring(x$outclab, 1, tl - 4), " ...\n", sep = "")
     }
   }
   ##

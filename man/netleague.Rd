@@ -12,8 +12,8 @@ netleague(
   random = x$random,
   seq = x$seq,
   ci = TRUE,
-  backtransf = TRUE,
-  direct = FALSE,
+  backtransf = x$backtransf,
+  direct,
   digits = gs("digits"),
   big.mark = gs("big.mark"),
   text.NA = ".",
@@ -24,6 +24,7 @@ netleague(
   writexl = !missing(path),
   path = "leaguetable.xlsx",
   overwrite = FALSE,
+  details = gs("details"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -37,10 +38,11 @@ netleague(
 )
 }
 \arguments{
-\item{x}{An object of class \code{netmeta} or \code{netleague}
-(mandatory).}
+\item{x}{An object of created with \code{netmeta}, \code{netcomb},
+\code{discomb}, or \code{netleague} (mandatory).}
 
-\item{y}{An object of class \code{netmeta} (optional).}
+\item{y}{An object of class \code{netmeta}, \code{netcomb}, or \code{discomb}
+(optional).}
 
 \item{common}{A logical indicating whether a league table should be
 printed for the common effects network meta-analysis.}
@@ -59,9 +61,12 @@ should be back transformed. If \code{backtransf = TRUE}, results
 for \code{sm = "OR"} are printed as odds ratios rather than log
 odds ratios, for example.}
 
-\item{direct}{A logical indicating whether league table with
-network estimates (default) or estimates from direct comparisons
-should be generated if argument \code{y} is not missing.}
+\item{direct}{A logical indicating whether league tables with
+network estimates or estimates from direct comparisons
+should be shown if (i) argument \code{y} is provided and the input for
+arguments \code{x} and \code{y} was created with \code{netmeta} or (ii)
+input for argument \code{x} was created with \code{netmeta} or
+\code{netcomb}.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
@@ -91,6 +96,9 @@ file.}
 \item{overwrite}{A logical indicating whether an existing Excel
 file should be overwritten.}
 
+\item{details}{A logical specifying whether details on rows and columns
+should be printed.}
+
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
 
@@ -114,24 +122,36 @@ A league table is a square matrix showing all pairwise comparisons
 in a network meta-analysis (Hutton et al., 2015). Typically, both
 treatment estimates and confidence intervals are shown.
 
-If argument \code{y} is not provided, the league table contains the
-network estimates from network meta-analysis object \code{x} in the
-lower triangle and the direct treatment estimates from pairwise
-comparisons in the upper triangle. Note, for the random-effects
-model, the direct treatment estimates are based on the common
-between-study variance \eqn{\tau^2} from the network meta-analysis,
-i.e. the square of list element \code{x$tau}.
+If argument \code{y} is not provided, the league table contains
+\itemize{
+\item the network estimates in the lower triangle and the direct treatment
+  estimates from pairwise comparisons in the upper triangle, if the input
+  for argument \code{x} was created with \code{netmeta};
+\item the network estimates from the component network meta-analysis in the
+  lower triangle, if the input for argument \code{x} was created with
+  \code{netcomb}, and, in the upper triangle, (i) the network estimates from
+  the network meta-analysis, if argument \code{direct = FALSE}, or
+  (ii)) the direct treatment estimates from pairwise comparisons, if
+  argument \code{direct = TRUE};
+\item the network estimates from the component network meta-analysis in the
+  lower and upper triangle, if the input for argument \code{x} was created
+  with \code{discomb}.
+}
+Note, for the random-effects model, the direct treatment estimates are based
+on the common between-study variance \eqn{\tau^2} from the network
+meta-analysis, i.e. the square of list element \code{x$tau}.
 
 If argument \code{y} is provided, the league table contains
-information on treatment comparisons from network meta-analysis
-object \code{x} in the lower triangle and from network
+information on treatment comparisons from (component) network meta-analysis
+object \code{x} in the lower triangle and from (component) network
 meta-analysis object \code{y} in the upper triangle. This is, for
 example, useful to print information on efficacy and safety in the
-same league table.
+same league table. If argument \code{direct = TRUE}, direct estimates are
+shown both in the lower and upper triangle if the input for arguments
+\code{x} and \code{y} was created with \code{netmeta}.
 
-By default, an R object with the league tables is
-generated. Alternatively, an Excel file is created if argument
-\code{writexl = TRUE}.
+By default, an R object with the league tables is generated. Alternatively,
+an Excel file is created if argument \code{writexl = TRUE}.
 
 This implementation reports pairwise comparisons of the treatment
 in the column versus the treatment in the row in the lower triangle
@@ -146,7 +166,7 @@ reports opposite pairwise comparisons in the lower and upper
 triangle, e.g., A versus B in the first row and second column and B
 versus A in the second row and first column.
 
-If the same network meta-analysis object is used for arguments
+If the same (component) network meta-analysis object is used for arguments
 \code{x} and \code{y}, reciprocal treatment estimates will be shown
 in the upper triangle (see examples), e.g., the comparison B versus
 A.
@@ -157,10 +177,8 @@ rows and columns in the league table (see examples).
 \examples{
 # Network meta-analysis of count mortality statistics
 #
-data(Woods2010)
-
 p0 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = dat.woods2010, sm = "OR")
 net0 <- netmeta(p0)
 
 oldopts <- options(width = 100)
@@ -198,11 +216,7 @@ netleague(net0, digits = 2, bracket = "(", separator = " to ",
 }
 
 \donttest{
-# Use depression dataset
-#
-data(Linde2015)
-
-# Define order of treatments
+# Define order of treatments in depression dataset dat.linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -215,7 +229,7 @@ outcomes <- c("Early response", "Early remission")
 #
 p1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net1 <- netmeta(p1, common = FALSE,
                 seq = trts, ref = "Placebo", small = "undesirable")
@@ -224,7 +238,7 @@ net1 <- netmeta(p1, common = FALSE,
 #
 p2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-  studlab = id, data = Linde2015, sm = "OR")
+  studlab = id, data = dat.linde2015, sm = "OR")
 #
 net2 <- netmeta(p2, common = FALSE,
                 seq = trts, ref = "Placebo", small = "undesirable")
@@ -244,8 +258,8 @@ netleague(net1, net2, digits = 2, ci = FALSE)
 netleague(net1, net2, seq = netrank(net1), ci = FALSE)
 netleague(net1, net2, seq = netrank(net2), ci = FALSE)
 
-print(netrank(net1))
-print(netrank(net2))
+netrank(net1)
+netrank(net2)
 
 
 # Report results for network meta-analysis twice
@@ -279,8 +293,10 @@ Checklist and Explanations.
 \bold{162}, 777
 }
 \seealso{
-\code{\link{netmeta}}, \code{\link{netposet}},
-  \code{\link{netrank}}
+\code{\link{netmeta}}, \code{\link{netcomb}},
+  \code{\link{discomb}}, \code{\link{netposet}}, \code{\link{netrank}},
+  \code{\link[metadat]{dat.woods2010}},
+  \code{\link[metadat]{dat.linde2015}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Gerta

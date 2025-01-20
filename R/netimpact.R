@@ -13,6 +13,10 @@
 #' @param event.ignore Assumed event number mimicking the removal of
 #'   individual studies from the network meta-analysis (considered for
 #'   \code{\link{netmetabin}} objects).
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names (see Details).
+#' @param nchar.studlab A numeric defining the minimum number of
+#'   characters used to create unique study labels.
 #' @param verbose A logical indicating whether information on the
 #'   estimation progress should be printed.
 #' 
@@ -44,18 +48,17 @@
 #' \bold{20}, 190
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netmetabin}},
-#'   \code{\link{netgraph.netimpact}}, \code{\link{print.netimpact}}
+#'   \code{\link{netgraph.netimpact}}, \code{\link{print.netimpact}},
+#'   \code{\link[metadat]{dat.franchini2012}}
 #' 
 #' @examples
-#' data(Franchini2012)
-#' 
 #' # Only consider first two studies (to reduce runtime of example)
 #' #
-#' studies <- unique(Franchini2012$Study)
+#' studies <- unique(dat.franchini2012$Study)
 #' p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
 #'   n = list(n1, n2, n3),
 #'   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-#'   data = subset(Franchini2012, Study %in% studies[1:2]),
+#'   data = subset(dat.franchini2012, Study %in% studies[1:2]),
 #'   studlab = Study)
 #' 
 #' net1 <- netmeta(p1)
@@ -66,10 +69,11 @@
 #' 
 #' @export netimpact
 
-
 netimpact <- function(x,
                       seTE.ignore = 100 * max(x$seTE, na.rm = TRUE),
                       event.ignore = 0.01,
+                      nchar.trts = x$nchar.trts,
+                      nchar.studlab = x$nchar.studlab,
                       verbose = FALSE) {
   
   
@@ -79,6 +83,9 @@ netimpact <- function(x,
   ##
   chknumeric(seTE.ignore, min = 0, zero = TRUE, length = 1)
   chknumeric(event.ignore, min = 0, zero = TRUE, length = 1)
+  #
+  chknumeric(nchar.trts, min = 1, length = 1)
+  chknumeric(nchar.studlab, min = 1, length = 1)
   
   
   studlab <- x$studlab
@@ -112,14 +119,13 @@ netimpact <- function(x,
     ignored[[i]] <- comparison[studlab == i]
     ##
     if (verbose) {
-      cat(paste0("** Removed study: ", i,
-                 " **\nComparison",
-                 if (length(comparison[studlab == i]) > 1) "s",
-                 ": ",
-                 paste(paste("'", comparison[studlab == i],
-                             "'", sep = ""),
-                       collapse = ", "),
-                 "\n\n"))
+      cat("** Removed study: ", i,
+          " **\nComparison",
+          if (length(comparison[studlab == i]) > 1) "s",
+          ": ",
+          paste(paste0("'", comparison[studlab == i], "'"), collapse = ", "),
+          "\n\n",
+          sep = "")
     }
     ##
     if (!inherits(x, "netmetabin")) {
@@ -171,8 +177,14 @@ netimpact <- function(x,
               impact.random = t(impact.random),
               ignored.comparisons = ignored,
               seTE.ignore = seTE.ignore,
+              #
               x = x,
               nets = nets,
+              method.tau = x$method.tau,
+              nchar.trts = nchar.trts,
+              nchar.studlab = nchar.studlab,
+              #
+              call = match.call(),
               version = packageDescription("netmeta")$Version)
   ##
   ## Backward compatibility

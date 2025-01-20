@@ -1,3 +1,207 @@
+## netmeta, version 3.0-0 (2025-01-20)
+
+### Major changes
+
+* Network meta-analysis of studies with correlated treatment arms implemented
+
+* Logistic regression with penalised likelihood implemented for network
+  meta-analysis of rare events
+  [(Evrenoglou et al., 2022)](https://doi.org/10.1002/sim.9562)
+
+* Subgroup network meta-analysis implemented
+
+* Component network meta-analysis:
+  - numbers of events and sample sizes can be provided for disconnected networks
+  - node size and line width can be changed in network graphs of disconnected
+    networks
+  - league tables can be constructed for connected or disconnect networks
+  - auxiliary functions createC() and combinations() to fit interaction
+    CNMA models more easily
+  - warn / inform about unidentifiable components only appearing together which
+    could be merged to make the combination identifiable
+
+* Rankograms can be constructed from samples
+
+* R functions pairwise() and subset.pairwise() moved from R package
+  **netmeta** to **meta**
+
+* R function pairwise() can be used with dose-response data
+
+* New R function settings.netmeta() to define and print default settings
+  for network meta-analyses in R package **netmeta**
+
+* New R function crossnma2netmeta() to create a netmeta object from a
+  crossnma object
+
+* By default, no reference group line is displayed in forest plots
+  (argument 'drop.reference.group = TRUE' instead of
+  'drop.reference.group = FALSE')
+
+* In R function netsplit(), only show results for pairwise comparisons
+  providing both direct and indirect evidence by default
+  (argument 'show = "both"' instead of 'show = "all"')
+
+* R function netmeta() does not automatically return the R object created
+    with rma.mv() from **metafor** to calculate the between-study variance
+    for the REML or ML estimator of the between-study variance
+    (argument 'keeprma = FALSE')
+
+### User-visible changes
+
+* New R functions subgroup.netmeta() and forest.subgroup.netmeta() to conduct
+  subgroup meta-analysis
+
+* New generic function rankogram() to calculate rankograms
+
+* New functions rankogram.netmeta(), replacing the older rankogram(),
+  and rankogram.default()
+
+* New generic function netpairwise() to conduct pairwise meta-analyses for all
+  comparisons with direct evidence
+
+* New functions netpairwise.netmeta(), replacing the older netpairwise(),
+  and netpairwise.netmetabin()
+
+* print.rankogram():
+  - by default, sort treatments by SUCRAs
+  - new logical argument 'sort' to sort treatments by SUCRA values
+
+* netmeta():
+  - new argument 'correlated' to conduct network meta-analysis of correlated
+    treatment arms
+  - new argument 'keeprma' to return the R object created with rma.mv()
+    from **metafor** to calculate the between-study variance for the REML or
+    ML method
+  - only list element 'rma.tau' with the rma.mv() object is returned if
+    argument 'keeprma = TRUE' (instead of elements '.metafor', '.dat.tau',
+    '.V', '.formula.trts', 'version.metafor'); 'rma.tau' replaces '.metafor',
+    all other information is part of the R object created with rma.mv()
+
+* netmetabin():
+  - new argument 'method.incr' indicating continuity correction method
+    (replaces deprecated arguments 'addincr' and 'allincr')
+  - argument 'method = "LRP"' can be used for penalized logistic regression
+  - argument 'reference.group' uses setting from pairwise object
+
+* discomb():
+  - new arguments 'n1', 'n2', 'event1', 'event2', 'incr', 'na.unident', and
+    'keepdata'
+
+* netmeta(), netmetabin(), discomb(), netcomb(),
+  summary.netmeta(), summary.netcomb(),
+  print.netmeta(), print.netcomb(),
+  print.summary.netmeta(), print.summary.netcomb(),
+  forest.netmeta(), forest.netcomb():
+  - new argument 'overall.hetstat' to specify whether to print heterogeneity
+    information
+
+* netleague():
+  - new argument 'details' to control printing of details on comparisons in
+    lower and upper triangle
+
+* forest.netmeta():
+  - new argument 'col.subgroup' replaces argument 'col.by'
+  - new arguments 'print.tau2' and 'print.tau'
+  - print text 'Common Effects Model' for Mantel-Haenszel and non-central
+    hypergeometrical model as details can be printed in forest plots using
+    argument 'details.methods = TRUE'
+
+* print.rankogram():
+  - new argument 'sort' to return rankings sorted by SUCRA values
+
+* print.netmeta(), print.summary.netmeta():
+  - new arguments 'zero.pval', 'JAMA.pval', 'print.tau2', 'print,tau',
+    'print.Q', 'print.I2', 'print.I2.ci', 'details.methods'
+
+* print.netcomb(), print.summary.netcomb():
+  - new arguments 'print.tau2', 'print,tau', 'print.Q', 'print.I2',
+    'print.I2.ci', 'details.methods'
+
+* netimpact():
+  - new arguments 'nchar.trts' and 'nchar.studlab'
+
+* print.netimpact():
+  - new arguments 'nchar.trts', 'nchar.studlab', 'details.methods',
+    'legend.studlab'
+
+* netconnection.pairwise():
+  - new argument 'drop.NA' to consider comparisons with missing estimates or
+    standard errors (e.g., to generate network graph for comparisons
+    with missing estimates or standard errors)
+
+* netdistance.netmeta(), netdistance.netcomb():
+  - new argument 'sort' to sort (sub)networks by treatment names
+
+* New function summary.netconnection() to print list of studies in subnetworks
+
+* New function print.netdistance() to print distance matrix
+
+* New generic function hasse() for Hasse diagrams
+
+* New functions hasse.netposet() replacing the older hasse()
+
+* Do not print the start-up message concerning older version of R package
+  **netmeta** for readers of 'Meta-Analysis with R (Use R!)'
+
+### Bug fixes
+
+* netmeta(), netmetabin(), discomb():
+  - consider value for argument 'reference.group' from pairwise() object
+
+* netmeta():
+  - set between-study variance to NA for single study if argument
+    'method.tau = "REML"' or 'method.tau = "ML"'
+
+* netcomb():
+  - input for arguments 'common' and 'random' was ignored
+
+* netcomplex():
+  - print correct component names for command *netcomplex(net1, 2)* etc.
+
+* netcomparison():
+  - NA was calculated for comparisons containing inestimable components which
+    canceled out, e.g., A + Z vs B + Z with inestimable Z
+
+* discomb():
+  - set study labels if argument 'studlab' is missing
+
+* print.netcomparison():
+  - do not print information on abbreviated component label for inactive
+    component if it isn't part of the comparison
+
+* print.netcomb():
+  - printout resulted in an error if the reference intervention contained an
+    inestimable component
+
+### Internal changes
+
+* New generic function netdistance() to calculate distance matrix
+
+* New functions netdistance.netmeta(), netdistance.netcomb(),
+  netdistance.netconnection(), netdistance.pairwise(), and netdistance.default()
+
+* New functions netconnection.netmeta(), netconnection.netcomb(),
+  netconnection.pairwise(), and netconnection.default()
+
+* New functions netconnection.netmeta(), netconnection.netcomb(),
+  netconnection.pairwise(), and netconnection.default()
+
+* R function netleague() can be used with netcomb() or discomb() objects
+
+* By default, R function netleague() uses the setting from argument 'x' as
+  the default for argument 'backtransf'
+
+* Use backtransf() from R package **meta** to back-transform results
+
+* New internal function nma_ruecker() allowing for correlated treatment arms
+  (R function nma.ruecker() still available)
+
+* R functions nma.additive() and nma.krahn() renamed to nma_additive() and
+  nma_krahn()
+
+* Do not calculate Q.diff within nma_additive() but netcomb() and discomb()
+
+
 ## netmeta, version 2.9-0 (2024-01-11)
 
 ### Major changes
@@ -1731,7 +1935,7 @@
 * Consider ordering of treatments in netrank() which is defined by
   argument seq in netmeta()
 
-* For multi-arm studoes, calculate pooled standard deviation in
+* For multi-arm studies, calculate pooled standard deviation in
   pairwise() if means and standard deviations are provided and
   summary measure is equal to "SMD"
 
@@ -1965,9 +2169,8 @@
 * Function netmeta:
   - implement a general check for correct number of comparisons for
     multi-arm studies
-  - use setseq function to check and set value of argument 'seq'
-  - use setref function to check and set value of argument
-    'reference.group'
+  - use setseq() to check and set value of argument 'seq'
+  - use setref() to check and set value of argument 'reference.group'
   - use chklevel function from R package **meta** to check levels of
     confidence intervals
   - consider attribute 'sm' from R objects generated with R function

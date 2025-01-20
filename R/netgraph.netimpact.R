@@ -35,20 +35,19 @@
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de},
 #'   Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{netimpact}}, \code{\link{netgraph.netmeta}}
+#' @seealso \code{\link{netimpact}}, \code{\link{netgraph.netmeta}},
+#'   \code{\link[metadat]{dat.franchini2012}}
 #' 
 #' @keywords hplot
 #' 
 #' @examples
-#' data(Franchini2012)
-#' 
 #' # Only consider first two studies (to reduce runtime of example)
 #' #
-#' studies <- unique(Franchini2012$Study)
+#' studies <- unique(dat.franchini2012$Study)
 #' p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
 #'   n = list(n1, n2, n3),
 #'   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-#'   data = subset(Franchini2012, Study %in% studies[1:2]),
+#'   data = subset(dat.franchini2012, Study %in% studies[1:2]),
 #'   studlab = Study)
 #' 
 #' net1 <- netmeta(p1)
@@ -60,7 +59,7 @@
 #' p2 <- pairwise(list(Treatment1, Treatment2, Treatment3),
 #'   n = list(n1, n2, n3),
 #'   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-#'   data = Franchini2012,
+#'   data = dat.franchini2012,
 #'   studlab = Study)
 #' 
 #' net2 <- netmeta(p2)
@@ -73,17 +72,16 @@
 #' @method netgraph netimpact
 #' @export
 
-
 netgraph.netimpact <- function(x,
                                col.ignore = "red",
                                number.of.studies = TRUE,
                                main, sub,
-                               multiarm = FALSE,
+                               multiarm = gs("multiarm"),
                                col.multiarm = NULL,
                                alpha.transparency = 0.5,
                                col.ignore.multiarm =  "transparent",
                                col = "black",
-                               plastic = FALSE,
+                               plastic = gs("plastic"),
                                ...) {
   
   
@@ -192,8 +190,7 @@ netgraph.netimpact <- function(x,
       title(sub = paste0("Comparison",
                          if (length(ignore.i) > 1) "s",
                          ": ",
-                         paste(paste("'", ignore.i, "'", sep = ""),
-                               collapse = ", ")))
+                         paste(paste0("'", ignore.i, "'"), collapse = ", ")))
   }
   
   

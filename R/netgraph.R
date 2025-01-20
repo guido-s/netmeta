@@ -21,6 +21,8 @@
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de
 #' }
 #' 
+#' @seealso \code{\link[metadat]{dat.woods2010}}
+#' 
 #' @keywords hplot
 #'
 #' @examples
@@ -53,9 +55,8 @@
 #' #
 #' netgraph(net2)
 #'
-#' data(Woods2010)
 #' p3 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = dat.woods2010, sm = "OR")
 #' net3 <- netmeta(p3)
 #' 
 #' # Network graph with default settings
@@ -72,7 +73,6 @@
 #' 
 #' @rdname netgraph
 #' @export netgraph
-
 
 netgraph <- function(x, ...)
   UseMethod("netgraph")

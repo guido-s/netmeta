@@ -19,8 +19,8 @@ meta-analysis}
   digits.pval = gs("digits.pval"),
   smlab = NULL,
   backtransf = x$backtransf,
-  lab.NA = ".",
-  weight.study = "same",
+  lab.NA = gs("lab.NA"),
+  equal.size = gs("equal.size"),
   ...
 )
 
@@ -35,19 +35,19 @@ should be plotted. Can be abbreviated.}
 
 \item{leftcols}{A character vector specifying (additional) columns
 to be plotted on the left side of the forest plot or a logical
-value (see \code{\link{forest.meta}} help page for details).}
+value (see \code{\link[meta]{forest.meta}} help page for details).}
 
 \item{leftlabs}{A character vector specifying labels for
 (additional) columns on left side of the forest plot (see
-\code{\link{forest.meta}} help page for details).}
+\code{\link[meta]{forest.meta}} help page for details).}
 
 \item{rightcols}{A character vector specifying (additional) columns
 to be plotted on the right side of the forest plot or a logical
-value (see \code{\link{forest.meta}} help page for details).}
+value (see \code{\link[meta]{forest.meta}} help page for details).}
 
 \item{rightlabs}{A character vector specifying labels for
 (additional) columns on right side of the forest plot (see
-\code{\link{forest.meta}} help page for details).}
+\code{\link[meta]{forest.meta}} help page for details).}
 
 \item{nchar.comps}{A numeric defining the minimum number of
 characters used to create unique names for components.}
@@ -71,10 +71,11 @@ than log odds ratios, for example.}
 
 \item{lab.NA}{A character string to label missing values.}
 
-\item{weight.study}{A character string indicating weighting used to
-determine size of squares or diamonds.}
+\item{equal.size}{A logical indicating whether all squares should
+be of equal size. Otherwise, the square size is proportional to
+the precision of estimates.}
 
-\item{\dots}{Additional arguments for \code{\link{forest.meta}}
+\item{\dots}{Additional arguments for \code{\link[meta]{forest.meta}}
 function.}
 }
 \description{
@@ -84,7 +85,7 @@ graphics system).
 \details{
 A forest plot, also called confidence interval plot, is drawn in
 the active graphics window. For more information see help page of
-\code{\link{forest.meta}} function.
+\code{\link[meta]{forest.meta}} function.
 }
 \examples{
 data(Linde2016)
@@ -118,7 +119,7 @@ forest(netcomparison(nc1, c("F", "TCA"), "UC"), nchar.comps = 4)
 }
 \seealso{
 \code{\link{netcomparison}}, \code{\link{netcomb}},
-  \code{\link{discomb}}, \code{\link{forest.meta}}
+  \code{\link{discomb}}, \code{\link[meta]{forest.meta}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

@@ -2,7 +2,6 @@
 % Please edit documentation in R/forest.netcomb.R
 \name{forest.netcomb}
 \alias{forest.netcomb}
-\alias{forest.netcomt}
 \alias{plot.netcomb}
 \title{Forest plot for additive network meta-analysis}
 \usage{
@@ -11,6 +10,7 @@
   pooled = ifelse(x$random, "random", "common"),
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
+  equal.size = gs("equal.size"),
   leftcols = "studlab",
   leftlabs = "Treatment",
   rightcols = c("effect", "ci"),
@@ -18,11 +18,12 @@
   digits = gs("digits.forest"),
   smlab = NULL,
   sortvar = x$seq,
+  overall.hetstat = gs("overall.hetstat"),
   backtransf = x$backtransf,
-  lab.NA = ".",
+  lab.NA = gs("lab.NA"),
   add.data,
-  drop.reference.group = FALSE,
-  weight.study = "same",
+  addrows.below.overall = if (x$overall.hetstat) 2 else gs("addrows.below.overall"),
+  drop.reference.group = gs("drop.reference.group"),
   ...
 )
 
@@ -41,21 +42,25 @@ should be plotted. Can be abbreviated.}
 should be expressed as comparisons of other treatments versus the
 reference treatment (default) or vice versa.}
 
+\item{equal.size}{A logical indicating whether all squares should
+be of equal size. Otherwise, the square size is proportional to
+the precision of estimates.}
+
 \item{leftcols}{A character vector specifying (additional) columns
 to be plotted on the left side of the forest plot or a logical
-value (see \code{\link{forest.meta}} help page for details).}
+value (see \code{\link[meta]{forest.meta}} help page for details).}
 
 \item{leftlabs}{A character vector specifying labels for
 (additional) columns on left side of the forest plot (see
-\code{\link{forest.meta}} help page for details).}
+\code{\link[meta]{forest.meta}} help page for details).}
 
 \item{rightcols}{A character vector specifying (additional) columns
 to be plotted on the right side of the forest plot or a logical
-value (see \code{\link{forest.meta}} help page for details).}
+value (see \code{\link[meta]{forest.meta}} help page for details).}
 
 \item{rightlabs}{A character vector specifying labels for
 (additional) columns on right side of the forest plot (see
-\code{\link{forest.meta}} help page for details).}
+\code{\link[meta]{forest.meta}} help page for details).}
 
 \item{digits}{Minimal number of significant digits for treatment
 effects and confidence intervals, see \code{print.default}.}
@@ -67,6 +72,9 @@ indicating either common or random effects model is printed.}
 studies (must be of same length as the total number of
 treatments).}
 
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
+
 \item{backtransf}{A logical indicating whether results should be
 back transformed in forest plots. If \code{backtransf = TRUE},
 results for \code{sm = "OR"} are presented as odds ratios rather
@@ -77,13 +85,14 @@ than log odds ratios, for example.}
 \item{add.data}{An optional data frame with additional columns to
 print in forest plot (see Details).}
 
+\item{addrows.below.overall}{A numeric value indicating how many
+empty rows are printed between meta-analysis results and
+heterogeneity statistics.}
+
 \item{drop.reference.group}{A logical indicating whether the
 reference group should be printed in the forest plot.}
 
-\item{weight.study}{A character string indicating weighting used to
-determine size of squares or diamonds.}
-
-\item{\dots}{Additional arguments for \code{\link{forest.meta}}
+\item{\dots}{Additional arguments for \code{\link[meta]{forest.meta}}
 function.}
 }
 \description{
@@ -108,7 +117,7 @@ the forest plot. This argument must be a data frame with the same
 row names as the treatment effects matrices in R object \code{x},
 i.e., \code{x$TE.common} or \code{x$TE.random}.
 
-For more information see help page of \code{\link{forest.meta}}
+For more information see help page of \code{\link[meta]{forest.meta}}
 function.
 }
 \examples{
@@ -166,7 +175,7 @@ forest(nc2)
 }
 \seealso{
 \code{\link{netcomb}}, \code{\link{discomb}},
-  \code{\link{forest.meta}}
+  \code{\link[meta]{forest.meta}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

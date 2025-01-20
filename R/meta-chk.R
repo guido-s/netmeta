@@ -251,3 +251,28 @@ chkdeprecated <- function(x, new, old, warn = TRUE) {
             call. = FALSE)
   invisible(depr)
 }
+
+chksuitable <- function(x, method,
+                        classes = c("netmetabin",
+                                    "netmeta.crossnma",
+                                    "netmeta.multinma"),
+                        addtext = "",
+                        stop = TRUE,
+                        status = "implemented") {
+  func <- if (stop) base::stop else base::warning
+  #
+  if (length(addtext) != length(classes) & length(addtext) == 1)
+    addtext <- rep_len(addtext, length(classes))
+  #
+  for (i in seq_along(classes)) {
+    if (inherits(x, classes[i])) {
+      func(method, " not ", status, " for an object of class \"",
+           classes[i], "\"", addtext[i], ".",
+           call. = FALSE)
+      #
+      return(FALSE)
+    }
+  }
+  #
+  return(TRUE)
+}

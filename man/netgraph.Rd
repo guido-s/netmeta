@@ -55,9 +55,8 @@ net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #
 netgraph(net2)
 
-data(Woods2010)
 p3 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = dat.woods2010, sm = "OR")
 net3 <- netmeta(p3)
 
 # Network graph with default settings
@@ -72,6 +71,9 @@ netgraph(net3, number.of.studies = TRUE,
   labels = paste0(trts, " (n=", n.trts, ")"))
 }
 
+}
+\seealso{
+\code{\link[metadat]{dat.woods2010}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de

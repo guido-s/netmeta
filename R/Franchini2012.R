@@ -34,7 +34,8 @@
 #' \bold{\emph{n3}}\tab Sample size arm 3
 #' }
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{metacont}},
+#' @seealso \code{\link[metadat]{dat.franchini2012}},
+#'   \code{\link[meta]{pairwise}}, \code{\link[meta]{metacont}},
 #'   \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 #' 
 #' @source
@@ -55,7 +56,7 @@
 #' @keywords datasets
 #' 
 #' @examples
-#' data(Franchini2012)
+#' Franchini2012 <- dat.franchini2012
 #' 
 #' # Transform data from arm-based format to contrast-based format
 #' #
@@ -78,6 +79,5 @@
 #' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
 #'   thickness = "se.common",
 #'   iterate = TRUE, plastic = TRUE, start = "eigen")
-
 
 NULL

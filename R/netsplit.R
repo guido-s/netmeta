@@ -40,8 +40,11 @@
 #' @param show A character string indicating which comparisons should
 #'   be printed (see Details).
 #' @param overall A logical indicating whether estimates from network
-#'   meta-analyis should be printed in addition to direct and indirect
-#'   estimates.
+#'   meta-analysis should be printed.
+#' @param direct A logical indicating whether direct estimates should
+#'   be printed.
+#' @param indirect A logical indicating whether indirect estimates
+#'   should be printed.
 #' @param ci A logical indicating whether confidence intervals should
 #'   be printed in addition to treatment estimates.
 #' @param test A logical indicating whether results of a test
@@ -166,7 +169,9 @@
 #'   \email{oremiou@@gmail.com}
 #' 
 #' @seealso \code{\link{forest.netsplit}}, \code{\link{netmeta}},
-#'   \code{\link{netmetabin}}, \code{\link{netmeasures}}
+#'   \code{\link{netmetabin}}, \code{\link{netmeasures}},
+#'   \code{\link[metadat]{dat.woods2010}}, \code{\link{Senn2013}},
+#'   \code{\link[metadat]{dat.dong2013}}
 #' 
 #' @references
 #' Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
@@ -193,10 +198,8 @@
 #' \bold{349}, g5630
 #' 
 #' @examples
-#' data(Woods2010)
-#' #
 #' p1 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = dat.woods2010, sm = "OR")
 #' #
 #' net1 <- netmeta(p1)
 #' #
@@ -229,9 +232,8 @@
 #' # Layout of Puhan et al. (2014), Table 1
 #' print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
 #' 
-#' data(Dong2013)
 #' p3 <- pairwise(treatment, death, randomized, studlab = id,
-#'   data = Dong2013, sm = "OR")
+#'   data = dat.dong2013, sm = "OR")
 #' net3 <- netmetabin(p3)
 #' netsplit(net3)
 #' }
@@ -239,11 +241,19 @@
 #' @rdname netsplit
 #' @export netsplit
 
-
 netsplit <- function(x, method,
                      upper = TRUE,
                      reference.group = x$reference.group,
                      baseline.reference = x$baseline.reference,
+                     #
+                     show = gs("show"),
+                     overall = TRUE,
+                     direct = TRUE,
+                     indirect = TRUE,
+                     only.reference = FALSE,
+                     ci = FALSE,
+                     test = show %in% c("all", "with.direct", "both"),
+                     #
                      order = NULL,
                      sep.trts = x$sep.trts, quote.trts = "",
                      tol.direct = 0.0005,
@@ -260,11 +270,13 @@ netsplit <- function(x, method,
   ##
   ##
   chkclass(x, "netmeta")
+  chksuitable(x, "Methods to split network estimates",
+              classes = c("netmeta.crossnma", "netmeta.multinma"))
   x <- updateversion(x)
   ##
-  is.bin <- inherits(x, "netmetabin")
+  is.mh.nch <- inherits(x, "netmetabin") && x$method %in% c("MH", "NCH")
   ##
-  is.tictoc <- is.installed.package("tictoc", stop = FALSE)
+  is.tictoc <- is_installed_package("tictoc", stop = FALSE)
   
   
   ##
@@ -275,7 +287,7 @@ netsplit <- function(x, method,
   if (!missing(method))
     method <- setchar(method, c("Back-calculation", "SIDDE"))
   else {
-    if (is.bin)
+    if (is.mh.nch)
       method <- "SIDDE"
     else
       method <- "Back-calculation"
@@ -289,7 +301,17 @@ netsplit <- function(x, method,
     baseline.reference <- FALSE
     reference.group <- ""
   }
-  ##
+  #
+  show <- setchar(show, c("all", "both", "with.direct",
+                          "direct.only", "indirect.only",
+                          "reference.only"))
+  chklogical(overall)
+  chklogical(direct)
+  chklogical(indirect)
+  chklogical(ci)
+  chklogical(test)
+  chklogical(only.reference)
+  #
   chkchar(sep.trts)
   chkchar(quote.trts)
   chknumeric(tol.direct, min = 0, length = 1)
@@ -332,7 +354,7 @@ netsplit <- function(x, method,
   ## (4) Change order of prop.direct.common and prop.direct.random
   ##
   ##
-  if (!(is.bin & method == "SIDDE")) {
+  if (!(is.mh.nch & method == "SIDDE")) {
     prop.common <- sortprop(x$prop.direct.common, dat.trts, x$sep.trts)
     prop.random <- sortprop(x$prop.direct.random, dat.trts, x$sep.trts)
   }
@@ -353,7 +375,7 @@ netsplit <- function(x, method,
     x.direct.indirect$TE.indirect.common <- ind$TE.indirect.common
     x.direct.indirect$seTE.indirect.common <- ind$seTE.indirect.common
     ##
-    if (!is.bin) {
+    if (!is.mh.nch) {
       x.direct.indirect$TE.indirect.random <- ind$TE.indirect.random
       x.direct.indirect$seTE.indirect.random <- ind$seTE.indirect.random
     }
@@ -377,11 +399,19 @@ netsplit <- function(x, method,
   ##
   ##
   res <- list(comparison = dat.trts$comparison,
-              ##
+              #
               k = m2d.f$k,
-              ##
+              #
+              show = show,
+              overall = overall,
+              direct = direct,
+              indirect = indirect,
+              ci = ci,
+              test = test,
+              only.reference = only.reference,
+              #
               prop.common = prop.common,
-              ##
+              #
               common = m2d.f$nma,
               direct.common = m2d.f$direct,
               indirect.common = m2d.f$indirect,
@@ -411,7 +441,7 @@ netsplit <- function(x, method,
               sep.trts = sep.trts,
               quote.trts = quote.trts,
               nchar.trts = x$nchar.trts,
-              ##
+              #
               tol.direct = tol.direct,
               backtransf = backtransf,
               ##
@@ -433,31 +463,29 @@ netsplit <- function(x, method,
   ##
   class(res) <-
     c("netsplit",
-      if (is.bin & method == "SIDDE")
+      if (is.mh.nch & method == "SIDDE")
         "netsplit.netmetabin")
   
   res
 }
 
 
-
-
-
 #' @rdname netsplit
 #' @method print netsplit
 #' @export
-
 
 print.netsplit <- function(x,
                            common = x$x$common,
                            random = x$x$random,
                            ##
-                           show = "all",
-                           overall = TRUE,
-                           ci = FALSE,
-                           test = show %in% c("all", "with.direct", "both"),
-                           only.reference = FALSE,
-                           ##
+                           show = x$show,
+                           overall = x$overall,
+                           direct = x$direct,
+                           indirect = x$indirect,
+                           ci = x$ci,
+                           test = x$test,
+                           only.reference = x$only.reference,
+                           #
                            sortvar = NULL,
                            subset = NULL,
                            ##
@@ -468,11 +496,11 @@ print.netsplit <- function(x,
                            digits.pval = gs("digits.pval"),
                            digits.prop = max(gs("digits.pval") - 2, 2),
                            ##
-                           text.NA = ".",
+                           text.NA = gs("lab.NA"),
                            backtransf = x$backtransf,
                            scientific.pval = gs("scientific.pval"),
                            big.mark = gs("big.mark"),
-                           legend = TRUE,
+                           legend = gs("legend"),
                            ##
                            indent = TRUE,
                            warn.deprecated = gs("warn.deprecated"),
@@ -488,7 +516,7 @@ print.netsplit <- function(x,
   x <- updateversion(x)
   ##
   is.bin <- inherits(x, "netsplit.netmetabin")
-  ##  
+  ##
   ## All individual results in a single row - be on the save side:
   ##
   oldopts <- options(width = 200)
@@ -525,6 +553,8 @@ print.netsplit <- function(x,
   }
   ##
   chklogical(overall)
+  chklogical(direct)
+  chklogical(indirect)
   chklogical(ci)
   chklogical(test)
   ##
@@ -551,9 +581,9 @@ print.netsplit <- function(x,
       ## Set proportions to 0 or 1
       ##
       if (is.numeric(sortvar)) {
-        sortvar[is.zero(abs(sortvar), n = 1000)] <- 0
-        sortvar[is.zero(1 - abs(sortvar), n = 1000)] <-
-          1 * sign(sortvar)[is.zero(1 - abs(sortvar), n = 1000)]
+        sortvar[is_zero(abs(sortvar), n = 1000)] <- 0
+        sortvar[is_zero(1 - abs(sortvar), n = 1000)] <-
+          1 * sign(sortvar)[is_zero(1 - abs(sortvar), n = 1000)]
       }
       sortvar <- order(do.call(order, as.list(as.data.frame(sortvar))))
     }
@@ -619,16 +649,15 @@ print.netsplit <- function(x,
   ## (3) Some additional settings and checks
   ##
   ##
-  sm <- x$sm
-  sm.lab <- sm
-  ##
-  relative <- is.relative.effect(sm)
+  sm <- sm.lab <- x$sm
+  #
+  relative <- is_relative_effect(sm) | sm == "VE"
   ##
   if (!backtransf & relative)
-    sm.lab <- paste("log", sm, sep = "")
+    sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##
   if (!(sm.lab == "" | sm.lab == "log"))
-    sm.lab <- paste("(", sm.lab, ") ", sep = "")
+    sm.lab <- paste0("(", sm.lab, ") ")
   else
     sm.lab <- ""
   ##
@@ -658,7 +687,8 @@ print.netsplit <- function(x,
     sel <- is.na(x$direct.common$TE) & !is.na(x$common$TE)
   ##
   if (sum(sel) == 0) {
-    warning("No results for argument 'show = ", show, "'.",
+    warning("No comparisons selected with argument 'show = ", show, "'. ",
+            "You could use 'show = \"all\" to show all comparisons.",
             call. = FALSE)
     return(invisible(NULL))
   }
@@ -726,39 +756,78 @@ print.netsplit <- function(x,
   }
   
   
-  if (backtransf & relative) {
-    TE.common <- exp(TE.common)
-    lower.common <- exp(lower.common)
-    upper.common <- exp(upper.common)
+  if (backtransf) {
+    TE.common <- backtransf(TE.common, sm)
+    lower.common <- backtransf(lower.common, sm)
+    upper.common <- backtransf(upper.common, sm)
     ##
-    TE.direct.common <- exp(TE.direct.common)
-    lower.direct.common <- exp(lower.direct.common)
-    upper.direct.common <- exp(upper.direct.common)
+    TE.direct.common <- backtransf(TE.direct.common, sm)
+    lower.direct.common <- backtransf(lower.direct.common, sm)
+    upper.direct.common <- backtransf(upper.direct.common, sm)
     ##
-    TE.indirect.common <- exp(TE.indirect.common)
-    lower.indirect.common <- exp(lower.indirect.common)
-    upper.indirect.common <- exp(upper.indirect.common)
+    TE.indirect.common <- backtransf(TE.indirect.common, sm)
+    lower.indirect.common <- backtransf(lower.indirect.common, sm)
+    upper.indirect.common <- backtransf(upper.indirect.common, sm)
     ##
-    TE.compare.common <- exp(TE.compare.common)
-    lower.compare.common <- exp(lower.compare.common)
-    upper.compare.common <- exp(upper.compare.common)
+    TE.compare.common <- backtransf(TE.compare.common, sm)
+    lower.compare.common <- backtransf(lower.compare.common, sm)
+    upper.compare.common <- backtransf(upper.compare.common, sm)
     ##
     if (random.available) {
-      TE.random <- exp(TE.random)
-      lower.random <- exp(lower.random)
-      upper.random <- exp(upper.random)
+      TE.random <- backtransf(TE.random, sm)
+      lower.random <- backtransf(lower.random, sm)
+      upper.random <- backtransf(upper.random, sm)
       ##
-      TE.direct.random <- exp(TE.direct.random)
-      lower.direct.random <- exp(lower.direct.random)
-      upper.direct.random <- exp(upper.direct.random)
+      TE.direct.random <- backtransf(TE.direct.random, sm)
+      lower.direct.random <- backtransf(lower.direct.random, sm)
+      upper.direct.random <- backtransf(upper.direct.random, sm)
       ##
-      TE.indirect.random <- exp(TE.indirect.random)
-      lower.indirect.random <- exp(lower.indirect.random)
-      upper.indirect.random <- exp(upper.indirect.random)
+      TE.indirect.random <- backtransf(TE.indirect.random, sm)
+      lower.indirect.random <- backtransf(lower.indirect.random, sm)
+      upper.indirect.random <- backtransf(upper.indirect.random, sm)
       ##
-      TE.compare.random <- exp(TE.compare.random)
-      lower.compare.random <- exp(lower.compare.random)
-      upper.compare.random <- exp(upper.compare.random)
+      TE.compare.random <- backtransf(TE.compare.random, sm)
+      lower.compare.random <- backtransf(lower.compare.random, sm)
+      upper.compare.random <- backtransf(upper.compare.random, sm)
+    }
+    #
+    # Switch lower and upper limit for VE if results have been
+    # backtransformed
+    #
+    if (sm == "VE") {
+      tmp.l <- lower.common
+      lower.common <- upper.common
+      upper.common <- tmp.l
+      #
+      tmp.l <- lower.direct.common
+      lower.direct.common <- upper.direct.common
+      upper.direct.common <- tmp.l
+      #
+      tmp.l <- lower.indirect.common
+      lower.indirect.common <- upper.indirect.common
+      upper.indirect.common <- tmp.l
+      #
+      tmp.l <- lower.compare.common
+      lower.compare.common <- upper.compare.common
+      upper.compare.common <- tmp.l
+      #
+      if (random.available) {
+        tmp.l <- lower.random
+        lower.random <- upper.random
+        upper.random <- tmp.l
+        #
+        tmp.l <- lower.direct.random
+        lower.direct.random <- upper.direct.random
+        upper.direct.random <- tmp.l
+        #
+        tmp.l <- lower.indirect.random
+        lower.indirect.random <- upper.indirect.random
+        upper.indirect.random <- tmp.l
+        #
+        tmp.l <- lower.compare.random
+        lower.compare.random <- upper.compare.random
+        upper.compare.random <- tmp.l
+      }
     }
   }
   
@@ -779,32 +848,36 @@ print.netsplit <- function(x,
       names.common <- c(names.common, ci.lab)
     }
   }
-  ##
-  common$TE.direct.common <-
-    formatN(TE.direct.common, digits, text.NA = text.NA,
-            big.mark = big.mark)
-  names.common <- c(names.common, "direct")
-  if (ci) {
-    common$ci.direct.common <-
-      formatCI(round(lower.direct.common, digits),
-               round(upper.direct.common, digits))
-    common$ci.direct.common[is.na(common$ci.direct.common)] <- text.NA
-    names.common <- c(names.common, ci.lab)
+  #
+  if (direct) {
+    common$TE.direct.common <-
+      formatN(TE.direct.common, digits, text.NA = text.NA,
+              big.mark = big.mark)
+    names.common <- c(names.common, "direct")
+    if (ci) {
+      common$ci.direct.common <-
+        formatCI(round(lower.direct.common, digits),
+                 round(upper.direct.common, digits))
+      common$ci.direct.common[is.na(common$ci.direct.common)] <- text.NA
+      names.common <- c(names.common, ci.lab)
+    }
   }
-  ##
-  common$TE.indirect.common <-
-    formatN(TE.indirect.common, digits,
-            text.NA = text.NA, big.mark = big.mark)
-  names.common <- c(names.common, "indir.")
-  ##
-  if (ci) {
-    common$ci.indirect.common <-
-      formatCI(round(lower.indirect.common, digits),
-               round(upper.indirect.common, digits))
-    common$ci.indirect.common[is.na(common$ci.indirect.common)] <- text.NA
-    names.common <- c(names.common, ci.lab)
+  #
+  if (indirect) {
+    common$TE.indirect.common <-
+      formatN(TE.indirect.common, digits,
+              text.NA = text.NA, big.mark = big.mark)
+    names.common <- c(names.common, "indir.")
+    #
+    if (ci) {
+      common$ci.indirect.common <-
+        formatCI(round(lower.indirect.common, digits),
+                 round(upper.indirect.common, digits))
+      common$ci.indirect.common[is.na(common$ci.indirect.common)] <- text.NA
+      names.common <- c(names.common, ci.lab)
+    }
   }
-  ##
+  #
   if (test) {
     common$diff <- formatN(TE.compare.common, digits, text.NA = text.NA,
                            big.mark = big.mark)
@@ -825,6 +898,7 @@ print.netsplit <- function(x,
     common$p[rmSpace(common$p) == "--"] <- text.NA
     names.common <- c(names.common, c("z", "p-value"))
   }
+  #
   common <- as.data.frame(common)
   names(common) <- names.common
   
@@ -846,30 +920,34 @@ print.netsplit <- function(x,
         names.random <- c(names.random, ci.lab)
       }
     }
-    ##
-    random$TE.direct.random <- formatN(TE.direct.random, digits,
-                                       text.NA = text.NA,
-                                       big.mark = big.mark)
-    names.random <- c(names.random, "direct")
-    if (ci) {
-      random$ci.direct.random <- formatCI(round(lower.direct.random, digits),
-                                          round(upper.direct.random, digits))
-      random$ci.direct.random[is.na(random$ci.direct.random)] <- text.NA
-      names.random <- c(names.random, ci.lab)
-    }
-    ##
-    random$TE.indirect.random <- formatN(TE.indirect.random, digits,
+    #
+    if (direct) {
+      random$TE.direct.random <- formatN(TE.direct.random, digits,
                                          text.NA = text.NA,
                                          big.mark = big.mark)
-    names.random <- c(names.random, "indir.")
-    if (ci) {
-      random$ci.indirect.random <-
-        formatCI(round(lower.indirect.random, digits),
-                 round(upper.indirect.random, digits))
-      random$ci.indirect.random[is.na(random$ci.indirect.random)] <- text.NA
-      names.random <- c(names.random, ci.lab)
+      names.random <- c(names.random, "direct")
+      if (ci) {
+        random$ci.direct.random <- formatCI(round(lower.direct.random, digits),
+                                            round(upper.direct.random, digits))
+        random$ci.direct.random[is.na(random$ci.direct.random)] <- text.NA
+        names.random <- c(names.random, ci.lab)
+      }
     }
-    ##
+    #
+    if (indirect) {
+      random$TE.indirect.random <- formatN(TE.indirect.random, digits,
+                                           text.NA = text.NA,
+                                           big.mark = big.mark)
+      names.random <- c(names.random, "indir.")
+      if (ci) {
+        random$ci.indirect.random <-
+          formatCI(round(lower.indirect.random, digits),
+                   round(upper.indirect.random, digits))
+        random$ci.indirect.random[is.na(random$ci.indirect.random)] <- text.NA
+        names.random <- c(names.random, ci.lab)
+      }
+    }
+    #
     if (test) {
       random$diff <- formatN(TE.compare.random, digits, text.NA = text.NA,
                              big.mark = big.mark)
@@ -938,8 +1016,8 @@ print.netsplit <- function(x,
     if (x$method == "SIDDE")
       cat("Separate indirect from direct design evidence (SIDDE)\n\n")
     else
-      cat(paste("Separate indirect from direct evidence (SIDE)",
-                "using back-calculation method\n\n"))
+      cat("Separate indirect from direct evidence (SIDE)",
+          "using back-calculation method\n\n")
   }
   else
     legend <- FALSE
@@ -968,37 +1046,44 @@ print.netsplit <- function(x,
   if (legend) {
     cat("\nLegend:\n")
     cat(" comparison - Treatment comparison\n")
-    cat(paste0(" k", if (indent) "          " else " ",
-               "- Number of studies providing direct evidence\n"))
+    cat(" k", if (indent) "          " else " ",
+        "- Number of studies providing direct evidence\n",
+        sep = "")
     if (!noprop)
-      cat(paste0(" prop", if (indent) "       " else " ",
-                 "- Direct evidence proportion\n"))
+      cat(" prop", if (indent) "       " else " ",
+          "- Direct evidence proportion\n",
+          sep = "")
     if (overall)
-      cat(paste0(" nma", if (indent) "        " else " ",
-                 "- Estimated treatment effect ", sm.lab,
-                 "in network meta-analysis\n", sep = ""))
-    cat(paste0(" direct", if (indent) "     " else " ",
-               "- Estimated treatment effect ", sm.lab,
-               "derived from direct evidence\n", sep = ""))
-    cat(paste0(" indir.", if (indent) "     " else " ",
-               "- Estimated treatment effect ", sm.lab,
-               "derived from indirect evidence\n", sep = ""))
+      cat(" nma", if (indent) "        " else " ",
+          "- Estimated treatment effect ", sm.lab,
+          "in network meta-analysis\n",
+          sep = "")
+    cat(" direct", if (indent) "     " else " ",
+        "- Estimated treatment effect ", sm.lab,
+        "derived from direct evidence\n",
+        sep = "")
+    cat(" indir.", if (indent) "     " else " ",
+        "- Estimated treatment effect ", sm.lab,
+        "derived from indirect evidence\n",
+        sep = "")
     if (test) {
       if (backtransf & relative)
-        cat(paste0(" RoR", if (indent) "        " else " ",
-                   "- Ratio of Ratios ",
-                   "(direct versus indirect)\n"))
+        cat(" RoR", if (indent) "        " else " ",
+            "- Ratio of Ratios ",
+            "(direct versus indirect)\n",
+            sep = "")
       else
-        cat(paste0(" Diff", if (indent) "       " else " ",
-                   "- Difference between direct and ",
-                   "indirect treatment estimates\n"))
+        cat(" Diff", if (indent) "       " else " ",
+            "- Difference between direct and ",
+            "indirect treatment estimates\n",
+            sep = "")
       ##
-      cat(paste0(" z", if (indent) "          " else " ",
-                 "- z-value of test for disagreement ",
-                 "(direct versus indirect)\n"))
-      cat(paste0(" p-value", if (indent) "    " else " ",
-                 "- p-value of test for disagreement ",
-                 "(direct versus indirect)\n"))
+      cat(" z", if (indent) "          " else " ",
+          "- z-value of test for disagreement (direct versus indirect)\n",
+          sep = "")
+      cat(" p-value", if (indent) "    " else " ",
+          "- p-value of test for disagreement (direct versus indirect)\n",
+          sep = "")
     }
     ##
     ## Add legend with abbreviated treatment labels

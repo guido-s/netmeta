@@ -47,7 +47,6 @@
 #' @method as.data.frame netmeta 
 #' @export
 
-
 as.data.frame.netmeta <- function(x, row.names = NULL,
                                   optional = FALSE,
                                   details = FALSE, ...){
