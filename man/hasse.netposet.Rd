@@ -74,7 +74,8 @@ po <- netposet(netrank(net1), netrank(net2), outcomes = outcomes)
 
 # Hasse diagram
 #
-hasse(po)
+if (requireNamespace("hasseDiagram", quietly = TRUE))
+  hasse(po)
 }
 
 }

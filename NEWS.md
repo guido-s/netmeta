@@ -1,8 +1,19 @@
+## netmeta, version 3.0-1 (2025-01-20)
+
+### User-visible changes
+
+* In help page of R function hasse(), use requireNamespace() to check whether
+  R package hasseDiagram from Bioconductor is installed
+
+
 ## netmeta, version 3.0-0 (2025-01-20)
 
 ### Major changes
 
 * Network meta-analysis of studies with correlated treatment arms implemented
+
+* Theodoros Evrenoglou <theodoros.evrenoglou@uniklinik-freiburg.de> added as
+  a contributor to the R package **netmeta**
 
 * Logistic regression with penalised likelihood implemented for network
   meta-analysis of rare events
@@ -643,7 +654,7 @@
   line with other print and print.summary functions in R)
 
 * Annabel Davies <annabel.davies@manchester.ac.uk> is a new co-author
-  of R package **netmeta**
+  of the R package **netmeta**
 
 * Random walk algorithm implemented to estimate network contributions
   [(Davies et al., 2021)](https://arxiv.org/abs/2107.02886)
@@ -829,7 +840,7 @@
 
 ### Major changes
 
-* Theodoros Papakonstantinou <dev@tpapak.com> is a new co-author of R
+* Theodoros Papakonstantinou <dev@tpapak.com> is a new co-author of the R
   package **netmeta**
 
 * Rankograms added
@@ -1287,7 +1298,7 @@
 
 ### Major changes
 
-* Orestis Efthimiou <oremiou@gmail.com> is a new co-author of R
+* Orestis Efthimiou <oremiou@gmail.com> is a new co-author of the R
   package **netmeta**
 
 * New function netmetabin() for network meta-analysis of binary data
