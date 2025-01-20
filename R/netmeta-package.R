@@ -254,15 +254,27 @@
 #'
 #' @importFrom Matrix bdiag
 #'
-#' @importFrom ggplot2 ggplot aes theme_classic geom_tile xlab ylab
-#'   theme element_blank element_text scale_fill_gradient2 geom_text
-#'   ggtitle scale_x_discrete scale_y_discrete theme_dark
+#' @importFrom ggplot2 ggplot aes xlab ylab labs
+#'    element_blank element_line element_rect element_text expand_limits
+#'    geom_col geom_line geom_step geom_tile geom_text ggtitle
+#'    scale_fill_gradient2 scale_x_discrete scale_y_discrete
+#'    scale_x_continuous scale_x_discrete scale_y_discrete
+#'    theme theme_classic theme_dark
+#'
+#' @importFrom colorspace sequential_hcl rainbow_hcl sequential_hcl
+#'   diverge_hcl heat_hcl terrain_hcl diverge_hsv choose_palette
 #'
 #' @importFrom metafor bldiag contrmat rma.mv rma.uni
 #' 
 #' @importFrom dplyr %>% filter select rename starts_with
 #' 
 #' @importFrom magrittr %<>%
+#' 
+#' @importFrom grid unit
+#' 
+#' @importFrom mvtnorm rmvnorm
+#' 
+#' @importFrom grDevices rainbow 
 
 "_PACKAGE"
 

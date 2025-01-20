@@ -178,7 +178,8 @@
 #' 
 #' # Hasse diagram
 #' #
-#' hasse(po)
+#' if (requireNamespace("hasseDiagram", quietly = TRUE))
+#'   hasse(po)
 #'
 #' 
 #' #
@@ -233,13 +234,15 @@
 #' 
 #' # Hasse diagram for all outcomes (random effects model)
 #' #
-#' hasse(po.ranks)
+#' if (requireNamespace("hasseDiagram", quietly = TRUE))
+#'   hasse(po.ranks)
 #' 
 #' # Hasse diagram for outcomes early response and early remission
 #' #
 #' po12 <- netposet(netrank(net1), netrank(net2),
 #'   outcomes = outcomes[1:2])
-#' hasse(po12)
+#' if (requireNamespace("hasseDiagram", quietly = TRUE))
+#'   hasse(po12)
 #' 
 #' # Scatter plot
 #' #
@@ -276,8 +279,10 @@
 #' po
 #' po12
 #' #
-#' hasse(po)
-#' hasse(po12)
+#' if (requireNamespace("hasseDiagram", quietly = TRUE)) {
+#'   hasse(po)
+#'   hasse(po12)
+#' }
 #' #
 #' oldpar <- par(pty = "s")
 #' plot(po12)

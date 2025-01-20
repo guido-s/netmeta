@@ -25,7 +25,7 @@ samples_netmeta <- function(x, nsim, pooled) {
   #
   var.theta <- as.vector(ginv(compMatrix) %*% diag(Cov.pooled))
   
-  samples <- mvtnorm::rmvnorm(nsim, theta, diag(var.theta))
+  samples <- rmvnorm(nsim, theta, diag(var.theta))
   rownames(samples) <- seq_len(nrow(samples))
   colnames(samples) <- x$trts
   

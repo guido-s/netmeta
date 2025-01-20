@@ -439,7 +439,7 @@ contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
           if (i != j & Q[i, j] <= 0)
             Q[i, j] <- 0
       ##
-      P <- MASS::ginv(diag(rowSums(Q))) %*% Q # Transition matrix
+      P <- ginv(diag(rowSums(Q))) %*% Q # Transition matrix
       P[t2, ] <- rep(0, n)
       P[t2, t2] <- 1
       P[is_zero(P, n = 1000)] <- 0
@@ -488,11 +488,11 @@ contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
       ## Find LS solution phi0.r
       ##
       path.length <- rowSums(abs(Z))
-      phi0.r <- H.full[r, ] %*% MASS::ginv(Z)
+      phi0.r <- H.full[r, ] %*% ginv(Z)
       ##
       ## Find L1 solution
       ##
-      A <- diag(p) - Z %*% MASS::ginv(Z)
+      A <- diag(p) - Z %*% ginv(Z)
       ##
       ## Minimise |wA + phi0.r|
       ##
@@ -635,7 +635,7 @@ contribution.matrix.ruecker.pseudoinv <- function (x, model, verbose = FALSE) {
       ## Create the transition matrix by normalising the values in
       ## each row of Q
       ##
-      P <- MASS::ginv(diag(rowSums(Q))) %*% Q
+      P <- ginv(diag(rowSums(Q))) %*% Q
       P[t2, ] <- rep(0, n)
       P[t2, t2] <- 1
       ##
@@ -686,7 +686,7 @@ contribution.matrix.ruecker.pseudoinv <- function (x, model, verbose = FALSE) {
       ## phi %*% Z = H.full[r, ]
       ##
       path.length <- rowSums(abs(Z))
-      phi.r <- H.full[r, ] %*% MASS::ginv(Z)
+      phi.r <- H.full[r, ] %*% ginv(Z)
       weights[r, ] <- (phi.r / path.length) %*% abs(Z)
       phi[[r]] <- as.vector(phi.r)
       pl[[r]] <- path.length

@@ -51,9 +51,11 @@ This function produces a rankogram, i.e., an image plot of ranking
 probabilities for all treatments.
 }
 \details{
-This function produces an image plot of (cumulative) ranking
-probabilities for all treatments as a bar graph, a line graph or as
-step functions (argument \code{type}).
+This function produces plots of (cumulative) ranking probabilities for all
+treatments as a bar graph, a line graph or as step functions
+(argument \code{type}). All plots will be shown in a single figure if
+R package \bold{gridExtra} is installed. Otherwise, separate figures will be
+created for treatments.
 
 By default (argument \code{pooled}), results for the random effects
 model are shown if a network meta-analysis was conducted for both

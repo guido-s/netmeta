@@ -32,9 +32,9 @@ order of treatment ranks in a network meta-analysis (Rücker &
 Schwarzer, 2017).
 
 This R function is a wrapper function for R function
-\code{\link[hasseDiagram]{hasse}} in R package \bold{hasseDiagram}
+\code{hasse} in R package \bold{hasseDiagram}
 (Krzysztof Ciomek, \url{https://github.com/kciomek/hasseDiagram}),
-i.e., function \code{hasse} can only be used if R package
+i.e., the function \code{hasse} can only be used if R package
 \bold{hasseDiagram} is installed.
 }
 \examples{

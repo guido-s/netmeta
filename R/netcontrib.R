@@ -4,7 +4,8 @@
 #' This function generates the contribution of direct comparisons to
 #' every network treatment comparison. The output is a matrix where
 #' rows represent network treatment effects and columns represent the
-#' contribution of direct treatment effects.
+#' contribution of direct treatment effects. R package \bold{igraph} must be
+#' available in order to run this function.
 #' 
 #' @aliases netcontrib print.netcontrib
 #' 
@@ -41,12 +42,13 @@
 #' meta-analysis.
 #' 
 #' We use ideas from graph theory to derive the proportion that is
-#' contributed by each direct treatment effect. We start with the
-#' 'projection' matrix in a two-step network meta-analysis model,
+#' contributed by each direct treatment effect. Accordingly, R package
+#' \bold{igraph} must be available in order to run this function. We start
+#' with the 'projection' matrix in a two-step network meta-analysis model,
 #' called the H matrix, which is analogous to the hat matrix in a
 #' linear regression model. H entries are translated to proportion
 #' contributions based on the observation that the rows of H can be
-#' interpreted as flow networks.  A stream is defined as the
+#' interpreted as flow networks. A stream is defined as the
 #' composition of a path and its associated flow (Papakonstantinou et
 #' al., 2018).
 #'
@@ -92,12 +94,12 @@
 #' not recommended.
 #'
 #' (3) If argument \code{method = "cccp"}, contributions are estimated
-#' using \code{\link[cccp]{l1}} from R package \bold{cccp} (Rücker et
-#' al., 2023, unpublished).
+#' using \code{\link[cccp]{l1}} from R package \bold{cccp} which must be
+#' available (Rücker et al., 2024).
 #'
 #' (4) If argument \code{method = "pseudoinverse"}, contributions are
 #' derived from an L2 solution based on a Moore-Penrose pseudoinverse
-#' (Rücker et al., 2023, unpublished).
+#' (Rücker et al., 2024).
 #' 
 #' Once the streams have been identified by any method, the proportion
 #' contribution of each direct comparison is equal to the sum over the
@@ -149,25 +151,34 @@
 #' \emph{Statistics in Medicine},
 #' \bold{41}, 2091--2114
 #' 
-#' Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
-#' Schwarzer, G., Egger, M., Salanti, G. (2018):
+#' Papakonstantinou T, Nikolakopoulou A, Rücker G, Chaimani A, Schwarzer G,
+#' Egger M, Salanti G (2018):
 #' Estimating the contribution of studies in network meta-analysis:
 #' paths, flows and streams.
 #' \emph{F1000Research}
 #' 
+#' Rücker G, Papakonstantinou T, Nikolakopoulou A, Schwarzer G, Galla T,
+#' Davies AL (2024):
+#' Shortest path or random walks? A framework for path weights in network
+#' meta-analysis.
+#' \emph{Statistics in Medicine}.
+#' 
 #' @keywords contribution
 #' 
 #' @examples
-#' # Use the Woods dataset
-#' #
-#' p1 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = dat.woods2010, sm = "OR")
+#' if (requireNamespace("igraph", quietly = TRUE)) {
+#'   # Use the Woods dataset
+#'   #
+#'   p1 <- pairwise(treatment, event = r, n = N,
+#'     studlab = author, data = dat.woods2010, sm = "OR")
 #' 
-#' net1 <- netmeta(p1)
-#' cm <- netcontrib(net1)
-#' cm
+#'   net1 <- netmeta(p1)
+#'   #
+#'   cm <- netcontrib(net1)
+#'   cm
 #'
 #' netcontrib(net1, method = "r")
+#' }
 #' 
 #' @rdname netcontrib
 #' @export netcontrib

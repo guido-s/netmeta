@@ -174,8 +174,9 @@
 #' # Create Excel files with league tables
 #' # (if R package writexl is available)
 #' #
-#' netleague(net0, digits = 2, bracket = "(", separator = " to ",
-#'           path = tempfile(fileext = ".xlsx"))
+#' if (requireNamespace("writexl", quietly = TRUE))
+#'   netleague(net0, digits = 2, bracket = "(", separator = " to ",
+#'             path = tempfile(fileext = ".xlsx"))
 #' }
 #' 
 #' \donttest{
@@ -239,11 +240,10 @@
 #' # Generate a partial order of treatment rankings 
 #' #
 #' np <- netposet(net1, net2, outcomes = outcomes)
-#'
-#' # Requires R package 'hasse'
-#' #
-#' hasse(np)
 #' plot(np)
+#'
+#' if (requireNamespace("hasseDiagram", quietly = TRUE))
+#'   hasse(np)
 #' }
 #' 
 #' @rdname netleague

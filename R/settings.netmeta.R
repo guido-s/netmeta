@@ -197,7 +197,7 @@ settings.netmeta <- function(..., quietly = TRUE) {
   if (print.settings & !quietly) {
     cat(paste0("\n** Settings for network meta-analysis method (",
                "R package netmeta, version ",
-               utils::packageDescription("netmeta")$Version,
+               packageDescription("netmeta")$Version,
                ") **\n\n"))
     #
     cat(paste0("* General settings *\n"))

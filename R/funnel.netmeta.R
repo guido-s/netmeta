@@ -384,10 +384,10 @@ funnel.netmeta <- function(x,
                     TE, TE.direct = NA, TE.adj = NA, seTE)
   ##
   if (missing(xlab)) {
-    if (xlab(x$sm, backtransf) == "")
+    if (xlab_meta(x$sm, backtransf) == "")
       xlab <- "Centered at comparison-specific effect"
     else
-      xlab <- paste(xlab(x$sm, backtransf),
+      xlab <- paste(xlab_meta(x$sm, backtransf),
                     "centered at\ncomparison-specific effect")
   }
   

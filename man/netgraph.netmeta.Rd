@@ -135,9 +135,10 @@ highlight the comparisons given by \code{highlight}.}
 \item{multiarm}{A logical indicating whether multi-arm studies
 should be marked in plot.}
 
-\item{col.multiarm}{Either a function from R package colorspace or
-grDevice to define colors for multi-arm studies or a character
-vector with colors to highlight multi-arm studies.}
+\item{col.multiarm}{Either a function from R package
+\bold{colorspace} or \bold{grDevice} to define colors for
+multi-arm studies or a character vector with colors to highlight
+multi-arm studies.}
 
 \item{alpha.transparency}{The alpha transparency of colors used to
 highlight multi-arm studies (0 means transparent and 1 means
@@ -403,10 +404,8 @@ Further, a couple of graphical parameters can be specified, such as
 color and appearance of the edges (treatments) and the nodes
 (comparisons), whether special comparisons should be highlighted
 and whether multi-arm studies should be indicated as colored
-polygons. By default, if R package colorspace is available the
-\code{\link[colorspace]{sequential_hcl}} function is used to
-highlight multi-arm studies; otherwise the \code{\link{rainbow}} is
-used.
+polygons. By default, the \code{\link[colorspace]{sequential_hcl}}
+function is used to highlight multi-arm studies.
 
 In order to generate 3-D plots (argument \code{dim = "3d"}), R
 package \bold{rgl} is necessary. Note, under macOS the X.Org X
@@ -510,7 +509,8 @@ netgraph(net2, srt.labels = "o")
 # zoom the plot using the mouse / the mouse wheel).
 # The rgl package must be installed for 3-D plots.
 #
-netgraph(net2, dim = "3d")
+if (requireNamespace("rgl", quietly = TRUE))
+  netgraph(net2, dim = "3d")
 }
 
 }
