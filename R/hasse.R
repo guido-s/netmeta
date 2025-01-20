@@ -86,7 +86,8 @@
 #' 
 #' # Hasse diagram
 #' #
-#' hasse(po)
+#' if (requireNamespace("hasseDiagram", quietly = TRUE))
+#'   hasse(po)
 #' }
 #' 
 #' @method hasse netposet
