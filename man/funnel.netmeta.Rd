@@ -111,7 +111,7 @@ be printed if deprecated arguments are used.}
 \item{mm}{Deprecated argument (replaced by \code{method.bias}).}
 
 \item{\dots}{Additional graphical arguments passed as arguments to
-\code{\link{funnel.meta}}.}
+\code{\link[meta]{funnel.meta}}.}
 }
 \value{
 A data frame with the following columns:
@@ -184,7 +184,7 @@ funnel(net1, order = "pl")
 funnel(net1, order = "pl", method.bias = "Egger",
   digits.pval = 2)
 
-# (Non-sensical) alphabetic order of treatments with placebo as
+# (Nonsensical) alphabetic order of treatments with placebo as
 # last treatment
 #
 ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
@@ -233,8 +233,8 @@ choice of axis.
 \bold{54}, 1046--55
 }
 \seealso{
-\code{\link{netmeta}}, \code{\link{funnel.meta}},
-  \code{\link{metabias}}
+\code{\link{netmeta}}, \code{\link[meta]{funnel.meta}},
+  \code{\link[meta]{metabias}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

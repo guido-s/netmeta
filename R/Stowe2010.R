@@ -2,7 +2,7 @@
 #' for Parkinson's disease
 #' 
 #' @description
-#' This data set contains data from a Cochrane review assessing
+#' This dataset contains data from a Cochrane review assessing
 #' efficacy and safety of three drug classes as adjuvant treatment to
 #' levodopa therapy in patients with Parkinson’s disease and motor
 #' complications (Stowe et al., 2010). The authors conducted three
@@ -39,7 +39,7 @@
 #' \bold{\emph{n3}}\tab Sample size arm 3
 #' }
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{metacont}},
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metacont}},
 #'   \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 #' 
 #' @source

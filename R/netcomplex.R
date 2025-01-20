@@ -169,7 +169,6 @@
 #' @export
 #' @export netcomplex
 
-
 netcomplex <- function(x, complex,
                        common = x$common,
                        random = x$random,
@@ -206,19 +205,19 @@ netcomplex <- function(x, complex,
     complex.orig <- complex    
   ##
   n.comps <- length(x$comps)
-  n.complex <- length(complex)
   ##
   comps <- x$comps
-  add <- rep("", n.complex)
   ##
   if (is.matrix(complex)) {
     C.matrix <- complex
     complex <- rownames(complex)   
+    n.complex <- length(complex)
+    add <- rep("", n.complex)
   }
   else if (is.numeric(complex)) {
     chknumeric(complex, min = 1, max = n.comps, length = 1)
     ##
-    C.matrix <- createC(ncol = n.comps, ncomb = complex)
+    C.matrix <- createC(n.comps, ncomb = complex)
     colnames(C.matrix) <- nam.comps <- x$comps
     rownames(C.matrix) <- paste0("...", seq_len(nrow(C.matrix)))
     ##
@@ -229,8 +228,11 @@ netcomplex <- function(x, complex,
     }
     ##
     complex <- rownames(C.matrix)
+    n.complex <- length(complex)
+    add <- rep("", n.complex)
   }
   else if (is.vector(complex)) {
+    n.complex <- length(complex)
     ##
     complex.list <- compsplit(complex, x$sep.comps)
     ##
@@ -279,8 +281,7 @@ netcomplex <- function(x, complex,
   ##
   ci.f <- ci(Comb.common, seComb.common, level = level)
   ci.r <- ci(Comb.random, seComb.random, level = level)
-  
-  
+    
   res <- list(complex = complex,
               ##
               Comb.common = ci.f$TE,
@@ -358,7 +359,7 @@ print.netcomplex <- function(x,
                              ##
                              big.mark = gs("big.mark"),
                              ##
-                             legend = TRUE,
+                             legend = gs("legend"),
                              warn.deprecated = gs("warn.deprecated"),
                              ##
                              ...) {
@@ -398,23 +399,21 @@ print.netcomplex <- function(x,
   if (common | random) {
     comps <- c(x$comps, x$inactive)
     comps.abbr <- treats(comps, nchar.comps)
-    ##
+     ##
     for (i in seq_len(n.complex))
       complex[i] <- compos(x$complex[i], comps, comps.abbr,
                            x$x$sep.comps, x$add[i] == " ")
   }
   
-
-  sm <- x$x$sm
+  
+  sm <- sm.lab <- x$x$sm
   ##
-  relative <- is.relative.effect(sm)
-  ##
-  sm.lab <- sm
+  relative <- is_relative_effect(sm) | sm == "VE"
   ##
   if (sm != "") {
     sm.lab <- paste0("i", sm)
     if (!backtransf & relative)
-      sm.lab <- paste0("log(", sm, ")")
+      sm.lab <- paste0("log(", if (sm == "VE") "VR" else sm, ")")
   }
   ##  
   ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
@@ -425,10 +424,19 @@ print.netcomplex <- function(x,
     lower.Comb.common <- x$lower.Comb.common
     upper.Comb.common <- x$upper.Comb.common
     ##
-    if (backtransf & relative) {
-      Comb.common <- exp(Comb.common)
-      lower.Comb.common <- exp(lower.Comb.common)
-      upper.Comb.common <- exp(upper.Comb.common)
+    if (backtransf) {
+      Comb.common <- backtransf(Comb.common, sm)
+      lower.Comb.common <- backtransf(lower.Comb.common, sm)
+      upper.Comb.common <- backtransf(upper.Comb.common, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lower.Comb.common
+        lower.Comb.common <- upper.Comb.common
+        upper.Comb.common <- tmp.l
+      }
     }
   }
   ##
@@ -437,10 +445,19 @@ print.netcomplex <- function(x,
     lower.Comb.random <- x$lower.Comb.random
     upper.Comb.random <- x$upper.Comb.random
     ##
-    if (backtransf & relative) {
-      Comb.random <- exp(Comb.random)
-      lower.Comb.random <- exp(lower.Comb.random)
-      upper.Comb.random <- exp(upper.Comb.random)
+    if (backtransf) {
+      Comb.random <- backtransf(Comb.random, sm)
+      lower.Comb.random <- backtransf(lower.Comb.random, sm)
+      upper.Comb.random <- backtransf(upper.Comb.random, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lower.Comb.random
+        lower.Comb.random <- upper.Comb.random
+        upper.Comb.random <- tmp.l
+      }
     }
   }
   

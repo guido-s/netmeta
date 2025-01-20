@@ -27,7 +27,7 @@
 #' \bold{\emph{ID}}\tab study ID
 #' }
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{metainc}},
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metainc}},
 #' \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 #' 
 #' @source

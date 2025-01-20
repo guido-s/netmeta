@@ -7,7 +7,7 @@
 decomp.design(
   x,
   tau.preset = x$tau.preset,
-  warn = TRUE,
+  warn = gs("warn"),
   nchar.trts = x$nchar.trts
 )
 }

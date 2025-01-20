@@ -32,6 +32,7 @@ updateversion <- function(x, verbose = FALSE) {
   update.2.5.0 <- update_needed(x$version, 2, 5, verbose)
   update.2.8.0 <- update_needed(x$version, 2, 8, verbose)
   update.2.9.0 <- update_needed(x$version, 2, 9, verbose)
+  update.3.0.0 <- update_needed(x$version, 3, 0, verbose)
   
   
   ##
@@ -43,7 +44,7 @@ updateversion <- function(x, verbose = FALSE) {
       x$prediction <- FALSE
       x$df.Q <- x$df
       ##
-      x$d <- nma.krahn(x)$d
+      x$d <- nma_krahn(x)$d
       if (is.null(x$d))
         x$d <- 1
       ##
@@ -188,7 +189,21 @@ updateversion <- function(x, verbose = FALSE) {
         x$data$.seTE.adj.random[sel.s] <- x$seTE.adj.random
       }
     }
-    ##
+    #
+    if (update.3.0.0) {
+      x$overall.hetstat <- TRUE
+      x$method.predict <- "V"
+      #
+      if (inherits(x, "netmetabin")) {
+        x$method.incr <- "only0"
+        #
+        if (is.logical(x$addincr) && x$addincr)
+          method.incr <- "all"
+        else if (is.logical(x$allincr) && x$allincr)
+          method.incr <- "if0all"
+      }
+    }
+    #
     return(x)
   }
   
@@ -212,7 +227,21 @@ updateversion <- function(x, verbose = FALSE) {
     ##
     if (update.2.8.0)
       x$x$small.values <- setsv(x$x$small.values)
-    ##
+    #
+    if (update.3.0.0) {
+      x$x$overall.hetstat <- TRUE
+      x$x$method.predict <- "V"
+      #
+      if (inherits(x, "summary.netmetabin")) {
+        x$method.incr <- "only0"
+        #
+        if (is.logical(x$addincr) && x$addincr)
+          method.incr <- "all"
+        else if (is.logical(x$allincr) && x$allincr)
+          method.incr <- "if0all"
+      }
+    }
+    #
     return(x)
   }
   
@@ -295,7 +324,12 @@ updateversion <- function(x, verbose = FALSE) {
     ##
     if (update.2.8.0)
       x$x$small.values <- setsv(x$x$small.values)
-    ##
+    #
+    if (update.3.0.0) {
+      x$overall.hetstat <- TRUE
+      x$method.tau <- x$x$method.tau
+    }
+    #
     return(x)
   }
   
@@ -375,7 +409,10 @@ updateversion <- function(x, verbose = FALSE) {
       x$Lplus.matrix.common <- x$Lplus.matrix.fixed
       x$H.matrix.common <- x$H.matrix.fixed        
     }
-    ##
+    #
+    if (update.3.0.0)
+      x$overall.hetstat <- TRUE
+    #
     return(x)
   }
   
@@ -424,6 +461,15 @@ updateversion <- function(x, verbose = FALSE) {
     ##
     if (update.2.8.0)
       x$x$small.values <- setsv(x$x$small.values)
+    ##
+    if (update.3.0.0) {
+      x$overall <- TRUE
+      x$direct <- TRUE
+      x$indirect <- TRUE
+      #
+      x$show <- gs("show.netsplit")
+      x$only.reference <- FALSE
+    }
     ##
     return(x)
   }
@@ -505,6 +551,12 @@ updateversion <- function(x, verbose = FALSE) {
     ##
     if (update.2.8.0)
       x$x$small.values <- setsv(x$x$small.values)
+    ##
+    if (update.3.0.0) {
+      x$method.tau <- x$x$method.tau
+      x$nchar.trts <- x$x$nchar.trts
+      x$nchar.studlab <- x$x$nchar.studlab
+    }
     ##
     return(x)
   }

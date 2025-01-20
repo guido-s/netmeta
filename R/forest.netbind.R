@@ -34,7 +34,7 @@
 #' @param lab.NA A character string to label missing values.
 #' @param smlab A label printed at top of figure. By default, text
 #'   indicating either common or random effects model is printed.
-#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#' @param \dots Additional arguments for \code{\link[meta]{forest.meta}}
 #'   function.
 #' 
 #' @details
@@ -46,13 +46,13 @@
 #' forest plot, respectively. If argument \code{rightcols} is
 #' \code{FALSE}, no columns will be plotted on the right side.
 #' 
-#' For more information see help page of \code{\link{forest.meta}}
+#' For more information see help page of \code{\link[meta]{forest.meta}}
 #' function.
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netbind}}, \code{\link{netcomb}},
-#'   \code{\link{forest.meta}}
+#'   \code{\link[meta]{forest.meta}}
 #' 
 #' @keywords hplot
 #' 
@@ -83,7 +83,7 @@
 #'   col.study = c("red", "black"),
 #'   col.square = c("red", "black"))
 #' forest(nb1,
-#'   col.by = "black", addrow.subgroups = FALSE,
+#'   col.subgroup = "black", addrow.subgroups = FALSE,
 #'   fontsize = 10, spacing = 0.7, squaresize = 0.9,
 #'   label.left = "Favours Placebo",
 #'   label.right = "Favours other")
@@ -91,11 +91,10 @@
 #' @method forest netbind
 #' @export
 
-
 forest.netbind <- function(x,
                            pooled = ifelse(x$x$random, "random", "common"),
                            ##
-                           equal.size = TRUE,
+                           equal.size = gs("equal.size"),
                            ##
                            leftcols = "studlab",
                            leftlabs = "Treatment",
@@ -108,7 +107,7 @@ forest.netbind <- function(x,
                            digits.prop = max(gs("digits.pval") - 2, 2),
                            ##
                            backtransf = x$backtransf,
-                           lab.NA = "",
+                           lab.NA = gs("lab.NA"),
                            smlab,
                            ...) {
   
@@ -171,6 +170,9 @@ forest.netbind <- function(x,
     m$col.inside <- x$common$col.inside[sel]
     ##
     text.pooled <- "Common Effects Model"
+    #
+    if (!is.null(x$common$method))
+      x$method <- unique(x$common$method[sel])
   }
   else {
     if (!missing(subset.treatments)) {
@@ -205,6 +207,9 @@ forest.netbind <- function(x,
     m$col.inside <- x$random$col.inside[sel]
     ##
     text.pooled <- "Random Effects Model"
+    #
+    if (!is.null(x$random$method))
+      x$method <- unique(x$random$method[sel])
   }
   ##
   if (missing(smlab))
@@ -218,6 +223,12 @@ forest.netbind <- function(x,
                       x$reference.group, "' vs other\n(",
                       text.pooled,
                       ")")
+  #
+  m$.text.details.methods <-
+    textmeth(x, pooled == pooled, FALSE, FALSE,
+             "", "", gs("digits.tau2"), gs("digits.tau"),
+             FALSE, gs("text.I2"),
+             big.mark = gs("big.mark"), forest = TRUE)
   
   
   ##
@@ -265,13 +276,9 @@ forest.netbind <- function(x,
 }
 
 
-
-
-
 #' @rdname forest.netbind
 #' @method plot netbind
 #' @export
-#'
 
 plot.netbind <- function(x, ...)
   forest(x, ...)

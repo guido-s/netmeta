@@ -13,16 +13,16 @@
 #'   should be plotted. Can be abbreviated.
 #' @param leftcols A character vector specifying (additional) columns
 #'   to be plotted on the left side of the forest plot or a logical
-#'   value (see \code{\link{forest.meta}} help page for details).
+#'   value (see \code{\link[meta]{forest.meta}} help page for details).
 #' @param leftlabs A character vector specifying labels for
 #'   (additional) columns on left side of the forest plot (see
-#'   \code{\link{forest.meta}} help page for details).
+#'   \code{\link[meta]{forest.meta}} help page for details).
 #' @param rightcols A character vector specifying (additional) columns
 #'   to be plotted on the right side of the forest plot or a logical
-#'   value (see \code{\link{forest.meta}} help page for details).
+#'   value (see \code{\link[meta]{forest.meta}} help page for details).
 #' @param rightlabs A character vector specifying labels for
 #'   (additional) columns on right side of the forest plot (see
-#'   \code{\link{forest.meta}} help page for details).
+#'   \code{\link[meta]{forest.meta}} help page for details).
 #' @param nchar.comps A numeric defining the minimum number of
 #'   characters used to create unique names for components.
 #' @param digits Minimal number of significant digits for treatment
@@ -38,20 +38,21 @@
 #'   results for \code{sm = "OR"} are presented as odds ratios rather
 #'   than log odds ratios, for example.
 #' @param lab.NA A character string to label missing values.
-#' @param weight.study A character string indicating weighting used to
-#'   determine size of squares or diamonds.
-#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#' @param equal.size A logical indicating whether all squares should
+#'   be of equal size. Otherwise, the square size is proportional to
+#'   the precision of estimates.
+#' @param \dots Additional arguments for \code{\link[meta]{forest.meta}}
 #'   function.
 #' 
 #' @details
 #' A forest plot, also called confidence interval plot, is drawn in
 #' the active graphics window. For more information see help page of
-#' \code{\link{forest.meta}} function.
+#' \code{\link[meta]{forest.meta}} function.
 #'
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netcomplex}}, \code{\link{netcomb}},
-#'   \code{\link{discomb}}, \code{\link{forest.meta}}
+#'   \code{\link{discomb}}, \code{\link[meta]{forest.meta}}
 #' 
 #' @keywords hplot
 #' 
@@ -88,7 +89,6 @@
 #' @method forest netcomplex
 #' @export
 
-
 forest.netcomplex <- function(x,
                               pooled = ifelse(x$random, "random", "common"),
                               leftcols = "studlab",
@@ -102,8 +102,8 @@ forest.netcomplex <- function(x,
                               digits.pval = gs("digits.pval"),
                               smlab = NULL,
                               backtransf = x$backtransf,
-                              lab.NA = ".",
-                              weight.study = "same",
+                              lab.NA = gs("lab.NA"),
+                              equal.size = gs("equal.size"),
                               ...) {
   
   
@@ -200,7 +200,7 @@ forest.netcomplex <- function(x,
          rightlabs = rightlabs,
          smlab = smlab,
          lab.NA = lab.NA,
-         weight.study = weight.study,
+         weight.study = if (equal.size) "same" else pooled,
          just.addcols = "right",
          ...)
   
@@ -209,13 +209,9 @@ forest.netcomplex <- function(x,
 }
 
 
-
-
-
 #' @rdname forest.netcomplex
 #' @method plot netcomplex
 #' @export
-#'
 
 plot.netcomplex <- function(x, ...)
   forest(x, ...)

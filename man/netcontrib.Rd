@@ -23,7 +23,7 @@ netcontrib(
   random = x$x$random,
   digits = 4,
   nchar.trts = x$nchar.trts,
-  legend = TRUE,
+  legend = gs("legend"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -177,9 +177,8 @@ package \bold{tictoc} is installed.
 \examples{
 # Use the Woods dataset
 #
-data("Woods2010")
 p1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = dat.woods2010, sm = "OR")
 
 net1 <- netmeta(p1)
 cm <- netcontrib(net1)
@@ -202,7 +201,7 @@ paths, flows and streams.
 \emph{F1000Research}
 }
 \seealso{
-\code{\link{netmeta}}
+\code{\link{netmeta}}, \code{\link[metadat]{dat.woods2010}}
 }
 \author{
 Theodoros Papakonstantinou \email{dev@tpapak.com}, Annabel

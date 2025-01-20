@@ -44,6 +44,15 @@
 #'   indicating either common or random effects model is printed.
 #' @param sortvar An optional vector used to sort treatments (must be
 #'   of same length as the total number of treatments).
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
+#' @param print.tau2 A logical value indicating whether to print the
+#'   value of the between-study variance \eqn{\tau^2}.
+#' @param print.tau A logical value indicating whether to print
+#'   \eqn{\tau}, the square root of the between-study variance
+#'   \eqn{\tau^2}.
+#' @param print.I2 A logical value indicating whether to print the
+#'   value of the I-squared statistic.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in forest plots. If \code{backtransf = TRUE},
 #'   results for \code{sm = "OR"} are presented as odds ratios rather
@@ -51,13 +60,16 @@
 #' @param lab.NA A character string to label missing values.
 #' @param add.data An optional data frame with additional columns to
 #'   print in forest plot (see Details).
+#' @param addrows.below.overall A numeric value indicating how many
+#'   empty rows are printed between meta-analysis results and
+#'   heterogeneity statistics.
 #' @param drop.reference.group A logical indicating whether the
 #'   reference group should be printed in the forest plot.
-#' @param col.by The colour to print information on subgroups.
+#' @param col.subgroup The colour to print information on subgroups.
 #' @param print.subgroup.name A logical indicating whether the name of
 #'   the grouping variable should be printed in front of the group
 #'   labels.
-#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#' @param \dots Additional arguments for \code{\link[meta]{forest.meta}}
 #'   function.
 #' 
 #' @details
@@ -103,7 +115,7 @@
 #'
 #' As a sidenote, the rather odd column name \code{"studlab"} to
 #' describe the treatment comparisons comes from internally calling
-#' \code{\link{forest.meta}} which uses study labels as the essential
+#' \code{\link[meta]{forest.meta}} which uses study labels as the essential
 #' information.
 #' 
 #' Argument \code{add.data} can be used to add additional columns to
@@ -111,12 +123,12 @@
 #' equal to the treatment names in R object \code{x}, i.e.,
 #' \code{x$trts}.
 #' 
-#' See help page of \code{\link{forest.meta}} for more information on
+#' See help page of \code{\link[meta]{forest.meta}} for more information on
 #' the generation of forest plots and additional arguments.
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{forest.meta}}
+#' @seealso \code{\link[meta]{forest.meta}}
 #' 
 #' @keywords hplot
 #' 
@@ -192,29 +204,35 @@
 #' @method forest netmeta
 #' @export
 
-
 forest.netmeta <- function(x,
                            pooled = ifelse(x$random, "random", "common"),
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
                            labels = x$trts,
-                           equal.size = TRUE,
+                           equal.size = gs("equal.size"),
                            leftcols = "studlab",
                            leftlabs,
                            rightcols = c("effect", "ci"),
                            rightlabs,
                            digits = gs("digits.forest"),
                            small.values = x$small.values,
-                           nsim = 1000,
+                           nsim = gs("nsim"),
                            digits.prop = 2,
                            smlab = NULL,
                            sortvar = x$seq,
+                           overall.hetstat = gs("overall.hetstat"),
+                           print.tau2 = gs("forest.tau2"),
+                           print.tau = gs("forest.tau"),
+                           print.I2 = gs("forest.I2"),
                            backtransf = x$backtransf,
-                           lab.NA = ".",
+                           lab.NA = gs("lab.NA"),
                            add.data,
-                           drop.reference.group = FALSE,
+                           addrows.below.overall =
+                             if (x$overall.hetstat) 2 else
+                               gs("addrows.below.overall"),
+                           drop.reference.group = gs("drop.reference.group"),
                            ##
-                           col.by = "black",
+                           col.subgroup = "black",
                            print.subgroup.name = FALSE,
                            ##
                            ...) {
@@ -261,7 +279,19 @@ forest.netmeta <- function(x,
   ##
   chklogical(drop.reference.group)
   chklogical(print.subgroup.name)
-  ##
+  #
+  overall.hetstat <- replaceNULL(overall.hetstat, FALSE)
+  print.tau2 <- replaceNULL(print.tau2, overall.hetstat)
+  print.tau <- replaceNULL(print.tau, overall.hetstat)
+  print.I2 <- replaceNULL(print.I2, overall.hetstat)
+  #
+  chklogical(print.tau2)
+  chklogical(print.tau)
+  chklogical(print.I2)
+  #
+  if (print.tau)
+    print.tau2 <- FALSE
+  #
   chklogical(backtransf)
   chkchar(lab.NA)
   ##
@@ -272,28 +302,19 @@ forest.netmeta <- function(x,
                "time.e", "time.c",
                "effect", "ci", "effect.ci",
                "w.common", "w.random")
-  ##
-  if (missing(leftlabs)) {
+  #
+  missing.leftlabs <- missing(leftlabs)
+  if (missing.leftlabs) {
     leftlabs <- leftcols
     leftlabs[leftcols %in% stdlabs] <- NA
-    ##
-    if (length(reference.group) > 1)
-      leftlabs[matchVar(leftcols, "studlab")] <- "Comparison"
-    else
-      leftlabs[matchVar(leftcols, "studlab")] <- "Treatment"
   }
-  else if (length(leftcols) != length(leftlabs)) {
-    if (length(reference.group) > 1)
-      leftlabs[matchVar(leftcols, "studlab")] <- "Comparison"
-    else
-      leftlabs[matchVar(leftcols, "studlab")] <- "Treatment"
-  }
-  ##
-  if (missing(rightlabs)) {
+  #
+  missing.rightlabs <- missing(rightlabs)
+  if (missing.rightlabs) {
     rightlabs <- rightcols
     rightlabs[rightcols %in% stdlabs] <- NA
   }
-  ##
+  #
   for (i in names(list(...))) {
     if (!is.null(setchar(i, "weight.study", stop.at.error = FALSE)))
       stop("Argument 'weight.study' set internally.", call. = TRUE)
@@ -348,11 +369,6 @@ forest.netmeta <- function(x,
     }
     ##
     text.pooled <- "Common Effects Model"
-    ##
-    if (x$method == "MH")
-      text.pooled <- "Mantel-Haenszel Method"
-    else if (x$method == "NCH")
-      text.pooled <- "Non-Central Hypergeometric"
   }
   ##
   if (pooled == "random") {
@@ -392,39 +408,101 @@ forest.netmeta <- function(x,
     else
       smlab  <- text.pooled
   }
-  ##
+  #
+  if (!missing.rightlabs && length(rightlabs) > length(rightcols))
+    stop("Too many labels defined in argument 'rightlabs': ",
+         length(rightlabs), " label", if (length(rightlabs) > 1) "s",
+         " for ", length(rightcols), " column",
+         if (length(rightcols) > 1) "s",
+         ".",
+         call. = FALSE)
+  #
   rightcols <- setCol(rightcols, "Pscore")
-  rightlabs <- setLab(rightlabs, rightcols, "Pscore", "P-score")
-  ##
   rightcols <- setCol(rightcols, "SUCRA")
-  rightlabs <- setLab(rightlabs, rightcols, "SUCRA", "SUCRA")
-  ##
   rightcols <- setCol(rightcols, "n.trts")
-  rightlabs <- setLab(rightlabs, rightcols, "n.trts",
-                      "Number of\nParticipants")
-  ##
   rightcols <- setCol(rightcols, "k")
-  rightlabs <- setLab(rightlabs, rightcols, "k", "Direct\nComparisons")
-  ##
   rightcols <- setCol(rightcols, "prop.direct")
-  rightlabs <- setLab(rightlabs, rightcols, "prop.direct",
-                      "Direct Evidence\nProportion")
-  ##
+  #
+  if (missing.rightlabs || (length(rightlabs) < length(rightcols))) {
+    rightlabs <- setLab(rightlabs, rightcols, "Pscore", "P-score")
+    rightlabs <- setLab(rightlabs, rightcols, "SUCRA", "SUCRA")
+    rightlabs <- setLab(rightlabs, rightcols, "n.trts",
+                        "Number of\nParticipants")
+    rightlabs <- setLab(rightlabs, rightcols, "k", "Direct\nComparisons")
+    rightlabs <- setLab(rightlabs, rightcols, "prop.direct",
+                        "Direct Evidence\nProportion")
+  }
+  else if (length(rightlabs) == length(rightcols) && any(is.na(rightlabs))) {
+    if (naLab(rightlabs[matchVar(rightcols, "Pscore")]))
+      rightlabs <- setLab(rightlabs, rightcols, "Pscore", "P-score")
+    #
+    if (naLab(rightlabs[matchVar(rightcols, "SUCRA")]))
+      rightlabs <- setLab(rightlabs, rightcols, "SUCRA", "SUCRA")
+    
+    if (naLab(rightlabs[matchVar(rightcols, "n.trts")]))
+      rightlabs <- 
+        setLab(rightlabs, rightcols, "n.trts", "Number of\nParticipants")
+    #
+    if (naLab(rightlabs[matchVar(rightcols, "k")]))
+      rightlabs <- setLab(rightlabs, rightcols, "k", "Direct\nComparisons")
+    #
+    if (naLab(rightlabs[matchVar(rightcols, "prop.direct")]))
+      rightlabs <- setLab(rightlabs, rightcols, "prop.direct",
+                          "Direct Evidence\nProportion")
+  }
+  #
+  if (!missing.leftlabs && length(leftlabs) > length(leftcols))
+    stop("Too many labels defined in argument 'leftlabs': ",
+         length(leftlabs), " label", if (length(leftlabs) > 1) "s",
+         " for ", length(leftcols), " column",
+         if (length(leftcols) > 1) "s",
+         ".",
+         call. = FALSE)
+  #
   leftcols <- setCol(leftcols, "Pscore")
-  leftlabs <- setLab(leftlabs, leftcols, "Pscore", "P-score")
-  ##
   leftcols <- setCol(leftcols, "SUCRA")
-  leftlabs <- setLab(leftlabs, leftcols, "SUCRA", "SUCRA")
-  ##
   leftcols <- setCol(leftcols, "n.trts")
-  leftlabs <- setLab(leftlabs, leftcols, "n.trts", "Number of\nParticipants")
-  ##
   leftcols <- setCol(leftcols, "k")
-  leftlabs <- setLab(leftlabs, leftcols, "k", "Direct\nComparisons")
-  ##
   leftcols <- setCol(leftcols, "prop.direct")
-  leftlabs <- setLab(leftlabs, leftcols, "prop.direct",
-                     "Direct Evidence\nProportion")
+  #
+  if (missing.leftlabs || (length(leftlabs) < length(leftcols))) {
+    if (length(reference.group) > 1)
+      leftlabs[matchVar(leftcols, "studlab")] <- "Comparison"
+    else
+      leftlabs[matchVar(leftcols, "studlab")] <- "Treatment"
+    #
+    leftlabs <- setLab(leftlabs, leftcols, "Pscore", "P-score")
+    leftlabs <- setLab(leftlabs, leftcols, "SUCRA", "SUCRA")
+    leftlabs <- setLab(leftlabs, leftcols, "n.trts", "Number of\nParticipants")
+    leftlabs <- setLab(leftlabs, leftcols, "k", "Direct\nComparisons")
+    leftlabs <- setLab(leftlabs, leftcols, "prop.direct",
+                       "Direct Evidence\nProportion")
+  }
+  else if (length(leftlabs) == length(leftcols) && any(is.na(leftlabs))) {
+    if (is.na(leftlabs[matchVar(leftcols, "studlab")])) {
+      if (length(reference.group) > 1)
+        leftlabs[matchVar(leftcols, "studlab")] <- "Comparison"
+      else
+        leftlabs[matchVar(leftcols, "studlab")] <- "Treatment"
+    }
+    #
+    if (naLab(leftlabs[matchVar(leftcols, "Pscore")]))
+      leftlabs <- setLab(leftlabs, leftcols, "Pscore", "P-score")
+    #
+    if (naLab(leftlabs[matchVar(leftcols, "SUCRA")]))
+      leftlabs <- setLab(leftlabs, leftcols, "SUCRA", "SUCRA")
+    
+    if (naLab(leftlabs[matchVar(leftcols, "n.trts")]))
+      leftlabs <- 
+        setLab(leftlabs, leftcols, "n.trts", "Number of\nParticipants")
+    #
+    if (naLab(leftlabs[matchVar(leftcols, "k")]))
+      leftlabs <- setLab(leftlabs, leftcols, "k", "Direct\nComparisons")
+    #
+    if (naLab(leftlabs[matchVar(leftcols, "prop.direct")]))
+      leftlabs <- setLab(leftlabs, leftcols, "prop.direct",
+                         "Direct Evidence\nProportion")
+  }
   
   
   ##
@@ -484,7 +562,7 @@ forest.netmeta <- function(x,
              call. = FALSE)
       if (any(rownames(add.data) != trts))
         stop("Dataset 'add.data' must have the following row names:\n",
-             paste(paste("'", trts, "'", sep = ""), collapse = " - "),
+             paste(paste0("'", trts, "'"), collapse = " - "),
              call. = FALSE)
       ##
       dat.i <- cbind(dat.i, add.data)
@@ -579,42 +657,51 @@ forest.netmeta <- function(x,
                                    studlab = labels, backtransf = backtransf,
                                    method.tau = "DL", method.tau.ci = "",
                                    warn = FALSE))
-  ##
+  #
+  m1 <- setHet(m1, x)
+  m1$.text.details.methods <-
+    textmeth(x, pooled == "random", print.tau2, print.tau,
+             "", "", gs("digits.tau2"), gs("digits.tau"),
+             print.I2, gs("text.I2"),
+             big.mark = gs("big.mark"), forest = TRUE)
+  #
   forest(m1,
          digits = digits,
+         #
          overall = FALSE, common = FALSE, random = FALSE,
-         hetstat = FALSE, test.subgroup = FALSE,
+         overall.hetstat = overall.hetstat,
+         print.tau2 = print.tau2, print.tau = print.tau,
+         print.I2 = print.I2,
+         test.subgroup = FALSE,
+         #
          leftcols = leftcols,
          leftlabs = leftlabs,
          rightcols = rightcols,
          rightlabs = rightlabs,
-         smlab = smlab,
-         lab.NA = lab.NA,
+         #
+         smlab = smlab, lab.NA = lab.NA,
          ##
-         col.by = col.by,
+         col.subgroup = col.subgroup,
          print.subgroup.name = print.subgroup.name,
          ##
          weight.study = if (equal.size) "same" else pooled,
-         ##
+         #
+         addrows.below.overall = addrows.below.overall,
+         #
          ...)
   
-
   rownames(dat.out) <- seq_len(nrow(dat.out))
-  ##
+  #
   attr(dat.out, "pooled") <- pooled
   attr(dat.out, "small.values") <- small.values
-  ##
+  #
   invisible(dat.out)
 }
-
-
-
 
 
 #' @rdname forest.netmeta
 #' @method plot netmeta
 #' @export
-#'
 
 plot.netmeta <- function(x, ...)
   forest(x, ...)

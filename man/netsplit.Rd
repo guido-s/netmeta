@@ -11,6 +11,13 @@ netsplit(
   upper = TRUE,
   reference.group = x$reference.group,
   baseline.reference = x$baseline.reference,
+  show = gs("show"),
+  overall = TRUE,
+  direct = TRUE,
+  indirect = TRUE,
+  only.reference = FALSE,
+  ci = FALSE,
+  test = show \%in\% c("all", "with.direct", "both"),
   order = NULL,
   sep.trts = x$sep.trts,
   quote.trts = "",
@@ -28,11 +35,13 @@ netsplit(
   x,
   common = x$x$common,
   random = x$x$random,
-  show = "all",
-  overall = TRUE,
-  ci = FALSE,
-  test = show \%in\% c("all", "with.direct", "both"),
-  only.reference = FALSE,
+  show = x$show,
+  overall = x$overall,
+  direct = x$direct,
+  indirect = x$indirect,
+  ci = x$ci,
+  test = x$test,
+  only.reference = x$only.reference,
   sortvar = NULL,
   subset = NULL,
   nchar.trts = x$nchar.trts,
@@ -40,11 +49,11 @@ netsplit(
   digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
   digits.prop = max(gs("digits.pval") - 2, 2),
-  text.NA = ".",
+  text.NA = gs("lab.NA"),
   backtransf = x$backtransf,
   scientific.pval = gs("scientific.pval"),
   big.mark = gs("big.mark"),
-  legend = TRUE,
+  legend = gs("legend"),
   indent = TRUE,
   warn.deprecated = gs("warn.deprecated"),
   ...
@@ -72,6 +81,27 @@ should be expressed as comparisons of other treatments versus the
 reference treatment or vice versa. This argument is only
 considered if \code{reference.group} is not equal to \code{""}
 and argument\code{order} is not provided.}
+
+\item{show}{A character string indicating which comparisons should
+be printed (see Details).}
+
+\item{overall}{A logical indicating whether estimates from network
+meta-analysis should be printed.}
+
+\item{direct}{A logical indicating whether direct estimates should
+be printed.}
+
+\item{indirect}{A logical indicating whether indirect estimates
+should be printed.}
+
+\item{only.reference}{A logical indicating whether only comparisons
+with the reference group should be printed.}
+
+\item{ci}{A logical indicating whether confidence intervals should
+be printed in addition to treatment estimates.}
+
+\item{test}{A logical indicating whether results of a test
+comparing direct and indirect estimates should be printed.}
 
 \item{order}{A optional character or numerical vector specifying
 the order of treatments in comparisons.}
@@ -107,22 +137,6 @@ be printed if deprecated arguments are used.}
 should be printed.}
 
 \item{\dots}{Additional arguments.}
-
-\item{show}{A character string indicating which comparisons should
-be printed (see Details).}
-
-\item{overall}{A logical indicating whether estimates from network
-meta-analyis should be printed in addition to direct and indirect
-estimates.}
-
-\item{ci}{A logical indicating whether confidence intervals should
-be printed in addition to treatment estimates.}
-
-\item{test}{A logical indicating whether results of a test
-comparing direct and indirect estimates should be printed.}
-
-\item{only.reference}{A logical indicating whether only comparisons
-with the reference group should be printed.}
 
 \item{sortvar}{An optional vector used to sort comparisons (must be
 of same length as the total number of comparisons).}
@@ -243,10 +257,8 @@ printed if argument \code{verbose = TRUE}. In addition, computation
 times are printed if R package \bold{tictoc} is installed.
 }
 \examples{
-data(Woods2010)
-#
 p1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = dat.woods2010, sm = "OR")
 #
 net1 <- netmeta(p1)
 #
@@ -279,9 +291,8 @@ print(netsplit(net2), digits = 2)
 # Layout of Puhan et al. (2014), Table 1
 print(netsplit(net2), digits = 2, ci = TRUE, test = FALSE)
 
-data(Dong2013)
 p3 <- pairwise(treatment, death, randomized, studlab = id,
-  data = Dong2013, sm = "OR")
+  data = dat.dong2013, sm = "OR")
 net3 <- netmetabin(p3)
 netsplit(net3)
 }
@@ -313,7 +324,9 @@ effect estimates from network meta-analysis.
 }
 \seealso{
 \code{\link{forest.netsplit}}, \code{\link{netmeta}},
-  \code{\link{netmetabin}}, \code{\link{netmeasures}}
+  \code{\link{netmetabin}}, \code{\link{netmeasures}},
+  \code{\link[metadat]{dat.woods2010}}, \code{\link{Senn2013}},
+  \code{\link[metadat]{dat.dong2013}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Gerta

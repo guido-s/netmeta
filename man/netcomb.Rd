@@ -7,16 +7,18 @@
 netcomb(
   x,
   inactive = NULL,
-  sep.comps = "+",
+  sep.comps = gs("sep.comps"),
   C.matrix,
   common = x$common,
   random = x$random | !is.null(tau.preset),
   tau.preset = NULL,
   details.chkident = FALSE,
   nchar.comps = x$nchar.trts,
+  sep.ia = gs("sep.ia"),
   func.inverse = invmat,
+  overall.hetstat = x$overall.hetstat,
   backtransf = x$backtransf,
-  na.unident = TRUE,
+  na.unident = gs("na.unident"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -48,8 +50,13 @@ unidentifiable components should be printed.}
 characters used to create unique names for components (see
 Details).}
 
+\item{sep.ia}{A single character to define separator for interactions.}
+
 \item{func.inverse}{R function used to calculate the pseudoinverse
 of the Laplacian matrix L (see \code{\link{netmeta}}).}
+
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots.}
@@ -215,7 +222,7 @@ containing the following components:
   between treatment labels.}
 \item{nchar.comps}{A numeric defining the minimum number of
   characters used to create unique component names.}
-\item{inactive, sep.comps}{As defined above.}
+\item{inactive, sep.comps, sep.ia}{As defined above.}
 \item{backtransf}{A logical indicating whether results should be
   back transformed in printouts and forest plots.}
 \item{title}{Title of meta-analysis / systematic review.}

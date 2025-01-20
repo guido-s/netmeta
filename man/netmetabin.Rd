@@ -18,19 +18,19 @@ netmetabin(
   method = "MH",
   cc.pooled = FALSE,
   incr,
-  allincr,
-  addincr,
+  method.incr,
   allstudies,
   level = gs("level"),
   level.ma = gs("level.ma"),
   common = gs("common"),
-  random = method == "Inverse" & (gs("random") | !is.null(tau.preset)),
-  prediction = FALSE,
+  random = method \%in\% c("Inverse", "LRP") & (gs("random") | !is.null(tau.preset)),
+  prediction = gs("prediction"),
   level.predict = gs("level.predict"),
-  reference.group = "",
-  baseline.reference = TRUE,
-  all.treatments = NULL,
-  seq = NULL,
+  reference.group,
+  baseline.reference = gs("baseline.reference"),
+  small.values = gs("small.values"),
+  all.treatments = gs("all.treatments"),
+  seq = gs("seq"),
   tau.preset = NULL,
   tol.multiarm = 0.001,
   tol.multiarm.se = NULL,
@@ -39,10 +39,13 @@ netmetabin(
   sep.trts = ":",
   nchar.trts = 666,
   func.inverse = invmat,
+  overall.hetstat = gs("overall.hetstat"),
   backtransf = gs("backtransf"),
-  title = "",
+  title = gs("title"),
   keepdata = gs("keepdata"),
-  warn = TRUE,
+  addincr,
+  allincr,
+  warn = gs("warn"),
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -73,8 +76,8 @@ be used.}
 i.e., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"}.}
 
 \item{method}{A character string indicating which method is to be
-used for pooling of studies. One of \code{"Inverse"},
-\code{"MH"}, or \code{"NCH"}, can be abbreviated.}
+used for pooling of studies. One of \code{"MH"},
+\code{"NCH"}, \code{"LRP"}, or \code{"Inverse"}, can be abbreviated.}
 
 \item{cc.pooled}{A logical indicating whether \code{incr} should be
 used as a continuity correction, when calculating the network
@@ -85,16 +88,9 @@ i.e., to the numbers of events and non-events, of all treatment
 arms in studies with zero events or non-events in any of the
 treatment arms ("continuity correction").}
 
-\item{allincr}{A logical indicating whether \code{incr} should be
-added to each cell count of all studies if a continuity
-correction was used for at least one study (only considered if
-\code{method = "Inverse"}). If FALSE (default), \code{incr} is
-used as continuity correction only for studies with zero events
-or zero non-events in any of the treatment arms.}
-
-\item{addincr}{A logical indicating whether \code{incr} should be
-added to each cell count of all studies, irrespective of zero
-cell counts (only considered if \code{method = "Inverse"}).}
+\item{method.incr}{A character string indicating which continuity
+correction method should be used (\code{"only0"},
+\code{"if0all"}, or \code{"all"}), see \code{\link[meta]{metabin}}.}
 
 \item{allstudies}{A logical indicating whether studies with zero
 events or non-events in all treatment arms should be included in
@@ -128,6 +124,11 @@ interval for a new study (only considered if \code{method =
 should be expressed as comparisons of other treatments versus the
 reference treatment (default) or vice versa. This argument is
 only considered if \code{reference.group} has been specified.}
+
+\item{small.values}{A character string specifying whether small
+treatment effects indicate a beneficial (\code{"desirable"}) or
+harmful (\code{"undesirable"}) effect (passed on to
+\code{\link{netrank}}, can be abbreviated.}
 
 \item{all.treatments}{A logical or \code{"NULL"}. If \code{TRUE},
 matrices with all treatment effects, and confidence limits will
@@ -167,6 +168,9 @@ characters used to create unique treatment names (see Details).}
 \item{func.inverse}{R function used to calculate the pseudoinverse
 of the Laplacian matrix L (see \code{\link{netmeta}}).}
 
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
+
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
 \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -175,8 +179,14 @@ example.}
 
 \item{title}{Title of meta-analysis / systematic review.}
 
-\item{keepdata}{A logical indicating whether original data (set)
+\item{keepdata}{A logical indicating whether original data(set)
 should be kept in netmeta object.}
+
+\item{addincr}{Deprecated argument (replaced by 'method.incr');
+see \code{\link[meta]{metabin}}.}
+
+\item{allincr}{Deprecated argument (replaced by 'method.incr');
+see \code{\link[meta]{metabin}}.}
 
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded from meta-analysis due to zero
@@ -275,36 +285,38 @@ following components:
 \item{pval.Q.inconsistency}{P-value for test of overall
   inconsistency.}
 \item{A.matrix}{Adjacency matrix (\emph{n}x\emph{n}).}
-\item{H.matrix}{Hat matrix (\emph{m}x\emph{m})}
+\item{H.matrix.common}{Hat matrix (\emph{m}x\emph{m})}
 \item{n.matrix}{\emph{n}x\emph{n} matrix with number of
   observations in direct comparisons.}
 \item{events.matrix}{\emph{n}x\emph{n} matrix with number of events
   in direct comparisons.}
 \item{sm, method, level, level.ma}{As defined above.}
-\item{incr, allincr, addincr, allstudies, cc.pooled}{As defined
+\item{incr, method.incr, allstudies, cc.pooled}{As defined
   above.}
+\item{addincr, allincr}{As defined above.}
 \item{common, random}{As defined above.}
 \item{prediction, level.predict}{As defined above.}
-\item{reference.group, baseline.reference, all.treatments}{As
+\item{reference.group, baseline.reference, small.values, all.treatments}{As
   defined above.}
 \item{seq, tau.preset, tol.multiarm, tol.multiarm.se}{As defined
   above.}
 \item{details.chkmultiarm, details.chkdata}{As defined above.}
-\item{sep.trts, nchar.trts}{As defined above.}
+\item{sep.trts, nchar.trts, overall.hetstat}{As defined above.}
 \item{backtransf, title, warn, warn.deprecated}{As defined above.}
-\item{data}{Data set (in contrast-based format).}
+\item{data}{Dataset (in contrast-based format).}
 \item{data.design}{List with data in arm-based format (each list
   element corresponds to a single design).}
 \item{call}{Function call.}
 \item{version}{Version of R package netmeta used to create object.}
 }
 \description{
-Provides three models for the network meta-analysis of binary data
+Provides four models for the network meta-analysis of binary data
 (Mantel-Haenszel method, based on the non-central hypergeometric
-distribution, and the inverse variance method).
+distribution, penalised logistic regression, and the
+inverse variance method).
 }
 \details{
-This function implements three models for the network meta-analysis
+This function implements four models for the network meta-analysis
 of binary data:
 \itemize{
 \item The Mantel-Haenszel network meta-analysis model, as described
@@ -312,6 +324,8 @@ of binary data:
 \item a network meta-analysis model using the non-central
   hypergeometric distribution with the Breslow approximation, as
   described in Stijnen et al. (2010) (\code{method = "NCH"});
+\item a logistic regression with penalised likelihood, as described
+  in Evrenoglou et al. (2022) (\code{method = "LRP"});
 \item the inverse variance method for network meta-analysis
   (\code{method = "Inverse"}), also provided by
   \code{\link{netmeta}}.
@@ -328,9 +342,9 @@ comparison between two treatments (arguments \code{treat1},
 \code{treat2}, \code{event1}, \code{n1}, \code{event2}, and
 \code{n2}). If data are provided in \emph{arm-based} format, that
 is, number of events and participants are given for each treatment
-arm separately, function \code{\link{pairwise}} can be used to
+arm separately, function \code{\link[meta]{pairwise}} can be used to
 transform the data to \emph{contrast-based} format (see help page
-of function \code{\link{pairwise}}).
+of function \code{\link[meta]{pairwise}}).
 
 Note, all pairwise comparisons must be provided for a multi-arm
 study. Consider a multi-arm study of \emph{p} treatments with known
@@ -339,11 +353,11 @@ must be provided for each treatment, for each of \emph{p}(\emph{p}
 - 1) / 2 possible comparisons in separate lines in the data. For
 instance, a three-arm study contributes three pairwise comparisons,
 a four-arm study even six pairwise comparisons. Function
-\code{\link{pairwise}} automatically calculates all pairwise
+\code{\link[meta]{pairwise}} automatically calculates all pairwise
 comparisons for multi-arm studies.
 
 For \code{method = "Inverse"}, both common and random effects
-models are calculated regardless of values choosen for arguments
+models are calculated regardless of values chosen for arguments
 \code{common} and \code{random}. Accordingly, the network estimates
 for the random effects model can be extracted from component
 \code{TE.random} of an object of class \code{"netmeta"} even if
@@ -382,11 +396,9 @@ treatment labels, a corresponding error message is printed asking
 the user to specify a different separator.
 }
 \examples{
-data(Dong2013)
-
 # Only consider first ten studies (to reduce runtime of example)
 #
-first10 <- subset(Dong2013, id <= 10)
+first10 <- subset(dat.dong2013, id <= 10)
 
 # Transform data from long arm-based format to contrast-based
 # format. Argument 'sm' has to be used for odds ratio as summary
@@ -411,7 +423,7 @@ netleague(nb1)
 # dataset
 #
 p2 <- pairwise(treatment, death, randomized, studlab = id,
-  data = Dong2013, sm = "OR")
+  data = dat.dong2013, sm = "OR")
 netmetabin(p2, ref = "plac")
   
 # Conduct network meta-analysis using the non-central
@@ -424,10 +436,8 @@ netmetabin(p2, ref = "plac", method = "NCH")
 #
 netmetabin(p2, ref = "plac", cc.pooled = TRUE)
 
-data(Gurusamy2011)
-
 p3 <- pairwise(treatment, death, n, studlab = study,
-  data = Gurusamy2011, sm = "OR")
+  data = dat.gurusamy2011, sm = "OR")
 
 # Conduct Mantel-Haenszel network meta-analysis (without continuity
 # correction)
@@ -443,6 +453,11 @@ A Mantel-Haenszel model for network meta-analysis of rare events.
 \emph{Statistics in Medicine},
 \bold{38}, 2992--3012
 
+Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
+Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+\emph{Statistics in Medicine},
+\bold{41}, 5203--19.
+
 Senn S, Gavini F, Magrez D, Scheen A (2013):
 Issues in performing a network meta-analysis.
 \emph{Statistical Methods in Medical Research},
@@ -456,9 +471,12 @@ data.
 \bold{29}, 3046--67
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{netmeta}}
+\code{\link[meta]{pairwise}}, \code{\link{netmeta}},
+  \code{\link[metadat]{dat.gurusamy2011}},
+  \code{\link[metadat]{dat.dong2013}}
 }
 \author{
 Orestis Efthimiou \email{oremiou@gmail.com}, Guido
-  Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
+  Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de},
+  Theodoros Evrenoglou \email{theodoros.evrenoglou@uniklinik-freiburg.de}
 }

@@ -24,6 +24,8 @@
 #'   individual studies should be printed.
 #' @param nma A logical indicating whether summary results of network
 #'   meta-analysis should be printed.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -45,16 +47,34 @@
 #'   between-study variance, see \code{print.default}.
 #' @param digits.I2 Minimal number of significant digits for I-squared
 #'   statistic, see \code{print.default}.
+#' @param big.mark A character used as thousands separator.
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
-#' @param big.mark A character used as thousands separator.
+#' @param zero.pval A logical specifying whether p-values should be
+#'   printed with a leading zero.
+#' @param JAMA.pval A logical specifying whether p-values for test of
+#'   overall effect should be printed according to JAMA reporting
+#'   standards.
+#' @param print.tau2 A logical specifying whether between-study
+#'   variance \eqn{\tau^2} should be printed.
+#' @param print.tau A logical specifying whether \eqn{\tau}, the
+#'   square root of the between-study variance \eqn{\tau^2}, should be
+#'   printed.
+#' @param print.Q A logical value indicating whether to print the
+#'   results of the test of heterogeneity.
+#' @param print.I2 A logical specifying whether heterogeneity
+#'   statistic I\eqn{^2} should be printed.
+#' @param print.I2.ci A logical specifying whether confidence interval for
+#'   heterogeneity statistic I\eqn{^2} should be printed.
 #' @param truncate An optional vector used to truncate the printout of
 #'   results for individual studies (must be a logical vector of
 #'   length corresponding to the number of pairwise comparisons
 #'   \code{x$TE} or contain numerical values).
 #' @param text.truncate A character string printed if study results
 #'   were truncated from the printout.
+#' @param details.methods A logical specifying whether details on statistical
+#'   methods should be printed.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -120,7 +140,6 @@
 #' @method print summary.netmeta
 #' @export
 
-
 print.summary.netmeta <- function(x,
                                   sortvar,
                                   common = x$x$common,
@@ -131,6 +150,7 @@ print.summary.netmeta <- function(x,
                                   all.treatments = x$all.treatments,
                                   details = TRUE, nma = TRUE,
                                   ##
+                                  overall.hetstat = x$overall.hetstat,
                                   backtransf = x$backtransf,
                                   nchar.trts = x$nchar.trts,
                                   nchar.studlab = x$nchar.studlab,
@@ -140,13 +160,24 @@ print.summary.netmeta <- function(x,
                                   digits.Q = gs("digits.Q"),
                                   digits.tau2 = gs("digits.tau2"),
                                   digits.I2 = gs("digits.I2"),
-                                  scientific.pval = gs("scientific.pval"),
+                                  #
                                   big.mark = gs("big.mark"),
+                                  scientific.pval = gs("scientific.pval"),
+                                  zero.pval = gs("zero.pval"),
+                                  JAMA.pval = gs("JAMA.pval"),
+                                  #
+                                  print.tau2 = gs("print.tau2"),
+                                  print.tau = gs("print.tau"),
+                                  print.Q = gs("print.Q"),
+                                  print.I2 = gs("print.I2"),
+                                  print.I2.ci = gs("print.I2.ci"),
+                                  #
                                   truncate,
                                   text.truncate = "*** Output truncated ***",
-                                  ##
-                                  legend = TRUE,
-                                  ##
+                                  #
+                                  details.methods = gs("details"),
+                                  legend = gs("legend"),
+                                  #
                                   warn.deprecated = gs("warn.deprecated"),
                                   ##
                                   ...) {
@@ -182,10 +213,20 @@ print.summary.netmeta <- function(x,
   chknumeric(digits.Q, min = 0, length = 1)
   chknumeric(digits.tau2, min = 0, length = 1)
   chknumeric(digits.I2, min = 0, length = 1)
-  ##
+  #
+  chkchar(big.mark, length = 1)
   chklogical(scientific.pval)
-  ##
+  chklogical(zero.pval)
+  chklogical(JAMA.pval)
+  #
+  chklogical(print.tau2)
+  chklogical(print.tau)
+  chklogical(print.Q)
+  chklogical(print.I2)
+  chklogical(print.I2.ci)
+  #
   chklogical(nma)
+  chklogical(details.methods)
   chklogical(legend)
   ##
   sfsp <- sys.frame(sys.parent())
@@ -244,10 +285,12 @@ print.summary.netmeta <- function(x,
   random <- deprecated(random, missing(random), args, "comb.random",
                        warn.deprecated)
   chklogical(random)
-  ##
+  #
+  chklogical(overall.hetstat)
+  #
   backtransf <-
     deprecated(backtransf, missing(backtransf), args, "logscale")
-  if (is.untransformed(x$sm))
+  if (is_untransformed(x$sm))
     backtransf <- TRUE
   chklogical(backtransf)
   
@@ -264,14 +307,12 @@ print.summary.netmeta <- function(x,
     if (length(sortvar) != k.all)
       stop("'x' and 'sortvar' have different length")
     ##
-    ci.lab <- paste(round(100 * x$level, 1), "%-CI", sep = "")
+    ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
     ##
-    sm <- x$sm
-    ##
-    sm.lab <- sm
-    ##
-    if (!backtransf & is.relative.effect(sm))
-      sm.lab <- paste("log", sm, sep = "")
+    sm <- sm.lab <- x$sm
+    #
+    if (!backtransf & (is_relative_effect(sm) | sm == "VE"))
+      sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
     ##    
     trts <- x$x$trts
     ##
@@ -292,12 +333,14 @@ print.summary.netmeta <- function(x,
     ##  
     if (details) {
       multiarm <- any(x$x$narms > 2)
-      cat(paste("Original data",
-                ifelse(multiarm & (common | random),
-                       paste(" (with adjusted standard errors for",
-                             "multi-arm studies)"),
-                       ""),
-                ":\n\n", sep = ""))
+      cat("Original data",
+          ifelse(multiarm & (common | random),
+                 paste(" (with adjusted standard errors for",
+                       "multi-arm studies)"),
+                 ""),
+          ":\n\n",
+          sep = ""
+      )
       ##
       res <- data.frame(treat1,
                         treat2,
@@ -311,16 +354,22 @@ print.summary.netmeta <- function(x,
           seTE.adj <- x$x$seTE.adj
         else
           seTE.adj <- x$x$seTE.adj.common
-        ##
+        #
         if (common & random & !is.null(x$x$seTE.adj.random)) {
-          res$seTE.adj.c <- format(round(seTE.adj, digits.se))
-          res$seTE.adj.r <- format(round(x$x$seTE.adj.random, digits.se))
+          if (!all(is.na(seTE.adj)))
+            res$seTE.adj.c <- format(round(seTE.adj, digits.se))
+          if (!all(is.na(x$x$seTE.adj.random)))
+            res$seTE.adj.r <- format(round(x$x$seTE.adj.random, digits.se))
         }
-        else if (common)
-          res$seTE.adj <- format(round(seTE.adj, digits.se))
-        else if (random & !is.null(x$x$seTE.adj.random))
-          res$seTE.adj <- format(round(x$x$seTE.adj.random, digits.se))
-        ##
+        else if (common) {
+          if (!all(is.na(seTE.adj)))
+            res$seTE.adj <- format(round(seTE.adj, digits.se))
+        }
+        else if (random & !is.null(x$x$seTE.adj.random)) {
+          if (!all(is.na(x$x$seTE.adj.random)))
+            res$seTE.adj <- format(round(x$x$seTE.adj.random, digits.se))
+        }
+        #
         res$narms <- x$x$n.arms
         res$multiarm <- ifelse(x$x$multiarm, "*", "")
       }
@@ -362,20 +411,38 @@ print.summary.netmeta <- function(x,
     lowTE.f <- x$comparison.nma.common$lower
     uppTE.f <- x$comparison.nma.common$upper
     ##
-    if (backtransf & is.relative.effect(sm)) {
-      TE.f    <- exp(TE.f)
-      lowTE.f <- exp(lowTE.f)
-      uppTE.f <- exp(uppTE.f)
+    if (backtransf) {
+      TE.f    <- backtransf(TE.f, sm)
+      lowTE.f <- backtransf(lowTE.f, sm)
+      uppTE.f <- backtransf(uppTE.f, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lowTE.f
+        lowTE.f <- uppTE.f
+        uppTE.f <- tmp.l
+      }
     }
-    ##
+    #
     TE.r    <- x$comparison.nma.random$TE
     lowTE.r <- x$comparison.nma.random$lower
     uppTE.r <- x$comparison.nma.random$upper
     ##
-    if (backtransf & is.relative.effect(sm)) {
-      TE.r    <- exp(TE.r)
-      lowTE.r <- exp(lowTE.r)
-      uppTE.r <- exp(uppTE.r)
+    if (backtransf) {
+      TE.r    <- backtransf(TE.r, sm)
+      lowTE.r <- backtransf(lowTE.r, sm)
+      uppTE.r <- backtransf(uppTE.r, sm)
+      #
+      # Switch lower and upper limit for VE if results have been
+      # backtransformed
+      #
+      if (sm == "VE") {
+        tmp.l <- lowTE.r
+        lowTE.r <- uppTE.r
+        uppTE.r <- tmp.l
+      }
     }
     ##
     res.f <- cbind(treat1, treat2,
@@ -445,6 +512,7 @@ print.summary.netmeta <- function(x,
                   common = common, random = random,
                   prediction = prediction,
                   backtransf = backtransf,
+                  overall.hetstat = overall.hetstat,
                   reference.group = reference.group,
                   baseline.reference = baseline.reference,
                   all.treatments = all.treatments,
@@ -455,9 +523,19 @@ print.summary.netmeta <- function(x,
                   digits.Q = digits.Q,
                   digits.tau2 = digits.tau2,
                   digits.I2 = digits.I2,
-                  scientific.pval = scientific.pval,
+                  #
                   big.mark = big.mark,
-                  ##
+                  scientific.pval = scientific.pval,
+                  zero.pval = zero.pval,
+                  JAMA.pval = JAMA.pval,
+                  #
+                  print.tau2 = print.tau2,
+                  print.tau = print.tau,
+                  print.Q = print.Q,
+                  print.I2 = print.I2,
+                  print.I2.ci = print.I2.ci,
+                  #
+                  details.methods = details.methods,
                   legend = legend)
   }
   else {

@@ -7,12 +7,14 @@
 #' meta-analysis uses methods that were originally developed in
 #' electrical network theory. It has been found to be equivalent to
 #' the frequentist approach to network meta-analysis which is based on
-#' weighted least squares regression (Rücker, 2012).
+#' weighted least squares regression (Rücker, 2012). An extension for
+#' multi-arm studies with correlated treatment arms is also implemented
+#' (Rücker & Schwarzer, 2025, unpublished).
 #' 
 #' @param TE Estimate of treatment effect, i.e. difference between
 #'   first and second treatment (e.g. log odds ratio, mean difference,
 #'   or log hazard ratio). Or an R object created with
-#'   \code{\link{pairwise}}.
+#'   \code{\link[meta]{pairwise}}.
 #' @param seTE Standard error of treatment estimate.
 #' @param treat1 Label/Number for first treatment.
 #' @param treat2 Label/Number for second treatment.
@@ -22,6 +24,8 @@
 #'   information.
 #' @param subset An optional vector specifying a subset of studies to
 #'   be used.
+#' @param correlated An optional logical vector specifying whether
+#'   treatment arms of a multi-arm study are correlated (see Details).
 #' @param sm A character string indicating underlying summary measure,
 #'   e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
 #'   \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.
@@ -71,6 +75,8 @@
 #'   printed.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -87,14 +93,18 @@
 #' @param event1 Number of events in first treatment group.
 #' @param event2 Number of events in second treatment group.
 #' @param incr Numerical value added to cell frequencies (for details,
-#'   see \code{\link{pairwise}}).
+#'   see \code{\link[meta]{pairwise}}).
+#' @param mean1 Mean in first treatment group.
+#' @param mean2 Mean in second treatment group.
 #' @param sd1 Standard deviation in first treatment group.
 #' @param sd2 Standard deviation in second treatment group.
 #' @param time1 Person time at risk in first treatment group.
 #' @param time2 Person time at risk in second treatment group.
 #' @param title Title of meta-analysis / systematic review.
-#' @param keepdata A logical indicating whether original data (set)
+#' @param keepdata A logical indicating whether original data(set)
 #'   should be kept in netmeta object.
+#' @param keeprma A logical indicating whether \code{\link[metafor]{rma.mv}}
+#'   object should be stored.
 #' @param control An optional list to control the iterative process to
 #'   estimate the between-study variance \eqn{\tau^2}. This argument
 #'   is passed on to \code{\link[metafor]{rma.mv}}.
@@ -110,6 +120,7 @@
 #' Network meta-analysis using R package \bold{netmeta} is described
 #' in detail in Schwarzer et al. (2015), Chapter 8.
 #' 
+#' \subsection{Network meta-analysis model}{
 #' Let \emph{n} be the number of different treatments (nodes,
 #' vertices) in a network and let \emph{m} be the number of existing
 #' comparisons (edges) between the treatments. If there are only
@@ -136,6 +147,22 @@
 #' parts for each pairwise meta-analysis and a part for remaining
 #' inconsistency between comparisons.
 #' 
+#' A simple random effects model assuming that a constant
+#' heterogeneity variance is added to each comparison of the network
+#' can be defined via a generalised methods of moments estimate of the
+#' between-studies variance \eqn{\tau^2} (Jackson et al., 2012). This
+#' is added to the observed sampling variance \code{seTE^2} of each
+#' comparison in the network (before appropriate adjustment for
+#' multi-arm studies). Then, as in standard pairwise meta-analysis,
+#' the procedure is repeated with the resulting enlarged standard
+#' errors.
+#' 
+#' For the random-effects model, the direct treatment estimates are
+#' based on the common between-study variance \eqn{\tau^2} from the
+#' network meta-analysis.
+#' }
+#' 
+#' \subsection{Multi-arm studies}{
 #' Often multi-arm studies are included in a network meta-analysis.
 #' In multi-arm studies, the treatment effects on different
 #' comparisons are not independent, but correlated. This is accounted
@@ -152,51 +179,59 @@
 #' within-study correlation by reweighting all comparisons of each
 #' multi-arm study.
 #' 
-#' Data entry for this function is in \emph{contrast-based} format,
-#' that is, data are given as contrasts (differences) between two
-#' treatments (argument \code{TE}) with standard error (argument
-#' \code{seTE}). In principle, meta-analysis functions from R package
-#' \bold{meta}, e.g. \code{\link{metabin}} for binary outcomes or
-#' \code{\link{metacont}} for continuous outcomes, can be used to
-#' calculate treatment effects separately for each treatment
-#' comparison which is a rather tedious enterprise. If data are
-#' provided in \emph{arm-based} format, that is, data are given for
-#' each treatment arm separately (e.g. number of events and
-#' participants for binary outcomes), a much more convenient way to
-#' transform data into contrast-based form is available. Function
-#' \code{\link{pairwise}} can automatically transform data with binary
-#' outcomes (using the \code{\link{metabin}} function from R package
-#' \bold{meta}), continuous outcomes (\code{\link{metacont}}
-#' function), incidence rates (\code{\link{metainc}} function), and
-#' generic outcomes (\code{\link{metagen}} function). Additional
-#' arguments of these functions can be provided (see help page of
-#' function \code{\link{pairwise}}).
-#' 
 #' Note, all pairwise comparisons must be provided for a multi-arm
 #' study. Consider a multi-arm study of \emph{p} treatments with known
 #' variances. For this study, treatment effects and standard errors
 #' must be provided for each of \emph{p}(\emph{p} - 1) / 2 possible
 #' comparisons. For instance, a three-arm study contributes three
 #' pairwise comparisons, a four-arm study even six pairwise
-#' comparisons. Function \code{\link{pairwise}} automatically
+#' comparisons. Function \code{\link[meta]{pairwise}} automatically
 #' calculates all pairwise comparisons for multi-arm studies.
+#' }
 #' 
-#' A simple random effects model assuming that a constant
-#' heterogeneity variance is added to each comparison of the network
-#' can be defined via a generalised methods of moments estimate of the
-#' between-studies variance \eqn{\tau^2} (Jackson et al., 2012). This
-#' is added to the observed sampling variance \code{seTE^2} of each
-#' comparison in the network (before appropriate adjustment for
-#' multi-arm studies). Then, as in standard pairwise meta-analysis,
-#' the procedure is repeated with the resulting enlarged standard
-#' errors.
+#' \subsection{Studies with correlated treatment arms}{
+#' The network meta-analysis method described in Rücker (2012) assumes that the
+#' treatment arms of a study are independent. This assumption is justified for
+#' parallel design trials and leads to variance consistency in multi-arm trials.
+#' However, this assumption is violated for trials with correlated arms, for
+#' example, split-body trials. For these trials, the variance of a contrast is
+#' not the sum of the arm-based variances, but comes with a correlation term
+#' which may lead to the violation of variance consistency. Using argument
+#' \code{correlated}, an alternative method is used for studies with correlated
+#' treatment arms (Rücker & Schwarzer, 2025, unpublished).
 #' 
-#' For the random-effects model, the direct treatment estimates are
-#' based on the common between-study variance \eqn{\tau^2} from the
-#' network meta-analysis.
+#' Argument \code{correlated}, which must be of the same length as arguments
+#' \code{TE}, \code{seTE}, etc., is a logical vector which must be TRUE for
+#' trials with correlated arms and FALSE otherwise. This can be easily done
+#' using a variable with design information like
+#' \code{correlated = design != "Parallel"}.
+#' }
 #' 
+#' \subsection{Data formats}{
+#' Data entry for this function is in \emph{contrast-based} format,
+#' that is, data are given as contrasts (differences) between two
+#' treatments (argument \code{TE}) with standard error (argument
+#' \code{seTE}). In principle, meta-analysis functions from R package
+#' \bold{meta}, e.g. \code{\link[meta]{metabin}} for binary outcomes or
+#' \code{\link[meta]{metacont}} for continuous outcomes, can be used to
+#' calculate treatment effects separately for each treatment
+#' comparison which is a rather tedious enterprise. If data are
+#' provided in \emph{arm-based} format, that is, data are given for
+#' each treatment arm separately (e.g. number of events and
+#' participants for binary outcomes), a much more convenient way to
+#' transform data into contrast-based form is available. Function
+#' \code{\link[meta]{pairwise}} can automatically transform data with binary
+#' outcomes (using the \code{\link[meta]{metabin}} function from R package
+#' \bold{meta}), continuous outcomes (\code{\link[meta]{metacont}}
+#' function), incidence rates (\code{\link[meta]{metainc}} function), and
+#' generic outcomes (\code{\link[meta]{metagen}} function). Additional
+#' arguments of these functions can be provided (see help page of
+#' function \code{\link[meta]{pairwise}}).
+#' }
+#' 
+#' \subsection{Additional comments}{
 #' Internally, both common and random effects models are calculated
-#' regardless of values choosen for arguments \code{common} and
+#' regardless of values chosen for arguments \code{common} and
 #' \code{random}. Accordingly, the network estimates for the random
 #' effects model can be extracted from component \code{TE.random} of
 #' an object of class \code{"netmeta"} even if argument \code{random =
@@ -226,6 +261,7 @@
 #' \code{"|"}, and \code{"*"}. If all of these characters are used in
 #' treatment labels, a corresponding error message is printed asking
 #' the user to specify a different separator.
+#' }
 #'
 #' @note
 #' R function \code{\link[metafor]{rma.mv}} from R package
@@ -237,7 +273,7 @@
 #' and \code{n2} (binary outcomes); \code{event1}, \code{event2},
 #' \code{time1}, and \code{time2} (incidence rates); \code{n1},
 #' \code{n2}, \code{sd1}, and \code{sd2} (mean difference) are
-#' provided. For data sets preprocessed with \code{\link{pairwise}}
+#' provided. For datasets preprocessed with \code{\link[meta]{pairwise}}
 #' the respective variables are selected automatically.
 #'
 #' @return
@@ -271,7 +307,7 @@
 #' \item{designs}{Vector with unique designs present in the network. A
 #'   design corresponds to the set of treatments compared within a
 #'   study.}
-#' \item{designs}{Vector with unique direct comparisons present in the
+#' \item{comparisons}{Vector with unique direct comparisons present in the
 #'   network.}
 #' \item{TE.nma.common, TE.nma.random}{A vector of length \emph{m} of
 #'   consistent treatment effects estimated by network meta-analysis
@@ -326,19 +362,13 @@
 #'   matrix with estimated standard errors from direct evidence (common
 #'   effects / random effects model).}
 #' \item{lower.direct.common, upper.direct.common, lower.direct.random,
-#'   }{\emph{n}x\emph{n} matrices with lower and upper confidence
-#'   interval limits from direct evidence (common / random
+#'   upper.direct.random}{\emph{n}x\emph{n} matrices with lower and upper
+#'   confidence interval limits from direct evidence (common / random
 #'   effects model).}
-#' \item{upper.direct.random}{\emph{n}x\emph{n} matrices with lower
-#'   and upper confidence interval limits from direct evidence (common
-#'   effects / random effects model).}
-#' \item{statistic.direct.common, pval.direct.common,
-#'   statistic.direct.random, }{\emph{n}x\emph{n} matrices with
-#'   z-value and p-value for test of overall treatment effect from
-#'   direct evidence (common / random effects model).}
-#' \item{pval.direct.random}{\emph{n}x\emph{n} matrices with z-value
-#'   and p-value for test of overall treatment effect from direct
-#'   evidence (common / random effects model).}
+#' \item{statistic.direct.common, pval.direct.common, statistic.direct.random,
+#'   pval.direct.random}{
+#'   \emph{n}x\emph{n} matrices with z-value and p-value for test of overall
+#'   treatment effect from direct evidence (common / random effects model).}
 #' \item{TE.indirect.common, TE.indirect.random}{\emph{n}x\emph{n}
 #'   matrix with estimated treatment effects from indirect evidence
 #'   (common / random effects model).}
@@ -346,19 +376,13 @@
 #'   matrix with estimated standard errors from indirect evidence
 #'   (common / random effects model).}
 #' \item{lower.indirect.common, upper.indirect.common,
-#'   lower.indirect.random, }{\emph{n}x\emph{n} matrices with lower
-#'   and upper confidence interval limits from indirect evidence
-#'   (common / random effects model).}
-#' \item{upper.indirect.random}{\emph{n}x\emph{n} matrices with lower
-#'   and upper confidence interval limits from indirect evidence
-#'   (common / random effects model).}
+#'   lower.indirect.random, upper.indirect.random}{
+#'   \emph{n}x\emph{n} matrices with lower and upper confidence interval limits
+#'   from indirect evidence (common / random effects model).}
 #' \item{statistic.indirect.common, pval.indirect.common,
-#'   statistic.indirect.random, }{\emph{n}x\emph{n} matrices with
-#'   z-value and p-value for test of overall treatment effect from
-#'   indirect evidence (common / random effects model).}
-#' \item{pval.indirect.random}{\emph{n}x\emph{n} matrices with z-value
-#'   and p-value for test of overall treatment effect from indirect
-#'   evidence (common / random effects model).}
+#'   statistic.indirect.random, pval.indirect.random}{
+#'   \emph{n}x\emph{n} matrices with z-value and p-value for test of overall
+#'   treatment effect from indirect evidence (common / random effects model).}
 #' \item{Q}{Overall heterogeneity / inconsistency statistic.}
 #' \item{df.Q}{Degrees of freedom for test of heterogeneity /
 #'   inconsistency.}
@@ -403,8 +427,7 @@
 #' \item{P.common, P.random}{\emph{n}x\emph{n} matrix with direct
 #'   evidence proportions (common / random effects model).}
 #' \item{Cov.common}{Variance-covariance matrix (common effects model)}
-#' \item{Cov.random}{Variance-covariance matrix (random effects
-#'   model)}
+#' \item{Cov.random}{Variance-covariance matrix (random effects model)}
 #' \item{sm, level, level.ma}{As defined above.}
 #' \item{common, random}{As defined above.}
 #' \item{prediction, level.predict}{As defined above.}
@@ -416,12 +439,17 @@
 #' \item{backtransf, title, warn, warn.deprecated}{As defined above.}
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create object.}
+#'
+#' In addition, the following component is stored if \bold{metafor} is
+#' used to calculate the between-study variance and argument
+#' \code{keeprma = TRUE}:
+#' \item{rma.tau}{R object created with \code{\link[metafor]{rma.mv}}.}
 #' 
 #' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{forest.netmeta}},
-#'   \code{\link{netrank}}, \code{\link{metagen}}
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link{forest.netmeta}},
+#'   \code{\link{netrank}}, \code{\link[meta]{metagen}}
 #' 
 #' @references
 #' Jackson D, White IR, Riley RD (2012):
@@ -502,35 +530,36 @@
 #' 
 #' @export netmeta
 
-
 netmeta <- function(TE, seTE,
                     treat1, treat2, studlab,
                     data = NULL, subset = NULL,
+                    correlated,
+                    #
                     sm,
                     level = gs("level"),
                     level.ma = gs("level.ma"),
                     common = gs("common"),
                     random = gs("random") | !is.null(tau.preset),
                     #
-                    prediction = FALSE,
+                    prediction = gs("prediction"),
                     level.predict = gs("level.predict"),
                     #
                     reference.group,
-                    baseline.reference = TRUE,
-                    small.values = "desirable",
-                    all.treatments = NULL,
-                    seq = NULL,
+                    baseline.reference = gs("baseline.reference"),
+                    small.values = gs("small.values"),
+                    all.treatments = gs("all.treatments"),
+                    seq = gs("seq"),
                     #
-                    method.tau = "DL",
+                    method.tau = gs("method.tau.netmeta"),
                     tau.preset = NULL,
                     #
-                    tol.multiarm = 0.001,
-                    tol.multiarm.se = NULL,
-                    details.chkmultiarm = FALSE,
+                    tol.multiarm = gs("tol.multiarm"),
+                    tol.multiarm.se = gs("tol.multiarm.se"),
+                    details.chkmultiarm = gs("details.chkmultiarm"),
                     #
-                    sep.trts = ":",
-                    nchar.trts = 666,
-                    nchar.studlab = 666,
+                    sep.trts = gs("sep.trts"),
+                    nchar.trts = gs("nchar.trts"),
+                    nchar.studlab = gs("nchar.studlab"),
                     #
                     func.inverse = invmat,
                     #
@@ -539,20 +568,22 @@ netmeta <- function(TE, seTE,
                     event1 = NULL,
                     event2 = NULL,
                     incr = NULL,
-                    #mean1 = NULL,
-                    #mean2 = NULL,
+                    mean1 = NULL,
+                    mean2 = NULL,
                     sd1 = NULL,
                     sd2 = NULL,
                     time1 = NULL,
                     time2 = NULL,
                     #
+                    overall.hetstat = gs("overall.hetstat"),
                     backtransf = gs("backtransf"),
                     #
-                    title = "",
+                    title = gs("title"),
                     keepdata = gs("keepdata"),
+                    keeprma = gs("keeprma"),
                     control = NULL,
                     #
-                    warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                    warn = gs("warn"), warn.deprecated = gs("warn.deprecated"),
                     #
                     nchar = nchar.trts,
                     ...) {
@@ -569,9 +600,11 @@ netmeta <- function(TE, seTE,
   chklogical(prediction)
   #
   missing.reference.group <- missing(reference.group)
+  #
+  baseline.reference <- replaceNULL(baseline.reference, TRUE)
   chklogical(baseline.reference)
   #
-  small.values <- setsv(small.values)
+  small.values <- setsv(replaceNULL(small.values, "desirable"))
   #
   if (!is.null(all.treatments))
     chklogical(all.treatments)
@@ -581,19 +614,28 @@ netmeta <- function(TE, seTE,
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
   #
+  tol.multiarm <- replaceNULL(tol.multiarm, 0.001)
   chknumeric(tol.multiarm, min = 0, length = 1)
   if (!is.null(tol.multiarm.se))
     chknumeric(tol.multiarm.se, min = 0, length = 1)
+  #
+  details.chkmultiarm <- replaceNULL(details.chkmultiarm, FALSE)
   chklogical(details.chkmultiarm)
   #
   missing.sep.trts <- missing(sep.trts)
-  chkchar(sep.trts)
+  sep.trts <- replaceNULL(sep.trts, ":")
+  chkchar(sep.trts, length = 1)
+  #
+  nchar.studlab <- replaceNULL(nchar.studlab, 666)
   chknumeric(nchar.studlab, length = 1)
   #
+  overall.hetstat <- replaceNULL(overall.hetstat, TRUE)
+  chklogical(overall.hetstat)
   chklogical(backtransf)
   #
   chkchar(title)
   chklogical(keepdata)
+  chklogical(keeprma)
   chklogical(warn)
   #
   chklogical(baseline.reference)
@@ -618,8 +660,10 @@ netmeta <- function(TE, seTE,
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
   #
+  missing.nchar.trts <- missing(nchar.trts)
+  nchar.trts <- replaceNULL(nchar.trts, 666)
   nchar.trts <-
-    deprecated2(nchar.trts, missing(nchar.trts), nchar, missing(nchar),
+    deprecated2(nchar.trts, missing.nchar.trts, nchar, missing(nchar),
                 warn.deprecated)
   chknumeric(nchar.trts, min = 1, length = 1)
   
@@ -640,19 +684,22 @@ netmeta <- function(TE, seTE,
   #
   TE <- catch("TE", mc, data, sfsp)
   #
-  missing.reference.group.pairwise <- FALSE
+  avail.reference.group.pairwise <- FALSE
   #
-  if (is.data.frame(TE) & !is.null(attr(TE, "pairwise"))) {
+  if (is.data.frame(TE) &&
+      (!is.null(attr(TE, "pairwise")) ||
+       inherits(TE, "pairwise"))) {
     is.pairwise <- TRUE
     #
     sm <- attr(TE, "sm")
+    #
     if (missing.reference.group) {
-      missing.reference.group.pairwise <- TRUE
       reference.group <- attr(TE, "reference.group")
+      #
       if (is.null(reference.group))
         reference.group <- ""
       else
-        missing.reference.group <- FALSE
+        avail.reference.group.pairwise <- TRUE
     }
     #
     keep.all.comparisons <- attr(TE, "keep.all.comparisons")
@@ -661,7 +708,11 @@ netmeta <- function(TE, seTE,
            "'keep.all.comparisons = FALSE'.",
            call. = TRUE)
     #
-    seTE <- TE$seTE
+    if (is.null(attr(TE, "varnames")))
+      seTE <- TE$seTE
+    else
+      seTE <- TE[[attr(TE, "varnames")[2]]]
+    #
     treat1 <- TE$treat1
     treat2 <- TE$treat2
     studlab <- TE$studlab
@@ -676,10 +727,10 @@ netmeta <- function(TE, seTE,
       event2 <- TE$event2
     if (!is.null(TE$incr))
       incr <- TE$incr
-    #if (!is.null(TE$mean1))
-    #  mean1 <- TE$mean1
-    #if (!is.null(TE$mean2))
-    #  mean2 <- TE$mean2
+    if (!is.null(TE$mean1))
+      mean1 <- TE$mean1
+    if (!is.null(TE$mean2))
+      mean2 <- TE$mean2
     if (!is.null(TE$sd1))
       sd1 <- TE$sd1
     if (!is.null(TE$sd2))
@@ -692,7 +743,10 @@ netmeta <- function(TE, seTE,
     pairdata <- TE
     data <- TE
     #
-    TE <- TE$TE
+    if (is.null(attr(TE, "varnames")))
+      TE <- TE$TE
+    else
+      TE <- TE[[attr(TE, "varnames")[1]]]
   }
   else {
     is.pairwise <- FALSE
@@ -717,9 +771,8 @@ netmeta <- function(TE, seTE,
     #
     incr <- catch("incr", mc, data, sfsp)
     #
-    #mean1 <- catch("mean1", mc, data, sfsp)
-    #
-    #mean2 <- catch("mean2", mc, data, sfsp)
+    mean1 <- catch("mean1", mc, data, sfsp)
+    mean2 <- catch("mean2", mc, data, sfsp)
     #
     sd1 <- catch("sd1", mc, data, sfsp)
     sd2 <- catch("sd2", mc, data, sfsp)
@@ -761,6 +814,16 @@ netmeta <- function(TE, seTE,
   subset <- catch("subset", mc, data, sfsp)
   missing.subset <- is.null(subset)
   #
+  correlated <- catch("correlated", mc, data, sfsp)
+  if (is.null(correlated))
+    correlated <- FALSE
+  if (!is.logical(correlated))
+    stop("Argument 'correlated' must be a logical vector.", call. = FALSE)
+  if (length(correlated) == 1)
+    correlated <- rep(correlated, length(TE))
+  else if (length(correlated) != length(TE))
+    stop("Different length for arguments 'TE' and 'correlated'.", call. = FALSE)
+  #
   if (!is.null(event1) & !is.null(event2))
     available.events <- TRUE
   else
@@ -774,10 +837,10 @@ netmeta <- function(TE, seTE,
   if (available.events & is.null(incr))
     incr <- rep(0, length(event2))
   #
-  #if (!is.null(mean1) & !is.null(mean2))
-  #  available.means <- TRUE
-  #else
-  available.means <- FALSE
+  if (!is.null(mean1) & !is.null(mean2))
+    available.means <- TRUE
+  else
+    available.means <- FALSE
   #
   if (!is.null(sd1) & !is.null(sd2))
     available.sds <- TRUE
@@ -814,15 +877,17 @@ netmeta <- function(TE, seTE,
     data$.TE <- TE
     data$.seTE <- seTE
     #
+    data$.correlated <- correlated
+    #
     data$.event1 <- event1
     data$.n1 <- n1
     data$.event2 <- event2
     data$.n2 <- n2
     data$.incr <- incr
     #
-    #data$.mean1 <- mean1
+    data$.mean1 <- mean1
     data$.sd1 <- sd1
-    #data$.mean2 <- mean2
+    data$.mean2 <- mean2
     data$.sd2 <- sd2
     #
     data$.time1 <- time1
@@ -850,11 +915,11 @@ netmeta <- function(TE, seTE,
         data$.event2[wo] <- tevent1[wo]
       }
       #
-      #if (isCol(data, ".mean1") & isCol(data, ".mean2")) {
-      #  tmean1 <- data$.mean1
-      #  data$.mean1[wo] <- data$.mean2[wo]
-      #  data$.mean2[wo] <- tmean1[wo]
-      #}
+      if (isCol(data, ".mean1") & isCol(data, ".mean2")) {
+        tmean1 <- data$.mean1
+        data$.mean1[wo] <- data$.mean2[wo]
+        data$.mean2[wo] <- tmean1[wo]
+      }
       #
       if (isCol(data, ".sd1") & isCol(data, ".sd2")) {
         tsd1 <- data$.sd1
@@ -897,6 +962,8 @@ netmeta <- function(TE, seTE,
     treat2 <- treat2[subset]
     studlab <- studlab[subset]
     #
+    correlated <- correlated[subset]
+    #
     if (!is.null(n1))
       n1 <- n1[subset]
     if (!is.null(n2))
@@ -907,10 +974,10 @@ netmeta <- function(TE, seTE,
       event2 <- event2[subset]
     if (!is.null(incr))
       incr <- incr[subset]
-    #if (!is.null(mean1))
-    #  mean1 <- mean1[subset]
-    #if (!is.null(mean2))
-    #  mean2 <- mean2[subset]
+    if (!is.null(mean1))
+      mean1 <- mean1[subset]
+    if (!is.null(mean2))
+      mean2 <- mean2[subset]
     if (!is.null(sd1))
       sd1 <- sd1[subset]
     if (!is.null(sd2))
@@ -923,38 +990,6 @@ netmeta <- function(TE, seTE,
   #
   labels <- sort(unique(c(treat1, treat2)))
   #
-  if (compmatch(labels, sep.trts)) {
-    if (!missing.sep.trts)
-      warning("Separator '", sep.trts,
-              "' used in at least one treatment label. ",
-              "Try to use predefined separators: ",
-              "':', '-', '_', '/', '+', '.', '|', '*'.",
-              call. = FALSE)
-    #
-    if (!compmatch(labels, ":"))
-      sep.trts <- ":"
-    else if (!compmatch(labels, "-"))
-      sep.trts <- "-"
-    else if (!compmatch(labels, "_"))
-      sep.trts <- "_"
-    else if (!compmatch(labels, "/"))
-      sep.trts <- "/"
-    else if (!compmatch(labels, "+"))
-      sep.trts <- "+"
-    else if (!compmatch(labels, "."))
-      sep.trts <- "-"
-    else if (!compmatch(labels, "|"))
-      sep.trts <- "|"
-    else if (!compmatch(labels, "*"))
-      sep.trts <- "*"
-    else
-      stop("All predefined separators (':', '-', '_', '/', '+', ",
-           "'.', '|', '*') are used in at least one treatment label.",
-           "\n   Please specify a different character that should be ",
-           "used as separator (argument 'sep.trts').",
-           call. = FALSE)
-  }
-  #
   if (!is.null(seq))
     seq <- setseq(seq, labels)
   else {
@@ -962,6 +997,8 @@ netmeta <- function(TE, seTE,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
+  #
+  sep.trts <- setsep(labels, sep.trts, missing = missing.sep.trts)
   
   
   #
@@ -976,22 +1013,20 @@ netmeta <- function(TE, seTE,
   # Check for correct number of comparisons
   #
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   #
   if (sum(sel.narms) == 1)
-    stop(paste("Study '", names(tabnarms)[sel.narms],
-               "' has a wrong number of comparisons.",
-               "\n  Please provide data for all treatment comparisons",
-               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""),
+    stop("Study '", names(tabnarms)[sel.narms],
+         "' has a wrong number of comparisons.",
+         "\n  Please provide data for all treatment comparisons",
+         " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
          call. = FALSE)
   if (sum(sel.narms) > 1)
-    stop(paste("The following studies have a wrong number of comparisons: ",
-               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
-                     collapse = ", "),
-               "\n  Please provide data for all treatment comparisons",
-               " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
-               sep = ""),
+    stop("The following studies have a wrong number of comparisons: ",
+         paste(paste0("'", names(tabnarms)[sel.narms], "'"),
+               collapse = ", "),
+         "\n  Please provide data for all treatment comparisons",
+         " (two-arm: 1; three-arm: 3; four-arm: 6, ...).",
          call. = FALSE)
   #
   # Check number of subgraphs
@@ -999,9 +1034,8 @@ netmeta <- function(TE, seTE,
   n.subnets <- netconnection(treat1, treat2, studlab)$n.subnets
   #
   if (n.subnets > 1)
-    stop(paste("Network consists of ", n.subnets, " separate sub-networks.\n  ",
-               "Use R function 'netconnection' to identify sub-networks.",
-               sep = ""),
+    stop("Network consists of ", n.subnets, " separate sub-networks.\n  ",
+         "Use R function 'netconnection' to identify sub-networks.",
          call. = FALSE)
   #
   # Check NAs and zero standard errors
@@ -1026,19 +1060,22 @@ netmeta <- function(TE, seTE,
               "in network meta-analysis.",
               call. = FALSE)
     if (warn) {
-      cat(paste("Comparison",
-                if (sum(excl) > 1) "s",
-                " not considered in network meta-analysis:\n", sep = ""))
+      cat("Comparison",
+          if (sum(excl) > 1) "s",
+          " not considered in network meta-analysis:\n",
+          sep = "")
       prmatrix(dat.NAs, quote = FALSE, right = TRUE,
                rowlab = rep("", sum(excl)))
       cat("\n")
     }
     #
-    studlab <- studlab[!(excl)]
-    treat1  <- treat1[!(excl)]
-    treat2  <- treat2[!(excl)]
-    TE      <- TE[!(excl)]
-    seTE    <- seTE[!(excl)]
+    studlab <- studlab[!excl]
+    treat1  <- treat1[!excl]
+    treat2  <- treat2[!excl]
+    TE      <- TE[!excl]
+    seTE    <- seTE[!excl]
+    #
+    correlated <- correlated[!excl]
     #
     if (!is.null(n1))
       n1 <- n1[!excl]
@@ -1050,10 +1087,10 @@ netmeta <- function(TE, seTE,
       event2 <- event2[!excl]
     if (!is.null(incr))
       incr <- incr[!excl]
-    #if (!is.null(mean1))
-    #  mean1 <- mean1[!excl]
-    #if (!is.null(mean2))
-    #  mean2 <- mean2[!excl]
+    if (!is.null(mean1))
+      mean1 <- mean1[!excl]
+    if (!is.null(mean2))
+      mean2 <- mean2[!excl]
     if (!is.null(sd1))
       sd1 <- sd1[!excl]
     if (!is.null(sd2))
@@ -1071,26 +1108,23 @@ netmeta <- function(TE, seTE,
   # comparisons with missing data)
   #
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   #
   if (sum(sel.narms) == 1)
-    stop(paste("After removing comparisons with missing treatment effects",
-               " or standard errors,\n  study '",
-               names(tabnarms)[sel.narms],
-               "' has a wrong number of comparisons.",
-               " Please check data and\n  consider to remove study",
-               " from network meta-analysis.",
-               sep = ""),
+    stop("After removing comparisons with missing treatment effects",
+         " or standard errors,\n  study '",
+         names(tabnarms)[sel.narms],
+         "' has a wrong number of comparisons.",
+         " Please check data and\n  consider to remove study",
+         " from network meta-analysis.",
          call. = FALSE)
   if (sum(sel.narms) > 1)
-    stop(paste("After removing comparisons with missing treatment effects",
-               " or standard errors,\n  the following studies have",
-               " a wrong number of comparisons: ",
-               paste(paste("'", names(tabnarms)[sel.narms], "'", sep = ""),
-                     collapse = ", "),
-               "\n  Please check data and consider to remove studies",
-               " from network meta-analysis.",
-               sep = ""),
+    stop("After removing comparisons with missing treatment effects",
+         " or standard errors,\n  the following studies have",
+         " a wrong number of comparisons: ",
+         paste(paste0("'", names(tabnarms)[sel.narms], "'"), collapse = ", "),
+         "\n  Please check data and consider to remove studies",
+         " from network meta-analysis.",
          call. = FALSE)
   #
   # Check number of subgraphs
@@ -1098,12 +1132,11 @@ netmeta <- function(TE, seTE,
   n.subnets <- netconnection(treat1, treat2, studlab)$n.subnets
   #
   if (n.subnets > 1)
-    stop(paste("After removing comparisons with missing treatment effects",
-               " or standard errors,\n  network consists of ",
-               n.subnets, " separate sub-networks.\n  ",
-               "Please check data and consider to remove studies",
-               " from network meta-analysis.",
-               sep = ""),
+    stop("After removing comparisons with missing treatment effects",
+         " or standard errors,\n  network consists of ",
+         n.subnets, " separate sub-networks.\n  ",
+         "Please check data and consider to remove studies",
+         " from network meta-analysis.",
          call. = FALSE)
   #
   # Check for correct treatment order within comparison
@@ -1147,9 +1180,9 @@ netmeta <- function(TE, seTE,
     }
   }
   #
-  # Check value for reference group
+  # Set reference group
   #
-  if (missing.reference.group | missing.reference.group.pairwise) {
+  if (missing.reference.group & !avail.reference.group.pairwise) {
     go.on <- TRUE
     i <- 0
     while (go.on) {
@@ -1174,6 +1207,8 @@ netmeta <- function(TE, seTE,
     else
       all.treatments <- FALSE
   #
+  # Check reference group
+  #
   if (reference.group != "")
     reference.group <- setref(reference.group, labels)
   
@@ -1184,22 +1219,27 @@ netmeta <- function(TE, seTE,
   #
   #
   #
-  # Generate ordered data set, with added numbers of arms per study
+  # Calculate weight matrix and generate ordered dataset, with added numbers
+  # of arms per study
   #
-  p0 <- prepare(TE, seTE, treat1, treat2, studlab,
-                func.inverse = func.inverse)
+  p0 <- prepare2(TE, seTE, treat1, treat2, studlab, correlated = correlated,
+                 func.inverse = func.inverse)
+  #
+  W.matrix.common <- p0$W
+  dat.c <- p0$data
   #
   # Check consistency of treatment effects and standard errors in
   # multi-arm studies
   #
-  chkmultiarm(p0$TE, p0$seTE, p0$treat1, p0$treat2, p0$studlab,
+  chkmultiarm(dat.c$TE, dat.c$seTE, dat.c$treat1, dat.c$treat2, dat.c$studlab,
+              dat.c$correlated,
               tol.multiarm = tol.multiarm, tol.multiarm.se = tol.multiarm.se,
               details = details.chkmultiarm)
   #
   # Study overview
   #
-  tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
-                      order = p0$order,
+  tdata <- data.frame(studies = dat.c$studlab, narms = dat.c$narms,
+                      order = dat.c$order,
                       stringsAsFactors = FALSE)
   #
   tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), , drop = FALSE]
@@ -1211,20 +1251,21 @@ netmeta <- function(TE, seTE,
   #
   # (6) Conduct network meta-analysis
   #
-  #
+  
   # Common effects model
   #
-  res.f <- nma.ruecker(p0$TE, sqrt(1 / p0$weights),
-                       p0$treat1, p0$treat2,
-                       p0$treat1.pos, p0$treat2.pos,
-                       p0$narms, p0$studlab,
+  res.c <- nma_ruecker(dat.c$TE,
+                       as.matrix(W.matrix.common),
+                       sqrt(1 / dat.c$weights),
+                       dat.c$treat1, dat.c$treat2,
+                       dat.c$treat1.pos, dat.c$treat2.pos,
+                       dat.c$narms, dat.c$studlab,
                        sm,
                        level, level.ma,
-                       p0$seTE, 0, sep.trts,
+                       dat.c$seTE, 0, sep.trts,
                        method.tau,
-                       func.inverse)
-  #
-  trts <- rownames(res.f$A.matrix)
+                       func.inverse, Cov0 = p0$Cov)
+  trts <- rownames(res.c$A.matrix)
   #
   #
   # Random effects model
@@ -1288,21 +1329,21 @@ netmeta <- function(TE, seTE,
         t2.i <- dat.tau$treat2
         e2.i <- dat.tau$event2
         n2.i <- dat.tau$n2
-        #mean2.i <- dat.tau$mean2
+        mean2.i <- dat.tau$mean2
         sd2.i <- dat.tau$sd2
         time2.i <- dat.tau$time2
         #
         dat.tau$treat2[wo] <- dat.tau$treat1[wo]
         dat.tau$event2[wo] <- dat.tau$event1[wo]
         dat.tau$n2[wo] <- dat.tau$n1[wo]
-        #dat.tau$mean2[wo] <- dat.tau$mean1[wo]
+        dat.tau$mean2[wo] <- dat.tau$mean1[wo]
         dat.tau$sd2[wo] <- dat.tau$sd1[wo]
         dat.tau$time2[wo] <- dat.tau$time2[wo]
         #
         dat.tau$treat1[wo] <- t2.i[wo]
         dat.tau$event1[wo] <- e2.i[wo]
         dat.tau$n1[wo] <- n2.i[wo]
-        #dat.tau$mean1[wo] <- mean2.i[wo]
+        dat.tau$mean1[wo] <- mean2.i[wo]
         dat.tau$sd1[wo] <- sd2.i[wo]
         dat.tau$time1[wo] <- time2.i[wo]
       }
@@ -1332,38 +1373,52 @@ netmeta <- function(TE, seTE,
       dat.tau.TE <- dat.tau$TE
       dat.tau$comparison <- paste(dat.tau$treat1, dat.tau$treat2, sep = " vs ")
       #
-      rma1 <-
-        runNN(rma.mv,
-              list(yi = dat.tau.TE, V = V,
-                   data = dat.tau,
-                   mods = formula.trts,
-                   random = as.call(~ factor(comparison) | studlab),
-                   rho = 0.5,
-                   method = method.tau, control = control))
-      #
-      tau <- sqrt(rma1$tau2)
+      if (length(dat.tau.TE) == 1) {
+        rma1 <- runNN(rma.uni,
+                      list(yi = dat.tau.TE, vi = V, data = dat.tau,
+                           method = method.tau, control = control))
+        #
+        tau <- NA
+      }
+      else {
+        rma1 <- runNN(rma.mv,
+                      list(yi = dat.tau.TE, V = V,
+                           data = dat.tau,
+                           mods = formula.trts,
+                           random = as.call(~ factor(comparison) | studlab),
+                           rho = 0.5,
+                           method = method.tau, control = control))
+        #
+        tau <- sqrt(rma1$tau2)
+      }
     }
     else
-      tau <- res.f$tau
+      tau <- res.c$tau
   }
   else
     tau <- tau.preset
   #
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, func.inverse)
+  p1 <- prepare2(TE, seTE, treat1, treat2, studlab, tau, correlated,
+                 func.inverse)
   #
-  res.r <- nma.ruecker(p1$TE, sqrt(1 / p1$weights),
-                       p1$treat1, p1$treat2,
-                       p1$treat1.pos, p1$treat2.pos,
-                       p1$narms, p1$studlab,
+  W.matrix.random <- p1$W
+  dat.r <- p1$data
+  #
+  res.r <- nma_ruecker(dat.r$TE,
+                       as.matrix(W.matrix.random),
+                       sqrt(1 / dat.r$weights),
+                       dat.r$treat1, dat.r$treat2,
+                       dat.r$treat1.pos, dat.r$treat2.pos,
+                       dat.r$narms, dat.r$studlab,
                        sm,
                        level, level.ma,
-                       p1$seTE, tau, sep.trts,
+                       dat.r$seTE, tau, sep.trts,
                        method.tau,
-                       func.inverse)
+                       func.inverse, Cov0 = p1$Cov)
   #
   TE.random <- res.r$TE.pooled
   seTE.random <- res.r$seTE.pooled
-  df.Q <- res.f$df
+  df.Q <- res.c$df
   #
   # Prediction intervals
   #
@@ -1372,7 +1427,7 @@ netmeta <- function(TE, seTE,
   #
   if (df.Q >= 2) {
     seTE.predict <- sqrt(seTE.random^2 + tau^2)
-    ci.p <- ci(TE.random, seTE.predict, level.predict, df.Q - 1)
+    ci.p <- ci(TE.random, seTE.predict, level.predict, df.Q)
     p.lower <- ci.p$lower
     p.upper <- ci.p$upper
     diag(p.lower) <- 0
@@ -1391,20 +1446,27 @@ netmeta <- function(TE, seTE,
   # (7) Generate R object
   #
   #
-  o <- order(p0$order)
+  o <- order(dat.c$order)
   #
-  designs <- designs(res.f$treat1, res.f$treat2, res.f$studlab,
+  designs <- designs(res.c$treat1, res.c$treat2, res.c$studlab,
                      sep.trts = sep.trts)
   #
-  res <- list(studlab = res.f$studlab[o],
-              treat1 = res.f$treat1[o],
-              treat2 = res.f$treat2[o],
+  W.matrix.common <- W.matrix.common[o, o, drop = FALSE]
+  rownames(W.matrix.common) <- colnames(W.matrix.common) <- res.c$studlab[o]
+  #
+  W.matrix.random <- W.matrix.random[o, o, drop = FALSE]
+  rownames(W.matrix.random) <- colnames(W.matrix.random) <- res.c$studlab[o]
+  #
+  res <- list(studlab = res.c$studlab[o],
+              treat1 = res.c$treat1[o],
+              treat2 = res.c$treat2[o],
               #
-              TE = res.f$TE[o],
-              seTE = res.f$seTE.orig[o],
-              seTE.adj = res.f$seTE[o],
-              seTE.adj.common = res.f$seTE[o],
+              TE = res.c$TE[o],
+              seTE = res.c$seTE.orig[o],
+              seTE.adj = res.c$seTE[o],
+              seTE.adj.common = res.c$seTE[o],
               seTE.adj.random = res.r$seTE[o],
+              correlated = correlated,
               #
               design = designs$design[o],
               #
@@ -1414,17 +1476,17 @@ netmeta <- function(TE, seTE,
               n2 = n2,
               incr = incr,
               #
-              #mean1 = mean1,
-              #mean2 = mean2,
+              mean1 = mean1,
+              mean2 = mean2,
               sd1 = sd1,
               sd2 = sd2,
               #
               time1 = time1,
               time2 = time2,
               #
-              k = res.f$k,
-              m = res.f$m,
-              n = res.f$n,
+              k = res.c$k,
+              m = res.c$m,
+              n = res.c$n,
               d = length(unique(designs$design)),
               #
               trts = trts,
@@ -1441,23 +1503,23 @@ netmeta <- function(TE, seTE,
               designs = unique(sort(designs$design)),
               comparisons = "",
               #
-              TE.nma.common = res.f$TE.nma[o],
-              seTE.nma.common = res.f$seTE.nma[o],
-              lower.nma.common = res.f$lower.nma[o],
-              upper.nma.common = res.f$upper.nma[o],
-              statistic.nma.common = res.f$statistic.nma[o],
-              pval.nma.common = res.f$pval.nma[o],
+              TE.nma.common = res.c$TE.nma[o],
+              seTE.nma.common = res.c$seTE.nma[o],
+              lower.nma.common = res.c$lower.nma[o],
+              upper.nma.common = res.c$upper.nma[o],
+              statistic.nma.common = res.c$statistic.nma[o],
+              pval.nma.common = res.c$pval.nma[o],
               #
-              leverage.common = res.f$leverage[o],
-              w.common = res.f$w.pooled[o],
-              Q.common = res.f$Q.pooled[o],
+              leverage.common = res.c$leverage[o],
+              w.common = res.c$w.pooled[o],
+              Q.common = res.c$Q.pooled[o],
               #
-              TE.common = res.f$TE.pooled,
-              seTE.common = res.f$seTE.pooled,
-              lower.common = res.f$lower.pooled,
-              upper.common = res.f$upper.pooled,
-              statistic.common = res.f$statistic.pooled,
-              pval.common = res.f$pval.pooled,
+              TE.common = res.c$TE.pooled,
+              seTE.common = res.c$seTE.pooled,
+              lower.common = res.c$lower.pooled,
+              upper.common = res.c$upper.pooled,
+              statistic.common = res.c$statistic.pooled,
+              pval.common = res.c$pval.pooled,
               #
               TE.nma.random = res.r$TE.nma[o],
               seTE.nma.random = res.r$seTE.nma[o],
@@ -1478,16 +1540,17 @@ netmeta <- function(TE, seTE,
               seTE.predict = seTE.predict,
               lower.predict = p.lower,
               upper.predict = p.upper,
+              method.predict = "V",
               #
               prop.direct.common = NA,
               prop.direct.random = NA,
               #
-              TE.direct.common = res.f$TE.direct,
-              seTE.direct.common = res.f$seTE.direct,
-              lower.direct.common = res.f$lower.direct,
-              upper.direct.common = res.f$upper.direct,
-              statistic.direct.common = res.f$statistic.direct,
-              pval.direct.common = res.f$pval.direct,
+              TE.direct.common = res.c$TE.direct,
+              seTE.direct.common = res.c$seTE.direct,
+              lower.direct.common = res.c$lower.direct,
+              upper.direct.common = res.c$upper.direct,
+              statistic.direct.common = res.c$statistic.direct,
+              pval.direct.common = res.c$pval.direct,
               #
               TE.direct.random = res.r$TE.direct,
               seTE.direct.random = res.r$seTE.direct,
@@ -1515,12 +1578,12 @@ netmeta <- function(TE, seTE,
               statistic.indirect.random = NA,
               pval.indirect.random = NA,
               #
-              Q = res.f$Q,
+              Q = res.c$Q,
               df.Q = df.Q,
-              pval.Q = res.f$pval.Q,
-              I2 = res.f$I2,
-              lower.I2 = res.f$lower.I2,
-              upper.I2 = res.f$upper.I2,
+              pval.Q = res.c$pval.Q,
+              I2 = res.c$I2,
+              lower.I2 = res.c$lower.I2,
+              upper.I2 = res.c$upper.I2,
               tau = tau,
               tau2 = tau^2,
               #
@@ -1532,22 +1595,25 @@ netmeta <- function(TE, seTE,
               df.Q.inconsistency = NA,
               pval.Q.inconsistency = NA,
               #
-              Q.decomp = res.f$Q.decomp,
+              Q.decomp = res.c$Q.decomp,
               #
-              A.matrix = res.f$A.matrix,
-              X.matrix = res.f$B.matrix[o, ],
-              B.matrix = res.f$B.matrix[o, ],
+              W.matrix.common = W.matrix.common,
+              W.matrix.random = W.matrix.random,
               #
-              L.matrix.common = res.f$L.matrix,
-              Lplus.matrix.common = res.f$Lplus.matrix,
+              A.matrix = res.c$A.matrix,
+              X.matrix = res.c$B.matrix[o, ],
+              B.matrix = res.c$B.matrix[o, ],
+              #
+              L.matrix.common = res.c$L.matrix,
+              Lplus.matrix.common = res.c$Lplus.matrix,
               L.matrix.random = res.r$L.matrix,
               Lplus.matrix.random = res.r$Lplus.matrix,
               #
-              Q.matrix = res.f$Q.matrix,
+              Q.matrix = res.c$Q.matrix,
               #
-              G.matrix = res.f$G.matrix[o, o, drop = FALSE],
+              G.matrix = res.c$G.matrix[o, o, drop = FALSE],
               #
-              H.matrix.common = res.f$H.matrix[o, o, drop = FALSE],
+              H.matrix.common = res.c$H.matrix[o, o, drop = FALSE],
               H.matrix.random = res.r$H.matrix[o, o, drop = FALSE],
               #
               n.matrix = if (available.n) NA else NULL,
@@ -1556,11 +1622,11 @@ netmeta <- function(TE, seTE,
               P.common = NA,
               P.random = NA,
               #
-              Cov.common = res.f$Cov,
+              Cov.common = res.c$Cov,
               Cov.random = res.r$Cov,
               #
-              treat1.pos = res.f$treat1.pos[o],
-              treat2.pos = res.f$treat2.pos[o],
+              treat1.pos = res.c$treat1.pos[o],
+              treat2.pos = res.c$treat2.pos[o],
               #
               sm = sm,
               method = "Inverse",
@@ -1590,6 +1656,7 @@ netmeta <- function(TE, seTE,
               nchar.trts = nchar.trts,
               nchar.studlab = nchar.studlab,
               #
+              overall.hetstat = overall.hetstat,
               backtransf = backtransf,
               #
               title = title,
@@ -1618,7 +1685,7 @@ netmeta <- function(TE, seTE,
     res$prop.direct.random <- as.numeric(res$prop.direct.random)
   #
   res$comparisons <-
-    names(res$prop.direct.random)[!is.zero(res$prop.direct.random)]
+    names(res$prop.direct.random)[!is_zero(res$prop.direct.random)]
   #
   # Add P.common and P.random
   #
@@ -1761,18 +1828,23 @@ netmeta <- function(TE, seTE,
                       by = ".studlab",
                       stringsAsFactors = FALSE)
     #
-    # Store adjusted standard errors in data set
+    # Store adjusted standard errors in dataset
     #
-    if (isCol(res$data, ".subset"))
-      sel.s <- res$data$.subset
-    else
-      sel.s <- rep(TRUE, nrow(res$data))
+    res$data <- merge(res$data,
+                      data.frame(.studlab = res.c$studlab,
+                                 .treat1 = res.c$treat1,
+                                 .treat2 = res.c$treat2,
+                                 .seTE.adj.common = res.c$seTE),
+                      by = c(".studlab", ".treat1", ".treat2"),
+                      stringsAsFactors = FALSE)
     #
-    res$data$.seTE.adj.common <- NA
-    res$data$.seTE.adj.random <- NA
-    #
-    res$data$.seTE.adj.common[sel.s] <- res.f$seTE
-    res$data$.seTE.adj.random[sel.s] <- res.r$seTE
+    res$data <- merge(res$data,
+                      data.frame(.studlab = res.r$studlab,
+                                 .treat1 = res.r$treat1,
+                                 .treat2 = res.r$treat2,
+                                 .seTE.adj.random = res.r$seTE),
+                      by = c(".studlab", ".treat1", ".treat2"),
+                      stringsAsFactors = FALSE)
     #
     res$data <- res$data[order(res$data$.order), ]
     res$data$.order <- NULL
@@ -1802,18 +1874,19 @@ netmeta <- function(TE, seTE,
     names(res$events.trts) <- trts
   }
   
-  
   #
   # Add results from rma.mv()
   #
-  if (method.tau %in% c("ML", "REML")) {
-    res$.metafor <- rma1
-    res$.dat.tau <- dat.tau
-    res$.V <- V
-    res$.formula.trts <- formula.trts
-    res$version.metafor <- packageDescription("metafor")$Version
-  }
+  if (keeprma & method.tau %in% c("ML", "REML"))
+    res$rma.tau <- rma1
   
+  #
+  # Drop list element 'correlated' if no correlated outcomes are considered 
+  #
+  if (all(!correlated)) {
+    res$correlated <- NULL
+    res$data <- res$data[, names(res$data) != ".correlated"]
+  }
   
   #
   # Backward compatibility
@@ -1860,8 +1933,7 @@ netmeta <- function(TE, seTE,
   res$Lplus.matrix.fixed <- res$Lplus.matrix.common
   res$H.matrix.fixed <- res$H.matrix.common
   res$P.fixed <- res$P.common
-  res$Cov.fixed <- res$Cov.common               
-  
+  res$Cov.fixed <- res$Cov.common
   
   res
 }

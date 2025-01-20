@@ -2,8 +2,7 @@
 % Please edit documentation in R/discomb.R
 \name{discomb}
 \alias{discomb}
-\title{Additive network meta-analysis for combinations of treatments
-(disconnected networks)}
+\title{(disconnected networks)}
 \usage{
 discomb(
   TE,
@@ -14,7 +13,7 @@ discomb(
   data = NULL,
   subset = NULL,
   inactive = NULL,
-  sep.comps = "+",
+  sep.comps = gs("sep.comps"),
   C.matrix,
   sm,
   level = gs("level"),
@@ -22,19 +21,28 @@ discomb(
   common = gs("common"),
   random = gs("random") | !is.null(tau.preset),
   reference.group,
-  baseline.reference = TRUE,
-  seq = NULL,
+  baseline.reference = gs("baseline.reference"),
+  seq = gs("sep"),
   tau.preset = NULL,
-  tol.multiarm = 0.001,
-  tol.multiarm.se = NULL,
-  details.chkmultiarm = FALSE,
+  tol.multiarm = gs("tol.multiarm"),
+  tol.multiarm.se = gs("tol.multiarm.se"),
+  details.chkmultiarm = gs("details.chkmultiarm"),
   details.chkident = FALSE,
-  sep.trts = ":",
-  nchar.comps = 666,
+  sep.trts = gs("sep.trts"),
+  nchar.comps = gs("nchar.comps"),
+  sep.ia = gs("sep.ia"),
   func.inverse = invmat,
+  n1 = NULL,
+  n2 = NULL,
+  event1 = NULL,
+  event2 = NULL,
+  incr = NULL,
+  overall.hetstat = gs("overall.hetstat"),
   backtransf = gs("backtransf"),
-  title = "",
-  warn = TRUE,
+  na.unident = gs("na.unident"),
+  title = gs("title"),
+  keepdata = gs("keepdata"),
+  warn = gs("warn"),
   warn.deprecated = gs("warn.deprecated"),
   nchar.trts = nchar.comps,
   ...
@@ -44,7 +52,7 @@ discomb(
 \item{TE}{Estimate of treatment effect, i.e. difference between
 first and second treatment (e.g. log odds ratio, mean difference,
 or log hazard ratio). Or an R object created with
-\code{\link{pairwise}}.}
+\code{\link[meta]{pairwise}}.}
 
 \item{seTE}{Standard error of treatment estimate.}
 
@@ -123,8 +131,23 @@ between treatment labels.}
 characters used to create unique names for components (see
 Details).}
 
+\item{sep.ia}{A single character to define separator for interactions.}
+
 \item{func.inverse}{R function used to calculate the pseudoinverse
 of the Laplacian matrix L (see \code{\link{netmeta}}).}
+
+\item{n1}{Number of observations in first treatment group.}
+
+\item{n2}{Number of observations in second treatment group.}
+
+\item{event1}{Number of events in first treatment group.}
+
+\item{event2}{Number of events in second treatment group.}
+
+\item{incr}{Numerical value added to cell frequencies.}
+
+\item{overall.hetstat}{A logical indicating whether to print heterogeneity
+measures.}
 
 \item{backtransf}{A logical indicating whether results should be
 back transformed in printouts and forest plots. If
@@ -132,7 +155,13 @@ back transformed in printouts and forest plots. If
 presented as odds ratios rather than log odds ratios, for
 example.}
 
+\item{na.unident}{A logical indicating whether unidentifiable
+components and combinations should be set to missing values.}
+
 \item{title}{Title of meta-analysis / systematic review.}
+
+\item{keepdata}{A logical indicating whether original data(set)
+should be kept in netmeta object.}
 
 \item{warn}{A logical indicating whether warnings should be printed
 (e.g., if studies are excluded from meta-analysis due to zero

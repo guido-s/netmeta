@@ -56,7 +56,7 @@ netmetabin(p2, ref = "cont")
 }
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{metabin}},
+\code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmetabin}}
 }
 \keyword{datasets}

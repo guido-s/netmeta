@@ -9,7 +9,11 @@
   common = x$x$common,
   random = x$x$random,
   digits = gs("digits.prop"),
-  legend = TRUE,
+  nchar.trts = x$nchar.trts,
+  nchar.studlab = x$nchar.studlab,
+  details.methods = gs("details"),
+  legend = gs("legend"),
+  legend.studlab = TRUE,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -25,8 +29,20 @@ effects model should be printed.}
 
 \item{digits}{Minimal number of significant digits.}
 
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names (see Details).}
+
+\item{nchar.studlab}{A numeric defining the minimum number of
+characters used to create unique study labels.}
+
+\item{details.methods}{A logical specifying whether details on statistical
+methods should be printed.}
+
 \item{legend}{A logical indicating whether a legend should be
 printed.}
+
+\item{legend.studlab}{A logical indicating whether a legend should
+be printed for abbreviated study labels.}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
@@ -37,15 +53,13 @@ be printed if deprecated arguments are used.}
 Print method for objects of class \code{netimpact}.
 }
 \examples{
-data(Franchini2012)
-
 # Only consider first two studies (to reduce runtime of example)
 #
-studies <- unique(Franchini2012$Study)
+studies <- unique(dat.franchini2012$Study)
 p1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
   n = list(n1, n2, n3),
   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-  data = subset(Franchini2012, Study \%in\% studies[1:2]),
+  data = subset(dat.franchini2012, Study \%in\% studies[1:2]),
   studlab = Study)
 
 net1 <- netmeta(p1)
@@ -54,7 +68,7 @@ ni
 
 }
 \seealso{
-\code{\link{netimpact}}
+\code{\link{netimpact}}, \code{\link[metadat]{dat.franchini2012}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

@@ -58,7 +58,6 @@
 #' @method heatplot netmeta
 #' @export
 
-
 heatplot.netmeta <- function(x,
                              pooled = ifelse(x$random, "random", "common"),
                              seq = x$seq,
@@ -89,7 +88,7 @@ heatplot.netmeta <- function(x,
   ##
   chknumeric(digits, min = 0, length = 1)
   ##
-  if (is.untransformed(sm))
+  if (is_untransformed(sm))
     backtransf <- TRUE
   backtransf <- replaceNULL(backtransf, TRUE)
   chklogical(backtransf)
@@ -117,14 +116,21 @@ heatplot.netmeta <- function(x,
     upper.nma <- x$upper.random[seq1, seq1]
   }
   ##
-  noeffect <- 0
-  ##
-  if (backtransf & is.relative.effect(sm)) {
-    noeffect <- 1
-    ##
-    TE.nma    <- exp(TE.nma)
-    lower.nma <- exp(lower.nma)
-    upper.nma <- exp(upper.nma)
+  noeffect <- 1L * (backtransf & is_relative_effect(sm))
+  #
+  if (backtransf) {
+    TE.nma    <- backtransf(TE.nma, sm)
+    lower.nma <- backtransf(lower.nma, sm)
+    upper.nma <- backtransf(upper.nma, sm)
+    #
+    # Switch lower and upper limit for VE if results have been
+    # backtransformed
+    #
+    if (sm == "VE") {
+      tmp.l <- lower.nma
+      lower.nma <- upper.nma
+      upper.nma <- tmp.l
+    }
   }
   ##
   TE.nma    <- round(TE.nma, digits)
@@ -187,9 +193,6 @@ heatplot.netmeta <- function(x,
   
   return(hplot)
 }
-
-
-
 
 
 heattrts <- function(x) {

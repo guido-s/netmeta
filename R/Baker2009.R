@@ -2,7 +2,7 @@
 #' obstructive pulmonary disease
 #' 
 #' @description
-#' This data set comes from a systematic review of randomized
+#' This dataset comes from a systematic review of randomized
 #' controlled trials on pharmacologic treatments for chronic
 #' obstructive pulmonary disease (COPD) (Baker et al., 2009).
 #'
@@ -30,7 +30,7 @@
 #' \bold{\emph{total}}\tab number of individuals in treatment arm
 #' }
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{metabin}},
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
 #'   \code{\link{netmetabin}}
 #' 
 #' @source

@@ -14,7 +14,7 @@
   big.mark = gs("big.mark"),
   nchar.trts = x$nchar.trts,
   sort = TRUE,
-  legend = TRUE,
+  legend = gs("legend"),
   ...
 )
 }

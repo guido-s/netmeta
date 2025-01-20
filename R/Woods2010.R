@@ -18,7 +18,7 @@
 #' \bold{\emph{N}}\tab number of patients in treatment arm
 #' }
 #' 
-#' @seealso \code{\link{pairwise}}, \code{\link{metabin}},
+#' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
 #'   \code{\link{netmeta}}
 #' 
 #' @source

@@ -127,7 +127,7 @@
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netcontrib}},
-#'   \code{\link{netheat}}
+#'   \code{\link{netheat}}, \code{\link[metadat]{dat.dong2013}}
 #' 
 #' @references
 #' Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
@@ -147,9 +147,8 @@
 #' \bold{3}, 312--24
 #' 
 #' @examples
-#' data(Dong2013)
 #' # Only consider first ten studies for concise output
-#' first10 <- subset(Dong2013, id <= 10)
+#' first10 <- subset(dat.dong2013, id <= 10)
 #' p1 <- pairwise(treatment, death, randomized, studlab = id,
 #'   data = first10, sm = "OR")
 #' net1 <- netmeta(p1, common = FALSE)
@@ -162,7 +161,6 @@
 #' hatmatrix(net1, method = "d", type = "full")
 #' 
 #' @export hatmatrix
-
 
 hatmatrix <- function(x, method = "Ruecker", type,
                       common = x$common,
@@ -224,12 +222,12 @@ hatmatrix <- function(x, method = "Ruecker", type,
   }
   else if (method == "Krahn") {
     if (type == "design") {
-      res$common <- nma.krahn(x)$H
-      res$random <- nma.krahn(x, tau.preset = x$tau)$H
+      res$common <- nma_krahn(x)$H
+      res$random <- nma_krahn(x, tau.preset = x$tau)$H
     }
     else if (type == "studies") {
-      res$common <- nma.krahn(x)$H.studies
-      res$random <- nma.krahn(x, tau.preset = x$tau)$H.studies
+      res$common <- nma_krahn(x)$H.studies
+      res$random <- nma_krahn(x, tau.preset = x$tau)$H.studies
     }
   }
   else if (method == "Davies") {
@@ -245,22 +243,19 @@ hatmatrix <- function(x, method = "Ruecker", type,
   res$x$random <- random
   res$x$nchar.trts <- nchar.trts
   res$x$nchar.studlab <- nchar.studlab
-  ##
+  #
+  res$call <- match.call()
   res$version <- packageDescription("netmeta")$Version
-  ##
+  #
   class(res) <- "hatmatrix"
   ##
   res
 }
 
 
-
-
-
 #' @rdname hatmatrix
 #' @method print hatmatrix
 #' @export
-
 
 print.hatmatrix <- function(x,
                             common = x$x$common,
@@ -268,7 +263,7 @@ print.hatmatrix <- function(x,
                             nchar.trts = x$x$nchar.trts,
                             nchar.studlab = x$x$nchar.studlab,
                             digits = gs("digits"),
-                            legend = TRUE,
+                            legend = gs("legend"),
                             legend.studlab = TRUE,
                             ...) {
   
@@ -289,15 +284,16 @@ print.hatmatrix <- function(x,
   ##
   matitle(x$x)
   ##
-  cat(paste0("Hat matrix (",
-             if (x$method == "Ruecker")
-               "R\u00FCcker, 2012, Research Synthesis Method"
-             else if (x$method == "Krahn")
-               "Krahn et al., 2013"
-             else if (x$method == "Davies")
-               "Davies et al., 2021",
-             ")\n\n"))
-  ##
+  cat("Hat matrix (",
+      if (x$method == "Ruecker")
+        "R\u00FCcker, 2012, Research Synthesis Method"
+      else if (x$method == "Krahn")
+        "Krahn et al., 2013"
+      else if (x$method == "Davies")
+        "Davies et al., 2021",
+      ")\n\n",
+      sep = "")
+  #
   trts <- x$x$trts
   sep.trts <- x$x$sep.trts
   anystudy.r <- anystudy.c <- FALSE
@@ -398,9 +394,6 @@ print.hatmatrix <- function(x,
 }
 
 
-
-
-
 hatmatrix.aggr <- function(x, model, type) {
   
   model <- setchar(model, c("common", "random"))
@@ -448,7 +441,7 @@ hatmatrix.aggr <- function(x, model, type) {
   L <- t(B) %*% W %*% B
   ## Pseudo-Inverse of L 
   L.plus <- invmat(L)
-  L.plus[is.zero(L.plus)] <- 0
+  L.plus[is_zero(L.plus)] <- 0
   ##
   ## Aggregate Hat matrix
   ##
@@ -515,12 +508,12 @@ hatmatrix.aggr <- function(x, model, type) {
     else if (type == "full")
       rownames(H) <- colnames(H) <- allcomps
   }
+  #
+  attr(H, "model") <- model
+  attr(H, "type") <- type
   
   H
 }
-
-
-
 
 
 hatmatrix.F1000 <- function(x, model) {
@@ -528,9 +521,9 @@ hatmatrix.F1000 <- function(x, model) {
   ## H matrix
   ##
   if (model == "common")
-    krahn <- nma.krahn(x)
+    krahn <- nma_krahn(x)
   else if (model == "random")
-    krahn <- nma.krahn(x, tau.preset = x$tau)
+    krahn <- nma_krahn(x, tau.preset = x$tau)
   ##
   X.full <- krahn$X.full
   direct <- krahn$direct
@@ -538,10 +531,12 @@ hatmatrix.F1000 <- function(x, model) {
   Vd <- diag(direct$seTE^2,
              nrow = length(direct$seTE),
              ncol = length(direct$seTE))
+  
   H <-
     X.full %*% solve(t(X) %*% solve(Vd) %*% X) %*% t(X) %*% solve(Vd)
-  ##
+  #
   colnames(H) <- rownames(X)
-  ##
+  attr(H, "model") <- model
+  
   H
 }

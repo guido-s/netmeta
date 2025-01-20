@@ -23,7 +23,7 @@ fibrillation: a network meta-analysis of 79 808 patients.
 \bold{100}, 396--405
 }
 \description{
-This data set comes from a systematic review aiming to determine
+This dataset comes from a systematic review aiming to determine
 the effects of eight antithrombotic treatments in reducing the
 incidence of major thrombotic events in patients with non-valvular
 atrial fibrillation (Dogliotti et al., 2014). The review included 20
@@ -49,7 +49,7 @@ netmetabin(p1, ref = "plac")
 }
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{metabin}},
+\code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmetabin}}
 }
 \keyword{datasets}

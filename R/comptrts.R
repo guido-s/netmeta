@@ -67,11 +67,11 @@ comptrts <- function(x,
   
   
   comparison <-
-    as.character(interaction(paste(quote.trts, dat.trts$treat1,
-                                   quote.trts, sep = ""),
-                             paste(quote.trts, dat.trts$treat2,
-                                   quote.trts, sep = ""),
-                             sep = sep.trts))
+    as.character(
+      interaction(
+        paste0(quote.trts, dat.trts$treat1, quote.trts),
+        paste0(quote.trts, dat.trts$treat2, quote.trts),
+        sep = sep.trts))
   
   
   res <- cbind(comparison, dat.trts)

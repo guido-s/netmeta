@@ -1,9 +1,11 @@
 # netmeta: Network Meta-Analysis using Frequentist Methods
 Official Git repository of R package **netmeta**
 
-[![CRAN Version](http://www.r-pkg.org/badges/version/netmeta)](https://cran.r-project.org/package=netmeta)
-[![Monthly Downloads](http://cranlogs.r-pkg.org/badges/netmeta)](http://cranlogs.r-pkg.org/badges/netmeta)
-[![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)](http://cranlogs.r-pkg.org/badges/grand-total/netmeta)
+[![License: GPL (>=2)](https://img.shields.io/badge/license-GPL-blue)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+[![CRAN Version](https://www.r-pkg.org/badges/version/netmeta)](https://cran.r-project.org/package=netmeta)
+[![GitHub develop](https://img.shields.io/badge/develop-3.0--1-purple)](https://img.shields.io/badge/develop-3.0--1-purple)
+[![Monthly Downloads](https://cranlogs.r-pkg.org/badges/netmeta)](https://cranlogs.r-pkg.org/badges/netmeta)
+[![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/netmeta)](https://cranlogs.r-pkg.org/badges/grand-total/netmeta)
 
 
 ## Authors
@@ -32,7 +34,9 @@ R package **netmeta** ([Balduzzi et al., 2023](https://www.doi.org/10.18637/jss.
   - network meta-analysis of binary data using the Mantel-Haenszel
     method or the non-central hypergeometric distribution ([Efthimiou
     et al.,
-    2019](https://scholar.google.com/scholar?q=Efthimiou+Rücker+Schwarzer+Higgins+Egger+Salanti+2019+Mantel-Haenszel+model)).
+    2019](https://scholar.google.com/scholar?q=Efthimiou+Rücker+Schwarzer+Higgins+Egger+Salanti+2019+Mantel-Haenszel+model)),
+    or penalised logistic regression ([Evrenoglou et al.,
+    2022](https://doi.org/10.1002/sim.9562)).
 
 
 ### Methods to present results of a network meta-analysis
@@ -89,18 +93,19 @@ R package **netmeta** ([Balduzzi et al., 2023](https://www.doi.org/10.18637/jss.
 
 ## Installation
 
-### Current official [![CRAN Version](http://www.r-pkg.org/badges/version/netmeta)](https://cran.r-project.org/package=netmeta) release:
+### Current official [![CRAN Version](https://www.r-pkg.org/badges/version/netmeta)](https://cran.r-project.org/package=netmeta) release:
 ```r
 install.packages("netmeta")
 ```
 
-### Current development version on GitHub:
+### Current [![GitHub develop](https://img.shields.io/badge/develop-3.0--1-purple)](https://img.shields.io/badge/develop-3.0--1-purple) release on GitHub:
 
 Installation using R package
 [**remotes**](https://cran.r-project.org/package=remotes):
 ```r
 install.packages("remotes")
-remotes::install_github("guido-s/netmeta", ref = "develop")
+remotes::install_github("guido-s/netmeta",
+  ref = "develop", build_vignettes = TRUE)
 ```
 
 

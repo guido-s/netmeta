@@ -37,7 +37,7 @@ nettable(
   verbose = FALSE
 )
 
-\method{print}{nettable}(x, common = x$x$common, random = x$x$random, legend = TRUE, ...)
+\method{print}{nettable}(x, common = x$x$common, random = x$x$random, legend = gs("legend"), ...)
 }
 \arguments{
 \item{\dots}{Any number of network meta-analysis objects or a
@@ -193,10 +193,8 @@ networks. Crude information on the computation progress is printed
 for SIDDE if argument \code{verbose} is \code{TRUE}.
 }
 \examples{
-data(Woods2010)
-#
 p1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = Woods2010, sm = "OR")
+  studlab = author, data = dat.woods2010, sm = "OR")
 #
 net1 <- netmeta(p1)
 #
@@ -247,7 +245,8 @@ effect estimates from network meta-analysis.
 }
 \seealso{
 \code{\link{netsplit}}, \code{\link{netmeta}},
-  \code{\link{netmetabin}}, \code{\link{netmeasures}}
+  \code{\link{netmetabin}}, \code{\link{netmeasures}},
+  \code{\link[metadat]{dat.woods2010}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

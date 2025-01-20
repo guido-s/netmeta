@@ -43,6 +43,5 @@
 #' @rdname heatplot
 #' @export heatplot
 
-
 heatplot <- function(x, ...)
   UseMethod("heatplot")

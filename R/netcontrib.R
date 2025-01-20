@@ -140,7 +140,7 @@
 #' @author Theodoros Papakonstantinou \email{dev@@tpapak.com}, Annabel
 #'   Davies \email{annabel.davies@@manchester.ac.uk}
 #' 
-#' @seealso \code{\link{netmeta}}
+#' @seealso \code{\link{netmeta}}, \code{\link[metadat]{dat.woods2010}}
 #' 
 #' @references
 #' Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
@@ -160,9 +160,8 @@
 #' @examples
 #' # Use the Woods dataset
 #' #
-#' data("Woods2010")
 #' p1 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = Woods2010, sm = "OR")
+#'   studlab = author, data = dat.woods2010, sm = "OR")
 #' 
 #' net1 <- netmeta(p1)
 #' cm <- netcontrib(net1)
@@ -172,7 +171,6 @@
 #' 
 #' @rdname netcontrib
 #' @export netcontrib
-
 
 netcontrib <- function(x,
                        method = "shortestpath",
@@ -192,7 +190,7 @@ netcontrib <- function(x,
   chkclass(x, "netmeta")
   x <- updateversion(x)
   ##
-  is.installed.package("igraph")
+  is_installed_package("igraph")
   
   
   ##
@@ -210,7 +208,7 @@ netcontrib <- function(x,
   }
   ##
   if (method == "cccp")
-    is.installed.package("cccp")
+    is_installed_package("cccp")
   
   chknumeric(nchar.trts, min = 1, length = 1)
   chklogical(verbose)
@@ -269,22 +267,18 @@ netcontrib <- function(x,
 }
 
 
-
-
-
 #' @rdname netcontrib
 #' 
 #' @method print netcontrib
 #' 
 #' @export
 
-
 print.netcontrib <- function(x,
                              common = x$x$common,
                              random = x$x$random,
                              digits = 4,
                              nchar.trts = x$nchar.trts,
-                             legend = TRUE,
+                             legend = gs("legend"),
                              warn.deprecated = gs("warn.deprecated"),
                              ...) {
   
@@ -294,6 +288,8 @@ print.netcontrib <- function(x,
   ##
   ##
   chkclass(x, "netcontrib")
+  chksuitable(x, "Network contributions",
+              classes = c("netmeta.crossnma", "netmeta.multinma"))
   x <- updateversion(x)
   
   
@@ -329,24 +325,25 @@ print.netcontrib <- function(x,
   ##
   matitle(x$x)
   ##
-  cat(paste0("Contribution matrix (",
-             if (is.null(x$method) | x$method == "shortestpath")
-               "Papakonstantinou et al., 2018, F1000Research"
-             else if (x$method == "randomwalk")
-               "Davies et al., 2022, Stat Med"
-             else if (x$method == "cccp")
-               paste0("Ruecker et al., 2023, ",
-                      "L1 solution based on R package cccp")
-             else if (x$method == "pseudoinverse")
-               paste0("Ruecker et al., 2023, ",
-                      "L2 solution based on Moore-Penrose pseudoinverse")
-             else
-               "unknown method",
-             ")"))
+  cat("Contribution matrix (",
+      if (is.null(x$method) | x$method == "shortestpath")
+        "Papakonstantinou et al., 2018, F1000Research"
+      else if (x$method == "randomwalk")
+        "Davies et al., 2022, Stat Med"
+      else if (x$method == "cccp")
+        paste0("Ruecker et al., 2023, ",
+               "L1 solution based on R package cccp")
+      else if (x$method == "pseudoinverse")
+        paste0("Ruecker et al., 2023, ",
+               "L2 solution based on Moore-Penrose pseudoinverse")
+      else
+        "unknown method",
+      ")",
+      sep = "")
   ##
   if ((is.null(x$method) | x$method == "shortestpath") & x$hatmatrix.F1000)
-    cat(paste(",\nhat matrix does not take correlation of",
-              "multi-arm studies into account"))
+    cat(",\nhat matrix does not take correlation of",
+        "multi-arm studies into account")
   ##
   cat("\n\n")
   

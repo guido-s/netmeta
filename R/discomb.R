@@ -1,4 +1,3 @@
-#' Additive network meta-analysis for combinations of treatments
 #' (disconnected networks)
 #' 
 #' @description
@@ -13,7 +12,7 @@
 #' @param TE Estimate of treatment effect, i.e. difference between
 #'   first and second treatment (e.g. log odds ratio, mean difference,
 #'   or log hazard ratio). Or an R object created with
-#'   \code{\link{pairwise}}.
+#'   \code{\link[meta]{pairwise}}.
 #' @param seTE Standard error of treatment estimate.
 #' @param treat1 Label/Number for first treatment.
 #' @param treat2 Label/Number for second treatment.
@@ -64,6 +63,8 @@
 #'   unidentifiable components should be printed.
 #' @param sep.trts A character used in comparison names as separator
 #'   between treatment labels.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -72,8 +73,18 @@
 #' @param nchar.comps A numeric defining the minimum number of
 #'   characters used to create unique names for components (see
 #'   Details).
+#' @param sep.ia A single character to define separator for interactions.
 #' @param func.inverse R function used to calculate the pseudoinverse
 #'   of the Laplacian matrix L (see \code{\link{netmeta}}).
+#' @param n1 Number of observations in first treatment group.
+#' @param n2 Number of observations in second treatment group.
+#' @param event1 Number of events in first treatment group.
+#' @param event2 Number of events in second treatment group.
+#' @param incr Numerical value added to cell frequencies.
+#' @param na.unident A logical indicating whether unidentifiable
+#'   components and combinations should be set to missing values.
+#' @param keepdata A logical indicating whether original data(set)
+#'   should be kept in netmeta object.
 #' @param title Title of meta-analysis / systematic review.
 #' @param warn A logical indicating whether warnings should be printed
 #'   (e.g., if studies are excluded from meta-analysis due to zero
@@ -371,13 +382,12 @@
 #' 
 #' @export discomb
 
-
 discomb <- function(TE, seTE,
                     treat1, treat2,
                     studlab, data = NULL, subset = NULL,
                     ##
                     inactive = NULL,
-                    sep.comps = "+", 
+                    sep.comps = gs("sep.comps"),
                     C.matrix,
                     ##
                     sm,
@@ -387,26 +397,39 @@ discomb <- function(TE, seTE,
                     random = gs("random") | !is.null(tau.preset),
                     ##
                     reference.group,
-                    baseline.reference = TRUE,
-                    seq = NULL,
+                    baseline.reference = gs("baseline.reference"),
+                    seq = gs("sep"),
                     ##
                     tau.preset = NULL,
                     ##
-                    tol.multiarm = 0.001,
-                    tol.multiarm.se = NULL,
-                    details.chkmultiarm = FALSE,
+                    tol.multiarm = gs("tol.multiarm"),
+                    tol.multiarm.se = gs("tol.multiarm.se"),
+                    details.chkmultiarm = gs("details.chkmultiarm"),
                     ##
                     details.chkident = FALSE,
                     ##
-                    sep.trts = ":",
-                    nchar.comps = 666,
-                    ##
+                    sep.trts = gs("sep.trts"),
+                    nchar.comps = gs("nchar.comps"),
+                    #
+                    sep.ia = gs("sep.ia"),
+                    #
                     func.inverse = invmat,
-                    ##
+                    #
+                    n1 = NULL,
+                    n2 = NULL,
+                    event1 = NULL,
+                    event2 = NULL,
+                    incr = NULL,
+                    #
+                    overall.hetstat = gs("overall.hetstat"),
                     backtransf = gs("backtransf"),
+                    #
+                    na.unident = gs("na.unident"),
                     ##
-                    title = "",
-                    warn = TRUE, warn.deprecated = gs("warn.deprecated"),
+                    title = gs("title"),
+                    keepdata = gs("keepdata"),
+                    #
+                    warn = gs("warn"), warn.deprecated = gs("warn.deprecated"),
                     nchar.trts = nchar.comps,
                     ...) {
   
@@ -435,10 +458,14 @@ discomb <- function(TE, seTE,
   ##
   missing.sep.trts <- missing(sep.trts)
   chkchar(sep.trts)
-  ##
+  #
+  overall.hetstat <- replaceNULL(overall.hetstat, TRUE)
+  chklogical(overall.hetstat)
   chklogical(backtransf)
+  chklogical(na.unident)
   ##
   chkchar(title)
+  chklogical(keepdata)
   chklogical(warn)
   ##
   ## Check for deprecated arguments in '...'
@@ -467,6 +494,9 @@ discomb <- function(TE, seTE,
                 warn.deprecated)
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
+  #
+  missing.sep.ia <- missing(sep.ia)
+  chkchar(sep.ia, nchar = 0:1, length = 1)
   
   
   ##
@@ -485,36 +515,55 @@ discomb <- function(TE, seTE,
   ##
   TE <- catch("TE", mc, data, sfsp)
   ##
-  missing.reference.group.pairwise <- FALSE
+  avail.reference.group.pairwise <- FALSE
   ##
   if (is.data.frame(TE) & !is.null(attr(TE, "pairwise"))) {
     is.pairwise <- TRUE
     ##
     sm <- attr(TE, "sm")
+    #
     if (missing.reference.group) {
-      missing.reference.group.pairwise <- TRUE
       reference.group <- attr(TE, "reference.group")
+      #
       if (is.null(reference.group))
         reference.group <- ""
       else
-        missing.reference.group <- FALSE
+        avail.reference.group.pairwise <- TRUE
     }
-    ##
+    #
     keep.all.comparisons <- attr(TE, "keep.all.comparisons")
     if (!is.null(keep.all.comparisons) && !keep.all.comparisons)
       stop("First argument is a pairwise object created with ",
            "'keep.all.comparisons = FALSE'.",
            call. = TRUE)
-    ##
-    seTE <- TE$seTE
+    #
+    if (is.null(attr(TE, "varnames")))
+      seTE <- TE$seTE
+    else
+      seTE <- TE[[attr(TE, "varnames")[2]]]
+    #
     treat1 <- TE$treat1
     treat2 <- TE$treat2
     studlab <- TE$studlab
-    ##
+    #
+    if (!is.null(TE$n1))
+      n1 <- TE$n1
+    if (!is.null(TE$n2))
+      n2 <- TE$n2
+    if (!is.null(TE$event1))
+      event1 <- TE$event1
+    if (!is.null(TE$event2))
+      event2 <- TE$event2
+    if (!is.null(TE$incr))
+      incr <- TE$incr
+    #
     pairdata <- TE
     data <- TE
-    ##
-    TE <- TE$TE
+    #
+    if (is.null(attr(TE, "varnames")))
+      TE <- TE$TE
+    else
+      TE <- TE[[attr(TE, "varnames")[1]]]
   }
   else {
     is.pairwise <- FALSE
@@ -525,11 +574,35 @@ discomb <- function(TE, seTE,
         sm <- ""
     ##
     seTE <- catch("seTE", mc, data, sfsp)
+    #
     treat1 <- catch("treat1", mc, data, sfsp)
     treat2 <- catch("treat2", mc, data, sfsp)
+    #
     studlab <- catch("studlab", mc, data, sfsp)
+    #
+    if (length(studlab) == 0) {
+      if (warn)
+        warning("No information given for argument 'studlab'. ",
+                "Assuming that comparisons are from independent studies.",
+                call. = FALSE)
+      studlab <- seq(along = TE)
+    }
+    studlab <- as.character(studlab)
+    #
+    n1 <- catch("n1", mc, data, sfsp)
+    n2 <- catch("n2", mc, data, sfsp)
+    #
+    event1 <- catch("event1", mc, data, sfsp)
+    event2 <- catch("event2", mc, data, sfsp)
+    #
+    incr <- catch("incr", mc, data, sfsp)
   }
-  ##
+  #
+  subset <- catch("subset", mc, data, sfsp)
+  missing.subset <- is.null(subset)
+  #
+  studlab <- as.character(studlab)
+  #
   chknumeric(TE)
   chknumeric(seTE)
   ##
@@ -552,14 +625,104 @@ discomb <- function(TE, seTE,
   ##
   treat1 <- rmSpace(rmSpace(treat1, end = TRUE))
   treat2 <- rmSpace(rmSpace(treat2, end = TRUE))
+  #
+  #
+  if (!is.null(event1) & !is.null(event2))
+    available.events <- TRUE
+  else
+    available.events <- FALSE
+  #
+  if (!is.null(n1) & !is.null(n2))
+    available.n <- TRUE
+  else
+    available.n <- FALSE
+  #
+  if (available.events & is.null(incr))
+    incr <- rep(0, length(event2))
+  #
+  # Store complete dataset in list object data
+  # (if argument keepdata is TRUE)
+  #
+  if (keepdata) {
+    if (nulldata & !is.pairwise)
+      data <- data.frame(.studlab = studlab, stringsAsFactors = FALSE)
+    else if (nulldata & is.pairwise) {
+      data <- pairdata
+      data$.studlab <- studlab
+    }
+    else
+      data$.studlab <- studlab
+    #
+    data$.order <- seq_along(studlab)
+    #
+    data$.treat1 <- treat1
+    data$.treat2 <- treat2
+    #
+    data$.TE <- TE
+    data$.seTE <- seTE
+    #
+    data$.event1 <- event1
+    data$.n1 <- n1
+    data$.event2 <- event2
+    data$.n2 <- n2
+    data$.incr <- incr
+    #
+    # Check for correct treatment order within comparison
+    #
+    wo <- data$.treat1 > data$.treat2
+    #
+    if (any(wo)) {
+      data$.TE[wo] <- -data$.TE[wo]
+      ttreat1 <- data$.treat1
+      data$.treat1[wo] <- data$.treat2[wo]
+      data$.treat2[wo] <- ttreat1[wo]
+      #
+      if (isCol(data, ".n1") & isCol(data, ".n2")) {
+        tn1 <- data$.n1
+        data$.n1[wo] <- data$.n2[wo]
+        data$.n2[wo] <- tn1[wo]
+      }
+      #
+      if (isCol(data, ".event1") & isCol(data, ".event2")) {
+        tevent1 <- data$.event1
+        data$.event1[wo] <- data$.event2[wo]
+        data$.event2[wo] <- tevent1[wo]
+      }
+      #
+      #if (isCol(data, ".mean1") & isCol(data, ".mean2")) {
+      #  tmean1 <- data$.mean1
+      #  data$.mean1[wo] <- data$.mean2[wo]
+      #  data$.mean2[wo] <- tmean1[wo]
+      #}
+      #
+      if (isCol(data, ".sd1") & isCol(data, ".sd2")) {
+        tsd1 <- data$.sd1
+        data$.sd1[wo] <- data$.sd2[wo]
+        data$.sd2[wo] <- tsd1[wo]
+      }
+      #
+      if (isCol(data, ".time1") & isCol(data, ".time2")) {
+        ttime1 <- data$.time1
+        data$.time1[wo] <- data$.time2[wo]
+        data$.time2[wo] <- ttime1[wo]
+      }
+    }
+    #
+    if (!missing.subset) {
+      if (length(subset) == dim(data)[1])
+        data$.subset <- subset
+      else {
+        data$.subset <- FALSE
+        data$.subset[subset] <- TRUE
+      }
+    }
+  }
   
   
   ##
   ##
   ## (3) Use subset for analysis
   ##
-  ##
-  subset <- catch("subset", mc, data, sfsp)
   ##
   if (!is.null(subset)) {
     if ((is.logical(subset) & (sum(subset) > k.Comp)) ||
@@ -571,32 +734,43 @@ discomb <- function(TE, seTE,
     treat1 <- treat1[subset]
     treat2 <- treat2[subset]
     studlab <- studlab[subset]
+    #
+    if (!is.null(n1))
+      n1 <- n1[subset]
+    if (!is.null(n2))
+      n2 <- n2[subset]
+    if (!is.null(event1))
+      event1 <- event1[subset]
+    if (!is.null(event2))
+      event2 <- event2[subset]
+    if (!is.null(incr))
+      incr <- incr[subset]
   }
   ##
-  labels <- sort(unique(c(treat1, treat2)))
+  trts <- sort(unique(c(treat1, treat2)))
   ##
-  if (compmatch(labels, sep.trts)) {
+  if (compmatch(trts, sep.trts)) {
     if (!missing.sep.trts)
       warning("Separator '", sep.trts, "' used in at least ",
               "one treatment label. Try to use predefined separators: ",
               "':', '-', '_', '/', '+', '.', '|', '*'.",
               call. = FALSE)
     ##
-    if (!compmatch(labels, ":"))
+    if (!compmatch(trts, ":"))
       sep.trts <- ":"
-    else if (!compmatch(labels, "-"))
+    else if (!compmatch(trts, "-"))
       sep.trts <- "-"
-    else if (!compmatch(labels, "_"))
+    else if (!compmatch(trts, "_"))
       sep.trts <- "_"
-    else if (!compmatch(labels, "/"))
+    else if (!compmatch(trts, "/"))
       sep.trts <- "/"
-    else if (!compmatch(labels, "+"))
+    else if (!compmatch(trts, "+"))
       sep.trts <- "+"
-    else if (!compmatch(labels, "."))
+    else if (!compmatch(trts, "."))
       sep.trts <- "-"
-    else if (!compmatch(labels, "|"))
+    else if (!compmatch(trts, "|"))
       sep.trts <- "|"
-    else if (!compmatch(labels, "*"))
+    else if (!compmatch(trts, "*"))
       sep.trts <- "*"
     else
       stop("All predefined separators ",
@@ -608,9 +782,9 @@ discomb <- function(TE, seTE,
   }
   ##
   if (!is.null(seq))
-    seq <- setseq(seq, labels)
+    seq <- setseq(seq, trts)
   else {
-    seq <- labels
+    seq <- trts
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
@@ -643,7 +817,7 @@ discomb <- function(TE, seTE,
   ## Check for correct number of comparisons
   ##
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
     stop(paste0("Study '", names(tabnarms)[sel.narms],
@@ -662,6 +836,9 @@ discomb <- function(TE, seTE,
   excl <- is.na(TE) | is.na(seTE) | seTE <= 0
   ##
   if (any(excl)) {
+    if (keepdata)
+      data$.excl <- excl
+    #
     dat.NAs <- data.frame(studlab = studlab[excl],
                           treat1 = treat1[excl],
                           treat2 = treat2[excl],
@@ -673,28 +850,39 @@ discomb <- function(TE, seTE,
             " with missing TE / seTE or zero seTE not considered in",
             " network meta-analysis.",
             call. = FALSE)
-    cat(paste0("Comparison",
-               if (sum(excl) > 1) "s",
-               " not considered in network meta-analysis:\n"))
+    cat("Comparison", if (sum(excl) > 1) "s",
+        " not considered in network meta-analysis:\n",
+        sep = "")
     prmatrix(dat.NAs, quote = FALSE, right = TRUE,
              rowlab = rep("", sum(excl)))
     cat("\n")
     ##
-    studlab <- studlab[!(excl)]
-    treat1  <- treat1[!(excl)]
-    treat2  <- treat2[!(excl)]
-    TE      <- TE[!(excl)]
-    seTE    <- seTE[!(excl)]
-    ##
+    studlab <- studlab[!excl]
+    treat1  <- treat1[!excl]
+    treat2  <- treat2[!excl]
+    TE      <- TE[!excl]
+    seTE    <- seTE[!excl]
+    #
+    if (!is.null(n1))
+      n1 <- n1[!excl]
+    if (!is.null(n2))
+      n2 <- n2[!excl]
+    if (!is.null(event1))
+      event1 <- event1[!excl]
+    if (!is.null(event2))
+      event2 <- event2[!excl]
+    if (!is.null(incr))
+      incr <- incr[!excl]
+    #
     seq <- seq[seq %in% unique(c(treat1, treat2))]
-    labels <- labels[labels %in% unique(c(treat1, treat2))]
+    trts <- trts[trts %in% unique(c(treat1, treat2))]
   }
   ##
   ## Check for correct number of comparisons (after removing
   ## comparisons with missing data)
   ##
   tabnarms <- table(studlab)
-  sel.narms <- !is.wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
   ##
   if (sum(sel.narms) == 1)
     stop(paste0("After removing comparisons with missing treatment effects",
@@ -721,15 +909,45 @@ discomb <- function(TE, seTE,
     ttreat1 <- treat1
     treat1[wo] <- treat2[wo]
     treat2[wo] <- ttreat1[wo]
+    #
+    if (available.n) {
+      tn1 <- n1
+      n1[wo] <- n2[wo]
+      n2[wo] <- tn1[wo]
+    }
+    #
+    if (available.events) {
+      tevent1 <- event1
+      event1[wo] <- event2[wo]
+      event2[wo] <- tevent1[wo]
+    }
   }
-  ##
-  ## Check value for reference group
-  ##
-  if (missing.reference.group | missing.reference.group.pairwise)
-    reference.group <- sort(labels)[1]
-  ##
+  #
+  # Set reference group
+  #
+  if (missing.reference.group & !avail.reference.group.pairwise) {
+    go.on <- TRUE
+    i <- 0
+    while (go.on) {
+      i <- i + 1
+      sel.i <-
+        !is.na(TE) & !is.na(seTE) &
+        (treat1 == trts[i] | treat2 == trts[i])
+      if (sum(sel.i) > 0) {
+        go.on <- FALSE
+        reference.group <- trts[i]
+      }
+      else if (i == length(trts)) {
+        go.on <- FALSE
+        reference.group <- ""
+      }
+    }
+  }
+  #
+  # Check reference group
+  #
   if (reference.group != "")
-    reference.group <- setref(reference.group, labels)
+    reference.group <- setref(reference.group, trts)
   
   
   ##
@@ -740,9 +958,9 @@ discomb <- function(TE, seTE,
   netc <- netconnection(treat1, treat2, studlab)
   ##
   if (missing(C.matrix)) {
-    C.matrix <- createC(netc, sep.comps, inactive)
+    C.matrix <- createC(netc, inactive = inactive, sep.comps = sep.comps)
     inactive <- attr(C.matrix, "inactive")
-    C.matrix <- C.matrix[labels, , drop = FALSE]
+    C.matrix <- C.matrix[trts, , drop = FALSE]
   }
   else {
     ##
@@ -750,30 +968,30 @@ discomb <- function(TE, seTE,
       stop("Argument 'C.matrix' must be a matrix or data frame.", 
            call. = FALSE)
     ##
-    wrong.labels <- FALSE
+    wrong.trts <- FALSE
     if (is.null(rownames(C.matrix)))
-      wrong.labels <- TRUE
+      wrong.trts <- TRUE
     else {
-      if (length(unique(labels)) ==
-          length(unique(tolower(labels))) &&
+      if (length(unique(trts)) ==
+          length(unique(tolower(trts))) &&
           length(unique(rownames(C.matrix))) ==
           length(unique(tolower(rownames(C.matrix))))
           )
         idx <- charmatch(tolower(rownames(C.matrix)), 
-                         tolower(labels), nomatch = NA)
+                         tolower(trts), nomatch = NA)
       else
-        idx <- charmatch(rownames(C.matrix), labels, nomatch = NA)
+        idx <- charmatch(rownames(C.matrix), trts, nomatch = NA)
       ##
       if (any(is.na(idx)) || any(idx == 0)) 
-        wrong.labels <- TRUE
+        wrong.trts <- TRUE
     }
-    if (wrong.labels) 
+    if (wrong.trts) 
       stop(paste0("Row names of argument 'C.matrix' must be a ", 
                   "permutation of treatment names:\n  ",
-                  paste(paste0("'", labels, "'"), collapse = " - ")),
+                  paste(paste0("'", trts, "'"), collapse = " - ")),
            call. = FALSE)
     ##
-    C.matrix <- C.matrix[labels, , drop = FALSE]
+    C.matrix <- C.matrix[trts, , drop = FALSE]
   }
   if (is.data.frame(C.matrix))
     C.matrix <- as.matrix(C.matrix)
@@ -789,7 +1007,7 @@ discomb <- function(TE, seTE,
   ##
   B.matrix <- createB(p0$treat1.pos[o], p0$treat2.pos[o])
   ##
-  colnames(B.matrix) <- labels
+  colnames(B.matrix) <- trts
   rownames(B.matrix) <- studlab
   ##
   ## Design matrix based on treatment components
@@ -798,59 +1016,35 @@ discomb <- function(TE, seTE,
   ##
   colnames(X.matrix) <- colnames(C.matrix)
   rownames(X.matrix) <- studlab
-  ##
-  sel.comps <- character(0)
-  ##
-  if (qr(X.matrix)$rank < c) {
-    sum.trts <- apply(abs(X.matrix), 2, sum)
-    sel.comps <- gsub("^\\s+|\\s+$", "",
-                      names(sum.trts)[sum.trts == 0])
-    ##
-    Xplus <- ginv(X.matrix)
-    colnames(Xplus) <- rownames(X.matrix)
-    rownames(Xplus) <- colnames(X.matrix)
-    e <- eigen(Xplus %*% X.matrix)$values
-    E <- eigen(Xplus %*% X.matrix)$vectors
-    rownames(E) <- rownames(Xplus %*% X.matrix)
-    M <- as.matrix(E[, is.zero(e, n = 100)])
-    ##
-    if (dim(M)[2] > 0) {
-      sel.ident <- character(0)
-      for (i in 1:dim(M)[2])
-        sel.ident <- c(sel.ident, names(M[, i])[!is.zero(M[, i], n = 100)])
-      ##
-      sel.ident <- unique(sort(sel.ident))
-      warning(paste0("The following component",
-                     if (length(sel.ident) > 1)
-                       "s are " else " is ",
-                     "not identifiable: ",
-                     paste(paste0("'", sel.ident, "'"),
-                           collapse = ", ")),
-              call. = FALSE)
-      ##
-      if (details.chkident) {
-        M[is.zero(M, n = 100)] <- 0
-        prmatrix(M, quote = FALSE, right = TRUE)
-      }
-    }
-  }
+  #
+  A.matrix <- diag(diag(t(B.matrix) %*% B.matrix)) - t(B.matrix) %*% B.matrix
+  #
+  # Identify and warn about not uniquely identifiable components
+  #
+  if (qr(X.matrix)$rank < c)
+    comps.unident <- get_unident(X.matrix, details.chkident)
+  else
+    comps.unident <- NULL
   
+    
   
   ##
   ##
   ## (6) Conduct network meta-analyses
   ##
   ##
-  tdata <- data.frame(studies = p0$studlab[o], narms = p0$narms[o])
-  tdata <- unique(tdata[order(tdata$studies, tdata$narms), ])
-  ##
-  studies <- tdata$studies
-  narms <- tdata$narms
+  tdata <- data.frame(studies = p0$studlab, narms = p0$narms,
+                      order = p0$order,
+                      stringsAsFactors = FALSE)
+  #
+  tdata <- tdata[!duplicated(tdata[, c("studies", "narms")]), , drop = FALSE]
+  studies <- tdata$studies[order(tdata$order)]
+  narms <- tdata$narms[order(tdata$order)]
   n.a <- sum(narms)  
   ##
   comps <- colnames(C.matrix) # treatment components
   ##
-  n <- length(labels)
+  n <- length(trts)
   m <- length(TE)
   k <- length(unique(studlab))
   ##
@@ -871,15 +1065,13 @@ discomb <- function(TE, seTE,
     df.Q.diff <- n - 1 - qr(X.matrix)$rank
   }
   else {
-    Q <- df.Q <- pval.Q <- NA
-    df.Q.diff <- NA
+    Q <- df.Q <- pval.Q <- df.Q.diff <- NA
   }
-  ##  
-  res.c <- nma.additive(p0$TE[o], p0$weights[o], p0$studlab[o],
+  ##
+  res.c <- nma_additive(p0$TE[o], p0$weights[o], p0$studlab[o],
                         p0$treat1[o], p0$treat2[o], level.ma,
                         X.matrix, C.matrix, B.matrix,
-                        Q, df.Q.additive, df.Q.diff,
-                        n, sep.trts)
+                        df.Q.additive, n, sep.trts)
   ##
   ## Random effects models
   ##
@@ -888,13 +1080,52 @@ discomb <- function(TE, seTE,
   else
     tau <- res.c$tau
   ##
-  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, invmat)
+  p1 <- prepare(TE, seTE, treat1, treat2, studlab, tau, func.inverse)
   ##
-  res.r <- nma.additive(p1$TE[o], p1$weights[o], p1$studlab[o],
+  res.r <- nma_additive(p1$TE[o], p1$weights[o], p1$studlab[o],
                         p1$treat1[o], p1$treat2[o], level.ma,
                         X.matrix, C.matrix, B.matrix,
-                        Q, df.Q.additive, df.Q.diff,
+                        df.Q.additive,
                         n, sep.trts)
+  #
+  # Difference to standard network meta-analysis model
+  #
+  Q.diff <- res.c$Q.additive - Q
+  if (!is.na(Q.diff) && abs(Q.diff) < .Machine$double.eps^0.75)
+    Q.diff <- 0
+  #
+  if (is.na(df.Q.diff) | df.Q.diff == 0)
+    pval.Q.diff <- NA
+  else
+    pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)
+  #
+  # Set unidentifiable components and combinations to NA
+  #
+  if (na.unident & length(comps.unident) > 0) {
+    trts <- names(res.c$combinations$TE)
+    unident.pattern <- paste0("^", comps.unident, "$", collapse = "|")
+    unident.combs <-
+      trts[unlist(lapply(lapply(compsplit(trts, sep.comps),
+                                grepl,
+                                pattern = unident.pattern), any))]
+    ##
+    res.c$components <- lapply(res.c$components, setNA_vars, comps.unident)
+    res.c$combinations <- lapply(res.c$combinations, setNA_vars, unident.combs)
+    ##
+    res.r$components <- lapply(res.r$components, setNA_vars, comps.unident)
+    res.r$combinations <- lapply(res.r$combinations, setNA_vars, unident.combs)
+  }
+  ##
+  if (length(comps.unident) == 0)
+    comps.unident <- NULL
+  #
+  comps <- names(res.c$components$TE)
+  #
+  if (sep.comps == sep.ia)
+    stop("Input for arguments 'sep.comps' and 'sep.ia' must be different.",
+         call. = FALSE)
+  #
+  sep.ia <- setsep(comps, sep.ia, missing = missing.sep.ia)
   
   
   ##
@@ -920,10 +1151,11 @@ discomb <- function(TE, seTE,
               ##
               design = designs$design[o],
               ##
-              event1 = NA,
-              event2 = NA,
-              n1 = NA,
-              n2 = NA,
+              event1 = event1,
+              event2 = event2,
+              n1 = n1,
+              n2 = n2,
+              incr = incr,
               ##
               k = k,
               m = m,
@@ -932,23 +1164,25 @@ discomb <- function(TE, seTE,
               c = c,
               s = netc$n.subnets,
               ##
-              trts = labels,
+              trts = trts,
               k.trts = NA,
-              n.trts = NA,
-              events.trts = NA,
+              n.trts = if (available.n) NA else NULL,
+              events.trts = if (available.events) NA else NULL,
               ##
               n.arms = NA,
               multiarm = NA,
               ##
-              studies = names(n.comps),
-              narms = (1 + sqrt(8 * as.vector(n.comps)  + 1)) / 2,
+              studies = studies,
+              narms = narms,
               ##
               designs = unique(sort(designs$design)),
               ##
-              comps = names(res.c$components$TE),
+              comps = comps,
               k.comps = NA,
               n.comps = NA,
               events.comps = NA,
+              na.unident = na.unident,
+              comps.unident = comps.unident,
               ##
               TE.nma.common = NAs,
               seTE.nma.common = NAs,
@@ -1031,10 +1265,11 @@ discomb <- function(TE, seTE,
               df.Q.standard = df.Q,
               pval.Q.standard = pval.Q, 
               ##
-              Q.diff = res.c$Q.diff,
+              Q.diff = Q.diff,
               df.Q.diff = df.Q.diff,
-              pval.Q.diff = res.c$pval.Q.diff, 
+              pval.Q.diff = pval.Q.diff, 
               ##
+              A.matrix = A.matrix,
               X.matrix = X.matrix,
               B.matrix = B.matrix,
               C.matrix = C.matrix,
@@ -1047,9 +1282,12 @@ discomb <- function(TE, seTE,
               H.matrix.common = res.c$H.matrix[o, o],
               H.matrix.random = res.r$H.matrix[o, o],
               ##
-              n.matrix = NA,
-              events.matrix = NA,
-              ##
+              n.matrix = NULL,
+              events.matrix = NULL,
+              #
+              Cov.common = res.c$Cov,
+              Cov.random = res.r$Cov,
+              #
               sm = sm,
               method = "Inverse",
               level = level,
@@ -1062,16 +1300,22 @@ discomb <- function(TE, seTE,
               all.treatments = NULL,
               seq = seq,
               ##
+              method.tau = "DL",
               tau.preset = tau.preset,
-              ##
+              #
+              tol.multiarm = tol.multiarm,
+              details.chkmultiarm = details.chkmultiarm,
+              #
               sep.trts = sep.trts,
               sep.comps = sep.comps,
               nchar.comps = nchar.comps,
-              ##
-              func.inverse = deparse(substitute(func.inverse)),
-              ##
+              sep.ia = sep.ia,
+              #
               inactive = inactive,
-              ##
+              #
+              func.inverse = deparse(substitute(func.inverse)),
+              #
+              overall.hetstat = overall.hetstat,
               backtransf = backtransf, 
               ##
               title = title,
@@ -1079,9 +1323,11 @@ discomb <- function(TE, seTE,
               call = match.call(),
               version = packageDescription("netmeta")$Version
               )
-  ##
-  ## Add information on multi-arm studies
-  ##
+  #
+  class(res) <- c("discomb", "netcomb")
+  #
+  # Add information on multi-arm studies
+  #
   if (any(res$narms > 2)) {
     tdata1 <- data.frame(studlab = res$studlab,
                          .order = seq(along = res$studlab))
@@ -1098,86 +1344,67 @@ discomb <- function(TE, seTE,
     res$n.arms <- rep(2, length(res$studlab))
     res$multiarm <- rep(FALSE, length(res$studlab))
   }
-  ##
-  ## Remove estimates for inestimable combinations and components
-  ##
-  if (length(sel.comps) > 0) {
-    ##
-    res$c <- res$c - length(sel.comps)
-    ##
-    ## Identify combinations
-    ##
-    list.trts <- lapply(compsplit(res$trts, sep.comps),
-                        gsub, pattern = "^\\s+|\\s+$", replacement = "")
-    sel1 <- rep(NA, length(list.trts))
-    ##
-    for (i in seq_along(list.trts))
-      sel1[i] <- any(list.trts[[i]] %in% sel.comps)
-    ##
-    res$Comb.common[sel1] <- NA
-    res$seComb.common[sel1] <- NA
-    res$lower.Comb.common[sel1] <- NA
-    res$upper.Comb.common[sel1] <- NA
-    res$statistic.Comb.common[sel1] <- NA
-    res$pval.Comb.common[sel1] <- NA
-    ##
-    res$Comb.random[sel1] <- NA
-    res$seComb.random[sel1] <- NA
-    res$lower.Comb.random[sel1] <- NA
-    res$upper.Comb.random[sel1] <- NA
-    res$statistic.Comb.random[sel1] <- NA
-    res$pval.Comb.random[sel1] <- NA
-    ##
-    res$TE.common[sel1, ] <- NA
-    res$seTE.common[sel1, ] <- NA
-    res$lower.common[sel1, ] <- NA
-    res$upper.common[sel1, ] <- NA
-    res$statistic.common[sel1, ] <- NA
-    res$pval.common[sel1, ] <- NA
-    ##
-    res$TE.common[, sel1] <- NA
-    res$seTE.common[, sel1] <- NA
-    res$lower.common[, sel1] <- NA
-    res$upper.common[, sel1] <- NA
-    res$statistic.common[, sel1] <- NA
-    res$pval.common[, sel1] <- NA
-    ##
-    res$TE.random[sel1, ] <- NA
-    res$seTE.random[sel1, ] <- NA
-    res$lower.random[sel1, ] <- NA
-    res$upper.random[sel1, ] <- NA
-    res$statistic.random[sel1, ] <- NA
-    res$pval.random[sel1, ] <- NA
-    ##
-    res$TE.random[, sel1] <- NA
-    res$seTE.random[, sel1] <- NA
-    res$lower.random[, sel1] <- NA
-    res$upper.random[, sel1] <- NA
-    res$statistic.random[, sel1] <- NA
-    res$pval.random[, sel1] <- NA
-    ##
-    ## Identify components
-    ##
-    list.comps <- lapply(compsplit(res$comps, sep.comps),
-                         gsub, pattern = "^\\s+|\\s+$", replacement = "")
-    sel2 <- rep(NA, length(list.comps))
-    ##
-    for (i in seq_along(list.comps))
-      sel2[i] <- any(list.comps[[i]] %in% sel.comps)
-    ##
-    res$Comp.common[sel2] <- NA
-    res$seComp.common[sel2] <- NA
-    res$lower.Comp.common[sel2] <- NA
-    res$upper.Comp.common[sel2] <- NA
-    res$statistic.Comp.common[sel2] <- NA
-    res$pval.Comp.common[sel2] <- NA
-    ##
-    res$Comp.random[sel2] <- NA
-    res$seComp.random[sel2] <- NA
-    res$lower.Comp.random[sel2] <- NA
-    res$upper.Comp.random[sel2] <- NA
-    res$statistic.Comp.random[sel2] <- NA
-    res$pval.Comp.random[sel2] <- NA
+  #
+  # Additional assignments
+  #
+  l1 <- length(res$treat1)
+  tab.trts <-
+    table(longarm(res$treat1, res$treat2,
+                  rep(1, l1), rep(2, l1), rep(1, l1), rep(2, l1),
+                  studlab = res$studlab)$treat)
+  res$k.trts <- as.numeric(tab.trts)
+  names(res$k.trts) <- names(tab.trts)
+  #
+  if (keepdata) {
+    data$.design <- designs(data$.treat1, data$.treat2, data$.studlab,
+                            sep = sep.trts)$design
+    #
+    res$data <- merge(data,
+                      data.frame(.studlab = res$studies, .narms = res$narms),
+                      by = ".studlab",
+                      stringsAsFactors = FALSE)
+    #
+    # Store adjusted standard errors in dataset
+    #
+    if (isCol(res$data, ".subset"))
+      sel.s <- res$data$.subset
+    else
+      sel.s <- rep(TRUE, nrow(res$data))
+    #
+    res$data$.seTE.adj.common <- NA
+    res$data$.seTE.adj.random <- NA
+    #
+    res$data$.seTE.adj.common[sel.s] <- res$seTE.adj.common
+    res$data$.seTE.adj.random[sel.s] <- res$seTE.adj.random
+    #
+    res$data <- res$data[order(res$data$.order), ]
+    res$data$.order <- NULL
+  }
+  #
+  # Add information on events and sample sizes
+  #
+  if (available.n) {
+    res$n.matrix <- netmatrix(res, n1 + n2, func = "sum")
+    #
+    dat.n <- data.frame(studlab = c(studlab, studlab),
+                        treat = c(treat1, treat2),
+                        n = c(n1, n2))
+    dat.n <- dat.n[!duplicated(dat.n[, c("studlab", "treat")]), ]
+    dat.n <- by(dat.n$n, dat.n$treat, sum, na.rm = TRUE)
+    res$n.trts <- as.vector(dat.n[trts])
+    names(res$n.trts) <- trts
+  }
+  #
+  if (available.events) {
+    res$events.matrix <- netmatrix(res, event1 + event2, func = "sum")
+    #
+    dat.e <- data.frame(studlab = c(studlab, studlab),
+                        treat = c(treat1, treat2),
+                        n = c(event1, event2))
+    dat.e <- dat.e[!duplicated(dat.e[, c("studlab", "treat")]), ]
+    dat.e <- by(dat.e$n, dat.e$treat, sum, na.rm = TRUE)
+    res$events.trts <- as.vector(dat.e[trts])
+    names(res$events.trts) <- trts
   }
   ##
   ## Backward compatibility
@@ -1224,8 +1451,6 @@ discomb <- function(TE, seTE,
   res$L.matrix.fixed <- res$L.matrix.common
   res$Lplus.matrix.fixed <- res$Lplus.matrix.common
   res$H.matrix.fixed <- res$H.matrix.common        
-  ##
-  class(res) <- c("discomb", "netcomb")
   
   
   res

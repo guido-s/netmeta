@@ -3,8 +3,10 @@
 \name{netconnection.default}
 \alias{netconnection.default}
 \alias{netconnection}
-\alias{print.netconnection}
 \alias{netconnection.pairwise}
+\alias{print.netconnection}
+\alias{netconnection.netmeta}
+\alias{netconnection.netcomb}
 \title{Get information on network connectivity (number of subnetworks,
 distance matrix)}
 \usage{
@@ -29,8 +31,29 @@ distance matrix)}
   studlab = NULL,
   subset = NULL,
   sep.trts = ":",
+  drop.NA = TRUE,
   nchar.trts = 666,
   title = "",
+  details.disconnected = FALSE,
+  warn = FALSE,
+  ...
+)
+
+\method{netconnection}{netmeta}(
+  data,
+  sep.trts = data$sep.trts,
+  nchar.trts = data$nchar.trts,
+  title = data$title,
+  details.disconnected = FALSE,
+  warn = FALSE,
+  ...
+)
+
+\method{netconnection}{netcomb}(
+  data,
+  sep.trts = data$sep.trts,
+  nchar.trts,
+  title = data$title,
   details.disconnected = FALSE,
   warn = FALSE,
   ...
@@ -49,16 +72,16 @@ netconnection(data, ...)
 }
 \arguments{
 \item{data}{A data frame, e.g., created with
-\code{\link{pairwise}}.}
+\code{\link[meta]{pairwise}}.}
 
 \item{treat1}{Label / number for first treatment (ignored if
-\code{data} was created with \code{\link{pairwise}}).}
+\code{data} was created with \code{\link[meta]{pairwise}}).}
 
 \item{treat2}{Label / number for second treatment (ignored if
-\code{data} was created with \code{\link{pairwise}}).}
+\code{data} was created with \code{\link[meta]{pairwise}}).}
 
 \item{studlab}{Study labels (ignored if \code{data} was created
-with \code{\link{pairwise}}).}
+with \code{\link[meta]{pairwise}}).}
 
 \item{subset}{An optional vector specifying a subset of studies to
 be used.}
@@ -78,6 +101,9 @@ more details for disconnected networks.}
 printed.}
 
 \item{\dots}{Additional arguments (ignored at the moment)}
+
+\item{drop.NA}{A logical indicating whether comparisons with missing
+treatment estimates or standard errors should be considered.}
 
 \item{x}{An object of class \code{netconnection}.}
 
@@ -167,7 +193,7 @@ net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6, subset = nc2$subnet == 2)
 
 net2.1
 net2.2
-}  
+}
 
 }
 \seealso{

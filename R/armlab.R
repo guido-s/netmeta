@@ -27,7 +27,7 @@ armlab <- function(sm, backtransf, big.mark = gs("big.mark")) {
     lab <- "Effectiveness"
   ##
   if (!backtransf) {
-    if (is.relative.effect(sm))
+    if (is_relative_effect(sm))
       lab <- paste("Log", lab)
     ##
     else if (sm == "VE")

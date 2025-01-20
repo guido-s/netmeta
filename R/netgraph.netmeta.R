@@ -133,11 +133,13 @@
 #' @param zpos Vector (\emph{n}) of z coordinates.
 #' @param figure A logical indicating whether network graph should be
 #'   shown.
-#' @param \dots Additional graphical arguments.
+#' @param \dots Additional graphical arguments (passed on to
+#'   \code{\link{plot.default}}).
 #' 
 #' @details
 #' This function generates a network graph for an R object created
-#' with \code{\link{netmeta}}.
+#' with \code{\link{netmeta}}. R function \code{\link{plot.default}} is used
+#' to create the network graph.
 #'
 #' \subsection{Layout of network graph}{
 #' The network is laid out in the plane, where the nodes in the graph
@@ -447,7 +449,6 @@
 #' @method netgraph netmeta
 #' @export
 
-
 netgraph.netmeta <- function(x, seq = x$seq,
                              labels = x$trts,
                              cex = 1, adj = NULL, srt.labels = 0,
@@ -458,9 +459,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
                                  0.0175,
                              scale = 1.10,
                              ##
-                             col = if (iterate) "slateblue" else "black",
-                             plastic = !(iterate & allfigures),
-                             thickness = "number.of.studies",
+                             col = gs("col.netgraph"),
+                             plastic = gs("plastic"),
+                             thickness = gs("thickness"),
                              lwd = 5, lwd.min = lwd / 2.5, lwd.max,
                              rescale.thickness,
                              ##
@@ -470,7 +471,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
                              highlight = NULL, col.highlight = "red2",
                              scale.highlight = 1,
                              ##
-                             multiarm = FALSE,
+                             multiarm = gs("multiarm"),
                              col.multiarm = NULL,
                              alpha.transparency = 0.5,
                              ##
@@ -482,8 +483,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
                                  "black" else "red",
                              bg.points = "red",
                              points.min, points.max, rescale.pointsize,
-                             ##
-                             number.of.studies = FALSE,
+                             #
+                             number.of.studies = gs("number.of.studies"),
                              cex.number.of.studies = cex,
                              col.number.of.studies = "white",
                              bg.number.of.studies = "black",
@@ -554,7 +555,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
   is_2d <- dim == "2d"
   is_3d <- !is_2d
   ##
-  if (is_3d & !is.installed.package("rgl", stop = FALSE)) {
+  if (is_3d & !is_installed_package("rgl", stop = FALSE)) {
     warning(paste0("2-D plot generated as package 'rgl' is missing.",
                    "\n  ",
                    "Please install package 'rgl' in order to ",
@@ -618,7 +619,10 @@ netgraph.netmeta <- function(x, seq = x$seq,
             call. = FALSE)
     iterate <- FALSE
   }
-  ##
+  #
+  col <- replaceNULL(col, if (iterate) "slateblue" else "black")
+  #
+  plastic <- replaceNULL(plastic, !(iterate & allfigures))
   chklogical(plastic)
   ##
   if (!missing(labels)) {
@@ -1144,7 +1148,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
            "number of treatments.",
            eval. = FALSE)
     if (is.null(names(srt.labels))) {
-      if (is.wholenumber(rotn) & abs(rotn) < x$n) {
+      if (is_wholenumber(rotn) & abs(rotn) < x$n) {
         srt1 <- seq_len(x$n)
         srt1 <- srt1 - rotn
         srt1[srt1 > x$n] <- srt1[srt1 > x$n] - x$n
@@ -1338,9 +1342,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
         for (i in n.plastic:1) {
           j <- j + 1
           lwd.multiply[j] <- sin(pi * i / 2 / n.plastic)
-          cols[j] <- paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
+          cols[j] <- paste0("gray", round(100 * (1 - i / n.plastic)))
           cols.highlight[, j] <-
-            paste("gray", round(100 * (1 - i / n.plastic)), sep = "")
+            paste0("gray", round(100 * (1 - i / n.plastic)))
         }
         ##
         for (h in seq_len(n.high)) {
@@ -1350,8 +1354,7 @@ netgraph.netmeta <- function(x, seq = x$seq,
                 substring(col.high.h, nchar(col.high.h)) %in% 1:4)
               col.high.h <- substring(col.high.h, 1, nchar(col.high.h) - 1)
             ##
-            cols.highlight[h, 1:12] <- rep(paste(col.high.h, 4:1, sep = ""),
-                                           rep(3, 4))
+            cols.highlight[h, 1:12] <- rep(paste0(col.high.h, 4:1), rep(3, 4))
             cols.highlight[h, 13:15] <- rep(col.high.h, 3)
           }
           else {
@@ -1380,11 +1383,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
                  "(see helpfile of plotgraph command).")
           ##
           if (sum(dat.nodes$trts %in% highs) != 2)
-            stop(paste0("Argument 'highlight' must contain two of ",
-                        "the following values ",
-                        "(separated by \":\"):\n  ",
-                        paste(paste("'", dat.nodes$trts, "'", sep = ""),
-                              collapse = " - "), sep = ""))
+            stop("Argument 'highlight' must contain two of ",
+                 "the following values (separated by \":\"):\n  ",
+                 paste(paste0("'", dat.nodes$trts, "'"), collapse = " - "))
           ##
           dat.high <- dat.nodes[dat.nodes$trts %in% highs, ]
           ##
@@ -1499,10 +1500,10 @@ netgraph.netmeta <- function(x, seq = x$seq,
                  "(see helpfile of plotgraph command).")
           ##
           if (sum(dat.nodes$trts %in% highs) != 2)
-            stop(paste("Argument 'highlight' must contain two of the ",
-                       "following values (separated by \":\"):\n  ",
-                       paste(paste("'", dat.nodes$trts, "'", sep = ""),
-                             collapse = " - "), sep = ""))
+            stop("Argument 'highlight' must contain two of the ",
+                 "following values (separated by \":\"):\n  ",
+                 paste(paste0("'", dat.nodes$trts, "'"),
+                       collapse = " - "))
           ##
           dat.high <- dat.nodes[dat.nodes$trts %in% highs, ]
           ##
@@ -1561,18 +1562,18 @@ netgraph.netmeta <- function(x, seq = x$seq,
   }
   
   
-  dat.nodes$xpos[is.zero(dat.nodes$xpos)] <- 0
-  dat.nodes$ypos[is.zero(dat.nodes$ypos)] <- 0
+  dat.nodes$xpos[is_zero(dat.nodes$xpos)] <- 0
+  dat.nodes$ypos[is_zero(dat.nodes$ypos)] <- 0
   ##
   if (!is_2d) {
-    dat.nodes$zpos[is.zero(dat.nodes$zpos)] <- 0
+    dat.nodes$zpos[is_zero(dat.nodes$zpos)] <- 0
     ##
     dat.nodes$xpos.labels <- NULL
     dat.nodes$ypos.labels <- NULL
   }
   else {
-    dat.nodes$xpos.labels[is.zero(dat.nodes$xpos.labels)] <- 0
-    dat.nodes$ypos.labels[is.zero(dat.nodes$ypos.labels)] <- 0
+    dat.nodes$xpos.labels[is_zero(dat.nodes$xpos.labels)] <- 0
+    dat.nodes$ypos.labels[is_zero(dat.nodes$ypos.labels)] <- 0
   }
   ##
   dat.nodes$zpos.labels <- NULL
@@ -1581,8 +1582,8 @@ netgraph.netmeta <- function(x, seq = x$seq,
   rownames(dat.edges) <-
     paste(dat.edges$treat1, dat.edges$treat2, sep = highlight.split)
   ##  
-  dat.edges$xpos[is.zero(dat.edges$xpos)] <- 0
-  dat.edges$ypos[is.zero(dat.edges$ypos)] <- 0
+  dat.edges$xpos[is_zero(dat.edges$xpos)] <- 0
+  dat.edges$ypos[is_zero(dat.edges$ypos)] <- 0
 
   res <- list(nodes = dat.nodes, edges = dat.edges)
   ##

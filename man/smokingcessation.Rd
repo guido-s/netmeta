@@ -60,7 +60,7 @@ tname <- c("No intervention", "Self-help",
 netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25, labels = tname)
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{metabin}},
+\code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 }
 \keyword{datasets}

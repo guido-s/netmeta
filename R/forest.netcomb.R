@@ -4,7 +4,7 @@
 #' Draws a forest plot in the active graphics window (using grid
 #' graphics system).
 #'
-#' @aliases forest.netcomt plot.netcomb
+#' @aliases forest.netcomb plot.netcomb
 #' 
 #' @param x An object of class \code{netcomb}.
 #' @param reference.group Reference treatment(s).
@@ -14,18 +14,21 @@
 #' @param pooled A character string indicating whether results for the
 #'   common (\code{"common"}) or random effects model (\code{"random"})
 #'   should be plotted. Can be abbreviated.
+#' @param equal.size A logical indicating whether all squares should
+#'   be of equal size. Otherwise, the square size is proportional to
+#'   the precision of estimates.
 #' @param leftcols A character vector specifying (additional) columns
 #'   to be plotted on the left side of the forest plot or a logical
-#'   value (see \code{\link{forest.meta}} help page for details).
+#'   value (see \code{\link[meta]{forest.meta}} help page for details).
 #' @param leftlabs A character vector specifying labels for
 #'   (additional) columns on left side of the forest plot (see
-#'   \code{\link{forest.meta}} help page for details).
+#'   \code{\link[meta]{forest.meta}} help page for details).
 #' @param rightcols A character vector specifying (additional) columns
 #'   to be plotted on the right side of the forest plot or a logical
-#'   value (see \code{\link{forest.meta}} help page for details).
+#'   value (see \code{\link[meta]{forest.meta}} help page for details).
 #' @param rightlabs A character vector specifying labels for
 #'   (additional) columns on right side of the forest plot (see
-#'   \code{\link{forest.meta}} help page for details).
+#'   \code{\link[meta]{forest.meta}} help page for details).
 #' @param digits Minimal number of significant digits for treatment
 #'   effects and confidence intervals, see \code{print.default}.
 #' @param smlab A label printed at top of figure. By default, text
@@ -33,6 +36,8 @@
 #' @param sortvar An optional vector used to sort the individual
 #'   studies (must be of same length as the total number of
 #'   treatments).
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in forest plots. If \code{backtransf = TRUE},
 #'   results for \code{sm = "OR"} are presented as odds ratios rather
@@ -40,11 +45,12 @@
 #' @param lab.NA A character string to label missing values.
 #' @param add.data An optional data frame with additional columns to
 #'   print in forest plot (see Details).
+#' @param addrows.below.overall A numeric value indicating how many
+#'   empty rows are printed between meta-analysis results and
+#'   heterogeneity statistics.
 #' @param drop.reference.group A logical indicating whether the
 #'   reference group should be printed in the forest plot.
-#' @param weight.study A character string indicating weighting used to
-#'   determine size of squares or diamonds.
-#' @param \dots Additional arguments for \code{\link{forest.meta}}
+#' @param \dots Additional arguments for \code{\link[meta]{forest.meta}}
 #'   function.
 #' 
 #' @details
@@ -65,13 +71,13 @@
 #' row names as the treatment effects matrices in R object \code{x},
 #' i.e., \code{x$TE.common} or \code{x$TE.random}.
 #' 
-#' For more information see help page of \code{\link{forest.meta}}
+#' For more information see help page of \code{\link[meta]{forest.meta}}
 #' function.
 #'
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netcomb}}, \code{\link{discomb}},
-#'   \code{\link{forest.meta}}
+#'   \code{\link[meta]{forest.meta}}
 #' 
 #' @keywords hplot
 #' 
@@ -130,11 +136,11 @@
 #' @method forest netcomb
 #' @export
 
-
 forest.netcomb <- function(x,
                            pooled = ifelse(x$random, "random", "common"),
                            reference.group = x$reference.group,
                            baseline.reference = x$baseline.reference,
+                           equal.size = gs("equal.size"),
                            leftcols = "studlab",
                            leftlabs = "Treatment",
                            rightcols = c("effect", "ci"),
@@ -142,11 +148,14 @@ forest.netcomb <- function(x,
                            digits = gs("digits.forest"),
                            smlab = NULL,
                            sortvar = x$seq,
+                           overall.hetstat = gs("overall.hetstat"),
                            backtransf = x$backtransf,
-                           lab.NA = ".",
+                           lab.NA = gs("lab.NA"),
                            add.data,
-                           drop.reference.group = FALSE,
-                           weight.study = "same",
+                           addrows.below.overall =
+                             if (x$overall.hetstat) 2 else
+                               gs("addrows.below.overall"),
+                           drop.reference.group = gs("drop.reference.group"),
                            ...) {
   
   
@@ -168,6 +177,8 @@ forest.netcomb <- function(x,
   chklogical(baseline.reference)
   chklogical(drop.reference.group)
   ##
+  overall.hetstat <- replaceNULL(overall.hetstat, FALSE)
+  #
   chklogical(backtransf)
   chkchar(lab.NA)
   
@@ -196,15 +207,11 @@ forest.netcomb <- function(x,
     ##
     if (is.null(smlab))
       if (baseline.reference)
-        smlab <- paste("Comparison: other vs '",
-                       reference.group, "'\n",
-                       text.common,
-                       sep = "")
+        smlab <- paste0("Comparison: other vs '", reference.group, "'\n",
+                        text.common)
       else
-        smlab <- paste("Comparison: '",
-                       reference.group, "' vs other\n",
-                       text.common,
-                       sep = "")
+        smlab <- paste0("Comparison: '", reference.group, "' vs other\n",
+                       text.common)
   }
   ##
   if (pooled == "random") {
@@ -212,13 +219,11 @@ forest.netcomb <- function(x,
     seTE <- x$seTE.random
     if (is.null(smlab))
       if (baseline.reference)
-        smlab <- paste("Comparison: other vs '",
-                       reference.group, "'\n(Random Effects Model)",
-                       sep = "")
+        smlab <- paste0("Comparison: other vs '", reference.group,
+                        "'\n(Random Effects Model)")
       else
-        smlab <- paste("Comparison: '",
-                       reference.group, "' vs other\n(Random Effects Model)",
-                       sep = "")
+        smlab <- paste0("Comparison: '", reference.group,
+                        "' vs other\n(Random Effects Model)")
   }
   
   
@@ -261,7 +266,7 @@ forest.netcomb <- function(x,
            call. = FALSE)
     if (any(rownames(add.data) != labels))
       stop("Dataset 'add.data' must have the following row names:\n",
-           paste(paste("'", labels, "'", sep = ""), collapse = " - "),
+           paste(paste0("'", labels, "'"), collapse = " - "),
            call. = FALSE)
     ##
     dat <- cbind(dat, add.data)
@@ -336,15 +341,22 @@ forest.netcomb <- function(x,
   ##
   forest(m1,
          digits = digits,
-         common = FALSE, random = FALSE,
-         overall = FALSE, hetstat = FALSE, test.subgroup = FALSE,
+         #
+         overall = FALSE, common = FALSE, random = FALSE,
+         overall.hetstat = overall.hetstat,
+         test.subgroup = FALSE,
+         #
          leftcols = leftcols,
          leftlabs = leftlabs,
          rightcols = rightcols,
          rightlabs = rightlabs,
-         smlab = smlab,
-         lab.NA = lab.NA,
-         weight.study = weight.study,
+         #
+         smlab = smlab, lab.NA = lab.NA,
+         #
+         weight.study = if (equal.size) "same" else pooled,
+         #
+         addrows.below.overall = addrows.below.overall,
+         #
          ...)
   
   
@@ -352,13 +364,9 @@ forest.netcomb <- function(x,
 }
 
 
-
-
-
 #' @rdname forest.netcomb
 #' @method plot netcomb
 #' @export
-#'
 
 plot.netcomb <- function(x, ...)
   forest(x, ...)

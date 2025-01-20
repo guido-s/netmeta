@@ -33,7 +33,7 @@ complications.
 \emph{Cochrane Database of Systematic Reviews}
 }
 \description{
-This data set contains data from a Cochrane review assessing
+This dataset contains data from a Cochrane review assessing
 efficacy and safety of three drug classes as adjuvant treatment to
 levodopa therapy in patients with Parkinson’s disease and motor
 complications (Stowe et al., 2010). The authors conducted three
@@ -64,7 +64,7 @@ net1 <- netmeta(p1, ref = "plac")
 net1
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{metacont}},
+\code{\link[meta]{pairwise}}, \code{\link[meta]{metacont}},
   \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 }
 \keyword{datasets}

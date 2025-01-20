@@ -9,6 +9,8 @@
 #'   effects model should be printed.
 #' @param random A logical indicating whether results for the random
 #'   effects model should be printed.
+#' @param overall.hetstat A logical indicating whether to print heterogeneity
+#'   measures.
 #' @param backtransf A logical indicating whether results should be
 #'   back transformed in printouts and forest plots. If
 #'   \code{backtransf = TRUE}, results for \code{sm = "OR"} are
@@ -32,21 +34,34 @@
 #'   root of between-study variance, see \code{print.default}.
 #' @param digits.I2 Minimal number of significant digits for I-squared
 #'   statistic, see \code{print.default}.
+#' @param big.mark A character used as thousands separator.
 #' @param scientific.pval A logical specifying whether p-values should
 #'   be printed in scientific notation, e.g., 1.2345e-01 instead of
 #'   0.12345.
 #' @param zero.pval A logical specifying whether p-values should be
 #'   printed with a leading zero.
 #' @param JAMA.pval A logical specifying whether p-values for test of
-#'   component or combination effect should be printed according to
-#'   JAMA reporting standards.
-#' @param big.mark A character used as thousands separator.
+#'   overall effect should be printed according to JAMA reporting
+#'   standards.
+#' @param print.tau2 A logical specifying whether between-study
+#'   variance \eqn{\tau^2} should be printed.
+#' @param print.tau A logical specifying whether \eqn{\tau}, the
+#'   square root of the between-study variance \eqn{\tau^2}, should be
+#'   printed.
+#' @param print.Q A logical value indicating whether to print the
+#'   results of the test of heterogeneity.
+#' @param print.I2 A logical specifying whether heterogeneity
+#'   statistic I\eqn{^2} should be printed.
+#' @param print.I2.ci A logical specifying whether confidence interval for
+#'   heterogeneity statistic I\eqn{^2} should be printed.
 #' @param text.tau2 Text printed to identify between-study variance
 #'   \eqn{\tau^2}.
 #' @param text.tau Text printed to identify \eqn{\tau}, the square
 #'   root of the between-study variance \eqn{\tau^2}.
 #' @param text.I2 Text printed to identify heterogeneity statistic
 #'   I\eqn{^2}.
+#' @param details.methods A logical specifying whether details on statistical
+#'   methods should be printed.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -96,10 +111,10 @@
 #' @method print netcomb
 #' @export
 
-
 print.netcomb <- function(x,
                           common = x$common,
                           random = x$random,
+                          overall.hetstat = x$overall.hetstat,
                           backtransf = x$backtransf,
                           nchar.comps = x$nchar.comps,
                           ##
@@ -111,18 +126,24 @@ print.netcomb <- function(x,
                           digits.tau2 = gs("digits.tau2"),
                           digits.tau = gs("digits.tau"),
                           digits.I2 = gs("digits.I2"),
-                          ##
+                          #
+                          big.mark = gs("big.mark"),
                           scientific.pval = gs("scientific.pval"),
                           zero.pval = gs("zero.pval"),
                           JAMA.pval = gs("JAMA.pval"),
-                          ##
-                          big.mark = gs("big.mark"),
-                          ##
+                          #
+                          print.tau2 = gs("print.tau2"),
+                          print.tau = gs("print.tau"),
+                          print.Q = gs("print.Q"),
+                          print.I2 = gs("print.I2"),
+                          print.I2.ci = gs("print.I2.ci"),
+                          #
                           text.tau2 = gs("text.tau2"),
                           text.tau = gs("text.tau"),
                           text.I2 = gs("text.I2"),
-                          ##
-                          legend = TRUE,
+                          #
+                          details.methods = gs("details"),
+                          legend = gs("legend"),
                           ##
                           warn.deprecated = gs("warn.deprecated"),
                           ##
@@ -143,6 +164,7 @@ print.netcomb <- function(x,
   ## (2) Check other arguments
   ##
   ##
+  chklogical(overall.hetstat)
   chklogical(backtransf)
   ##
   chknumeric(digits, min = 0, length = 1)
@@ -153,15 +175,23 @@ print.netcomb <- function(x,
   chknumeric(digits.tau2, min = 0, length = 1)
   chknumeric(digits.tau, min = 0, length = 1)
   chknumeric(digits.I2, min = 0, length = 1)
-  ##
+  #
+  chkchar(big.mark, length = 1)
   chklogical(scientific.pval)
   chklogical(zero.pval)
   chklogical(JAMA.pval)
-  ##
+  #
+  chklogical(print.tau2)
+  chklogical(print.tau)
+  chklogical(print.Q)
+  chklogical(print.I2)
+  chklogical(print.I2.ci)
+  #
   chkchar(text.tau2)
   chkchar(text.tau)
   chkchar(text.I2)
-  ##
+  #
+  chklogical(details.methods)
   chklogical(legend)
   ##
   ## Check for deprecated arguments in '...'
@@ -194,14 +224,14 @@ print.netcomb <- function(x,
   upper.I2 <- round(100 * x$upper.I2, digits.I2)
   ##
   if (common | random) {
-    cat(paste("Number of studies: k = ", x$k, "\n", sep = ""))
-    cat(paste("Number of pairwise comparisons: m = ", x$m, "\n", sep = ""))
-    cat(paste("Number of treatments: n = ", x$n, "\n", sep = ""))
-    cat(paste("Number of active components: c = ", x$c, "\n", sep = ""))
+    cat("Number of studies: k = ", x$k, "\n", sep = "")
+    cat("Number of pairwise comparisons: m = ", x$m, "\n", sep = "")
+    cat("Number of treatments: n = ", x$n, "\n", sep = "")
+    cat("Number of active components: c = ", x$c, "\n", sep = "")
     if (!is.null(x$d))
-      cat(paste("Number of designs: d = ", x$d, "\n", sep = ""))
+      cat("Number of designs: d = ", x$d, "\n", sep = "")
     if (inherits(x, "discomb"))
-      cat(paste("Number of subnetworks: s = ", x$s, "\n", sep = ""))
+      cat("Number of subnetworks: s = ", x$s, "\n", sep = "")
     ##
     cat("\n")
     ##
@@ -215,12 +245,12 @@ print.netcomb <- function(x,
     comps.abbr <- treats(comps, nchar.comps)
     sep.comps <- x$sep.comps
     ##
-    if (!backtransf & is.relative.effect(sm))
-      sm.lab <- paste("log", sm, sep = "")
+    if (!backtransf & (is_relative_effect(sm) | sm == "VE"))
+      sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
     else
       sm.lab <- sm
     ##
-    ci.lab <- paste(round(100 * x$level, 1), "%-CI", sep = "")
+    ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
     ##
     TE.common <- x$TE.common
     lowTE.common <- x$lower.common
@@ -261,39 +291,50 @@ print.netcomb <- function(x,
       trts.abbr <- compos(trts, comps, comps.abbr, sep.comps)
       ##
       if (baseline.reference)
-        comptext <- paste("comparison: ",
-                          if (x$n == 2)
-                            paste("'",
-                                  trts.abbr[trts != reference.group],
-                                  "'", sep = "")
-                          else
-                            "other treatments",
-                          " vs '",
-                         trts.abbr[trts == reference.group],
-                          "'", sep = "")
+        comptext <- paste0("comparison: ",
+                           if (x$n == 2)
+                             paste0("'",
+                                    trts.abbr[trts != reference.group],
+                                    "'")
+                           else
+                             "other treatments",
+                           " vs '",
+                           trts.abbr[trts == reference.group],
+                           "'")
       else
-        comptext <- paste("comparison: '",
-                         trts.abbr[trts == reference.group],
-                          "' vs ",
-                          if (x$n == 2)
-                            paste("'",
-                                  trts.abbr[trts != reference.group],
-                                  "'", sep = "")
-                          else
-                            "other treatments", sep = "")
+        comptext <- paste0("comparison: '",
+                           trts.abbr[trts == reference.group],
+                           "' vs ",
+                           if (x$n == 2)
+                             paste0("'",
+                                    trts.abbr[trts != reference.group],
+                                    "'")
+                           else
+                             "other treatments")
       ##
-      noeffect <- 0
-      ##  
-      if (backtransf & is.relative.effect(sm)) {
-        noeffect <- 1
+      noeffect <- 1L * (backtransf & is_relative_effect(sm))
+      #
+      if (backtransf) {
+        TE.common    <- backtransf(TE.common, sm)
+        lowTE.common <- backtransf(lowTE.common, sm)
+        uppTE.common <- backtransf(uppTE.common, sm)
         ##
-        TE.common    <- exp(TE.common)
-        lowTE.common <- exp(lowTE.common)
-        uppTE.common <- exp(uppTE.common)
-        ##
-        TE.random    <- exp(TE.random)
-        lowTE.random <- exp(lowTE.random)
-        uppTE.random <- exp(uppTE.random)
+        TE.random    <- backtransf(TE.random, sm)
+        lowTE.random <- backtransf(lowTE.random, sm)
+        uppTE.random <- backtransf(uppTE.random, sm)
+        #
+        # Switch lower and upper limit for VE if results have been
+        # backtransformed
+        #
+        if (sm == "VE") {
+          tmp.l <- lowTE.common
+          lowTE.common <- uppTE.common
+          uppTE.common <- tmp.l
+          #
+          tmp.l <- lowTE.random
+          lowTE.random <- uppTE.random
+          uppTE.random <- tmp.l
+        }
       }
       ##
       TE.common <- round(TE.common, digits)
@@ -338,16 +379,17 @@ print.netcomb <- function(x,
                                digits, "NA", big.mark = big.mark)),
               formatN(statistic.common.b, digits.stat, text.NA = "NA",
                       big.mark = big.mark),
-              formatPT(pval.common.b,
-                       digits = digits.pval,
-                       scientific = scientific.pval)
+              formatPT(pval.common.b, digits = digits.pval,
+                       scientific = scientific.pval,
+                       zero = zero.pval, JAMA = JAMA.pval)
               )
       ##
       dat1.c[trts == reference.group, ] <- rep(".", ncol(dat1.c))
       dimnames(dat1.c) <-
         list(trts, c(sm.lab, ci.lab, "z", "p-value"))
       ##
-      if (TE.common.b[trts == reference.group] == noeffect)
+      if (!is.na(TE.common.b[trts == reference.group]) &&
+          TE.common.b[trts == reference.group] == noeffect)
         dat1.c[trts == reference.group, ] <- "."
       rownames(dat1.c) <- trts.abbr
       ##
@@ -383,16 +425,17 @@ print.netcomb <- function(x,
                                digits, "NA", big.mark = big.mark)),
               formatN(statistic.random.b, digits.stat, text.NA = "NA",
                       big.mark = big.mark),
-              formatPT(pval.random.b,
-                       digits = digits.pval,
-                       scientific = scientific.pval)
+              formatPT(pval.random.b, digits = digits.pval,
+                       scientific = scientific.pval,
+                       zero = zero.pval, JAMA = JAMA.pval)
               )
       ##
       dat1.r[trts == reference.group, ] <- rep(".", ncol(dat1.r))
       dimnames(dat1.r) <-
         list(colnames(TE.random), c(sm.lab, ci.lab, "z", "p-value"))
       ##
-      if (TE.random.b[trts == reference.group] == noeffect)
+      if (!is.na(TE.random.b[trts == reference.group]) &&
+          TE.random.b[trts == reference.group] == noeffect)
         dat1.r[trts == reference.group, ] <- "."
       rownames(dat1.r) <- trts.abbr
     }
@@ -489,13 +532,14 @@ print.netcomb <- function(x,
     ##
     if (common) {
       if (reference.group != "") {
-        cat(paste0("Common effects model",
-                   if (!is.null(x$inactive))
-                     paste0(" (inactive component: '", x$inactive, "')"),
-                   "\n\n"))
+        cat("Common effects model",
+            if (!is.null(x$inactive))
+              paste0(" (inactive component: '", x$inactive, "')"),
+            "\n\n",
+            sep = "")
         ##
-        cat("Treatment estimate (sm = '", sm.lab,
-            "', ", comptext, "):\n", sep = "")
+        cat("Treatment estimate (sm = '", sm.lab, "', ", comptext, "):\n",
+            sep = "")
         prmatrix(dat1.c, quote = FALSE, right = TRUE)
         cat("\n")
       }
@@ -508,15 +552,17 @@ print.netcomb <- function(x,
       ##
       cat("Incremental effect for components:\n")
       print(dat3.c)
-      cat("\n")
     }
     ##
     if (random) {
+      if (common)
+        cat("\n")
       if (reference.group != "") {
-        cat(paste0("Random effects model",
-                   if (!is.null(x$inactive))
-                     paste0(" (inactive component: '", x$inactive, "')"),
-                   "\n\n"))
+        cat("Random effects model",
+            if (!is.null(x$inactive))
+              paste0(" (inactive component: '", x$inactive, "')"),
+            "\n\n",
+            sep = "")
         ##
         cat("Treatment estimate (sm = '", sm.lab,
             "', ", comptext, "):\n", sep = "")
@@ -532,50 +578,90 @@ print.netcomb <- function(x,
       ##
       cat("Incremental effect for components:\n")
       print(dat3.r)
-      cat("\n")
     }
     ##
     ## (d) Heterogeneity / inconsistency
     ##
-    cat(paste0("Quantifying heterogeneity / inconsistency:\n",
-               formatPT(x$tau^2,
-                        lab = TRUE, labval = text.tau2,
-                        digits = digits.tau2,
-                        lab.NA = "NA", big.mark = big.mark),
-               "; ",
-               formatPT(x$tau,
-                        lab = TRUE, labval = text.tau,
-                        digits = digits.tau,
-                        lab.NA = "NA", big.mark = big.mark),
-               if (!is.na(I2))
-                 paste0("; ", text.I2, " = ", round(I2, digits.I2), "%"),
-               if (!(is.na(lower.I2) | is.na(upper.I2)))
-                 pasteCI(lower.I2, upper.I2, digits.I2, big.mark, unit = "%"),
-               "\n\n")
-        )
-    ##
-    cat("Heterogeneity statistics:\n")
-    ##
-    hetdat <- 
-      data.frame(Q = formatN(c(x$Q.additive,
-                               x$Q.standard,
-                               x$Q.diff),
-                             digits.Q),
-                 df.Q = formatN(c(x$df.Q.additive,
-                                  x$df.Q.standard,
-                                  x$df.Q.diff), 0),
-                 pval = formatPT(c(x$pval.Q.additive,
-                                   x$pval.Q.standard,
-                                   x$pval.Q.diff),
-                                 digits = digits.pval.Q,
-                                 scientific = scientific.pval),
-                 row.names = c("Additive model", "Standard model",
-                               "Difference"))
-    ##
-    names(hetdat) <- c("Q", "df", "p-value")
-    ##
-    print(hetdat)
-    ##
+    print.I2 <- print.I2 & !is.na(I2)
+    #
+    if (overall.hetstat) {
+      if (print.tau2 | print.tau | print.I2 | print.Q)
+        cat("\n")
+      #
+      if (print.tau2 | print.tau | print.I2) {
+        print.I2.ci <- print.I2.ci & print.I2
+        #
+        text.hetstat <- "Quantifying heterogeneity / inconsistency:\n"
+        #
+        if (print.tau2)
+          text.hetstat <- paste0(
+            text.hetstat,
+            formatPT(x$tau^2,
+                     lab = TRUE, labval = text.tau2,
+                     digits = digits.tau2,
+                     lab.NA = "NA", big.mark = big.mark))
+        #
+        if (print.tau)
+          text.hetstat <- paste0(
+            text.hetstat,
+            if (print.tau2) "; ",
+            formatPT(x$tau,
+                     lab = TRUE, labval = text.tau,
+                     digits = digits.tau,
+                     lab.NA = "NA", big.mark = big.mark))
+        #
+        if (print.I2)
+          text.hetstat <- paste0(
+            text.hetstat,
+            if (print.tau2 | print.tau) "; ",
+            paste0(text.I2, " = ", round(I2, digits.I2), "%"),
+            if (print.I2.ci & (!(is.na(lower.I2) | is.na(upper.I2))))
+              pasteCI(lower.I2, upper.I2,
+                      digits.I2, big.mark, unit = "%"))
+        #
+        text.hetstat <- paste0(text.hetstat, "\n")
+        #
+        cat(text.hetstat)
+      }
+      #
+      if (print.Q) {
+        if (print.tau2 | print.tau | print.I2)
+          cat("\n")
+        #
+        cat("Heterogeneity statistics:\n")
+        #
+        hetdat <- 
+          data.frame(Q = formatN(c(x$Q.additive,
+                                   x$Q.standard,
+                                   x$Q.diff),
+                                 digits.Q),
+                     df.Q = formatN(c(x$df.Q.additive,
+                                      x$df.Q.standard,
+                                      x$df.Q.diff), 0),
+                     pval = formatPT(c(x$pval.Q.additive,
+                                       x$pval.Q.standard,
+                                       x$pval.Q.diff),
+                                     digits = digits.pval.Q,
+                                     scientific = scientific.pval,
+                                     zero = zero.pval, JAMA = JAMA.pval),
+                     row.names = c("Additive model", "Standard model",
+                                   "Difference"))
+        #
+        names(hetdat) <- c("Q", "df", "p-value")
+        #
+        print(hetdat)
+      }
+    }
+    #
+    # Print details of component network meta-analysis methods
+    #
+    if (details.methods)
+      cat(textmeth(x, random, print.tau2, print.tau,
+                   text.tau2, text.tau, digits.tau2, digits.tau,
+                   print.I2, text.I2, big.mark))
+    #
+    # Add legend with abbreviated component labels
+    #
     if (legend) {
       diff.comps <- comps != comps.abbr
       if (any(diff.comps)) {

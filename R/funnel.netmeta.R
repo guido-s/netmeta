@@ -58,7 +58,7 @@
 #' @param rank Deprecated argument (replaced by \code{method.bias}).
 #' @param mm Deprecated argument (replaced by \code{method.bias}).
 #' @param \dots Additional graphical arguments passed as arguments to
-#'   \code{\link{funnel.meta}}.
+#'   \code{\link[meta]{funnel.meta}}.
 #' 
 #' @details
 #' A \sQuote{comparison-adjusted} funnel plot (Chaimani & Salanti,
@@ -108,8 +108,8 @@
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
-#' @seealso \code{\link{netmeta}}, \code{\link{funnel.meta}},
-#'   \code{\link{metabias}}
+#' @seealso \code{\link{netmeta}}, \code{\link[meta]{funnel.meta}},
+#'   \code{\link[meta]{metabias}}
 #' 
 #' @references
 #' Chaimani A & Salanti G (2012):
@@ -152,7 +152,7 @@
 #' funnel(net1, order = "pl", method.bias = "Egger",
 #'   digits.pval = 2)
 #' 
-#' # (Non-sensical) alphabetic order of treatments with placebo as
+#' # (Nonsensical) alphabetic order of treatments with placebo as
 #' # last treatment
 #' #
 #' ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
@@ -183,7 +183,6 @@
 #'
 #' @method funnel netmeta
 #' @export
-
 
 funnel.netmeta <- function(x,
                            order,

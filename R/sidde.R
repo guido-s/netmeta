@@ -59,9 +59,10 @@ sidde <- function(x,
       tictoc::tic()
     ##
     if (verbose)
-      cat(paste0("- ",
-                 paste(trts[idx1.i], trts[idx2.i], sep = sep.trts),
-                 " (", i, "/", n.comps, ")\n"))
+      cat("- ",
+          paste(trts[idx1.i], trts[idx2.i], sep = sep.trts),
+          " (", i, "/", n.comps, ")\n",
+          sep = "")
     ##
     ## Determine all pairwise comparisons of trts[idx1.i] vs trts[idx2.i]
     ##
@@ -138,7 +139,7 @@ sidde <- function(x,
       names.tictoc[i] <- paste(trts[idx1.i], trts[idx2.i], sep = sep.trts)
       ##
       if (verbose)
-        cat(paste(round(tictoc[i], 3), "sec elapsed\n"))
+        cat(round(tictoc[i], 3), "sec elapsed\n")
     }
   }
   

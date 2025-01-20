@@ -51,7 +51,7 @@ forest(net1, ref = "Placebo", drop = TRUE,
 }
 }
 \seealso{
-\code{\link{pairwise}}, \code{\link{metabin}},
+\code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmeta}}
 }
 \keyword{datasets}
