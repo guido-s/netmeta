@@ -176,8 +176,9 @@
 #' # Create Excel files with network tables
 #' # (if R package writexl is available)
 #' #
-#' nettable(net1, digits = 2, bracket = "(", separator = " to ",
-#'          path = tempfile(fileext = ".xlsx"))
+#' if (requireNamespace("writexl", quietly = TRUE))
+#'   nettable(net1, digits = 2, bracket = "(", separator = " to ",
+#'            path = tempfile(fileext = ".xlsx"))
 #' }
 #' 
 #' @rdname nettable

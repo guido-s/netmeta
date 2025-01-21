@@ -17,50 +17,38 @@ multicols <- function(studies, narms, missing.col.multiarm,
   ##
   o.cols <- TRUE
   ##
-  if (missing.col.multiarm | is.null(col.multiarm)) {
-    ## Check for R package colorspace & use various gray values if
-    ## not installed packages
-    if (!any(as.data.frame(installed.packages())$Package == "colorspace"))
-      cols <- grDevices::rainbow(n.multi, alpha = alpha.transparency)
-    else
-      cols <- colorspace::sequential_hcl(n.multi, alpha = alpha.transparency)
-  }
+  if (missing.col.multiarm | is.null(col.multiarm))
+    cols <- sequential_hcl(n.multi, alpha = alpha.transparency)
   else {
     ##
     if (is.function(col.multiarm)) {
       mcname <- deparse(substitute(col.multiarm))
       ##
-      csfun <- function(fcall, fname) {
-        is.cs <- length(grep(fname, fcall)) > 0
-        if (is.cs)
-          is_installed_package("colorspace")
-        is.cs
-      }
+      colfun <- function(fcall, fname)
+        length(grep(fname, fcall)) > 0
       ##
-      if (csfun(mcname, "rainbow_hcl"))
-        cols <- colorspace::rainbow_hcl(n.multi,
-                                        start = 240, end = 60,
-                                        alpha = alpha.transparency)
-      else if (csfun(mcname, "sequential_hcl"))
-        cols <- colorspace::sequential_hcl(n.multi, alpha = alpha.transparency)
-      else if (csfun(mcname, "diverge_hcl"))
-        cols <- colorspace::diverge_hcl(n.multi, alpha = alpha.transparency)
-      else if (csfun(mcname, "heat_hcl"))
-        cols <- colorspace::heat_hcl(n.multi, alpha = alpha.transparency)
-      else if (csfun(mcname, "terrain_hcl"))
-        cols <- colorspace::terrain_hcl(n.multi, alpha = alpha.transparency)
-      else if (csfun(mcname, "diverge_hsv"))
-        cols <- colorspace::diverge_hsv(n.multi, alpha = alpha.transparency)
-      else if (csfun(mcname, "choose_palette")) {
-        fcolm <- colorspace::choose_palette(n = n.multi)
+      if (colfun(mcname, "rainbow_hcl"))
+        cols <-
+        rainbow_hcl(n.multi, start = 240, end = 60, alpha = alpha.transparency)
+      else if (colfun(mcname, "sequential_hcl"))
+        cols <- sequential_hcl(n.multi, alpha = alpha.transparency)
+      else if (colfun(mcname, "diverge_hcl"))
+        cols <- diverge_hcl(n.multi, alpha = alpha.transparency)
+      else if (colfun(mcname, "heat_hcl"))
+        cols <- heat_hcl(n.multi, alpha = alpha.transparency)
+      else if (colfun(mcname, "terrain_hcl"))
+        cols <- terrain_hcl(n.multi, alpha = alpha.transparency)
+      else if (colfun(mcname, "diverge_hsv"))
+        cols <- diverge_hsv(n.multi, alpha = alpha.transparency)
+      else if (colfun(mcname, "choose_palette")) {
+        fcolm <- choose_palette(n = n.multi)
         cols <- fcolm(n = n.multi)
       }
       else
         cols <- sapply(n.multi, col.multiarm, alpha = alpha.transparency)
       ##
-      if (csfun(mcname, "sequential_hcl") |
-          csfun(mcname, "diverge_hcl") |
-          csfun(mcname, "heat_hcl"))
+      if (colfun(mcname, "sequential_hcl") | colfun(mcname, "diverge_hcl") |
+          colfun(mcname, "heat_hcl"))
         cols <- rev(cols)
     }
   }

@@ -1,12 +1,4 @@
-## netmeta, version 3.0-1 (2025-01-20)
-
-### User-visible changes
-
-* In help page of R function hasse(), use requireNamespace() to check whether
-  R package hasseDiagram from Bioconductor is installed
-
-
-## netmeta, version 3.0-0 (2025-01-20)
+## netmeta, version 3.0-2 (2025-01-21)
 
 ### Major changes
 
@@ -56,6 +48,12 @@
     with rma.mv() from **metafor** to calculate the between-study variance
     for the REML or ML estimator of the between-study variance
     (argument 'keeprma = FALSE')
+
+* Use the GitHub version of R package **hasseDiagram** which has been archived
+  on CRAN on 2025-01-15
+
+* R packages **mvtnorm**, **grid**, and **colorspace** moved from Suggests to
+  Imports
 
 ### User-visible changes
 
@@ -150,6 +148,9 @@
 * New generic function hasse() for Hasse diagrams
 
 * New functions hasse.netposet() replacing the older hasse()
+
+* In help pages, use requireNamespace() for R commands using R packages
+  listed under Suggests
 
 * Do not print the start-up message concerning older version of R package
   **netmeta** for readers of 'Meta-Analysis with R (Use R!)'

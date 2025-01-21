@@ -611,7 +611,7 @@ plot.netrank <- function(...,
   
   plt <- plt + theme_classic()
   
-  plt <- plt + geom_tile() + ggplot2::xlab("") + ggplot2::ylab("") +
+  plt <- plt + geom_tile() + xlab("") + ylab("") +
     theme(line = element_blank(),
           axis.ticks = element_blank(),
           axis.text.x = element_text(size = axis.size, face = axis.face,
