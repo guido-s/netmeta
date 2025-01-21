@@ -1,7 +1,7 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
 Version: 3.0-2
-Date: 2025-01-20
+Date: 2025-01-21
 Depends: R (>= 4.0.0), meta (>= 8.0-1)
 Imports: Matrix, metafor, MASS, mvtnorm, magic, ggplot2, colorspace, grid,
   dplyr, magrittr
@@ -46,7 +46,7 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <doi:10.1002/jrsm.1143>;
  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <doi:10.1002/cem.2569>; (Rücker & Schwarzer, 2017) <doi:10.1002/jrsm.1270>;
  - contribution matrix as described in Papakonstantinou et al. (2018) <doi:10.12688/f1000research.14770.3> and Davies et al. (2022) <doi:10.1002/sim.9346>;
- - subgroup network meta-analysis.
+ - subgroup network meta-analysis. The suggested package 'hasseDiagram' is available from <https://github.com/kciomek/hasseDiagram>.
 License: GPL (>= 2)
 Encoding: UTF-8
 VignetteBuilder: R.rsp

@@ -1,4 +1,4 @@
-## netmeta, version 3.0-2 (2025-01-20)
+## netmeta, version 3.0-2 (2025-01-21)
 
 ### Major changes
 
