@@ -100,8 +100,6 @@ rankogram.netmeta <- function(x, nsim = gs("nsim"),
   chkclass(x, "netmeta")
   chksuitable(x, "Rankograms", "netmetabin")
   x <- updateversion(x)
-  #
-  is_installed_package("mvtnorm")
   
   
   #

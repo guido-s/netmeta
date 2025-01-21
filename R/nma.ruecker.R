@@ -190,7 +190,7 @@ nma.ruecker <- function(TE, W, seTE,
   TE.pooled <- all
   seTE.pooled <- sqrt(R)
   ##
-  ci.pooled <- meta::ci(all, sqrt(R), level = level.ma)
+  ci.pooled <- ci(all, sqrt(R), level = level.ma)
   ##
   lower.pooled <- ci.pooled$lower
   upper.pooled <- ci.pooled$upper
@@ -296,7 +296,7 @@ nma.ruecker <- function(TE, W, seTE,
     
   }
   ##
-  ci.direct <- meta::ci(TE.direct, seTE.direct, level = level.ma)
+  ci.direct <- ci(TE.direct, seTE.direct, level = level.ma)
   ##
   lower.direct <- ci.direct$lower
   upper.direct <- ci.direct$upper
@@ -582,7 +582,7 @@ nma_ruecker <- function(TE, W, seTE,
   TE.pooled <- all
   seTE.pooled <- sqrt(R)
   ##
-  ci.pooled <- meta::ci(all, sqrt(R), level = level.ma)
+  ci.pooled <- ci(all, sqrt(R), level = level.ma)
   ##
   lower.pooled <- ci.pooled$lower
   upper.pooled <- ci.pooled$upper
@@ -688,7 +688,7 @@ nma_ruecker <- function(TE, W, seTE,
     
   }
   ##
-  ci.direct <- meta::ci(TE.direct, seTE.direct, level = level.ma)
+  ci.direct <- ci(TE.direct, seTE.direct, level = level.ma)
   ##
   lower.direct <- ci.direct$lower
   upper.direct <- ci.direct$upper

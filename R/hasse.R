@@ -21,9 +21,9 @@
 #' Schwarzer, 2017).
 #' 
 #' This R function is a wrapper function for R function
-#' \code{\link[hasseDiagram]{hasse}} in R package \bold{hasseDiagram}
+#' \code{hasse} in R package \bold{hasseDiagram}
 #' (Krzysztof Ciomek, \url{https://github.com/kciomek/hasseDiagram}),
-#' i.e., function \code{hasse} can only be used if R package
+#' i.e., the function \code{hasse} can only be used if R package
 #' \bold{hasseDiagram} is installed.
 #' 
 #' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
@@ -104,19 +104,28 @@ hasse.netposet <- function(x,
   pooled <- setchar(pooled, c("common", "random", "fixed"))
   pooled[pooled == "fixed"] <- "common"
   
-  if (!is_installed_package("hasseDiagram", stop = FALSE))
-    stop(paste0("Package 'hasseDiagram' missing.",
-                "\n  ",
-                "Please use the following R commands for installation:",
-                "\n  ",
-                "install.packages(\"BiocManager\")",
-                "\n  ",
-                "BiocManager::install()",
-                "\n  ",
-                "BiocManager::install(\"Rgraphviz\")",
-                "\n  ",
-                "install.packages(\"hasseDiagram\")"),
-         call. = FALSE)
+  if (!is_installed_package("hasseDiagram", stop = FALSE)) {
+    message(paste0("Package 'hasseDiagram' missing.",
+                   "\n  ",
+                   "Please use the following R commands for installation:",
+                   "\n  ",
+                   "install.packages(\"BiocManager\")",
+                   "\n  ",
+                   #"BiocManager::install()",
+                   #"\n  ",
+                   "BiocManager::install(\"Rgraphviz\")",
+                   "\n  ",
+                   #"install.packages(\"hasseDiagram\")",
+                   #"\n\n  ",
+                   #"If the last command fails, you could install the ",
+                   #"GitHub version of R package hasseDiagram:",
+                   #"\n  ",
+                   "install.packages(\"remotes\")",
+                   "\n  ",
+                   "remotes::install_github(\"kciomek/hasseDiagram\")"))
+    #
+    return(invisible(NULL))
+  }
   
   if (pooled == "common")
     M <- x$M.common

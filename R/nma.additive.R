@@ -95,9 +95,9 @@ nma_additive <- function(TE, weights, studlab,
   all.comparisons <- ci(delta.all.matrix, se.delta.all.matrix,
                         level = level)
   ##
-  components <- meta::ci(beta, se.beta, level = level)
+  components <- ci(beta, se.beta, level = level)
   ##
-  combinations <- meta::ci(theta, se.theta, level = level)
+  combinations <- ci(theta, se.theta, level = level)
   ##
   ## Test of total heterogeneity / inconsistency:
   ##
