@@ -21,7 +21,7 @@ Ulrike Krahn,
 
 ## Contributor
 
-[Theodoros Evrenoglou](https://orcid.org/0000-0003-3336-8058),
+[Theodoros Evrenoglou](https://orcid.org/0000-0003-3336-8058)
 
 
 ## Description
