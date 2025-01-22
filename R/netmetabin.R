@@ -25,7 +25,8 @@
 #'   \code{"NCH"}, \code{"LRP"}, or \code{"Inverse"}, can be abbreviated.
 #' @param cc.pooled A logical indicating whether \code{incr} should be
 #'   used as a continuity correction, when calculating the network
-#'   meta-analysis estimates.
+#'   meta-analysis estimates (ignored for penalised logistic regression and
+#'   inverse variance method).
 #' @param incr A numerical value which is added to each cell count,
 #'   i.e., to the numbers of events and non-events, of all treatment
 #'   arms in studies with zero events or non-events in any of the
@@ -463,6 +464,7 @@ netmetabin <- function(event1, n1, event2, n2,
   method <- setchar(method, c("Inverse", "MH", "NCH", "LRP"), modtext)
   is.mh.nch <- !(method %in% c("Inverse", "LRP"))
   is.lrp <- method == "LRP"
+  is.iv <- method == "Inverse"
   #
   chklogical(cc.pooled)
   ##
@@ -574,7 +576,7 @@ netmetabin <- function(event1, n1, event2, n2,
     missing.method.incr <- FALSE
     missing.allstudies <- FALSE
     #
-    if (missing(sm) & method == "Inverse")
+    if (missing(sm) & is.iv)
       sm <- replaceNULL(attr(event1, "sm"), gs("smbin"))
     else if (method != "Inverse") {
       if (!missing(sm) && tolower(sm) != "or")
@@ -627,7 +629,7 @@ netmetabin <- function(event1, n1, event2, n2,
     if (missing(allstudies))
       allstudies <- gs("allstudies")
     #
-    if (missing(sm) & method == "Inverse") {
+    if (missing(sm) & is.iv) {
       if (!nulldata && !is.null(attr(data, "sm")))
         sm <- attr(data, "sm")
       else
@@ -925,7 +927,7 @@ netmetabin <- function(event1, n1, event2, n2,
     incr <- 0
   }
   ##
-  if (all(incr == 0) & is.mh.nch & cc.pooled == TRUE)
+  if (is.mh.nch & cc.pooled == TRUE & all(incr == 0))
     cc.pooled <- FALSE
   ##
   lengthunique <- function(x) length(unique(x))
@@ -1362,55 +1364,41 @@ netmetabin <- function(event1, n1, event2, n2,
   ##
   dat.iv <- dat.long[order(dat.long$.order), ]
   ##
-  if (method == "Inverse") {
+  if (is.iv) {
     if (missing(warn))
-      warn.iv <- gs("warn")
-    else
-      warn.iv <- warn
-    incr.iv <- incr
-    allstudies.iv <- allstudies
-  }
-  else {
-    warn.iv <- FALSE
-    incr.iv <- incr * cc.pooled
-    allstudies.iv <- cc.pooled
-  }
-  ##
-  p.iv <- pairwise(studlab = dat.iv$studlab,
-                   treat = dat.iv$treat,
-                   event = dat.iv$event,
-                   n = dat.iv$n,
-                   data = dat.iv,
-                   sm = sm,
-                   incr = incr.iv,
-                   method.incr = method.incr,
-                   allstudies = allstudies.iv)
-  ##
-  net.iv <- netmeta(p.iv,
-                    level = level, level.ma = level.ma,
-                    common = common, random = random,
-                    prediction = prediction, level.predict = level.predict,
-                    reference.group = reference.group,
-                    baseline.reference = baseline.reference,
-                    all.treatments = all.treatments,
-                    seq = seq,
-                    tau.preset = tau.preset,
-                    tol.multiarm = tol.multiarm,
-                    tol.multiarm.se = tol.multiarm.se,
-                    details.chkmultiarm = details.chkmultiarm,
-                    sep.trts = sep.trts,
-                    nchar.trts = nchar.trts,
-                    overall.hetstat = overall.hetstat,
-                    backtransf = backtransf,
-                    title = title,
-                    keepdata = keepdata,
-                    warn = warn.iv)
-  ##
-  if (method == "Inverse")
+      warn <- gs("warn")
+    #
+    p.iv <- pairwise(studlab = dat.iv$studlab,
+                     treat = dat.iv$treat,
+                     event = dat.iv$event,
+                     n = dat.iv$n,
+                     data = dat.iv,
+                     sm = sm,
+                     incr = incr,
+                     method.incr = method.incr,
+                     allstudies = allstudies)
+    ##
+    net.iv <- netmeta(p.iv,
+                      level = level, level.ma = level.ma,
+                      common = common, random = random,
+                      prediction = prediction, level.predict = level.predict,
+                      reference.group = reference.group,
+                      baseline.reference = baseline.reference,
+                      all.treatments = all.treatments,
+                      seq = seq,
+                      tau.preset = tau.preset,
+                      tol.multiarm = tol.multiarm,
+                      tol.multiarm.se = tol.multiarm.se,
+                      details.chkmultiarm = details.chkmultiarm,
+                      sep.trts = sep.trts,
+                      nchar.trts = nchar.trts,
+                      overall.hetstat = overall.hetstat,
+                      backtransf = backtransf,
+                      title = title,
+                      keepdata = keepdata,
+                      warn = warn)
+    #
     return(net.iv)
-  else {
-    net.iv$Cov.common[!is.na(net.iv$Cov.common)] <- NA
-    net.iv$Cov.random[!is.na(net.iv$Cov.random)] <- NA
   }
   
   
@@ -1984,7 +1972,7 @@ netmetabin <- function(event1, n1, event2, n2,
     pval.Q <- NA
   }
   
-  
+    
   ##
   ##
   ## (9) Inconsistency evaluation: direct MH estimates
@@ -2056,19 +2044,25 @@ netmetabin <- function(event1, n1, event2, n2,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
-  
+  #
+  comps <- vector("character")
+  #
+  for (i in seq_along(trts))
+    for (j in seq_along(trts))
+      if (i < j)
+        comps <- c(comps, paste(trts[i], trts[j], sep = sep.trts))
+  #
+  Cov <- matrix(NA, nrow = length(comps), ncol = length(comps),
+                dimnames = list(comps, comps))
+  #
+  # Row names in the H matrix are second vs first, not first vs second
+  #
   secondfirst <- function(x, sep)
-    paste0(x[2], sep, x[1])
+    paste(x[2], x[1], sep = sep)
   #
-  trts.list <- lapply(compsplit(rownames(net.iv$Cov.common), sep.trts),
-                      secondfirst, sep = sep.trts)
-  #
-  rn <- rep_len("", nrow(H))
-  #
-  for (i in seq_along(trts.list))
-    rn[i] <- trts.list[[i]]
-  #
-  rownames(H) <- rn
+  if (nrow(H) == length(comps))
+    rownames(H) <- sapply(compsplit(comps, sep.trts), secondfirst,
+                          sep = sep.trts)
   
   
   res <- list(studlab = studlab,
@@ -2187,8 +2181,8 @@ netmetabin <- function(event1, n1, event2, n2,
               P.common = NA,
               P.random = NA,
               ##
-              Cov.common = net.iv$Cov.common,
-              Cov.random = net.iv$Cov.random,
+              Cov.common = Cov,
+              Cov.random = Cov,
               ##
               sm = sm,
               method = method,

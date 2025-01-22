@@ -1,3 +1,12 @@
+## netmeta, version 3.0-3 (2025-mm-dd)
+
+### Bug fixes
+
+* netmetabin():
+  - fix error if all comparisons containing the specified reference treatment
+    had a zero event in one group
+
+
 ## netmeta, version 3.0-2 (2025-01-21)
 
 ### Major changes
