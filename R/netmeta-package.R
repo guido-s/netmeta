@@ -255,6 +255,11 @@
 #' @importFrom utils installed.packages packageDescription capture.output
 #'   packageVersion
 #'
+#' @importFrom igraph E<- V<- E V all_simple_paths delete_edges
+#'   get.shortest.paths
+#'   graph_from_adjacency_matrix graph_from_edgelist gsize
+#'   set.edge.attribute set.edge.attribute set.vertex.attribute
+#'
 #' @importFrom grDevices colours col2rgb heat.colors rainbow rgb xy.coords
 #'
 #' @importFrom graph graphAM subGraph

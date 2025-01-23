@@ -8,9 +8,12 @@
 * Modified version of R functions from the R package **hasseDiagram** added to
   construct Hasse diagrams
 
-* Hasse diagrams available without installation of additional packages
+* Hasse diagrams and calculation of network contributions available without
+  installation of additional packages
 
 * R packages **Rgraphviz**, **graph**, and **methods** added to Imports
+
+* R package **igraph** moved from Suggests to Imports
 
 * R package **hasseDiagram** removed from Suggests
 

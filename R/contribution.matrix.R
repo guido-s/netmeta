@@ -41,11 +41,10 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
   ## comparisonToEdge <- function (comp) unlist (split(comp))
   ##
   setWeights <- function(g, comparison, conMat)
-    igraph::set.edge.attribute(g, "weight",
-                               value = rep(1, dims[2]))
+    set.edge.attribute(g, "weight", value = rep(1, dims[2]))
   ##
   getFlow <- function(g, edge)
-    igraph::E(g)[edge]$flow
+    E(g)[edge]$flow
   ##
   sv <- function (comparison)
     split(comparison)[[1]][1][1]
@@ -66,12 +65,11 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
     dedgeList <- matrix(unlist(dedgeList), ncol = 2, byrow = TRUE)
     ##
     flows <- abs(x[comparison, ])
-    dg <- igraph::graph_from_edgelist(dedgeList, directed = TRUE)
-    igraph::E(dg)[]$weight <- rep(0, dims[2])
-    igraph::E(dg)[]$flow <- abs(x[comparison, ])
-    igraph::V(dg)[]$label <- igraph::V(dg)[]$name
-    resg <-
-      igraph::set.edge.attribute(dg, 'label', value = 1:igraph::gsize(dg))
+    dg <- graph_from_edgelist(dedgeList, directed = TRUE)
+    E(dg)[]$weight <- rep(0, dims[2])
+    E(dg)[]$flow <- abs(x[comparison, ])
+    V(dg)[]$label <- V(dg)[]$name
+    resg <- set.edge.attribute(dg, 'label', value = seq_len(gsize(dg)))
     ##
     resg
   }
@@ -79,7 +77,7 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
   reducePath <- function(g, comparison, spl) {
     pl <- length(spl[[1]])
     splE <- lapply(spl[[1]], function(e) {
-      return (igraph::E(g)[e[]])
+      return(E(g)[e[]])
     })
     flow <- min(unlist(lapply(splE,
                               function(e) {
@@ -88,18 +86,18 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
     gg <- Reduce(function(g, e) {
       elabel <- e$label
       pfl <- e$flow[]
-      g <- igraph::set.edge.attribute(g, "flow", e, pfl-flow)
+      g <- set.edge.attribute(g, "flow", e, pfl-flow)
       cw <- e$weight[] + (flow[1] / pl) 
       weights[comparison, elabel] <<- cw
-      return(igraph::set.edge.attribute(g, "weight", e, cw))},
+      return(set.edge.attribute(g, "weight", e, cw))},
       splE, g)
     emptyEdges <- Reduce(function(removedEdges, e) {
-      e <- igraph::E(gg)[e[]]
+      e <- E(gg)[e[]]
       if(e$flow[[1]][[1]] == 0)
         removedEdges <- c(removedEdges, e)
       return(removedEdges)}, splE, c())
     ##
-    igraph::delete_edges(gg, emptyEdges)
+    delete_edges(gg, emptyEdges)
   }
   ##
   reduceGraph <- function(g, comparison, verbose, is.tictoc) {
@@ -111,12 +109,9 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
     ##
     getshortest <- function (g, comparison) {
       getShortest <- function() {
-        return(igraph::get.shortest.paths(g,
-                                          sv(comparison),
-                                          tv(comparison),
-                                          mode = "out",
-                                          output = "epath",
-                                          weights = NA)$epath)
+        return(get.shortest.paths(g, sv(comparison), tv(comparison),
+                                  mode = "out", output = "epath",
+                                  weights = NA)$epath)
       }
       ##
       res <- suppressWarnings(getShortest())
@@ -146,9 +141,9 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
   directlist <- unlist(lapply(lapply(directs, split), unlist))
   edgeList <- matrix(directlist, ncol = 2, byrow = TRUE)
   ##
-  g <- igraph::graph_from_edgelist(edgeList , directed = FALSE)
-  g <- igraph::set.vertex.attribute(g, 'label', value = igraph::V(g))
-  g <- igraph::set.edge.attribute(g, 'label', value = igraph::E(g))
+  g <- graph_from_edgelist(edgeList , directed = FALSE)
+  g <- set.vertex.attribute(g, 'label', value = V(g))
+  g <- set.edge.attribute(g, 'label', value = E(g))
   
   
   dims <- dim(H)
@@ -288,15 +283,15 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
       ## directed (and acyclic) and weighted
       ##
       Pgraph <-
-        igraph::graph_from_adjacency_matrix(P, "directed",
-                                            weighted = TRUE, diag = FALSE)
+        graph_from_adjacency_matrix(P, "directed",
+                                    weighted = TRUE, diag = FALSE)
       ##
       ## Now find all possible paths from source to sink
       ##
       ## Simple paths means no vertex is visited more than once this
       ## is true for us as the graph is acyclic
       ##
-      all.paths <- igraph::all_simple_paths(Pgraph, t1, t2, mode = "out")
+      all.paths <- all_simple_paths(Pgraph, t1, t2, mode = "out")
       ##
       ## Calculate streams
       ##
@@ -444,9 +439,9 @@ contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
       P[t2, t2] <- 1
       P[is_zero(P, n = 1000)] <- 0
       Pgraph <-
-        igraph::graph_from_adjacency_matrix(
-                  P, "directed", weighted = TRUE, diag = FALSE)
-      all.paths <- igraph::all_simple_paths(Pgraph, t1, t2, mode = "out")
+        graph_from_adjacency_matrix(P, "directed",
+                                    weighted = TRUE, diag = FALSE)
+      all.paths <- all_simple_paths(Pgraph, t1, t2, mode = "out")
       ##
       Z <- matrix(0, nrow = length(all.paths), ncol = dim(H.full)[2])
       rownames(Z) <- all.paths
@@ -647,15 +642,15 @@ contribution.matrix.ruecker.pseudoinv <- function (x, model, verbose = FALSE) {
       ## directed (and acyclic) and weighted
       ##
       Pgraph <-
-        igraph::graph_from_adjacency_matrix(P, "directed", weighted = TRUE,
-                                            diag = FALSE)
+        graph_from_adjacency_matrix(P, "directed",
+                                    weighted = TRUE, diag = FALSE)
       ##
       ## Now find all possible paths from source to sink
       ##
       ## Simple paths means no vertex is visited more than once 
       ## This is true for us as the graph is acyclic
       ##
-      all.paths <- igraph::all_simple_paths(Pgraph, t1, t2, mode = "out")
+      all.paths <- all_simple_paths(Pgraph, t1, t2, mode = "out")
       ##
       ## Calculate streams
       ##

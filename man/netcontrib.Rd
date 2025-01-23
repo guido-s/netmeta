@@ -177,19 +177,18 @@ the computation progress is printed if argument \code{verbose} is
 package \bold{tictoc} is installed.
 }
 \examples{
-if (requireNamespace("igraph", quietly = TRUE)) {
-  # Use the Woods dataset
-  #
-  p1 <- pairwise(treatment, event = r, n = N,
-    studlab = author, data = dat.woods2010, sm = "OR")
+# Use the Woods dataset
+#
+p1 <- pairwise(treatment, event = r, n = N,
+  studlab = author, data = dat.woods2010, sm = "OR")
 
-  net1 <- netmeta(p1)
-  #
-  cm <- netcontrib(net1)
-  cm
+net1 <- netmeta(p1)
 
+# Shortest path approach (default)
+netcontrib(net1)
+
+# Random walk approach
 netcontrib(net1, method = "r")
-}
 
 }
 \references{

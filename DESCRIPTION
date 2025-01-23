@@ -3,9 +3,9 @@ Title: Network Meta-Analysis using Frequentist Methods
 Version: 3.1-0
 Date: 2025-01-23
 Depends: R (>= 4.0.0), meta (>= 8.0-1)
-Imports: Matrix, metafor, MASS, mvtnorm, magic, ggplot2, colorspace, grid,
-  dplyr, magrittr, graph, methods, Rgraphviz
-Suggests: rgl, gridExtra, tictoc, writexl, R.rsp, igraph, cccp, brglm2
+Imports: Matrix, metafor, MASS, mvtnorm, magic, igraph, Rgraphviz,
+  ggplot2, colorspace, grid, dplyr, magrittr, graph, methods
+Suggests: rgl, gridExtra, tictoc, writexl, R.rsp, cccp, brglm2
 Authors@R: c(person("Gerta", "Rücker",
                     role = "aut",
                     comment = c(ORCID = "0000-0002-2192-2560")),
