@@ -174,9 +174,8 @@
 #' # Create Excel files with league tables
 #' # (if R package writexl is available)
 #' #
-#' if (requireNamespace("writexl", quietly = TRUE))
-#'   netleague(net0, digits = 2, bracket = "(", separator = " to ",
-#'             path = tempfile(fileext = ".xlsx"))
+#' netleague(net0, digits = 2, bracket = "(", separator = " to ",
+#'           path = tempfile(fileext = ".xlsx"))
 #' }
 #' 
 #' \donttest{
@@ -242,8 +241,7 @@
 #' np <- netposet(net1, net2, outcomes = outcomes)
 #' plot(np)
 #'
-#' if (requireNamespace("hasseDiagram", quietly = TRUE))
-#'   hasse(np)
+#' hasse(np)
 #' }
 #' 
 #' @rdname netleague

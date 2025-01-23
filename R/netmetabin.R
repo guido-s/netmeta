@@ -2052,8 +2052,9 @@ netmetabin <- function(event1, n1, event2, n2,
       if (i < j)
         comps <- c(comps, paste(trts[i], trts[j], sep = sep.trts))
   #
-  Cov <- matrix(NA, nrow = length(comps), ncol = length(comps),
+  Cov <- matrix(1, nrow = length(comps), ncol = length(comps),
                 dimnames = list(comps, comps))
+  Cov <- setNA(Cov)
   #
   # Row names in the H matrix are second vs first, not first vs second
   #

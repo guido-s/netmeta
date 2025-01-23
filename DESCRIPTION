@@ -1,12 +1,11 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
-Version: 3.0-3
-Date: 2025-01-21
+Version: 3.1-0
+Date: 2025-01-23
 Depends: R (>= 4.0.0), meta (>= 8.0-1)
 Imports: Matrix, metafor, MASS, mvtnorm, magic, ggplot2, colorspace, grid,
-  dplyr, magrittr
-Suggests: rgl, gridExtra, tictoc, writexl, R.rsp, igraph, cccp, brglm2,
-  hasseDiagram
+  dplyr, magrittr, graph, methods, Rgraphviz
+Suggests: rgl, gridExtra, tictoc, writexl, R.rsp, igraph, cccp, brglm2
 Authors@R: c(person("Gerta", "Rücker",
                     role = "aut",
                     comment = c(ORCID = "0000-0002-2192-2560")),
@@ -27,6 +26,11 @@ Authors@R: c(person("Gerta", "Rücker",
              person("Theodoros", "Evrenoglou",
                     role = "ctb",
                     comment = c(ORCID = "0000-0003-3336-8058")),
+             person("Krzysztof", "Ciomek",
+                    role = "ctb",
+                    comment = c(ORCID = "0000-0002-2293-2146",
+                    paste("Author of the original MIT-licensed",
+                          "R package hasseDiagram"))),
              person("Guido", "Schwarzer",
                     role = c("aut", "cre"),
                     email = "guido.schwarzer@uniklinik-freiburg.de",
@@ -46,8 +50,8 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <doi:10.1002/jrsm.1143>;
  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <doi:10.1002/cem.2569>; (Rücker & Schwarzer, 2017) <doi:10.1002/jrsm.1270>;
  - contribution matrix as described in Papakonstantinou et al. (2018) <doi:10.12688/f1000research.14770.3> and Davies et al. (2022) <doi:10.1002/sim.9346>;
- - subgroup network meta-analysis. The suggested package 'hasseDiagram' is available from <https://github.com/kciomek/hasseDiagram>.
-License: GPL (>= 2)
+ - subgroup network meta-analysis.
+License: GPL (>= 2) | file LICENSE
 Encoding: UTF-8
 VignetteBuilder: R.rsp
 RoxygenNote: 7.3.2

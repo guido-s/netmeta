@@ -178,8 +178,7 @@
 #' 
 #' # Hasse diagram
 #' #
-#' if (requireNamespace("hasseDiagram", quietly = TRUE))
-#'   hasse(po)
+#' hasse(po)
 #'
 #' 
 #' #
@@ -234,15 +233,13 @@
 #' 
 #' # Hasse diagram for all outcomes (random effects model)
 #' #
-#' if (requireNamespace("hasseDiagram", quietly = TRUE))
-#'   hasse(po.ranks)
+#' hasse(po.ranks)
 #' 
 #' # Hasse diagram for outcomes early response and early remission
 #' #
 #' po12 <- netposet(netrank(net1), netrank(net2),
 #'   outcomes = outcomes[1:2])
-#' if (requireNamespace("hasseDiagram", quietly = TRUE))
-#'   hasse(po12)
+#' hasse(po12)
 #' 
 #' # Scatter plot
 #' #
@@ -279,10 +276,8 @@
 #' po
 #' po12
 #' #
-#' if (requireNamespace("hasseDiagram", quietly = TRUE)) {
-#'   hasse(po)
-#'   hasse(po12)
-#' }
+#' hasse(po)
+#' hasse(po12)
 #' #
 #' oldpar <- par(pty = "s")
 #' plot(po12)
@@ -607,7 +602,7 @@ netposet <- function(..., outcomes, treatments, small.values,
   
   ## Calculate "full" Hasse matrix M
   ##
-  M.common[Pos.common == o]   <- 1
+  M.common[Pos.common == o] <- 1
   M.random[Pos.random == o] <- 1
   
   

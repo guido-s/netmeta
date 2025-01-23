@@ -1,10 +1,32 @@
-## netmeta, version 3.0-3 (2025-mm-dd)
+## netmeta, version 3.1-0 (2025-mm-dd)
+
+### Major changes
+
+* [Krzysztof Ciomek](https://orcid.org/0000-0002-2293-2146) added as
+  a contributor to the R package **netmeta**
+
+* Modified version of R functions from the R package **hasseDiagram** added to
+  construct Hasse diagrams
+
+* Hasse diagrams available without installation of additional packages
+
+* R packages **Rgraphviz**, **graph**, and **methods** added to Imports
+
+* R package **hasseDiagram** removed from Suggests
 
 ### Bug fixes
 
 * netmetabin():
   - fix error if all comparisons containing the specified reference treatment
     had a zero event in one group
+
+### User-visible changes
+
+* hasse():
+  - new argument 'shape' to change the shape of node borders
+  - new arguments 'col.lines' and 'col.nodes' to change the colour of lines and
+    treatment node borders
+  - new argument 'lwd' to change the width of lines and node borders
 
 
 ## netmeta, version 3.0-2 (2025-01-21)
@@ -13,7 +35,7 @@
 
 * Network meta-analysis of studies with correlated treatment arms implemented
 
-* Theodoros Evrenoglou <theodoros.evrenoglou@uniklinik-freiburg.de> added as
+* [Theodoros Evrenoglou](https://orcid.org/0000-0003-3336-8058) added as
   a contributor to the R package **netmeta**
 
 * Logistic regression with penalised likelihood implemented for network
@@ -293,7 +315,7 @@
 * Vignette with publication on **netmeta** in *Journal of Statistical
   Software* added (command: vignette("netmeta"))
   
-* R package **R.rsp** added to suggested packages
+* R package **R.rsp** added to Suggests
 
 ### User-visible changes
 
@@ -507,7 +529,7 @@
   
 * Nodes in circular network graphs can be rotated
   
-* R package **writexl** added to suggested packages
+* R package **writexl** added to Suggests
 
 ### Bug fixes
 
@@ -583,7 +605,7 @@
   
 * Comparators in 'comparison-adjusted' funnel plot can be lumped
 
-* R package **tictoc** added to suggested packages
+* R package **tictoc** added to Suggests
 
 ### Bug fixes
 
@@ -1933,8 +1955,7 @@
 
 * Import ginv() from R package **MASS** (for consistency checks)
 
-* Suggested packages added (for Hasse diagram): **hasseDiagram** and
-  **grid**
+* For Hasse diagrams, **hasseDiagram** and **grid** added to Suggests
 
 * Bug fixes:
   - netmeta() calculates correct direct evidence estimates under
@@ -1990,7 +2011,7 @@
 
 ### Major changes
 
-* R package **rgl** moved from imported to suggested packages as
+* R package **rgl** moved from Imports to Suggests as
   - 3-D network plots are not essential for network meta-analysis
   - installation of **netmeta** breaks under macOS if XQuartz is not
     available
@@ -2086,7 +2107,7 @@
 
 * Internal function nodedist removed (replaced by netdistance function)
 
-* Import functions from R package **rgl** (for 3-D plots)
+* R package **rgl** added to Imports (for 3-D plots)
 
 * New dataset Woods2010 (use long format in pairwise function)
 
