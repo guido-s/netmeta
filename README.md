@@ -3,7 +3,7 @@ Official Git repository of R package **netmeta**
 
 [![License: GPL (>=2)](https://img.shields.io/badge/license-GPL-blue)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![CRAN Version](https://www.r-pkg.org/badges/version/netmeta)](https://cran.r-project.org/package=netmeta)
-[![GitHub develop](https://img.shields.io/badge/develop-3.1--0-purple)](https://img.shields.io/badge/develop-3.1--0-purple)
+[![GitHub develop](https://img.shields.io/badge/develop-3.1--1-purple)](https://img.shields.io/badge/develop-3.1--1-purple)
 [![Monthly Downloads](https://cranlogs.r-pkg.org/badges/netmeta)](https://cranlogs.r-pkg.org/badges/netmeta)
 [![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/netmeta)](https://cranlogs.r-pkg.org/badges/grand-total/netmeta)
 
@@ -104,7 +104,7 @@ R package **netmeta** ([Balduzzi et al., 2023](https://www.doi.org/10.18637/jss.
 install.packages("netmeta")
 ```
 
-### Current [![GitHub develop](https://img.shields.io/badge/develop-3.1--0-purple)](https://img.shields.io/badge/develop-3.1--0-purple) release on GitHub:
+### Current [![GitHub develop](https://img.shields.io/badge/develop-3.1--1-purple)](https://img.shields.io/badge/develop-3.1--1-purple) release on GitHub:
 
 Installation using R package
 [**remotes**](https://cran.r-project.org/package=remotes):
