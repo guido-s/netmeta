@@ -236,23 +236,39 @@
 #'   metabias metabin metacont metagen metainc metacum metainf metareg
 #'   gs ci cilayout backtransf pairwise settings.meta
 #'
+#' @importFrom metafor bldiag contrmat rma.mv rma.uni
+#'
+#' @importFrom Matrix bdiag
+#'
+#' @importFrom MASS ginv
+#'
 #' @importFrom magic adiag
-#'
-#' @importFrom grDevices colours col2rgb heat.colors rgb xy.coords
-#'
-#' @importFrom graphics axis box lines par points plot polygon rect
-#'   text strheight strwidth title
+#' 
+#' @importFrom mvtnorm rmvnorm
 #'
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
 #'   prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted
 #'   residuals quantile
+#'   
+#' @importFrom methods as
 #'
 #' @importFrom utils installed.packages packageDescription capture.output
 #'   packageVersion
 #'
-#' @importFrom MASS ginv
+#' @importFrom igraph E<- V<- E V all_simple_paths delete_edges
+#'   get.shortest.paths
+#'   graph_from_adjacency_matrix graph_from_edgelist gsize
+#'   set.edge.attribute set.edge.attribute set.vertex.attribute
 #'
-#' @importFrom Matrix bdiag
+#' @importFrom grDevices colours col2rgb heat.colors rainbow rgb xy.coords
+#'
+#' @importFrom graph graphAM subGraph
+#'
+#' @importFrom graphics axis box lines par points plot polygon rect
+#'   text strheight strwidth title
+#' 
+#' @importFrom Rgraphviz AgEdge AgNode agopen bezierPoints boundBox botLeft
+#'   getNodeCenter getNodeHeight getNodeLW getNodeRW getX getY upRight
 #'
 #' @importFrom ggplot2 ggplot aes xlab ylab labs
 #'    element_blank element_line element_rect element_text expand_limits
@@ -263,18 +279,15 @@
 #'
 #' @importFrom colorspace sequential_hcl rainbow_hcl sequential_hcl
 #'   diverge_hcl heat_hcl terrain_hcl diverge_hsv choose_palette
-#'
-#' @importFrom metafor bldiag contrmat rma.mv rma.uni
+#' 
+#' @importFrom grid arrow convertHeight convertWidth convertX convertY
+#'   drawDetails gpar grid.clip grid.draw grid.lines grid.newpage grid.rect
+#'   grid.roundrect grid.text grob popViewport pushViewport stringWidth
+#'   unit viewport
 #' 
 #' @importFrom dplyr %>% filter select rename starts_with
 #' 
 #' @importFrom magrittr %<>%
-#' 
-#' @importFrom grid unit
-#' 
-#' @importFrom mvtnorm rmvnorm
-#' 
-#' @importFrom grDevices rainbow 
 
 "_PACKAGE"
 

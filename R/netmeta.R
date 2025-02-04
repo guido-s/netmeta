@@ -686,12 +686,11 @@ netmeta <- function(TE, seTE,
   #
   avail.reference.group.pairwise <- FALSE
   #
-  if (is.data.frame(TE) &&
-      (!is.null(attr(TE, "pairwise")) ||
-       inherits(TE, "pairwise"))) {
+  if (inherits(TE, "pairwise")) {
     is.pairwise <- TRUE
     #
     sm <- attr(TE, "sm")
+    allstudies <- replaceNULL(attr(TE, "allstudies"), TRUE)
     #
     if (missing.reference.group) {
       reference.group <- attr(TE, "reference.group")
@@ -1053,21 +1052,6 @@ netmeta <- function(TE, seTE,
                           seTE = format(round(seTE[excl], 4)),
                           stringsAsFactors = FALSE
                           )
-    if (warn)
-      warning("Comparison",
-              if (sum(excl) > 1) "s",
-              " with missing TE / seTE or zero seTE not considered ",
-              "in network meta-analysis.",
-              call. = FALSE)
-    if (warn) {
-      cat("Comparison",
-          if (sum(excl) > 1) "s",
-          " not considered in network meta-analysis:\n",
-          sep = "")
-      prmatrix(dat.NAs, quote = FALSE, right = TRUE,
-               rowlab = rep("", sum(excl)))
-      cat("\n")
-    }
     #
     studlab <- studlab[!excl]
     treat1  <- treat1[!excl]
@@ -1114,18 +1098,46 @@ netmeta <- function(TE, seTE,
     stop("After removing comparisons with missing treatment effects",
          " or standard errors,\n  study '",
          names(tabnarms)[sel.narms],
-         "' has a wrong number of comparisons.",
-         " Please check data and\n  consider to remove study",
-         " from network meta-analysis.",
+         "' has a wrong number of comparisons.\n  ",
+         "Please check data and consider to ",
+         if (is.pairwise & !allstudies) "\n   (i) ",
+         "remove study from network meta-analysis",
+         if (is.pairwise & !allstudies)
+           " or\n  (ii) use argument 'allstudies = TRUE' in pairwise()",
+         ".",
          call. = FALSE)
+  #
   if (sum(sel.narms) > 1)
     stop("After removing comparisons with missing treatment effects",
          " or standard errors,\n  the following studies have",
          " a wrong number of comparisons: ",
          paste(paste0("'", names(tabnarms)[sel.narms], "'"), collapse = ", "),
-         "\n  Please check data and consider to remove studies",
-         " from network meta-analysis.",
+         "\n  ",
+         "Please check data and consider to ",
+         if (is.pairwise & !allstudies) "\n   (i) ",
+         "remove studies from network meta-analysis",
+         if (is.pairwise & !allstudies)
+           " or\n  (ii) use argument 'allstudies = TRUE' in pairwise()",
+         ".",
          call. = FALSE)
+  #
+  if (any(excl)) {
+    if (warn)
+      warning("Comparison",
+              if (sum(excl) > 1) "s",
+              " with missing TE / seTE or zero seTE not considered ",
+              "in network meta-analysis.",
+              call. = FALSE)
+    if (warn) {
+      cat("Comparison",
+          if (sum(excl) > 1) "s",
+          " not considered in network meta-analysis:\n",
+          sep = "")
+      prmatrix(dat.NAs, quote = FALSE, right = TRUE,
+               rowlab = rep("", sum(excl)))
+      cat("\n")
+    }
+  }
   #
   # Check number of subgraphs
   #

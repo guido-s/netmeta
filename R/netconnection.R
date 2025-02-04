@@ -518,8 +518,18 @@ netconnection.pairwise <- function(data,
   else
     subset <- rep_len(TRUE, length(treat1))
   #
-  if (drop.NA)
-    subset <- subset & (!is.na(data$TE) & !(is.na(data$seTE) | data$seTE == 0))
+  if (drop.NA) {
+    if (is.null(attr(data, "varnames"))) {
+      TE <- data$TE
+      seTE <- data$seTE
+    }
+    else {
+      TE <- data[[attr(data, "varnames")[1]]]
+      seTE <- data[[attr(data, "varnames")[2]]]
+    }
+    #
+    subset <- subset & (!is.na(TE) & !(is.na(seTE) | seTE == 0))
+  }
   #
   treat1 <- treat1[subset]
   treat2 <- treat2[subset]
@@ -636,7 +646,7 @@ print.netconnection <- function(x,
   if (!is.null(x$d))
     cat("Number of designs: d = ", x$d, "\n", sep = "")
   ##
-  cat("Number of subnetworks: ", x$n.subnets, "\n", sep = "")
+  cat("Number of networks: ", x$n.subnets, "\n", sep = "")
   ##
   if (x$n.subnets > 1) {
     f <- function(x) length(unique(x))

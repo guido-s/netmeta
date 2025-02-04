@@ -171,8 +171,7 @@
 #' 
 #' # Hasse diagram
 #' #
-#' if (requireNamespace("hasseDiagram", quietly = TRUE))
-#'   hasse(po3)
+#' hasse(po3)
 #' 
 #' # Scatter plot
 #' #

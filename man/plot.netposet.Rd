@@ -213,8 +213,7 @@ po3 <- netposet(netrank(net1), netrank(net2), netrank(net3),
 
 # Hasse diagram
 #
-if (requireNamespace("hasseDiagram", quietly = TRUE))
-  hasse(po3)
+hasse(po3)
 
 # Scatter plot
 #
