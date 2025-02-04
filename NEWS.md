@@ -1,4 +1,4 @@
-## netmeta, version 3.1-0 (2025-mm-dd)
+## netmeta, version 3.1-0 (2025-02-04)
 
 ### Major changes
 
@@ -23,7 +23,14 @@
   - fix error if all comparisons containing the specified reference treatment
     had a zero event in one group
 
+* netconnection.pairwise():
+  - fix error if argument 'varnames' was used in pairwise()
+
 ### User-visible changes
+
+* netmeta():
+  - print more informative error message for missing treatment estimates in
+    multi-arm studies if main input is pairwise object
 
 * hasse():
   - new argument 'shape' to change the shape of node borders
