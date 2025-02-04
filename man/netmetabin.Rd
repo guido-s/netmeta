@@ -81,7 +81,8 @@ used for pooling of studies. One of \code{"MH"},
 
 \item{cc.pooled}{A logical indicating whether \code{incr} should be
 used as a continuity correction, when calculating the network
-meta-analysis estimates.}
+meta-analysis estimates (ignored for penalised logistic regression and
+inverse variance method).}
 
 \item{incr}{A numerical value which is added to each cell count,
 i.e., to the numbers of events and non-events, of all treatment

@@ -5,7 +5,16 @@
 \alias{hasse}
 \title{Hasse diagram}
 \usage{
-\method{hasse}{netposet}(x, pooled = ifelse(x$random, "random", "common"), newpage = TRUE, ...)
+\method{hasse}{netposet}(
+  x,
+  pooled = ifelse(x$random, "random", "common"),
+  newpage = TRUE,
+  shape = "roundrect",
+  col.lines = "black",
+  col.nodes = "black",
+  lwd = 1,
+  ...
+)
 
 hasse(x, ...)
 }
@@ -20,6 +29,15 @@ show be drawn for common (\code{"common"}) or random effects model
 should be printed in an existing graphics window. Otherwise, the
 Hasse diagram is added to the existing figure.}
 
+\item{shape}{Shape of node borders, either \code{"roundrect"},
+\code{"rect"}, or \code{"none"}, can be abbreviated.}
+
+\item{col.lines}{Line colour.}
+
+\item{col.nodes}{Colour for treatment node borders.}
+
+\item{lwd}{Width of lines and node borders.}
+
 \item{\dots}{Additional arguments (ignored).}
 }
 \description{
@@ -31,11 +49,10 @@ Generate a Hasse diagram (Carlsen & Bruggemann, 2014) for a partial
 order of treatment ranks in a network meta-analysis (Rücker &
 Schwarzer, 2017).
 
-This R function is a wrapper function for R function
+This R function is a wrapper function for a modified version of R function
 \code{hasse} in R package \bold{hasseDiagram}
-(Krzysztof Ciomek, \url{https://github.com/kciomek/hasseDiagram}),
-i.e., the function \code{hasse} can only be used if R package
-\bold{hasseDiagram} is installed.
+(Krzysztof Ciomek, \url{https://github.com/kciomek/hasseDiagram}) which is
+available under the MIT license.
 }
 \examples{
 \dontrun{
@@ -74,8 +91,7 @@ po <- netposet(netrank(net1), netrank(net2), outcomes = outcomes)
 
 # Hasse diagram
 #
-if (requireNamespace("hasseDiagram", quietly = TRUE))
-  hasse(po)
+hasse(po)
 }
 
 }

@@ -13,6 +13,11 @@
 #' @param newpage A logical value indicating whether a new figure
 #'   should be printed in an existing graphics window. Otherwise, the
 #'   Hasse diagram is added to the existing figure.
+#' @param shape Shape of node borders, either \code{"roundrect"},
+#'   \code{"rect"}, or \code{"none"}, can be abbreviated.
+#' @param col.lines Line colour.
+#' @param col.nodes Colour for treatment node borders.
+#' @param lwd Width of lines and node borders.
 #' @param \dots Additional arguments (ignored).
 #' 
 #' @details
@@ -20,11 +25,10 @@
 #' order of treatment ranks in a network meta-analysis (Rücker &
 #' Schwarzer, 2017).
 #' 
-#' This R function is a wrapper function for R function
+#' This R function is a wrapper function for a modified version of R function
 #' \code{hasse} in R package \bold{hasseDiagram}
-#' (Krzysztof Ciomek, \url{https://github.com/kciomek/hasseDiagram}),
-#' i.e., the function \code{hasse} can only be used if R package
-#' \bold{hasseDiagram} is installed.
+#' (Krzysztof Ciomek, \url{https://github.com/kciomek/hasseDiagram}) which is
+#' available under the MIT license.
 #' 
 #' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Guido
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
@@ -86,8 +90,7 @@
 #' 
 #' # Hasse diagram
 #' #
-#' if (requireNamespace("hasseDiagram", quietly = TRUE))
-#'   hasse(po)
+#' hasse(po)
 #' }
 #' 
 #' @method hasse netposet
@@ -96,44 +99,38 @@
 hasse.netposet <- function(x,
                            pooled = ifelse(x$random, "random", "common"),
                            newpage = TRUE,
+                           shape = "roundrect",
+                           col.lines = "black", col.nodes = "black",
+                           lwd = 1,
                            ...) {
   
   chkclass(x, "netposet")
   x <- updateversion(x)
-  ##
+  #
   pooled <- setchar(pooled, c("common", "random", "fixed"))
   pooled[pooled == "fixed"] <- "common"
-  
-  if (!is_installed_package("hasseDiagram", stop = FALSE)) {
-    message(paste0("Package 'hasseDiagram' missing.",
-                   "\n  ",
-                   "Please use the following R commands for installation:",
-                   "\n  ",
-                   "install.packages(\"BiocManager\")",
-                   "\n  ",
-                   #"BiocManager::install()",
-                   #"\n  ",
-                   "BiocManager::install(\"Rgraphviz\")",
-                   "\n  ",
-                   #"install.packages(\"hasseDiagram\")",
-                   #"\n\n  ",
-                   #"If the last command fails, you could install the ",
-                   #"GitHub version of R package hasseDiagram:",
-                   #"\n  ",
-                   "install.packages(\"remotes\")",
-                   "\n  ",
-                   "remotes::install_github(\"kciomek/hasseDiagram\")"))
-    #
-    return(invisible(NULL))
-  }
+  #
+  chklogical(newpage)
+  #
+  shape <- setchar(shape, c("roundrect", "rect", "none"))
+  #
+  chkcolor(col.lines, length = 1)
+  chkcolor(col.nodes, length = 1)
+  #
+  chknumeric(lwd, min = 0, zero = TRUE, length = 1)
   
   if (pooled == "common")
     M <- x$M.common
   else
     M <- x$M.random
-  ##
-  hasseDiagram::hasse(matrix(as.logical(M), dim(M), dimnames = dimnames(M)),
-                      parameters = list(newpage = newpage))
+  #
+  M <- matrix(as.logical(M), dim(M), dimnames = dimnames(M))
+  #
+  pars <- list(newpage = newpage,  shape = shape,
+               col.lines = col.lines, col.nodes = col.nodes,
+               lwd = lwd)
+  #
+  hasse_hasseDiagram(M, pars)
   
   invisible()
 }
