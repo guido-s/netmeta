@@ -1,3 +1,11 @@
+## netmeta, version 3.2-1 (2025-mm-dd)
+
+### User-visible changes
+
+* print.summary.netconnection():
+  - print information on treatments in subnetworks
+
+
 ## netmeta, version 3.2-0 (2025-04-10)
 
 ### Major changes
