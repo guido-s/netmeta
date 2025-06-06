@@ -1,5 +1,12 @@
 ## netmeta, version 3.2-1 (2025-mm-dd)
 
+### Major changes
+
+* Vignette on workflow for the R package **netmeta** added
+  (command: vignette("netmeta-workflow"))
+  
+* R packages **rmarkdowni** and **knitr** added to Suggests
+
 ### User-visible changes
 
 * print.summary.netconnection():
