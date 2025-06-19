@@ -12,6 +12,7 @@ netcontrib(
   common = x$common,
   random = x$random,
   nchar.trts = x$nchar.trts,
+  pathContribution = FALSE,
   warn.deprecated = gs("warn.deprecated"),
   verbose = FALSE,
   ...
@@ -73,6 +74,10 @@ following components:
 \item{random}{Numeric matrix of percentage contributions of direct
   comparisons for each network comparison for the random effects
   model.}
+\item{common.pcm}{Data frame containing path contributions for each
+  comparison for the common effect model.}
+\item{random.pcm}{Data frame containing path contributions for each
+  comparison for the random effects model.}
 \item{x}{As defined above.}
 \item{tictoc.common}{Computation times under common effects model
   (if R package \bold{tictoc} is installed).}
