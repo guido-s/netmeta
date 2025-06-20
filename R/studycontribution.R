@@ -17,8 +17,6 @@ getStudyContribution <- function(x, contribution.Matrix, comparison, model) {
   dfr$comp <- paste(dfr$treat1, dfr$treat2, sep = ":")
   dfr$w.adj <- 1 / (dfr$seTE.adj^2 + tau^2)
   
-  #saveRDS(dfr$w.adj, file = "studyWeights.rds")
-  
   studyContribution <- function(direct){
     aux <- dfr[dfr$comp == direct, ]
     normfac <- sum(aux[, "w.adj"])

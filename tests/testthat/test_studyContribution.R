@@ -26,15 +26,6 @@ test_that("Study contributions sum to 1 ",{
   expect_equal(sum(sc$contribution), 1)
 })
 
-#test_that("studyContribution weights = netmeta's weights",{
-#  studyWeights <- readRDS("studyWeights.rds")
-#  tryCatch(
-#   expect_equal(studyWeights, net1$w.common),
-#    error = function(e) {
-#      fail(paste(studyWeights, net1$w.common ))
-#    })
-#})
-
 test_that("Tom's weights = netmeta's weights",{
   tryCatch(
    expect_true(
