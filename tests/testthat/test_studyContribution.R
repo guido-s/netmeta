@@ -22,8 +22,8 @@ test_that("Study contributions are not given by default ", {
 test_that("Study contributions sum to 1 ",{
   cm <- netcontrib(net1, path = TRUE, study = TRUE)
   scm <- cm$study.common
-  sc <- subset(scm, comparison == "A:B") %>% select(study, x)
-  expect_equal(sum(sc$x), 1)
+  sc <- subset(scm, comparison == "A:B") %>% select(study, contribution)
+  expect_equal(sum(sc$contribution), 1)
 })
 
 #test_that("studyContribution weights = netmeta's weights",{
@@ -50,6 +50,6 @@ test_that("Study contributions replicate Woods example with Tom's",{
   scm <- cm$study.common
   tomsContrs <- tomsTest$contrs
   tc <- data.frame(names(tomsContrs),c(tomsContrs))
-  sc <- subset(scm, comparison == "A:B") %>% select(study, x)
+  sc <- subset(scm, comparison == "A:B") %>% select(study, contribution)
   expect_equal(tc[, 2], sc[, 2])
 })
