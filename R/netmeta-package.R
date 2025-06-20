@@ -258,7 +258,7 @@
 #'
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
 #'   prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted
-#'   residuals quantile setNames model.matrix
+#'   residuals quantile setNames model.matrix aggregate
 #'   
 #' @importFrom methods as
 #'
@@ -268,7 +268,7 @@
 #' @importFrom igraph E<- V<- E V all_simple_paths delete_edges
 #'   get.shortest.paths
 #'   graph_from_adjacency_matrix graph_from_edgelist gsize
-#'   set.edge.attribute set.edge.attribute set.vertex.attribute
+#'   set_edge_attr set_vertex_attr head_of tail_of
 #'
 #' @importFrom grDevices colours col2rgb heat.colors rainbow rgb xy.coords
 #'

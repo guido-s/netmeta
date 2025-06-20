@@ -1,9 +1,5 @@
-
 runTomsHandBTest <- function(data1){
 library(corpcor)
-
-setwd(dirname(rstudioapi::getSourceEditorContext()$path))
-
 
 #----------------------------------------------
 # Binary, fixed effects
@@ -31,14 +27,14 @@ netmeta1 <- netmeta::netmeta(
 )
 
 contributions1 <- netmeta::netcontrib(
-  x = netmeta1,
+  netmeta1,
   method = "shortestpath",
   random = FALSE
 )
 
 #The current version of CINeMA uses the old hat matrix
 # contributions1 <- netmeta::netcontrib(
-#   x = netmeta1,
+#   netmeta1,
 #   method = "shortestpath",
 #   random = FALSE,
 #   hatmatrix.F1000 = TRUE

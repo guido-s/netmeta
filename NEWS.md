@@ -2,15 +2,28 @@
 
 ### Major changes
 
+* Contributions of individual studies or paths on each comparison in the
+  network can be calculated for the shortest path algorithm
+
 * Vignette on workflow for the R package **netmeta** added
   (command: vignette("netmeta-workflow"))
   
-* R packages **rmarkdowni** and **knitr** added to Suggests
+* R packages **rmarkdown** and **knitr** added to Suggests
 
 ### User-visible changes
 
 * print.summary.netconnection():
   - print information on treatments in subnetworks
+
+* netcontrib():
+  - new arguments 'study' and 'path' for contributions of individual studies
+    and paths
+
+### Internal changes
+
+* netcontrib():
+  - new list elements 'study.common', 'study.random', 'path.common' and
+    'path.random' with information on contributions of studies and paths
 
 
 ## netmeta, version 3.2-0 (2025-04-10)
