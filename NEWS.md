@@ -10,6 +10,11 @@
   
 * R packages **rmarkdown** and **knitr** added to Suggests
 
+### Bug fixes
+
+* netgraph.netconnection():
+  - argument 'seq = "optimal"' can be used
+
 ### User-visible changes
 
 * print.summary.netconnection():
