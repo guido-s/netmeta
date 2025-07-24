@@ -20,6 +20,11 @@
 * print.summary.netconnection():
   - print information on treatments in subnetworks
 
+* print.summary.netmetan():
+  - abbreviations for study and treatment labels based on reduced
+    data set (argument 'truncate')
+  - sort number of treatment arms per study by number of arms
+
 * netcontrib():
   - new arguments 'study' and 'path' for contributions of individual studies
     and paths
