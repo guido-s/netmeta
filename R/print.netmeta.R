@@ -149,12 +149,11 @@ print.netmeta <- function(x,
     oldversion <- TRUE
   else
     oldversion <- FALSE
-  ##
+  #
   if (is.null(x$lower.predict))
     prediction <- FALSE
-  ##
-  if (is.null(x$nchar.trts))
-    nchar.trts <- 666
+  #
+  nchar.trts <- replaceNULL(x$nchar.trts, 666)
   
   
   ##

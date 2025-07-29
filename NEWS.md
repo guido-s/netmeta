@@ -12,6 +12,9 @@
 
 ### Bug fixes
 
+* netmeta():
+  - use of argument 'subset' does not result in an error
+
 * netgraph.netconnection():
   - argument 'seq = "optimal"' can be used
 
@@ -25,15 +28,28 @@
     data set (argument 'truncate')
   - sort number of treatment arms per study by number of arms
 
+* netleague():
+  - new argument 'nchar.trts' to abbreviate treatment labels
+  - the setting for argument 'nchar.trts' in netnetma() is used as
+    default setting
+
 * netcontrib():
   - new arguments 'study' and 'path' for contributions of individual studies
     and paths
+
+* print.netrank(), print.rankogram():
+  - print "number of repetitions" instead of "number of simulations"
 
 ### Internal changes
 
 * netcontrib():
   - new list elements 'study.common', 'study.random', 'path.common' and
     'path.random' with information on contributions of studies and paths
+
+* netbind():
+  - overwrite common effects with random effects results if 'common = FALSE'
+    and 'random = TRUE' for a (C)NMA object and arguments 'common' and 'random'
+    haven't been used
 
 
 ## netmeta, version 3.2-0 (2025-04-10)

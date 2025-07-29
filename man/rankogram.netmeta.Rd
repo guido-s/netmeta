@@ -20,7 +20,7 @@
 \arguments{
 \item{x}{An object of class \code{\link{netmeta}}.}
 
-\item{nsim}{Number of simulations.}
+\item{nsim}{Number of repetitions.}
 
 \item{common}{A logical indicating to compute ranking probabilities
 and SUCRAs for the common effects model.}

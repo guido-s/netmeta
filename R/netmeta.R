@@ -1156,8 +1156,14 @@ netmeta <- function(TE, seTE,
   excl <- is.na(TE) | is.na(seTE) | seTE <= 0
   #
   if (any(excl)) {
-    if (keepdata)
-      data$.excl <- excl
+    if (keepdata) {
+      if (!missing.subset) {
+        data$.excl <- NA
+        data$.excl[subset] <- excl
+      }
+      else
+        data$.excl <- excl
+    }
     #
     dat.NAs <- data.frame(studlab = studlab[excl],
                           treat1 = treat1[excl],
@@ -1249,7 +1255,7 @@ netmeta <- function(TE, seTE,
           sep = "")
       prmatrix(dat.NAs, quote = FALSE, right = TRUE,
                rowlab = rep("", sum(excl)))
-      cat("\n")
+      #cat("\n")
     }
   }
   #

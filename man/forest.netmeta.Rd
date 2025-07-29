@@ -81,7 +81,7 @@ treatment effects indicate a beneficial (\code{"desirable"}) or
 harmful (\code{"undesirable"}) effect, can be abbreviated; see
 \code{\link{netrank}}.}
 
-\item{nsim}{Number of simulations to calculate SUCRAs.}
+\item{nsim}{Number of repetitions to calculate SUCRAs.}
 
 \item{digits.prop}{Minimal number of significant digits for
 P-scores, SUCRAs and direct evidence proportions, see

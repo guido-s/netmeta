@@ -6,7 +6,7 @@
 #' RAnking curve) in frequentist network meta-analysis.
 #'
 #' @param x An object of class \code{\link{netmeta}}.
-#' @param nsim Number of simulations.
+#' @param nsim Number of repetitions.
 #' @param common A logical indicating to compute ranking probabilities
 #'   and SUCRAs for the common effects model.
 #' @param random A logical indicating to compute ranking probabilities
