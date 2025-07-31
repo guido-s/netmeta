@@ -84,7 +84,7 @@
 #' @export netimpact
 
 netimpact <- function(x,
-                      seTE.ignore = 100 * max(x$seTE, na.rm = TRUE),
+                      seTE.ignore = 1000 * max(x$seTE, na.rm = TRUE),
                       event.ignore = 0.01,
                       nchar.trts = x$nchar.trts,
                       nchar.studlab = x$nchar.studlab,
