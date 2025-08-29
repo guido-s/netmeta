@@ -14,6 +14,9 @@
 
 * netmeta():
   - use of argument 'subset' does not result in an error
+  - use correct increment to construct the covariance matrix used to
+    calculate the REML or ML estimate of the between-study variance
+    (only for pairwise object as main input with binary or count outcome)
 
 * netgraph.netconnection():
   - argument 'seq = "optimal"' can be used
