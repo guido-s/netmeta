@@ -399,9 +399,8 @@ netcomb <- function(x,
   ##
   ##
   chkclass(x, "netmeta")
-  chksuitable(x, "Component network meta-analysis",
-              classes = c("netmeta.crossnma", "netmeta.multinma"))
-  ##
+  chksuitable(x, "Component network meta-analysis", classes = gs(".other_nma"))
+  #
   x <- updateversion(x)
   ##
   chkchar(sep.comps, nchar = 0:1, length = 1)

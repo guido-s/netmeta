@@ -59,6 +59,9 @@
                   #
                   legend = TRUE,
                   #
+                  .other_nma =
+                    c("netmeta.crossnma", "netmeta.gemtc", "netmeta.multinma"),
+                  #
                   .argslist.netmeta = argslist))
 }
 

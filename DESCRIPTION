@@ -1,12 +1,12 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
 Version: 3.2-1
-Date: 2025-08-29
+Date: 2025-08-31
 Depends: R (>= 4.0.0), meta (>= 8.0-1)
 Imports: Matrix, metafor, MASS, mvtnorm, magic, igraph, 
   ggplot2, colorspace, grid, dplyr, magrittr, methods
 Suggests: Rgraphviz, graph, rgl, gridExtra, tictoc, writexl,
-  R.rsp, cccp, brglm2, crossnma, rmarkdown, knitr
+  R.rsp, cccp, brglm2, crossnma, gemtc, rmarkdown, knitr
 Authors@R: c(person("Gerta", "Rücker",
                     role = "aut",
                     comment = c(ORCID = "0000-0002-2192-2560")),

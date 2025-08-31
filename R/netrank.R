@@ -194,8 +194,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
   if (missing(method)) {
     if (inherits(x, "netcomb"))
       method <- "P-score"
-    else if (inherits(x, "netmeta") &
-             !inherits(x, c("netmeta.crossnma", "netmeta.multinma")))
+    else if (inherits(x, "netmeta") & !inherits(x, gs(".other_nma")))
       method <- "P-score"
     else
       method <- "SUCRA"
@@ -221,9 +220,9 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
                        warn.deprecated)
   chklogical(random)
   #
-  # Additional checks for crossnma and multinma objects
+  # Additional checks for crossnma, gemtc and multinma objects
   #
-  if (inherits(x, c("netmeta.crossnma", "netmeta.multinma"))) {
+  if (inherits(x, gs(".other_nma"))) {
     if (method == "P-score")
       warning("Argument 'method = \"SUCRA\"' for netmeta.", x$method,
               " object.",
@@ -260,8 +259,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
       stop("netcomb object is not compatible with SUCRAs.",
            call. = FALSE)
     else if (inherits(x, "netmeta")) {
-      if (inherits(x, c("netmeta.crossnma", "netmeta.multinma")) &&
-          x$keep.samples) {
+      if (inherits(x, gs(".other_nma")) && x$keep.samples) {
         rnk <- rankogram(x$samples$d,
                          pooled = if (common) "common" else "random",
                          small.values = small.values)

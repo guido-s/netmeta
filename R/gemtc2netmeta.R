@@ -1,9 +1,10 @@
-#' Create a netmeta object from a crossnma object
+#' Create a netmeta object from a gemtc object
 #' 
 #' @description
-#' Auxiliary function to create a netmeta object from a crossnma object.
+#' Auxiliary function to create a netmeta object from a gemtc object
+#' (experimental feature).
 #' 
-#' @param x A \code{crossnma} object created with R package \bold{crossnma}.
+#' @param x A \code{gemtc} object created with R package \bold{gemtc}.
 #' @param keep.samples A logical indicating whether to keep the generated
 #'   samples.
 #' @param level The level used to calculate confidence intervals for
@@ -36,7 +37,7 @@
 #'   characters used to create unique study labels.
 #'
 #' @return
-#' A netmeta object with additional class "netmeta.crossnma".
+#' A netmeta object with additional class "netmeta.gemtc".
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
@@ -44,49 +45,47 @@
 #' 
 #' @examples
 #' \donttest{
-#' if (requireNamespace("crossnma", quietly = TRUE)) {
-#' library("crossnma")
-#' # Create a JAGS model
-#' mod <- crossnma.model(treat, id, relapse, n, design,
-#'   prt.data = ipddata, std.data = stddata,
-#'   reference = "A", trt.effect = "random", method.bias = "naive")
-#' # Fit JAGS model
-#' set.seed(1909)
-#' fit <- crossnma(mod)
+#' if (requireNamespace("gemtc", quietly = TRUE)) {
+#' library("gemtc")
+#' # Load the example network and generate a consistency model:
+#' model <- mtc.model(smoking, type="consistency")
+#' results <- mtc.run(model, thin = 10)
+#' detach("package:gemtc")
 #'
 #' # Print results in netmeta layout
-#' cro <- crossnma2netmeta(fit)
-#' cro
+#' mtc <- gemtc2netmeta(results)
+#' mtc
 #' # SUCRAs
-#' netrank(cro)
+#' netrank(mtc)
 #' # Rankogram
-#' rankogram(cro)
+#' rankogram(mtc)
 #' }
 #' }
 #' 
-#' @export crossnma2netmeta
+#' @export gemtc2netmeta
 
-crossnma2netmeta <- function(x,
-                             keep.samples = TRUE,
-                             level = gs("level"), level.ma = x$model$level.ma,
-                             reference.group = x$model$reference,
-                             baseline.reference = gs("baseline.reference"),
-                             small.values = x$model$small.values,
-                             all.treatments = gs("all.treatments"),
-                             seq = gs("seq"),
-                             backtransf = x$model$backtransf,
-                             nchar.trts = gs("nchar.trts"),
-                             nchar.studlab = gs("nchar.studlab")) {
+gemtc2netmeta <- function(x,
+                          keep.samples = TRUE,
+                          level = gs("level"),
+                          level.ma = gs("level.ma"),
+                          reference.group =
+                            levels(x$model$network$treatments$id)[1],
+                          baseline.reference = gs("baseline.reference"),
+                          small.values = gs("small.values"),
+                          all.treatments = gs("all.treatments"),
+                          seq = gs("seq"),
+                          backtransf = gs("backtransf"),
+                          nchar.trts = gs("nchar.trts"),
+                          nchar.studlab = gs("nchar.studlab")) {
   
   #
-  # (1) Check for crossnma object and extract data / settings
+  # (1) Check for gemtc object and extract data / settings
   #
   
-  chkclass(x, "crossnma")
+  chkclass(x, "mtc.result")
   #
-  if (!is.null(x$model$covariate))
-    stop("R function crossnma2netmeta() not suitable for ",
-         "network meta-regression.",
+  if (!is.null(x$model$regressor))
+    stop("R function gemtc2netmeta() not suitable for network meta-regression.",
          call. = FALSE)
   #
   chklogical(keep.samples)
@@ -100,12 +99,33 @@ crossnma2netmeta <- function(x,
   chknumeric(nchar.trts, min = 1, length = 1)
   chknumeric(nchar.studlab, min = 1, length = 1)
   #
-  common <- x$model$trt.effect == "common"
-  random <- x$model$trt.effect == "random"
-  sm <- x$model$sm
+  random <- x$model$linearModel == "random"
+  common <- !random
   #
-  trts <- as.character(x$trt.key$trt.ini)
+  likelihood <- x$model$likelihood
+  link <- x$model$link
+  #
+  # Determine summary measure
+  #
+  assign_rules <- data.frame(
+    lik = rep(c("normal", "binom", "poisson"), c(2, 3, 1)),
+    lin = c("identity", "smd", "logit", "log", "cloglog", "log"),
+    sm = c("MD", "SMD", "OR", "RR", "HR", "HR")
+  )
+  #
+  # Get rid of warning 'Undefined global functions or variables'
+  lik <- lin <- NULL
+  #
+  sm <- assign_rules %>% filter(lik == likelihood, lin == link) %>%
+    select(sm) %>% pull()
+  #
+  if (sm == "HR")
+    stop("Not yet implemented.")
+  #
+  trts <- levels(x$model$network$treatments$id)
   labels <- sort(trts)
+  #
+  trts.long <- x$model$network$treatments$description
   #
   if (!is.null(seq))
     seq <- setseq(seq, labels)
@@ -115,12 +135,24 @@ crossnma2netmeta <- function(x,
       seq <- as.character(seq)
   }
   #
-  dat <- x$model$all.data.ad
-  trt <- dat$trt
-  n <- dat$n
-  outcome <- dat$outcome
-  study <- dat$study
-  se <- dat$se
+  dat <- x$model$data
+  #
+  trt <- as.vector(t(dat$t))
+  sel <- !is.na(trt)
+  trt <- trt[sel]
+  trt <- as.character(factor(trt, levels = sort(unique(trt)), labels = trts))
+  #
+  if (sm %in% c("OR", "RR", "HR")) {
+    outcome <- as.vector(t(dat$r))[sel]
+    n <- as.vector(t(dat$n))[sel]
+  }
+  #
+  if (sm %in% c("MD", "SMD")) {
+    outcome <- as.vector(t(dat$m))[sel]
+    se <- as.vector(t(dat$e))[sel]
+  }
+  #
+  study <- rep(dat$studies, dat$na)
   
   
   #
@@ -129,12 +161,12 @@ crossnma2netmeta <- function(x,
   
   dmat <- do.call(rbind, x$samples) %>% data.frame() %>%
     select(starts_with("d."))
+  dmat <- cbind(0, dmat)
   names(dmat) <- trts
   #
-  if (random) {
-    tau <- NULL
-    tmat <- do.call(rbind, x$samples) %>% data.frame() %>% select(tau)
-  }
+  tau <- NULL
+  tmat <- do.call(rbind, x$samples) %>%
+    data.frame() %>% select(starts_with("sd."))
   #
   TE.matrix <- seTE.matrix <-
     lower.matrix <- upper.matrix <-
@@ -168,7 +200,7 @@ crossnma2netmeta <- function(x,
   
   
   #
-  # (3) Create pairwise object from crossnma data and run network meta-analysis
+  # (3) Create pairwise object from gemtc data and run network meta-analysis
   #
   
   if (sm %in% c("OR", "RR")) {
@@ -182,7 +214,7 @@ crossnma2netmeta <- function(x,
     suppressWarnings(
       dat <-
         pairwise(treat = trt,
-                 mean = outcome, n = n, sd = se,
+                 TE = outcome, seTE = se,
                  studlab = study, sm = sm, warn = FALSE)
     )
   }
@@ -192,7 +224,7 @@ crossnma2netmeta <- function(x,
   
   
   #
-  # (4) Add crossnma results to netmeta object
+  # (4) Add gemtc results to netmeta object
   #
   
   res <- setNA_nma(res)
@@ -206,13 +238,13 @@ crossnma2netmeta <- function(x,
       res$samples$tau <- tmat
   }
   #
-  res$method <- "crossnma"
+  res$method <- "gemtc"
   res$method.tau <- ""
   res$m <- NA
   #
   res$level <- gs("level")
   res$level.ma <- level.ma
-  res$reference.group <- reference.group
+  res$reference.group <- setchar(reference.group, trts)
   res$baseline.reference <- baseline.reference
   res$small.values <- small.values
   res$all.treatments <- all.treatments
@@ -264,7 +296,7 @@ crossnma2netmeta <- function(x,
   # (5) Return netmeta object
   #
   
-  class(res) <- c(class(res), "netmeta.crossnma")
+  class(res) <- c(class(res), "netmeta.gemtc")
   #
   res
 }

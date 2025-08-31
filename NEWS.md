@@ -7,8 +7,11 @@
 
 * Vignette on workflow for the R package **netmeta** added
   (command: vignette("netmeta-workflow"))
+
+* New experimental R function gemtc2netmeta() to create a netmeta object from a
+  gemtc object
   
-* R packages **rmarkdown** and **knitr** added to Suggests
+* R packages **rmarkdown**, **knitr** and **gemtc** added to Suggests
 
 ### Bug fixes
 
