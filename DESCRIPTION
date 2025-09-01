@@ -1,7 +1,7 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
 Version: 3.2-1
-Date: 2025-08-31
+Date: 2025-09-01
 Depends: R (>= 4.0.0), meta (>= 8.0-1)
 Imports: Matrix, metafor, MASS, mvtnorm, magic, igraph, 
   ggplot2, colorspace, grid, dplyr, magrittr, methods

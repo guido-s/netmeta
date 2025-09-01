@@ -79,7 +79,9 @@ gemtc2netmeta <- function(x,
                           nchar.studlab = gs("nchar.studlab")) {
   
   #
+  #
   # (1) Check for gemtc object and extract data / settings
+  #
   #
   
   chkclass(x, "mtc.result")
@@ -110,10 +112,11 @@ gemtc2netmeta <- function(x,
   assign_rules <- data.frame(
     lik = rep(c("normal", "binom", "poisson"), c(2, 3, 1)),
     lin = c("identity", "smd", "logit", "log", "cloglog", "log"),
-    sm = c("MD", "SMD", "OR", "RR", "HR", "HR")
+    sm = c("MD", "SMD", "OR", "RR", "HR", "IRR")
   )
   #
   # Get rid of warning 'Undefined global functions or variables'
+  #
   lik <- lin <- NULL
   #
   sm <- assign_rules %>% filter(lik == likelihood, lin == link) %>%
@@ -134,29 +137,12 @@ gemtc2netmeta <- function(x,
     if (is.numeric(seq))
       seq <- as.character(seq)
   }
-  #
-  dat <- x$model$data
-  #
-  trt <- as.vector(t(dat$t))
-  sel <- !is.na(trt)
-  trt <- trt[sel]
-  trt <- as.character(factor(trt, levels = sort(unique(trt)), labels = trts))
-  #
-  if (sm %in% c("OR", "RR", "HR")) {
-    outcome <- as.vector(t(dat$r))[sel]
-    n <- as.vector(t(dat$n))[sel]
-  }
-  #
-  if (sm %in% c("MD", "SMD")) {
-    outcome <- as.vector(t(dat$m))[sel]
-    se <- as.vector(t(dat$e))[sel]
-  }
-  #
-  study <- rep(dat$studies, dat$na)
   
   
+  #
   #
   # (2) Calculate matrices with treatment effects, standard errors, etc.
+  #
   #
   
   dmat <- do.call(rbind, x$samples) %>% data.frame() %>%
@@ -200,31 +186,84 @@ gemtc2netmeta <- function(x,
   
   
   #
+  #
   # (3) Create pairwise object from gemtc data and run network meta-analysis
   #
-  
-  if (sm %in% c("OR", "RR")) {
-    suppressWarnings(
-      dat <-
-        pairwise(treat = trt, event = outcome, n = n,
-                 studlab = study, sm = sm, warn = FALSE)
-    )
-  }
-  else if (sm %in% c("MD", "SMD")) {
-    suppressWarnings(
-      dat <-
-        pairwise(treat = trt,
-                 TE = outcome, seTE = se,
-                 studlab = study, sm = sm, warn = FALSE)
-    )
-  }
   #
-  res <- suppressWarnings(netmeta(dat, common = common, random = random,
-                                  warn = FALSE))
+  
+  #
+  # Arm-level data
+  #
+  dat.gemtc <- x$model$network$data.ab
+  #
+  if (!is.null(dat.gemtc)) {
+    #
+    # Get rid of warning 'Undefined global functions or variables'
+    #
+    treatment <- study <- responders <- sampleSize <- exposure <-
+      mean <- std.err <- std.dev <- NULL
+    #
+    if (sm %in% c("OR", "RR")) {
+      suppressWarnings(
+        dat <-
+          pairwise(treat = treatment, studlab = study,
+                   event = responders, n = sampleSize,
+                   data = dat.gemtc,
+                   sm = sm, warn = FALSE))
+    }
+    else if (sm == "MD") {
+      #
+      # Only means and standard errors provided
+      #
+      if (is.null(dat.gemtc$std.dev)) {
+        suppressWarnings(
+          dat <-
+            pairwise(treat = treatment,
+                     TE = mean, seTE = std.err,
+                     studlab = study,
+                     data = dat.gemtc,
+                     sm = sm, warn = FALSE))
+      }
+      else {
+        suppressWarnings(
+          dat <-
+            pairwise(treat = treatment,
+                     n = sampleSize, mean = mean, sd = std.dev,
+                     studlab = study,
+                     data = dat.gemtc,
+                     sm = sm, warn = FALSE))
+      }
+    }
+    else if (sm == "SMD") {
+      suppressWarnings(
+        dat <-
+          pairwise(treat = treatment,
+                   n = sampleSize, mean = mean, sd = std.dev,
+                   studlab = study,
+                   data = dat.gemtc,
+                   sm = sm, warn = FALSE))
+    }
+    else if (sm == "IRR") {
+      suppressWarnings(
+        dat <-
+          pairwise(treat = treatment, studlab = study,
+                   event = responders, time = exposure,
+                   data = dat.gemtc,
+                   sm = sm, warn = FALSE))
+    }
+  }
+  else
+    stop("R function gemtc2netmeta() not suitable for relative effect data.",
+         call. = FALSE)
+  #
+  res <- suppressWarnings(
+    netmeta(dat, common = common, random = random, warn = FALSE))
   
   
+  #
   #
   # (4) Add gemtc results to netmeta object
+  #
   #
   
   res <- setNA_nma(res)
@@ -293,7 +332,9 @@ gemtc2netmeta <- function(x,
   
   
   #
+  #
   # (5) Return netmeta object
+  #
   #
   
   class(res) <- c(class(res), "netmeta.gemtc")
