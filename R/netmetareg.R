@@ -232,15 +232,37 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$n1 <- ifelse(x$data$treat1==x$data$.treat1, x$data$n1, x$data$n2)
     dat$n2 <- ifelse(x$data$treat2==x$data$.treat2, x$data$n2, x$data$n1)
   }
-  if (!is.null(x$data$incr)) {
-    dat$incr <- x$data$incr
+  if (!is.null(x$incr)) { #incr assigned to netmeta object
+    dat$incr <- x$incr
   }
+  
+  # if Ival not supplied default to treatment order
+  
+  
+  # if Ival supplied prior to netmeta. Right now the pairwise object requires an item named "Ival" otherwise it will default to treatment order. Otherwise they will beed to specify 2 separate directionality variables, 1 for each treatment. Or they will need to do the directionality setting manually but this can have issues in multi-arm studies if they are not consistent
+  if (consistency==FALSE & !is.null(x$data$Ival1) & !is.null(x$data$Ival2)){ 
+    # must be coded 0.1. need to add chk for Ival consistency v
+    dat$Ival1 <- ifelse(x$data$treat1==x$data$.treat1, x$data$Ival1, x$data$Ival2)
+    dat$Ival2 <- ifelse(x$data$treat2==x$data$.treat2, x$data$Ival2, x$data$Ival1)
+    } else if (consistency==FALSE & (is.null(x$data$Ival1) & is.null(x$data$Ival2))){
+      
+      mkIval(dat, ref = reference.group) # in netmetareg internal
+      dat<-do.call(rbind, lapply(split(dat, dat$studlab), mkIval, ref=reference.group))
+      rownames(dat)<-NULL
+      warning("No Directionality Parameter Specified. Defaulting to treatment order")
+    }
+	
   #
   dat <- dat[order(dat$studlab, dat$treat1, dat$treat2), , drop = FALSE]
   #
   keep <- logical(0)
   wo <- logical(0)
   #
+  if(consistency==TRUE){
+    # check for constant covariate in reference treatment
+    if(length(unique(dat[dat$treat1==reference.group|dat$treat2==reference.group,covar.name]))==1){
+      stop("Invalid reference treatment for interaction. Insufficient variation in observed covariate values for reference treatment")
+      }
   for (i in unique(dat$studlab)) {
     d.i <- dat[dat$studlab == i, , drop = FALSE]
     trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
@@ -251,6 +273,15 @@ netmetareg.netmeta <- function(x, covar = NULL,
     #
     keep.i <- !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
     wo.i <- d.i$treat1 == ref.i
+    #
+      keep <- c(keep, keep.i)
+      wo <- c(wo, wo.i)
+    }
+  } else  if(consistency==FALSE){
+    # calcV is sensitive to the choice of reference treatment. but if we have study specific references we had to update the keep and wo statements
+    dat$Ival_diff<-dat$Ival1-dat$Ival2
+    keep.i <- dat$Ival_diff!=0 # whether a row contains a reference. equivalent !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
+    wo.i <- dat$Ival1==0 # whether the reference treatment is treat1. equivalent to  d.i$treat1 == ref.i
     #
     keep <- c(keep, keep.i)
     wo <- c(wo, wo.i)
@@ -268,6 +299,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     mean2.i <- dat$mean2
     sd2.i <- dat$sd2
     time2.i <- dat$time2
+	Ival2.i <- dat$Ival2
     #
     dat$treat2[wo] <- dat$treat1[wo]
     dat$event2[wo] <- dat$event1[wo]
@@ -275,6 +307,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$mean2[wo] <- dat$mean1[wo]
     dat$sd2[wo] <- dat$sd1[wo]
     dat$time2[wo] <- dat$time1[wo]
+	dat$Ival2[wo] <- dat$Ival1[wo]
     #
     dat$treat1[wo] <- t2.i[wo]
     dat$event1[wo] <- e2.i[wo]
@@ -282,6 +315,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$mean1[wo] <- mean2.i[wo]
     dat$sd1[wo] <- sd2.i[wo]
     dat$time1[wo] <- time2.i[wo]
+	dat$Ival1[wo] <- Ival2.i[wo]
   }
   #
   ncols1 <- ncol(dat)
@@ -292,7 +326,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   dat <- dat[order(dat$studlab), ]
   #
   trts.all <- varnames
-  trts <- varnames[-length(varnames)]
+  trts <- trts.all[trts.all!=reference.group] # consistency
   
   
   #
@@ -310,8 +344,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
                            paste0( " + ",
                              paste(paste0(trts, ":", covar.name),
                                  collapse = " + "))))
-    }
-    else {
+    } else {
       #
       # The interaction is all non-reference treatments vs reference,
       # so we can define a variable indicating whether it is reference
@@ -320,7 +353,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
       # colon which is in the same format as the independent. Helpful
       # for later extraction
       #
-      dat$nonref <- as.numeric(dat[[reference.group]] != 0)
+      dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0) # if the treatments are coded as numbers, then the contrast.matrix function creates columns using make.names that do not correspond to the original reference group
       #
       formula.nmr_default <- # renamed for construction of manual matrix below
         as.formula(paste("~ 0 + ",
@@ -330,10 +363,30 @@ netmetareg.netmeta <- function(x, covar = NULL,
                                    paste(paste0("nonref:", covar.name),
                                          collapse = " + "))))
     }
-  }
-  else {
-    warning("Inconsistency models not yet implemented.")
-    return(NULL)
+  } else {
+	# trts <- varnames[-length(varnames)]
+       dat$Ival<-dat$Ival1-dat$Ival2 #basically Ivaldiff updated after "wo"
+    if (assumption == "independent") {
+      dat$.comp_<-paste(pmin(dat$treat1, dat$treat2), pmax(dat$treat1, dat$treat2), sep="_vs_")
+      count_comp<-table(dat$.comp_)
+
+        dat$.comp_<-ifelse(dat$.comp_%in% names(count_comp[count_comp>=2]),dat$.comp_, "insufficient_data") # requires at least 2 observations
+        
+      formula.nmr_default <-as.formula(paste("~ 0 + ",
+                                             paste(trts, collapse = " + "),
+                                             if (!is.null(covar)){
+                                               paste0("+ .comp_:Ival:",covar.name)}
+      ))
+      
+    } else {
+      formula.nmr_default <-as.formula(paste("~ 0 + ",
+                                             paste(trts, collapse = " + "),
+                                             if (!is.null(covar)){
+                                               paste0("+ Ival:",covar.name)}
+                                             ))
+    }
+    
+    
   }
   #
   # Checks for non-numeric covariate
@@ -383,8 +436,15 @@ netmetareg.netmeta <- function(x, covar = NULL,
   dat$comparison <- paste(dat$treat1, dat$treat2, sep = " vs ")
   #
   # Calculate Variance-Covariance matrix
-  #
-  V <- bldiag(lapply(split(dat, dat$studlab), calcV, sm = sm))
+      #
+      if (sm %in%c("OR","MD")) {
+        V <- bldiag(lapply(split(dat, dat$studlab), calcV, sm = sm))
+      } else{
+        V <- dat$seTE^2
+		}
+      #
+
+
   #
   suppressWarnings(
     res <-

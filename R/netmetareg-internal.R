@@ -230,8 +230,7 @@ nmr_full_results <- function(x) {
     # assignment which will later be important for more than two levels
     #
     return(merge(dat_d, dat_se.d, by = "comparison", all.x = TRUE))
-  }
-  else if (consistency) {
+  }  else if (consistency) {
     if (assumption == "common") {
       # The common assumption has one beta per treatment
       #
@@ -370,6 +369,137 @@ nmr_full_results <- function(x) {
         paste(rownames(dat_se.beta.i), i, sep = sep.trts)
       dat_se.beta <- rbind(dat_se.beta, dat_se.beta.i)
     }
+  } else if(consistency==FALSE){
+    if(assumption=="common"){# common
+      mat_beta<-matrix(nrow = length(x$results[x$results$type =="d","treat"])+1,
+                       ncol=length(x$results[x$results$type =="d","treat"])+1,
+                       data=x$results[x$results$type =="beta","coef"])
+      diag(mat_beta)<-0
+      dimnames(mat_beta)<-list(c(reference.group,x$results[x$results$type =="d","treat"]),
+                               c(reference.group,x$results[x$results$type =="d","treat"]))
+      
+      mat_se.beta<-matrix(nrow = length(x$results[x$results$type =="d","treat"])+1,
+                          ncol=length(x$results[x$results$type =="d","treat"])+1,
+                          data=x$results[x$results$type =="beta","se"])
+      diag(mat_se.beta)<-0
+      dimnames(mat_se.beta)<-list(c(reference.group,x$results[x$results$type =="d","treat"]),
+                                  c(reference.group,x$results[x$results$type =="d","treat"]))
+      
+      # covariances ###############
+      temp_vcov<-Cov_d_beta <- Cov[!sel.d, sel.d]
+      # rownames(temp_vcov)<-gsub(":.*|`","",rownames(temp_vcov))
+      temp_vcov[reference.group]<-0
+      mat_vcov<-as.numeric(temp_vcov)
+      names(mat_vcov)<-names(temp_vcov)
+      mat_vcov<-outer(mat_vcov,mat_vcov,"-")
+      mat_vcov<-mat_vcov[order(rownames(mat_vcov)),order(colnames(mat_vcov))]
+      
+      mat_vcov<-as.data.frame(mat_vcov)
+      
+      
+    }else if(assumption=="independent"){
+      mat_beta<-x$results[x$results$type =="beta",c("coef","treat")]
+      mat_se.beta<-x$results[x$results$type =="beta",c("se","treat")]
+      # #reverse direction in case reverse direction occurs in original data
+      mat_beta<-rbind.data.frame(mat_beta,
+                                 data.frame("coef"=mat_beta$coef,# reversal depends on interpretation of ivals. Which is why users need the ival warning. Treatment direction is reversible
+                                            "treat"=paste(gsub(".*_vs_","",mat_beta$treat), # without the vs this can get messy
+                                                          gsub("_vs_.*","",mat_beta$treat),
+                                                          sep="_vs_")))
+      mat_beta$treat<-gsub(".comp_", "", mat_beta$treat) # since i added comp
+      mat_beta$treat<-gsub("_vs_", ":", mat_beta$treat) #standardize with treatment effect matrices
+      mat_se.beta<-rbind.data.frame(mat_se.beta)
+      mat_se.beta<-rbind.data.frame(mat_se.beta,
+                                    data.frame("se"=mat_se.beta$se,
+                                               "treat"=paste(gsub(".*_vs_","",mat_se.beta$treat), # without the vs this can get messy
+                                                             gsub("_vs_.*","",mat_se.beta$treat),
+                                                             sep="_vs_")))
+      mat_se.beta$treat<-gsub(".comp_", "", mat_se.beta$treat) # since i added comp
+      mat_se.beta$treat<-gsub("_vs_", ":", mat_se.beta$treat) #standardize with treatment effect matrices
+      names(mat_beta)<-c("beta","comparison")
+      names(mat_se.beta)<-c("se.beta","comparison")
+      
+      # it is already a joinable list
+      dat_beta<-mat_beta
+      dat_se.beta<-mat_se.beta
+      
+      # covariances ###############
+      temp_vcov<-Cov_beta <- Cov[!sel.d, sel.d]
+      rownames(temp_vcov)<-gsub("\\.comp_|:.*|`","",rownames(temp_vcov))
+      temp_vcov_interactions<-rownames(temp_vcov)
+      temp_vcov<-as.data.frame(temp_vcov)
+      temp_vcov[colnames(temp_vcov)[!colnames(temp_vcov)%in%temp_vcov_interactions],]<-0 # the dataframe appends rows whereas the matrix will not
+      
+      temp_vcov <- cbind(0, temp_vcov)
+      temp_vcov <- rbind(0, temp_vcov)
+      rownames(temp_vcov)[1] <- reference.group
+      colnames(temp_vcov)[1] <- reference.group
+      
+      temp_vcov<-temp_vcov[order(rownames(temp_vcov)),order(colnames(temp_vcov))]
+      mat_vcov<-temp_vcov
+      
+      mat_vcov<-as.data.frame(mat_vcov)
+      mat_vcov<-reshape(mat_vcov,
+                        idvar = "interaction",
+                        ids=rownames(mat_vcov),
+                        direction = "long", 
+                        varying = list(names(mat_vcov)),
+                        v.names = "value", 
+                        timevar = "treat", 
+                        times = names(mat_vcov))
+      mat_vcov$int_treat1<-gsub(".*_vs_","",mat_vcov$interaction)
+      mat_vcov$int_treat2<-gsub("_vs_.*","",mat_vcov$interaction)
+      
+      mat_vcov$type<-ifelse(mat_vcov$treat==mat_vcov$int_treat1&mat_vcov$treat==mat_vcov$int_treat2,"ref","interim")
+      
+      interim<-mat_vcov[mat_vcov$type=="interim"&
+                          (mat_vcov$treat==mat_vcov$int_treat1|
+                             mat_vcov$treat==mat_vcov$int_treat2),
+                        !names(mat_vcov)%in%c("type")]
+      names(interim)<-gsub("value","interim",names(interim))
+      
+      ref<-mat_vcov[mat_vcov$type=="ref",!names(mat_vcov)%in%c("treat","type","int_treat1", "int_treat2")]
+      names(ref)<-gsub("value","ref",names(ref))
+      
+      comb1<-merge(interim,ref, by.x="int_treat2",by.y="interaction")
+      comb1<-merge(comb1,ref, by.x="int_treat1",by.y="interaction")
+      comb1<-merge(comb1,interim, by.x=c("interaction","int_treat1","int_treat2"),by.y=c("interaction","int_treat1","int_treat2"))
+      comb1<-comb1[comb1$treat.x==comb1$int_treat2,]# only in the same order as the covariate
+      
+      comb1$cov<-comb1$ref.x+comb1$ref.y+comb1$interim.x-comb1$interim.y
+      comb1$.comp<-paste(comb1$treat.x,comb1$treat.y,sep=":")
+      combrev<-comb1
+      combrev$.comp<-paste(combrev$treat.y,combrev$treat.x,sep=":")#reverse, does not change covariance
+      comb1<-rbind(comb1,combrev)
+      dat_cov_d_beta<-unique(comb1[,c(".comp","cov")])
+      names(dat_cov_d_beta)<-c("comparison", "cov")
+    }
+    
+    
+    if(assumption=="common"|consistency==TRUE){
+      dat_beta <- dat_se.beta<- dat_cov_d_beta<-NULL
+    }
+    for (i in colnames(mat_beta)) {
+      if(assumption=="common"|consistency==TRUE){
+        dat_beta.i <- as.data.frame(mat_beta)[i]
+        names(dat_beta.i) <- "beta"
+        dat_beta.i$comparison <- paste(rownames(dat_beta.i), i, sep = sep.trts)
+        #
+        dat_beta <- rbind(dat_beta, dat_beta.i)
+        #
+        dat_se.beta.i <- as.data.frame(mat_se.beta)[i]
+        names(dat_se.beta.i) <- "se.beta"
+        dat_se.beta.i$comparison <-
+          paste(rownames(dat_se.beta.i), i, sep = sep.trts)
+        dat_se.beta <- rbind(dat_se.beta, dat_se.beta.i)
+        
+        
+        dat_cov_d_beta.i <- as.data.frame(mat_vcov)[i]
+        names(dat_cov_d_beta.i) <- "cov"
+        dat_cov_d_beta.i$comparison <-paste(rownames(dat_cov_d_beta.i), i, sep = sep.trts)
+        dat_cov_d_beta <- rbind(dat_cov_d_beta, dat_cov_d_beta.i)
+      }
+    }
   }
   #
   # Combine elements for summary and all combinations
@@ -396,3 +526,15 @@ nmr_full_results <- function(x) {
   #
   res
 }
+
+# create directionality parameter as treatment order ################
+mkIval<-function(x, ref){ # treatment order as direction
+  if(ref %in% c(x$treat1,x$treat2)){
+    x$Ival1<-ifelse(x$treat1==ref, 0, 1)
+    x$Ival2<-ifelse(x$treat2==ref, 0, 1)
+  } else {
+    x$Ival1<-0
+    x$Ival2<-1
+  }
+  return(x)
+} 
