@@ -230,16 +230,10 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$time2 <- x$data$.time2
     available.times <- TRUE
   }
-
-  ## The logic above does not work because the following variables do not have
-  ## .variable equivalents exported from netmeta. They are needed for calcV()
-  #if (!is.null(x$data$p1) & !is.null(x$data$p2)) {
-  #  dat$p1 <- ifelse(x$data$treat1==x$data$.treat1, x$data$p1, x$data$p2)
-  #  dat$p2 <- ifelse(x$data$treat2==x$data$.treat2, x$data$p2, x$data$p1)
-  #}
   #
-  if (!is.null(x$data$incr)) {
-    dat$incr <- x$data$incr
+  if (!is.null(x$data$.incr1) & !is.null(x$data$.incr2)) {
+    dat$incr1 <- x$data$.incr1
+    dat$incr2 <- x$data$.incr2
   }
   #
   dat <- dat[order(dat$studlab, dat$treat1, dat$treat2), , drop = FALSE]
@@ -274,6 +268,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     mean2.i <- dat$mean2
     sd2.i <- dat$sd2
     time2.i <- dat$time2
+    incr2.i <- dat$incr2
     #
     dat$treat2[wo] <- dat$treat1[wo]
     dat$event2[wo] <- dat$event1[wo]
@@ -281,6 +276,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$mean2[wo] <- dat$mean1[wo]
     dat$sd2[wo] <- dat$sd1[wo]
     dat$time2[wo] <- dat$time1[wo]
+    dat$incr2[wo] <- dat$incr1[wo]
     #
     dat$treat1[wo] <- t2.i[wo]
     dat$event1[wo] <- e2.i[wo]
@@ -288,6 +284,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$mean1[wo] <- mean2.i[wo]
     dat$sd1[wo] <- sd2.i[wo]
     dat$time1[wo] <- time2.i[wo]
+    dat$incr1[wo] <- incr2.i[wo]
   }
   #
   ncols1 <- ncol(dat)
