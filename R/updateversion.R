@@ -33,6 +33,7 @@ updateversion <- function(x, verbose = FALSE) {
   update.2.8.0 <- update_needed(x$version, 2, 8, verbose)
   update.2.9.0 <- update_needed(x$version, 2, 9, verbose)
   update.3.0.0 <- update_needed(x$version, 3, 0, verbose)
+  update.3.3.0 <- update_needed(x$version, 3, 3, verbose)
   
   
   ##
@@ -201,6 +202,13 @@ updateversion <- function(x, verbose = FALSE) {
           method.incr <- "all"
         else if (is.logical(x$allincr) && x$allincr)
           method.incr <- "if0all"
+      }
+    }
+    #
+    if (update.3.3.0) {
+      if (!is.null(x$data$incr)) {
+       x$data$.incr1 <- replaceNULL(x$data$.incr1, x$data$incr) 
+       x$data$.incr2 <- replaceNULL(x$data$.incr2, x$data$incr) 
       }
     }
     #

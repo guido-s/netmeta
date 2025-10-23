@@ -231,8 +231,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
     available.times <- TRUE
   }
   #
-  if (!is.null(x$data$incr1) & !is.null(x$data$.incr2)) {
-    dat$incr1 <- x$data$incr1
+  if (!is.null(x$data$.incr1) & !is.null(x$data$.incr2)) {
+    dat$incr1 <- x$data$.incr1
     dat$incr2 <- x$data$.incr2
   }
   #

@@ -1,4 +1,4 @@
-## netmeta, version 3.2-1 (2025-mm-dd)
+## netmeta, version 3.3-0 (2025-mm-dd)
 
 ### Major changes
 
@@ -23,6 +23,9 @@
 
 * netgraph.netconnection():
   - argument 'seq = "optimal"' can be used
+
+* netmetareg():
+  - fix some bugs
 
 ### User-visible changes
 
