@@ -253,7 +253,7 @@ nmr_full_results <- function(x) {
       #
       # Covariances
       #
-      Cov_d_beta <- Cov[!sel.d, sel.d, drop = FALSE]
+      Cov_d_beta <- Cov[!sel.d, sel.d]
       #
       all_se.beta <- dat_d %>% select(comparison) %>% mutate(cov.default = 0)
       #
