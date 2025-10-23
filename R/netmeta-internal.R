@@ -95,9 +95,13 @@ calcV <- function(x, sm) {
   else if (sm == "IRSD")
     V <- matrix(0.25 / x$time2[1],
                 nrow = nrow(x), ncol = nrow(x))
-  ##
+  else if (nrow(x) == 1)
+    V <- as.matrix(x$seTE^2)
+  else
+    V <- diag(x$seTE^2)
+  #
   diag(V) <- x$seTE^2
-  ##
+  #
   V
 }
 
