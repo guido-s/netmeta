@@ -25,7 +25,12 @@
   - argument 'seq = "optimal"' can be used
 
 * netmetareg():
-  - fix some bugs
+  - use correct increment to construct the covariance matrix used to
+    calculate the REML or ML estimate of the between-study variance
+    (only for pairwise object as main input with binary or count outcome)
+  - align variance covariance matrix construction in netmetareg with netmeta to enable netmetareg with SMDs
+  - update internal reference treatment assignment to use r-friendly matrix names for models with the common assumption
+
 
 ### User-visible changes
 
