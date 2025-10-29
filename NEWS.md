@@ -20,12 +20,19 @@
   - use correct increment to construct the covariance matrix used to
     calculate the REML or ML estimate of the between-study variance
     (only for pairwise object as main input with binary or count outcome)
+  - use covariance 1 / n0 for pairwise() object with multi-arm studies and
+    standardized mean difference as effect measure
 
 * netgraph.netconnection():
   - argument 'seq = "optimal"' can be used
 
 * netmetareg():
-  - fix some bugs
+  - use correct increment to construct the covariance matrix used to
+    calculate the REML or ML estimate of the between-study variance
+    (only for pairwise() object as main input with binary or count outcome)
+  - align variance-covariance matrix construction with netmeta()
+  - update internal reference treatment assignment to use R-friendly matrix
+     names for models with the common assumption
 
 ### User-visible changes
 

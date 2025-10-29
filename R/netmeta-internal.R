@@ -86,6 +86,9 @@ calcV <- function(x, sm) {
   else if (sm == "MD")
     V <- matrix(x$sd2[1]^2 / x$n2[1],
                 nrow = nrow(x), ncol = nrow(x))
+  else if (sm == "SMD")
+    V <- matrix(1 / x$n2[1],
+                nrow = nrow(x), ncol = nrow(x))
   else if (sm == "IRR")
     V <- matrix(1 / (x$event2[1] + x$incr2[1]),
                 nrow = nrow(x), ncol = nrow(x))
