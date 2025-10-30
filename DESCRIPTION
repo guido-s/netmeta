@@ -1,10 +1,11 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
 Version: 3.3-0
-Date: 2025-10-29
+Date: 2025-10-30
 Depends: R (>= 4.0.0), meta (>= 8.0-1)
 Imports: Matrix, metafor, MASS, mvtnorm, magic, igraph, 
-  ggplot2, colorspace, grid, dplyr, magrittr, methods
+  ggplot2, colorspace, grid, dplyr, magrittr, methods,
+  reshape2
 Suggests: Rgraphviz, graph, rgl, gridExtra, tictoc, writexl,
   R.rsp, cccp, brglm2, crossnma, gemtc, rmarkdown, knitr
 Authors@R: c(person("Gerta", "Rücker",
@@ -35,6 +36,9 @@ Authors@R: c(person("Gerta", "Rücker",
              person("Nana-Adjoa", "Kwarteng",
                     role = "ctb",
                     comment = c(ORCID = "0009-0009-0502-6887")),
+             person("Noosheen R.", "Tahmasebi",
+                    role = "ctb",
+                    comment = c(ORCID = "0009-0000-9660-3655")),
              person("Guido", "Schwarzer",
                     role = c("aut", "cre"),
                     email = "guido.schwarzer@uniklinik-freiburg.de",
@@ -54,6 +58,7 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <doi:10.1002/jrsm.1143>;
  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <doi:10.1002/cem.2569>; (Rücker & Schwarzer, 2017) <doi:10.1002/jrsm.1270>;
  - contribution matrix as described in Papakonstantinou et al. (2018) <doi:10.12688/f1000research.14770.3> and Davies et al. (2022) <doi:10.1002/sim.9346>;
+ - path-based approach to detect and assess inconsistency;
  - network meta-regression with a single continuous or binary covariate;
  - subgroup network meta-analysis.
 License: GPL (>= 2) | file LICENSE

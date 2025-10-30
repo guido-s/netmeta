@@ -263,12 +263,15 @@
 #' @importFrom methods as
 #'
 #' @importFrom utils installed.packages packageDescription capture.output
-#'   packageVersion
+#'   packageVersion combn
+#' 
+#' @importFrom reshape2 melt
 #'
 #' @importFrom igraph E<- V<- E V all_simple_paths delete_edges
 #'   get.shortest.paths
 #'   graph_from_adjacency_matrix graph_from_edgelist gsize
 #'   set_edge_attr set_vertex_attr head_of tail_of
+#'   graph
 #'
 #' @importFrom grDevices colours col2rgb heat.colors rainbow rgb xy.coords
 #'
@@ -280,7 +283,9 @@
 #'    geom_col geom_line geom_step geom_tile geom_text ggtitle
 #'    scale_fill_gradient2 scale_x_discrete scale_y_discrete
 #'    scale_x_continuous scale_x_discrete scale_y_discrete
-#'    theme theme_classic theme_dark
+#'    scale_fill_gradient scale_y_continuous
+#'    theme theme_classic theme_dark theme_minimal
+#'    annotate coord_fixed
 #'
 #' @importFrom colorspace sequential_hcl rainbow_hcl sequential_hcl
 #'   diverge_hcl heat_hcl terrain_hcl diverge_hsv choose_palette

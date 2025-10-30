@@ -2,14 +2,23 @@
 
 ### Major changes
 
+* [Noosheen R. Tahmasebi](https://orcid.org/0009-0000-9660-3655) added as
+  a contributor to the R package **netmeta**
+
 * Contributions of individual studies or paths on each comparison in the
   network can be calculated for the shortest path algorithm
 
 * Vignette on workflow for the R package **netmeta** added
   (command: vignette("netmeta-workflow"))
 
+* New R functions netpath() and heatplot.netpath() for path-based approach
+  to detect and assess inconsistency in network meta-analysis
+  [(Tahmasebi et al., 2025)](https://arxiv.org/html/2506.20364)
+
 * New experimental R function gemtc2netmeta() to create a netmeta object from a
   gemtc object
+  
+* R package **reshape2** added to Imports
   
 * R packages **rmarkdown**, **knitr** and **gemtc** added to Suggests
 
