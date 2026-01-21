@@ -34,6 +34,9 @@
   - update internal reference treatment assignment to use R-friendly matrix
      names for models with the common assumption
 
+* hatmatrix():
+  - consider input for arguments 'common' and 'random'
+
 ### User-visible changes
 
 * print.summary.netconnection():
