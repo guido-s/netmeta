@@ -240,7 +240,13 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   keep <- logical(0)
   wo <- logical(0)
-  #
+  
+  if(consistency==TRUE){
+    # check for constant covariate in reference treatment
+    if(length(unique(dat[dat$treat1==reference.group|dat$treat2==reference.group,covar.name]))==1){
+      stop("Invalid reference treatment for interaction. Insufficient variation in observed covariate values for reference treatment")
+    }
+    
   for (i in unique(dat$studlab)) {
     d.i <- dat[dat$studlab == i, , drop = FALSE]
     trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
@@ -256,6 +262,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     wo <- c(wo, wo.i)
   }
   #
+  }
   dat <- dat[keep, , drop = FALSE]
   #
   wo <- wo[keep]
@@ -295,7 +302,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
   dat <- dat[order(dat$studlab), ]
   #
   trts.all <- varnames
-  trts <- varnames[-length(varnames)]
+  trts <- trts.all[trts.all!=reference.group] # ensure that the reference treatment is correctly assigned
+  
   
   
   #
