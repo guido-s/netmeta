@@ -42,6 +42,9 @@ textmeth <- function(x, random = FALSE, print.tau2 = FALSE, print.tau = FALSE,
     else if (inherits(x, "netmeta.crossnma")) {
       text.details <- "- Bayesian network meta-analysis with crossnma\n"
     }
+    else if (inherits(x, "netmeta.gemtc")) {
+      text.details <- "- Bayesian network meta-analysis with gemtc\n"
+    }
     else if (inherits(x, "netmeta.multinma")) {
       text.details <- "- Bayesian network meta-analysis with multinma\n"
     }

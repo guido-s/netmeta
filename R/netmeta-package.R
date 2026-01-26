@@ -92,6 +92,14 @@
 #'   component network meta-analysis (\code{\link{netcomplex}}).
 #' }
 #' 
+#' R package \bold{netmeta} provides two vignettes:
+#' \itemize{
+#'  \item \code{vignette("netmeta-workflow")} with an overview of the
+#'    work flow and the main functions,
+#'  \item \code{vignette("netmeta")} with the PDF file for
+#'    Balduzzi et al. (2023).
+#' }
+#' 
 #' Functions and datasets from \bold{netmeta} are utilised in
 #' Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
 #' \url{https://link.springer.com/book/10.1007/978-3-319-21416-0}.
@@ -250,7 +258,7 @@
 #'
 #' @importFrom stats as.formula dist hclust optim optimize pchisq
 #'   prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted
-#'   residuals quantile setNames model.matrix
+#'   residuals quantile setNames model.matrix aggregate
 #'   
 #' @importFrom methods as
 #'
@@ -260,7 +268,7 @@
 #' @importFrom igraph E<- V<- E V all_simple_paths delete_edges
 #'   get.shortest.paths
 #'   graph_from_adjacency_matrix graph_from_edgelist gsize
-#'   set.edge.attribute set.edge.attribute set.vertex.attribute
+#'   set_edge_attr set_vertex_attr head_of tail_of
 #'
 #' @importFrom grDevices colours col2rgb heat.colors rainbow rgb xy.coords
 #'
@@ -283,7 +291,7 @@
 #'   unit viewport
 #' 
 #' @importFrom dplyr %>% filter select rename starts_with relocate last_col
-#'   mutate if_else bind_rows
+#'   mutate if_else bind_rows pull
 #' 
 #' @importFrom magrittr %<>%
 

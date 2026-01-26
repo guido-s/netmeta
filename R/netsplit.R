@@ -286,6 +286,8 @@ netsplit <- function(x, method,
                      test = show %in% c("all", "with.direct", "both"),
                      #
                      order = NULL,
+                     #
+                     nchar.trts = x$nchar.trts,
                      sep.trts = x$sep.trts, quote.trts = "",
                      tol.direct = 0.0005,
                      common = x$common,
@@ -302,7 +304,7 @@ netsplit <- function(x, method,
   ##
   chkclass(x, "netmeta")
   chksuitable(x, "Methods to split network estimates",
-              classes = c("netmeta.crossnma", "netmeta.multinma"))
+              classes = gs(".other_nma"))
   x <- updateversion(x)
   ##
   is.mh.nch <- inherits(x, "netmetabin") && x$method %in% c("MH", "NCH")
@@ -342,6 +344,9 @@ netsplit <- function(x, method,
   chklogical(ci)
   chklogical(test)
   chklogical(only.reference)
+  #
+  nchar.trts <- replaceNULL(nchar.trts, 666)
+  chknumeric(nchar.trts, length = 1)
   #
   chkchar(sep.trts)
   chkchar(quote.trts)
@@ -471,7 +476,7 @@ netsplit <- function(x, method,
               order = order,
               sep.trts = sep.trts,
               quote.trts = quote.trts,
-              nchar.trts = x$nchar.trts,
+              nchar.trts = nchar.trts,
               #
               tol.direct = tol.direct,
               backtransf = backtransf,
@@ -638,11 +643,10 @@ print.netsplit <- function(x,
     if (!is.logical(subset))
       stop("Argument 'subset' must be a logical vector.")
   }
-  ##
-  if (is.null(nchar.trts))
-    nchar.trts <- 666
+  #
+  nchar.trts <- replaceNULL(nchar.trts, 666)
   chknumeric(nchar.trts, length = 1)
-  ##
+  #
   chknumeric(digits, min = 0, length = 1)
   chknumeric(digits.stat, min = 0, length = 1)
   chknumeric(digits.pval, min = 1, length = 1)

@@ -92,8 +92,9 @@
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
 #' @param event2 Number of events in second treatment group.
-#' @param incr Numerical value added to cell frequencies (for details,
-#'   see \code{\link[meta]{pairwise}}).
+#' @param incr Numerical value added to cell frequencies to construct the
+#'   covariance matrix used to calculate the REML or ML estimate of the
+#'   between-study variance \eqn{\tau^2} (only for binary or count outcomes).
 #' @param mean1 Mean in first treatment group.
 #' @param mean2 Mean in second treatment group.
 #' @param sd1 Standard deviation in first treatment group.
@@ -838,8 +839,14 @@ netmeta <- function(TE, seTE,
       event1 <- TE$event1
     if (!is.null(TE$event2))
       event2 <- TE$event2
-    if (!is.null(TE$incr))
+    #
+    incr1 <- TE$incr1
+    incr2 <- TE$incr2
+    if (!is.null(incr2))
+      incr <- incr2
+    else
       incr <- TE$incr
+    #
     if (!is.null(TE$mean1))
       mean1 <- TE$mean1
     if (!is.null(TE$mean2))
@@ -882,7 +889,8 @@ netmeta <- function(TE, seTE,
     event1 <- catch("event1", mc, data, sfsp)
     event2 <- catch("event2", mc, data, sfsp)
     #
-    incr <- catch("incr", mc, data, sfsp)
+    incr1 <- NULL
+    incr2 <- catch("incr", mc, data, sfsp)
     #
     mean1 <- catch("mean1", mc, data, sfsp)
     mean2 <- catch("mean2", mc, data, sfsp)
@@ -947,8 +955,8 @@ netmeta <- function(TE, seTE,
   else
     available.n <- FALSE
   #
-  if (available.events & is.null(incr))
-    incr <- rep(0, length(event2))
+  if (available.events & is.null(incr2))
+    incr2 <- rep(0, length(event2))
   #
   if (!is.null(mean1) & !is.null(mean2))
     available.means <- TRUE
@@ -996,7 +1004,8 @@ netmeta <- function(TE, seTE,
     data$.n1 <- n1
     data$.event2 <- event2
     data$.n2 <- n2
-    data$.incr <- incr
+    data$.incr1 <- incr1
+    data$.incr2 <- incr2
     #
     data$.mean1 <- mean1
     data$.sd1 <- sd1
@@ -1085,8 +1094,10 @@ netmeta <- function(TE, seTE,
       event1 <- event1[subset]
     if (!is.null(event2))
       event2 <- event2[subset]
-    if (!is.null(incr))
-      incr <- incr[subset]
+    if (!is.null(incr1))
+      incr1 <- incr1[subset]
+    if (!is.null(incr2))
+      incr2 <- incr2[subset]
     if (!is.null(mean1))
       mean1 <- mean1[subset]
     if (!is.null(mean2))
@@ -1156,8 +1167,14 @@ netmeta <- function(TE, seTE,
   excl <- is.na(TE) | is.na(seTE) | seTE <= 0
   #
   if (any(excl)) {
-    if (keepdata)
-      data$.excl <- excl
+    if (keepdata) {
+      if (!missing.subset) {
+        data$.excl <- NA
+        data$.excl[subset] <- excl
+      }
+      else
+        data$.excl <- excl
+    }
     #
     dat.NAs <- data.frame(studlab = studlab[excl],
                           treat1 = treat1[excl],
@@ -1183,8 +1200,10 @@ netmeta <- function(TE, seTE,
       event1 <- event1[!excl]
     if (!is.null(event2))
       event2 <- event2[!excl]
-    if (!is.null(incr))
-      incr <- incr[!excl]
+    if (!is.null(incr1))
+      incr1 <- incr1[!excl]
+    if (!is.null(incr2))
+      incr2 <- incr2[!excl]
     if (!is.null(mean1))
       mean1 <- mean1[!excl]
     if (!is.null(mean2))
@@ -1249,7 +1268,7 @@ netmeta <- function(TE, seTE,
           sep = "")
       prmatrix(dat.NAs, quote = FALSE, right = TRUE,
                rowlab = rep("", sum(excl)))
-      cat("\n")
+      #cat("\n")
     }
   }
   #
@@ -1412,7 +1431,7 @@ netmeta <- function(TE, seTE,
       if (available.events) {
         dat.tau$event1 <- event1
         dat.tau$event2 <- event2
-        dat.tau$incr <- incr
+        dat.tau$incr2 <- incr2
       }
       if (available.means) {
         dat.tau$mean1 <- mean1
@@ -1614,7 +1633,7 @@ netmeta <- function(TE, seTE,
               event2 = event2,
               n1 = n1,
               n2 = n2,
-              incr = incr,
+              incr = incr2,
               #
               mean1 = mean1,
               mean2 = mean2,

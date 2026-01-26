@@ -14,6 +14,11 @@
 #'   disconnected networks).
 #' @param plastic A logical indicating whether the appearance of the
 #'   comparisons should be in '3D look'.
+#' @param start.layout A character string indicating which starting
+#'   layout is used (see \code{\link{netgraph.netmeta}}).
+#' @param iterate A logical indicating whether the stress majorization
+#'   algorithm is carried out for optimization of the layout
+#'   (see \code{\link{netgraph.netmeta}}).
 #' @param \dots Additional arguments passed on to
 #'   \code{\link{netgraph.netmeta}} (see Details).
 #' 
@@ -54,6 +59,7 @@ netgraph.netconnection <- function(x, seq,
                                    col = seq_len(x$n.subnets),
                                    reference.group = NULL,
                                    plastic = gs("plastic"),
+                                   start.layout = "circle", iterate = FALSE,
                                    ...) {
   
   
@@ -61,9 +67,14 @@ netgraph.netconnection <- function(x, seq,
   
   if (missing(seq))
     seq <- rownames(x$A.matrix)
-  else
-    seq <- setseq(seq, rownames(x$A.matrix))
-  ##
+  else {
+    if (length(seq) == 1)
+      seq <- setchar(seq, "optimal", "should be equal to ",
+                     "'optimal' or a permutation of treatments")
+    else
+      seq <- setseq(seq, rownames(x$A.matrix))
+  }
+  #
   x$d <- 2
   x$trts <- rownames(x$A.matrix)
   ##
@@ -125,7 +136,8 @@ netgraph.netconnection <- function(x, seq,
   
   
   res <- netgraph(x, plastic = plastic, col = col,
-                  seq = seq, ...)
+                  seq = seq, start.layout = start.layout, iterate = iterate,
+                  ...)
 
   
   invisible(res)

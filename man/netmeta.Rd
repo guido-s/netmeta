@@ -165,8 +165,9 @@ of the Laplacian matrix L (see Details).}
 
 \item{event2}{Number of events in second treatment group.}
 
-\item{incr}{Numerical value added to cell frequencies (for details,
-see \code{\link[meta]{pairwise}}).}
+\item{incr}{Numerical value added to cell frequencies to construct the
+covariance matrix used to calculate the REML or ML estimate of the
+between-study variance \eqn{\tau^2} (only for binary or count outcomes).}
 
 \item{mean1}{Mean in first treatment group.}
 

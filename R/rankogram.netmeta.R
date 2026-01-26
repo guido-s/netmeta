@@ -6,7 +6,7 @@
 #' RAnking curve) in frequentist network meta-analysis.
 #'
 #' @param x An object of class \code{\link{netmeta}}.
-#' @param nsim Number of simulations.
+#' @param nsim Number of repetitions.
 #' @param common A logical indicating to compute ranking probabilities
 #'   and SUCRAs for the common effects model.
 #' @param random A logical indicating to compute ranking probabilities
@@ -138,9 +138,10 @@ rankogram.netmeta <- function(x, nsim = gs("nsim"),
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
   #
-  # Additional checks for crossnma and multinma objects (and return results)
+  # Additional checks for crossnma, gemtc and multinma objects
+  # (and return results)
   #
-  if (inherits(x, c("netmeta.crossnma", "netmeta.multinma"))) {
+  if (inherits(x, gs(".other_nma"))) {
     if (!x$keep.samples)
       stop("Input for argument 'x' is a netmeta.", x$method,
            " object without samples; recreate ", x$method,

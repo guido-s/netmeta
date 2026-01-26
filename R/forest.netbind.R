@@ -101,6 +101,9 @@ forest.netbind <- function(x,
   chklogical(backtransf)
   ##
   chkchar(lab.NA)
+  #
+  commons <- replaceNULL(x$x$commons, 1)
+  randoms <- replaceNULL(x$x$randoms, 1)
   
   
   ##
@@ -139,8 +142,11 @@ forest.netbind <- function(x,
     m$col.square <- x$common$col.square[sel]
     m$col.square.lines <- x$common$col.square.lines[sel]
     m$col.inside <- x$common$col.inside[sel]
-    ##
-    text.pooled <- "Common Effects Model"
+    #
+    if (length(unique(commons)) == 1)
+      text.pooled <- "\n(Common Effects Model)"
+    else
+      text.pooled <- ""
     #
     if (!is.null(x$common$method))
       x$method <- unique(x$common$method[sel])
@@ -176,8 +182,11 @@ forest.netbind <- function(x,
     m$col.square <- x$random$col.square[sel]
     m$col.square.lines <- x$random$col.square.lines[sel]
     m$col.inside <- x$random$col.inside[sel]
-    ##
-    text.pooled <- "Random Effects Model"
+    #
+    if (length(unique(randoms)) == 1)
+      text.pooled <- "\n(Random Effects Model)"
+    else
+      text.pooled <- ""
     #
     if (!is.null(x$random$method))
       x$method <- unique(x$random$method[sel])
@@ -186,14 +195,12 @@ forest.netbind <- function(x,
   if (missing(smlab))
     if (x$baseline.reference)
       smlab <- paste0("Comparison: other vs '",
-                      x$reference.group, "'\n(",
-                      text.pooled,
-                      ")")
+                      x$reference.group, "'",
+                      text.pooled)
     else
       smlab <- paste0("Comparison: '",
-                      x$reference.group, "' vs other\n(",
-                      text.pooled,
-                      ")")
+                      x$reference.group, "' vs other",
+                      text.pooled)
   #
   m$.text.details.methods <-
     textmeth(x, pooled == pooled, FALSE, FALSE,

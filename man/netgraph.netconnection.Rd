@@ -10,6 +10,8 @@
   col = seq_len(x$n.subnets),
   reference.group = NULL,
   plastic = gs("plastic"),
+  start.layout = "circle",
+  iterate = FALSE,
   ...
 )
 }
@@ -29,6 +31,13 @@ disconnected networks).}
 
 \item{plastic}{A logical indicating whether the appearance of the
 comparisons should be in '3D look'.}
+
+\item{start.layout}{A character string indicating which starting
+layout is used (see \code{\link{netgraph.netmeta}}).}
+
+\item{iterate}{A logical indicating whether the stress majorization
+algorithm is carried out for optimization of the layout
+(see \code{\link{netgraph.netmeta}}).}
 
 \item{\dots}{Additional arguments passed on to
 \code{\link{netgraph.netmeta}} (see Details).}
