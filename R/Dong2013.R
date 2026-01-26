@@ -38,18 +38,7 @@
 #' @examples
 #' head(dat.dong2013)
 #' 
-#' \donttest{
-#' # Transform data from long arm-based format to contrast-based
-#' # format. Argument 'sm' has to be used for odds ratio as summary
-#' # measure; by default the risk ratio is used in the metabin
-#' # function called internally.
-#' #
-#' pw1 <- pairwise(treatment, death, randomized, studlab = id,
-#'   data = dat.dong2013, sm = "OR")
-#' 
-#' # Conduct Mantel-Haenszel network meta-analysis
-#' #
-#' netmetabin(pw1, ref = "plac")
-#' }
+#' # Example using pairwise() and netmetabin():
+#' # example(dat.dong2013, run.dontrun = TRUE)
 
 NULL

@@ -308,7 +308,6 @@
 #'   Theodoros Evrenoglou \email{theodoros.evrenoglou@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link[meta]{pairwise}}, \code{\link{netmeta}},
-#'   \code{\link[metadat]{dat.gurusamy2011}},
 #'   \code{\link[metadat]{dat.dong2013}}
 #' 
 #' @references
@@ -334,9 +333,9 @@
 #' data.
 #' \emph{Statistics in Medicine},
 #' \bold{29}, 3046--67
-
-
+#' 
 #' @examples
+#' \donttest{
 #' # Only consider first four studies (to reduce runtime of example)
 #' #
 #' first4 <- subset(dat.dong2013, id <= 4)
@@ -359,31 +358,8 @@
 #' #
 #' netleague(nb1)
 #' 
-#' \donttest{
-#' # Conduct Mantel-Haenszel network meta-analysis for the whole
-#' # dataset
-#' #
-#' pw2 <- pairwise(treatment, death, randomized, studlab = id,
-#'   data = dat.dong2013, sm = "OR")
-#' netmetabin(pw2, ref = "plac")
-#'   
-#' # Conduct network meta-analysis using the non-central
-#' # hypergeometric model (without continuity correction)
-#' #
-#' netmetabin(pw2, ref = "plac", method = "NCH")
-#' 
-#' # Conduct Mantel-Haenszel network meta-analysis (with continuity
-#' # correction of 0.5; include all studies)
-#' #
-#' netmetabin(pw2, ref = "plac", cc.pooled = TRUE)
-#' 
-#' pw3 <- pairwise(treatment, death, n, studlab = study,
-#'   data = dat.gurusamy2011, sm = "OR")
-#' 
-#' # Conduct Mantel-Haenszel network meta-analysis (without continuity
-#' # correction)
-#' #
-#' netmetabin(pw3, ref = "cont")
+#' # Mantel-Haenszel network meta-analysis for the whole
+#' # dataset: example(dat.dong2013)
 #' }
 #' 
 #' @export netmetabin

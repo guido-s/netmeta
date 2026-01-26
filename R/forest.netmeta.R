@@ -36,7 +36,7 @@
 #'   treatment effects indicate a beneficial (\code{"desirable"}) or
 #'   harmful (\code{"undesirable"}) effect, can be abbreviated; see
 #'   \code{\link{netrank}}.
-#' @param nsim Number of simulations to calculate SUCRAs.
+#' @param nsim Number of repetitions to calculate SUCRAs.
 #' @param digits.prop Minimal number of significant digits for
 #'   P-scores, SUCRAs and direct evidence proportions, see
 #'   \code{\link{print.default}} and \code{\link{netrank}}.
@@ -133,73 +133,7 @@
 #' @keywords hplot
 #' 
 #' @examples
-#' data(smokingcessation)
-#' 
-#' # Transform data from arm-based format to contrast-based format
-#' #
-#' pw1 <- pairwise(list(treat1, treat2, treat3),
-#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
-#'   data = smokingcessation, sm = "OR")
-#' 
-#' # Conduct random effects network meta-analysis
-#' #
-#' net1 <- netmeta(pw1, common = FALSE)
-#'
-#' forest(net1)
-#' 
-#' \donttest{
-#' data(Senn2013)
-#' 
-#' # Conduct network meta-analysis
-#' #
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD")
-#' 
-#' forest(net2, ref = "plac")
-#' forest(net2, xlim = c(-1.5, 1), ref = "plac",
-#'   xlab = "HbA1c difference", rightcols = FALSE)
-#' 
-#' # Random effects effect model
-#' #
-#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", common = FALSE)
-#' 
-#' forest(net3, xlim = c(-1.5, 1), ref = "plac",
-#'   xlab = "HbA1c difference")
-#' 
-#' # Add column with P-Scores on right side of forest plot
-#' #
-#' forest(net3, xlim = c(-1.5, 1), ref = "plac",
-#'   xlab = "HbA1c difference",
-#'   rightcols = c("effect", "ci", "Pscore"),
-#'   just.addcols = "right")
-#' 
-#' # Add column with P-Scores on left side of forest plot
-#' #
-#' forest(net3, xlim = c(-1.5, 1), ref = "plac",
-#'   xlab = "HbA1c difference",
-#'   leftcols = c("studlab", "Pscore"),
-#'   just.addcols = "right")
-#' 
-#' # Sort forest plot by descending P-Score
-#' #
-#' forest(net3, xlim = c(-1.5, 1), ref = "plac",
-#'   xlab = "HbA1c difference",
-#'   rightcols = c("effect", "ci", "Pscore"),
-#'   just.addcols = "right",
-#'   sortvar = -Pscore)
-#' 
-#' # Drop reference group and sort by and print number of studies with
-#' # direct treatment comparisons
-#' #
-#' forest(net3, xlim = c(-1.5, 1), ref = "plac",
-#'   xlab = "HbA1c difference",
-#'   leftcols = c("studlab", "k"),
-#'   leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
-#'   sortvar = -k,
-#'   drop = TRUE,
-#'   smlab = "Random Effects Model")
-#' }
+#' # Examples: example(netmeta)
 #' 
 #' @method forest netmeta
 #' @export

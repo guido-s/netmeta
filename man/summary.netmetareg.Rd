@@ -35,6 +35,7 @@ Summary method for objects of class \code{netmetareg} to print
 list of studies in subnetworks.
 }
 \examples{
+\dontrun{
 data(smokingcessation)
 # Add variable with (fictitious) risk of bias values
 # with 1 = "low risk" and 2 = "high risk"
@@ -53,6 +54,7 @@ nr1 <- netmetareg(net1, rob)
 nr1
 
 summary(nr1)
+}
 
 }
 \seealso{

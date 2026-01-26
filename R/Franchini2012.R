@@ -61,28 +61,7 @@
 #' @examples
 #' head(dat.franchini2012)
 #' 
-#' \donttest{
-#' # Transform data from arm-based format to contrast-based format
-#' #
-#' pw1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
-#'   n = list(n1, n2, n3),
-#'   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-#'   data = dat.franchini2012, studlab = Study)
-#' pw1
-#' 
-#' # Conduct network meta-analysis
-#' net1 <- netmeta(pw1)
-#' net1
-#' 
-#' # Draw network graphs
-#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-#'   thickness = "se.common")
-#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-#'   thickness = "se.common",
-#'   iterate = TRUE, plastic = TRUE)
-#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.5,
-#'   thickness = "se.common",
-#'   iterate = TRUE, plastic = TRUE, start = "eigen")
-#' }
+#' # Example using pairwise() and netmeta():
+#' # example(dat.franchini2012, run.dontrun = TRUE)
 
 NULL

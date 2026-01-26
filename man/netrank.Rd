@@ -37,7 +37,7 @@ harmful (\code{"undesirable"}) effect, can be abbreviated.}
 \code{"P-score"} or \code{"SUCRA"} ranking metric will be
 calculated.}
 
-\item{nsim}{Number of simulations to calculate SUCRAs.}
+\item{nsim}{Number of repetitions to calculate SUCRAs.}
 
 \item{common}{A logical indicating whether to print P-scores or
 SUCRAs for the common effects model.}
@@ -88,7 +88,7 @@ The Surface Under the Cumulative RAnking curve (SUCRA) is the rank
 of treatment \emph{i} within the range of treatments, measured on a
 scale from 0 (worst) to 1 (best) (Salanti et al. 2011). A
 resampling method is used to calculate SUCRAs for frequentist
-network meta-analysis. The number of simulations is determine by
+network meta-analysis. The number of repetitions is determine by
 argument \code{nsim}.
 
 The interpretation of P-scores and SUCRAs is comparable.
@@ -107,40 +107,79 @@ extent of certainty that treatment \emph{i} is better than another
 treatment.
 }
 \examples{
-data(smokingcessation)
+\donttest{
+# Define order of treatments in depression dataset dat.linde2015
+#
+trts <- c("TCA", "SSRI", "SNRI", "NRI",
+  "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 
-pw1 <- pairwise(list(treat1, treat2, treat3),
-  event = list(event1, event2, event3), n = list(n1, n2, n3),
-  data = smokingcessation, sm = "OR")
-net1 <- netmeta(pw1)
+# Outcome labels
+#
+outcomes <- c("Early response", "Early remission")
 
+# (1) Early response
+#
+pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+  event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+  studlab = id, data = dat.linde2015, sm = "OR")
+#
+net1 <- netmeta(pw1, common = FALSE, seq = trts, ref = "Placebo",
+  small.values = "undesirable")
 netrank(net1)
 
-\donttest{
-data(Senn2013)
+# (2) Early remission
+#
+pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+  event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+  studlab = id, data = dat.linde2015, sm = "OR")
+#
+net2 <- netmeta(pw2, common = FALSE, seq = trts, ref = "Placebo",
+  small.values = "undesirable")
+netrank(net2)
 
-net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", random = FALSE)
+# Image plot of treatment rankings (two outcomes)
+#
+plot(netrank(net1), netrank(net2), name = outcomes, digits = 2)
 
-nr2 <- netrank(net2)
-nr2
-print(nr2, sort = FALSE)
 
-net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD")
+# Outcome labels
+#
+outcomes <- c("Early response", "Early remission",
+  "Lost to follow-up", "Lost to follow-up due to AEs",
+  "Adverse events (AEs)")
 
-nr3 <- netrank(net3)
-nr3
-print(nr3, sort = "common")
-print(nr3, sort = FALSE)
+# (3) Loss to follow-up
+#
+pw3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+  event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
+  studlab = id, data = dat.linde2015, sm = "OR")
+#
+net3 <- netmeta(pw3, common = FALSE, seq = trts, ref = "Placebo",
+  small.values = "desirable")
 
-net4 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD")
+# (4) Loss to follow-up due to adverse events
+#
+pw4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+  event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
+  studlab = id, data = subset(dat.linde2015, id != 55), sm = "OR")
+#
+net4 <- netmeta(pw4, common = FALSE, seq = trts, ref = "Placebo",
+  small.values = "desirable")
 
-nr4 <- netrank(net4, method = "SUCRA", nsim = 100)
-nr4
-print(nr4, sort = "common")
-print(nr4, sort = FALSE)
+# (5) Adverse events
+#
+pw5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+  event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
+  studlab = id, data = dat.linde2015, sm = "OR")
+#
+net5 <- netmeta(pw5, common = FALSE, seq = trts, ref = "Placebo",
+  small.values = "desirable")
+
+# Image plot of treatment rankings (two outcomes)
+#
+plot(netrank(net1), netrank(net2), netrank(net3),
+  netrank(net4), netrank(net5),
+  name = outcomes, digits = 2)
 }
 
 }

@@ -33,26 +33,8 @@ The dataset Woods2010 is identical to dataset
 \examples{
 head(dat.woods2010)
 
-\donttest{
-# Transform data from long arm-based format to contrast-based
-# format Argument 'sm' has to be used for odds ratio as summary
-# measure; by default the risk ratio is used in metabin() which is
-# called internally.
-#
-pw1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = dat.woods2010, sm = "OR")
-pw1
-
-# Conduct network meta-analysis
-#
-net1 <- netmeta(pw1)
-net1
-
-# Show forest plot
-#
-forest(net1, ref = "Placebo", drop = TRUE,
-  leftlabs = "Contrast to Placebo")
-}
+# Example using pairwise() and netmeta():
+# example(dat.woods2010, run.dontrun = TRUE)
 }
 \seealso{
 \code{\link[metadat]{dat.woods2010}},

@@ -57,7 +57,7 @@
 #' @keywords hplot
 #' 
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' data(Linde2016)
 #' 
 #' # Only consider studies including Face-to-face PST (to reduce

@@ -220,7 +220,6 @@ nmr_full_results <- function(x) {
   rownames(dat_d) <- seq_len(nrow(dat_d))
   rownames(dat_se.d) <- seq_len(nrow(dat_se.d))
   
-  
   #
   # Covariance for interaction terms
   #
@@ -280,7 +279,7 @@ nmr_full_results <- function(x) {
       rownames(mat_beta) <- colnames(mat_beta) <-
         c(reference.group, results$treat[!sel.d])
       #
-      Cov_beta <- Cov[!sel.d, !sel.d]
+      Cov_beta <- Cov[!sel.d, !sel.d, drop = FALSE]
       Cov_beta <- cbind(0, Cov_beta)
       Cov_beta <- rbind(0, Cov_beta)
       rownames(Cov_beta)[1] <- colnames(Cov_beta)[1] <- reference.group
@@ -295,7 +294,7 @@ nmr_full_results <- function(x) {
       # Make the interaction vs treatment matrix a proper square matrix,
       # interactions in rows, treats in cols
       #
-      Cov_d_beta <- Cov[!sel.d, sel.d]
+      Cov_d_beta <- Cov[!sel.d, sel.d, drop = FALSE]
       #
       # Drop interaction part from row names
       #
@@ -515,14 +514,6 @@ nmr_full_results <- function(x) {
   res$treat1 <- sapply(split_comps, first)
   res$treat2 <- sapply(split_comps, second)
   res %<>% filter(treat1 != treat2) %>% filter(!duplicated(comparison))
-  #
-  # if (isCol(res, "beta")) {
-  #   sel.zero <- with(res, beta == 0 & se.beta == 0 & cov == 0)
-  #   #
-  #   res$beta[sel.zero] <- NA
-  #   res$se.beta[sel.zero] <- NA
-  #   res$cov[sel.zero] <- NA
-  # }
   #
   res
 }

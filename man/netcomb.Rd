@@ -326,6 +326,23 @@ net1
 nc1 <- netcomb(net1, inactive = "placebo")
 nc1
 
+# Print results with two digits and test statistics with three digits
+print(nc1, digits = 2, digits.stat = 3)
+
+# Print detailed results
+print(summary(nc1), digits = 2, digits.stat = 3)
+
+# All available combinations in CNMA
+combinations(nc1) # only "Face-to-face PST + SSRI"
+
+# Create C matrix with all available interactions, i.e., one interaction
+# for each combination
+colnames(createC(nc1))
+
+# Run interaction CNMA model with all available interactions
+# (same result as standard NMA)
+netcomb(net1, C.matrix = createC(nc1))
+
 \donttest{
 forest(net1, xlim = c(0.2, 50))
 forest(nc1, xlim = c(0.2, 50))

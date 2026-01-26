@@ -66,6 +66,8 @@ Available functions to evaluate network inconsistency:
 
 Additional methods and functions:
 \itemize{
+\item network meta-regression with a single continuous or binary covariate
+  (\code{\link{netmetareg}});
 \item subgroup network meta-analysis (\code{\link{subgroup.netmeta}});
 \item information on network connectivity
   (\code{\link{netconnection}});
@@ -92,6 +94,14 @@ Additional methods and functions:
   (\code{\link{netcomparison}});
 \item calculate effect of arbitrary complex interventions in
   component network meta-analysis (\code{\link{netcomplex}}).
+}
+
+R package \bold{netmeta} provides two vignettes:
+\itemize{
+ \item \code{vignette("netmeta-workflow")} with an overview of the
+   work flow and the main functions,
+ \item \code{vignette("netmeta")} with the PDF file for
+   Balduzzi et al. (2023).
 }
 
 Functions and datasets from \bold{netmeta} are utilised in

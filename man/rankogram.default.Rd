@@ -83,27 +83,7 @@ ran1 <- rankogram(net1, common = FALSE, nsim = 10, # reduce runtime
   keep.samples = TRUE)
 ran1
 
-rankogram(ran1$samples.random, pooled = "random")
-
-\donttest{
-pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-  event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
-#
-net2 <- netmeta(pw2, common = FALSE,
-  ref = "Placebo", small = "undesirable")
-
-ran2 <- rankogram(net2, nsim = 100, common = FALSE,
-  keep.samples = TRUE)
-ran2
-
-# Wrong ranking due to using the default,
-# i.e., argument 'small.values = "desirable".
-rankogram(ran2$samples.random, pooled = "random")
-# Correct ranking 
-rankogram(ran2$samples.random, pooled = "random",
-  small.values = "undesirable")
-}
+rankogram(ran1$samples.random)
 
 }
 \references{

@@ -1,5 +1,5 @@
 contribution.matrix <- function(x, method, model, hatmatrix.F1000,
-                                verbose = FALSE) {
+                                study, path, verbose = FALSE) {
   if (verbose)
     cat("Calculate network contributions (", model, " effects model):\n",
         sep = "")
@@ -8,6 +8,7 @@ contribution.matrix <- function(x, method, model, hatmatrix.F1000,
     return(contribution.matrix.davies(x, model, verbose = verbose))
   else if (method == "shortestpath")
     return(contribution.matrix.tpapak(x, model, hatmatrix.F1000,
+                                      study = study, path = path,
                                       verbose = verbose))
   else if (method == "cccp")
     return(contribution.matrix.ruecker.cccp(x, model, verbose = verbose))
@@ -18,11 +19,9 @@ contribution.matrix <- function(x, method, model, hatmatrix.F1000,
 }
 
 
-
-
-
 contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
-                                       verbose = FALSE) {
+                                       study, path, verbose = FALSE
+                                       ) {
   
   chkclass(x, "netmeta")
   model <- setchar(model, c("common", "random"))
@@ -38,18 +37,18 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
   split <- function(dir)
     strsplit(dir, x$sep.trts)
   ##
-  ## comparisonToEdge <- function (comp) unlist (split(comp))
+  ## comparisonToEdge <- function(comp) unlist (split(comp))
   ##
   setWeights <- function(g, comparison, conMat)
-    set.edge.attribute(g, "weight", value = rep(1, dims[2]))
+    set_edge_attr(g, "weight", value = rep(1, dims[2]))
   ##
   getFlow <- function(g, edge)
     E(g)[edge]$flow
   ##
-  sv <- function (comparison)
+  sv <- function(comparison)
     split(comparison)[[1]][1][1]
   ##
-  tv <- function (comparison)
+  tv <- function(comparison)
     split(comparison)[[1]][2][1]
   ##
   initRowGraph <- function(x, comparison) {
@@ -69,34 +68,53 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
     E(dg)[]$weight <- rep(0, dims[2])
     E(dg)[]$flow <- abs(x[comparison, ])
     V(dg)[]$label <- V(dg)[]$name
-    resg <- set.edge.attribute(dg, 'label', value = seq_len(gsize(dg)))
+    resg <- set_edge_attr(dg, 'label', value = seq_len(gsize(dg)))
     ##
     resg
   }
   ##
   reducePath <- function(g, comparison, spl) {
     pl <- length(spl[[1]])
-    splE <- lapply(spl[[1]], function(e) {
-      return(E(g)[e[]])
-    })
-    flow <- min(unlist(lapply(splE,
-                              function(e) {
-                                return(e$flow[])
-                              })))
+    #
+    splE <- lapply(spl[[1]], function(e) E(g)[e[]])
+    flow <- min(unlist(lapply(splE, function(e) e$flow[])))
+    #
+    pathNames <-
+      unlist(
+        lapply(
+          splE,
+          function(e)
+            paste(tail_of(g, e)$name, head_of(g, e)$name, sep = "->"))) %>%
+      paste(collapse = ",")
+    #
+    pathContribution <<-
+      rbind(pathContribution,
+            data.frame(comparison = comparison,
+                       path = pathNames,
+                       contribution = flow))
+    #
     gg <- Reduce(function(g, e) {
       elabel <- e$label
       pfl <- e$flow[]
-      g <- set.edge.attribute(g, "flow", e, pfl-flow)
+      g <- set_edge_attr(g, "flow", e, pfl-flow)
       cw <- e$weight[] + (flow[1] / pl) 
       weights[comparison, elabel] <<- cw
-      return(set.edge.attribute(g, "weight", e, cw))},
+      #
+      set_edge_attr(g, "weight", e, cw)
+      },
       splE, g)
-    emptyEdges <- Reduce(function(removedEdges, e) {
-      e <- E(gg)[e[]]
-      if(e$flow[[1]][[1]] == 0)
-        removedEdges <- c(removedEdges, e)
-      return(removedEdges)}, splE, c())
-    ##
+    #
+    emptyEdges <-
+      Reduce(
+        function(removedEdges, e) {
+          e <- E(gg)[e[]]
+          if (e$flow[[1]][[1]] == 0)
+            removedEdges <- c(removedEdges, e)
+          #
+          removedEdges
+          },
+      splE, c())
+    #
     delete_edges(gg, emptyEdges)
   }
   ##
@@ -107,15 +125,15 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
     if (verbose & is.tictoc)
       tictoc::tic()
     ##
-    getshortest <- function (g, comparison) {
-      getShortest <- function() {
-        return(get.shortest.paths(g, sv(comparison), tv(comparison),
-                                  mode = "out", output = "epath",
-                                  weights = NA)$epath)
-      }
+    getshortest <- function(g, comparison) {
+      getShortest <- function()
+        get.shortest.paths(g, sv(comparison), tv(comparison),
+                           mode = "out", output = "epath",
+                           weights = NA)$epath
       ##
       res <- suppressWarnings(getShortest())
-      return(res)
+      #
+      res
     }
     spath <- getshortest(g, comparison)
     while (length(unlist(spath)) > 0) {
@@ -138,47 +156,70 @@ contribution.matrix.tpapak <- function(x, model, hatmatrix.F1000,
   directs <- colnames(H)
   
   
-  directlist <- unlist(lapply(lapply(directs, split), unlist))
-  edgeList <- matrix(directlist, ncol = 2, byrow = TRUE)
+  list.direct <- unlist(lapply(lapply(directs, split), unlist))
+  list.edge <- matrix(list.direct, ncol = 2, byrow = TRUE)
   ##
-  g <- graph_from_edgelist(edgeList , directed = FALSE)
-  g <- set.vertex.attribute(g, 'label', value = V(g))
-  g <- set.edge.attribute(g, 'label', value = E(g))
+  g <- graph_from_edgelist(list.edge , directed = FALSE)
+  g <- set_vertex_attr(g, 'label', value = V(g))
+  g <- set_edge_attr(g, 'label', value = E(g))
   
   
+  is.tictoc <- is_installed_package("tictoc", stop = FALSE)
+  #
   dims <- dim(H)
   ##
   contribution <- rep(0, dims[2])
   names(contribution) <- seq_len(dims[2])
-  ##
+  #
+  # Weights matrix
+  #
   weights <- matrix(rep(0, dims[2] * dims[1]),
                     nrow = dims[1], ncol = dims[2], byrow = TRUE)
   rownames(weights) <- rownames(H)
   colnames(weights) <- seq_len(dims[2])
-  
-  
-  is.tictoc <- is_installed_package("tictoc", stop = FALSE)
-  ## rows of comparison matrix
+  #
+  # Rows of comparison matrix
+  #
   comparisons <- unlist(lapply(rownames(H), unlist))
-  ##
+  #
+  # Path contributions
+  #
+  pathContribution <- data.frame()
+  #
+  # Both pathContribution and weights are changed internally in reduceGraph()
+  # using "<<-"
+  #
   lapply(comparisons,
-         function (comp)
+         function(comp)
            reduceGraph(initRowGraph(H, comp), comp, verbose, is.tictoc))
-  
-  
+  #
+  if (!path)
+    pathContribution <- NULL
+  #
   colnames(weights) <- directs
-  ##
+  #
   weights[is_zero(weights)] <- 0
-  ##
+  #
   attr(weights, "model") <- model
   attr(weights, "hatmatrix.F1000") <- old
-  ##
-  res <- list(weights = weights)
+  #
+  # Study contributions
+  #
+  if (study) {
+    studyContribution <- 
+      lapply(comparisons,
+             function(comp) getStudyContribution(x, weights, comp, model))
+    #
+    studyContribution <- bind_rows(studyContribution)
+  }
+  else
+    studyContribution <- NULL
+  #
+  res <- list(weights = weights,
+              studyContribution = studyContribution,
+              pathContribution = pathContribution)
   res
 }
-
-
-
 
 
 contribution.matrix.davies <- function(x, model, verbose = FALSE) {
@@ -349,7 +390,7 @@ contribution.matrix.davies <- function(x, model, verbose = FALSE) {
 
 
 
-contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
+contribution.matrix.ruecker.cccp <- function(x, model, verbose = FALSE) {
   
   chkclass(x, "netmeta")
   ##
@@ -527,7 +568,7 @@ contribution.matrix.ruecker.cccp <- function (x, model, verbose = FALSE) {
 }
 
 
-contribution.matrix.ruecker.pseudoinv <- function (x, model, verbose = FALSE) {
+contribution.matrix.ruecker.pseudoinv <- function(x, model, verbose = FALSE) {
   
   chkclass(x, "netmeta")
   model <- setchar(model, c("common", "random"))

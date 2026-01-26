@@ -16,6 +16,8 @@
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
 #'   \code{\link{print.default}}.
+#' @param details.methods A logical specifying whether details on statistical
+#'   methods should be printed.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -24,8 +26,7 @@
 #' 
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #'
-#' @seealso \code{\link{rankogram}}, \code{\link{plot.rankogram}},
-#'   \code{\link[metadat]{dat.woods2010}}
+#' @seealso \code{\link{rankogram}}, \code{\link{plot.rankogram}}
 #'
 #' @references
 #' Salanti G, Ades AE, Ioannidis JP (2011):
@@ -33,15 +34,11 @@
 #' from multiple-treatment meta-analysis: an overview and tutorial.
 #' \emph{Journal of Clinical Epidemiology},
 #' \bold{64}, 163--71
+#' 
+#' @keywords print
 #'
 #' @examples
-#' pw1 <- pairwise(treatment, event = r, n = N, studlab = author,
-#'   data = dat.woods2010, sm = "OR")
-#' net1 <- netmeta(pw1, small.values = "desirable")
-#'
-#' ran1 <- rankogram(net1, nsim = 100)
-#' ran1
-#' print(ran1, cumulative.rankprob = TRUE)
+#' # Examples: example(rankogram.netmeta)
 #'
 #' @rdname print.rankogram
 #' @method print rankogram
@@ -54,6 +51,7 @@ print.rankogram <- function(x,
                             sort = TRUE,
                             nchar.trts = x$nchar.trts,
                             digits = gs("digits.prop"),
+                            details.methods = gs("details"),
                             legend = gs("legend"),
                             warn.deprecated = gs("warn.deprecated"),
                             ...) {
@@ -80,6 +78,7 @@ print.rankogram <- function(x,
   chknumeric(nchar.trts, length = 1)
   #
   chknumeric(digits, length = 1)
+  chklogical(details.methods)
   chklogical(legend)
   #
   # Check for deprecated arguments in '...'
@@ -108,7 +107,7 @@ print.rankogram <- function(x,
   if (common | random)
     cat(if (cumulative.rankprob)
       "Cumulative ranking probabilities" else "Rankogram",
-      " (based on ", x$nsim, " simulation",
+      " (based on ", x$nsim, " repetition",
       if (x$nsim > 1) "s", ")\n\n",
       sep = "")
   #
@@ -151,7 +150,6 @@ print.rankogram <- function(x,
   #
   # Print details of network meta-analysis methods
   #
-  details.methods <- TRUE
   if (details.methods) {
     text.details <-
       textmeth(x, random, TRUE)

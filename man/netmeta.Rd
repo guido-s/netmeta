@@ -165,8 +165,9 @@ of the Laplacian matrix L (see Details).}
 
 \item{event2}{Number of events in second treatment group.}
 
-\item{incr}{Numerical value added to cell frequencies (for details,
-see \code{\link[meta]{pairwise}}).}
+\item{incr}{Numerical value added to cell frequencies to construct the
+covariance matrix used to calculate the REML or ML estimate of the
+between-study variance \eqn{\tau^2} (only for binary or count outcomes).}
 
 \item{mean1}{Mean in first treatment group.}
 
@@ -553,6 +554,10 @@ provided. For datasets preprocessed with \code{\link[meta]{pairwise}}
 the respective variables are selected automatically.
 }
 \examples{
+#
+# 1) Smoking cessation example
+#
+
 data(smokingcessation)
 
 # Transform data from arm-based format to contrast-based format
@@ -566,7 +571,22 @@ pw1 <- pairwise(list(treat1, treat2, treat3),
 net1 <- netmeta(pw1, common = FALSE)
 net1
 
+# Draw network graphs
+#
+netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25)
+tname <- c("No intervention", "Self-help",
+  "Individual counselling", "Group counselling")
+netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25, labels = tname)
+
+# Forest plot
+#
+forest(net1)
+
 \donttest{
+#
+# 2) Diabetes example
+#
+
 data(Senn2013)
 
 # Conduct common effects network meta-analysis
@@ -579,22 +599,115 @@ net2$Q.decomp
 # Comparison with reference group
 #
 print(net2, reference = "plac")
+forest(net2, reference = "plac")
+
+# Print detailed results
+#
+snet2 <- summary(net2)
+print(snet2, digits = 3)
+
+# Only show individual study results for multi-arm studies
+#
+print(snet2, digits = 3, truncate = multiarm)
+
+# Only show first three individual study results
+#
+print(snet2, digits = 3, truncate = 1:3)
+
+# Only show individual study results for Kim2007 and Willms1999
+#
+print(snet2, digits = 3, truncate = c("Kim2007", "Willms1999"))
+
+# Only show individual study results for studies starting with the
+# letter "W"
+#
+print(snet2, ref = "plac", digits = 3,
+  truncate = substring(studlab, 1, 1) == "W")
 
 # Conduct random effects network meta-analysis
 #
 net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", common = FALSE)
+  data = Senn2013, sm = "MD", common = FALSE,
+  reference = "plac")
 net3
+forest(net3, xlim = c(-1.5, 1), xlab = "HbA1c difference")
+
+# Add column with P-Scores on right side of forest plot
+#
+forest(net3, xlim = c(-1.5, 1),
+  xlab = "HbA1c difference",
+  rightcols = c("effect", "ci", "Pscore"),
+  just.addcols = "right")
+
+# Add column with P-Scores on left side of forest plot
+#
+forest(net3, xlim = c(-1.5, 1),
+  xlab = "HbA1c difference",
+  leftcols = c("studlab", "Pscore"),
+  just.addcols = "right")
+
+# Sort forest plot by descending P-Score
+#
+forest(net3, xlim = c(-1.5, 1),
+  xlab = "HbA1c difference",
+  rightcols = c("effect", "ci", "Pscore"),
+  just.addcols = "right",
+  sortvar = -Pscore)
+
+# Sort by and print number of studies with direct treatment comparisons
+#
+forest(net3, xlim = c(-1.5, 1),
+  xlab = "HbA1c difference",
+  leftcols = c("studlab", "k"),
+  leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
+  sortvar = -k,
+  smlab = "Random Effects Model")
 
 # Change printing order of treatments with placebo last and use
 # long treatment names
 #
 trts <- c("acar", "benf", "metf", "migl", "piog",
   "rosi", "sita", "sulf", "vild", "plac")
+#
 net4 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
   data = Senn2013, sm = "MD", common = FALSE,
-  seq = trts, reference = "Placebo")
+  reference = "Placebo", seq = trts)
 print(net4, digits = 2)
+
+#
+# 3) Dietary fat example
+#
+
+data(dietaryfat)
+
+# Transform data from arm-based format to contrast-based format
+# Using incidence rate ratios (sm = "IRR") as effect measure.
+# Note, the argument 'sm' is not necessary as this is the default
+# in R function metainc() called internally
+#
+pw5 <- pairwise(list(treat1, treat2, treat3),
+  list(d1, d2, d3), time = list(years1, years2, years3),
+  studlab = ID, data = dietaryfat, sm = "IRR")
+pw5
+
+# Conduct network meta-analysis
+#
+net5 <- netmeta(pw5)
+net5
+
+# Conduct network meta-analysis using incidence rate differences
+# (sm = "IRD")
+#
+pw6 <- pairwise(list(treat1, treat2, treat3),
+  list(d1, d2, d3), time = list(years1, years2, years3),
+  studlab = ID, data = dietaryfat, sm = "IRD")
+net6 <- netmeta(pw6)
+net6
+
+# Draw network graph
+#
+netgraph(net5, points = TRUE, cex.points = 3, cex = 1.25,
+  labels = c("Control","Diet", "Diet 2"))
 }
 
 }
@@ -632,7 +745,9 @@ Conducting Meta-Analyses in R with the metafor Package.
 }
 \seealso{
 \code{\link[meta]{pairwise}}, \code{\link{forest.netmeta}},
-  \code{\link{netrank}}, \code{\link[meta]{metagen}}
+  \code{\link{netrank}}, \code{\link[meta]{metagen}},
+  \code{\link{smokingcessation}}, \code{\link{Senn2013}},
+  \code{\link{dietaryfat}}
 }
 \author{
 Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido

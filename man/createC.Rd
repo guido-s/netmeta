@@ -62,30 +62,7 @@ on treatment combinations and interaction terms and (ii) a vector with all
 combinations in a component network meta-analysis.
 }
 \examples{
-\donttest{
-data(Linde2016)
-
-# Conduct random effects network meta-analysis
-#
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-  data = Linde2016, ref = "placebo", sm = "OR", common = FALSE)
-
-# Additive component network meta-analysis (with placebo as inactive
-# treatment)
-#
-nc1 <- netcomb(net1, inactive = "placebo")
-
-# Available combinations in CNMA
-combinations(nc1)
-
-# Create C matrix with all available interactions, i.e., one interaction
-# for each combination
-createC(nc1)
-
-# Run interaction CNMA model with all available interactions
-# (same result as standard NMA)
-netcomb(net1, C.matrix = createC(nc1))
-}
+# Examples: example(netcomb)
 
 }
 \seealso{

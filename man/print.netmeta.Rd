@@ -157,3 +157,14 @@ be printed if deprecated arguments are used.}
 \description{
 Print method for objects of class \code{netmeta}.
 }
+\examples{
+# Examples: example(netmeta)
+
+}
+\seealso{
+\code{\link{netmeta}}
+}
+\author{
+Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
+}
+\keyword{print}

@@ -148,13 +148,26 @@
 #' netcomparison(nc1, "Face-to-face PST", "TCA + Plac", nchar.comps = 4)
 #' 
 #' \donttest{
+#'
+#' # Forest plots
+#' #
+#' t1 <- c("F + TCA", "F + Plac", "SSRI + Plac + TCA")
+#' t2 <- c("UC", "Plac", "UC")
+#' #
+#' netcomparison(nc1, t1, t2)
+#' #
+#' forest(netcomparison(nc1, t1, t2))
+#' forest(netcomparison(nc1, t1, t2), nchar.comps = 4)
+#' forest(netcomparison(nc1, c("F", "TCA"), "UC"), nchar.comps = 4)
+#' 
 #' # Artificial example
-#' t1 <- rep("A", 3)
-#' t2 <- c("B+C", "A+C", "C+D")
+#' #
+#' treat1 <- rep("A", 3)
+#' treat2 <- c("B+C", "A+C", "C+D")
 #' TE <- c(0, 1, 0)
 #' seTE <- rep(1, 3)
 #' # Conduct (C)NMA
-#' net2 <- netmeta(TE, seTE, t1, t2, random = FALSE)
+#' net2 <- netmeta(TE, seTE, treat1, treat2, random = FALSE)
 #' nc2 <- netcomb(net2)
 #'
 #' # Result for comparison A vs B + D

@@ -66,7 +66,7 @@
 #' @keywords hplot
 #' 
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' data("Senn2013")
 #' # Add variable with (fictitious) risk of bias values
 #' Senn2013$rob <- NA

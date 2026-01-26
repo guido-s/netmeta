@@ -159,54 +159,7 @@ be printed if deprecated arguments are used.}
 Print method for objects of class \code{summary.netmeta}.
 }
 \examples{
-data(smokingcessation)
-
-# Transform data from arm-based format to contrast-based format
-#
-pw1 <- pairwise(list(treat1, treat2, treat3),
-  event = list(event1, event2, event3), n = list(n1, n2, n3),
-  data = smokingcessation, sm = "OR")
-
-# Conduct random effects network meta-analysis and print detailed
-# summary
-#
-net1 <- netmeta(pw1, common = FALSE)
-summary(net1)
-
-\donttest{
-data(Senn2013)
-
-# Conduct common effects network meta-analysis
-#
-net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", random = FALSE, ref = "plac")
-snet2 <- summary(net2)
-print(snet2, digits = 3)
-
-# Only show individual study results for multi-arm studies
-#
-print(snet2, digits = 3, truncate = multiarm)
-
-# Only show first three individual study results
-#
-print(snet2, digits = 3, truncate = 1:3)
-
-# Only show individual study results for Kim2007 and Willms1999
-#
-print(snet2, digits = 3, truncate = c("Kim2007", "Willms1999"))
-
-# Only show individual study results for studies starting with the
-# letter "W"
-#
-print(snet2, ref = "plac", digits = 3,
-  truncate = substring(studlab, 1, 1) == "W")
-
-# Conduct random effects network meta-analysis
-#
-net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD", common = FALSE, ref = "plac")
-print(summary(net3), digits = 3)
-}
+# Examples: example(summary.netmeta)
 
 }
 \seealso{

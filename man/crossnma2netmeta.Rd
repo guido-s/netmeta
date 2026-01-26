@@ -67,7 +67,7 @@ characters used to create unique study labels.}
 A netmeta object with additional class "netmeta.crossnma".
 }
 \description{
-Auxiliary function to create a netmeta object from a crossnma object
+Auxiliary function to create a netmeta object from a crossnma object.
 }
 \examples{
 \donttest{

@@ -14,6 +14,7 @@ netleague(
   ci = TRUE,
   backtransf = x$backtransf,
   direct,
+  nchar.trts = x$nchar.trts,
   digits = gs("digits"),
   big.mark = gs("big.mark"),
   text.NA = ".",
@@ -67,6 +68,9 @@ should be shown if (i) argument \code{y} is provided and the input for
 arguments \code{x} and \code{y} was created with \code{netmeta} or (ii)
 input for argument \code{x} was created with \code{netmeta} or
 \code{netcomb}.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}

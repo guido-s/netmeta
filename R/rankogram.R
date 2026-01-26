@@ -29,16 +29,9 @@
 #' \bold{64}, 163--71
 #'
 #' @examples
-#' pw1 <- pairwise(treatment, event = r, n = N, studlab = author,
-#'   data = dat.woods2010, sm = "OR")
-#' net1 <- netmeta(pw1, small.values = "desirable")
-#'
-#' set.seed(1909) # get reproducible results
-#' ran1 <- rankogram(net1, nsim = 100)
-#' ran1
-#' print(ran1, cumulative.rankprob = TRUE)
-#'
-#' plot(ran1)
+#' # Examples:
+#' # example(rankogram.netmeta)
+#' # example(rankogram.default)
 #'
 #' @rdname rankogram
 #' @export rankogram

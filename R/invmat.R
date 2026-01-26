@@ -38,13 +38,8 @@
 #'   data = smokingcessation, sm = "OR")
 #' net1 <- netmeta(pw1)
 #' 
-#' invmat(net1$L.matrix.common)
-#' 
-#' data(Senn2013)
-#' 
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab, data = Senn2013)
-#' L1 <- net2$L.matrix.common
-#' L2 <- invmat(net2$Lplus.matrix.common)
+#' L1 <- net1$L.matrix.common
+#' L2 <- invmat(net1$Lplus.matrix.common)
 #' all.equal(round(L1, 10), round(L2, 10))
 #' }
 #' 

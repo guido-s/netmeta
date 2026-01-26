@@ -53,22 +53,11 @@ be printed if deprecated arguments are used.}
 Print method for objects of class \code{netimpact}.
 }
 \examples{
-# Only consider first two studies (to reduce runtime of example)
-#
-studies <- unique(dat.franchini2012$Study)
-pw1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
-  n = list(n1, n2, n3),
-  mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-  data = subset(dat.franchini2012, Study \%in\% studies[1:2]),
-  studlab = Study)
-
-net1 <- netmeta(pw1)
-ni <- netimpact(net1, verbose = TRUE)
-ni
+# Examples: example(netimpact)
 
 }
 \seealso{
-\code{\link{netimpact}}, \code{\link[metadat]{dat.franchini2012}}
+\code{\link{netimpact}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

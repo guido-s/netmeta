@@ -127,31 +127,7 @@
 #' @keywords hplot
 #' 
 #' @examples
-#' \donttest{
-#' data(Senn2013)
-#' 
-#' net1 <- netmeta(TE, seTE, treat1.long, treat2.long,
-#'   studlab, data = Senn2013, common = FALSE, reference = "plac")
-#' #
-#' ns1 <- netsplit(net1)
-#' 
-#' # Forest plot showing comparisons contributing both direct and
-#' # indirect evidence
-#' #
-#' forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
-#' 
-#' # Forest plot showing comparisons contributing direct evidence
-#' #
-#' forest(ns1, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
-#'   show = "with.direct")
-#' 
-#' # Forest plot only showing network estimates compared to reference
-#' # group and prediction intervals
-#' #
-#' forest(ns1, fontsize = 8, spacing = 0.75, show = "all",
-#'   only.reference = TRUE, prediction = TRUE,
-#'   direct = FALSE, indirect = FALSE)
-#' }
+#' # Examples: example(netsplit)
 #' 
 #' @method forest netsplit
 #' @export

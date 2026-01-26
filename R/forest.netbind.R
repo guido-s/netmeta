@@ -57,38 +57,7 @@
 #' @keywords hplot
 #' 
 #' @examples
-#' \donttest{
-#' data(Linde2016)
-#' 
-#' # Only consider studies including Face-to-face PST (to reduce
-#' # runtime of example)
-#' #
-#' face <- subset(Linde2016, id %in% c(16, 24, 49, 118))
-#' 
-#' # Standard random effects NMA model (with placebo as reference
-#' # treatment)
-#' #
-#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'   data = face, reference.group = "placebo",
-#'   sm = "OR", common = FALSE)
-#' 
-#' # Additive CNMA model with placebo as inactive component and
-#' # reference
-#' #
-#' nc1 <- netcomb(net1, inactive = "placebo")
-#' 
-#' # Combine results of standard NMA and CNMA
-#' #
-#' nb1 <- netbind(nc1, net1,
-#'   name = c("Additive CNMA", "Standard NMA"),
-#'   col.study = c("red", "black"),
-#'   col.square = c("red", "black"))
-#' forest(nb1,
-#'   col.subgroup = "black", addrow.subgroups = FALSE,
-#'   fontsize = 10, spacing = 0.7, squaresize = 0.9,
-#'   label.left = "Favours Placebo",
-#'   label.right = "Favours other")
-#' }
+#' # Examples: example(netbind)
 #' 
 #' @method forest netbind
 #' @export
@@ -132,6 +101,9 @@ forest.netbind <- function(x,
   chklogical(backtransf)
   ##
   chkchar(lab.NA)
+  #
+  commons <- replaceNULL(x$x$commons, 1)
+  randoms <- replaceNULL(x$x$randoms, 1)
   
   
   ##
@@ -170,8 +142,11 @@ forest.netbind <- function(x,
     m$col.square <- x$common$col.square[sel]
     m$col.square.lines <- x$common$col.square.lines[sel]
     m$col.inside <- x$common$col.inside[sel]
-    ##
-    text.pooled <- "Common Effects Model"
+    #
+    if (length(unique(commons)) == 1)
+      text.pooled <- "\n(Common Effects Model)"
+    else
+      text.pooled <- ""
     #
     if (!is.null(x$common$method))
       x$method <- unique(x$common$method[sel])
@@ -207,8 +182,11 @@ forest.netbind <- function(x,
     m$col.square <- x$random$col.square[sel]
     m$col.square.lines <- x$random$col.square.lines[sel]
     m$col.inside <- x$random$col.inside[sel]
-    ##
-    text.pooled <- "Random Effects Model"
+    #
+    if (length(unique(randoms)) == 1)
+      text.pooled <- "\n(Random Effects Model)"
+    else
+      text.pooled <- ""
     #
     if (!is.null(x$random$method))
       x$method <- unique(x$random$method[sel])
@@ -217,14 +195,12 @@ forest.netbind <- function(x,
   if (missing(smlab))
     if (x$baseline.reference)
       smlab <- paste0("Comparison: other vs '",
-                      x$reference.group, "'\n(",
-                      text.pooled,
-                      ")")
+                      x$reference.group, "'",
+                      text.pooled)
     else
       smlab <- paste0("Comparison: '",
-                      x$reference.group, "' vs other\n(",
-                      text.pooled,
-                      ")")
+                      x$reference.group, "' vs other",
+                      text.pooled)
   #
   m$.text.details.methods <-
     textmeth(x, pooled == pooled, FALSE, FALSE,

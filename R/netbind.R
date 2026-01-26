@@ -77,11 +77,18 @@
 #' nb1 <- netbind(nc1, net1,
 #'   name = c("Additive CNMA", "Standard NMA"),
 #'   col.study = c("red", "black"), col.square = c("red", "black"))
+#' #
+#' nb1
+#' #
 #' forest(nb1,
 #'   col.subgroup = "black", addrow.subgroups = FALSE,
 #'   fontsize = 10, spacing = 0.7, squaresize = 0.9,
 #'   label.left = "Favours Placebo",
 #'   label.right = "Favours other")
+#' 
+#' # Also show results for common effects model
+#' #
+#' print(nb1, common = TRUE)
 #' }
 #' 
 #' @export netbind
@@ -135,7 +142,9 @@ netbind <- function(..., name,
     }
     args <- args2
   }
-  ##  
+  #
+  commons <- randoms <- vector()
+  #
   for (i in n.i) {
     if (!is.nma(args[[i]]))
       stop("All elements of argument '...' must be of classes ",
@@ -143,6 +152,9 @@ netbind <- function(..., name,
            call. = FALSE)
     ##
     args[[i]] <- updateversion(args[[i]])
+    #
+    commons[i] <- args[[i]]$common
+    randoms[i] <- args[[i]]$random
   }
   ##
   levs <- numeric(0)
@@ -199,8 +211,6 @@ netbind <- function(..., name,
   print.warning2 <- FALSE
   print.warning3 <- FALSE
   print.warning4 <- FALSE
-  print.warning5 <- FALSE
-  print.warning6 <- FALSE
 
 
   ##
@@ -249,12 +259,8 @@ netbind <- function(..., name,
     ##
     cfs <- unique(cfs)
     ##
-    if (length(cfs) != 1) {
+    if (length(cfs) != 1)
       common <- TRUE
-      warning2 <- paste0("Argument 'common' set to TRUE ",
-                         "(as it is not unique in network meta-analyses).")
-      print.warning2 <- TRUE
-    }
     else
       common <- cfs
   }
@@ -286,12 +292,8 @@ netbind <- function(..., name,
     ##
     crs <- unique(crs)
     ##
-    if (length(crs) != 1) {
+    if (length(crs) != 1)
       random <- TRUE
-      warning3 <- paste0("Argument 'random' set to TRUE ",
-                         "(as it is not unique in network meta-analyses).")
-      print.warning3 <- TRUE
-    }
     else
       random <- crs
   }
@@ -316,9 +318,9 @@ netbind <- function(..., name,
     ##
     if (length(backt) != 1) {
       backtransf <- TRUE
-      warning4 <- paste0("Argument 'backtransf' set to TRUE ",
+      warning2 <- paste0("Argument 'backtransf' set to TRUE ",
                          "(as it is not unique in network meta-analyses).")
-      print.warning4 <- TRUE
+      print.warning2 <- TRUE
     }
     else
       backtransf <- backt
@@ -343,19 +345,19 @@ netbind <- function(..., name,
     ##
     if (length(refs) == 0) {
       reference.group <- args[[i]]$trts[1]
-      warning5 <- paste0("Unspecified argument 'reference.group' is set to '",
+      warning3 <- paste0("Unspecified argument 'reference.group' is set to '",
                          reference.group,
                          "'.")
-      print.warning5 <- TRUE
+      print.warning3 <- TRUE
     }
     else if (length(refs) == 1)
       reference.group <- refs
     else {
       reference.group <- refs[1]
-      warning5 <- paste0("Argument 'reference.group' set to '",
+      warning3 <- paste0("Argument 'reference.group' set to '",
                          reference.group,
                          "' (as it is not unique in network meta-analyses).")
-      print.warning5 <- TRUE
+      print.warning3 <- TRUE
     }
   }
   ##
@@ -387,9 +389,9 @@ netbind <- function(..., name,
     ##
     if (length(bref) != 1) {
       bref <- TRUE
-      warning6 <- paste0("Argument 'baseline.reference' set to TRUE ",
+      warning4 <- paste0("Argument 'baseline.reference' set to TRUE ",
                          "(as it is not unique in network meta-analyses).")
-      print.warning6 <- TRUE
+      print.warning4 <- TRUE
     }
     ##
     baseline.reference <- bref
@@ -532,9 +534,25 @@ netbind <- function(..., name,
                       )
     }
   }
-  ##
+  #
   rownames(random) <- seq_len(nrow(random))
   
+  
+  # Replace common effects with random effects results and vice versa
+  # if (C)NMA was based on random or common effects model only
+  #
+  if (missing.common & missing.random) {
+    for (i in seq_along(commons)) {
+      if (!commons[i] & randoms[i]) {
+        common[common$name == name[i], ] <-
+          random[random$name == name[i], ]
+      }
+      else if (commons[i] & !randoms[i]) {
+        random[random$name == name[i], ] <-
+          common[common$name == name[i], ]
+      }
+    }
+  }
   
   res <- list(common = common,
               random = random,
@@ -548,6 +566,9 @@ netbind <- function(..., name,
               baseline.reference = baseline.reference,
               ##
               version = packageDescription("netmeta")$Version)
+  #
+  res$x$commons <- commons
+  res$x$randoms <- randoms
   ##
   ## Backward compatibility
   ##
@@ -568,10 +589,6 @@ netbind <- function(..., name,
     warning(warning3, call. = FALSE)
   if (print.warning4)
     warning(warning4, call. = FALSE)
-  if (print.warning5)
-    warning(warning5, call. = FALSE)
-  if (print.warning6)
-    warning(warning6, call. = FALSE)
 
 
   res

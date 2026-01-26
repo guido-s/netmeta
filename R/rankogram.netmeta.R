@@ -6,7 +6,7 @@
 #' RAnking curve) in frequentist network meta-analysis.
 #'
 #' @param x An object of class \code{\link{netmeta}}.
-#' @param nsim Number of simulations.
+#' @param nsim Number of repetitions.
 #' @param common A logical indicating to compute ranking probabilities
 #'   and SUCRAs for the common effects model.
 #' @param random A logical indicating to compute ranking probabilities
@@ -76,6 +76,9 @@
 #' ran1
 #' print(ran1, cumulative.rankprob = TRUE)
 #'
+#' # Also print mean ranks
+#' summary(ran1)
+#'
 #' plot(ran1)
 #'
 #' @rdname rankogram.netmeta
@@ -135,9 +138,10 @@ rankogram.netmeta <- function(x, nsim = gs("nsim"),
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
   #
-  # Additional checks for crossnma and multinma objects (and return results)
+  # Additional checks for crossnma, gemtc and multinma objects
+  # (and return results)
   #
-  if (inherits(x, c("netmeta.crossnma", "netmeta.multinma"))) {
+  if (inherits(x, gs(".other_nma"))) {
     if (!x$keep.samples)
       stop("Input for argument 'x' is a netmeta.", x$method,
            " object without samples; recreate ", x$method,
@@ -178,9 +182,12 @@ rankogram.netmeta <- function(x, nsim = gs("nsim"),
   # (3) Resampling to calculate ranking probabilities and SUCRAs
   #
   #
-    
-  sucras.common  <- ranking.matrix.common  <- cumrank.matrix.common  <- NULL
-  sucras.random <- ranking.matrix.random <- rank.cum.random <- NULL
+  
+  sucras.common  <- ranking.matrix.common  <- cumrank.matrix.common <-
+    meanranks.common <- medianranks.common <- NULL
+  #
+  sucras.random <- ranking.matrix.random <- cumrank.matrix.random <-
+    meanranks.random <- medianranks.random <- NULL
   #
   if (common) {
     res.c <- ranksampling(x, nsim, "common", small.values, keep.samples)
@@ -188,6 +195,9 @@ rankogram.netmeta <- function(x, nsim = gs("nsim"),
     sucras.common <- res.c$sucras
     ranking.matrix.common <- res.c$rankogram
     cumrank.matrix.common <- res.c$cumrank
+    #
+    meanranks.common <- res.c$meanranks
+    medianranks.common <- res.c$medianranks
     #
     samples.common <- res.c$samples
   }
@@ -197,7 +207,10 @@ rankogram.netmeta <- function(x, nsim = gs("nsim"),
     #
     sucras.random <- res.r$sucras
     ranking.matrix.random <- res.r$rankogram
-    rank.cum.random <- res.r$cumrank
+    cumrank.matrix.random <- res.r$cumrank
+    #
+    meanranks.random <- res.r$meanranks
+    medianranks.random <- res.r$medianranks
     #
     samples.random <- res.r$samples
   }
@@ -212,12 +225,20 @@ rankogram.netmeta <- function(x, nsim = gs("nsim"),
   res <- list(ranking.common = sucras.common,
               ranking.matrix.common = ranking.matrix.common,
               cumrank.matrix.common = cumrank.matrix.common,
+              #
+              meanranks.common = meanranks.common,
+              medianranks.common = medianranks.common,
+              #
               samples.common =
                 if (common & keep.samples) samples.common else NULL,
               #
               ranking.random = sucras.random,
               ranking.matrix.random = ranking.matrix.random,
-              cumrank.matrix.random = rank.cum.random,
+              cumrank.matrix.random = cumrank.matrix.random,
+              #
+              meanranks.random = meanranks.random,
+              medianranks.random = medianranks.random,
+              #
               samples.random =
                 if (random & keep.samples) samples.random else NULL,
               #

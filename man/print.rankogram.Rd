@@ -12,6 +12,7 @@
   sort = TRUE,
   nchar.trts = x$nchar.trts,
   digits = gs("digits.prop"),
+  details.methods = gs("details"),
   legend = gs("legend"),
   warn.deprecated = gs("warn.deprecated"),
   ...
@@ -38,6 +39,9 @@ characters used to create unique treatment names.}
 \item{digits}{Minimal number of significant digits, see
 \code{\link{print.default}}.}
 
+\item{details.methods}{A logical specifying whether details on statistical
+methods should be printed.}
+
 \item{legend}{A logical indicating whether a legend should be
 printed.}
 
@@ -50,13 +54,7 @@ be printed if deprecated arguments are used.}
 Print method for objects of class \code{rankogram}.
 }
 \examples{
-pw1 <- pairwise(treatment, event = r, n = N, studlab = author,
-  data = dat.woods2010, sm = "OR")
-net1 <- netmeta(pw1, small.values = "desirable")
-
-ran1 <- rankogram(net1, nsim = 100)
-ran1
-print(ran1, cumulative.rankprob = TRUE)
+# Examples: example(rankogram.netmeta)
 
 }
 \references{
@@ -67,9 +65,9 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \bold{64}, 163--71
 }
 \seealso{
-\code{\link{rankogram}}, \code{\link{plot.rankogram}},
-  \code{\link[metadat]{dat.woods2010}}
+\code{\link{rankogram}}, \code{\link{plot.rankogram}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }
+\keyword{print}

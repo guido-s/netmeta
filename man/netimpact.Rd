@@ -7,7 +7,7 @@ meta-analysis}
 \usage{
 netimpact(
   x,
-  seTE.ignore = 100 * max(x$seTE, na.rm = TRUE),
+  seTE.ignore = 1000 * max(x$seTE, na.rm = TRUE),
   event.ignore = 0.01,
   nchar.trts = x$nchar.trts,
   nchar.studlab = x$nchar.studlab,
@@ -70,6 +70,20 @@ ni1 <- netimpact(net1, verbose = TRUE)
 ni1
 
 netgraph(ni1)
+
+\donttest{
+netgraph(ni1, plastic = TRUE)
+
+pw2 <- pairwise(list(Treatment1, Treatment2, Treatment3),
+  n = list(n1, n2, n3),
+  mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
+  data = dat.franchini2012,
+  studlab = Study)
+
+net2 <- netmeta(pw2)
+ni2 <- netimpact(net2, verbose = TRUE)
+netgraph(ni2)
+}
 
 }
 \references{

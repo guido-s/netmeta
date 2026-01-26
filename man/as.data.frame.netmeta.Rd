@@ -42,17 +42,8 @@ pw1 <- pairwise(list(treat1, treat2, treat3),
 # Conduct random effects network meta-analysis and show data frame
 #
 net1 <- netmeta(pw1, common = FALSE)
-as.data.frame(net1)
-
-data(Senn2013)
-
-# Conduct network meta-analysis
-#
-net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD")
-
-as.data.frame(net2)
-as.data.frame(net2, details = TRUE)
+head(as.data.frame(net1))
+head(as.data.frame(net1, details = TRUE))
 }
 
 }

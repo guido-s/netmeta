@@ -41,14 +41,7 @@
 #' data(Linde2016)
 #' head(Linde2016)
 #' 
-#' \donttest{
-#' # Conduct random effects network meta-analysis
-#' #
-#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'   data = Linde2016, reference.group = "placebo",
-#'   sm = "OR", common = FALSE, nchar.trts = 6)
-#' #
-#' net1
-#' }
+#' # Example using pairwise(), netmeta() and netcomb():
+#' # example(dat.linde2016, run.dontrun = TRUE)
 
 NULL

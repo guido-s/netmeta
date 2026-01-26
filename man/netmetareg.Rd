@@ -116,6 +116,7 @@ iterative estimation algorithm. See help page of R function
 \code{\link[metafor]{rma.mv}} for more details.
 }
 \examples{
+\donttest{
 data(smokingcessation)
 # Add variable with (fictitious) risk of bias values
 # with 1 = "low risk" and 2 = "high risk"
@@ -132,6 +133,7 @@ net1 <- netmeta(pw1, common = FALSE, ref = "A")
 # independent slopes
 nr1 <- netmetareg(net1, rob)
 nr1
+}
 
 }
 \references{

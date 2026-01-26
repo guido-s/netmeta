@@ -143,32 +143,7 @@
 #' @keywords summary
 #' 
 #' @examples
-#' data(smokingcessation)
-#' 
-#' pw1 <- pairwise(list(treat1, treat2, treat3),
-#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
-#'   data = smokingcessation, sm = "OR")
-#' net1 <- netmeta(pw1)
-#'
-#' summary(net1)
-#' 
-#' \donttest{
-#' data(Senn2013)
-#' 
-#' # Conduct common effects network meta-analysis
-#' #
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", random = FALSE)
-#' print(net2, ref = "plac", digits = 3)
-#' summary(net2)
-#'
-#' # Conduct random effects network meta-analysis
-#' #
-#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", common = FALSE)
-#' print(net3, ref = "plac", digits = 3)
-#' summary(net3)
-#' }
+#' # Examples: example(netmeta)
 #' 
 #' @method summary netmeta
 #' @export

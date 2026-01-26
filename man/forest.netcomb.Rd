@@ -121,38 +121,7 @@ For more information see help page of \code{\link[meta]{forest.meta}}
 function.
 }
 \examples{
-\donttest{
-data(Linde2016)
-# Specify, order of treatments
-#
-trts <- c("TCA", "SSRI", "SNRI", "NRI", "Low-dose SARI", "NaSSa",
-  "rMAO-A", "Ind drug", "Hypericum", "Face-to-face CBT",
-  "Face-to-face PST", "Face-to-face interpsy", "Face-to-face psychodyn",
-  "Other face-to-face", "Remote CBT", "Self-help CBT", "No contact CBT",
-  "Face-to-face CBT + SSRI", "Face-to-face interpsy + SSRI",
-  "Face-to-face PST + SSRI", "UC", "Placebo")
-#
-# Note, three treatments are actually combinations of 'SSRI' with
-# other components:
-# "Face-to-face CBT + SSRI",
-# "Face-to-face interpsy + SSRI",
-# "Face-to-face PST + SSRI"
-
-# Conduct random effects network meta-analysis
-#
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-  data = Linde2016, ref = "placebo",
-  seq = trts, sm = "OR", common = FALSE)
-#
-net1
-
-# Additive model for treatment components (with placebo as inactive
-# treatment)
-#
-nc1 <- netcomb(net1, inactive = "placebo")
-#
-forest(nc1)
-}
+# Examples: example(netcomb)
 
 }
 \seealso{

@@ -48,20 +48,15 @@ difference. Data on this outcome were available for 5,331 patients
 from 28 studies comparing an active treatment with placebo and one
 three-arm study comparing two active treatments with placebo.
 }
+\note{
+The dataset Stowe2010 is identical to dataset
+\code{\link[metadat]{dat.stowe2010}} in R package \bold{metadat}.
+}
 \examples{
 data(Stowe2010)
 
-# Transform data from arm-based format to contrast-based format
-#
-pw1 <- pairwise(list(t1, t2, t3),
-  n = list(n1, n2, n3),
-  mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-  data = Stowe2010, studlab = study)
-pw1
-
-# Conduct network meta-analysis
-net1 <- netmeta(pw1, ref = "plac")
-net1
+# Example using pairwise(), netmeta() and netrank():
+# example(dat.stowe2010, run.dontrun = TRUE)
 }
 \seealso{
 \code{\link[meta]{pairwise}}, \code{\link[meta]{metacont}},

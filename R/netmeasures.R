@@ -102,36 +102,6 @@
 #' plot(nm1$meanpath, nm1$minpar, type = "n",
 #'   xlab = "Mean path length", ylab = "Minimal parallelism")
 #' text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex = 0.8)
-#'
-#' \donttest{
-#' data(Senn2013)
-#' 
-#' # Conduct common effects network meta-analysis with reference
-#' # treatment 'plac', i.e. placebo
-#' #
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", reference = "plac", random = FALSE)
-#' 
-#' # Calculate measures based on a common effects model
-#' #        
-#' nm2 <- netmeasures(net2)
-#' 
-#' # Plot of minimal parallelism versus mean path length
-#' #
-#' plot(nm2$meanpath, nm2$minpar, type = "n",
-#'   xlab = "Mean path length", ylab = "Minimal parallelism")
-#' text(nm2$meanpath, nm2$minpar, names(nm2$meanpath), cex = 0.8)
-#'
-#' # Conduct random effects network meta-analysis with reference
-#' # treatment 'plac', i.e. placebo
-#' #
-#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", reference = "plac", common = FALSE)
-#' 
-#' # Calculate measures based on a random effects model
-#' #                          
-#' nm3 <- netmeasures(net3)
-#' }
 #' 
 #' @export netmeasures
 
@@ -148,8 +118,7 @@ netmeasures <- function(x,
   ##
   ##
   chkclass(x, "netmeta")
-  chksuitable(x, "Network measures",
-              classes = c("netmeta.crossnma", "netmeta.multinma"))
+  chksuitable(x, "Network measures", classes = gs(".other_nma"))
   x <- updateversion(x)
   ##
   is.bin <- inherits(x, "netmetabin")

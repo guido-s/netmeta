@@ -136,39 +136,7 @@ be printed if deprecated arguments are used.}
 Print method for objects of class \code{netcomb}.
 }
 \examples{
-data(Linde2016)
-
-# Only consider studies including Face-to-face PST (to reduce
-# runtime of example)
-#
-face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
-
-# Conduct random effects network meta-analysis
-#
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-  data = face, reference.group = "placebo",
-  sm = "OR", common = FALSE)
-
-# Additive model for treatment components
-#
-nc1 <- netcomb(net1)
-nc1
-
-\donttest{
-print(nc1, digits = 2, digits.stat = 3)
-
-# Conduct random effects network meta-analysis
-#
-net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-  data = Linde2016, reference.group = "placebo",
-  sm = "OR", common = FALSE)
-
-# Additive model for treatment components
-#
-nc2 <- netcomb(net2)
-nc2
-print(nc2, digits = 2, digits.stat = 3)
-}
+# Examples: example(netcomb)
 
 }
 \seealso{

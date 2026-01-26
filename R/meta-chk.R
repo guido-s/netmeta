@@ -253,9 +253,7 @@ chkdeprecated <- function(x, new, old, warn = TRUE) {
 }
 
 chksuitable <- function(x, method,
-                        classes = c("netmetabin",
-                                    "netmeta.crossnma",
-                                    "netmeta.multinma"),
+                        classes = c("netmetabin", gs(".other_nma")),
                         addtext = "",
                         stop = TRUE,
                         status = "implemented") {

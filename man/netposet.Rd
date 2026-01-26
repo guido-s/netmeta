@@ -142,7 +142,7 @@ passed on to the printing function.
 }
 \examples{
 \donttest{
-# Define order of treatments in depression dataset linde2015
+# Define order of treatments in depression data set dat.linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -171,22 +171,37 @@ net2 <- netmeta(pw2, common = FALSE,
 
 # Partial order of treatment rankings (two outcomes)
 #
-po <- netposet(netrank(net1), netrank(net2), outcomes = outcomes)
+po12 <- netposet(netrank(net1), netrank(net2), outcomes = outcomes)
 
-# Hasse diagram
+# Scatter plot
+#
+plot(po12)
+
+# Biplot (same scatter plot as only two outcomes considered)
+#
+plot(po12, "biplot")
+
+# Hasse diagram for outcomes early response and early remission
 #
 \dontrun{
 if (requireNamespace("Rgraphviz", quietly = TRUE))
-  hasse(po)
+  hasse(po12)
 }
 
+# Scatter plot for outcomes early response and early remission
+#
+oldpar <- par(pty = "s")
+plot(po12)
+par(oldpar)
 
+
+# Consider five outcomes
 #
 # Outcome labels
 #
 outcomes <- c("Early response", "Early remission",
   "Lost to follow-up", "Lost to follow-up due to AEs",
-  "Adverse events (AEs)")
+   "Adverse events (AEs)")
 
 # (3) Loss to follow-up
 #
@@ -215,12 +230,12 @@ pw5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 net5 <- netmeta(pw5, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "desirable")
 
-# Partial order of treatment rankings (all five outcomes)
+# Partial order of treatment rankings (based on netrank() objects)
 #
 po.ranks <- netposet(netrank(net1), netrank(net2),
   netrank(net3), netrank(net4), netrank(net5), outcomes = outcomes)
 
-# Same result
+# Same result (based on netmeta() objects)
 #
 po.nets <- netposet(net1, net2, net3, net4, net5,
   outcomes = outcomes)
@@ -237,21 +252,6 @@ po.nets$P.random
 if (requireNamespace("Rgraphviz", quietly = TRUE))
   hasse(po.ranks)
 }
-
-# Hasse diagram for outcomes early response and early remission
-#
-po12 <- netposet(netrank(net1), netrank(net2),
-  outcomes = outcomes[1:2])
-\dontrun{
-if (requireNamespace("Rgraphviz", quietly = TRUE))
-  hasse(po12)
-}
-
-# Scatter plot
-#
-oldpar <- par(pty = "s")
-plot(po12)
-par(oldpar)
 }
 
 # Example using ranking matrix with P-scores

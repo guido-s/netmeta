@@ -39,6 +39,10 @@
 #' \bold{\emph{n3}}\tab Sample size arm 3
 #' }
 #' 
+#' @note
+#' The dataset Stowe2010 is identical to dataset
+#' \code{\link[metadat]{dat.stowe2010}} in R package \bold{metadat}.
+#' 
 #' @seealso \code{\link[meta]{pairwise}}, \code{\link[meta]{metacont}},
 #'   \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 #' 
@@ -55,17 +59,7 @@
 #' @examples
 #' data(Stowe2010)
 #' 
-#' # Transform data from arm-based format to contrast-based format
-#' #
-#' pw1 <- pairwise(list(t1, t2, t3),
-#'   n = list(n1, n2, n3),
-#'   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-#'   data = Stowe2010, studlab = study)
-#' pw1
-#' 
-#' # Conduct network meta-analysis
-#' net1 <- netmeta(pw1, ref = "plac")
-#' net1
-
+#' # Example using pairwise(), netmeta() and netrank():
+#' # example(dat.stowe2010, run.dontrun = TRUE)
 
 NULL

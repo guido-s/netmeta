@@ -81,6 +81,7 @@
 #' @keywords models regression
 #' 
 #' @examples
+#' \donttest{
 #' data(smokingcessation)
 #' # Add variable with (fictitious) risk of bias values
 #' # with 1 = "low risk" and 2 = "high risk"
@@ -97,6 +98,7 @@
 #' # independent slopes
 #' nr1 <- netmetareg(net1, rob)
 #' nr1
+#' }
 #' 
 #' @rdname netmetareg
 #' @method netmetareg netmeta
@@ -199,9 +201,11 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   dat[[covar.name]] <- covar
   #
-  if (!is.null(x$data$.n1) & !is.null(x$data$.n2)) { #netmeta is not exporting n1 and n2 for ORs
+  available.n <- available.events <- available.times <- available.sds <- FALSE
+  if (!is.null(x$data$.n1) & !is.null(x$data$.n2)) {
     dat$n1 <- x$data$.n1
     dat$n2 <- x$data$.n2
+    available.n <- TRUE
   }
   #
   if (!is.null(x$data$.mean1) & !is.null(x$data$.mean2)) {
@@ -212,12 +216,21 @@ netmetareg.netmeta <- function(x, covar = NULL,
   if (!is.null(x$data$.sd1) & !is.null(x$data$.sd2)) {
     dat$sd1 <- x$data$.sd1
     dat$sd2 <- x$data$.sd2
+    available.sds <- TRUE
+  }
+  #
+  if (!is.null(x$data$.event1) & !is.null(x$data$.event2)) {
+    dat$event1 <- x$data$.event1
+    dat$event2 <- x$data$.event2
+    available.events <- TRUE
   }
   #
   if (!is.null(x$data$.time1) & !is.null(x$data$.time2)) {
     dat$time1 <- x$data$.time1
     dat$time2 <- x$data$.time2
+    available.times <- TRUE
   }
+<<<<<<< HEAD
 
   # the logic above does not work because the following variables do not have .variable equivalents exported from netmeta. They are needed for the calcV function
   if (!is.null(x$data$event1) & !is.null(x$data$event2)) {
@@ -234,6 +247,12 @@ netmetareg.netmeta <- function(x, covar = NULL,
   }
   if (!is.null(x$incr)) { #incr assigned to netmeta object
     dat$incr <- x$incr
+=======
+  #
+  if (!is.null(x$data$.incr1) & !is.null(x$data$.incr2)) {
+    dat$incr1 <- x$data$.incr1
+    dat$incr2 <- x$data$.incr2
+>>>>>>> develop
   }
   
   # if Ival not supplied default to treatment order
@@ -257,12 +276,21 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   keep <- logical(0)
   wo <- logical(0)
+<<<<<<< HEAD
   #
+=======
+  
+>>>>>>> develop
   if(consistency==TRUE){
     # check for constant covariate in reference treatment
     if(length(unique(dat[dat$treat1==reference.group|dat$treat2==reference.group,covar.name]))==1){
       stop("Invalid reference treatment for interaction. Insufficient variation in observed covariate values for reference treatment")
+<<<<<<< HEAD
       }
+=======
+    }
+    
+>>>>>>> develop
   for (i in unique(dat$studlab)) {
     d.i <- dat[dat$studlab == i, , drop = FALSE]
     trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
@@ -287,6 +315,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     wo <- c(wo, wo.i)
   }
   #
+  }
   dat <- dat[keep, , drop = FALSE]
   #
   wo <- wo[keep]
@@ -299,7 +328,11 @@ netmetareg.netmeta <- function(x, covar = NULL,
     mean2.i <- dat$mean2
     sd2.i <- dat$sd2
     time2.i <- dat$time2
+<<<<<<< HEAD
 	Ival2.i <- dat$Ival2
+=======
+    incr2.i <- dat$incr2
+>>>>>>> develop
     #
     dat$treat2[wo] <- dat$treat1[wo]
     dat$event2[wo] <- dat$event1[wo]
@@ -307,7 +340,11 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$mean2[wo] <- dat$mean1[wo]
     dat$sd2[wo] <- dat$sd1[wo]
     dat$time2[wo] <- dat$time1[wo]
+<<<<<<< HEAD
 	dat$Ival2[wo] <- dat$Ival1[wo]
+=======
+    dat$incr2[wo] <- dat$incr1[wo]
+>>>>>>> develop
     #
     dat$treat1[wo] <- t2.i[wo]
     dat$event1[wo] <- e2.i[wo]
@@ -315,7 +352,11 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$mean1[wo] <- mean2.i[wo]
     dat$sd1[wo] <- sd2.i[wo]
     dat$time1[wo] <- time2.i[wo]
+<<<<<<< HEAD
 	dat$Ival1[wo] <- Ival2.i[wo]
+=======
+    dat$incr1[wo] <- incr2.i[wo]
+>>>>>>> develop
   }
   #
   ncols1 <- ncol(dat)
@@ -326,7 +367,12 @@ netmetareg.netmeta <- function(x, covar = NULL,
   dat <- dat[order(dat$studlab), ]
   #
   trts.all <- varnames
+<<<<<<< HEAD
   trts <- trts.all[trts.all!=reference.group] # consistency
+=======
+  trts <- trts.all[trts.all!=reference.group] # ensure that the reference treatment is correctly assigned
+  
+>>>>>>> develop
   
   
   #
@@ -353,7 +399,11 @@ netmetareg.netmeta <- function(x, covar = NULL,
       # colon which is in the same format as the independent. Helpful
       # for later extraction
       #
+<<<<<<< HEAD
       dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0) # if the treatments are coded as numbers, then the contrast.matrix function creates columns using make.names that do not correspond to the original reference group
+=======
+      dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0)
+>>>>>>> develop
       #
       formula.nmr_default <- # renamed for construction of manual matrix below
         as.formula(paste("~ 0 + ",
@@ -436,6 +486,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   dat$comparison <- paste(dat$treat1, dat$treat2, sep = " vs ")
   #
   # Calculate Variance-Covariance matrix
+<<<<<<< HEAD
       #
       if (sm %in%c("OR","MD")) {
         V <- bldiag(lapply(split(dat, dat$studlab), calcV, sm = sm))
@@ -445,6 +496,15 @@ netmetareg.netmeta <- function(x, covar = NULL,
       #
 
 
+=======
+  #
+  if (available.n &
+      (available.events | available.times | (available.sds))) {
+    V <- bldiag(lapply(split(dat, dat$studlab), calcV, sm = sm))
+  }
+  else
+    V <- dat$seTE^2
+>>>>>>> develop
   #
   suppressWarnings(
     res <-

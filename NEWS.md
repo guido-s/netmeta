@@ -1,4 +1,77 @@
-## netmeta, version 3.2-0 (2025-mm-dd)
+## netmeta, version 3.3-0 (2025-mm-dd)
+
+### Major changes
+
+* Contributions of individual studies or paths on each comparison in the
+  network can be calculated for the shortest path algorithm
+
+* Vignette on workflow for the R package **netmeta** added
+  (command: vignette("netmeta-workflow"))
+
+* New experimental R function gemtc2netmeta() to create a netmeta object from a
+  gemtc object
+  
+* R packages **rmarkdown**, **knitr** and **gemtc** added to Suggests
+
+### Bug fixes
+
+* netmeta():
+  - use of argument 'subset' does not result in an error
+  - use correct increment to construct the covariance matrix used to
+    calculate the REML or ML estimate of the between-study variance
+    (only for pairwise object as main input with binary or count outcome)
+  - use covariance 1 / n0 for pairwise() object with multi-arm studies and
+    standardized mean difference as effect measure
+
+* netgraph.netconnection():
+  - argument 'seq = "optimal"' can be used
+
+* netmetareg():
+  - use correct increment to construct the covariance matrix used to
+    calculate the REML or ML estimate of the between-study variance
+    (only for pairwise() object as main input with binary or count outcome)
+  - align variance-covariance matrix construction with netmeta()
+  - update internal reference treatment assignment to use R-friendly matrix
+     names for models with the common assumption
+
+* hatmatrix():
+  - consider input for arguments 'common' and 'random'
+
+### User-visible changes
+
+* print.summary.netconnection():
+  - print information on treatments in subnetworks
+
+* print.summary.netmetan():
+  - abbreviations for study and treatment labels based on reduced
+    data set (argument 'truncate')
+  - sort number of treatment arms per study by number of arms
+
+* netleague():
+  - new argument 'nchar.trts' to abbreviate treatment labels
+  - the setting for argument 'nchar.trts' in netnetma() is used as
+    default setting
+
+* netcontrib():
+  - new arguments 'study' and 'path' for contributions of individual studies
+    and paths
+
+* print.netrank(), print.rankogram():
+  - print "number of repetitions" instead of "number of simulations"
+
+### Internal changes
+
+* netcontrib():
+  - new list elements 'study.common', 'study.random', 'path.common' and
+    'path.random' with information on contributions of studies and paths
+
+* netbind():
+  - overwrite common effects with random effects results if 'common = FALSE'
+    and 'random = TRUE' for a (C)NMA object and arguments 'common' and 'random'
+    haven't been used
+
+
+## netmeta, version 3.2-0 (2025-04-10)
 
 ### Major changes
 
@@ -7,6 +80,11 @@
 
 * New R function netmetareg() to conduct network meta-regression with a
   single continuous or binary covariate
+
+* Calculate mean and median ranks in R function rankogram()
+
+* New R functions summary.rankogram() and print.summary.rankogram() to print
+  SUCRAs and mean ranks in addition to ranking probabilities
 
 * Add R package **crossnma** to Suggests
 

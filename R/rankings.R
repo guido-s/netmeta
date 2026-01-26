@@ -21,21 +21,36 @@ rankings <- function(x) {
   }
   else
     rankogram <- t(as.data.frame(tab))
+  #
+  rankogram <- rankogram / nsim
   
   #
   # Cumulative ranks and SUCRAs
   #
   
   cumrank <- t(apply(rankogram, 1, cumsum))
-  sucras <- apply(cumrank[, -n.trts], 1, sum) / (n.trts - 1) / nsim
+  sucras <- apply(cumrank[, -n.trts], 1, sum) / (n.trts - 1)
+  
+  #
+  # Mean and median ranks
+  #
+  
+  meanranks <- apply(col(rankogram) * rankogram, 1, sum)
+  #
+  getmed <- function(x) which(x >= 0.5)[1]
+  medianranks <- apply(cumrank, 1, getmed)
   
   #
   # Return results
   #
   
   res <- list(sucras = sucras,
-              rankogram = rankogram / nsim,
-              cumrank = cumrank / nsim,
+              rankogram = rankogram,
+              cumrank = cumrank,
+              #
+              meanranks = meanranks,
+              medianranks = medianranks,
+              #
               nsim = nsim)
   #
   res

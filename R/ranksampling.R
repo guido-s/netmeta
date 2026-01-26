@@ -33,6 +33,9 @@ ranksampling <- function(x, nsim,
               rankogram = rankings$rankogram,
               cumrank = rankings$cumrank,
               #
+              meanranks = rankings$meanranks,
+              medianranks = rankings$medianranks,
+              #
               nsim = nsim,
               pooled = pooled,
               small.values = small.values,

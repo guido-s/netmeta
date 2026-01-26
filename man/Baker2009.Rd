@@ -45,28 +45,12 @@ The dataset Baker2009 is identical to dataset
 \examples{
 head(dat.baker2009)
 
-\donttest{
-# Transform data from long arm-based format to contrast-based
-# format. Argument 'sm' has to be used for odds ratio as summary
-# measure; by default the risk ratio is used in the metabin
-# function called internally.
-#
-pw1 <- pairwise(treatment, exac, total, studlab = paste(study, year),
-  data = dat.baker2009, sm = "OR")
-
-# Conduct network meta-analysis
-#
-net1 <- netmeta(pw1, ref = "plac")
-
-# Conduct component network meta-analysis
-#
-cnet1 <- netcomb(net1)
-cnet1
-}
+# Example using pairwise(), netmeta() and netcomb():
+# example(dat.baker2009, run.dontrun = TRUE)
 }
 \seealso{
 \code{\link[metadat]{dat.baker2009}},
   \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
-  \code{\link{netmetabin}}
+  \code{\link{netmeta}}, \code{\link{netcomb}}
 }
 \keyword{datasets}

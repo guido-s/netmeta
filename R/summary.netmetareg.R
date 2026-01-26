@@ -17,6 +17,7 @@
 #' @seealso \code{\link{netmetareg}}
 #' 
 #' @examples
+#' \dontrun{
 #' data(smokingcessation)
 #' # Add variable with (fictitious) risk of bias values
 #' # with 1 = "low risk" and 2 = "high risk"
@@ -35,6 +36,7 @@
 #' nr1
 #' 
 #' summary(nr1)
+#' }
 #'
 #' @method summary netmetareg 
 #' @export

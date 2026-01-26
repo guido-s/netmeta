@@ -1,7 +1,7 @@
 #' Create a netmeta object from a crossnma object
 #' 
 #' @description
-#' Auxiliary function to create a netmeta object from a crossnma object
+#' Auxiliary function to create a netmeta object from a crossnma object.
 #' 
 #' @param x A \code{crossnma} object created with R package \bold{crossnma}.
 #' @param keep.samples A logical indicating whether to keep the generated
@@ -264,7 +264,7 @@ crossnma2netmeta <- function(x,
   # (5) Return netmeta object
   #
   
-  class(res) <- c("netmeta.crossnma", class(res))
+  class(res) <- c(class(res), "netmeta.crossnma")
   #
   res
 }

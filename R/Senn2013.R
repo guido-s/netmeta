@@ -58,29 +58,7 @@
 #' data(Senn2013)
 #' head(Senn2013)
 #' 
-#' \donttest{
-#' # Common effects model
-#' #
-#' net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'   data = Senn2013, sm = "MD", random = FALSE, nchar.trts = 4)
-#' net1
-#' net1$Q.decomp
-#' 
-#' # Forest plot
-#' #
-#' forest(net1, ref = "plac")
-#' 
-#' # Comparison with reference group
-#' #
-#' netmeta(TE, seTE, treat1.long, treat2.long,
-#'   studlab, data = Senn2013, reference = "plac")
-#' 
-#' # Random effects model
-#' #
-#' net2 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'   data = Senn2013, common = FALSE)
-#' net2
-#' forest(net2, ref = "plac")
-#' }
+#' # Example using netmeta():
+#' # example(netmeta)
 
 NULL

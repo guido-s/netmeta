@@ -13,7 +13,7 @@
 #' @param method A character string specifying whether the
 #'   \code{"P-score"} or \code{"SUCRA"} ranking metric will be
 #'   calculated.
-#' @param nsim Number of simulations to calculate SUCRAs.
+#' @param nsim Number of repetitions to calculate SUCRAs.
 #' @param common A logical indicating whether to print P-scores or
 #'   SUCRAs for the common effects model.
 #' @param random A logical indicating whether to print P-scores or
@@ -41,7 +41,7 @@
 #' of treatment \emph{i} within the range of treatments, measured on a
 #' scale from 0 (worst) to 1 (best) (Salanti et al. 2011). A
 #' resampling method is used to calculate SUCRAs for frequentist
-#' network meta-analysis. The number of simulations is determine by
+#' network meta-analysis. The number of repetitions is determine by
 #' argument \code{nsim}.
 #'
 #' The interpretation of P-scores and SUCRAs is comparable.
@@ -94,40 +94,79 @@
 #' \bold{64}, 163--71
 #' 
 #' @examples
-#' data(smokingcessation)
-#' 
-#' pw1 <- pairwise(list(treat1, treat2, treat3),
-#'   event = list(event1, event2, event3), n = list(n1, n2, n3),
-#'   data = smokingcessation, sm = "OR")
-#' net1 <- netmeta(pw1)
+#' \donttest{
+#' # Define order of treatments in depression dataset dat.linde2015
+#' #
+#' trts <- c("TCA", "SSRI", "SNRI", "NRI",
+#'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
 #'
+#' # Outcome labels
+#' #
+#' outcomes <- c("Early response", "Early remission")
+#' 
+#' # (1) Early response
+#' #
+#' pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
+#'   studlab = id, data = dat.linde2015, sm = "OR")
+#' #
+#' net1 <- netmeta(pw1, common = FALSE, seq = trts, ref = "Placebo",
+#'   small.values = "undesirable")
 #' netrank(net1)
 #' 
-#' \donttest{
-#' data(Senn2013)
+#' # (2) Early remission
+#' #
+#' pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
+#'   studlab = id, data = dat.linde2015, sm = "OR")
+#' #
+#' net2 <- netmeta(pw2, common = FALSE, seq = trts, ref = "Placebo",
+#'   small.values = "undesirable")
+#' netrank(net2)
 #' 
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", random = FALSE)
-#' 
-#' nr2 <- netrank(net2)
-#' nr2
-#' print(nr2, sort = FALSE)
+#' # Image plot of treatment rankings (two outcomes)
+#' #
+#' plot(netrank(net1), netrank(net2), name = outcomes, digits = 2)
 #'
-#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD")
 #' 
-#' nr3 <- netrank(net3)
-#' nr3
-#' print(nr3, sort = "common")
-#' print(nr3, sort = FALSE)
-#'
-#' net4 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD")
+#' # Outcome labels
+#' #
+#' outcomes <- c("Early response", "Early remission",
+#'   "Lost to follow-up", "Lost to follow-up due to AEs",
+#'   "Adverse events (AEs)")
 #' 
-#' nr4 <- netrank(net4, method = "SUCRA", nsim = 100)
-#' nr4
-#' print(nr4, sort = "common")
-#' print(nr4, sort = FALSE)
+#' # (3) Loss to follow-up
+#' #
+#' pw3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
+#'   studlab = id, data = dat.linde2015, sm = "OR")
+#' #
+#' net3 <- netmeta(pw3, common = FALSE, seq = trts, ref = "Placebo",
+#'   small.values = "desirable")
+#' 
+#' # (4) Loss to follow-up due to adverse events
+#' #
+#' pw4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
+#'   studlab = id, data = subset(dat.linde2015, id != 55), sm = "OR")
+#' #
+#' net4 <- netmeta(pw4, common = FALSE, seq = trts, ref = "Placebo",
+#'   small.values = "desirable")
+#' 
+#' # (5) Adverse events
+#' #
+#' pw5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
+#'   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
+#'   studlab = id, data = dat.linde2015, sm = "OR")
+#' #
+#' net5 <- netmeta(pw5, common = FALSE, seq = trts, ref = "Placebo",
+#'   small.values = "desirable")
+#' 
+#' # Image plot of treatment rankings (two outcomes)
+#' #
+#' plot(netrank(net1), netrank(net2), netrank(net3),
+#'   netrank(net4), netrank(net5),
+#'   name = outcomes, digits = 2)
 #' }
 #' 
 #' @rdname netrank
@@ -155,8 +194,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
   if (missing(method)) {
     if (inherits(x, "netcomb"))
       method <- "P-score"
-    else if (inherits(x, "netmeta") &
-             !inherits(x, c("netmeta.crossnma", "netmeta.multinma")))
+    else if (inherits(x, "netmeta") & !inherits(x, gs(".other_nma")))
       method <- "P-score"
     else
       method <- "SUCRA"
@@ -182,9 +220,9 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
                        warn.deprecated)
   chklogical(random)
   #
-  # Additional checks for crossnma and multinma objects
+  # Additional checks for crossnma, gemtc and multinma objects
   #
-  if (inherits(x, c("netmeta.crossnma", "netmeta.multinma"))) {
+  if (inherits(x, gs(".other_nma"))) {
     if (method == "P-score")
       warning("Argument 'method = \"SUCRA\"' for netmeta.", x$method,
               " object.",
@@ -221,8 +259,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
       stop("netcomb object is not compatible with SUCRAs.",
            call. = FALSE)
     else if (inherits(x, "netmeta")) {
-      if (inherits(x, c("netmeta.crossnma", "netmeta.multinma")) &&
-          x$keep.samples) {
+      if (inherits(x, gs(".other_nma")) && x$keep.samples) {
         rnk <- rankogram(x$samples$d,
                          pooled = if (common) "common" else "random",
                          small.values = small.values)
@@ -484,7 +521,7 @@ print.netrank <- function(x,
 
   if (x$method == "SUCRA" & !is.null(x$nsim))
     cat("\n- based on ", x$nsim,
-        " simulation", if (x$nsim > 1) "s", "\n",
+        " repetition", if (x$nsim > 1) "s", "\n",
         sep = "")
   
   

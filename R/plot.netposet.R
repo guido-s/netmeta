@@ -79,7 +79,7 @@
 #' Arguments \code{sel.x} and \code{sel.y} can be used to select
 #' different outcomes to show on x- and y-axis in a 2-D scatter plot;
 #' argument \code{sel.z} can be used accordingly in a 3-D scatter
-#' plot.  These arguments are ignored for a biplot.
+#' plot. These arguments are ignored for a biplot.
 #' 
 #' Note, in order to generate 3-D plots (argument \code{dim = "3d"}),
 #' R package \bold{rgl} is necessary. Note, under macOS the X.Org X
@@ -108,82 +108,7 @@
 #' @keywords hplot
 #' 
 #' @examples
-#' \donttest{
-#' # Define order of treatments in depression data set dat.linde2015
-#' #
-#' trts <- c("TCA", "SSRI", "SNRI", "NRI",
-#'   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
-#' #
-#' # Outcome labels
-#' #
-#' outcomes <- c("Early response", "Early remission")
-#' 
-#' # (1) Early response
-#' #
-#' pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-#'   studlab = id, data = dat.linde2015, sm = "OR")
-#' #
-#' net1 <- netmeta(pw1, common = FALSE,
-#'   seq = trts, ref = "Placebo", small.values = "undesirable")
-#' 
-#' # (2) Early remission
-#' #
-#' pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-#'   studlab = id, data = dat.linde2015, sm = "OR")
-#' #
-#' net2 <- netmeta(pw2, common = FALSE,
-#'   seq = trts, ref = "Placebo", small.values = "undesirable")
-#' 
-#' # Partial order of treatment rankings
-#' #
-#' po2 <- netposet(netrank(net1), netrank(net2), outcomes = outcomes)
-#' 
-#' # Scatter plot
-#' #
-#' plot(po2)
-#' 
-#' # Same scatter plot as only two outcomes considered in netposet()
-#' #
-#' plot(po2, "biplot")
-#'
-#' 
-#' # Consider three outcomes
-#' #
-#' # Outcome labels
-#' #
-#' outcomes <- c("Early response", "Early remission", "Lost to follow-up")
-#' 
-#' # (3) Loss to follow-up
-#' #
-#' pw3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
-#'   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
-#'   studlab = id, data = dat.linde2015, sm = "OR")
-#' #
-#' net3 <- netmeta(pw3, common = FALSE,
-#'   seq = trts, ref = "Placebo", small.values = "desirable")
-#' 
-#' # Partial order of treatment rankings (with three outcomes) 
-#' #
-#' po3 <- netposet(netrank(net1), netrank(net2), netrank(net3),
-#'   outcomes = outcomes)
-#' 
-#' \dontrun{
-#' # Hasse diagram
-#' #
-#' if (requireNamespace("Rgraphviz", quietly = TRUE))
-#'   hasse(po3)
-#' }
-#' 
-#' # Scatter plot
-#' #
-#' plot(po3)
-#' 
-#' # Biplot (reverse limits of y-axis as biplot is upside down)
-#' #
-#' plot(po3, "bi", xlim = c(-1, 1.7), ylim = c(2.5, -2.5))
-#' }
+#' # Examples: example(netposet)
 #' 
 #' @method plot netposet
 #' @export

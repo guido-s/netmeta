@@ -92,8 +92,9 @@
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
 #' @param event2 Number of events in second treatment group.
-#' @param incr Numerical value added to cell frequencies (for details,
-#'   see \code{\link[meta]{pairwise}}).
+#' @param incr Numerical value added to cell frequencies to construct the
+#'   covariance matrix used to calculate the REML or ML estimate of the
+#'   between-study variance \eqn{\tau^2} (only for binary or count outcomes).
 #' @param mean1 Mean in first treatment group.
 #' @param mean2 Mean in second treatment group.
 #' @param sd1 Standard deviation in first treatment group.
@@ -449,7 +450,9 @@
 #'   Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link[meta]{pairwise}}, \code{\link{forest.netmeta}},
-#'   \code{\link{netrank}}, \code{\link[meta]{metagen}}
+#'   \code{\link{netrank}}, \code{\link[meta]{metagen}},
+#'   \code{\link{smokingcessation}}, \code{\link{Senn2013}},
+#'   \code{\link{dietaryfat}}
 #' 
 #' @references
 #' Jackson D, White IR, Riley RD (2012):
@@ -484,6 +487,10 @@
 #' \bold{36}, 1--48
 #' 
 #' @examples
+#' #
+#' # 1) Smoking cessation example
+#' #
+#' 
 #' data(smokingcessation)
 #' 
 #' # Transform data from arm-based format to contrast-based format
@@ -497,7 +504,22 @@
 #' net1 <- netmeta(pw1, common = FALSE)
 #' net1
 #' 
+#' # Draw network graphs
+#' #
+#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25)
+#' tname <- c("No intervention", "Self-help",
+#'   "Individual counselling", "Group counselling")
+#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25, labels = tname)
+#' 
+#' # Forest plot
+#' #
+#' forest(net1)
+#' 
 #' \donttest{
+#' #
+#' # 2) Diabetes example
+#' #
+#' 
 #' data(Senn2013)
 #' 
 #' # Conduct common effects network meta-analysis
@@ -510,22 +532,115 @@
 #' # Comparison with reference group
 #' #
 #' print(net2, reference = "plac")
+#' forest(net2, reference = "plac")
+#' 
+#' # Print detailed results
+#' #
+#' snet2 <- summary(net2)
+#' print(snet2, digits = 3)
+#' 
+#' # Only show individual study results for multi-arm studies
+#' #
+#' print(snet2, digits = 3, truncate = multiarm)
+#' 
+#' # Only show first three individual study results
+#' #
+#' print(snet2, digits = 3, truncate = 1:3)
+#' 
+#' # Only show individual study results for Kim2007 and Willms1999
+#' #
+#' print(snet2, digits = 3, truncate = c("Kim2007", "Willms1999"))
+#' 
+#' # Only show individual study results for studies starting with the
+#' # letter "W"
+#' #
+#' print(snet2, ref = "plac", digits = 3,
+#'   truncate = substring(studlab, 1, 1) == "W")
 #'
 #' # Conduct random effects network meta-analysis
 #' #
 #' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", common = FALSE)
+#'   data = Senn2013, sm = "MD", common = FALSE,
+#'   reference = "plac")
 #' net3
+#' forest(net3, xlim = c(-1.5, 1), xlab = "HbA1c difference")
+#' 
+#' # Add column with P-Scores on right side of forest plot
+#' #
+#' forest(net3, xlim = c(-1.5, 1),
+#'   xlab = "HbA1c difference",
+#'   rightcols = c("effect", "ci", "Pscore"),
+#'   just.addcols = "right")
+#' 
+#' # Add column with P-Scores on left side of forest plot
+#' #
+#' forest(net3, xlim = c(-1.5, 1),
+#'   xlab = "HbA1c difference",
+#'   leftcols = c("studlab", "Pscore"),
+#'   just.addcols = "right")
+#' 
+#' # Sort forest plot by descending P-Score
+#' #
+#' forest(net3, xlim = c(-1.5, 1),
+#'   xlab = "HbA1c difference",
+#'   rightcols = c("effect", "ci", "Pscore"),
+#'   just.addcols = "right",
+#'   sortvar = -Pscore)
+#' 
+#' # Sort by and print number of studies with direct treatment comparisons
+#' #
+#' forest(net3, xlim = c(-1.5, 1),
+#'   xlab = "HbA1c difference",
+#'   leftcols = c("studlab", "k"),
+#'   leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
+#'   sortvar = -k,
+#'   smlab = "Random Effects Model")
 #' 
 #' # Change printing order of treatments with placebo last and use
 #' # long treatment names
 #' #
 #' trts <- c("acar", "benf", "metf", "migl", "piog",
 #'   "rosi", "sita", "sulf", "vild", "plac")
+#' #
 #' net4 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
 #'   data = Senn2013, sm = "MD", common = FALSE,
-#'   seq = trts, reference = "Placebo")
+#'   reference = "Placebo", seq = trts)
 #' print(net4, digits = 2)
+#' 
+#' #
+#' # 3) Dietary fat example
+#' #
+#' 
+#' data(dietaryfat)
+#' 
+#' # Transform data from arm-based format to contrast-based format
+#' # Using incidence rate ratios (sm = "IRR") as effect measure.
+#' # Note, the argument 'sm' is not necessary as this is the default
+#' # in R function metainc() called internally
+#' #
+#' pw5 <- pairwise(list(treat1, treat2, treat3),
+#'   list(d1, d2, d3), time = list(years1, years2, years3),
+#'   studlab = ID, data = dietaryfat, sm = "IRR")
+#' pw5
+#' 
+#' # Conduct network meta-analysis
+#' #
+#' net5 <- netmeta(pw5)
+#' net5
+#' 
+#' # Conduct network meta-analysis using incidence rate differences
+#' # (sm = "IRD")
+#' #
+#' pw6 <- pairwise(list(treat1, treat2, treat3),
+#'   list(d1, d2, d3), time = list(years1, years2, years3),
+#'   studlab = ID, data = dietaryfat, sm = "IRD")
+#' net6 <- netmeta(pw6)
+#' net6
+#' 
+#' # Draw network graph
+#' #
+#' netgraph(net5, points = TRUE, cex.points = 3, cex = 1.25,
+#'   labels = c("Control","Diet", "Diet 2"))
 #' }
 #' 
 #' @export netmeta
@@ -724,8 +839,14 @@ netmeta <- function(TE, seTE,
       event1 <- TE$event1
     if (!is.null(TE$event2))
       event2 <- TE$event2
-    if (!is.null(TE$incr))
+    #
+    incr1 <- TE$incr1
+    incr2 <- TE$incr2
+    if (!is.null(incr2))
+      incr <- incr2
+    else
       incr <- TE$incr
+    #
     if (!is.null(TE$mean1))
       mean1 <- TE$mean1
     if (!is.null(TE$mean2))
@@ -768,7 +889,8 @@ netmeta <- function(TE, seTE,
     event1 <- catch("event1", mc, data, sfsp)
     event2 <- catch("event2", mc, data, sfsp)
     #
-    incr <- catch("incr", mc, data, sfsp)
+    incr1 <- NULL
+    incr2 <- catch("incr", mc, data, sfsp)
     #
     mean1 <- catch("mean1", mc, data, sfsp)
     mean2 <- catch("mean2", mc, data, sfsp)
@@ -833,8 +955,8 @@ netmeta <- function(TE, seTE,
   else
     available.n <- FALSE
   #
-  if (available.events & is.null(incr))
-    incr <- rep(0, length(event2))
+  if (available.events & is.null(incr2))
+    incr2 <- rep(0, length(event2))
   #
   if (!is.null(mean1) & !is.null(mean2))
     available.means <- TRUE
@@ -882,7 +1004,8 @@ netmeta <- function(TE, seTE,
     data$.n1 <- n1
     data$.event2 <- event2
     data$.n2 <- n2
-    data$.incr <- incr
+    data$.incr1 <- incr1
+    data$.incr2 <- incr2
     #
     data$.mean1 <- mean1
     data$.sd1 <- sd1
@@ -971,8 +1094,10 @@ netmeta <- function(TE, seTE,
       event1 <- event1[subset]
     if (!is.null(event2))
       event2 <- event2[subset]
-    if (!is.null(incr))
-      incr <- incr[subset]
+    if (!is.null(incr1))
+      incr1 <- incr1[subset]
+    if (!is.null(incr2))
+      incr2 <- incr2[subset]
     if (!is.null(mean1))
       mean1 <- mean1[subset]
     if (!is.null(mean2))
@@ -1042,8 +1167,14 @@ netmeta <- function(TE, seTE,
   excl <- is.na(TE) | is.na(seTE) | seTE <= 0
   #
   if (any(excl)) {
-    if (keepdata)
-      data$.excl <- excl
+    if (keepdata) {
+      if (!missing.subset) {
+        data$.excl <- NA
+        data$.excl[subset] <- excl
+      }
+      else
+        data$.excl <- excl
+    }
     #
     dat.NAs <- data.frame(studlab = studlab[excl],
                           treat1 = treat1[excl],
@@ -1069,8 +1200,10 @@ netmeta <- function(TE, seTE,
       event1 <- event1[!excl]
     if (!is.null(event2))
       event2 <- event2[!excl]
-    if (!is.null(incr))
-      incr <- incr[!excl]
+    if (!is.null(incr1))
+      incr1 <- incr1[!excl]
+    if (!is.null(incr2))
+      incr2 <- incr2[!excl]
     if (!is.null(mean1))
       mean1 <- mean1[!excl]
     if (!is.null(mean2))
@@ -1135,7 +1268,7 @@ netmeta <- function(TE, seTE,
           sep = "")
       prmatrix(dat.NAs, quote = FALSE, right = TRUE,
                rowlab = rep("", sum(excl)))
-      cat("\n")
+      #cat("\n")
     }
   }
   #
@@ -1298,7 +1431,7 @@ netmeta <- function(TE, seTE,
       if (available.events) {
         dat.tau$event1 <- event1
         dat.tau$event2 <- event2
-        dat.tau$incr <- incr
+        dat.tau$incr2 <- incr2
       }
       if (available.means) {
         dat.tau$mean1 <- mean1
@@ -1500,7 +1633,7 @@ netmeta <- function(TE, seTE,
               event2 = event2,
               n1 = n1,
               n2 = n2,
-              incr = incr,
+              incr = incr2,
               #
               mean1 = mean1,
               mean2 = mean2,
