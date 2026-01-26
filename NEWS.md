@@ -1,4 +1,4 @@
-## netmeta, version 3.3-0 (2025-mm-dd)
+## netmeta, version 3.3-0 (2026-01-26)
 
 ### Major changes
 
@@ -32,7 +32,8 @@
     (only for pairwise() object as main input with binary or count outcome)
   - align variance-covariance matrix construction with netmeta()
   - update internal reference treatment assignment to use R-friendly matrix
-     names for models with the common assumption
+    names for models with the common assumption
+  - use correct reference treatment (argument reference.group)
 
 * hatmatrix():
   - consider input for arguments 'common' and 'random'

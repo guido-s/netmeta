@@ -241,27 +241,28 @@ netmetareg.netmeta <- function(x, covar = NULL,
   keep <- logical(0)
   wo <- logical(0)
   
-  if(consistency==TRUE){
-    # check for constant covariate in reference treatment
-    if(length(unique(dat[dat$treat1==reference.group|dat$treat2==reference.group,covar.name]))==1){
-      stop("Invalid reference treatment for interaction. Insufficient variation in observed covariate values for reference treatment")
-    }
-    
-  for (i in unique(dat$studlab)) {
-    d.i <- dat[dat$studlab == i, , drop = FALSE]
-    trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
-    if (reference.group %in% trts.i)
-      ref.i <- reference.group
-    else
-      ref.i <- rev(trts.i)[1]
-    #
-    keep.i <- !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
-    wo.i <- d.i$treat1 == ref.i
-    #
-    keep <- c(keep, keep.i)
-    wo <- c(wo, wo.i)
-  }
+  # Check for constant covariate in reference treatment
   #
+  if (consistency) {
+    if (length(unique(dat[dat$treat1 == reference.group |
+                          dat$treat2 == reference.group, covar.name])) == 1)
+      stop("Invalid reference treatment for interaction. Insufficient ",
+           "variation in observed covariate values for reference treatment.")
+    
+    for (i in unique(dat$studlab)) {
+      d.i <- dat[dat$studlab == i, , drop = FALSE]
+      trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
+      if (reference.group %in% trts.i)
+        ref.i <- reference.group
+      else
+        ref.i <- rev(trts.i)[1]
+      #
+      keep.i <- !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
+      wo.i <- d.i$treat1 == ref.i
+      #
+      keep <- c(keep, keep.i)
+      wo <- c(wo, wo.i)
+    }
   }
   dat <- dat[keep, , drop = FALSE]
   #
@@ -296,14 +297,11 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   ncols1 <- ncol(dat)
   dat <- contrmat(dat, grp1 = "treat1", grp2 = "treat2")
-  ncols2 <- ncol(dat)
-  varnames <- names(dat)[(ncols1 + 1):ncols2]
-  #
   dat <- dat[order(dat$studlab), ]
+  trts.all <- names(dat)[(ncols1 + 1):ncol(dat)]
   #
-  trts.all <- varnames
-  trts <- trts.all[trts.all!=reference.group] # ensure that the reference treatment is correctly assigned
-  
+  # Ensure that the reference treatment is correctly assigned
+  trts <- trts.all[trts.all != reference.group]
   
   
   #
