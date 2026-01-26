@@ -36,7 +36,7 @@
 #'   treatment effects indicate a beneficial (\code{"desirable"}) or
 #'   harmful (\code{"undesirable"}) effect, can be abbreviated; see
 #'   \code{\link{netrank}}.
-#' @param nsim Number of simulations to calculate SUCRAs.
+#' @param nsim Number of repetitions to calculate SUCRAs.
 #' @param digits.prop Minimal number of significant digits for
 #'   P-scores, SUCRAs and direct evidence proportions, see
 #'   \code{\link{print.default}} and \code{\link{netrank}}.

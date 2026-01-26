@@ -9,3 +9,4 @@ roxygen2.*[.]R
 install-rgraphviz.sh
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^tests$

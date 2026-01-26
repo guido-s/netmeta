@@ -613,11 +613,16 @@ netgraph.netmeta <- function(x, seq = x$seq,
   ##
   if (missing(iterate))
     iterate <- ifelse(start.layout == "circle", FALSE, TRUE)
-  else if (length(seq) == 1 && seq == "optimal") {
-    warning("Argument 'iterate' ignored as argument 'seq' is ",
-            "equal to \"optimal\".",
-            call. = FALSE)
-    iterate <- FALSE
+  else {
+    chklogical(iterate)
+    #
+    if (iterate && length(seq) == 1 && seq == "optimal") {
+      warning("Argument 'iterate' ignored as argument 'seq' is ",
+              "equal to \"optimal\".",
+              call. = FALSE)
+      #
+      iterate <- FALSE
+    }
   }
   #
   col <- replaceNULL(col, if (iterate) "slateblue" else "black")

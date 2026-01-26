@@ -29,6 +29,8 @@
 #'   arguments \code{x} and \code{y} was created with \code{netmeta} or (ii)
 #'   input for argument \code{x} was created with \code{netmeta} or
 #'   \code{netcomb}.
+#' @param nchar.trts A numeric defining the minimum number of
+#'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param big.mark A character used as thousands separator.
@@ -240,7 +242,9 @@ netleague <- function(x, y,
                       common = x$common, random = x$random,
                       seq = x$seq, ci = TRUE, backtransf = x$backtransf,
                       direct,
-                      ##
+                      #
+                      nchar.trts = x$nchar.trts,
+                      #
                       digits = gs("digits"),
                       ##
                       big.mark = gs("big.mark"),
@@ -334,6 +338,9 @@ netleague <- function(x, y,
                   "created with netmeta()."))
     direct <- TRUE
   }
+  #
+  nchar.trts <- replaceNULL(nchar.trts, 666)
+  chknumeric(nchar.trts, min = 1, length = 1)
   #
   chknumeric(digits, min = 0, length = 1)
   ##
@@ -654,7 +661,7 @@ netleague <- function(x, y,
                     text.NA = text.NA, big.mark = big.mark)
   ##
   nl.c <- matrix(nl.c, nrow = nrow(TE.common.x), ncol = ncol(TE.common.x))
-  diag(nl.c) <- rownames(TE.common.x)
+  diag(nl.c) <- treats(rownames(TE.common.x), nchar.trts)
   ##
   TE.common.y    <- round(   TE.common.y[seq.c, seq.c], digits)
   lower.common.y <- round(lower.common.y[seq.c, seq.c], digits)
@@ -706,7 +713,7 @@ netleague <- function(x, y,
                       text.NA = text.NA, big.mark = big.mark)
     ##
     nl.r <- matrix(nl.r, nrow = nrow(TE.random.x), ncol = ncol(TE.random.x))
-    diag(nl.r) <- rownames(TE.random.x)
+    diag(nl.r) <- treats(rownames(TE.random.x), nchar.trts)
     ##
     TE.random.y    <- round(   TE.random.y[seq.r, seq.r], digits)
     lower.random.y <- round(lower.random.y[seq.r, seq.r], digits)

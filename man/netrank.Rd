@@ -37,7 +37,7 @@ harmful (\code{"undesirable"}) effect, can be abbreviated.}
 \code{"P-score"} or \code{"SUCRA"} ranking metric will be
 calculated.}
 
-\item{nsim}{Number of simulations to calculate SUCRAs.}
+\item{nsim}{Number of repetitions to calculate SUCRAs.}
 
 \item{common}{A logical indicating whether to print P-scores or
 SUCRAs for the common effects model.}
@@ -88,7 +88,7 @@ The Surface Under the Cumulative RAnking curve (SUCRA) is the rank
 of treatment \emph{i} within the range of treatments, measured on a
 scale from 0 (worst) to 1 (best) (Salanti et al. 2011). A
 resampling method is used to calculate SUCRAs for frequentist
-network meta-analysis. The number of simulations is determine by
+network meta-analysis. The number of repetitions is determine by
 argument \code{nsim}.
 
 The interpretation of P-scores and SUCRAs is comparable.

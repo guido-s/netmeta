@@ -266,15 +266,25 @@ print.summary.netmeta <- function(x,
     #
     if (!backtransf & (is_relative_effect(sm) | sm == "VE"))
       sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
-    ##    
-    trts <- x$x$trts
-    ##
-    treat1 <-
-      as.character(factor(x$x$treat1, levels = trts,
-                          labels = treats(trts, nchar.trts)))
-    treat2 <-
-      as.character(factor(x$x$treat2, levels = trts,
-                          labels = treats(trts, nchar.trts)))
+    #
+    if (missing.truncate)
+      truncate <- rep_len(TRUE, x$x$m)
+    #
+    treat1 <- x$x$treat1
+    treat2 <- x$x$treat2
+    #
+    trts <- unique(c(treat1[truncate], treat2[truncate]))
+    trts.abbr <- treats(trts, nchar.trts)
+    #
+    studlab <- x$x$studlab
+    studlab.tr <- studlab[truncate]
+    #
+    studies.tr <- unique(studlab.tr)
+    labels.s <- treats(studies.tr, nchar.studlab)
+    #
+    studlab.abbr <-
+      as.character(
+        factor(studlab, levels = studies.tr, labels = labels.s))
     
     
     ##
@@ -328,27 +338,55 @@ print.summary.netmeta <- function(x,
       }
       ##
       res <- as.matrix(res)
-      dimnames(res)[[1]] <- x$x$studlab
-      ##
+      rownames(res) <- studlab
+      #
       if (!missing.truncate) {
         sortvar <- sortvar[truncate]
         res <- res[truncate, , drop = FALSE]
       }
-      ##
+      #
       res <- res[order(sortvar), , drop = FALSE]
-      dimnames(res)[[1]] <- treats(dimnames(res)[[1]], nchar.studlab)
+      #
+      rownames(res) <-
+        as.character(
+          factor(rownames(res), levels = studies.tr, labels = labels.s))
+      #
+      res[, "treat1"] <-
+        as.character(factor(res[, "treat1"], levels = trts, labels = trts.abbr))
+      #
+      res[, "treat2"] <-
+        as.character(factor(res[, "treat2"], levels = trts, labels = trts.abbr))
+      #
       prmatrix(res, quote = FALSE, right = TRUE)
+      #
       if (!missing.truncate)
         cat(text.truncate, "\n")
       cat("\n")
       ##      
       studyarms <- data.frame(narms = x$x$narms, row.names = x$x$studies)
+      #
       if (!missing.truncate)
         studyarms <-
-          studyarms[rownames(studyarms) %in% rownames(res), , drop = FALSE]
-      cat("Number of treatment arms (by study):\n")
-      rownames(studyarms) <- treats(rownames(studyarms), nchar.studlab)
+          studyarms[rownames(studyarms) %in% studies.tr, , drop = FALSE]
+      #
+      rownames(studyarms) <-
+        as.character(
+          factor(rownames(studyarms), levels = studies.tr, labels = labels.s))
+      #
+      if (multiarm)
+        studyarms$multiarm <- ifelse(studyarms$narms > 2, "*", "")
+      #
+      if (length(unique(studyarms$narms)) != 1) {
+        studyarms <- studyarms[order(-studyarms$narms), , drop = FALSE]
+        addtext <- " (by decreasing number of arms)"
+      }
+      else
+        addtext <- ""
+      #
+      cat(paste0("Number of treatment arms per study", addtext, ":\n"))
+      #
       prmatrix(studyarms, quote = FALSE, right = TRUE)
+      #
       if (!missing.truncate)
         cat(text.truncate, "\n")
       cat("\n")
@@ -360,22 +398,22 @@ print.summary.netmeta <- function(x,
     ## (5) Print results for individual studies
     ##
     ##
-    TE.f    <- x$comparison.nma.common$TE
-    lowTE.f <- x$comparison.nma.common$lower
-    uppTE.f <- x$comparison.nma.common$upper
+    TE.c    <- x$comparison.nma.common$TE
+    lowTE.c <- x$comparison.nma.common$lower
+    uppTE.c <- x$comparison.nma.common$upper
     ##
     if (backtransf) {
-      TE.f    <- backtransf(TE.f, sm)
-      lowTE.f <- backtransf(lowTE.f, sm)
-      uppTE.f <- backtransf(uppTE.f, sm)
+      TE.c    <- backtransf(TE.c, sm)
+      lowTE.c <- backtransf(lowTE.c, sm)
+      uppTE.c <- backtransf(uppTE.c, sm)
       #
       # Switch lower and upper limit for VE if results have been
       # backtransformed
       #
       if (sm == "VE") {
-        tmp.l <- lowTE.f
-        lowTE.f <- uppTE.f
-        uppTE.f <- tmp.l
+        tmp.l <- lowTE.c
+        lowTE.c <- uppTE.c
+        uppTE.c <- tmp.l
       }
     }
     #
@@ -398,11 +436,11 @@ print.summary.netmeta <- function(x,
       }
     }
     ##
-    res.f <- cbind(treat1, treat2,
-                   formatN(TE.f, digits, text.NA = "NA", big.mark = big.mark),
-                   formatCI(formatN(round(lowTE.f, digits), digits, "NA",
+    res.c <- cbind(treat1, treat2,
+                   formatN(TE.c, digits, text.NA = "NA", big.mark = big.mark),
+                   formatCI(formatN(round(lowTE.c, digits), digits, "NA",
                                     big.mark = big.mark),
-                            formatN(round(uppTE.f, digits), digits, "NA",
+                            formatN(round(uppTE.c, digits), digits, "NA",
                                     big.mark = big.mark)),
                    if (common)
                      formatN(round(x$x$Q.common, digits.Q), digits.Q, "NA",
@@ -410,13 +448,21 @@ print.summary.netmeta <- function(x,
                    if (common & !all(x$x$narms > 2))
                      formatN(round(x$x$leverage.common, 2), 2, ".")
                    )
-    dimnames(res.f) <-
-      list(treats(x$x$studlab, nchar.studlab),
+    dimnames(res.c) <-
+      list(studlab.abbr,
            c("treat1", "treat2",
              sm.lab, ci.lab,
              if (common) "Q",
              if (common & !all(x$x$narms > 2)) "leverage"))
-    ##
+    #
+    res.c[, "treat1"] <-
+      as.character(factor(res.c[, "treat1"],
+                          levels = trts, labels = trts.abbr))
+    #
+    res.c[, "treat2"] <-
+      as.character(factor(res.c[, "treat2"],
+                          levels = trts, labels = trts.abbr))
+    #
     res.r <- cbind(treat1, treat2,
                    formatN(TE.r, digits, text.NA = "NA", big.mark = big.mark),
                    formatCI(formatN(round(lowTE.r, digits), digits, "NA",
@@ -424,16 +470,24 @@ print.summary.netmeta <- function(x,
                             formatN(round(uppTE.r, digits), digits, "NA",
                                     big.mark = big.mark)))
     dimnames(res.r) <-
-      list(treats(x$x$studlab, nchar.studlab),
+      list(studlab.abbr,
            c("treat1", "treat2", sm.lab, ci.lab))
-    ##
+    #
+    res.r[, "treat1"] <-
+      as.character(factor(res.r[, "treat1"],
+                          levels = trts, labels = trts.abbr))
+    #
+    res.r[, "treat2"] <-
+      as.character(factor(res.r[, "treat2"],
+                          levels = trts, labels = trts.abbr))
+    #
     if (common) {
       cat("Results (common effects model):\n\n")
       ##
       if (!missing.truncate)
-        res.f <- res.f[truncate, , drop = FALSE]
+        res.c <- res.c[truncate, , drop = FALSE]
       ##
-      prmatrix(res.f[order(sortvar), , drop = FALSE],
+      prmatrix(res.c[order(sortvar), , drop = FALSE],
                quote = FALSE, right = TRUE)
       if (!missing.truncate)
         cat(text.truncate, "\n")      
@@ -493,9 +547,12 @@ print.summary.netmeta <- function(x,
   }
   else {
     ##
-    ## Add legend with abbreviated treatment labels
+    ## Add legend with abbreviated treatment or study labels
     ##
-    legendabbr(trts, treats(trts, nchar.trts), legend)
+    legendabbr(trts, trts.abbr, legend)
+    legendabbr(studies.tr, labels.s, legend,
+               text = "Study label",
+               header = if (!any(trts != trts.abbr)) "\nLegend:\n" else "\n")
   }
   
   

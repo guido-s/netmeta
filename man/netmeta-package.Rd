@@ -96,6 +96,14 @@ Additional methods and functions:
   component network meta-analysis (\code{\link{netcomplex}}).
 }
 
+R package \bold{netmeta} provides two vignettes:
+\itemize{
+ \item \code{vignette("netmeta-workflow")} with an overview of the
+   work flow and the main functions,
+ \item \code{vignette("netmeta")} with the PDF file for
+   Balduzzi et al. (2023).
+}
+
 Functions and datasets from \bold{netmeta} are utilised in
 Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
 \url{https://link.springer.com/book/10.1007/978-3-319-21416-0}.

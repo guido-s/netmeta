@@ -13,7 +13,7 @@
 #' @param method A character string specifying whether the
 #'   \code{"P-score"} or \code{"SUCRA"} ranking metric will be
 #'   calculated.
-#' @param nsim Number of simulations to calculate SUCRAs.
+#' @param nsim Number of repetitions to calculate SUCRAs.
 #' @param common A logical indicating whether to print P-scores or
 #'   SUCRAs for the common effects model.
 #' @param random A logical indicating whether to print P-scores or
@@ -41,7 +41,7 @@
 #' of treatment \emph{i} within the range of treatments, measured on a
 #' scale from 0 (worst) to 1 (best) (Salanti et al. 2011). A
 #' resampling method is used to calculate SUCRAs for frequentist
-#' network meta-analysis. The number of simulations is determine by
+#' network meta-analysis. The number of repetitions is determine by
 #' argument \code{nsim}.
 #'
 #' The interpretation of P-scores and SUCRAs is comparable.
@@ -194,8 +194,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
   if (missing(method)) {
     if (inherits(x, "netcomb"))
       method <- "P-score"
-    else if (inherits(x, "netmeta") &
-             !inherits(x, c("netmeta.crossnma", "netmeta.multinma")))
+    else if (inherits(x, "netmeta") & !inherits(x, gs(".other_nma")))
       method <- "P-score"
     else
       method <- "SUCRA"
@@ -221,9 +220,9 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
                        warn.deprecated)
   chklogical(random)
   #
-  # Additional checks for crossnma and multinma objects
+  # Additional checks for crossnma, gemtc and multinma objects
   #
-  if (inherits(x, c("netmeta.crossnma", "netmeta.multinma"))) {
+  if (inherits(x, gs(".other_nma"))) {
     if (method == "P-score")
       warning("Argument 'method = \"SUCRA\"' for netmeta.", x$method,
               " object.",
@@ -260,8 +259,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
       stop("netcomb object is not compatible with SUCRAs.",
            call. = FALSE)
     else if (inherits(x, "netmeta")) {
-      if (inherits(x, c("netmeta.crossnma", "netmeta.multinma")) &&
-          x$keep.samples) {
+      if (inherits(x, gs(".other_nma")) && x$keep.samples) {
         rnk <- rankogram(x$samples$d,
                          pooled = if (common) "common" else "random",
                          small.values = small.values)
@@ -523,7 +521,7 @@ print.netrank <- function(x,
 
   if (x$method == "SUCRA" & !is.null(x$nsim))
     cat("\n- based on ", x$nsim,
-        " simulation", if (x$nsim > 1) "s", "\n",
+        " repetition", if (x$nsim > 1) "s", "\n",
         sep = "")
   
   

@@ -17,7 +17,7 @@ document()
 # (3) Build R package and PDF file with help pages
 #
 
-build(args = "--compact-vignettes=gs+qpdf")
+build(args = "--compact-vignettes=both")
 build_manual()
 
 
@@ -32,7 +32,7 @@ install(build_vignettes = TRUE)
 # (5) Check R package
 #
 
-check(build_args = "--compact-vignettes=gs+qpdf")
+check(build_args = "--compact-vignettes=both")
 
 
 #

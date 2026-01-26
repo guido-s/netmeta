@@ -19,6 +19,7 @@ netsplit(
   ci = FALSE,
   test = show \%in\% c("all", "with.direct", "both"),
   order = NULL,
+  nchar.trts = x$nchar.trts,
   sep.trts = x$sep.trts,
   quote.trts = "",
   tol.direct = 5e-04,
@@ -106,6 +107,9 @@ comparing direct and indirect estimates should be printed.}
 \item{order}{A optional character or numerical vector specifying
 the order of treatments in comparisons.}
 
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names.}
+
 \item{sep.trts}{A character string used in comparison names as
 separator between treatment labels, e.g., " vs ".}
 
@@ -144,9 +148,6 @@ of same length as the total number of comparisons).}
 \item{subset}{An optional logical vector specifying a subset of
 comparisons to print (must be of same length as the total number of
 comparisons) .}
-
-\item{nchar.trts}{A numeric defining the minimum number of
-characters used to create unique treatment names.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}

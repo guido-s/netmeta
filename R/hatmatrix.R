@@ -199,14 +199,13 @@ hatmatrix <- function(x, method = "Ruecker", type,
     else if (method == "Davies")
       type <- setchar(type, c("short", "long", "full"))
   }
-  ##
-  common <- replaceNULL(x$common, x$comb.fixed)
-  common <- replaceNULL(x$common, x$fixed)
+  #
+  common <- replaceNULL(common, TRUE)
   chklogical(common)
-  ##
-  random <- replaceNULL(x$random, x$comb.random)
+  #
+  random <- replaceNULL(random, TRUE)
   chklogical(random)
-  ##
+  #
   nchar.trts <- replaceNULL(nchar.trts, 666)
   chknumeric(nchar.trts, min = 1, length = 1)
   ##

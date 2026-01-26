@@ -49,11 +49,17 @@ print.summary.netconnection <- function(x, ...) {
   class(x) <- "netconnection"
   print(x, ...)
   #
-  cat("\nStudies in subnetworks\n\n")
-  #
   for (i in seq_len(x$n.subnets)) {
-    cat(paste0("Subnet ", i, ":\n"))
-    cat(paste(unique(x$studlab[x$subnet == i]), collapse = ", "))
+    cat(paste0("\n*** Subnet ", i, " ***\n"))
+    #
+    cat("\nTreatments:\n ")
+    cat(paste(paste0("'", sort(unique(c(x$treat1[x$subnet == i],
+                                        x$treat2[x$subnet == i]))), "'"),
+              collapse = ", "))
+    #
+    cat("\nStudies:\n ")
+    cat(paste(paste0("'", sort(unique(x$studlab[x$subnet == i])), "'"),
+              collapse = ", "))
     cat("\n")
   }
   #

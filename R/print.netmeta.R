@@ -149,12 +149,11 @@ print.netmeta <- function(x,
     oldversion <- TRUE
   else
     oldversion <- FALSE
-  ##
+  #
   if (is.null(x$lower.predict))
     prediction <- FALSE
-  ##
-  if (is.null(x$nchar.trts))
-    nchar.trts <- 666
+  #
+  nchar.trts <- replaceNULL(x$nchar.trts, 666)
   
   
   ##
@@ -371,23 +370,22 @@ print.netmeta <- function(x,
     if (reference.group != "") {
       if (baseline.reference)
         comptext <-
-          paste0("comparison: ",
-                 if (x$n == 2)
-                   paste0("'",
-                          treats(rownames(TE.common),
-                                 nchar.trts)[rownames(TE.common)
-                                             != reference.group],
-                          "'")
-                 else
-                   "other treatments",
-                 " vs '",
-                 treats(rownames(TE.common),
-                        nchar.trts)[rownames(TE.common)
-                                    == reference.group],
-                 "'")
+          paste0(if (x$n == 2)
+            paste0("'",
+                   treats(rownames(TE.common),
+                          nchar.trts)[rownames(TE.common)
+                                      != reference.group],
+                   "'")
+            else
+              "other treatments",
+            " vs '",
+            treats(rownames(TE.common),
+                   nchar.trts)[rownames(TE.common)
+                               == reference.group],
+            "'")
       else
         comptext <-
-          paste0("comparison: '",
+          paste0("'",
                  treats(rownames(TE.common),
                         nchar.trts)[rownames(TE.common)
                                     == reference.group],
@@ -568,8 +566,7 @@ print.netmeta <- function(x,
         ##
         rownames(res) <- treats(rownames(res), nchar.trts)
         ##
-        cat("\nTreatment estimate (sm = '", sm.lab,
-            "', ", comptext, "):\n", sep = "")
+        cat("\nTreatment estimate (", comptext, "):\n", sep = "")
         ##
         prmatrix(res, quote = FALSE, right = TRUE)
       }
@@ -734,8 +731,7 @@ print.netmeta <- function(x,
         ##
         rownames(res) <- treats(rownames(res), nchar.trts)
         ##
-        cat("\nTreatment estimate (sm = '", sm.lab,
-            "', ", comptext, "):\n", sep = "")
+        cat("\nTreatment estimate (", comptext, "):\n", sep = "")
         ##
         prmatrix(res, quote = FALSE, right = TRUE)
       }

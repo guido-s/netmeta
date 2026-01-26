@@ -20,6 +20,12 @@
 #'   should be printed for the common effects network meta-analysis.
 #' @param random A logical indicating whether a contribution matrix
 #'   should be printed for the random effects network meta-analysis.
+#' @param study A logical indicating whether contributions of individual studies
+#'    for each comparison should be returned (currently only supported for the
+#'   \code{"shortestpath"} method).
+#' @param path A logical indicating whether contributions of individual paths
+#'   for each comparison should be returned (currently only supported for the
+#'   \code{"shortestpath"} method).
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names (see Details).
 #' @param digits Minimal number of significant digits, see
@@ -75,16 +81,20 @@
 #' (2) If argument \code{method = "shortestpath"}, an iterative
 #' algorithm is used (Papakonstantinou et al., 2018). Broadly
 #' speaking, each iteration of the algorithm consists of the following
-#' steps: (i) A path in the evidence flow network is selected. (ii)
-#' The minimum flow through the edges making up the path is
-#' identified. This is assigned as the flow associated with the
-#' path. (iii) The flow of the path is subtracted from the values of
-#' flow in the edges that make up that path. This means that the edge
-#' corresponding to the minimum flow in that path is removed from the
-#' graph. (iv) A new path is then selected from the remaining
-#' graph. The process repeats until all the evidence flow in the edges
-#' has been assigned to a path.
-#' 
+#' steps:
+#' \itemize{
+#' \item A path in the evidence flow network is selected.
+#' \item The minimum flow through the edges making up the path is
+#'   identified. This is assigned as the flow associated with the
+#'   path.
+#' \item The flow of the path is subtracted from the values of
+#'   flow in the edges that make up that path. This means that the edge
+#'   corresponding to the minimum flow in that path is removed from the
+#'   graph.
+#' \item A new path is then selected from the remaining graph. The process
+#'   repeats until all the evidence flow in the edges has been assigned to a
+#'   path.
+#' }
 #' In the original F1000 paper (Papakonstantinou et al., 2018), the
 #' hat matrix used did not account for correlations due to multi-arm
 #' trials. For reproducibility the result of this version can be
@@ -129,6 +139,14 @@
 #' \item{random}{Numeric matrix of percentage contributions of direct
 #'   comparisons for each network comparison for the random effects
 #'   model.}
+#' \item{study.common}{Data frame containing study contributions for each
+#'   comparison for the common effects model.}
+#' \item{study.random}{Data frame containing study contributions for each
+#'   comparison for the random effects model.}
+#' \item{path.common}{Data frame containing path contributions for each
+#'   comparison for the common effects model.}
+#' \item{path.random}{Data frame containing path contributions for each
+#'   comparison for the random effects model.}
 #' \item{x}{As defined above.}
 #' \item{tictoc.common}{Computation times under common effects model
 #'   (if R package \bold{tictoc} is installed).}
@@ -188,9 +206,13 @@
 netcontrib <- function(x,
                        method = "shortestpath",
                        hatmatrix.F1000 = FALSE,
-                       common = x$common,
-                       random = x$random,
+                       #
+                       common = x$common, random = x$random,
+                       #
+                       study = FALSE, path = FALSE,
+                       #
                        nchar.trts = x$nchar.trts,
+                       #
                        warn.deprecated = gs("warn.deprecated"),
                        verbose = FALSE,
                        ...) {
@@ -222,6 +244,15 @@ netcontrib <- function(x,
     is_installed_package("cccp")
   
   chknumeric(nchar.trts, min = 1, length = 1)
+  #
+  if (method != "shortestpath") {
+    study <- FALSE
+    path <- FALSE
+  }
+  #
+  chklogical(study)
+  chklogical(path)
+  #
   chklogical(verbose)
   ##
   ## Check for deprecated arguments in '...'
@@ -249,11 +280,17 @@ netcontrib <- function(x,
   x$common <- common
   x$random <- random
   ##
-  cm.f <- contribution.matrix(x, method, "common", hatmatrix.F1000, verbose)
-  cm.r <- contribution.matrix(x, method, "random", hatmatrix.F1000, verbose)
+  cm.f <- contribution.matrix(x, method, "common", hatmatrix.F1000,
+                              study, path, verbose)
+  cm.r <- contribution.matrix(x, method, "random", hatmatrix.F1000,
+                              study, path, verbose)
   ##
   res <- list(common = cm.f$weights,
               random = cm.r$weights,
+              study.common = cm.f$studyContribution,
+              study.random = cm.r$studyContribution,
+              path.common = cm.f$pathContribution,
+              path.random = cm.r$pathContribution,
               method = method,
               hatmatrix.F1000 = hatmatrix.F1000,
               nchar.trts = nchar.trts,
@@ -299,8 +336,7 @@ print.netcontrib <- function(x,
   ##
   ##
   chkclass(x, "netcontrib")
-  chksuitable(x, "Network contributions",
-              classes = c("netmeta.crossnma", "netmeta.multinma"))
+  chksuitable(x, "Network contributions", classes = gs(".other_nma"))
   x <- updateversion(x)
   
   
