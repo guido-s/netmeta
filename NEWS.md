@@ -1,4 +1,4 @@
-## netmeta, version 3.3-0 (2026-01-26)
+## netmeta, version 3.3-1 (2026-01-27)
 
 ### Major changes
 
@@ -10,7 +10,11 @@
 
 * New experimental R function gemtc2netmeta() to create a netmeta object from a
   gemtc object
-  
+
+* Replaced the vignette of the article published in the
+  *Journal of Statistical Software* with a newly compiled version in which all
+  web links use https instead of http, as required by the CRAN team.
+
 * R packages **rmarkdown**, **knitr** and **gemtc** added to Suggests
 
 ### Bug fixes
