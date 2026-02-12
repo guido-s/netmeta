@@ -333,14 +333,11 @@ if (consistency == FALSE) {
   #
   ncols1 <- ncol(dat)
   dat <- contrmat(dat, grp1 = "treat1", grp2 = "treat2")
-  ncols2 <- ncol(dat)
-  varnames <- names(dat)[(ncols1 + 1):ncols2]
-  #
   dat <- dat[order(dat$studlab), ]
+  trts.all <- names(dat)[(ncols1 + 1):ncol(dat)]
   #
-  trts.all <- varnames
-  trts <- trts.all[trts.all!=reference.group] # ensure that the reference treatment is correctly assigned
-  
+  # Ensure that the reference treatment is correctly assigned
+  trts <- trts.all[trts.all != reference.group]
   
   
   #

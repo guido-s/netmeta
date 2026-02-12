@@ -1,4 +1,4 @@
-## netmeta, version 3.3-0 (2025-mm-dd)
+## netmeta, version 3.3-1 (2026-01-27)
 
 ### Major changes
 
@@ -10,7 +10,11 @@
 
 * New experimental R function gemtc2netmeta() to create a netmeta object from a
   gemtc object
-  
+
+* Replaced the vignette of the article published in the
+  *Journal of Statistical Software* with a newly compiled version in which all
+  web links use https instead of http, as required by the CRAN team.
+
 * R packages **rmarkdown**, **knitr** and **gemtc** added to Suggests
 
 ### Bug fixes
@@ -32,7 +36,8 @@
     (only for pairwise() object as main input with binary or count outcome)
   - align variance-covariance matrix construction with netmeta()
   - update internal reference treatment assignment to use R-friendly matrix
-     names for models with the common assumption
+    names for models with the common assumption
+  - use correct reference treatment (argument reference.group)
 
 * hatmatrix():
   - consider input for arguments 'common' and 'random'
