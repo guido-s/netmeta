@@ -110,6 +110,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
                                method.tau = if (!x$random) "FE" else "REML",
                                level = x$level.ma,
                                reference.group = x$reference.group,
+							   treat_1_direction=NULL,treat_2_direction=NULL,
+                               max_interactions=FALSE,
                                nchar.trts = x$nchar.trts, ...) {
   
   #
@@ -235,6 +237,29 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$incr1 <- x$data$.incr1
     dat$incr2 <- x$data$.incr2
   }
+  
+  # import or create directionality parameters
+if (consistency == FALSE) {
+  # Handle directionality parameters for inconsistency model
+  has_treat1_dir <- !is.null(substitute(treat_1_direction))
+  has_treat2_dir <- !is.null(substitute(treat_2_direction))
+  
+  if (has_treat1_dir & has_treat2_dir) {
+    # Use provided directionality parameters
+    dat$Ival1 <- ifelse( x$data$treat1 == x$data$.treat1, x$data[[substitute(treat_1_direction)]], x$data[[substitute(treat_2_direction)]])
+    dat$Ival2 <- ifelse(x$data$treat2 == x$data$.treat2, x$data[[substitute(treat_2_direction)]],x$data[[substitute(treat_1_direction)]])
+  } else if (!has_treat1_dir & !has_treat2_dir) {
+    # Default to treatment order when no directionality specified
+    dat <- do.call(rbind, lapply(split(dat, dat$studlab), mkIval))
+    rownames(dat) <- NULL
+    warning("No directionality parameters specified. Defaulting to treatment order.")
+    
+  }
+  
+  # Validate directionality parameters
+  chk_Ival(dat)
+  }
+  
   #
   dat <- dat[order(dat$studlab, dat$treat1, dat$treat2), , drop = FALSE]
   #
@@ -262,7 +287,16 @@ netmetareg.netmeta <- function(x, covar = NULL,
       wo <- c(wo, wo.i)
     }
     #
+  } else if(consistency==FALSE){
+    # calcV is sensitive to the choice of reference treatment. but if we have study specific references we had to update the keep and wo statements
+    dat$Ival_diff<-dat$Ival1-dat$Ival2
+    keep.i <- dat$Ival_diff!=0 # whether a row contains a reference. equivalent !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
+    wo.i <- dat$Ival1==0 # whether the reference treatment is treat1. equivalent to  d.i$treat1 == ref.i
+    #
+    keep <- c(keep, keep.i)
+    wo <- c(wo, wo.i)
   }
+  
   dat <- dat[keep, , drop = FALSE]
   #
   wo <- wo[keep]
@@ -276,6 +310,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     sd2.i <- dat$sd2
     time2.i <- dat$time2
     incr2.i <- dat$incr2
+	Ival2.i <- dat$Ival2
     #
     dat$treat2[wo] <- dat$treat1[wo]
     dat$event2[wo] <- dat$event1[wo]
@@ -284,6 +319,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$sd2[wo] <- dat$sd1[wo]
     dat$time2[wo] <- dat$time1[wo]
     dat$incr2[wo] <- dat$incr1[wo]
+	dat$Ival2[wo] <- dat$Ival1[wo]
     #
     dat$treat1[wo] <- t2.i[wo]
     dat$event1[wo] <- e2.i[wo]
@@ -292,6 +328,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$sd1[wo] <- sd2.i[wo]
     dat$time1[wo] <- time2.i[wo]
     dat$incr1[wo] <- incr2.i[wo]
+	dat$Ival1[wo] <- Ival2.i[wo]
   }
   #
   ncols1 <- ncol(dat)
@@ -341,15 +378,34 @@ netmetareg.netmeta <- function(x, covar = NULL,
                                    paste(paste0("nonref:", covar.name),
                                          collapse = " + "))))
     }
-  }
-  else {
-    warning("Inconsistency models not yet implemented.")
-    return(NULL)
+  } else {
+    dat$Ival<-dat$Ival1-dat$Ival2
+      if (assumption == "independent") {
+        dat$.comp_<-paste(pmin(dat$treat1, dat$treat2), pmax(dat$treat1, dat$treat2), sep="_vs_")
+        count_comp<-table(dat$.comp_)
+        if(max_interactions==FALSE){ # for dev use
+          dat$.comp_<-ifelse(dat$.comp_%in% names(count_comp[count_comp>=2]),dat$.comp_, "insufficient_data") # requires at least 2 observations
+        }
+        formula.nmr_default <-as.formula(paste("~ 0 + ",
+                                               paste(trts, collapse = " + "),
+                                               if (!is.null(covar)){
+                                                 paste0("+ .comp_:Ival:",covar.name)}
+        ))
+        
+      } else {
+        formula.nmr_default <-as.formula(paste("~ 0 + ",
+                                               paste(trts, collapse = " + "),
+                                               if (!is.null(covar)){
+                                                 paste0("+ Ival:",covar.name)}
+        ))
+      }
   }
   #
   # Checks for non-numeric covariate
   #
   mm <- model.matrix(formula.nmr_default, data = dat) # default model matrix
+  mm<-mm[,grepl("insufficient_data", colnames(mm))==FALSE]
+  
   #
   # Drop interactions which contain the reference covariate level if covariate
   # is of mode factor, character, or logical

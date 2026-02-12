@@ -519,13 +519,79 @@ nmr_full_results <- function(x) {
 }
 
 # create directionality parameter as treatment order ################
-mkIval<-function(x, ref){ # treatment order as direction
-  if(ref %in% c(x$treat1,x$treat2)){
-    x$Ival1<-ifelse(x$treat1==ref, 0, 1)
-    x$Ival2<-ifelse(x$treat2==ref, 0, 1)
-  } else {
-    x$Ival1<-0
-    x$Ival2<-1
-  }
+mkIval<-function(x){ # treatment order as direction
+  ref<-sort(unique(c(x$treat1,x$treat2)))[1]
+  
+  x$Ival1<-ifelse(x$treat1==ref, 0, 1)
+  x$Ival2<-ifelse(x$treat2==ref, 0, 1)
+  
   return(x)
 } 
+
+# check Ival with ability to specify 2 custom variables #############
+any_invalid_I <- function(df) {
+  edges2 <- df %>%
+    mutate(w = case_when(Ival_diff >0 ~ -Ival_diff,
+                         TRUE~Ival_diff),
+           treat1_new = case_when(Ival_diff %in% c(0, 1) ~ treat2,
+                                  TRUE ~ treat1),
+           treat2_new = case_when(Ival_diff %in% c(0, 1) ~ treat1,
+                                  TRUE ~ treat2)) %>%
+    select(-c(treat1, treat2)) %>%
+    rename(treat1 = treat1_new, treat2 = treat2_new)
+  treats<-unique(c(edges2$treat1, edges2$treat2))
+  n <- length(treats)
+  
+  dist <- rep(0, n) #?
+  names(dist)<-treats
+  for (i in seq_len(n)) { # for each treatment
+    updated <- FALSE
+    for (e in seq_len(nrow(edges2))) { #for each comparison
+      if (dist[edges2$treat1[e]] > dist[edges2$treat2[e]] + edges2$w[e]) {#dist for comparator treatment larger than the dist for reference + the length
+        dist[edges2$treat1[e]] <- dist[edges2$treat2[e]] + edges2$w[e]
+        updated <- TRUE
+      }
+    }
+    if (!updated) return(FALSE)
+  }
+  
+  TRUE
+}
+
+chk_Ival<-function(dat){
+  #invalid values######
+  if(sum(!dat$Ival1 %in%c(-1,0,1))>0){
+    stop("error in directionality assignment. Ival1 only accepts values of -1, 0, or 1")
+  }
+  if(sum(!dat$Ival2 %in%c(-1,0,1))>0){
+    stop("error in directionality assignment. Ival1 only accepts values of -1, 0, or 1")
+  }
+  
+  multiple_Ival<-dat%>%select(studlab, treat=treat1, Ival=Ival1)%>%
+    bind_rows(dat%>%select(studlab, treat=treat2, Ival=Ival2))%>%
+    distinct()%>%
+    count(studlab, treat)
+  
+  longtrt_Ival<-unique(rbind(setNames(dat[c("studlab","treat1","Ival1")], c("studlab","treat","Ival")),
+                             setNames(dat[c("studlab","treat2","Ival2")], c("studlab","treat","Ival"))
+  ))
+  
+  ct_unique_Ival <- as.data.frame(table(longtrt_Ival$studlab, longtrt_Ival$treat))
+  names(ct_unique_Ival) <- c("studlab", "treat", "n")
+  
+  # multiple treatment specific Ivalues within a study
+  if(sum(ct_unique_Ival$n>1)>0){ 
+    stop(paste("error in directionality assignment. multiple directions defined for identical treatments in the following studies:",paste(unique(ct_unique_Ival[ct_unique_Ival$n>1,"studlab"]),collapse=",")))
+  }
+  # inconsistent Ivalues between arms within a study
+  dat$Ival_diff<-dat$Ival1-dat$Ival2
+  Ival_consistency_list<-lapply(split(dat, dat$studlab), function(x) any_invalid_I(x))
+  if(length(Ival_consistency_list[Ival_consistency_list==TRUE])>0){
+    stop(paste("error in directionality assignment. inconsistent directions defined in the following studies:",paste(names(chk_Ival_consistency[chk_Ival_consistency==TRUE]),collapse=",")))
+    
+  }
+  
+  if(sum(!dat$Ival_diff %in%c(-1,0,1))>0){
+    stop("error in directionality assignment. At least 1 study has a difference between directionality values which is not in the accepted values of -1,0, 1")
+  }
+}
