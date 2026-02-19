@@ -15,6 +15,9 @@
   method.tau = if (!x$random) "FE" else "REML",
   level = x$level.ma,
   reference.group = x$reference.group,
+  direction1 = NULL,
+  direction2 = NULL,
+  max.ia = FALSE,
   nchar.trts = x$nchar.trts,
   ...
 )
@@ -53,6 +56,12 @@ used to estimate the between-study variance tau-squared. Either
 coefficients.}
 
 \item{reference.group}{Reference treatment.}
+
+\item{direction1}{ADD DESCRIPTION.}
+
+\item{direction2}{ADD DESCRIPTION.}
+
+\item{max.ia}{ADD DESCRIPTION.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}

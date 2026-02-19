@@ -34,6 +34,9 @@
 #' @param level The level used to calculate confidence intervals for regression
 #'   coefficients.
 #' @param reference.group Reference treatment.
+#' @param direction1 ADD DESCRIPTION.
+#' @param direction2 ADD DESCRIPTION.
+#' @param max.ia ADD DESCRIPTION.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
@@ -110,8 +113,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
                                method.tau = if (!x$random) "FE" else "REML",
                                level = x$level.ma,
                                reference.group = x$reference.group,
-							   treat_1_direction=NULL,treat_2_direction=NULL,
-                               max_interactions=FALSE,
+                               direction1 = NULL, direction2 = NULL,
+                               max.ia = FALSE,
                                nchar.trts = x$nchar.trts, ...) {
   
   #
@@ -239,39 +242,48 @@ netmetareg.netmeta <- function(x, covar = NULL,
   }
   
   # import or create directionality parameters
-if (consistency == FALSE) {
-  # Handle directionality parameters for inconsistency model
-  has_treat1_dir <- !is.null(substitute(treat_1_direction))
-  has_treat2_dir <- !is.null(substitute(treat_2_direction))
-  
-  if (has_treat1_dir & has_treat2_dir) {
-    # Use provided directionality parameters
-    dat$Ival1 <- ifelse( x$data$treat1 == x$data$.treat1, x$data[[substitute(treat_1_direction)]], x$data[[substitute(treat_2_direction)]])
-    dat$Ival2 <- ifelse(x$data$treat2 == x$data$.treat2, x$data[[substitute(treat_2_direction)]],x$data[[substitute(treat_1_direction)]])
-  } else if (!has_treat1_dir & !has_treat2_dir) {
-    # Default to treatment order when no directionality specified
-    dat <- do.call(rbind, lapply(split(dat, dat$studlab), mkIval))
-    rownames(dat) <- NULL
-    warning("No directionality parameters specified. Defaulting to treatment order.")
+  if (consistency == FALSE) {
+    # Handle directionality parameters for inconsistency model
+    has_treat1_dir <- !is.null(substitute(direction1))
+    has_treat2_dir <- !is.null(substitute(direction2))
     
+    if (has_treat1_dir & has_treat2_dir) {
+      # Use provided directionality parameters
+      dat$Ival1 <-
+        ifelse(x$data$treat1 == x$data$.treat1,
+               x$data[[substitute(direction1)]],
+               x$data[[substitute(direction2)]])
+      #
+      dat$Ival2 <-
+        ifelse(x$data$treat2 == x$data$.treat2,
+               x$data[[substitute(direction2)]],
+               x$data[[substitute(direction1)]])
+    }
+    else if (!has_treat1_dir & !has_treat2_dir) {
+      # Default to treatment order when no directionality specified
+      dat <- do.call(rbind, lapply(split(dat, dat$studlab), mkIval))
+      rownames(dat) <- NULL
+      warning("No directionality parameters specified. ",
+              "Defaulting to treatment order.")
+    }
+    # Validate directionality parameters
+    check_Ival(dat)
   }
-  
-  # Validate directionality parameters
-  chk_Ival(dat)
-  }
-  
   #
   dat <- dat[order(dat$studlab, dat$treat1, dat$treat2), , drop = FALSE]
   #
   keep <- logical(0)
   wo <- logical(0)
-  
-  if(consistency==TRUE){
-    # check for constant covariate in reference treatment
-    if(length(unique(dat[dat$treat1==reference.group|dat$treat2==reference.group,covar.name]))==1){
-      stop("Invalid reference treatment for interaction. Insufficient variation in observed covariate values for reference treatment")
-    }
-    
+  #
+  if (consistency) {
+    # Check for constant covariate in reference treatment
+    if (length(unique(dat[dat$treat1 == reference.group |
+                          dat$treat2 == reference.group,
+                          covar.name])) == 1)
+      stop("Invalid reference treatment for interaction. ",
+           "Insufficient variation in observed covariate values for ",
+           "reference treatment.")
+    #
     for (i in unique(dat$studlab)) {
       d.i <- dat[dat$studlab == i, , drop = FALSE]
       trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
@@ -287,30 +299,38 @@ if (consistency == FALSE) {
       wo <- c(wo, wo.i)
     }
     #
-  } else if(consistency==FALSE){
-    # calcV is sensitive to the choice of reference treatment. but if we have study specific references we had to update the keep and wo statements
-    dat$Ival_diff<-dat$Ival1-dat$Ival2
-    keep.i <- dat$Ival_diff!=0 # whether a row contains a reference. equivalent !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
-    wo.i <- dat$Ival1==0 # whether the reference treatment is treat1. equivalent to  d.i$treat1 == ref.i
+  }
+  else if (!consistency) {
+    # calcV() is sensitive to the choice of reference treatment, but if we
+    # have study specific references we have to update the keep and wo
+    # statements
+    #
+    dat$Ival_diff <- dat$Ival1 - dat$Ival2
+    # Whether a row contains a reference.
+    # Equivalent !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
+    keep.i <- dat$Ival_diff != 0
+    # Whether the reference treatment is treat1.
+    # Equivalent to d.i$treat1 == ref.i
+    wo.i <- dat$Ival1 == 0
     #
     keep <- c(keep, keep.i)
     wo <- c(wo, wo.i)
   }
-  
+  #
   dat <- dat[keep, , drop = FALSE]
   #
   wo <- wo[keep]
   if (sum(wo) > 0) {
     dat$TE[wo] <- -dat$TE[wo]
     #
-    t2.i <- dat$treat2
-    e2.i <- dat$event2
-    n2.i <- dat$n2
-    mean2.i <- dat$mean2
-    sd2.i <- dat$sd2
-    time2.i <- dat$time2
-    incr2.i <- dat$incr2
-	Ival2.i <- dat$Ival2
+    t2.tmp <- dat$treat2
+    e2.tmp <- dat$event2
+    n2.tmp <- dat$n2
+    mean2.tmp <- dat$mean2
+    sd2.tmp <- dat$sd2
+    time2.tmp <- dat$time2
+    incr2.tmp <- dat$incr2
+    Ival2.tmp <- dat$Ival2
     #
     dat$treat2[wo] <- dat$treat1[wo]
     dat$event2[wo] <- dat$event1[wo]
@@ -319,16 +339,16 @@ if (consistency == FALSE) {
     dat$sd2[wo] <- dat$sd1[wo]
     dat$time2[wo] <- dat$time1[wo]
     dat$incr2[wo] <- dat$incr1[wo]
-	dat$Ival2[wo] <- dat$Ival1[wo]
+    dat$Ival2[wo] <- dat$Ival1[wo]
     #
-    dat$treat1[wo] <- t2.i[wo]
-    dat$event1[wo] <- e2.i[wo]
-    dat$n1[wo] <- n2.i[wo]
-    dat$mean1[wo] <- mean2.i[wo]
-    dat$sd1[wo] <- sd2.i[wo]
-    dat$time1[wo] <- time2.i[wo]
-    dat$incr1[wo] <- incr2.i[wo]
-	dat$Ival1[wo] <- Ival2.i[wo]
+    dat$treat1[wo] <- t2.tmp[wo]
+    dat$event1[wo] <- e2.tmp[wo]
+    dat$n1[wo] <- n2.tmp[wo]
+    dat$mean1[wo] <- mean2.tmp[wo]
+    dat$sd1[wo] <- sd2.tmp[wo]
+    dat$time1[wo] <- time2.tmp[wo]
+    dat$incr1[wo] <- incr2.tmp[wo]
+    dat$Ival1[wo] <- Ival2.tmp[wo]
   }
   #
   ncols1 <- ncol(dat)
@@ -375,41 +395,48 @@ if (consistency == FALSE) {
                                    paste(paste0("nonref:", covar.name),
                                          collapse = " + "))))
     }
-  } else {
-    dat$Ival<-dat$Ival1-dat$Ival2
-      if (assumption == "independent") {
-        dat$.comp_<-paste(pmin(dat$treat1, dat$treat2), pmax(dat$treat1, dat$treat2), sep="_vs_")
-        count_comp<-table(dat$.comp_)
-        if(max_interactions==FALSE){ # for dev use
-          dat$.comp_<-ifelse(dat$.comp_%in% names(count_comp[count_comp>=2]),dat$.comp_, "insufficient_data") # requires at least 2 observations
-        }
-        formula.nmr_default <-as.formula(paste("~ 0 + ",
-                                               paste(trts, collapse = " + "),
-                                               if (!is.null(covar)){
-                                                 paste0("+ .comp_:Ival:",covar.name)}
-        ))
-        
-      } else {
-        formula.nmr_default <-as.formula(paste("~ 0 + ",
-                                               paste(trts, collapse = " + "),
-                                               if (!is.null(covar)){
-                                                 paste0("+ Ival:",covar.name)}
-        ))
+  }
+  else {
+    dat$Ival <- dat$Ival1 - dat$Ival2
+    if (assumption == "independent") {
+      dat$.comp_ <- paste(pmin(dat$treat1, dat$treat2),
+                          pmax(dat$treat1, dat$treat2),
+                          sep = "_vs_")
+      count_comp <- table(dat$.comp_)
+      # for dev use
+      if (!max.ia) {
+        # Requires at least two observations
+        dat$.comp_ <-
+          ifelse(dat$.comp_ %in% names(count_comp[count_comp >= 2]),
+                 dat$.comp_, "insufficient_data")
       }
+      #
+      formula.nmr_default <-
+        as.formula(paste("~ 0 + ", paste(trts, collapse = " + "),
+                         if (!is.null(covar))
+                           paste0("+ .comp_:Ival:", covar.name))
+        )
+    }
+    else {
+      formula.nmr_default <-
+        as.formula(paste("~ 0 + ", paste(trts, collapse = " + "),
+                         if (!is.null(covar))
+                           paste0("+ Ival:", covar.name))
+        )
+    }
   }
   #
   # Checks for non-numeric covariate
   #
   mm <- model.matrix(formula.nmr_default, data = dat) # default model matrix
-  mm<-mm[,grepl("insufficient_data", colnames(mm))==FALSE]
-  
+  mm <- mm[, grepl("insufficient_data", colnames(mm)) == FALSE]
   #
   # Drop interactions which contain the reference covariate level if covariate
   # is of mode factor, character, or logical
   #
   if (is.factor(covar))
-    mm <- mm[, !grepl(paste0(levels(covar)[1], "$"), colnames(mm)),
-             drop = FALSE]
+    mm <-
+    mm[, !grepl(paste0(levels(covar)[1], "$"), colnames(mm)), drop = FALSE]
   else if (is.character(covar))
     mm <- mm[, !grepl(paste0(min(covar, na.rm = TRUE), "$"), colnames(mm)),
              drop = FALSE]
@@ -436,7 +463,7 @@ if (consistency == FALSE) {
   
   # Get rid of warning 'Undefined global functions or variables'
   #
-  treat1 <- treat2 <-  comparison <- NULL
+  treat1 <- treat2 <- comparison <- NULL
   #
   # Covariate 'x' makes problems without removing network meta-analysis object x
   #
@@ -448,10 +475,8 @@ if (consistency == FALSE) {
   #
   # Calculate Variance-Covariance matrix
   #
-  if (available.n &
-      (available.events | available.times | (available.sds))) {
+  if (available.n & (available.events | available.times | (available.sds)))
     V <- bldiag(lapply(split(dat, dat$studlab), calcV, sm = sm))
-  }
   else
     V <- dat$seTE^2
   #

@@ -1,3 +1,10 @@
+## netmeta, version 3.4-0 (2026-mm-dd)
+
+### Major changes
+
+* Implement UMIE models
+
+
 ## netmeta, version 3.3-1 (2026-01-27)
 
 ### Major changes

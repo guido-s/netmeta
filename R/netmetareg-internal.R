@@ -66,7 +66,8 @@ nmr_results <- function(x,
   #
   if (is_num) {
     row.names(dat_beta) <- paste0("beta[", rnam[!sel_d], "]")
-  }  else {
+  }
+  else {
     # Add original treatment names to merge results
     # (for the common assumption only the covariates observed for the
     #  reference treatment are relevant)
@@ -74,8 +75,8 @@ nmr_results <- function(x,
     dat_beta %<>%
       mutate(treat_temp = ifelse(treat == "nonref", reference.group, treat),
              treat_long =
-               as.character(factor(treat_temp,
-                                   levels = trts.abbr, labels = trts))) %>%
+               as.character(
+                 factor(treat_temp, levels = trts.abbr, labels = trts))) %>%
       select(-treat_temp)
     #
     # Get observed covariate levels for each treatment
@@ -150,8 +151,7 @@ nmr_results <- function(x,
 }
 
 nmr_full_results <- function(x) {
-  
-  # Extract NMR attributes/assumptions
+  # Extract NMR attributes / assumptions
   #
   assumption <- x$.netmeta$assumption
   reference.group <- x$.netmeta$reference.group
@@ -475,11 +475,12 @@ nmr_full_results <- function(x) {
     }
     
     
-    if(assumption=="common"|consistency==TRUE){
+    if (assumption == "common" | consistency) {
       dat_beta <- dat_se.beta<- dat_cov_d_beta<-NULL
     }
+    #
     for (i in colnames(mat_beta)) {
-      if(assumption=="common"|consistency==TRUE){
+      if (assumption == "common" | consistency) {
         dat_beta.i <- as.data.frame(mat_beta)[i]
         names(dat_beta.i) <- "beta"
         dat_beta.i$comparison <- paste(rownames(dat_beta.i), i, sep = sep.trts)
@@ -491,11 +492,11 @@ nmr_full_results <- function(x) {
         dat_se.beta.i$comparison <-
           paste(rownames(dat_se.beta.i), i, sep = sep.trts)
         dat_se.beta <- rbind(dat_se.beta, dat_se.beta.i)
-        
-        
+        #
         dat_cov_d_beta.i <- as.data.frame(mat_vcov)[i]
         names(dat_cov_d_beta.i) <- "cov"
-        dat_cov_d_beta.i$comparison <-paste(rownames(dat_cov_d_beta.i), i, sep = sep.trts)
+        dat_cov_d_beta.i$comparison <-
+          paste(rownames(dat_cov_d_beta.i), i, sep = sep.trts)
         dat_cov_d_beta <- rbind(dat_cov_d_beta, dat_cov_d_beta.i)
       }
     }
@@ -518,80 +519,121 @@ nmr_full_results <- function(x) {
   res
 }
 
-# create directionality parameter as treatment order ################
-mkIval<-function(x){ # treatment order as direction
-  ref<-sort(unique(c(x$treat1,x$treat2)))[1]
-  
-  x$Ival1<-ifelse(x$treat1==ref, 0, 1)
-  x$Ival2<-ifelse(x$treat2==ref, 0, 1)
-  
+mkIval <- function(x) {
+  # Create directionality parameter as treatment order
+  #
+  ref <- sort(unique(c(x$treat1, x$treat2)))[1]
+  #
+  x$Ival1 <- ifelse(x$treat1 == ref, 0, 1)
+  x$Ival2 <- ifelse(x$treat2 == ref, 0, 1)
+  #
   return(x)
-} 
+}
 
-# check Ival with ability to specify 2 custom variables #############
-any_invalid_I <- function(df) {
-  edges2 <- df %>%
-    mutate(w = case_when(Ival_diff >0 ~ -Ival_diff,
-                         TRUE~Ival_diff),
-           treat1_new = case_when(Ival_diff %in% c(0, 1) ~ treat2,
-                                  TRUE ~ treat1),
-           treat2_new = case_when(Ival_diff %in% c(0, 1) ~ treat1,
-                                  TRUE ~ treat2)) %>%
-    select(-c(treat1, treat2)) %>%
+any_invalid_I <- function(x) {
+  # Get rid of warning "no visible binding for global variable"
+  #
+  treat1 <- treat2 <- treat1_new <- treat2_new <- NULL
+  #
+  # Check Ival with ability to specify two custom variables
+  #
+  edges2 <- x %>%
+    mutate(w = case_when(Ival_diff > 0 ~ -Ival_diff, TRUE ~ Ival_diff),
+           treat1_new =
+             case_when(Ival_diff %in% c(0, 1) ~ treat2, TRUE ~ treat1),
+           treat2_new =
+             case_when(Ival_diff %in% c(0, 1) ~ treat1, TRUE ~ treat2)
+           ) %>%
+    select(-treat1, -treat2) %>%
     rename(treat1 = treat1_new, treat2 = treat2_new)
-  treats<-unique(c(edges2$treat1, edges2$treat2))
+  #
+  treats <- unique(c(edges2$treat1, edges2$treat2))
   n <- length(treats)
-  
-  dist <- rep(0, n) #?
-  names(dist)<-treats
-  for (i in seq_len(n)) { # for each treatment
+  #
+  dist <- rep(0, n)
+  names(dist) <- treats
+  #
+  # For each treatment
+  #
+  for (i in seq_len(n)) {
     updated <- FALSE
-    for (e in seq_len(nrow(edges2))) { #for each comparison
-      if (dist[edges2$treat1[e]] > dist[edges2$treat2[e]] + edges2$w[e]) {#dist for comparator treatment larger than the dist for reference + the length
+    #
+    # For each comparison
+    #
+    for (e in seq_len(nrow(edges2))) {
+      # Distance for comparator treatment larger than the distance for
+      # reference + the length
+      if (dist[edges2$treat1[e]] > dist[edges2$treat2[e]] + edges2$w[e]) {
         dist[edges2$treat1[e]] <- dist[edges2$treat2[e]] + edges2$w[e]
         updated <- TRUE
       }
     }
-    if (!updated) return(FALSE)
+    if (!updated)
+      return(FALSE)
   }
-  
-  TRUE
+  #
+  return(TRUE)
 }
 
-chk_Ival<-function(dat){
-  #invalid values######
-  if(sum(!dat$Ival1 %in%c(-1,0,1))>0){
-    stop("error in directionality assignment. Ival1 only accepts values of -1, 0, or 1")
-  }
-  if(sum(!dat$Ival2 %in%c(-1,0,1))>0){
-    stop("error in directionality assignment. Ival1 only accepts values of -1, 0, or 1")
-  }
-  
-  multiple_Ival<-dat%>%select(studlab, treat=treat1, Ival=Ival1)%>%
-    bind_rows(dat%>%select(studlab, treat=treat2, Ival=Ival2))%>%
-    distinct()%>%
+check_Ival <- function(dat) {
+  # Get rid of warning "no visible binding for global variable"
+  #
+  studlab <- treat <- treat1 <- treat2 <- Ival1 <- Ival2 <- NULL
+  #
+  # Check for invalid values
+  #
+  if (sum(!dat$Ival1 %in% c(-1, 0, 1)) > 0)
+    stop("Error in directionality assignment. ",
+         "Ival1 only accepts values of -1, 0, or 1.")
+  #
+  if (sum(!dat$Ival2 %in%c(-1, 0, 1)) > 0)
+    stop("Error in directionality assignment. ",
+         "Ival2 only accepts values of -1, 0, or 1.")
+  #
+  multiple_Ival <- dat %>%
+    select(studlab, treat = treat1, Ival = Ival1) %>%
+    bind_rows(dat %>% select(studlab, treat = treat2, Ival = Ival2)) %>%
+    distinct() %>%
     count(studlab, treat)
-  
-  longtrt_Ival<-unique(rbind(setNames(dat[c("studlab","treat1","Ival1")], c("studlab","treat","Ival")),
-                             setNames(dat[c("studlab","treat2","Ival2")], c("studlab","treat","Ival"))
-  ))
-  
-  ct_unique_Ival <- as.data.frame(table(longtrt_Ival$studlab, longtrt_Ival$treat))
+  #
+  longtrt_Ival <-
+    unique(
+      rbind(setNames(dat[c("studlab", "treat1", "Ival1")],
+                     c("studlab", "treat", "Ival")),
+            setNames(dat[c("studlab", "treat2", "Ival2")],
+                     c("studlab", "treat", "Ival"))
+            )
+      )
+  #
+  ct_unique_Ival <-
+    as.data.frame(table(longtrt_Ival$studlab, longtrt_Ival$treat))
   names(ct_unique_Ival) <- c("studlab", "treat", "n")
-  
-  # multiple treatment specific Ivalues within a study
-  if(sum(ct_unique_Ival$n>1)>0){ 
-    stop(paste("error in directionality assignment. multiple directions defined for identical treatments in the following studies:",paste(unique(ct_unique_Ival[ct_unique_Ival$n>1,"studlab"]),collapse=",")))
-  }
-  # inconsistent Ivalues between arms within a study
-  dat$Ival_diff<-dat$Ival1-dat$Ival2
-  Ival_consistency_list<-lapply(split(dat, dat$studlab), function(x) any_invalid_I(x))
-  if(length(Ival_consistency_list[Ival_consistency_list==TRUE])>0){
-    stop(paste("error in directionality assignment. inconsistent directions defined in the following studies:",paste(names(chk_Ival_consistency[chk_Ival_consistency==TRUE]),collapse=",")))
-    
-  }
-  
-  if(sum(!dat$Ival_diff %in%c(-1,0,1))>0){
-    stop("error in directionality assignment. At least 1 study has a difference between directionality values which is not in the accepted values of -1,0, 1")
-  }
+  #
+  # Multiple treatment specific Ivalues within a study
+  #
+  if (sum(ct_unique_Ival$n > 1) > 0) 
+    stop(paste("Error in directionality assignment. ",
+               "Multiple directions defined for identical treatments in the ",
+               "following studies: ",
+               paste(unique(ct_unique_Ival[ct_unique_Ival$n > 1, "studlab"]),
+                     collapse = ", ")))
+  #
+  # Inconsistent Ivalues between arms within a study
+  #
+  dat$Ival_diff <- dat$Ival1 - dat$Ival2
+  Ival_consistency_list <-
+    lapply(split(dat, dat$studlab), function(x) any_invalid_I(x))
+  #
+  if (length(Ival_consistency_list[Ival_consistency_list]) > 0)
+    stop(paste("Error in directionality assignment. ",
+               "Inconsistent directions defined in the following studies: ",
+               paste(names(Ival_consistency_list[Ival_consistency_list]),
+                     collapse = ", ")))
+  #
+  if (sum(!dat$Ival_diff %in% c(-1, 0, 1)) > 0)
+    stop("Error in directionality assignment. ",
+         "At least one study has a difference between directionality values ",
+         "which is not in the accepted values of -1, 0, 1.")
+  #
+  NULL
 }
