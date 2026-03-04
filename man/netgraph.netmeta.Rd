@@ -80,11 +80,11 @@ abbreviated), a single numeric or numerical vector with value(s)
 between -180 and 180 specifying the angle to rotate treatment
 labels (see Details).}
 
-\item{offset}{Distance between edges (i.e. treatments) in graph and
+\item{offset}{Distance between nodes (i.e. treatments) in graph and
 treatment labels for 2-D plots (value of 0.0175 corresponds to a
 difference of 1.75\% of the range on x- and y-axis).}
 
-\item{scale}{Additional space added outside of edges
+\item{scale}{Additional space added outside of nodes
 (i.e. treatments).  Increase this value for larger treatment
 labels (value of 1.10 corresponds to an additional space of 10\%
 around the network graph).}
@@ -120,7 +120,8 @@ thickness of lines (see Details).}
 \code{"3d"}.}
 
 \item{rotate}{A single numeric with value between -180 and 180
-specifying the angle to rotate nodes in a circular network.}
+specifying the degree to rotate nodes in a circular network clockwise or
+anticlockwise.}
 
 \item{highlight}{A character vector identifying comparisons that
 should be marked in the network graph, e.g. \code{highlight =
@@ -251,9 +252,9 @@ edges.
 \item{labels}{Treatment labels.}
 \item{seq}{Sequence of treatment labels.}
 \item{srt}{String rotation.}
-\item{xpos}{Position of treatment / edge on x-axis.}
-\item{ypos}{Position of treatment / edge on y-axis.}
-\item{zpos}{Position of treatment / edge on z-axis (for 3-D
+\item{xpos}{Position of treatment / node on x-axis.}
+\item{ypos}{Position of treatment / node on y-axis.}
+\item{zpos}{Position of treatment / node on z-axis (for 3-D
   plots).}
 \item{xpos.labels}{Position of treatment labels on x-axis (for 2-D
   plots).}
@@ -263,7 +264,7 @@ edges.
   plots).}
 \item{offset.y}{Offset of treatment labels on y-axis (for 2-D
   plots).}
-\item{cex}{Point size of treatments / edges.}
+\item{cex}{Point size of treatments / nodes}
 \item{col}{Color for points.}
 \item{pch}{Point type.}
 \item{bg}{Background color for points.}
@@ -281,7 +282,7 @@ edges.
 \item{adj}{Adjustment of number of studies.}
 \item{pos.number.of.studies}{Position of number of studies on
   edge.}
-\item{col}{Color for edges.}
+\item{col}{Color for lines / edges.}
 }
 \description{
 This function generates a graph of the evidence network.
@@ -401,7 +402,7 @@ names must be equal to the treatment names (and treatment labels
 are rotated according to the specified values).
 
 Further, a couple of graphical parameters can be specified, such as
-color and appearance of the edges (treatments) and the nodes
+color and appearance of the nodes (treatments) and the edges
 (comparisons), whether special comparisons should be highlighted
 and whether multi-arm studies should be indicated as colored
 polygons. By default, the \code{\link[colorspace]{sequential_hcl}}

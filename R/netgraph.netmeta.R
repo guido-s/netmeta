@@ -47,7 +47,8 @@
 #'   3-dimensional plot should be produced, either \code{"2d"} or
 #'   \code{"3d"}.
 #' @param rotate A single numeric with value between -180 and 180
-#'   specifying the angle to rotate nodes in a circular network.
+#'   specifying the degree to rotate nodes in a circular network clockwise or
+#'   anticlockwise.
 #' @param highlight A character vector identifying comparisons that
 #'   should be marked in the network graph, e.g. \code{highlight =
 #'   "treat1:treat2"}.
@@ -303,7 +304,7 @@
 #' \item{adj}{Adjustment of number of studies.}
 #' \item{pos.number.of.studies}{Position of number of studies on
 #'   edge.}
-#' \item{col}{Color for edges.}
+#' \item{col}{Color for lines / edges.}
 #' 
 #' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Ulrike
 #'   Krahn \email{ulrike.krahn@@bayer.com}, Jochem König

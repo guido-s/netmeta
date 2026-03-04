@@ -8,7 +8,7 @@
 #'   of treatments arrangement (anticlockwise if \code{start.layout =
 #'   "circle"}).
 #' @param col A single color (or vector of colors) for lines
-#'   connecting treatments (edges) if argument \code{plastic = FALSE}
+#'   connecting treatments if argument \code{plastic = FALSE}
 #'   (see Details).
 #' @param reference.group Reference treatment (only relevant for
 #'   disconnected networks).
@@ -23,7 +23,7 @@
 #'   \code{\link{netgraph.netmeta}} (see Details).
 #' 
 #' @details
-#' Argument \code{col} can be a single color for all edges, a vector
+#' Argument \code{col} can be a single color for all lines / edges, a vector
 #' of length equal to the number of edges, or a vector of length equal
 #' to the number of subnetworks. Argument \code{reference.group} is
 #' only considered in disconnected networks, i.e., if more than one

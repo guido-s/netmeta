@@ -23,7 +23,7 @@ of treatments arrangement (anticlockwise if \code{start.layout =
 "circle"}).}
 
 \item{col}{A single color (or vector of colors) for lines
-connecting treatments (edges) if argument \code{plastic = FALSE}
+connecting treatments if argument \code{plastic = FALSE}
 (see Details).}
 
 \item{reference.group}{Reference treatment (only relevant for
@@ -46,7 +46,7 @@ algorithm is carried out for optimization of the layout
 This function generates a graph of the evidence network.
 }
 \details{
-Argument \code{col} can be a single color for all edges, a vector
+Argument \code{col} can be a single color for all lines / edges, a vector
 of length equal to the number of edges, or a vector of length equal
 to the number of subnetworks. Argument \code{reference.group} is
 only considered in disconnected networks, i.e., if more than one

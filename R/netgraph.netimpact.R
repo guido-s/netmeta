@@ -25,9 +25,9 @@
 #'   \code{"transparent"} or any color defined in
 #'   \code{\link[grDevices]{colours}}.
 #' @param col A single color (or vector of colors) for lines
-#'   connecting treatments (edges) if argument \code{plastic =
+#'   connecting treatments if argument \code{plastic =
 #'   FALSE}. Length of the vector must be equal to the number of
-#'   edges.
+#'   lines / edges.
 #' @param plastic A logical indicating whether the appearance of the
 #'   comparisons should be in '3D look'.
 #' @param \dots Additional arguments passed on to

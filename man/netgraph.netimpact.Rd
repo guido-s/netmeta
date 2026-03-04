@@ -51,9 +51,9 @@ mark multi-arm studies removed from network, either
 \code{\link[grDevices]{colours}}.}
 
 \item{col}{A single color (or vector of colors) for lines
-connecting treatments (edges) if argument \code{plastic =
+connecting treatments if argument \code{plastic =
 FALSE}. Length of the vector must be equal to the number of
-edges.}
+lines / edges.}
 
 \item{plastic}{A logical indicating whether the appearance of the
 comparisons should be in '3D look'.}
