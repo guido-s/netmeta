@@ -115,14 +115,14 @@ plot.rankogram <- function(x,
   
   mytheme <-
     theme(axis.line.x =
-            element_line(colour = "black", size = 1, linetype = "solid"),
+            element_line(colour = "black", linewidth = 1, linetype = "solid"),
           axis.line.y =
-            element_line(colour = "black", size = 1, linetype = "solid"),
+            element_line(colour = "black", linewidth = 1, linetype = "solid"),
           panel.grid.major = element_line(color = "transparent"),
           panel.grid.minor = element_line(color = "transparent"),
           panel.background = element_rect(fill = "transparent"),
           plot.background =
-            element_rect(fill = "transparent", colour = "transparent", size = 1)
+            element_rect(fill = "transparent", colour = "transparent", linewidth = 1)
           )
   
   
