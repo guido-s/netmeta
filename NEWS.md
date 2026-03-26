@@ -2,7 +2,10 @@
 
 ### Major changes
 
-* Implement UMIE models
+* UMIE models implemented
+
+* In R function netmetabin(), drop comparisons with missing events or
+  sample sizes
 
 
 ## netmeta, version 3.3-1 (2026-01-27)

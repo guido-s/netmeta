@@ -680,12 +680,90 @@ netmetabin <- function(event1, n1, event2, n2,
   treat1 <- rmSpace(rmSpace(treat1, end = TRUE))
   treat2 <- rmSpace(rmSpace(treat2, end = TRUE))
   ##
-  ## Keep original order of studies
-  ##
-  .order <- seq_along(studlab)
-  ##
   subset <- catch("subset", mc, data, sfsp)
   missing.subset <- is.null(subset)
+  #
+  # Drop comparisons with missing events
+  #
+  if (!is.iv & (any(is.na(event1)) | any(is.na(event2)))) {
+    keepEv <- !(is.na(event1) | is.na(event2))
+    #
+    if (warn) {
+      prt_s <- sum(!keepEv) > 1
+      #
+      dat_Ev <- data.frame(studlab, treat1, treat2, event1, event2)[!keepEv, ]
+      #
+      warning("Comparison", if (prt_s) "s",
+              " with missing events not considered ",
+              "in network meta-analysis.",
+              call. = FALSE)
+      #
+      cat("Comparison", if (prt_s) "s",
+          " not considered in network meta-analysis:\n",
+          sep = "")
+      prmatrix(dat_Ev,
+               quote = FALSE, right = TRUE,
+               rowlab = rep("", sum(!keepEv)))
+    }
+    #
+    studlab <- studlab[keepEv]
+    treat1 <- treat1[keepEv]
+    treat2 <- treat2[keepEv]
+    #
+    event1 <- event1[keepEv]
+    event2 <- event2[keepEv]
+    n1 <- n1[keepEv]
+    n2 <- n2[keepEv]
+    #
+    if (!missing.subset)
+      subset <- subset[keepEv]
+    #
+    if (nulldata & is.pairwise)
+      pairdata <- pairdata[keepEv, , drop = FALSE]
+  }
+  #
+  # Drop comparisons with missing sample sizes
+  #
+  if (!is.iv & (any(is.na(n1)) | any(is.na(n2)))) {
+    keepN <- !(is.na(n1) | is.na(n2))
+    #
+    if (warn) {
+      prt_s <- sum(!keepN) > 1
+      #
+      dat_N <- data.frame(studlab, treat1, treat2, n1, n2)[!keepN, ]
+      #
+      warning("Comparison", if (prt_s) "s",
+              " with missing sample sizes not considered ",
+              "in network meta-analysis.",
+              call. = FALSE)
+      #
+      cat("Comparison", if (prt_s) "s",
+          " not considered in network meta-analysis:\n",
+          sep = "")
+      prmatrix(dat_N,
+               quote = FALSE, right = TRUE,
+               rowlab = rep("", sum(!keepN)))
+    }
+    #
+    studlab <- studlab[keepN]
+    treat1 <- treat1[keepN]
+    treat2 <- treat2[keepN]
+    #
+    event1 <- event1[keepN]
+    event2 <- event2[keepN]
+    n1 <- n1[keepN]
+    n2 <- n2[keepN]
+    #
+    if (!missing.subset)
+      subset <- subset[keepN]
+    #
+    if (nulldata & is.pairwise)
+      pairdata <- pairdata[keepN, , drop = FALSE]
+  }
+  #
+  # Keep original order of studies
+  #
+  .order <- seq_along(studlab)
   
   
   ##
