@@ -170,8 +170,8 @@
 #' 
 #' @seealso \code{\link{forest.netsplit}}, \code{\link{netmeta}},
 #'   \code{\link{netmetabin}}, \code{\link{netmeasures}},
-#'   \code{\link[metadat]{dat.woods2010}}, \code{\link{Senn2013}},
-#'   \code{\link[metadat]{dat.dong2013}}
+#'   \code{\link[metabook]{Woods2010}}, \code{\link{Senn2013}},
+#'   \code{\link[metabook]{Dong2013}}
 #' 
 #' @references
 #' Dias S, Welton NJ, Caldwell DM, Ades AE (2010):
@@ -203,40 +203,40 @@
 #' #
 #' 
 #' pw1 <- pairwise(treatment, event = r, n = N,
-#'   studlab = author, data = dat.woods2010, sm = "OR")
+#'   studlab = author, data = Woods2010, sm = "OR")
 #' #
-#' net1 <- netmeta(pw1)
+#' nma1 <- netmeta(pw1)
 #' #
-#' print(netsplit(net1), digits = 2)
+#' print(netsplit(nma1), digits = 2)
 #' 
 #' \donttest{
-#' print(netsplit(net1), digits = 2,
+#' print(netsplit(nma1), digits = 2,
 #'   backtransf = FALSE, common = FALSE)
 #'
 #' # Sort by increasing number of studies in direct comparisons
-#' print(netsplit(net1), digits = 2, sortvar = k)
+#' print(netsplit(nma1), digits = 2, sortvar = k)
 #' # Sort by decreasing number of studies in direct comparisons
-#' print(netsplit(net1), digits = 2, sortvar = -k)
+#' print(netsplit(nma1), digits = 2, sortvar = -k)
 #' 
 #' # Sort by increasing evidence proportion under common effects model
-#' print(netsplit(net1), digits = 2, sortvar = prop.common)
+#' print(netsplit(nma1), digits = 2, sortvar = prop.common)
 #' # Sort by decreasing evidence proportion under common effects model
-#' print(netsplit(net1), digits = 2, sortvar = -prop.common)
+#' print(netsplit(nma1), digits = 2, sortvar = -prop.common)
 #' 
 #' # Sort by decreasing evidence proportion under common effects model
 #' # and number of studies
-#' print(netsplit(net1), digits = 2, sortvar = cbind(-prop.common, -k))
+#' print(netsplit(nma1), digits = 2, sortvar = cbind(-prop.common, -k))
 #' 
 #' #
 #' # 2) Diabetes example
 #' #
 #' 
-#' data(Senn2013)
+#' pw2 <- pairwise(studlab = study, treat = treatment,
+#'   n = n, mean = mean, sd = sd, data = Senn2013,
+#'   varnames = c("MD", "seMD"))
+#' nma2 <- netmeta(pw2, reference = "plac")
 #' #
-#' net2 <- netmeta(TE, seTE, treat1.long, treat2.long,
-#'   studlab, data = Senn2013)
-#' #
-#' ns2 <- netsplit(net2)
+#' ns2 <- netsplit(nma2)
 #' #
 #' print(ns2, digits = 2)
 #' # Layout of Puhan et al. (2014), Table 1
@@ -264,9 +264,9 @@
 #' #
 #' 
 #' pw3 <- pairwise(treatment, death, randomized, studlab = id,
-#'   data = dat.dong2013, sm = "OR")
-#' net3 <- netmetabin(pw3)
-#' netsplit(net3)
+#'   data = Dong2013, sm = "OR")
+#' nma3 <- netmetabin(pw3)
+#' netsplit(nma3)
 #' }
 #' 
 #' @rdname netsplit

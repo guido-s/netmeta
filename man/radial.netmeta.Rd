@@ -147,48 +147,49 @@ group. The text for this group can be specified with argument
 }
 \examples{
 \donttest{
-data(Senn2013)
-
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD")
+pw <- pairwise(studlab = study, treat = treatment,
+  n = n, mean = mean, sd = sd, data = Senn2013,
+  varnames = c("MD", "seMD"))
+#
+nma <- netmeta(pw)
 
 # 'Comparison-adjusted' radial plot not created as argument 'order'
 # is missing
 #
-try(radial(net1))
+try(radial(nma))
 
 # Only show comparisons with placebo
 #
-radial(net1, order = "pl")
+radial(nma, order = "pl")
 
 # Add result for Egger test of funnel plot asymmetry
 #
-radial(net1, order = "pl", method.bias = "Egger",
+radial(nma, order = "pl", method.bias = "Egger",
   digits.pval = 2)
 
 # (Non-sensical) alphabetic order of treatments with placebo as
 # last treatment
 #
 ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
-radial(net1, order = ord)
+radial(nma, order = ord)
 
 # Add results for tests of funnel plot asymmetry and use different
 # plotting symbols and colours
 #
-radial(net1, order = ord,
+radial(nma, order = ord,
   pch = rep(c(15:18, 1), 3), col = 1:3,
   method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 
 # Same results for tests of funnel plot asymmetry using reversed
 # order of treatments
 #
-radial(net1, order = rev(ord),
+radial(nma, order = rev(ord),
   pch = rep(c(15:18, 1), 3), col = 1:3,
   method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 
 # Calculate tests for funnel plot asymmetry
 #
-f1 <- radial(net1, order = ord)
+f1 <- radial(nma, order = ord)
 #
 metabias(metagen(TE.adj, seTE, data = f1))
 metabias(metagen(TE.adj, seTE, data = f1), method = "Begg")

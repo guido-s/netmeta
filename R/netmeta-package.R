@@ -291,7 +291,7 @@
 #'   unit viewport
 #' 
 #' @importFrom dplyr %>% filter select rename starts_with relocate last_col
-#'   mutate if_else bind_rows pull
+#'   mutate if_else bind_rows pull case_when distinct count
 #' 
 #' @importFrom magrittr %<>%
 

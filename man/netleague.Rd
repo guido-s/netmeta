@@ -182,9 +182,9 @@ rows and columns in the league table (see examples).
 # Network meta-analysis of count mortality statistics
 #
 pw0 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = dat.woods2010, sm = "OR",
+  studlab = author, data = Woods2010, sm = "OR",
   reference.group = "Placebo")
-net0 <- netmeta(pw0)
+nma0 <- netmeta(pw0)
 
 oldopts <- options(width = 100)
 
@@ -192,23 +192,23 @@ oldopts <- options(width = 100)
 # - network estimates in lower triangle
 # - direct estimates in upper triangle
 #
-netleague(net0, digits = 2, bracket = "(", separator = " - ")
+netleague(nma0, digits = 2, bracket = "(", separator = " - ")
 
 \donttest{
 # League table for common effects model
 #
-netleague(net0, random = FALSE, digits = 2)
+netleague(nma0, random = FALSE, digits = 2)
 
 # Change order of treatments according to treatment ranking (random
 # effects model)
 #
-netleague(net0, common = FALSE, digits = 2, seq = netrank(net0))
+netleague(nma0, common = FALSE, digits = 2, seq = netrank(nma0))
 #
-print(netrank(net0), common = FALSE)
+print(netrank(nma0), common = FALSE)
 
 # Create a CSV file with league table for random effects model
 #
-league0 <- netleague(net0, digits = 2, bracket = "(", separator = " to ")
+league0 <- netleague(nma0, digits = 2, bracket = "(", separator = " to ")
 #
 write.table(league0$random, file = "league0-random.csv",
   row.names = FALSE, col.names = FALSE, sep = ",")
@@ -216,10 +216,10 @@ write.table(league0$random, file = "league0-random.csv",
 # Create Excel files with league tables
 # (if R package writexl is available)
 #
-netleague(net0, digits = 2, bracket = "(", separator = " to ",
+netleague(nma0, digits = 2, bracket = "(", separator = " to ",
           path = tempfile(fileext = ".xlsx"))
 
-# Define order of treatments in depression dataset dat.linde2015
+# Define order of treatments in depression dataset Linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -232,43 +232,43 @@ outcomes <- c("Early response", "Early remission")
 #
 pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(pw1, common = FALSE,
+nma1 <- netmeta(pw1, common = FALSE,
   seq = trts, ref = "Placebo", small = "undesirable")
 
 # (2) Early remission
 #
 pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(pw2, common = FALSE,
+nma2 <- netmeta(pw2, common = FALSE,
   seq = trts, ref = "Placebo", small = "undesirable")
 
 options(width = 200)
-netleague(net1, digits = 2)
+netleague(nma1, digits = 2)
 
-netleague(net1, digits = 2, ci = FALSE)
-netleague(net2, digits = 2, ci = FALSE)
+netleague(nma1, digits = 2, ci = FALSE)
+netleague(nma2, digits = 2, ci = FALSE)
 
 # League table for two outcomes with
 # - network estimates of first outcome in lower triangle
 # - network estimates of second outcome in upper triangle
 #
-netleague(net1, net2, digits = 2, ci = FALSE)
+netleague(nma1, nma2, digits = 2, ci = FALSE)
 
-netleague(net1, net2, seq = netrank(net1), ci = FALSE)
-netleague(net1, net2, seq = netrank(net2), ci = FALSE)
+netleague(nma1, nma2, seq = netrank(nma1), ci = FALSE)
+netleague(nma1, nma2, seq = netrank(nma2), ci = FALSE)
 
-netrank(net1)
-netrank(net2)
+netrank(nma1)
+netrank(nma2)
 
 # Report results for network meta-analysis twice
 #
-netleague(net1, net1, seq = netrank(net1), ci = FALSE,
+netleague(nma1, nma1, seq = netrank(nma1), ci = FALSE,
   backtransf = FALSE)
-netleague(net1, net1, seq = netrank(net1), ci = FALSE,
+netleague(nma1, nma1, seq = netrank(nma1), ci = FALSE,
   backtransf = FALSE, direct = TRUE)
 }
 
@@ -286,8 +286,8 @@ Checklist and Explanations.
 \seealso{
 \code{\link{netmeta}}, \code{\link{netcomb}},
   \code{\link{discomb}}, \code{\link{netposet}}, \code{\link{netrank}},
-  \code{\link[metadat]{dat.woods2010}},
-  \code{\link[metadat]{dat.linde2015}}
+  \code{\link[metabook]{Woods2010}},
+  \code{\link[metabook]{Linde2015}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Gerta

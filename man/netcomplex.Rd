@@ -154,29 +154,32 @@ effect for comparisons of two arbitrary complex intervention in a
 component network meta-analysis.
 }
 \examples{
-data(Linde2016)
-
 # Only consider studies including Face-to-face PST (to reduce
 # runtime of example)
 #
 face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 
+# Use pairwise() to transform data to comparison-based format
+#
+pw <- pairwise(treat = int,
+  event = resp, n = n, studlab = paste(author, year),
+  data = face, reference = "plac", sm = "OR")
+
 # Conduct random effects network meta-analysis
 #
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-  data = face, ref = "placebo", sm = "OR", common = FALSE)
+nma1 <- netmeta(pw, common = FALSE)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
 #
-nc1 <- netcomb(net1, inactive = "placebo")
+cnma1 <- netcomb(nma1, inactive = "placebo")
 
 # Result for combination Face-to-face PST + SSRI
-netcomplex(nc1, "Face-to-face PST + SSRI", nchar.comps = 4)
-netcomplex(nc1, "F + S", nchar.comps = 4)
+netcomplex(cnma1, "Face-to-face PST + SSRI", nchar.comps = 4)
+netcomplex(cnma1, "F + S", nchar.comps = 4)
 
 # Result for combination Face-to-face PST + SSRI + Placebo
-netcomplex(nc1, "Face-to-face PST + SSRI + Plac", nchar.comps = 4)
+netcomplex(cnma1, "Face-to-face PST + SSRI + Plac", nchar.comps = 4)
 
 \donttest{
 # Artificial example
@@ -185,24 +188,24 @@ t2 <- c("B+C", "A+C", "C+D")
 TE <- c(0, 1, 0)
 seTE <- rep(1, 3)
 # Conduct (C)NMA
-net2 <- netmeta(TE, seTE, t1, t2, random = FALSE)
-nc2 <- netcomb(net2)
+nma2 <- netmeta(TE, seTE, t1, t2, random = FALSE)
+cnma2 <- netcomb(nma2)
 
 # Result for combination A + B + C
-netcomplex(nc2, "A + B + C")
+netcomplex(cnma2, "A + B + C")
 # Same results
-netcomplex(nc2, "A+B+C")
-netcomplex(nc2, "B+C+A")
-netcomplex(nc2, "C+B+A")
-netcomplex(nc2, "c+b+a")
+netcomplex(cnma2, "A+B+C")
+netcomplex(cnma2, "B+C+A")
+netcomplex(cnma2, "C+B+A")
+netcomplex(cnma2, "c+b+a")
 
 # Generated C matrix
-netcomplex(nc2, c(LETTERS[1:4], "A+B+C"))$C.matrix
+netcomplex(cnma2, c(LETTERS[1:4], "A+B+C"))$C.matrix
 
 # Results for all possible combinations of two components
-netcomplex(nc2, 2)
+netcomplex(cnma2, 2)
 # Results for all possible combinations of three components
-netcomplex(nc2, 3)
+netcomplex(cnma2, 3)
 }
 
 }

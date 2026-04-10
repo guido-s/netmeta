@@ -17,14 +17,14 @@
 #'   matrix with length / number of rows equal to the number of
 #'   treatments) specifying the x (and optionally y and z) adjustment
 #'   for treatment labels.
-#' @param offset Distance between edges (i.e. treatments) in graph and
+#' @param offset Distance between nodes (i.e. treatments) in graph and
 #'   treatment labels for 2-D plots (value of 0.0175 corresponds to a
 #'   difference of 1.75\% of the range on x- and y-axis).
 #' @param srt.labels The character string \code{"orthogonal"} (can be
 #'   abbreviated), a single numeric or numerical vector with value(s)
 #'   between -180 and 180 specifying the angle to rotate treatment
 #'   labels (see Details).
-#' @param scale Additional space added outside of edges
+#' @param scale Additional space added outside of nodes
 #'   (i.e. treatments).  Increase this value for larger treatment
 #'   labels (value of 1.10 corresponds to an additional space of 10\%
 #'   around the network graph).
@@ -47,7 +47,8 @@
 #'   3-dimensional plot should be produced, either \code{"2d"} or
 #'   \code{"3d"}.
 #' @param rotate A single numeric with value between -180 and 180
-#'   specifying the angle to rotate nodes in a circular network.
+#'   specifying the degree to rotate nodes in a circular network clockwise or
+#'   anticlockwise.
 #' @param highlight A character vector identifying comparisons that
 #'   should be marked in the network graph, e.g. \code{highlight =
 #'   "treat1:treat2"}.
@@ -252,7 +253,7 @@
 #' are rotated according to the specified values).
 #' 
 #' Further, a couple of graphical parameters can be specified, such as
-#' color and appearance of the edges (treatments) and the nodes
+#' color and appearance of the nodes (treatments) and the edges
 #' (comparisons), whether special comparisons should be highlighted
 #' and whether multi-arm studies should be indicated as colored
 #' polygons. By default, the \code{\link[colorspace]{sequential_hcl}}
@@ -273,9 +274,9 @@
 #' \item{labels}{Treatment labels.}
 #' \item{seq}{Sequence of treatment labels.}
 #' \item{srt}{String rotation.}
-#' \item{xpos}{Position of treatment / edge on x-axis.}
-#' \item{ypos}{Position of treatment / edge on y-axis.}
-#' \item{zpos}{Position of treatment / edge on z-axis (for 3-D
+#' \item{xpos}{Position of treatment / node on x-axis.}
+#' \item{ypos}{Position of treatment / node on y-axis.}
+#' \item{zpos}{Position of treatment / node on z-axis (for 3-D
 #'   plots).}
 #' \item{xpos.labels}{Position of treatment labels on x-axis (for 2-D
 #'   plots).}
@@ -285,7 +286,7 @@
 #'   plots).}
 #' \item{offset.y}{Offset of treatment labels on y-axis (for 2-D
 #'   plots).}
-#' \item{cex}{Point size of treatments / edges.}
+#' \item{cex}{Point size of treatments / nodes}
 #' \item{col}{Color for points.}
 #' \item{pch}{Point type.}
 #' \item{bg}{Background color for points.}
@@ -303,7 +304,7 @@
 #' \item{adj}{Adjustment of number of studies.}
 #' \item{pos.number.of.studies}{Position of number of studies on
 #'   edge.}
-#' \item{col}{Color for edges.}
+#' \item{col}{Color for lines / edges.}
 #' 
 #' @author Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}, Ulrike
 #'   Krahn \email{ulrike.krahn@@bayer.com}, Jochem König
@@ -357,93 +358,92 @@
 #' 
 #' # Conduct random effects network meta-analysis
 #' #
-#' net1 <- netmeta(pw1, common = FALSE)
+#' nma1 <- netmeta(pw1, common = FALSE)
 #' 
 #' # Network graph with default settings
 #' #
-#' netgraph(net1)
+#' netgraph(nma1)
 #' 
 #' \donttest{
-#' data(Senn2013)
-#' 
 #' # Generation of an object of class 'netmeta' with reference
 #' # treatment 'plac'
 #' #
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", reference = "plac")
+#' pw2 <- pairwise(studlab = study, treat = treatment,
+#'   n = n, mean = mean, sd = sd, data = Senn2013,
+#'   varnames = c("MD", "seMD"))
+#' nma2 <- netmeta(pw2, reference = "plac")
 #' 
 #' # Network graph with default settings
 #' #
-#' netgraph(net2)
+#' netgraph(nma2)
 #' 
 #' # Network graph with specified order of the treatments and one
 #' # highlighted comparison
 #' #
 #' trts <- c("plac", "benf", "migl", "acar", "sulf",
 #'   "metf", "rosi", "piog", "sita", "vild")
-#' netgraph(net2, highlight = "rosi:plac", seq = trts)
+#' netgraph(nma2, highlight = "rosi:plac", seq = trts)
 #' 
 #' # Same network graph using argument 'seq' in netmeta function
 #' #
-#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", reference = "plac", seq = trts)
-#' netgraph(net3, highlight = "rosi:plac")
+#' nma3 <- netmeta(pw2, reference = "plac", seq = trts)
+#' netgraph(nma3, highlight = "rosi:plac")
 #' 
 #' # Network graph optimized, starting from a circle, with multi-arm
 #' # study colored
 #' #
-#' netgraph(net2, start = "circle", iterate = TRUE,
+#' netgraph(nma2, start = "circle", iterate = TRUE,
 #'   multiarm = TRUE, col.multiarm = "purple")
 #'
 #' # Network graph optimized, starting from a circle, with multi-arm
 #' # study colored and all intermediate iteration steps visible
 #' #
-#' netgraph(net2, start = "circle", iterate = TRUE,
+#' netgraph(nma2, start = "circle", iterate = TRUE,
 #'   multiarm = TRUE, col.multiarm = "purple",
 #'   allfigures = TRUE)
 #' 
 #' # Network graph optimized, starting from Laplacian eigenvectors,
 #' # with multi-arm study colored
 #' #
-#' netgraph(net2, start = "eigen",
+#' netgraph(nma2, start = "eigen",
 #'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph optimized, starting from different Laplacian
 #' # eigenvectors, with multi-arm study colored
 #' #
-#' netgraph(net2, start = "prcomp",
+#' netgraph(nma2, start = "prcomp",
 #'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph optimized, starting from random initial layout,
 #' # with multi-arm study colored
 #' #
-#' netgraph(net2, start = "random",
+#' netgraph(nma2, start = "random",
 #'   multiarm = TRUE, col.multiarm = "purple")
 #' 
 #' # Network graph without plastic look and one highlighted comparison
 #' #
-#' netgraph(net2, plastic = FALSE, highlight = "rosi:plac")
+#' netgraph(nma2, plastic = FALSE, highlight = "rosi:plac")
 #' 
 #' # Network graph with same thickness for all comparisons
 #' #
-#' netgraph(net2, thickness = "equal")
+#' netgraph(nma2, thickness = "equal")
 #' 
 #' # Network graph with changed labels and specified order of the
 #' # treatments
 #' #
-#' netgraph(net2, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
+#' netgraph(nma2, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
 #'   labels = LETTERS[1:10])
 #' 
 #' # Rotate treatment labels (orthogonal to circle)
 #' #
-#' netgraph(net2, srt.labels = "o")
+#' netgraph(nma2, srt.labels = "o")
 #' 
 #' # Network graph in 3-D (opens a new device, where you may rotate and
 #' # zoom the plot using the mouse / the mouse wheel).
 #' # The rgl package must be installed for 3-D plots.
 #' #
 #' if (requireNamespace("rgl", quietly = TRUE))
-#'   netgraph(net2, dim = "3d")
+#'   netgraph(nma2, dim = "3d")
 #' }
 #' 
 #' @method netgraph netmeta
@@ -1386,7 +1386,9 @@ netgraph.netmeta <- function(x, seq = x$seq,
           if (length(highs) != 2)
             stop("Wrong format for argument 'highlight' ",
                  "(see helpfile of plotgraph command).")
-          ##
+          #
+          highs <- setseq(highs, dat.nodes$trts, equal.length = FALSE)
+          #
           if (sum(dat.nodes$trts %in% highs) != 2)
             stop("Argument 'highlight' must contain two of ",
                  "the following values (separated by \":\"):\n  ",
