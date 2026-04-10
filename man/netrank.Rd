@@ -108,7 +108,7 @@ treatment.
 }
 \examples{
 \donttest{
-# Define order of treatments in depression dataset dat.linde2015
+# Define order of treatments in depression dataset Linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -121,25 +121,25 @@ outcomes <- c("Early response", "Early remission")
 #
 pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(pw1, common = FALSE, seq = trts, ref = "Placebo",
+nma1 <- netmeta(pw1, common = FALSE, seq = trts, ref = "Placebo",
   small.values = "undesirable")
-netrank(net1)
+netrank(nma1)
 
 # (2) Early remission
 #
 pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(pw2, common = FALSE, seq = trts, ref = "Placebo",
+nma2 <- netmeta(pw2, common = FALSE, seq = trts, ref = "Placebo",
   small.values = "undesirable")
-netrank(net2)
+netrank(nma2)
 
 # Image plot of treatment rankings (two outcomes)
 #
-plot(netrank(net1), netrank(net2), name = outcomes, digits = 2)
+plot(netrank(nma1), netrank(nma2), name = outcomes, digits = 2)
 
 
 # Outcome labels
@@ -152,33 +152,33 @@ outcomes <- c("Early response", "Early remission",
 #
 pw3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net3 <- netmeta(pw3, common = FALSE, seq = trts, ref = "Placebo",
+nma3 <- netmeta(pw3, common = FALSE, seq = trts, ref = "Placebo",
   small.values = "desirable")
 
 # (4) Loss to follow-up due to adverse events
 #
 pw4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
-  studlab = id, data = subset(dat.linde2015, id != 55), sm = "OR")
+  studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
 #
-net4 <- netmeta(pw4, common = FALSE, seq = trts, ref = "Placebo",
+nma4 <- netmeta(pw4, common = FALSE, seq = trts, ref = "Placebo",
   small.values = "desirable")
 
 # (5) Adverse events
 #
 pw5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net5 <- netmeta(pw5, common = FALSE, seq = trts, ref = "Placebo",
+nma5 <- netmeta(pw5, common = FALSE, seq = trts, ref = "Placebo",
   small.values = "desirable")
 
 # Image plot of treatment rankings (two outcomes)
 #
-plot(netrank(net1), netrank(net2), netrank(net3),
-  netrank(net4), netrank(net5),
+plot(netrank(nma1), netrank(nma2), netrank(nma3),
+  netrank(nma4), netrank(nma5),
   name = outcomes, digits = 2)
 }
 

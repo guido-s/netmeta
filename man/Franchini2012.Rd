@@ -51,16 +51,16 @@ as 1 and the four active drugs as 2 to 5.
 }
 \note{
 The dataset Franchini2012 is identical to dataset
-\code{\link[metadat]{dat.franchini2012}} in R package \bold{metadat}.
+\code{\link[metabook]{Franchini2012}} in R package \bold{metabook}.
 }
 \examples{
-head(dat.franchini2012)
+head(Franchini2012)
 
 # Example using pairwise() and netmeta():
-# example(dat.franchini2012, run.dontrun = TRUE)
+# example(Franchini2012, package = "metabook")
 }
 \seealso{
-\code{\link[metadat]{dat.franchini2012}},
+\code{\link[metabook]{Franchini2012}},
   \code{\link[meta]{pairwise}}, \code{\link[meta]{metacont}},
   \code{\link{netmeta}}, \code{\link{netgraph.netmeta}}
 }

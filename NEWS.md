@@ -1,3 +1,23 @@
+## netmeta, version 3.4-0 (2026-04-10)
+
+### Major changes
+
+* In R function netmetabin(), drop comparisons with missing events or
+  missing sample sizes
+
+* Use datasets from the R package **metabook** in examples
+
+### Internal changes
+
+* netgraph.netmeta():
+  - input to argument 'highlight' can contain abbreviated treatment names
+
+### Bug fixes
+
+* print.netmeta():
+  - input to argument 'nchar.trts' was ignored
+
+
 ## netmeta, version 3.3-1 (2026-01-27)
 
 ### Major changes

@@ -63,16 +63,16 @@ al. (2015), supplementary Table 2.
 }
 \note{
 The dataset Linde2015 is identical to dataset
-\code{\link[metadat]{dat.linde2015}} in R package \bold{metadat}.
+\code{\link[metabook]{Linde2015}} in R package \bold{metabook}.
 }
 \examples{
-head(dat.linde2015)
+head(Linde2015)
 
 # Example using pairwise(), netmeta(), netrank() and netposet():
-# example(dat.linde2015, run.dontrun = TRUE)
+# example(Linde2015, package = "metabook")
 }
 \seealso{
-\code{\link[metadat]{dat.dong2013}},
+\code{\link[metabook]{Dong2013}},
   \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmeta}}, \code{\link{netposet}}
 }

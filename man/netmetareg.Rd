@@ -40,7 +40,7 @@ netmetareg(x, ...)
 \item{covar}{Continuous or binary covariate.}
 
 \item{consistency}{A logical indicating whether a consistency or
-inconsistency model should be assumed.}
+unrelated mean interaction effect (UMIE) model should be assumed.}
 
 \item{assumption}{A character string indicating which assumption is done
 for the covariate; either "independent" or "common" (can be abbreviated).}
@@ -123,16 +123,16 @@ data(smokingcessation)
 #
 smokingcessation$rob <- rep(1:2, 12)
 
-pw1 <- pairwise(list(treat1, treat2, treat3),
+pw <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
   data = smokingcessation, sm = "OR")
 
-net1 <- netmeta(pw1, common = FALSE, ref = "A")
+nma <- netmeta(pw, common = FALSE, ref = "A")
 
 # Network meta-regression with continuous covariate and assumption of
 # independent slopes
-nr1 <- netmetareg(net1, rob)
-nr1
+nr <- netmetareg(nma, rob)
+nr
 }
 
 }

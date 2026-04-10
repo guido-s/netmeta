@@ -2,7 +2,7 @@
 #' 
 #' @description
 #' Forest plot to show direct and indirect evidence in network
-#' meta-analysis.  Furthermore, estimates from network meta-analysis
+#' meta-analysis. Furthermore, estimates from network meta-analysis
 #' as well as prediction intervals can be printed.
 #'
 #' @aliases forest.netsplit plot.netsplit

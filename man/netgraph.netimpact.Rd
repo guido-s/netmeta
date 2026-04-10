@@ -51,9 +51,9 @@ mark multi-arm studies removed from network, either
 \code{\link[grDevices]{colours}}.}
 
 \item{col}{A single color (or vector of colors) for lines
-connecting treatments (edges) if argument \code{plastic =
+connecting treatments if argument \code{plastic =
 FALSE}. Length of the vector must be equal to the number of
-edges.}
+lines / edges.}
 
 \item{plastic}{A logical indicating whether the appearance of the
 comparisons should be in '3D look'.}
@@ -70,7 +70,7 @@ This function generates a graph of the evidence network.
 }
 \seealso{
 \code{\link{netimpact}}, \code{\link{netgraph.netmeta}},
-  \code{\link[metadat]{dat.franchini2012}}
+  \code{\link[metabook]{Franchini2012}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de},

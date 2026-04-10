@@ -153,7 +153,7 @@ print.netmeta <- function(x,
   if (is.null(x$lower.predict))
     prediction <- FALSE
   #
-  nchar.trts <- replaceNULL(x$nchar.trts, 666)
+  nchar.trts <- replaceNULL(nchar.trts, 666)
   
   
   ##
