@@ -28,17 +28,16 @@ al. (2010), Table 1).
 }
 \note{
 The dataset Woods2010 is identical to dataset
-\code{\link[metadat]{dat.woods2010}} in R package \bold{metadat}.
+\code{\link[metabook]{Woods2010}} in R package \bold{metabook}.
 }
 \examples{
-head(dat.woods2010)
+head(Woods2010)
 
 # Example using pairwise() and netmeta():
-# example(dat.woods2010, run.dontrun = TRUE)
+# example(Woods2010, package = "metabook")
 }
 \seealso{
-\code{\link[metadat]{dat.woods2010}},
-  \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
+\code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmeta}}
 }
 \keyword{datasets}

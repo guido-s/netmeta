@@ -58,15 +58,15 @@ study is removed / ignored from the network (Rücker et al., 2020).
 \examples{
 # Only consider first two studies (to reduce runtime of example)
 #
-studies <- unique(dat.franchini2012$Study)
+studies <- unique(Franchini2012$Study)
 pw1 <- pairwise(list(Treatment1, Treatment2, Treatment3),
   n = list(n1, n2, n3),
   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-  data = subset(dat.franchini2012, Study \%in\% studies[1:2]),
+  data = subset(Franchini2012, Study \%in\% studies[1:2]),
   studlab = Study)
 
-net1 <- netmeta(pw1)
-ni1 <- netimpact(net1, verbose = TRUE)
+nma1 <- netmeta(pw1)
+ni1 <- netimpact(nma1, verbose = TRUE)
 ni1
 
 netgraph(ni1)
@@ -77,11 +77,11 @@ netgraph(ni1, plastic = TRUE)
 pw2 <- pairwise(list(Treatment1, Treatment2, Treatment3),
   n = list(n1, n2, n3),
   mean = list(y1, y2, y3), sd = list(sd1, sd2, sd3),
-  data = dat.franchini2012,
+  data = Franchini2012,
   studlab = Study)
 
-net2 <- netmeta(pw2)
-ni2 <- netimpact(net2, verbose = TRUE)
+nma2 <- netmeta(pw2)
+ni2 <- netimpact(nma2, verbose = TRUE)
 netgraph(ni2)
 }
 
@@ -97,7 +97,7 @@ estimate.
 \seealso{
 \code{\link{netmeta}}, \code{\link{netmetabin}},
   \code{\link{netgraph.netimpact}}, \code{\link{print.netimpact}},
-  \code{\link[metadat]{dat.franchini2012}}
+  \code{\link[metabook]{Franchini2012}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de},

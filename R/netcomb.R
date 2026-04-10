@@ -299,45 +299,48 @@
 #' \bold{169}: 1158--65
 #' 
 #' @examples
-#' data(Linde2016)
-#' 
 #' # Only consider studies including Face-to-face PST (to reduce
 #' # runtime of example)
 #' #
 #' face <- subset(Linde2016, id %in% c(16, 24, 49, 118))
 #' 
+#' # Use pairwise() to transform data to comparison-based format
+#' #
+#' pw1 <- pairwise(treat = int,
+#'   event = resp, n = n, studlab = paste(author, year),
+#'   data = face, reference = "plac", sm = "OR")
+#' 
 #' # Conduct random effects network meta-analysis
 #' #
-#' net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'   data = face, ref = "placebo", sm = "OR", common = FALSE)
-#' net1
+#' nma1 <- netmeta(pw1, common = FALSE)
+#' nma1
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
 #' #
-#' nc1 <- netcomb(net1, inactive = "placebo")
-#' nc1
+#' cnma1 <- netcomb(nma1, inactive = "placebo")
+#' cnma1
 #' 
 #' # Print results with two digits and test statistics with three digits
-#' print(nc1, digits = 2, digits.stat = 3)
+#' print(cnma1, digits = 2, digits.stat = 3)
 #'
 #' # Print detailed results
-#' print(summary(nc1), digits = 2, digits.stat = 3)
+#' print(summary(cnma1), digits = 2, digits.stat = 3)
 #' 
 #' # All available combinations in CNMA
-#' combinations(nc1) # only "Face-to-face PST + SSRI"
+#' combinations(cnma1) # only "Face-to-face PST + SSRI"
 #' 
 #' # Create C matrix with all available interactions, i.e., one interaction
 #' # for each combination
-#' colnames(createC(nc1))
+#' colnames(createC(cnma1))
 #' 
 #' # Run interaction CNMA model with all available interactions
 #' # (same result as standard NMA)
-#' netcomb(net1, C.matrix = createC(nc1))
+#' netcomb(nma1, C.matrix = createC(cnma1))
 #' 
 #' \donttest{
-#' forest(net1, xlim = c(0.2, 50))
-#' forest(nc1, xlim = c(0.2, 50))
+#' forest(nma1, xlim = c(0.2, 50))
+#' forest(cnma1, xlim = c(0.2, 50))
 #' 
 #' # Specify, order of treatments
 #' #
@@ -354,20 +357,22 @@
 #' # "Face-to-face interpsy + SSRI",
 #' # "Face-to-face PST + SSRI"
 #' 
+#' pw2 <- pairwise(treat = int,
+#'   event = resp, n = n, studlab = paste(author, year),
+#'   data = Linde2016, reference = "plac", sm = "OR")
+#' 
 #' # Conduct random effects network meta-analysis
 #' #
-#' net2 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-#'   data = Linde2016, ref = "placebo",
-#'   seq = trts, sm = "OR", common = FALSE)
-#' net2
-#' forest(net2, xlim = c(0.2, 50))
+#' nma2 <- netmeta(pw2, common = FALSE)
+#' nma2
+#' forest(nma2, xlim = c(0.2, 50))
 #' 
 #' # Additive model for treatment components (with placebo as inactive
 #' # treatment)
 #' #
-#' nc2 <- netcomb(net2, inactive = "placebo")
-#' nc2
-#' forest(nc2, xlim = c(0.2, 50))
+#' cnma2 <- netcomb(nma2, inactive = "placebo")
+#' cnma2
+#' forest(cnma2, xlim = c(0.2, 50))
 #' }
 #' 
 #' @export netcomb

@@ -24,16 +24,16 @@
 #' #
 #' smokingcessation$rob <- rep(1:2, 12)
 #' 
-#' pw1 <- pairwise(list(treat1, treat2, treat3),
+#' pw <- pairwise(list(treat1, treat2, treat3),
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
 #'   data = smokingcessation, sm = "OR")
 #' 
-#' net1 <- netmeta(pw1, common = FALSE, ref = "A")
+#' nma <- netmeta(pw, common = FALSE, ref = "A")
 #' 
 #' # Network meta-regression with continuous covariate and assumption of
 #' # independent slopes
-#' nr1 <- netmetareg(net1, rob)
-#' nr1
+#' nr <- netmetareg(nma, rob)
+#' nr
 #' 
 #' summary(nr1)
 #' }

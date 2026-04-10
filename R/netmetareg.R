@@ -25,7 +25,7 @@
 #' @param x An object of class \code{netmeta}.
 #' @param covar Continuous or binary covariate.
 #' @param consistency A logical indicating whether a consistency or
-#'   inconsistency model should be assumed.
+#'   unrelated mean interaction effect (UMIE) model should be assumed.
 #' @param assumption A character string indicating which assumption is done
 #'   for the covariate; either "independent" or "common" (can be abbreviated).
 #' @param method.tau A character string indicating which method is
@@ -34,9 +34,6 @@
 #' @param level The level used to calculate confidence intervals for regression
 #'   coefficients.
 #' @param reference.group Reference treatment.
-#' @param direction1 ADD DESCRIPTION.
-#' @param direction2 ADD DESCRIPTION.
-#' @param max.ia ADD DESCRIPTION.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
@@ -91,16 +88,16 @@
 #' #
 #' smokingcessation$rob <- rep(1:2, 12)
 #' 
-#' pw1 <- pairwise(list(treat1, treat2, treat3),
+#' pw <- pairwise(list(treat1, treat2, treat3),
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
 #'   data = smokingcessation, sm = "OR")
 #' 
-#' net1 <- netmeta(pw1, common = FALSE, ref = "A")
+#' nma <- netmeta(pw, common = FALSE, ref = "A")
 #' 
 #' # Network meta-regression with continuous covariate and assumption of
 #' # independent slopes
-#' nr1 <- netmetareg(net1, rob)
-#' nr1
+#' nr <- netmetareg(nma, rob)
+#' nr
 #' }
 #' 
 #' @rdname netmetareg
@@ -113,8 +110,6 @@ netmetareg.netmeta <- function(x, covar = NULL,
                                method.tau = if (!x$random) "FE" else "REML",
                                level = x$level.ma,
                                reference.group = x$reference.group,
-                               direction1 = NULL, direction2 = NULL,
-                               max.ia = FALSE,
                                nchar.trts = x$nchar.trts, ...) {
   
   #
@@ -135,6 +130,10 @@ netmetareg.netmeta <- function(x, covar = NULL,
   chklevel(level)
   #
   sm <- x$sm
+  #
+  direction1 <- NULL
+  direction2 <- NULL
+  max.ia <- FALSE
   
   
   #
@@ -244,8 +243,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
   # import or create directionality parameters
   if (consistency == FALSE) {
     # Handle directionality parameters for inconsistency model
-    has_treat1_dir <- !is.null(substitute(direction1))
-    has_treat2_dir <- !is.null(substitute(direction2))
+    has_treat1_dir <- !is.null(direction1)
+    has_treat2_dir <- !is.null(direction2)
     
     if (has_treat1_dir & has_treat2_dir) {
       # Use provided directionality parameters

@@ -308,7 +308,7 @@
 #'   Theodoros Evrenoglou \email{theodoros.evrenoglou@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link[meta]{pairwise}}, \code{\link{netmeta}},
-#'   \code{\link[metadat]{dat.dong2013}}
+#'   \code{\link[metabook]{Dong2013}}
 #' 
 #' @references
 #' Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
@@ -338,7 +338,7 @@
 #' \donttest{
 #' # Only consider first four studies (to reduce runtime of example)
 #' #
-#' first4 <- subset(dat.dong2013, id <= 4)
+#' first4 <- subset(Dong2013, id <= 4)
 #' 
 #' # Transform data from long arm-based format to contrast-based
 #' # format. Argument 'sm' has to be used for odds ratio as summary
@@ -359,7 +359,7 @@
 #' netleague(nb1)
 #' 
 #' # Mantel-Haenszel network meta-analysis for the whole
-#' # dataset: example(dat.dong2013)
+#' # dataset: example(Dong2013)
 #' }
 #' 
 #' @export netmetabin
