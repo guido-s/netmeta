@@ -1,3 +1,13 @@
+## netmeta, version 3.5-0 (2026-mm-dd)
+
+### Major changes
+
+* New function plot.netsplit() implementing the method to visualize local
+  consistency by [Wilson et al. (2026)](https://doi.org/10.1017/rsm.2026.10082)
+
+* R packages **stringr**, **tidyr** and **ggrepel** added to Imports
+
+
 ## netmeta, version 3.4-0 (2026-04-10)
 
 ### Major changes

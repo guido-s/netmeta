@@ -5,7 +5,7 @@
 #' meta-analysis. Furthermore, estimates from network meta-analysis
 #' as well as prediction intervals can be printed.
 #'
-#' @aliases forest.netsplit plot.netsplit
+#' @aliases forest.netsplit
 #' 
 #' @param x An object of class \code{netsplit}.
 #' @param pooled A character string indicating whether results for the
@@ -27,7 +27,7 @@
 #'   of same length as the total number of comparisons).
 #' @param subset An optional logical vector specifying a subset of
 #'   comparisons to print (must be of same length as the total number of
-#'   comparisons) .
+#'   comparisons).
 #' @param subgroup A character string indicating which layout should
 #'   be used in forest plot: subgroups by comparisons
 #'   (\code{"comparison"}) or subgroups by estimates
@@ -772,10 +772,3 @@ forest.netsplit <- function(x,
   invisible(res)
 }
 
-
-#' @rdname forest.netsplit
-#' @method plot netsplit
-#' @export
-
-plot.netsplit <- function(x, ...)
-  forest(x, ...)

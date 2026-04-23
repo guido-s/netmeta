@@ -59,6 +59,8 @@ Available functions to evaluate network inconsistency:
 \item split direct and indirect evidence (\code{\link{netsplit}})
   to check for consistency (Dias et al., 2010; Efthimiou et al.,
   2019);
+\item scatter plot of direct and indirect estimates to visualize
+  local consistency (Wilson et al., 2026);
 \item net heat plot (\code{\link{netheat}}) and design-based
   decomposition of Cochran's Q (\code{\link{decomp.design}})
   described in Krahn et al. (2013).
@@ -238,6 +240,12 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 Schwarzer G, Carpenter JR and Rücker G (2015):
 \emph{Meta-Analysis with R (Use R!)}.
 Springer International Publishing, Switzerland.
+
+Wilson H, Schönstein A, Robson S, Bonofiglio F (2026):
+A novel approach for visualizing local consistency in
+network meta-analysis.
+\emph{Research Synthesis Methods},
+1--15
 }
 \seealso{
 Useful links:

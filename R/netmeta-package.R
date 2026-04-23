@@ -55,6 +55,8 @@
 #' \item split direct and indirect evidence (\code{\link{netsplit}})
 #'   to check for consistency (Dias et al., 2010; Efthimiou et al.,
 #'   2019);
+#' \item scatter plot of direct and indirect estimates to visualize
+#'   local consistency (Wilson et al., 2026);
 #' \item net heat plot (\code{\link{netheat}}) and design-based
 #'   decomposition of Cochran's Q (\code{\link{decomp.design}})
 #'   described in Krahn et al. (2013).
@@ -239,6 +241,12 @@
 #' Schwarzer G, Carpenter JR and Rücker G (2015):
 #' \emph{Meta-Analysis with R (Use R!)}.
 #' Springer International Publishing, Switzerland.
+#' 
+#' Wilson H, Schönstein A, Robson S, Bonofiglio F (2026):
+#' A novel approach for visualizing local consistency in
+#' network meta-analysis.
+#' \emph{Research Synthesis Methods},
+#' 1--15
 #'
 #' @keywords package
 #' 
@@ -278,9 +286,13 @@
 #' @importFrom ggplot2 ggplot aes xlab ylab labs
 #'    element_blank element_line element_rect element_text expand_limits
 #'    geom_col geom_line geom_step geom_tile geom_text ggtitle
+#'    geom_abline geom_hline geom_point geom_vline
 #'    scale_fill_gradient2 scale_x_discrete scale_y_discrete
 #'    scale_x_continuous scale_x_discrete scale_y_discrete
 #'    theme theme_classic theme_dark
+#'    scale_color_manual coord_cartesian guide_legend guides margin
+#' 
+#' @importFrom ggrepel geom_text_repel
 #'
 #' @importFrom colorspace sequential_hcl rainbow_hcl sequential_hcl
 #'   diverge_hcl heat_hcl terrain_hcl diverge_hsv choose_palette
@@ -292,6 +304,11 @@
 #' 
 #' @importFrom dplyr %>% filter select rename starts_with relocate last_col
 #'   mutate if_else bind_rows pull case_when distinct count
+#'   summarise inner_join
+#' 
+#' @importFrom stringr str_length
+#' 
+#' @importFrom tidyr pivot_longer
 #' 
 #' @importFrom magrittr %<>%
 
