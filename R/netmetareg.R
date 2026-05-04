@@ -382,7 +382,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
       # or non-reference.
       #
       error <-
-        try(dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0))
+        try(dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0),
+            silent = TRUE)
       #
       # Necessary, if reference treatment contains a whitespace
       #
