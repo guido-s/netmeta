@@ -4,8 +4,7 @@
 #' Calculate distance matrix for an adjacency matrix based on distance
 #' algorithm by Müller et al. (1987).
 #' 
-#' @aliases netdistance netdistance.default netdistance.netmeta
-#'   netdistance.netcomb print.netdistance
+#' @aliases netdistance netdistance.default netdistance.netmeta netdistance.netcomb print.netdistance
 #' 
 #' @param x Either a netmeta or netcomb object or an adjacency matrix.
 #' @param sort A logical indicating whether to sort within (sub)networks by

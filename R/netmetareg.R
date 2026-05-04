@@ -241,7 +241,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   }
   
   # import or create directionality parameters
-  if (consistency == FALSE) {
+  if (!consistency) {
     # Handle directionality parameters for inconsistency model
     has_treat1_dir <- !is.null(direction1)
     has_treat2_dir <- !is.null(direction2)
@@ -380,11 +380,18 @@ netmetareg.netmeta <- function(x, covar = NULL,
       # The interaction is all non-reference treatments vs reference,
       # so we can define a variable indicating whether it is reference
       # or non-reference.
+      #
+      error <-
+        try(dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0))
+      #
+      # Necessary, if reference treatment contains a whitespace
+      #
+      if (inherits(error, "try-error"))
+        dat$nonref <- as.numeric(dat[[gsub(" ", "_", reference.group)]] != 0)
+      #
       # Then get the interaction using the colon(:). The output has a
       # colon which is in the same format as the independent. Helpful
       # for later extraction
-      #
-      dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0)
       #
       formula.nmr_default <- # renamed for construction of manual matrix below
         as.formula(paste("~ 0 + ",

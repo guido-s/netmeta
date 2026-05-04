@@ -8,7 +8,7 @@
 #' 
 #' @param x An object of class \code{netsplit}.
 #' @param type A character string indicating which figure type is to be used.
-#'   Either \code{"Wilson"} or \code{"Bland-Altman"}, can be abbreviated.
+#'   Either \code{"Bland-Altman"} or \code{"Wilson"}, can be abbreviated.
 #'   See Details.
 #' @param pooled A character string indicating whether results for the
 #'   common (\code{"common"}) or random effects model (\code{"random"})
@@ -54,18 +54,18 @@
 #' @details
 #' A scatter plot is drawn in the active graphics window.
 #' 
-#' By default (argument \code{type = "Wilson"}), a scatter plot with
-#' direct effect estimates on the horizontal and indirect estimates on the
-#' vertical axis is produced (Wilson et al., 2026). The confidence intervals are
-#' calculated from the indirect (argument \code{vertical = TRUE}) or direct
-#' effect estimates and the standard error of the difference between indirect
-#' and direct effect estimates.
-#' 
-#' A variant of the Bland-Altman plot is shown if argument
-#' \code{type = "Bland-Altman"} (Bland & Altman, 1995). In this case, the
+#' By default (argument \code{type = "Bland-Altman"}), a variant of the
+#' Bland-Altman plot is shown (Bland & Altman, 1995). In this case, the
 #' network estimates are shown on the horizontal axis and the difference between
 #' direct and indirect effect estimates on the vertical axis. The confidence
 #' intervals are those from the differences.
+#' 
+#' If argument \code{type = "Wilson"}, a scatter plot with direct effect
+#' estimates on the horizontal and indirect estimates on the vertical axis
+#' is produced (Wilson et al., 2026). The confidence intervals are
+#' calculated from the indirect (argument \code{vertical = TRUE}) or direct
+#' effect estimates and the standard error of the difference between indirect
+#' and direct effect estimates.
 #' 
 #' For both plot types, the dashed green line corresponds to comparisons with
 #' equal direct and indirect effect estimates.
@@ -103,7 +103,7 @@
 #' @export
 
 plot.netsplit <- function(x,
-                          type = "Wilson",
+                          type = "Bland-Altman",
                           pooled = ifelse(x$x$random, "random", "common"),
                           subset = NULL,
                           only.reference = x$only.reference,

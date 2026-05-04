@@ -250,9 +250,7 @@
 #'
 #' @keywords package
 #' 
-#' @importFrom meta baujat forest funnel radial trimfill longarm
-#'   metabias metabin metacont metagen metainc metacum metainf metareg
-#'   gs ci cilayout backtransf pairwise settings.meta
+#' @importFrom meta baujat forest funnel radial trimfill longarm metabias metabin metacont metagen metainc metacum metainf metareg gs ci cilayout backtransf pairwise settings.meta
 #'
 #' @importFrom metafor bldiag contrmat rma.mv rma.uni
 #'
@@ -264,47 +262,27 @@
 #' 
 #' @importFrom mvtnorm rmvnorm
 #'
-#' @importFrom stats as.formula dist hclust optim optimize pchisq
-#'   prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted
-#'   residuals quantile setNames model.matrix aggregate
+#' @importFrom stats as.formula dist hclust optim optimize pchisq prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted residuals quantile setNames model.matrix aggregate
 #'   
 #' @importFrom methods as
 #'
-#' @importFrom utils installed.packages packageDescription capture.output
-#'   packageVersion
+#' @importFrom utils installed.packages packageDescription capture.output packageVersion
 #'
-#' @importFrom igraph E<- V<- E V all_simple_paths delete_edges
-#'   get.shortest.paths
-#'   graph_from_adjacency_matrix graph_from_edgelist gsize
-#'   set_edge_attr set_vertex_attr head_of tail_of
+#' @importFrom igraph E<- V<- E V all_simple_paths delete_edges get.shortest.paths graph_from_adjacency_matrix graph_from_edgelist gsize set_edge_attr set_vertex_attr head_of tail_of
 #'
 #' @importFrom grDevices colours col2rgb heat.colors rainbow rgb xy.coords
 #'
-#' @importFrom graphics axis box lines par points plot polygon rect
-#'   text strheight strwidth title
+#' @importFrom graphics axis box lines par points plot polygon rect text strheight strwidth title
 #'
-#' @importFrom ggplot2 ggplot aes xlab ylab labs
-#'    element_blank element_line element_rect element_text expand_limits
-#'    geom_col geom_line geom_step geom_tile geom_text ggtitle
-#'    geom_abline geom_hline geom_point geom_vline
-#'    scale_fill_gradient2 scale_x_discrete scale_y_discrete
-#'    scale_x_continuous scale_x_discrete scale_y_discrete
-#'    theme theme_classic theme_dark
-#'    scale_color_manual coord_cartesian guide_legend guides margin
+#' @importFrom ggplot2 ggplot aes xlab ylab labs element_blank element_line element_rect element_text expand_limits geom_col geom_line geom_step geom_tile geom_text ggtitle geom_abline geom_hline geom_point geom_vline scale_fill_gradient2 scale_x_discrete scale_y_discrete scale_x_continuous scale_x_discrete scale_y_discrete theme theme_classic theme_dark scale_color_manual coord_cartesian guide_legend guides margin
 #' 
 #' @importFrom ggrepel geom_text_repel
 #'
-#' @importFrom colorspace sequential_hcl rainbow_hcl sequential_hcl
-#'   diverge_hcl heat_hcl terrain_hcl diverge_hsv choose_palette
+#' @importFrom colorspace sequential_hcl rainbow_hcl sequential_hcl diverge_hcl heat_hcl terrain_hcl diverge_hsv choose_palette
 #' 
-#' @importFrom grid arrow convertHeight convertWidth convertX convertY
-#'   drawDetails gpar grid.clip grid.draw grid.lines grid.newpage grid.rect
-#'   grid.roundrect grid.text grob popViewport pushViewport stringWidth
-#'   unit viewport
+#' @importFrom grid arrow convertHeight convertWidth convertX convertY drawDetails gpar grid.clip grid.draw grid.lines grid.newpage grid.rect grid.roundrect grid.text grob popViewport pushViewport stringWidth unit viewport
 #' 
-#' @importFrom dplyr %>% filter select rename starts_with relocate last_col
-#'   mutate if_else bind_rows pull case_when distinct count
-#'   summarise inner_join
+#' @importFrom dplyr %>% filter select rename starts_with relocate last_col mutate if_else bind_rows pull case_when distinct count summarise inner_join
 #' 
 #' @importFrom stringr str_length
 #' 
