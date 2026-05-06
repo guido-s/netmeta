@@ -2,19 +2,17 @@
 #'
 #' @description
 #' Network meta-regression with a single continuous or binary covariate for
-#' objects of class \code{netmeta}. This is a wrapper function for the R
-#' function \code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
+#' objects of class \code{netmeta} (Kwarteng et al., 2026). This is a wrapper
+#' function for \code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
 #' (Viechtbauer 2010).
 #'
 #' @details
-#' This R function is a wrapper function for R function
-#' \code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
-#' (Viechtbauer 2010).
+#' This R function is a wrapper function for \code{\link[metafor]{rma.mv}} in
+#' the R package \bold{metafor} (Viechtbauer 2010).
 #'
-#' Note, results are not back-transformed in printouts of
-#' network meta-analyses using summary measures with transformations, e.g.,
-#' log risk ratios are printed instead of the risk ratio if argument
-#' \code{sm = "RR"}.
+#' Note, results are not back-transformed in printouts of network meta-analyses
+#' using summary measures with transformations, e.g., log risk ratios are
+#' printed instead of the risk ratio if argument \code{sm = "RR"}.
 #'
 #' Argument '\dots{}' can be used to pass additional arguments to R
 #' function \code{\link[metafor]{rma.mv}}. For example, argument
@@ -34,6 +32,9 @@
 #' @param level The level used to calculate confidence intervals for regression
 #'   coefficients.
 #' @param reference.group Reference treatment.
+#' @param direction1 ADD DESCRIPTION.
+#' @param direction2 ADD DESCRIPTION.
+#' @param max.ia ADD DESCRIPTION.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
@@ -48,8 +49,7 @@
 #'   printed.
 #' @param details.methods A logical specifying whether details on statistical
 #'   methods should be printed.
-#' @param \dots Additional arguments passed to R function
-#'   \code{\link[metafor]{rma.uni}}.
+#' @param \dots Additional arguments passed to \code{\link[metafor]{rma.mv}}.
 #'
 #' @return
 #' An object of class \code{c("netmetareg", "rma.mv", "rma")}. Please
@@ -73,6 +73,12 @@
 #' @seealso \code{\link{netmeta}}
 #'
 #' @references
+#' 
+#' Kwarteng N, Evrenoglou T, Mueller J, Elsaesser M, Schramm E, Schwarzer G,
+#' Nikolakopoulou A (2026):
+#' Illustrating the assumptions of meta-regression in treatment networks.
+#' Preprint, Research Square, \url{https://doi.org/10.21203/rs.3.rs-8235913/}.
+#' 
 #' Viechtbauer W (2010):
 #' Conducting Meta-Analyses in R with the Metafor Package.
 #' \emph{Journal of Statistical Software},
@@ -110,6 +116,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
                                method.tau = if (!x$random) "FE" else "REML",
                                level = x$level.ma,
                                reference.group = x$reference.group,
+                               direction1 = NULL, direction2 = NULL,
+                               max.ia = FALSE,
                                nchar.trts = x$nchar.trts, ...) {
   
   #
@@ -130,10 +138,6 @@ netmetareg.netmeta <- function(x, covar = NULL,
   chklevel(level)
   #
   sm <- x$sm
-  #
-  direction1 <- NULL
-  direction2 <- NULL
-  max.ia <- FALSE
   
   
   #
@@ -385,7 +389,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
         try(dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0),
             silent = TRUE)
       #
-      # Necessary, if reference treatment contains a whitespace
+      # Necessary, if reference treatment contains a white space
       #
       if (inherits(error, "try-error"))
         dat$nonref <- as.numeric(dat[[gsub(" ", "_", reference.group)]] != 0)
@@ -436,7 +440,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   # Checks for non-numeric covariate
   #
   mm <- model.matrix(formula.nmr_default, data = dat) # default model matrix
-  mm <- mm[, grepl("insufficient_data", colnames(mm)) == FALSE]
+  mm <- mm[, !grepl("insufficient_data", colnames(mm))]
   #
   # Drop interactions which contain the reference covariate level if covariate
   # is of mode factor, character, or logical

@@ -15,6 +15,9 @@
   method.tau = if (!x$random) "FE" else "REML",
   level = x$level.ma,
   reference.group = x$reference.group,
+  direction1 = NULL,
+  direction2 = NULL,
+  max.ia = FALSE,
   nchar.trts = x$nchar.trts,
   ...
 )
@@ -54,11 +57,16 @@ coefficients.}
 
 \item{reference.group}{Reference treatment.}
 
+\item{direction1}{ADD DESCRIPTION.}
+
+\item{direction2}{ADD DESCRIPTION.}
+
+\item{max.ia}{ADD DESCRIPTION.}
+
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
 
-\item{\dots}{Additional arguments passed to R function
-\code{\link[metafor]{rma.uni}}.}
+\item{\dots}{Additional arguments passed to \code{\link[metafor]{rma.mv}}.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
@@ -95,19 +103,17 @@ the following components:
 }
 \description{
 Network meta-regression with a single continuous or binary covariate for
-objects of class \code{netmeta}. This is a wrapper function for the R
-function \code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
+objects of class \code{netmeta} (Kwarteng et al., 2026). This is a wrapper
+function for \code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
 (Viechtbauer 2010).
 }
 \details{
-This R function is a wrapper function for R function
-\code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
-(Viechtbauer 2010).
+This R function is a wrapper function for \code{\link[metafor]{rma.mv}} in
+the R package \bold{metafor} (Viechtbauer 2010).
 
-Note, results are not back-transformed in printouts of
-network meta-analyses using summary measures with transformations, e.g.,
-log risk ratios are printed instead of the risk ratio if argument
-\code{sm = "RR"}.
+Note, results are not back-transformed in printouts of network meta-analyses
+using summary measures with transformations, e.g., log risk ratios are
+printed instead of the risk ratio if argument \code{sm = "RR"}.
 
 Argument '\dots{}' can be used to pass additional arguments to R
 function \code{\link[metafor]{rma.mv}}. For example, argument
@@ -137,6 +143,11 @@ nr
 
 }
 \references{
+Kwarteng N, Evrenoglou T, Mueller J, Elsaesser M, Schramm E, Schwarzer G,
+Nikolakopoulou A (2026):
+Illustrating the assumptions of meta-regression in treatment networks.
+Preprint, Research Square, \url{https://doi.org/10.21203/rs.3.rs-8235913/}.
+
 Viechtbauer W (2010):
 Conducting Meta-Analyses in R with the Metafor Package.
 \emph{Journal of Statistical Software},
