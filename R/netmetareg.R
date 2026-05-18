@@ -32,9 +32,9 @@
 #' @param level The level used to calculate confidence intervals for regression
 #'   coefficients.
 #' @param reference.group Reference treatment.
-#' @param direction1 ADD DESCRIPTION.
-#' @param direction2 ADD DESCRIPTION.
-#' @param max.ia ADD DESCRIPTION.
+#' @param direction1 Directionality parameter for the first treatment group when using UMIE models.
+#' @param direction2 Directionality parameter for the second treatment group when using UMIE models.
+#' @param max.ia Removes comparisons with insufficient data for interaction estimation when using UMIE models. The reccomended and default setting is FALSE. 
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
@@ -88,6 +88,9 @@
 #' 
 #' @examples
 #' \donttest{
+#' #
+#' # 1) Smoking cessation example
+#' #
 #' data(smokingcessation)
 #' # Add variable with (fictitious) risk of bias values
 #' # with 1 = "low risk" and 2 = "high risk"
@@ -104,6 +107,70 @@
 #' # independent slopes
 #' nr <- netmetareg(nma, rob)
 #' nr
+#' }
+#' 
+#' \donttest{
+#' #
+#' # 2) Pain Prevention of Propofol Injection Example 
+#' # ( Jalota2011)
+#' #
+#' 
+#' data("Jalota2011")
+#' # create pairwise object
+#' pw_Jalota<- pairwise(treat = trt, event =  pain, n=n, studlab=id, data = Jalota2011, sm = "OR")
+#' #'implement NMA
+#' nma_Jalota <- netmeta(pw_Jalota, common = FALSE, ref = "Hand vein")
+#' 
+#' # NMR with independent and consistent assumption 
+#' # (default)
+#' Jalota_nmr_i<-netmetareg(nma_Jalota, covar=seTE, consistency = TRUE, assumption = "i")
+#' # NMR with common and consistent assumption
+#' Jalota_nmr_c<-netmetareg(nma_Jalota, covar=seTE, consistency = TRUE, assumption = "c")
+#' # NMR with independent UMIE model 
+#' # (no consistency in interactions) using default treatment order
+#' Jalota_nmr_iumie<-netmetareg(nma_Jalota, covar=seTE, consistency = FALSE, assumption = "i")
+#'}
+#'
+#' \donttest{
+#' #
+#' # 3) Physical therapy example: Hong 2015
+#' #
+#' 
+#' data("Hong2015")
+#' mydata<-Hong2015
+#' # Externally create a customizable treatment order indicator variable, which will later be modified
+#' mydata$trtnum <- as.numeric(as.factor(mydata$trt))
+#' mydata <- do.call(rbind, lapply(split(mydata, mydata$id), function(x) {
+#'   x$direction <- ifelse(x$trtnum == min(x$trtnum), 0, 1)
+#'   x}))
+#' 
+#' pw_mydata<- pairwise(treat = trt, mean = mean_pain, n=n, sd = sd_pain,studlab=id,
+#'                      data = mydata, sm = "MD")
+#' # create difference variable for covariate
+#' pw_mydata$disability_diff <- pw_mydata$mean_disability1 - pw_mydata$mean_disability2
+#' 
+#' # update directionality parameters so that they will exclude imputed values
+#' pw_mydata$direction1 <- ifelse(is.na(pw_mydata$disability_diff), 0, pw_mydata$direction1) 
+#' pw_mydata$direction2 <- ifelse(is.na(pw_mydata$disability_diff), 0, pw_mydata$direction2)
+#' 
+#' # mean imputations for missing covariate values
+#' pw_mydata$disability_diff <- ifelse(is.na(pw_mydata$disability_diff), mean(pw_mydata$disability_diff, na.rm = TRUE), pw_mydata$disability_diff)
+#' 
+#' # NMA
+#' nma_Hong <- netmeta(pw_mydata, common = FALSE, ref = "No treatment")
+#' 
+#' # NMR with independent and consistent assumption (default)
+#' nmr_i<-netmetareg(nma_Hong, covar=disability_diff, consistency = TRUE, assumption = "i")
+#' # NMR with common and consistent assumption
+#' nmr_c<-netmetareg(nma_Hong, covar=disability_diff, consistency = TRUE, assumption = "c")
+#' # NMR with independent UMIE model (no consistency in interactions) using default treatment order variable
+#' nmr_iumie<-netmetareg(nma_Hong, covar=disability_diff, consistency = FALSE, assumption = "i")
+#' # NMR with independent UMIE model (no consistency in interactions) using custom treatment order variable which excludes the mean imputations from interaction estimation
+#' nmr_iumie_noimp<-netmetareg(nma_Hong, covar=disability_diff, consistency = FALSE, assumption = "i", direction1 = "direction1", direction2="direction2")
+#' # NMR with common UMIE model (no consistency in interactions) using default treatment order variable
+#' nmr_cumie<-netmetareg(nma_Hong, covar=disability_diff, consistency = FALSE, assumption = "c")
+#' # NMR with common UMIE model (no consistency in interactions) using custom treatment order variable which excludes the mean imputations from interaction estimation
+#' nmr_cumie_noimp<-netmetareg(nma_Hong, covar=disability_diff, consistency = FALSE, assumption = "c", direction1 = "direction1", direction2="direction2")
 #' }
 #' 
 #' @rdname netmetareg
@@ -302,8 +369,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
       wo <- c(wo, wo.i)
     }
     #
-  }
-  else if (!consistency) {
+  } else if (!consistency) {
     # calcV() is sensitive to the choice of reference treatment, but if we
     # have study specific references we have to update the keep and wo
     # statements
@@ -406,8 +472,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
                                    paste(paste0("nonref:", covar.name),
                                          collapse = " + "))))
     }
-  }
-  else {
+  } else {
     dat$Ival <- dat$Ival1 - dat$Ival2
     if (assumption == "independent") {
       dat$.comp_ <- paste(pmin(dat$treat1, dat$treat2),

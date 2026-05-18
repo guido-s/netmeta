@@ -624,10 +624,10 @@ check_Ival <- function(dat) {
   Ival_consistency_list <-
     lapply(split(dat, dat$studlab), function(x) any_invalid_I(x))
   #
-  if (length(Ival_consistency_list[Ival_consistency_list]) > 0)
+  if (length(Ival_consistency_list[Ival_consistency_list==TRUE]) > 0)
     stop(paste("Error in directionality assignment. ",
                "Inconsistent directions defined in the following studies: ",
-               paste(names(Ival_consistency_list[Ival_consistency_list]),
+               paste(names(Ival_consistency_list[Ival_consistency_list==TRUE]),
                      collapse = ", ")))
   #
   if (sum(!dat$Ival_diff %in% c(-1, 0, 1)) > 0)
