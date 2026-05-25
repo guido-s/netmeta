@@ -67,7 +67,7 @@
 #' \item{version.metafor}{Version of R package \bold{metafor} used to
 #'   create object.}
 #'
-#' @author Nana-Adjoa Kwarteng
+#' @author Nana-adjoa Kwarteng
 #'   \email{nana-adjoa.kwarteng@@uniklinik-freiburg.de},
 #'   Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #'

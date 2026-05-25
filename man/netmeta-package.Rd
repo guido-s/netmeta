@@ -63,7 +63,7 @@ Available functions to evaluate network inconsistency:
   to check for consistency (Dias et al., 2010; Efthimiou et al.,
   2019);
 \item scatter plot of direct and indirect estimates
-  (\code{\link{plot.netmeta}}) to visualize local consistency
+  (\code{\link{plot.netmeta}}) to visualise local consistency
   (Wilson et al., 2026);
 \item net heat plot (\code{\link{netheat}}) and design-based
   decomposition of Cochran's Q (\code{\link{decomp.design}})

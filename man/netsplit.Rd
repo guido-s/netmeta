@@ -253,7 +253,7 @@ Argument \code{show} determines which comparisons are printed:
 }
 
 Wilson et al. (2026) introduced a scatter plot of direct and indirect
-estimates to visualize local consistency in a network meta-analysis.
+estimates to visualise local consistency in a network meta-analysis.
 Alternatively, a forest plot with direct and indirect estimates can be
 generated.
 

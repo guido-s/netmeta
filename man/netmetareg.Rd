@@ -235,7 +235,7 @@ Conducting Meta-Analyses in R with the Metafor Package.
 \code{\link{netmeta}}
 }
 \author{
-Nana-Adjoa Kwarteng
+Nana-adjoa Kwarteng
   \email{nana-adjoa.kwarteng@uniklinik-freiburg.de},
   Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

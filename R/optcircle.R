@@ -34,9 +34,9 @@ optcircle <- function(x, start.layout = "eigen") {
     }
   }
   
-  ##
-  ## Distance matrix D of n-circle, here used to penalize distances
-  ##
+  #
+  # Distance matrix D of n-circle, here used to penalise distances
+  #
   if (n > 676)
     stop("Maximum number of 676 treatments", call. = FALSE)
   else if (n > 26) {
