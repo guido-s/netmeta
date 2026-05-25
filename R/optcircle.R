@@ -4,12 +4,10 @@ optcircle <- function(x, start.layout = "eigen") {
   n1 <- netgraph(x, start.layout = start.layout,
                  iterate = TRUE, figure = FALSE)
   
-  
   xpos <- n1$nodes$xpos
   ypos <- n1$nodes$ypos
   ##
   slope <- ypos / xpos
-  
   
   angle <- rep(0, n)
   ##
@@ -36,7 +34,6 @@ optcircle <- function(x, start.layout = "eigen") {
     }
   }
   
-  
   ##
   ## Distance matrix D of n-circle, here used to penalize distances
   ##
@@ -50,13 +47,12 @@ optcircle <- function(x, start.layout = "eigen") {
   }
   else
     trts <- LETTERS[1:n]
-  ##
+  #
   D <- t(P) %*% netconnection(trts, trts[c(2:n, 1)])$D.matrix %*% P
-  ##
-  A.matrix <- sign(x$A.matrix) * D # A.matrix is the adjacency matrix, edges penalized
-  ##
-  distsum <- sum(A.matrix) / 2 # Weighted distance sum
-  
+  # A.matrix is the adjacency matrix, edges penalised
+  A.matrix <- sign(x$A.matrix) * D
+  # Weighted distance sum
+  distsum <- sum(A.matrix) / 2
   
   res <- list(xpos = xpos, ypos = ypos, seq = seq,
               A.matrix = A.matrix, distsum = distsum,

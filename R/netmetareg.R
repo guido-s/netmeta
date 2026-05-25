@@ -68,17 +68,17 @@
 #'   create object.}
 #'
 #' @author Nana-Adjoa Kwarteng
-#'   \email{nana-adjoa.kwarteng@uniklinik-freiburg.de},
+#'   \email{nana-adjoa.kwarteng@@uniklinik-freiburg.de},
 #'   Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #'
 #' @seealso \code{\link{netmeta}}
 #'
 #' @references
-#' 
 #' Kwarteng N, Evrenoglou T, Mueller J, Elsaesser M, Schramm E, Schwarzer G,
 #' Nikolakopoulou A (2026):
 #' Illustrating the assumptions of meta-regression in treatment networks.
-#' Preprint, Research Square, \url{https://doi.org/10.21203/rs.3.rs-8235913/}.
+#' Preprint available at \emph{Research Square},
+#' \url{https://doi.org/10.21203/rs.3.rs-8235913/v1}
 #' 
 #' Viechtbauer W (2010):
 #' Conducting Meta-Analyses in R with the Metafor Package.

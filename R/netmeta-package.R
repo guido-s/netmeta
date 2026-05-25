@@ -3,7 +3,7 @@
 #' @description
 #' R package \bold{netmeta} (Balduzzi et al., 2023) provides
 #' frequentist methods for network meta-analysis and supports
-#' Schwarzer et al. (2015), Chapter 8 on network meta-analysis
+#' Schwarzer et al. (2015), Chapter 8 on network meta-analysis,
 #' \url{https://link.springer.com/book/10.1007/978-3-319-21416-0}.
 #' 
 #' @details
@@ -20,7 +20,10 @@
 #' \item network meta-analysis of binary data
 #'   (\code{\link{netmetabin}}) using the Mantel-Haenszel or
 #'   non-central hypergeometric distribution method (Efthimiou et al.,
-#'   2019), or penalised logistic regression (Evrenoglou et al., 2022).
+#'   2019), or penalised logistic regression (Evrenoglou et al., 2022);
+#' \item network meta-regression (\code{\link{netmetareg}}) with a single
+#'   continuous or binary covariate (Kwarteng et al., 2026);
+#' \item subgroup network meta-analysis (\code{\link{subgroup.netmeta}}).
 #' }
 #'
 #' The following methods are available to present results of a network
@@ -55,8 +58,9 @@
 #' \item split direct and indirect evidence (\code{\link{netsplit}})
 #'   to check for consistency (Dias et al., 2010; Efthimiou et al.,
 #'   2019);
-#' \item scatter plot of direct and indirect estimates to visualize
-#'   local consistency (Wilson et al., 2026);
+#' \item scatter plot of direct and indirect estimates
+#'   (\code{\link{plot.netmeta}}) to visualize local consistency
+#'   (Wilson et al., 2026);
 #' \item net heat plot (\code{\link{netheat}}) and design-based
 #'   decomposition of Cochran's Q (\code{\link{decomp.design}})
 #'   described in Krahn et al. (2013).
@@ -165,7 +169,7 @@
 #' \bold{38}, 2992--3012
 #' 
 #' Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
-#' Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+#' Network Meta-analysis of rare events using penalized likelihood regression.
 #' \emph{Statistics in Medicine},
 #' \bold{41}, 5203--19.
 #' 
@@ -179,6 +183,12 @@
 #' A graphical tool for locating inconsistency in network meta-analyses.
 #' \emph{BMC Medical Research Methodology},
 #' \bold{13}, 35
+#' 
+#' Kwarteng N, Evrenoglou T, Mueller J, Elsaesser M, Schramm E, Schwarzer G,
+#' Nikolakopoulou A (2026):
+#' Illustrating the assumptions of meta-regression in treatment networks.
+#' Preprint available at \emph{Research Square},
+#' \url{https://doi.org/10.21203/rs.3.rs-8235913/v1}
 #' 
 #' Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
 #' Schwarzer, G., Egger, M., Salanti, G. (2018):

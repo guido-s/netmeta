@@ -318,7 +318,7 @@
 #' \bold{38}, 2992--3012
 #' 
 #' Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
-#' Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+#' Network Meta-analysis of rare events using penalized likelihood regression.
 #' \emph{Statistics in Medicine},
 #' \bold{41}, 5203--19.
 #' 
@@ -435,7 +435,7 @@ netmetabin <- function(event1, n1, event2, n2,
   modtext <-
     paste0("must be equal to 'MH' (Mantel-Haenszel, the default), ",
            "'NCH' (common-effects non-central hypergeometric), ",
-           "'LRP' (penalized logistic regression), or ",
+           "'LRP' (penalised logistic regression), or ",
            "'Inverse' (classic network meta-analysis).")
   method <- setchar(method, c("Inverse", "MH", "NCH", "LRP"), modtext)
   is.mh.nch <- !(method %in% c("Inverse", "LRP"))
@@ -1886,7 +1886,7 @@ netmetabin <- function(event1, n1, event2, n2,
   }
   else if (is.lrp) {
     #
-    # Penalized logistic regression
+    # Penalised logistic regression
     #
     is_installed_package("brglm2", "netmetabin", "method", " = \"LRP\"")
     #

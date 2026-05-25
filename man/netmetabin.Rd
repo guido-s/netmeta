@@ -433,7 +433,7 @@ A Mantel-Haenszel model for network meta-analysis of rare events.
 \bold{38}, 2992--3012
 
 Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
-Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+Network Meta-analysis of rare events using penalized likelihood regression.
 \emph{Statistics in Medicine},
 \bold{41}, 5203--19.
 
