@@ -224,7 +224,7 @@ Kwarteng N, Evrenoglou T, Mueller J, Elsaesser M, Schramm E, Schwarzer G,
 Nikolakopoulou A (2026):
 Illustrating the assumptions of meta-regression in treatment networks.
 Preprint available at \emph{Research Square},
-\url{https://doi.org/10.21203/rs.3.rs-8235913/v1}
+\doi{10.21203/rs.3.rs-8235913/v1}
 
 Viechtbauer W (2010):
 Conducting Meta-Analyses in R with the Metafor Package.
