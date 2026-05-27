@@ -2,7 +2,6 @@
 % Please edit documentation in R/forest.netsplit.R
 \name{forest.netsplit}
 \alias{forest.netsplit}
-\alias{plot.netsplit}
 \title{Forest plot for direct and indirect evidence}
 \usage{
 \method{forest}{netsplit}(
@@ -44,8 +43,6 @@
   smlab,
   ...
 )
-
-\method{plot}{netsplit}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{netsplit}.}
@@ -82,7 +79,7 @@ of same length as the total number of comparisons).}
 
 \item{subset}{An optional logical vector specifying a subset of
 comparisons to print (must be of same length as the total number of
-comparisons) .}
+comparisons).}
 
 \item{text.overall}{A character string used in the plot to label
 the network estimates.}

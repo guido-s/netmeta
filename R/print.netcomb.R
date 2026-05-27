@@ -219,7 +219,7 @@ print.netcomb <- function(x,
     else
       sm.lab <- sm
     ##
-    ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
+    ci.lab <- paste0(round(100 * x$level, 1), "% CI")
     ##
     TE.common <- x$TE.common
     lowTE.common <- x$lower.common

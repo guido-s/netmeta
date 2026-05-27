@@ -9,7 +9,7 @@
 #' 
 #' @details
 #' In the context of network meta-analysis and the assessment of the
-#' homogeneity and consistency assumption, a generalized Cochran's Q
+#' homogeneity and consistency assumption, a generalised Cochran's Q
 #' statistic for multivariate meta-analysis can be used as shown in
 #' Krahn et al. (2013). This Q statistic can be decomposed in a sum
 #' of within-design Q statistics and one between-designs Q statistic

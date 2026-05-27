@@ -260,7 +260,7 @@ print.summary.netmeta <- function(x,
     if (length(sortvar) != k.all)
       stop("'x' and 'sortvar' have different length")
     ##
-    ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
+    ci.lab <- paste0(round(100 * x$level, 1), "% CI")
     ##
     sm <- sm.lab <- x$sm
     #

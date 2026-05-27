@@ -180,8 +180,8 @@ should be indented.}
 }
 \value{
 An object of class \code{netsplit} with corresponding \code{print}
-and \code{forest} functions. The object is a list containing the
-following components:
+\code{forest}, and \code{plot} functions. The object is a list containing
+the following components:
 \item{common, random}{As defined above.}
 \item{comparison}{A vector with treatment comparisons.}
 \item{prop.common, prop.random}{A vector with direct evidence
@@ -252,6 +252,11 @@ Argument \code{show} determines which comparisons are printed:
   evidence
 }
 
+Wilson et al. (2026) introduced a scatter plot of direct and indirect
+estimates to visualise local consistency in a network meta-analysis.
+Alternatively, a forest plot with direct and indirect estimates can be
+generated.
+
 The node-splitting method and SIDDE can be compute-intensive in
 large networks. Crude information on the computation progress is
 printed if argument \code{verbose = TRUE}. In addition, computation
@@ -307,6 +312,10 @@ print(ns2, digits = 2, ci = TRUE, test = FALSE)
 #
 forest(ns2, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
 
+# Scatter plot to evaluate local inconsistency
+#
+plot(ns2)
+
 # Forest plot showing comparisons contributing direct evidence
 #
 forest(ns2, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE,
@@ -353,10 +362,17 @@ A GRADE working group approach for rating the quality of treatment
 effect estimates from network meta-analysis.
 \emph{British Medical Journal},
 \bold{349}, g5630
+
+Wilson H, Schönstein A, Robson S, Bonofiglio F (2026):
+A novel approach for visualizing local consistency in
+network meta-analysis.
+\emph{Research Synthesis Methods},
+1--15
 }
 \seealso{
-\code{\link{forest.netsplit}}, \code{\link{netmeta}},
-  \code{\link{netmetabin}}, \code{\link{netmeasures}},
+\code{\link{forest.netsplit}}, \code{\link{plot.netsplit}},
+  \code{\link{netmeta}}, \code{\link{netmetabin}},
+  \code{\link{netmeasures}},
   \code{\link[metabook]{Woods2010}}, \code{\link{Senn2013}},
   \code{\link[metabook]{Dong2013}}
 }

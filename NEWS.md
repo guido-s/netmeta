@@ -1,3 +1,23 @@
+## netmeta, version 3.5-0 (2026-05-27)
+
+### Major changes
+
+* Unrelated mean interaction effect (UMIE) models for network
+  meta-regression implemented
+  [(Kwarteng et al., 2026)](https://doi.org/10.21203/rs.3.rs-8235913/v1)
+
+* New function plot.netsplit() implementing the method by
+  [Wilson et al. (2026)](https://doi.org/10.1017/rsm.2026.10082) to visualize
+  local consistency
+
+* R packages **stringr**, **tidyr** and **ggrepel** added to Imports
+
+### User-visible changes
+
+* netmetareg():
+  - new arguments 'direction1' and 'direction2' for UMIE models
+
+
 ## netmeta, version 3.4-0 (2026-04-10)
 
 ### Major changes
@@ -100,7 +120,7 @@
 
 ### Major changes
 
-* [Nana-Adjoa Kwarteng](https://orcid.org/0009-0009-0502-6887) added as
+* [Nana-adjoa Kwarteng](https://orcid.org/0009-0009-0502-6887) added as
   a contributor to the R package **netmeta**
 
 * New R function netmetareg() to conduct network meta-regression with a
