@@ -693,7 +693,7 @@ print.netmetareg <- function(x,
   dat <- replaceNA(dat, ".")
   #
   names(dat)[names(dat) == "lower"] <-
-    paste0(round(100 * x$.netmeta$level, 1), "%-CI")
+    paste0(round(100 * x$.netmeta$level, 1), "% CI")
   #
   dat$z <- formatN(dat$z, digits = digits.stat)
   dat$pval <- formatPT(dat$pval, digits = digits.pval)

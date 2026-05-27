@@ -332,7 +332,7 @@ forest.netsplit <- function(x,
     if (!(length(x$level.predict) == 0) &&
         x$level.ma != x$level.predict)
       text.predict <- paste0(text.predict, " (",
-                             round(x$level.predict * 100), "%-PI)")
+                             round(x$level.predict * 100), "% PI)")
   ##
   if (overall & n.subgroup > 1) {
     if (text.overall == text.predict)

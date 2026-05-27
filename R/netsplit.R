@@ -713,7 +713,7 @@ print.netsplit <- function(x,
     sm.lab <- ""
   ##
   level.ma <- x$level.ma
-  ci.lab <- paste(100 * level.ma, "%-CI", sep ="")
+  ci.lab <- paste(100 * level.ma, "% CI", sep ="")
   ##  
   random.available <- !is.null(x$random)
   ##

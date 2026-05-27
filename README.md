@@ -46,7 +46,9 @@ R package **netmeta** ([Balduzzi et al., 2023](https://www.doi.org/10.18637/jss.
     ([Evrenoglou et al., 2022](https://doi.org/10.1002/sim.9562));
 
   - network meta-regression with a single continuous or binary covariate
-    ([Kwarteng et al., 2026](https://doi.org/10.21203/rs.3.rs-8235913/v1)).
+    ([Kwarteng et al., 2026](https://doi.org/10.21203/rs.3.rs-8235913/v1));
+
+  - subgroup network meta-analysis.
 
 
 ### Methods to present results of a network meta-analysis

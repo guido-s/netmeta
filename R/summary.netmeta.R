@@ -314,7 +314,7 @@ summary.netmeta <- function(object,
               level.ma = object$level.ma,
               level.predict = object$level.predict,
               #
-              ci.lab = paste0(round(100 * object$level.ma, 1),"%-CI"),
+              ci.lab = paste0(round(100 * object$level.ma, 1),"% CI"),
               #
               incr = object$incr,
               method.incr = object$method.incr,
