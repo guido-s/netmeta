@@ -2,6 +2,9 @@ is_installed_package <- function(pkg, func, argument, value,
                                  chksettings = FALSE, stop = TRUE,
                                  version = NULL) {
   
+  old <- options(rgl.useNULL = TRUE)
+  on.exit(options(old), add = TRUE)
+
   pkginstalled <- requireNamespace(pkg, quietly = TRUE)
   
   oldpkg <- pkginstalled && !is.null(version) && packageVersion(pkg) < version

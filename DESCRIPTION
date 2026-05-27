@@ -1,10 +1,11 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
-Version: 3.4-0
-Date: 2026-04-10
-Depends: R (>= 4.0.0), meta (>= 8.3-0)
+Version: 3.5-0
+Date: 2026-05-27
+Depends: R (>= 4.0.0), meta (>= 8.5-0)
 Imports: Matrix, metafor, MASS, mvtnorm, magic, igraph, 
-  ggplot2, colorspace, grid, dplyr, magrittr, methods
+  ggplot2, colorspace, grid, dplyr, magrittr, methods,
+  stringr, tidyr, ggrepel
 Suggests: Rgraphviz, graph, rgl, gridExtra, tictoc, writexl,
   R.rsp, cccp, brglm2, crossnma, gemtc, rmarkdown, knitr
 Authors@R: c(person("Gerta", "Rücker",
@@ -32,7 +33,7 @@ Authors@R: c(person("Gerta", "Rücker",
                     comment = c(ORCID = "0000-0002-2293-2146",
                     paste("Author of the original MIT-licensed",
                           "R package hasseDiagram"))),
-             person("Nana-Adjoa", "Kwarteng",
+             person("Nana-adjoa", "Kwarteng",
                     role = "ctb",
                     comment = c(ORCID = "0009-0009-0502-6887")),
              person("Guido", "Schwarzer",
@@ -47,6 +48,7 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - rankograms and ranking of treatments by the Surface under the cumulative ranking curve (SUCRA) (Salanti et al., 2013) <doi:10.1016/j.jclinepi.2010.03.016>;
  - ranking of treatments using P-scores (frequentist analogue of SUCRAs without resampling) according to Rücker & Schwarzer (2015) <doi:10.1186/s12874-015-0060-8>;
  - split direct and indirect evidence to check consistency (Dias et al., 2010) <doi:10.1002/sim.3767>, (Efthimiou et al., 2019) <doi:10.1002/sim.8158>;
+ - scatter plot to visualize local inconsistency (Wilson et al., 2026) <doi:10.1017/rsm.2026.10082>;
  - league table with network meta-analysis results;
  - 'comparison-adjusted' funnel plot (Chaimani & Salanti, 2012) <doi:10.1002/jrsm.57>;
  - net heat plot and design-based decomposition of Cochran's Q according to Krahn et al. (2013) <doi:10.1186/1471-2288-13-35>;
@@ -54,9 +56,9 @@ Description: A comprehensive set of functions providing frequentist methods for 
  - automated drawing of network graphs described in Rücker & Schwarzer (2016) <doi:10.1002/jrsm.1143>;
  - partial order of treatment rankings ('poset') and Hasse diagram for 'poset' (Carlsen & Bruggemann, 2014) <doi:10.1002/cem.2569>; (Rücker & Schwarzer, 2017) <doi:10.1002/jrsm.1270>;
  - contribution matrix as described in Papakonstantinou et al. (2018) <doi:10.12688/f1000research.14770.3> and Davies et al. (2022) <doi:10.1002/sim.9346>;
- - network meta-regression with a single continuous or binary covariate;
+ - network meta-regression with a single continuous or binary covariate (Kwarteng et al., 2026) <doi:10.21203/rs.3.rs-8235913/v1>;
  - subgroup network meta-analysis.
 License: GPL (>= 2) | file LICENSE
 Encoding: UTF-8
 VignetteBuilder: R.rsp, knitr
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.0.0

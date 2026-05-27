@@ -539,7 +539,7 @@ print.netcomparison <- function(x,
   if (!backtransf & relative)
     sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##  
-  ci.lab <- paste0(round(100 * x$level, 1), "%-CI")
+  ci.lab <- paste0(round(100 * x$level, 1), "% CI")
   
   
   if (common) {

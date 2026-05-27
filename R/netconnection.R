@@ -15,8 +15,7 @@
 #' the additive network meta-analysis model might be possible, see
 #' \link{discomb} function.
 #' 
-#' @aliases netconnection netconnection.default netconnection.pairwise
-#'   print.netconnection
+#' @aliases netconnection netconnection.default netconnection.pairwise print.netconnection
 #' 
 #' @param data A data frame, e.g., created with
 #'   \code{\link[meta]{pairwise}}.

@@ -3,7 +3,7 @@
 #' @description
 #' R package \bold{netmeta} (Balduzzi et al., 2023) provides
 #' frequentist methods for network meta-analysis and supports
-#' Schwarzer et al. (2015), Chapter 8 on network meta-analysis
+#' Schwarzer et al. (2015), Chapter 8 on network meta-analysis,
 #' \url{https://link.springer.com/book/10.1007/978-3-319-21416-0}.
 #' 
 #' @details
@@ -20,7 +20,10 @@
 #' \item network meta-analysis of binary data
 #'   (\code{\link{netmetabin}}) using the Mantel-Haenszel or
 #'   non-central hypergeometric distribution method (Efthimiou et al.,
-#'   2019), or penalised logistic regression (Evrenoglou et al., 2022).
+#'   2019), or penalised logistic regression (Evrenoglou et al., 2022);
+#' \item network meta-regression (\code{\link{netmetareg}}) with a single
+#'   continuous or binary covariate (Kwarteng et al., 2026);
+#' \item subgroup network meta-analysis (\code{\link{subgroup.netmeta}}).
 #' }
 #'
 #' The following methods are available to present results of a network
@@ -55,6 +58,9 @@
 #' \item split direct and indirect evidence (\code{\link{netsplit}})
 #'   to check for consistency (Dias et al., 2010; Efthimiou et al.,
 #'   2019);
+#' \item scatter plot of direct and indirect estimates
+#'   (\code{\link{plot.netmeta}}) to visualise local consistency
+#'   (Wilson et al., 2026);
 #' \item net heat plot (\code{\link{netheat}}) and design-based
 #'   decomposition of Cochran's Q (\code{\link{decomp.design}})
 #'   described in Krahn et al. (2013).
@@ -163,7 +169,7 @@
 #' \bold{38}, 2992--3012
 #' 
 #' Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
-#' Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+#' Network Meta-analysis of rare events using penalized likelihood regression.
 #' \emph{Statistics in Medicine},
 #' \bold{41}, 5203--19.
 #' 
@@ -177,6 +183,12 @@
 #' A graphical tool for locating inconsistency in network meta-analyses.
 #' \emph{BMC Medical Research Methodology},
 #' \bold{13}, 35
+#' 
+#' Kwarteng N, Evrenoglou T, Mueller J, Elsaesser M, Schramm E, Schwarzer G,
+#' Nikolakopoulou A (2026):
+#' Illustrating the assumptions of meta-regression in treatment networks.
+#' Preprint available at \emph{Research Square},
+#' \doi{10.21203/rs.3.rs-8235913/v1}
 #' 
 #' Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
 #' Schwarzer, G., Egger, M., Salanti, G. (2018):
@@ -239,12 +251,16 @@
 #' Schwarzer G, Carpenter JR and Rücker G (2015):
 #' \emph{Meta-Analysis with R (Use R!)}.
 #' Springer International Publishing, Switzerland.
+#' 
+#' Wilson H, Schönstein A, Robson S, Bonofiglio F (2026):
+#' A novel approach for visualizing local consistency in
+#' network meta-analysis.
+#' \emph{Research Synthesis Methods},
+#' 1--15
 #'
 #' @keywords package
 #' 
-#' @importFrom meta baujat forest funnel radial trimfill longarm
-#'   metabias metabin metacont metagen metainc metacum metainf metareg
-#'   gs ci cilayout backtransf pairwise settings.meta
+#' @importFrom meta baujat forest funnel radial trimfill longarm metabias metabin metacont metagen metainc metacum metainf metareg gs ci cilayout backtransf pairwise settings.meta
 #'
 #' @importFrom metafor bldiag contrmat rma.mv rma.uni
 #'
@@ -256,42 +272,31 @@
 #' 
 #' @importFrom mvtnorm rmvnorm
 #'
-#' @importFrom stats as.formula dist hclust optim optimize pchisq
-#'   prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted
-#'   residuals quantile setNames model.matrix aggregate
+#' @importFrom stats as.formula dist hclust optim optimize pchisq prcomp relevel reshape rnorm sd coef glm binomial vcov update fitted residuals quantile setNames model.matrix aggregate
 #'   
 #' @importFrom methods as
 #'
-#' @importFrom utils installed.packages packageDescription capture.output
-#'   packageVersion
+#' @importFrom utils installed.packages packageDescription capture.output packageVersion
 #'
-#' @importFrom igraph E<- V<- E V all_simple_paths delete_edges
-#'   get.shortest.paths
-#'   graph_from_adjacency_matrix graph_from_edgelist gsize
-#'   set_edge_attr set_vertex_attr head_of tail_of
+#' @importFrom igraph E<- V<- E V all_simple_paths delete_edges get.shortest.paths graph_from_adjacency_matrix graph_from_edgelist gsize set_edge_attr set_vertex_attr head_of tail_of
 #'
 #' @importFrom grDevices colours col2rgb heat.colors rainbow rgb xy.coords
 #'
-#' @importFrom graphics axis box lines par points plot polygon rect
-#'   text strheight strwidth title
+#' @importFrom graphics axis box lines par points plot polygon rect text strheight strwidth title
 #'
-#' @importFrom ggplot2 ggplot aes xlab ylab labs
-#'    element_blank element_line element_rect element_text expand_limits
-#'    geom_col geom_line geom_step geom_tile geom_text ggtitle
-#'    scale_fill_gradient2 scale_x_discrete scale_y_discrete
-#'    scale_x_continuous scale_x_discrete scale_y_discrete
-#'    theme theme_classic theme_dark
+#' @importFrom ggplot2 ggplot aes xlab ylab labs element_blank element_line element_rect element_text expand_limits geom_col geom_line geom_step geom_tile geom_text ggtitle geom_abline geom_hline geom_point geom_vline scale_fill_gradient2 scale_x_discrete scale_y_discrete scale_x_continuous scale_x_discrete scale_y_discrete theme theme_classic theme_dark scale_color_manual coord_cartesian guide_legend guides margin
+#' 
+#' @importFrom ggrepel geom_text_repel
 #'
-#' @importFrom colorspace sequential_hcl rainbow_hcl sequential_hcl
-#'   diverge_hcl heat_hcl terrain_hcl diverge_hsv choose_palette
+#' @importFrom colorspace sequential_hcl rainbow_hcl sequential_hcl diverge_hcl heat_hcl terrain_hcl diverge_hsv choose_palette
 #' 
-#' @importFrom grid arrow convertHeight convertWidth convertX convertY
-#'   drawDetails gpar grid.clip grid.draw grid.lines grid.newpage grid.rect
-#'   grid.roundrect grid.text grob popViewport pushViewport stringWidth
-#'   unit viewport
+#' @importFrom grid arrow convertHeight convertWidth convertX convertY drawDetails gpar grid.clip grid.draw grid.lines grid.newpage grid.rect grid.roundrect grid.text grob popViewport pushViewport stringWidth unit viewport
 #' 
-#' @importFrom dplyr %>% filter select rename starts_with relocate last_col
-#'   mutate if_else bind_rows pull case_when distinct count
+#' @importFrom dplyr %>% filter select rename starts_with relocate last_col mutate if_else bind_rows pull case_when distinct count summarise inner_join
+#' 
+#' @importFrom stringr str_length
+#' 
+#' @importFrom tidyr pivot_longer
 #' 
 #' @importFrom magrittr %<>%
 
