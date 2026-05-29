@@ -208,7 +208,7 @@ crossnma2netmeta <- function(x,
   #
   res$method <- "crossnma"
   res$method.tau <- ""
-  res$m <- NA
+  res$m <- length(res$treat1)
   #
   res$level <- gs("level")
   res$level.ma <- level.ma
@@ -252,8 +252,8 @@ crossnma2netmeta <- function(x,
       res$upper.nma.random[i] <- res$upper.random[res$treat1[i], res$treat2[i]]
     }
     #
-    res$tau2 <- mean(tmat %>% unlist() %>% unname())
-    res$tau <- sqrt(res$tau2)
+    res$tau <- mean(tmat %>% unlist() %>% unname())
+    res$tau2 <- res$tau2^2
     #
     res$TE.common[!is.na(res$TE.common)] <- NA
     res$seTE.common <- res$lower.common <- res$upper.common <- res$TE.common

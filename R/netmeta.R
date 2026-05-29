@@ -60,6 +60,11 @@
 #'   used to estimate the between-study variance \eqn{\tau^2} and its
 #'   square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
 #'   \code{"ML"}, can be abbreviated.
+#' @param method.random.ci A character string indicating which method
+#'   is used to calculate confidence interval and test statistic for
+#'   random effects estimate; either \code{"classic"} for standard normal
+#'   quantiles or \code{"t-dist"} for quantiles from the t-distribution, can
+#'   be abbreviated.
 #' @param tau.preset An optional value for manually setting the
 #'   square-root of the between-study variance \eqn{\tau^2}.
 #' @param tol.multiarm A numeric for the tolerance for consistency of
@@ -678,6 +683,8 @@ netmeta <- function(TE, seTE,
                     method.tau = gs("method.tau.netmeta"),
                     tau.preset = NULL,
                     #
+                    method.random.ci = "classic",
+                    #
                     tol.multiarm = gs("tol.multiarm"),
                     tol.multiarm.se = gs("tol.multiarm.se"),
                     details.chkmultiarm = gs("details.chkmultiarm"),
@@ -738,6 +745,8 @@ netmeta <- function(TE, seTE,
   #
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
+  #
+  method.random.ci <- setchar(method.random.ci, c("classic", "t-dist"))
   #
   tol.multiarm <- replaceNULL(tol.multiarm, 0.001)
   chknumeric(tol.multiarm, min = 0, length = 1)
@@ -1577,7 +1586,8 @@ netmeta <- function(TE, seTE,
                        level, level.ma,
                        dat.r$seTE, tau, sep.trts,
                        method.tau,
-                       func.inverse, Cov0 = p1$Cov)
+                       func.inverse, Cov0 = p1$Cov,
+                       method.random.ci = method.random.ci)
   #
   TE.random <- res.r$TE.pooled
   seTE.random <- res.r$seTE.pooled
@@ -1817,6 +1827,8 @@ netmeta <- function(TE, seTE,
               #
               method.tau = method.tau,
               tau.preset = tau.preset,
+              #
+              method.random.ci = method.random.ci,
               #
               tol.multiarm = tol.multiarm,
               tol.multiarm.se = tol.multiarm.se,

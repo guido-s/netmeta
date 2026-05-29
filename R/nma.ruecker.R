@@ -391,7 +391,8 @@ nma_ruecker <- function(TE, W, seTE,
                         seTE.orig, tau.direct = 0, sep.trts = ":",
                         method.tau = "DL",
                         func.inverse,
-                        Cov0) {
+                        Cov0,
+                        method.random.ci = "classic") {
   
   
   w.pooled <- 1 / seTE^2
@@ -399,6 +400,7 @@ nma_ruecker <- function(TE, W, seTE,
   m <- length(TE)                        # Number of pairwise comparisons (edges)
   n <- length(unique(c(treat1, treat2))) # Number of treatments (vertices)
   df1 <- 2 * sum(1 / narms)              # Sum of degrees of freedom per study
+  df.Q <- df1 - (n - 1)                  # Degrees of freedom for Q test
   
   # Drop Matrix attributes
   W <- as.matrix(W)
@@ -501,11 +503,10 @@ nma_ruecker <- function(TE, W, seTE,
   ## Test of total heterogeneity / inconsistency:
   ##
   Q <- as.vector(t(TE - v) %*% W %*% (TE - v))
-  df <- df1 - (n - 1)
-  if (df == 0)
+  if (df.Q == 0)
     pval.Q <-  NA
   else
-    pval.Q <- pchisq(Q, df, lower.tail = FALSE)
+    pval.Q <- pchisq(Q, df.Q, lower.tail = FALSE)
   ##
   ## Heterogeneity variance
   ##
@@ -515,16 +516,16 @@ nma_ruecker <- function(TE, W, seTE,
     for (j in 1:m)
       E[i, j] <- as.numeric(studlab[i] == studlab[j])
   ##
-  if (df == 0) {
+  if (df.Q == 0) {
     tau2 <- NA
     tau <- NA
     I2 <- lower.I2 <- upper.I2 <- NA
   }
   else {
     tau2 <-
-      max(0, (Q - df) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
+      max(0, (Q - df.Q) / sum(diag((I - H) %*% (B %*% t(B) * E / 2) %*% W)))
     tau <- sqrt(tau2)
-    ci.I2 <- isquared(Q, df, level.ma)
+    ci.I2 <- isquared(Q, df.Q, level.ma)
     I2 <- ci.I2$TE
     lower.I2 <- ci.I2$lower
     upper.I2 <- ci.I2$upper
@@ -583,14 +584,17 @@ nma_ruecker <- function(TE, W, seTE,
   
   TE.pooled <- all
   seTE.pooled <- sqrt(R)
-  ##
-  ci.pooled <- ci(all, sqrt(R), level = level.ma)
-  ##
+  #
+  if (method.random.ci == "classic")
+    ci.pooled <- ci(all, sqrt(R), level = level.ma)
+  else
+    ci.pooled <- ci(all, sqrt(R), df = df.Q, level = level.ma)
+  #
   lower.pooled <- ci.pooled$lower
   upper.pooled <- ci.pooled$upper
   statistic.pooled <- ci.pooled$statistic
   pval.pooled <- ci.pooled$p
-  ##
+  #
   rownames(TE.pooled) <- colnames(TE.pooled) <- names.treat
   rownames(seTE.pooled) <- colnames(seTE.pooled) <- names.treat
   rownames(lower.pooled) <- colnames(lower.pooled) <- names.treat
@@ -726,12 +730,14 @@ nma_ruecker <- function(TE, W, seTE,
               upper.pooled = upper.pooled,
               statistic.pooled = statistic.pooled,
               pval.pooled = pval.pooled,
-              ##
+              #
+              method.random.ci = method.random.ci,
+              #
               k = length(unique(studlab)),
               m = length(TE),
               n = dim(TE.pooled)[[1]],
               Q = Q,
-              df = df,
+              df = df.Q,
               pval.Q = pval.Q,
               I2 = I2,
               lower.I2 = lower.I2,
