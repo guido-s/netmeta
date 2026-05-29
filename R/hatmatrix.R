@@ -127,7 +127,7 @@
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netmeta}}, \code{\link{netcontrib}},
-#'   \code{\link{netheat}}, \code{\link[metadat]{dat.dong2013}}
+#'   \code{\link{netheat}}, \code{\link[metabook]{Dong2013}}
 #' 
 #' @references
 #' Davies AL, Papakonstantinou T, Nikolakopoulou A, Rücker G, Galla T
@@ -148,17 +148,17 @@
 #' 
 #' @examples
 #' # Only consider first ten studies for concise output
-#' first10 <- subset(dat.dong2013, id <= 10)
-#' pw1 <- pairwise(treatment, death, randomized, studlab = id,
+#' first10 <- subset(Dong2013, id <= 10)
+#' pw <- pairwise(treatment, death, randomized, studlab = id,
 #'   data = first10, sm = "OR")
-#' net1 <- netmeta(pw1, common = FALSE)
+#' nma <- netmeta(pw, common = FALSE)
 #' 
-#' hatmatrix(net1)
-#' hatmatrix(net1, method = "k")
-#' hatmatrix(net1, method = "k", type = "studies")
-#' hatmatrix(net1, method = "d")
-#' hatmatrix(net1, method = "d", type = "long")
-#' hatmatrix(net1, method = "d", type = "full")
+#' hatmatrix(nma)
+#' hatmatrix(nma, method = "k")
+#' hatmatrix(nma, method = "k", type = "studies")
+#' hatmatrix(nma, method = "d")
+#' hatmatrix(nma, method = "d", type = "long")
+#' hatmatrix(nma, method = "d", type = "full")
 #' 
 #' @export hatmatrix
 

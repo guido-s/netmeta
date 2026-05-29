@@ -91,7 +91,7 @@
 #' 
 #' @seealso \code{\link{netposet}}, \code{\link{hasse}},
 #'   \code{\link{netrank}}, \code{\link{netmeta}},
-#'   \code{\link[metadat]{dat.linde2015}}
+#'   \code{\link[metabook]{Linde2015}}
 #'   
 #' @references
 #' Carlsen L, Bruggemann R (2014):

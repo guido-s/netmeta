@@ -29,16 +29,16 @@ requirements during liver transplantation.
 }
 \note{
 The dataset Gurusamy2011 is identical to dataset
-\code{\link[metadat]{dat.gurusamy2011}} in R package \bold{metadat}.
+\code{\link[metabook]{Gurusamy2011}} in R package \bold{metabook}.
 }
 \examples{
-head(dat.gurusamy2011)
+head(Gurusamy2011)
 
 # Example using pairwise() and netmetabin():
-# example(dat.gurusamy2011, run.dontrun = TRUE)
+# example(Gurusamy2011, package = "metabook")
 }
 \seealso{
-\code{\link[metadat]{dat.gurusamy2011}},
+\code{\link[metabook]{Gurusamy2011}},
   \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmetabin}}
 }

@@ -70,17 +70,17 @@ Cumulative ranking probabilites are shown if
 shown for cumulative ranking probabilites.
 }
 \examples{
-pw1 <- pairwise(treatment, event = r, n = N, studlab = author,
-  data = dat.woods2010, sm = "OR")
-net1 <- netmeta(pw1, small.values = "good")
+pw <- pairwise(treatment, event = r, n = N, studlab = author,
+  data = Woods2010, sm = "OR")
+nma <- netmeta(pw, small.values = "desirable")
 
 set.seed(1909) # get reproducible results
-ran1 <- rankogram(net1, nsim = 100)
-ran1
+rnk <- rankogram(nma, nsim = 100)
+rnk
 
-plot(ran1)
-plot(ran1, type = "l")
-plot(ran1, cumulative.rankprob = TRUE)
+plot(rnk)
+plot(rnk, type = "l")
+plot(rnk, cumulative.rankprob = TRUE)
 
 }
 \references{
@@ -91,7 +91,7 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \bold{64}, 163--71
 }
 \seealso{
-\code{\link{rankogram}}, \code{\link[metadat]{dat.woods2010}}
+\code{\link{rankogram}}, \code{\link[metabook]{Woods2010}}
 }
 \author{
 Theodoros Papakonstantinou \email{dev@tpapak.com}, Guido

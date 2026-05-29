@@ -78,7 +78,7 @@
 #' 
 #' @seealso \code{\link{netrank}}, \code{\link{netmeta}},
 #'   \code{\link{netposet}}, \code{\link{hasse}},
-#'   \code{\link[metadat]{dat.linde2015}}
+#'   \code{\link[metabook]{Linde2015}}
 #' 
 #' @references
 #' Palpacuer C, Duprez R, Huneau A, Locher C, Boussageon R, Laviolle

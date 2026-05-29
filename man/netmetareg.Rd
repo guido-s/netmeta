@@ -17,7 +17,6 @@
   reference.group = x$reference.group,
   direction1 = NULL,
   direction2 = NULL,
-  max.ia = FALSE,
   nchar.trts = x$nchar.trts,
   ...
 )
@@ -43,7 +42,7 @@ netmetareg(x, ...)
 \item{covar}{Continuous or binary covariate.}
 
 \item{consistency}{A logical indicating whether a consistency or
-inconsistency model should be assumed.}
+unrelated mean interaction effect (UMIE) model should be assumed.}
 
 \item{assumption}{A character string indicating which assumption is done
 for the covariate; either "independent" or "common" (can be abbreviated).}
@@ -57,17 +56,16 @@ coefficients.}
 
 \item{reference.group}{Reference treatment.}
 
-\item{direction1}{ADD DESCRIPTION.}
+\item{direction1}{Directionality parameter for the first treatment group
+when using UMIE models.}
 
-\item{direction2}{ADD DESCRIPTION.}
-
-\item{max.ia}{ADD DESCRIPTION.}
+\item{direction2}{Directionality parameter for the second treatment group
+when using UMIE models.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
 
-\item{\dots}{Additional arguments passed to R function
-\code{\link[metafor]{rma.uni}}.}
+\item{\dots}{Additional arguments passed to \code{\link[metafor]{rma.mv}}.}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
@@ -104,19 +102,17 @@ the following components:
 }
 \description{
 Network meta-regression with a single continuous or binary covariate for
-objects of class \code{netmeta}. This is a wrapper function for the R
-function \code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
+objects of class \code{netmeta} (Kwarteng et al., 2026). This is a wrapper
+function for \code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
 (Viechtbauer 2010).
 }
 \details{
-This R function is a wrapper function for R function
-\code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
-(Viechtbauer 2010).
+This R function is a wrapper function for \code{\link[metafor]{rma.mv}} in
+the R package \bold{metafor} (Viechtbauer 2010).
 
-Note, results are not back-transformed in printouts of
-network meta-analyses using summary measures with transformations, e.g.,
-log risk ratios are printed instead of the risk ratio if argument
-\code{sm = "RR"}.
+Note, results are not back-transformed in printouts of network meta-analyses
+using summary measures with transformations, e.g., log risk ratios are
+printed instead of the risk ratio if argument \code{sm = "RR"}.
 
 Argument '\dots{}' can be used to pass additional arguments to R
 function \code{\link[metafor]{rma.mv}}. For example, argument
@@ -125,7 +121,9 @@ iterative estimation algorithm. See help page of R function
 \code{\link[metafor]{rma.mv}} for more details.
 }
 \examples{
-\donttest{
+#
+# 1) Smoking cessation example
+#
 data(smokingcessation)
 # Add variable with (fictitious) risk of bias values
 # with 1 = "low risk" and 2 = "high risk"
@@ -136,16 +134,98 @@ pw1 <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
   data = smokingcessation, sm = "OR")
 
-net1 <- netmeta(pw1, common = FALSE, ref = "A")
+# Run network meta-analysis (NMA)
+nma1 <- netmeta(pw1, common = FALSE, ref = "A")
 
 # Network meta-regression with continuous covariate and assumption of
 # independent slopes
-nr1 <- netmetareg(net1, rob)
+nr1 <- netmetareg(nma1, rob)
 nr1
+
+\donttest{
+# 2) Pain Prevention of Propofol Injection Example (Jalota2011)
+#
+# Create pairwise object
+pw2 <- pairwise(treat = trt, event =  pain, n = n,
+  studlab = id, data = Jalota2011, sm = "OR")
+
+# Run network meta-analysis (NMA)
+nma2 <- netmeta(pw2, common = FALSE, ref = "Hand vein")
+
+# NMR with independent and consistent assumption (default)
+nmr2_i <- netmetareg(nma2, covar = seTE, consistency = TRUE,
+  assumption = "i")
+# NMR with common and consistent assumption
+nmr2_c <- netmetareg(nma2, covar = seTE, consistency = TRUE,
+  assumption = "c")
+# NMR with independent UMIE model (no consistency in interactions) using
+# default treatment order
+nmr2_i_umie <- netmetareg(nma2, covar = seTE, consistency = FALSE,
+  assumption = "i")
+
+# 3) Physical therapy example (Hong 2015)
+#
+dat3 <- Hong2015
+# Externally create a customizable treatment order indicator variable,
+# which will later be modified
+dat3$trtnum <- as.numeric(as.factor(dat3$trt))
+dat3 <- do.call(rbind, lapply(split(dat3, dat3$id),
+  function(x) {
+    x$direction <- ifelse(x$trtnum == min(x$trtnum), 0, 1)
+  x}))
+
+pw3 <- pairwise(treat = trt, mean = mean_pain, n = n, sd = sd_pain,
+  studlab=id, data = dat3, sm = "MD")
+# Create difference variable for covariate
+pw3$disability_diff <- pw3$mean_disability1 - pw3$mean_disability2
+
+# Update directionality parameters so that they will exclude imputed values
+sel.NA <- is.na(pw3$disability_diff)
+pw3$direction1[sel.NA] <- 0
+pw3$direction2[sel.NA] <- 0
+
+# Mean imputations for missing covariate values
+pw3$disability_diff[sel.NA] <- mean(pw3$disability_diff, na.rm = TRUE)
+
+# NMA
+nma3 <- netmeta(pw3, common = FALSE, ref = "No treatment")
+
+# NMR with independent and consistent assumption (default)
+nmr3_i <- netmetareg(nma3, covar = disability_diff, consistency = TRUE,
+  assumption = "i")
+# NMR with common and consistent assumption
+nmr3_c <- netmetareg(nma3, covar = disability_diff, consistency = TRUE,
+  assumption = "c")
+# NMR with independent UMIE model (no consistency in interactions) using
+# default treatment order variable
+nmr3_i_umie <- netmetareg(nma3, covar = disability_diff, consistency = FALSE,
+  assumption = "i")
+# NMR with independent UMIE model (no consistency in interactions) using
+# custom treatment order variable which excludes the mean imputations from
+# interaction estimation
+nmr3_i_umie_noimp <- netmetareg(nma3, covar = disability_diff,
+  consistency = FALSE, assumption = "i",
+   direction1 = "direction1", direction2 = "direction2")
+# NMR with common UMIE model (no consistency in interactions) using default
+# treatment order variable
+nmr3_c_umie <- netmetareg(nma3, covar = disability_diff, consistency = FALSE,
+  assumption = "c")
+# NMR with common UMIE model (no consistency in interactions) using custom
+# treatment order variable which excludes the mean imputations from
+# interaction estimation
+nmr3_c_umie_noimp <- netmetareg(nma3, covar = disability_diff,
+  consistency = FALSE, assumption = "c",
+  direction1 = "direction1", direction2 = "direction2")
 }
 
 }
 \references{
+Kwarteng N, Evrenoglou T, Mueller J, Elsaesser M, Schramm E, Schwarzer G,
+Nikolakopoulou A (2026):
+Illustrating the assumptions of meta-regression in treatment networks.
+Preprint available at \emph{Research Square},
+\doi{10.21203/rs.3.rs-8235913/v1}
+
 Viechtbauer W (2010):
 Conducting Meta-Analyses in R with the Metafor Package.
 \emph{Journal of Statistical Software},
@@ -155,7 +235,7 @@ Conducting Meta-Analyses in R with the Metafor Package.
 \code{\link{netmeta}}
 }
 \author{
-Nana-Adjoa Kwarteng
+Nana-adjoa Kwarteng
   \email{nana-adjoa.kwarteng@uniklinik-freiburg.de},
   Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}
 }

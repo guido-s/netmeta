@@ -12,6 +12,10 @@
 #' @docType data
 #' 
 #' @details
+#' This data set is in comparison-based format. The data in
+#' long arm-based format are available in \code{\link[metabook]{Senn2013}} in
+#' R package \bold{metabook}.
+#' 
 #' Treatment labels provided by columns \code{treat1} and
 #' \code{treat2} have been abbreviated:
 #' \itemize{
@@ -55,7 +59,6 @@
 #' @keywords datasets
 #' 
 #' @examples
-#' data(Senn2013)
 #' head(Senn2013)
 #' 
 #' # Example using netmeta():

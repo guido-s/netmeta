@@ -38,10 +38,9 @@
 #' @keywords datasets
 #' 
 #' @examples
-#' data(Linde2016)
 #' head(Linde2016)
 #' 
 #' # Example using pairwise(), netmeta() and netcomb():
-#' # example(dat.linde2016, run.dontrun = TRUE)
+#' # example(Linde2016, package = "metabook")
 
 NULL

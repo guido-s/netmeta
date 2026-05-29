@@ -153,7 +153,7 @@ print.netmeta <- function(x,
   if (is.null(x$lower.predict))
     prediction <- FALSE
   #
-  nchar.trts <- replaceNULL(x$nchar.trts, 666)
+  nchar.trts <- replaceNULL(nchar.trts, 666)
   
   
   ##
@@ -232,7 +232,7 @@ print.netmeta <- function(x,
   if (!backtransf & (is_relative_effect(sm) | sm == "VE"))
     sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##
-  ci.lab <- paste0(round(100 * x$level.ma, 1), "%-CI")
+  ci.lab <- paste0(round(100 * x$level.ma, 1), "% CI")
   #
   zlab <- "z"
   
@@ -546,7 +546,7 @@ print.netmeta <- function(x,
               upper.predict[rownames(upper.predict) == reference.group, ]
           }
           ##
-          pi.lab <- paste0(round(100 * x$level.predict, 1), "%-PI")
+          pi.lab <- paste0(round(100 * x$level.predict, 1), "% PI")
           ##
           res <- cbind(res,
                        rep_len("", nrow(res)),
@@ -709,7 +709,7 @@ print.netmeta <- function(x,
               upper.predict[rownames(upper.predict) == reference.group, ]
           }
           ##
-          pi.lab <- paste0(round(100 * x$level.predict, 1), "%-PI")
+          pi.lab <- paste0(round(100 * x$level.predict, 1), "% PI")
           ##
           res <- cbind(res,
                        rep_len("", nrow(res)),

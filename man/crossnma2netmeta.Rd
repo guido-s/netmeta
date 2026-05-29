@@ -82,12 +82,12 @@ set.seed(1909)
 fit <- crossnma(mod)
 
 # Print results in netmeta layout
-cro <- crossnma2netmeta(fit)
-cro
+nma <- crossnma2netmeta(fit)
+nma
 # SUCRAs
-netrank(cro)
+netrank(nma)
 # Rankogram
-rankogram(cro)
+rankogram(nma)
 }
 }
 

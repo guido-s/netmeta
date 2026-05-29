@@ -28,13 +28,13 @@ with identity matrix \strong{J} of dimension \emph{n}x\emph{n}.
 \donttest{
 data(smokingcessation)
 
-pw1 <- pairwise(list(treat1, treat2, treat3),
+pw <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
   data = smokingcessation, sm = "OR")
-net1 <- netmeta(pw1)
+net <- netmeta(pw)
 
-L1 <- net1$L.matrix.common
-L2 <- invmat(net1$Lplus.matrix.common)
+L1 <- net$L.matrix.common
+L2 <- invmat(net$Lplus.matrix.common)
 all.equal(round(L1, 10), round(L2, 10))
 }
 

@@ -37,7 +37,7 @@
 #'   Gerta Rücker \email{gerta.ruecker@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link{netimpact}}, \code{\link{netgraph.netmeta}},
-#'   \code{\link[metadat]{dat.franchini2012}}
+#'   \code{\link[metabook]{Franchini2012}}
 #' 
 #' @keywords hplot
 #' 

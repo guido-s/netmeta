@@ -26,10 +26,10 @@ information on membership of studies / pairwise comparisons to a
 t1 <- c("G", "B", "B", "D", "A", "F")
 t2 <- c("B", "C", "E", "E", "H", "A")
 #
-nc2 <- netconnection(t1, t2)
-print(nc2, details = TRUE)
+nc <- netconnection(t1, t2)
+print(nc, details = TRUE)
 
-as.data.frame(nc2)
+as.data.frame(nc)
 
 }
 \seealso{

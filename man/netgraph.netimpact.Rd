@@ -70,7 +70,7 @@ This function generates a graph of the evidence network.
 }
 \seealso{
 \code{\link{netimpact}}, \code{\link{netgraph.netmeta}},
-  \code{\link[metadat]{dat.franchini2012}}
+  \code{\link[metabook]{Franchini2012}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de},

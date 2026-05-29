@@ -59,7 +59,7 @@ available under the MIT license.
 # Only run example if R package 'Rgraphviz' from Bioconductor is available
 #
 if (requireNamespace("Rgraphviz", quietly = TRUE)) {
-# Define order of treatments in depression dataset dat.linde2015
+# Define order of treatments in depression dataset Linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -73,9 +73,9 @@ outcomes <- c("Early response", "Early remission")
 pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3),
   n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(pw1, common = FALSE,
+nma1 <- netmeta(pw1, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "undesirable")
 
 # (2) Early remission
@@ -83,14 +83,14 @@ net1 <- netmeta(pw1, common = FALSE,
 pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3),
   n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(pw2, common = FALSE,
+nma2 <- netmeta(pw2, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "undesirable")
 
 # Partial order of treatment rankings
 #
-po <- netposet(netrank(net1), netrank(net2), outcomes = outcomes)
+po <- netposet(netrank(nma1), netrank(nma2), outcomes = outcomes)
 
 # Hasse diagram
 #
@@ -114,7 +114,7 @@ Partial ordering of treatments.
 \seealso{
 \code{\link{netmeta}}, \code{\link{netposet}},
   \code{\link{netrank}}, \code{\link{plot.netrank}},
-  \code{\link[metadat]{dat.linde2015}}
+  \code{\link[metabook]{Linde2015}}
 }
 \author{
 Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido

@@ -4,8 +4,7 @@
 #' Calculate distance matrix for an adjacency matrix based on distance
 #' algorithm by Müller et al. (1987).
 #' 
-#' @aliases netdistance netdistance.default netdistance.netmeta
-#'   netdistance.netcomb print.netdistance
+#' @aliases netdistance netdistance.default netdistance.netmeta netdistance.netcomb print.netdistance
 #' 
 #' @param x Either a netmeta or netcomb object or an adjacency matrix.
 #' @param sort A logical indicating whether to sort within (sub)networks by
@@ -30,18 +29,18 @@
 #' pw1 <- pairwise(list(treat1, treat2, treat3),
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
 #'   data = smokingcessation, sm = "OR")
-#' net1 <- netmeta(pw1, common = FALSE)
+#' nma1 <- netmeta(pw1, common = FALSE)
 #' 
-#' netdistance(net1)
+#' netdistance(nma1)
 #' 
 #' \donttest{
-#' data(Senn2013)
+#' pw2 <- pairwise(studlab = study, treat = treatment,
+#'   n = n, mean = mean, sd = sd, data = Senn2013,
+#'   varnames = c("MD", "seMD"))
+#' nma2 <- netmeta(pw2)
 #' 
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD")
-#' 
-#' netdistance(net1)
-#' netdistance(net1$A.matrix)
+#' netdistance(nma2)
+#' netdistance(nma2$A.matrix)
 #' }
 #' 
 #' @rdname netdistance
