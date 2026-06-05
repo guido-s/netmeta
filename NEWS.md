@@ -11,6 +11,9 @@
   - new argument 'method.random.ci' to specify method to calculate
     random effects confidence intervals
 
+* print.netimpact():
+  - new argument 'lab.zero' to replace zero contributions with a character string
+
 ### Bug fixes
 
 * crossnma2netmeta():

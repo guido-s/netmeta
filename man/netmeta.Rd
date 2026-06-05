@@ -27,6 +27,7 @@ netmeta(
   seq = gs("seq"),
   method.tau = gs("method.tau.netmeta"),
   tau.preset = NULL,
+  method.random.ci = "classic",
   tol.multiarm = gs("tol.multiarm"),
   tol.multiarm.se = gs("tol.multiarm.se"),
   details.chkmultiarm = gs("details.chkmultiarm"),
@@ -130,6 +131,12 @@ square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
 
 \item{tau.preset}{An optional value for manually setting the
 square-root of the between-study variance \eqn{\tau^2}.}
+
+\item{method.random.ci}{A character string indicating which method
+is used to calculate confidence interval and test statistic for
+random effects estimate; either \code{"classic"} for standard normal
+quantiles or \code{"t-dist"} for quantiles from the t-distribution, can
+be abbreviated.}
 
 \item{tol.multiarm}{A numeric for the tolerance for consistency of
 treatment estimates in multi-arm studies which are consistent by
