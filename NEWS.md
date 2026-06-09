@@ -1,3 +1,30 @@
+## netmeta, version 3.6-0 (2026-06-09)
+
+### Major changes
+
+* Random effects confidence intervals based on quantiles of the t-distribution
+  implemented
+
+### User-visible changes
+
+* netmeta():
+  - new argument 'method.random.ci' to specify method to calculate
+    random effects confidence intervals
+
+* print.netimpact():
+  - new argument 'lab.zero' to replace zero contributions with a character string
+
+### Bug fixes
+
+* crossnma2netmeta():
+  - fix values for tau2 and tau - crossnma() returns tau instead of tau2
+
+### Internal changes
+
+* crossnma2netmeta():
+  - return number of pairwise comparisons
+
+
 ## netmeta, version 3.5-0 (2026-05-27)
 
 ### Major changes
