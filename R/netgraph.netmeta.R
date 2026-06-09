@@ -582,7 +582,15 @@ netgraph.netmeta <- function(x, seq = x$seq,
   missing.start.layout <- missing(start.layout)
   start.layout <-
     setchar(start.layout, c("eigen", "prcomp", "circle", "random"))
-  ##
+  #
+  if (!missing(labels)) {
+    #
+    labels <- catch("labels", mc, x, sfsp)
+    #
+    if (is.null(labels))
+      stop("Argument 'labels' must be not NULL.")
+  }
+  #
   if (!missing(seq) & is.null(seq))
     stop("Argument 'seq' must be not NULL.")
   ##
@@ -629,14 +637,6 @@ netgraph.netmeta <- function(x, seq = x$seq,
   #
   plastic <- replaceNULL(plastic, !(iterate & allfigures))
   chklogical(plastic)
-  ##
-  if (!missing(labels)) {
-    ##
-    labels <- catch("labels", mc, x, sfsp)
-    ##
-    if (is.null(labels))
-      stop("Argument 'labels' must be not NULL.")
-  }
   ##
   ## Colors of edges
   ##
