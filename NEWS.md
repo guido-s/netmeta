@@ -1,3 +1,13 @@
+## netmeta, version 3.6-1 (2026-06-19)
+
+### Bug fixes
+
+* forest.netmeta():
+  - print correct confidence intervals for network meta-analysis with
+    confidence intervals based on t-distribution
+    [(issue #32)](https://github.com/guido-s/netmeta/issues/32)
+
+
 ## netmeta, version 3.6-0 (2026-06-09)
 
 ### Major changes
