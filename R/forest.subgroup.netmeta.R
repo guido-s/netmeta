@@ -166,6 +166,7 @@ forest.subgroup.netmeta <- function(x,
     #
     m <-
       suppressWarnings(metagen(TE, seTE, studlab = subgroup, data = common,
+                               lower = common$lower, upper = common$upper,
                                subgroup = paste(treat1, treat2, sep = sep.trts),
                                print.subgroup.name = FALSE,
                                sm = x$x$sm,
@@ -186,6 +187,7 @@ forest.subgroup.netmeta <- function(x,
     #
     m <-
       suppressWarnings(metagen(TE, seTE, studlab = subgroup, data = random,
+                               lower = random$lower, upper = random$upper,
                                subgroup = paste(treat1, treat2, sep = " vs "),
                                print.subgroup.name = FALSE,
                                sm = x$x$sm,

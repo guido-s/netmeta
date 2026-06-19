@@ -121,6 +121,8 @@ forest.netbind <- function(x,
     ##
     m <-
       suppressWarnings(metagen(x$common$TE, x$common$seTE,
+                               lower = x$common$lower,
+                               upper = x$common$upper,
                                studlab = x$common$name,
                                sm = x$sm,
                                common = FALSE, random = FALSE,
@@ -161,6 +163,8 @@ forest.netbind <- function(x,
     ##
     m <-
       suppressWarnings(metagen(x$random$TE, x$random$seTE,
+                               lower = x$random$lower,
+                               upper = x$random$upper,
                                studlab = x$random$name,
                                sm = x$sm,
                                common = FALSE, random = FALSE,
