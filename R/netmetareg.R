@@ -769,8 +769,10 @@ print.netmetareg <- function(x,
     #
     if (assumption == "independent")
       cat("- Independent slopes\n")
-    else
+    else if (assumption == "common")
       cat("- Common slope\n")
+    else if (assumption == "exchangeable")
+      cat("- Exchangeable slope\n")
     #
     cat(paste0("- Reference group: ", x$.netmeta$reference.group, "\n"))
   }
