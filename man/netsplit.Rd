@@ -180,8 +180,8 @@ should be indented.}
 }
 \value{
 An object of class \code{netsplit} with corresponding \code{print}
-and \code{forest} functions. The object is a list containing the
-following components:
+\code{forest}, and \code{plot} functions. The object is a list containing
+the following components:
 \item{common, random}{As defined above.}
 \item{comparison}{A vector with treatment comparisons.}
 \item{prop.common, prop.random}{A vector with direct evidence
@@ -252,6 +252,11 @@ Argument \code{show} determines which comparisons are printed:
   evidence
 }
 
+Wilson et al. (2026) introduced a scatter plot of direct and indirect
+estimates to visualise local consistency in a network meta-analysis.
+Alternatively, a forest plot with direct and indirect estimates can be
+generated.
+
 The node-splitting method and SIDDE can be compute-intensive in
 large networks. Crude information on the computation progress is
 printed if argument \code{verbose = TRUE}. In addition, computation
@@ -263,40 +268,40 @@ times are printed if R package \bold{tictoc} is installed.
 #
 
 pw1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = dat.woods2010, sm = "OR")
+  studlab = author, data = Woods2010, sm = "OR")
 #
-net1 <- netmeta(pw1)
+nma1 <- netmeta(pw1)
 #
-print(netsplit(net1), digits = 2)
+print(netsplit(nma1), digits = 2)
 
 \donttest{
-print(netsplit(net1), digits = 2,
+print(netsplit(nma1), digits = 2,
   backtransf = FALSE, common = FALSE)
 
 # Sort by increasing number of studies in direct comparisons
-print(netsplit(net1), digits = 2, sortvar = k)
+print(netsplit(nma1), digits = 2, sortvar = k)
 # Sort by decreasing number of studies in direct comparisons
-print(netsplit(net1), digits = 2, sortvar = -k)
+print(netsplit(nma1), digits = 2, sortvar = -k)
 
 # Sort by increasing evidence proportion under common effects model
-print(netsplit(net1), digits = 2, sortvar = prop.common)
+print(netsplit(nma1), digits = 2, sortvar = prop.common)
 # Sort by decreasing evidence proportion under common effects model
-print(netsplit(net1), digits = 2, sortvar = -prop.common)
+print(netsplit(nma1), digits = 2, sortvar = -prop.common)
 
 # Sort by decreasing evidence proportion under common effects model
 # and number of studies
-print(netsplit(net1), digits = 2, sortvar = cbind(-prop.common, -k))
+print(netsplit(nma1), digits = 2, sortvar = cbind(-prop.common, -k))
 
 #
 # 2) Diabetes example
 #
 
-data(Senn2013)
+pw2 <- pairwise(studlab = study, treat = treatment,
+  n = n, mean = mean, sd = sd, data = Senn2013,
+  varnames = c("MD", "seMD"))
+nma2 <- netmeta(pw2, reference = "plac")
 #
-net2 <- netmeta(TE, seTE, treat1.long, treat2.long,
-  studlab, data = Senn2013)
-#
-ns2 <- netsplit(net2)
+ns2 <- netsplit(nma2)
 #
 print(ns2, digits = 2)
 # Layout of Puhan et al. (2014), Table 1
@@ -306,6 +311,10 @@ print(ns2, digits = 2, ci = TRUE, test = FALSE)
 # indirect evidence
 #
 forest(ns2, fontsize = 6, spacing = 0.5, addrow.subgroups = FALSE)
+
+# Scatter plot to evaluate local inconsistency
+#
+plot(ns2)
 
 # Forest plot showing comparisons contributing direct evidence
 #
@@ -324,9 +333,9 @@ forest(ns2, fontsize = 8, spacing = 0.75, show = "all",
 #
 
 pw3 <- pairwise(treatment, death, randomized, studlab = id,
-  data = dat.dong2013, sm = "OR")
-net3 <- netmetabin(pw3)
-netsplit(net3)
+  data = Dong2013, sm = "OR")
+nma3 <- netmetabin(pw3)
+netsplit(nma3)
 }
 
 }
@@ -353,12 +362,19 @@ A GRADE working group approach for rating the quality of treatment
 effect estimates from network meta-analysis.
 \emph{British Medical Journal},
 \bold{349}, g5630
+
+Wilson H, Schönstein A, Robson S, Bonofiglio F (2026):
+A novel approach for visualizing local consistency in
+network meta-analysis.
+\emph{Research Synthesis Methods},
+1--15
 }
 \seealso{
-\code{\link{forest.netsplit}}, \code{\link{netmeta}},
-  \code{\link{netmetabin}}, \code{\link{netmeasures}},
-  \code{\link[metadat]{dat.woods2010}}, \code{\link{Senn2013}},
-  \code{\link[metadat]{dat.dong2013}}
+\code{\link{forest.netsplit}}, \code{\link{plot.netsplit}},
+  \code{\link{netmeta}}, \code{\link{netmetabin}},
+  \code{\link{netmeasures}},
+  \code{\link[metabook]{Woods2010}}, \code{\link{Senn2013}},
+  \code{\link[metabook]{Dong2013}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Gerta

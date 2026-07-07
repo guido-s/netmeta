@@ -9,7 +9,7 @@
 #' 
 #' @details
 #' In the context of network meta-analysis and the assessment of the
-#' homogeneity and consistency assumption, a generalized Cochran's Q
+#' homogeneity and consistency assumption, a generalised Cochran's Q
 #' statistic for multivariate meta-analysis can be used as shown in
 #' Krahn et al. (2013). This Q statistic can be decomposed in a sum
 #' of within-design Q statistics and one between-designs Q statistic
@@ -121,21 +121,24 @@
 #' 
 #' @examples
 #' \donttest{
-#' data(Senn2013)
-#' 
 #' # Only consider first five studies (to reduce runtime of example)
 #' #
-#' studies <- unique(Senn2013$studlab)
-#' Senn2013.5 <- subset(Senn2013, studlab %in% studies[1:5])
+#' studies <- unique(Senn2013$study)
+#' Senn2013.5 <- subset(Senn2013, study %in% studies[1:5])
 #' 
-#' # Conduct network meta-analysis with placebo as reference treatment
+#' # Transform data from long arm-based to contrast-based format
 #' #
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013.5, sm = "MD", reference = "plac")
+#' pw <- pairwise(studlab = study, treat = treatment,
+#'   n = n, mean = mean, sd = sd, data = Senn2013.5,
+#'   varnames = c("MD", "seMD"))
+#' 
+#' # Conduct network meta-analysis
+#' #
+#' nma <- netmeta(pw)
 #' 
 #' # Decomposition of Cochran's Q
 #' #
-#' decomp.design(net1)
+#' decomp.design(nma)
 #' }
 #' 
 #' @export decomp.design

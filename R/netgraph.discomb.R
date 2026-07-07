@@ -9,11 +9,12 @@
 #'   matrix with length / number of rows equal to the number of
 #'   treatments) specifying the x (and optionally y and z) adjustment
 #'   for treatment labels.
-#' @param offset Distance between edges (i.e. treatments) in graph and
+#' @param offset Distance between nodes (i.e. treatments) in graph and
 #'   treatment labels for 2-D plots (value of 0.0175 corresponds to a
 #'   difference of 1.75\% of the range on x- and y-axis).
 #' @param rotate A single numeric with value between -180 and 180
-#'   specifying the angle to rotate nodes in a circular network.
+#'   specifying the degrees to rotate nodes in a circular network clockwise or
+#'   anticlockwise.
 #' @param points A logical indicating whether points should be printed
 #'   at nodes (i.e. treatments) of the network graph.
 #' @param cex.points Corresponding point size. Can be a vector with length

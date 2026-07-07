@@ -193,30 +193,30 @@ networks. Crude information on the computation progress is printed
 for SIDDE if argument \code{verbose} is \code{TRUE}.
 }
 \examples{
-pw1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = dat.woods2010, sm = "OR")
+pw <- pairwise(treatment, event = r, n = N,
+  studlab = author, data = Woods2010, sm = "OR")
 #
-net1 <- netmeta(pw1)
+nma <- netmeta(pw)
 #
-nt1 <- nettable(net1, digits = 2)
-nt1
+nt <- nettable(nma, digits = 2)
+nt
 
 \donttest{
-print(nt1, common = FALSE)
-print(nt1, random = FALSE)
+print(nt, common = FALSE)
+print(nt, random = FALSE)
 
 # Create a CSV file with network table from random effects model
 #
-table1 <- nettable(net1, digits = 2, bracket = "(", separator = " to ")
+table <- nettable(nma, digits = 2, bracket = "(", separator = " to ")
 #
-write.table(table1$random, file = "table1-random.csv",
+write.table(table$random, file = "table-random.csv",
   row.names = FALSE, col.names = TRUE, sep = ",")
 #
 # Create Excel files with network tables
 # (if R package writexl is available)
 #
 if (requireNamespace("writexl", quietly = TRUE))
-  nettable(net1, digits = 2, bracket = "(", separator = " to ",
+  nettable(nma, digits = 2, bracket = "(", separator = " to ",
            path = tempfile(fileext = ".xlsx"))
 }
 
@@ -248,7 +248,7 @@ effect estimates from network meta-analysis.
 \seealso{
 \code{\link{netsplit}}, \code{\link{netmeta}},
   \code{\link{netmetabin}}, \code{\link{netmeasures}},
-  \code{\link[metadat]{dat.woods2010}}
+  \code{\link[metabook]{Woods2010}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

@@ -96,30 +96,35 @@
 #' 
 #' @examples
 #' \donttest{
-#' data(Senn2013)
+#' # Transform data from long arm-based to contrast-based format
+#' #
+#' pw <- pairwise(studlab = study, treat = treatment,
+#'   n = n, mean = mean, sd = sd, data = Senn2013,
+#'   varnames = c("MD", "seMD"))
 #' 
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD")
+#' # Conduct network meta-analysis
+#' #
+#' nma <- netmeta(pw)
 #' 
 #' # Test for asymmetry in 'comparison-adjusted' funnel plot not
 #' # conducted as argument 'order' is missing
 #' #
-#' try(metabias(net1))
+#' try(metabias(nma))
 #' 
 #' # Test for funnel plot asymmetry comparing active treatments with
 #' # placebo
-#' metabias(net1, order = "pl")
+#' metabias(nma, order = "pl")
 #'
 #' # Rank test
 #' #
-#' metabias(net1, order = "pl", method.bias = "Begg")
+#' metabias(nma, order = "pl", method.bias = "Begg")
 #'
 #' 
 #' # Test for funnel plot asymmetry based on (non-sensical) alphabetic
 #' # order of treatments with placebo as last treatment
 #' #
 #' ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
-#' metabias(net1, order = ord)
+#' metabias(nma, order = ord)
 #' }
 #'
 #' @method metabias netmeta

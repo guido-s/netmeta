@@ -32,16 +32,16 @@ studies. The primary outcome is stroke reduction.
 }
 \note{
 The dataset Dogliotti2014 is identical to dataset
-\code{\link[metadat]{dat.dogliotti2014}} in R package \bold{metadat}.
+\code{\link[metabook]{Dogliotti2014}} in R package \bold{metabook}.
 }
 \examples{
-head(dat.dogliotti2014)
+head(Dogliotti2014)
 
 # Example using pairwise(), netmeta() and netmetabin():
-# example(dat.dogliotti2014, run.dontrun = TRUE)
+# example(Dogliotti2014, package = "metabook")
 }
 \seealso{
-\code{\link[metadat]{dat.dogliotti2014}},
+\code{\link[metabook]{Dogliotti2014}},
   \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmetabin}}
 }

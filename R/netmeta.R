@@ -60,6 +60,11 @@
 #'   used to estimate the between-study variance \eqn{\tau^2} and its
 #'   square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
 #'   \code{"ML"}, can be abbreviated.
+#' @param method.random.ci A character string indicating which method
+#'   is used to calculate confidence interval and test statistic for
+#'   random effects estimate; either \code{"classic"} for standard normal
+#'   quantiles or \code{"t-dist"} for quantiles from the t-distribution, can
+#'   be abbreviated.
 #' @param tau.preset An optional value for manually setting the
 #'   square-root of the between-study variance \eqn{\tau^2}.
 #' @param tol.multiarm A numeric for the tolerance for consistency of
@@ -493,7 +498,7 @@
 #' 
 #' data(smokingcessation)
 #' 
-#' # Transform data from arm-based format to contrast-based format
+#' # Transform data from wide arm-based to contrast-based format
 #' #
 #' pw1 <- pairwise(list(treat1, treat2, treat3),
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
@@ -501,87 +506,99 @@
 #' 
 #' # Conduct random effects network meta-analysis
 #' #
-#' net1 <- netmeta(pw1, common = FALSE)
-#' net1
+#' nma1 <- netmeta(pw1, common = FALSE)
+#' nma1
 #' 
 #' # Draw network graphs
 #' #
-#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25)
+#' netgraph(nma1, points = TRUE, cex.points = 3, cex = 1.25)
 #' tname <- c("No intervention", "Self-help",
 #'   "Individual counselling", "Group counselling")
-#' netgraph(net1, points = TRUE, cex.points = 3, cex = 1.25, labels = tname)
+#' netgraph(nma1, points = TRUE, cex.points = 3, cex = 1.25, labels = tname)
 #' 
 #' # Forest plot
 #' #
-#' forest(net1)
+#' forest(nma1)
 #' 
 #' \donttest{
 #' #
 #' # 2) Diabetes example
 #' #
 #' 
-#' data(Senn2013)
+#' # Transform data from long arm-based to contrast-based format
+#' #
+#' pw2 <- pairwise(studlab = study, treat = treatment,
+#'   n = n, mean = mean, sd = sd, data = Senn2013,
+#'   varnames = c("MD", "seMD"))
 #' 
 #' # Conduct common effects network meta-analysis
 #' #
-#' net2 <- netmeta(TE, seTE, treat1, treat2, studlab,
+#' nma2 <- netmeta(pw2, random = FALSE)
+#' nma2
+#' 
+#' \dontrun{
+#' # Senn (2013) data set in comparison-based format
+#' data(Senn2013)
+#' #
+#' nma2.2 <- netmeta(TE, seTE, treat1, treat2, studlab,
 #'   data = Senn2013, sm = "MD", random = FALSE)
-#' net2
-#' net2$Q.decomp
+#' nma2.2
+#' rm(Senn2013)
+#' }
+#' 
+#' nma2$Q.decomp
 #' 
 #' # Comparison with reference group
 #' #
-#' print(net2, reference = "plac")
-#' forest(net2, reference = "plac")
+#' print(nma2, reference = "plac")
+#' forest(nma2, reference = "plac")
 #' 
 #' # Print detailed results
 #' #
-#' snet2 <- summary(net2)
-#' print(snet2, digits = 3)
+#' snma2 <- summary(nma2)
+#' print(snma2, digits = 3)
 #' 
 #' # Only show individual study results for multi-arm studies
 #' #
-#' print(snet2, digits = 3, truncate = multiarm)
+#' print(snma2, digits = 3, truncate = multiarm)
 #' 
 #' # Only show first three individual study results
 #' #
-#' print(snet2, digits = 3, truncate = 1:3)
+#' print(snma2, digits = 3, truncate = 1:3)
 #' 
-#' # Only show individual study results for Kim2007 and Willms1999
+#' # Only show individual study results for 'Kim 2007' and 'Willms 1999'
 #' #
-#' print(snet2, digits = 3, truncate = c("Kim2007", "Willms1999"))
+#' print(snma2, digits = 3, truncate = c("Kim 2007", "Willms 1999"))
 #' 
 #' # Only show individual study results for studies starting with the
 #' # letter "W"
 #' #
-#' print(snet2, ref = "plac", digits = 3,
+#' print(snma2, ref = "plac", digits = 3,
 #'   truncate = substring(studlab, 1, 1) == "W")
 #'
 #' # Conduct random effects network meta-analysis
 #' #
-#' net3 <- netmeta(TE, seTE, treat1, treat2, studlab,
-#'   data = Senn2013, sm = "MD", common = FALSE,
-#'   reference = "plac")
-#' net3
-#' forest(net3, xlim = c(-1.5, 1), xlab = "HbA1c difference")
+#' nma3 <- netmeta(pw2, common = FALSE, reference = "plac")
+#' nma3
+#' forest(nma3, xlim = c(-1.5, 1), xlab = "HbA1c difference")
 #' 
 #' # Add column with P-Scores on right side of forest plot
 #' #
-#' forest(net3, xlim = c(-1.5, 1),
+#' forest(nma3, xlim = c(-1.5, 1),
 #'   xlab = "HbA1c difference",
 #'   rightcols = c("effect", "ci", "Pscore"),
 #'   just.addcols = "right")
 #' 
 #' # Add column with P-Scores on left side of forest plot
 #' #
-#' forest(net3, xlim = c(-1.5, 1),
+#' forest(nma3, xlim = c(-1.5, 1),
 #'   xlab = "HbA1c difference",
 #'   leftcols = c("studlab", "Pscore"),
 #'   just.addcols = "right")
 #' 
 #' # Sort forest plot by descending P-Score
 #' #
-#' forest(net3, xlim = c(-1.5, 1),
+#' forest(nma3, xlim = c(-1.5, 1),
 #'   xlab = "HbA1c difference",
 #'   rightcols = c("effect", "ci", "Pscore"),
 #'   just.addcols = "right",
@@ -589,7 +606,7 @@
 #' 
 #' # Sort by and print number of studies with direct treatment comparisons
 #' #
-#' forest(net3, xlim = c(-1.5, 1),
+#' forest(nma3, xlim = c(-1.5, 1),
 #'   xlab = "HbA1c difference",
 #'   leftcols = c("studlab", "k"),
 #'   leftlabs = c("Contrast\nto Placebo", "Direct\nComparisons"),
@@ -602,10 +619,8 @@
 #' trts <- c("acar", "benf", "metf", "migl", "piog",
 #'   "rosi", "sita", "sulf", "vild", "plac")
 #' #
-#' net4 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'   data = Senn2013, sm = "MD", common = FALSE,
-#'   reference = "Placebo", seq = trts)
-#' print(net4, digits = 2)
+#' nma4 <- netmeta(pw2, common = FALSE, reference = "plac", seq = trts)
+#' print(nma4, digits = 2)
 #' 
 #' #
 #' # 3) Dietary fat example
@@ -625,8 +640,8 @@
 #' 
 #' # Conduct network meta-analysis
 #' #
-#' net5 <- netmeta(pw5)
-#' net5
+#' nma5 <- netmeta(pw5)
+#' nma5
 #' 
 #' # Conduct network meta-analysis using incidence rate differences
 #' # (sm = "IRD")
@@ -634,12 +649,12 @@
 #' pw6 <- pairwise(list(treat1, treat2, treat3),
 #'   list(d1, d2, d3), time = list(years1, years2, years3),
 #'   studlab = ID, data = dietaryfat, sm = "IRD")
-#' net6 <- netmeta(pw6)
-#' net6
+#' nma6 <- netmeta(pw6)
+#' nma6
 #' 
 #' # Draw network graph
 #' #
-#' netgraph(net5, points = TRUE, cex.points = 3, cex = 1.25,
+#' netgraph(nma5, points = TRUE, cex.points = 3, cex = 1.25,
 #'   labels = c("Control","Diet", "Diet 2"))
 #' }
 #' 
@@ -667,6 +682,8 @@ netmeta <- function(TE, seTE,
                     #
                     method.tau = gs("method.tau.netmeta"),
                     tau.preset = NULL,
+                    #
+                    method.random.ci = "classic",
                     #
                     tol.multiarm = gs("tol.multiarm"),
                     tol.multiarm.se = gs("tol.multiarm.se"),
@@ -728,6 +745,8 @@ netmeta <- function(TE, seTE,
   #
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
+  #
+  method.random.ci <- setchar(method.random.ci, c("classic", "t-dist"))
   #
   tol.multiarm <- replaceNULL(tol.multiarm, 0.001)
   chknumeric(tol.multiarm, min = 0, length = 1)
@@ -1567,7 +1586,8 @@ netmeta <- function(TE, seTE,
                        level, level.ma,
                        dat.r$seTE, tau, sep.trts,
                        method.tau,
-                       func.inverse, Cov0 = p1$Cov)
+                       func.inverse, Cov0 = p1$Cov,
+                       method.random.ci = method.random.ci)
   #
   TE.random <- res.r$TE.pooled
   seTE.random <- res.r$seTE.pooled
@@ -1807,6 +1827,8 @@ netmeta <- function(TE, seTE,
               #
               method.tau = method.tau,
               tau.preset = tau.preset,
+              #
+              method.random.ci = method.random.ci,
               #
               tol.multiarm = tol.multiarm,
               tol.multiarm.se = tol.multiarm.se,

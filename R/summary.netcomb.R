@@ -363,7 +363,7 @@ summary.netcomb <- function(object,
               level = object$level,
               level.ma = object$level.ma,
               ##
-              ci.lab = paste0(round(100 * object$level.ma, 1),"%-CI"),
+              ci.lab = paste0(round(100 * object$level.ma, 1),"% CI"),
               ##
               reference.group = object$reference.group,
               baseline.reference = object$baseline.reference,

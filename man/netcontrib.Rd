@@ -201,18 +201,18 @@ package \bold{tictoc} is installed.
 \donttest{
 # Use the Woods dataset
 #
-pw1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = dat.woods2010, sm = "OR")
+pw <- pairwise(treatment, event = r, n = N,
+  studlab = author, data = Woods2010, sm = "OR")
 
-net1 <- netmeta(pw1)
+nma <- netmeta(pw)
 
 # Shortest path approach (default)
-netcontrib(net1)
+netcontrib(nma)
 }
 
 \dontrun{ 
 # Random walk approach
-netcontrib(net1, method = "r")
+netcontrib(nma, method = "r")
 }
 
 }
@@ -236,7 +236,7 @@ meta-analysis.
 \emph{Statistics in Medicine}.
 }
 \seealso{
-\code{\link{netmeta}}, \code{\link[metadat]{dat.woods2010}}
+\code{\link{netmeta}}, \code{\link[metabook]{Woods2010}}
 }
 \author{
 Theodoros Papakonstantinou \email{dev@tpapak.com}, Annabel

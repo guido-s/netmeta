@@ -85,23 +85,23 @@
 #' 
 #' # Transform data from arm-based format to contrast-based format
 #' #
-#' pw1 <- pairwise(list(treat1, treat2, treat3),
+#' pw <- pairwise(list(treat1, treat2, treat3),
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
 #'   data = smokingcessation, sm = "OR")
 #' 
 #' # Conduct network meta-analysis
 #' #
-#' net1 <- netmeta(pw1)
+#' nma <- netmeta(pw)
 #' 
 #' # Calculate measures based on a common effects model
 #' #        
-#' nm1 <- netmeasures(net1)
+#' nm <- netmeasures(nma)
 #' 
 #' # Plot of minimal parallelism versus mean path length
 #' #
-#' plot(nm1$meanpath, nm1$minpar, type = "n",
+#' plot(nm$meanpath, nm$minpar, type = "n",
 #'   xlab = "Mean path length", ylab = "Minimal parallelism")
-#' text(nm1$meanpath, nm1$minpar, names(nm1$meanpath), cex = 0.8)
+#' text(nm$meanpath, nm$minpar, names(nm$meanpath), cex = 0.8)
 #' 
 #' @export netmeasures
 

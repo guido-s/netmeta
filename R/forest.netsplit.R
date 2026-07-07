@@ -2,10 +2,10 @@
 #' 
 #' @description
 #' Forest plot to show direct and indirect evidence in network
-#' meta-analysis.  Furthermore, estimates from network meta-analysis
+#' meta-analysis. Furthermore, estimates from network meta-analysis
 #' as well as prediction intervals can be printed.
 #'
-#' @aliases forest.netsplit plot.netsplit
+#' @aliases forest.netsplit
 #' 
 #' @param x An object of class \code{netsplit}.
 #' @param pooled A character string indicating whether results for the
@@ -27,7 +27,7 @@
 #'   of same length as the total number of comparisons).
 #' @param subset An optional logical vector specifying a subset of
 #'   comparisons to print (must be of same length as the total number of
-#'   comparisons) .
+#'   comparisons).
 #' @param subgroup A character string indicating which layout should
 #'   be used in forest plot: subgroups by comparisons
 #'   (\code{"comparison"}) or subgroups by estimates
@@ -332,7 +332,7 @@ forest.netsplit <- function(x,
     if (!(length(x$level.predict) == 0) &&
         x$level.ma != x$level.predict)
       text.predict <- paste0(text.predict, " (",
-                             round(x$level.predict * 100), "%-PI)")
+                             round(x$level.predict * 100), "% PI)")
   ##
   if (overall & n.subgroup > 1) {
     if (text.overall == text.predict)
@@ -614,6 +614,7 @@ forest.netsplit <- function(x,
     if (n.subgroup > 1)
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 lower = dat$lower, upper = dat$upper,
                                  studlab = dat$evidence, data = dat,
                                  sm = x$sm,
                                  common = FALSE, random = FALSE,
@@ -623,6 +624,7 @@ forest.netsplit <- function(x,
     else
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 lower = dat$lower, upper = dat$upper,
                                  studlab = dat$comps, data = dat, sm = x$sm,
                                  common = FALSE, random = FALSE,
                                  method.tau = "DL", method.tau.ci = ""))
@@ -674,6 +676,7 @@ forest.netsplit <- function(x,
     if (n.subgroup > 1)
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 lower = dat$lower, upper = dat$upper,
                                  studlab = dat$comps, data = dat,
                                  sm = x$sm,
                                  common = FALSE, random = FALSE,
@@ -683,6 +686,7 @@ forest.netsplit <- function(x,
     else
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 lower = dat$lower, upper = dat$upper,
                                  studlab = dat$comps, data = dat, sm = x$sm,
                                  common = FALSE, random = FALSE,
                                  method.tau = "DL", method.tau.ci = ""))
@@ -772,10 +776,3 @@ forest.netsplit <- function(x,
   invisible(res)
 }
 
-
-#' @rdname forest.netsplit
-#' @method plot netsplit
-#' @export
-
-plot.netsplit <- function(x, ...)
-  forest(x, ...)

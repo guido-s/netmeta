@@ -95,6 +95,14 @@ textmeth <- function(x, random = FALSE, print.tau2 = FALSE, print.tau = FALSE,
         }
       }
       #
+      if (random) {
+        if (!is.null(x$method.random.ci) && x$method.random.ci == "t-dist")
+          text.details <-
+            paste0(text.details,
+                     "- Random effects confidence intervals based on ",
+                     "t-distribution (df = ", x$df.Q, ")\n")
+      }
+      #
       if (print.I2) {
         text.details <-
           paste0(text.details, "- Calculation of ", text.I2, " based on Q\n")

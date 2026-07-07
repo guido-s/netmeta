@@ -98,27 +98,27 @@
 #' 
 #' # Conduct random effects network meta-analysis
 #' #
-#' net1 <- netmeta(pw1, common = FALSE)
+#' nma1 <- netmeta(pw1, common = FALSE)
 #' 
 #' # Calculate and print concise results for all pairwise
 #' # meta-analyses
 #' #
-#' np1 <- netpairwise(net1)
+#' np1 <- netpairwise(nma1)
 #' np1
 #' print(np1, details.method = FALSE)
 #'
 #' \donttest{
-#' data(Senn2013)
-#' 
 #' # Random effects model
 #' #
-#' net2 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'   data = Senn2013, sm = "MD", common = FALSE, reference = "plac")
+#' pw2 <- pairwise(studlab = study, treat = treatment,
+#'   n = n, mean = mean, sd = sd, data = Senn2013,
+#'   varnames = c("MD", "seMD"))
+#' nma2 <- netmeta(pw2, common = FALSE, reference = "plac")
 #' 
 #' # Calculate and print concise results for all pairwise
 #' # meta-analyses
 #' #
-#' np2 <- netpairwise(net2)
+#' np2 <- netpairwise(nma2)
 #' np2
 #' print(np2, details.method = FALSE)
 #'
@@ -126,7 +126,7 @@
 #' 
 #' # Print detailed information for each pairwise comparison
 #' #
-#' np3 <- netpairwise(net2, separate = TRUE)
+#' np3 <- netpairwise(nma2, separate = TRUE)
 #' forest(np3)
 #' funnel(np3)
 #' radial(np3)

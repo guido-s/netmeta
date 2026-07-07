@@ -40,16 +40,16 @@ evaluating the individual components.
 }
 \note{
 The dataset Baker2009 is identical to dataset
-\code{\link[metadat]{dat.baker2009}} in R package \bold{metadat}.
+\code{\link[metabook]{Baker2009}} in R package \bold{metabook}.
 }
 \examples{
-head(dat.baker2009)
+head(Baker2009)
 
 # Example using pairwise(), netmeta() and netcomb():
-# example(dat.baker2009, run.dontrun = TRUE)
+# example(Baker2009, package = "metabook")
 }
 \seealso{
-\code{\link[metadat]{dat.baker2009}},
+\code{\link[metabook]{Baker2009}},
   \code{\link[meta]{pairwise}}, \code{\link[meta]{metabin}},
   \code{\link{netmeta}}, \code{\link{netcomb}}
 }

@@ -85,34 +85,35 @@ of several network meta-analyses.
 }
 \examples{
 \donttest{
-data(Linde2016)
-
 # Only consider studies including Face-to-face PST (to reduce
 # runtime of example)
 #
 face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 
-# Standard random effects NMA model (with placebo as reference
-# treatment)
+# Use pairwise() to transform data to comparison-based format
 #
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-  data = face, reference.group = "placebo",
-  sm = "OR", common = FALSE)
+pw <- pairwise(treat = int,
+  event = resp, n = n, studlab = paste(author, year),
+  data = face, reference = "plac", sm = "OR")
+
+# Conduct random effects network meta-analysis
+#
+nma <- netmeta(pw, common = FALSE)
 
 # Additive CNMA model with placebo as inactive component and
 # reference
 #
-nc1 <- netcomb(net1, inactive = "placebo")
+cnma <- netcomb(nma, inactive = "placebo")
 
 # Combine results of standard NMA and CNMA
 #
-nb1 <- netbind(nc1, net1,
+nb <- netbind(cnma, nma,
   name = c("Additive CNMA", "Standard NMA"),
   col.study = c("red", "black"), col.square = c("red", "black"))
 #
-nb1
+nb
 #
-forest(nb1,
+forest(nb,
   col.subgroup = "black", addrow.subgroups = FALSE,
   fontsize = 10, spacing = 0.7, squaresize = 0.9,
   label.left = "Favours Placebo",
@@ -120,7 +121,7 @@ forest(nb1,
 
 # Also show results for common effects model
 #
-print(nb1, common = TRUE)
+print(nb, common = TRUE)
 }
 
 }

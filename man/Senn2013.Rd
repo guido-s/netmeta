@@ -32,6 +32,10 @@ These data are used as an example in Senn et al. (2013) and have been
 preprocessed for use in R package netmeta.
 }
 \details{
+This data set is in comparison-based format. The data in
+long arm-based format are available in \code{\link[metabook]{Senn2013}} in
+R package \bold{metabook}.
+
 Treatment labels provided by columns \code{treat1} and
 \code{treat2} have been abbreviated:
 \itemize{
@@ -51,7 +55,6 @@ Full treatment names are available in columns \code{treat1.long}
 and \code{treat2.long}.
 }
 \examples{
-data(Senn2013)
 head(Senn2013)
 
 # Example using netmeta():

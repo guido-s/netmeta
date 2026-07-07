@@ -165,48 +165,53 @@ variance), \code{"invse"} (inverse of the standard error), and
 }
 \examples{
 \donttest{
-data(Senn2013)
+# Transform data from long arm-based to contrast-based format
+#
+pw <- pairwise(studlab = study, treat = treatment,
+  n = n, mean = mean, sd = sd, data = Senn2013,
+  varnames = c("MD", "seMD"))
 
-net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
-  data = Senn2013, sm = "MD")
+# Conduct network meta-analysis
+#
+nma <- netmeta(pw)
 
 # 'Comparison-adjusted' funnel plot not created as argument 'order'
 # is missing
 #
-try(funnel(net1))
+try(funnel(nma))
 
 # Only show comparisons with placebo
 #
-funnel(net1, order = "pl")
+funnel(nma, order = "pl")
 
 # Add result for Egger test of funnel plot asymmetry
 #
-funnel(net1, order = "pl", method.bias = "Egger",
+funnel(nma, order = "pl", method.bias = "Egger",
   digits.pval = 2)
 
 # (Nonsensical) alphabetic order of treatments with placebo as
 # last treatment
 #
 ord <- c("a", "b", "me", "mi", "pi", "r", "si", "su", "v", "pl")
-funnel(net1, order = ord)
+funnel(nma, order = ord)
 
 # Add results for tests of funnel plot asymmetry and use different
 # plotting symbols and colours
 #
-funnel(net1, order = ord,
+funnel(nma, order = ord,
   pch = rep(c(15:18, 1), 3), col = 1:3,
   method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 
 # Same results for tests of funnel plot asymmetry using reversed
 # order of treatments
 #
-funnel(net1, order = rev(ord),
+funnel(nma, order = rev(ord),
   pch = rep(c(15:18, 1), 3), col = 1:3,
   method.bias = c("Egger", "Begg", "Thompson"), digits.pval = 2)
 
 # Calculate tests for funnel plot asymmetry
 #
-f1 <- funnel(net1, order = ord)
+f1 <- funnel(nma, order = ord)
 #
 metabias(metagen(TE.adj, seTE, data = f1))
 metabias(metagen(TE.adj, seTE, data = f1), method = "Begg")

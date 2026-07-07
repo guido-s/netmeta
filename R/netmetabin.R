@@ -308,7 +308,7 @@
 #'   Theodoros Evrenoglou \email{theodoros.evrenoglou@@uniklinik-freiburg.de}
 #' 
 #' @seealso \code{\link[meta]{pairwise}}, \code{\link{netmeta}},
-#'   \code{\link[metadat]{dat.dong2013}}
+#'   \code{\link[metabook]{Dong2013}}
 #' 
 #' @references
 #' Efthimiou O, Rücker G, Schwarzer G, Higgins J, Egger M, Salanti G
@@ -318,7 +318,7 @@
 #' \bold{38}, 2992--3012
 #' 
 #' Evrenoglou T, White IR, Afach S, Mavridis D, Chaimani A (2022):
-#' Network Meta-Analysis of Rare Events Using Penalized Likelihood Regression.
+#' Network Meta-analysis of rare events using penalized likelihood regression.
 #' \emph{Statistics in Medicine},
 #' \bold{41}, 5203--19.
 #' 
@@ -338,7 +338,7 @@
 #' \donttest{
 #' # Only consider first four studies (to reduce runtime of example)
 #' #
-#' first4 <- subset(dat.dong2013, id <= 4)
+#' first4 <- subset(Dong2013, id <= 4)
 #' 
 #' # Transform data from long arm-based format to contrast-based
 #' # format. Argument 'sm' has to be used for odds ratio as summary
@@ -359,7 +359,7 @@
 #' netleague(nb1)
 #' 
 #' # Mantel-Haenszel network meta-analysis for the whole
-#' # dataset: example(dat.dong2013)
+#' # dataset: example(Dong2013)
 #' }
 #' 
 #' @export netmetabin
@@ -435,7 +435,7 @@ netmetabin <- function(event1, n1, event2, n2,
   modtext <-
     paste0("must be equal to 'MH' (Mantel-Haenszel, the default), ",
            "'NCH' (common-effects non-central hypergeometric), ",
-           "'LRP' (penalized logistic regression), or ",
+           "'LRP' (penalised logistic regression), or ",
            "'Inverse' (classic network meta-analysis).")
   method <- setchar(method, c("Inverse", "MH", "NCH", "LRP"), modtext)
   is.mh.nch <- !(method %in% c("Inverse", "LRP"))
@@ -680,12 +680,90 @@ netmetabin <- function(event1, n1, event2, n2,
   treat1 <- rmSpace(rmSpace(treat1, end = TRUE))
   treat2 <- rmSpace(rmSpace(treat2, end = TRUE))
   ##
-  ## Keep original order of studies
-  ##
-  .order <- seq_along(studlab)
-  ##
   subset <- catch("subset", mc, data, sfsp)
   missing.subset <- is.null(subset)
+  #
+  # Drop comparisons with missing events
+  #
+  if (!is.iv & (any(is.na(event1)) | any(is.na(event2)))) {
+    keepEv <- !(is.na(event1) | is.na(event2))
+    #
+    if (warn) {
+      prt_s <- sum(!keepEv) > 1
+      #
+      dat_Ev <- data.frame(studlab, treat1, treat2, event1, event2)[!keepEv, ]
+      #
+      warning("Comparison", if (prt_s) "s",
+              " with missing events not considered ",
+              "in network meta-analysis.",
+              call. = FALSE)
+      #
+      cat("Comparison", if (prt_s) "s",
+          " not considered in network meta-analysis:\n",
+          sep = "")
+      prmatrix(dat_Ev,
+               quote = FALSE, right = TRUE,
+               rowlab = rep("", sum(!keepEv)))
+    }
+    #
+    studlab <- studlab[keepEv]
+    treat1 <- treat1[keepEv]
+    treat2 <- treat2[keepEv]
+    #
+    event1 <- event1[keepEv]
+    event2 <- event2[keepEv]
+    n1 <- n1[keepEv]
+    n2 <- n2[keepEv]
+    #
+    if (!missing.subset)
+      subset <- subset[keepEv]
+    #
+    if (nulldata & is.pairwise)
+      pairdata <- pairdata[keepEv, , drop = FALSE]
+  }
+  #
+  # Drop comparisons with missing sample sizes
+  #
+  if (!is.iv & (any(is.na(n1)) | any(is.na(n2)))) {
+    keepN <- !(is.na(n1) | is.na(n2))
+    #
+    if (warn) {
+      prt_s <- sum(!keepN) > 1
+      #
+      dat_N <- data.frame(studlab, treat1, treat2, n1, n2)[!keepN, ]
+      #
+      warning("Comparison", if (prt_s) "s",
+              " with missing sample sizes not considered ",
+              "in network meta-analysis.",
+              call. = FALSE)
+      #
+      cat("Comparison", if (prt_s) "s",
+          " not considered in network meta-analysis:\n",
+          sep = "")
+      prmatrix(dat_N,
+               quote = FALSE, right = TRUE,
+               rowlab = rep("", sum(!keepN)))
+    }
+    #
+    studlab <- studlab[keepN]
+    treat1 <- treat1[keepN]
+    treat2 <- treat2[keepN]
+    #
+    event1 <- event1[keepN]
+    event2 <- event2[keepN]
+    n1 <- n1[keepN]
+    n2 <- n2[keepN]
+    #
+    if (!missing.subset)
+      subset <- subset[keepN]
+    #
+    if (nulldata & is.pairwise)
+      pairdata <- pairdata[keepN, , drop = FALSE]
+  }
+  #
+  # Keep original order of studies
+  #
+  .order <- seq_along(studlab)
   
   
   ##
@@ -1808,7 +1886,7 @@ netmetabin <- function(event1, n1, event2, n2,
   }
   else if (is.lrp) {
     #
-    # Penalized logistic regression
+    # Penalised logistic regression
     #
     is_installed_package("brglm2", "netmetabin", "method", " = \"LRP\"")
     #

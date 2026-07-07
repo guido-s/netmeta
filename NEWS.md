@@ -1,4 +1,92 @@
-## netmeta, version 3.3-0 (2025-mm-dd)
+## netmeta, version 3.7-0 (2026-mm-dd)
+
+### Major changes
+
+* New R functions netpath() and heatplot.netpath() for path-based approach
+  to detect and assess inconsistency in network meta-analysis
+  [(Tahmasebi et al., 2025)](https://arxiv.org/html/2506.20364)
+ 
+* R package **reshape2** added to Imports
+
+
+## netmeta, version 3.6-1 (2026-06-19)
+
+### Bug fixes
+
+* forest.netmeta():
+  - print correct confidence intervals for network meta-analysis with
+    confidence intervals based on t-distribution
+    [(issue #32)](https://github.com/guido-s/netmeta/issues/32)
+
+
+## netmeta, version 3.6-0 (2026-06-09)
+
+### Major changes
+
+* Random effects confidence intervals based on quantiles of the t-distribution
+  implemented
+
+### User-visible changes
+
+* netmeta():
+  - new argument 'method.random.ci' to specify method to calculate
+    random effects confidence intervals
+
+* print.netimpact():
+  - new argument 'lab.zero' to replace zero contributions with a character string
+
+### Bug fixes
+
+* crossnma2netmeta():
+  - fix values for tau2 and tau - crossnma() returns tau instead of tau2
+
+### Internal changes
+
+* crossnma2netmeta():
+  - return number of pairwise comparisons
+
+
+## netmeta, version 3.5-0 (2026-05-27)
+
+### Major changes
+
+* Unrelated mean interaction effect (UMIE) models for network
+  meta-regression implemented
+  [(Kwarteng et al., 2026)](https://doi.org/10.21203/rs.3.rs-8235913/v1)
+
+* New function plot.netsplit() implementing the method by
+  [Wilson et al. (2026)](https://doi.org/10.1017/rsm.2026.10082) to visualize
+  local consistency
+
+* R packages **stringr**, **tidyr** and **ggrepel** added to Imports
+
+### User-visible changes
+
+* netmetareg():
+  - new arguments 'direction1' and 'direction2' for UMIE models
+
+
+## netmeta, version 3.4-0 (2026-04-10)
+
+### Major changes
+
+* In R function netmetabin(), drop comparisons with missing events or
+  missing sample sizes
+
+* Use datasets from the R package **metabook** in examples
+
+### Internal changes
+
+* netgraph.netmeta():
+  - input to argument 'highlight' can contain abbreviated treatment names
+
+### Bug fixes
+
+* print.netmeta():
+  - input to argument 'nchar.trts' was ignored
+
+
+## netmeta, version 3.3-1 (2026-01-27)
 
 ### Major changes
 
@@ -11,15 +99,13 @@
 * Vignette on workflow for the R package **netmeta** added
   (command: vignette("netmeta-workflow"))
 
-* New R functions netpath() and heatplot.netpath() for path-based approach
-  to detect and assess inconsistency in network meta-analysis
-  [(Tahmasebi et al., 2025)](https://arxiv.org/html/2506.20364)
-
 * New experimental R function gemtc2netmeta() to create a netmeta object from a
   gemtc object
-  
-* R package **reshape2** added to Imports
-  
+
+* Replaced the vignette of the article published in the
+  *Journal of Statistical Software* with a newly compiled version in which all
+  web links use https instead of http, as required by the CRAN team.
+
 * R packages **rmarkdown**, **knitr** and **gemtc** added to Suggests
 
 ### Bug fixes
@@ -41,7 +127,11 @@
     (only for pairwise() object as main input with binary or count outcome)
   - align variance-covariance matrix construction with netmeta()
   - update internal reference treatment assignment to use R-friendly matrix
-     names for models with the common assumption
+    names for models with the common assumption
+  - use correct reference treatment (argument reference.group)
+
+* hatmatrix():
+  - consider input for arguments 'common' and 'random'
 
 ### User-visible changes
 
@@ -81,7 +171,7 @@
 
 ### Major changes
 
-* [Nana-Adjoa Kwarteng](https://orcid.org/0009-0009-0502-6887) added as
+* [Nana-adjoa Kwarteng](https://orcid.org/0009-0009-0502-6887) added as
   a contributor to the R package **netmeta**
 
 * New R function netmetareg() to conduct network meta-regression with a

@@ -11,6 +11,7 @@
   digits = gs("digits.prop"),
   nchar.trts = x$nchar.trts,
   nchar.studlab = x$nchar.studlab,
+  lab.zero = NULL,
   details.methods = gs("details"),
   legend = gs("legend"),
   legend.studlab = TRUE,
@@ -34,6 +35,8 @@ characters used to create unique treatment names (see Details).}
 
 \item{nchar.studlab}{A numeric defining the minimum number of
 characters used to create unique study labels.}
+
+\item{lab.zero}{An optional character string to replace zero contributions.}
 
 \item{details.methods}{A logical specifying whether details on statistical
 methods should be printed.}

@@ -155,7 +155,7 @@ acamprosate, baclofen and topiramate.
 \seealso{
 \code{\link{netrank}}, \code{\link{netmeta}},
   \code{\link{netposet}}, \code{\link{hasse}},
-  \code{\link[metadat]{dat.linde2015}}
+  \code{\link[metabook]{Linde2015}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}, Clément

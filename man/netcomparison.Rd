@@ -166,42 +166,44 @@ effect for arbitrary complex interventions in a component network
 meta-analysis.
 }
 \examples{
-data(Linde2016)
-
 # Only consider studies including Face-to-face PST (to reduce
 # runtime of example)
 #
 face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 
+# Use pairwise() to transform data to comparison-based format
+#
+pw <- pairwise(treat = int,
+  event = resp, n = n, studlab = paste(author, year),
+  data = face, reference = "plac", sm = "OR")
+
 # Conduct random effects network meta-analysis
 #
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-  data = face, ref = "placebo", sm = "OR", common = FALSE)
+nma1 <- netmeta(pw, common = FALSE)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
 #
-nc1 <- netcomb(net1, inactive = "placebo")
+cnma1 <- netcomb(nma1, inactive = "placebo")
 
 # Result for comparison Face-to-face PST vs TCA
-netcomparison(nc1, "Face-to-face PST", "TCA", nchar.comps = 4)
-netcomparison(nc1, "F", "T", nchar.comps = 4)
+netcomparison(cnma1, "Face-to-face PST", "TCA", nchar.comps = 4)
+netcomparison(cnma1, "F", "T", nchar.comps = 4)
 
 # Result for comparison Face-to-face PST vs TCA + Placebo
-netcomparison(nc1, "Face-to-face PST", "TCA + Plac", nchar.comps = 4)
+netcomparison(cnma1, "Face-to-face PST", "TCA + Plac", nchar.comps = 4)
 
 \donttest{
-
 # Forest plots
 #
 t1 <- c("F + TCA", "F + Plac", "SSRI + Plac + TCA")
 t2 <- c("UC", "Plac", "UC")
 #
-netcomparison(nc1, t1, t2)
+netcomparison(cnma1, t1, t2)
 #
-forest(netcomparison(nc1, t1, t2))
-forest(netcomparison(nc1, t1, t2), nchar.comps = 4)
-forest(netcomparison(nc1, c("F", "TCA"), "UC"), nchar.comps = 4)
+forest(netcomparison(cnma1, t1, t2))
+forest(netcomparison(cnma1, t1, t2), nchar.comps = 4)
+forest(netcomparison(cnma1, c("F", "TCA"), "UC"), nchar.comps = 4)
 
 # Artificial example
 #
@@ -210,20 +212,20 @@ treat2 <- c("B+C", "A+C", "C+D")
 TE <- c(0, 1, 0)
 seTE <- rep(1, 3)
 # Conduct (C)NMA
-net2 <- netmeta(TE, seTE, treat1, treat2, random = FALSE)
-nc2 <- netcomb(net2)
+nma2 <- netmeta(TE, seTE, treat1, treat2, random = FALSE)
+cnma2 <- netcomb(nma2)
 
 # Result for comparison A vs B + D
-netcomparison(nc2, "A", "B + D")
+netcomparison(cnma2, "A", "B + D")
 # Same results
-netcomparison(nc2, "A", "B+D")
-netcomparison(nc2, "A", "D+B")
-netcomparison(nc2, "a", "d+b")
+netcomparison(cnma2, "A", "B+D")
+netcomparison(cnma2, "A", "D+B")
+netcomparison(cnma2, "a", "d+b")
 
 # Generated B matrix
-netcomparison(nc2, "A", "B + D")$C.matrix
+netcomparison(cnma2, "A", "B + D")$C.matrix
 # Generated B matrix
-netcomparison(nc2, "A", "B + D")$B.matrix
+netcomparison(cnma2, "A", "B + D")$B.matrix
 }
 
 }

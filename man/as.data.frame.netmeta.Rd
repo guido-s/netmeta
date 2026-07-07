@@ -35,15 +35,15 @@ data(smokingcessation)
 
 # Transform data from arm-based format to contrast-based format
 #
-pw1 <- pairwise(list(treat1, treat2, treat3),
+pw <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
   data = smokingcessation, sm = "OR")
 
 # Conduct random effects network meta-analysis and show data frame
 #
-net1 <- netmeta(pw1, common = FALSE)
-head(as.data.frame(net1))
-head(as.data.frame(net1, details = TRUE))
+nma <- netmeta(pw, common = FALSE)
+head(as.data.frame(nma))
+head(as.data.frame(nma, details = TRUE))
 }
 
 }

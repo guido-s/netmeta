@@ -15,8 +15,7 @@
 #' the additive network meta-analysis model might be possible, see
 #' \link{discomb} function.
 #' 
-#' @aliases netconnection netconnection.default netconnection.pairwise
-#'   print.netconnection
+#' @aliases netconnection netconnection.default netconnection.pairwise print.netconnection
 #' 
 #' @param data A data frame, e.g., created with
 #'   \code{\link[meta]{pairwise}}.
@@ -71,9 +70,13 @@
 #' 
 #' @examples
 #' \donttest{
-#' data(Senn2013)
+#' # Transform data from long arm-based to contrast-based format
+#' #
+#' pw <- pairwise(studlab = study, treat = treatment,
+#'   n = n, mean = mean, sd = sd, data = Senn2013,
+#'   varnames = c("MD", "seMD"))
 #' 
-#' nc1 <- netconnection(treat1, treat2, studlab, data = Senn2013)
+#' nc1 <- netconnection(pw)
 #' nc1
 #' 
 #' # Extract number of (sub)networks
@@ -83,10 +86,6 @@
 #' # Extract distance matrix
 #' #
 #' nc1$D.matrix
-#'
-#' # Conduct network meta-analysis (results not shown)
-#' #
-#' net1 <- netmeta(TE, seTE, treat1, treat2, studlab, data = Senn2013)
 #' 
 #' # Artificial example with two subnetworks
 #' #
@@ -106,18 +105,18 @@
 #' 
 #' # Conduct network meta-analysis (results in an error message due to
 #' # unconnected network)
-#' try(net2 <- netmeta(1:6, 1:6, t1, t2, 1:6))
+#' try(nma <- netmeta(1:6, 1:6, t1, t2, 1:6))
 #' 
 #' # Conduct network meta-analysis on first subnetwork
 #' #
-#' net2.1 <- netmeta(1:6, 1:6, t1, t2, 1:6, subset = nc2$subnet == 1)
+#' nma.1 <- netmeta(1:6, 1:6, t1, t2, 1:6, subset = nc2$subnet == 1)
 #' 
 #' # Conduct network meta-analysis on second subnetwork
 #' #
-#' net2.2 <- netmeta(1:6, 1:6, t1, t2, 1:6, subset = nc2$subnet == 2)
+#' nma.2 <- netmeta(1:6, 1:6, t1, t2, 1:6, subset = nc2$subnet == 2)
 #' 
-#' net2.1
-#' net2.2
+#' nma.1
+#' nma.2
 #' }
 #' 
 #' @rdname netconnection

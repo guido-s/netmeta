@@ -43,34 +43,34 @@ treatment names, \code{comps} calls \code{treats} internally.
 }
 \examples{
 \donttest{
-data(Senn2013)
-#
-net1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-  data = Senn2013)
+pw <- pairwise(studlab = study, treat = treatment,
+  n = n, mean = mean, sd = sd, data = Senn2013,
+  varnames = c("MD", "seMD"))
+nma <- netmeta(pw)
 
 # Full treatment names
 #
-net1$trts
+nma$trts
 
 # Treatment names with four characters
 #
-treats(net1$trts, nchar.trts = 4)
+treats(nma$trts, nchar.trts = 4)
 
 # With two characters
 #
-treats(net1$trts, nchar.trts = 2)
+treats(nma$trts, nchar.trts = 2)
 
 # With one character (if possible)
 #
-treats(net1$trts, nchar.trts = 1)
+treats(nma$trts, nchar.trts = 1)
 
 # Full comparison names
 #
-net1$comparisons
+nma$comparisons
 
 # Abbreviated comparison names
 #
-with(net1, comps(comparisons, trts, sep.trts, nchar = 4))
+with(nma, comps(comparisons, trts, sep.trts, nchar = 4))
 }
 
 }

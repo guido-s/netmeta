@@ -89,34 +89,37 @@ the active graphics window. For more information see help page of
 }
 \examples{
 \dontrun{
-data(Linde2016)
-
 # Only consider studies including Face-to-face PST (to reduce
 # runtime of example)
 #
 face <- subset(Linde2016, id \%in\% c(16, 24, 49, 118))
 
+# Use pairwise() to transform data to comparison-based format
+#
+pw <- pairwise(treat = int,
+  event = resp, n = n, studlab = paste(author, year),
+  data = face, reference = "plac", sm = "OR")
+
 # Conduct random effects network meta-analysis
 #
-net1 <- netmeta(lnOR, selnOR, treat1, treat2, id,
-  data = face, ref = "placebo", sm = "OR", common = FALSE)
+nma <- netmeta(pw, common = FALSE)
 
 # Additive model for treatment components (with placebo as inactive
 # treatment)
 #
-nc1 <- netcomb(net1, inactive = "placebo")
+cnma <- netcomb(nma, inactive = "placebo")
 
 # Some complex interventions
 #
 ints <- c("F + TCA", "F + Plac", "SSRI + Plac + TCA")
-netcomplex(nc1, ints)
+netcomplex(cnma, ints)
 #
-forest(netcomplex(nc1, ints))
-forest(netcomplex(nc1, ints), nchar.comps = 4)
+forest(netcomplex(cnma, ints))
+forest(netcomplex(cnma, ints), nchar.comps = 4)
 
 # Component effects
 #
-forest(netcomplex(nc1, nc1$comps))
+forest(netcomplex(cnma, cnma$comps))
 }
 
 }

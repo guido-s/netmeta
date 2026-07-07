@@ -391,7 +391,7 @@ print.subgroup.netmeta <- function(x,
   if (!backtransf & (is_relative_effect(sm) | sm == "VE"))
     sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##
-  ci.lab <- paste0(round(100 * x$x$level.ma, 1), "%-CI")
+  ci.lab <- paste0(round(100 * x$x$level.ma, 1), "% CI")
   
   if (common) {
     cat("Common effects model: \n\n")

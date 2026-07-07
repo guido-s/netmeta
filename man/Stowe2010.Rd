@@ -50,13 +50,13 @@ three-arm study comparing two active treatments with placebo.
 }
 \note{
 The dataset Stowe2010 is identical to dataset
-\code{\link[metadat]{dat.stowe2010}} in R package \bold{metadat}.
+\code{\link[metabook]{Stowe2010}} in R package \bold{metabook}.
 }
 \examples{
-data(Stowe2010)
+head(Stowe2010)
 
 # Example using pairwise(), netmeta() and netrank():
-# example(dat.stowe2010, run.dontrun = TRUE)
+# example(Stowe2010, package = "metabook")
 }
 \seealso{
 \code{\link[meta]{pairwise}}, \code{\link[meta]{metacont}},

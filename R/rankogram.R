@@ -19,7 +19,7 @@
 #' @author Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #'
 #' @seealso \code{\link{netmeta}}, \code{\link{netrank}},
-#'   \code{\link{plot.rankogram}}, \code{\link[metadat]{dat.woods2010}}
+#'   \code{\link{plot.rankogram}}, \code{\link[metabook]{Woods2010}}
 #'
 #' @references
 #' Salanti G, Ades AE, Ioannidis JP (2011):

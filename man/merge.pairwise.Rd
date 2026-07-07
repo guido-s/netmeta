@@ -30,19 +30,20 @@ network connectivity.
 # measure; by default the risk ratio is used in the metabin
 # function called internally.
 #
-pw1 <- pairwise(treatment, event = r, n = N,
-  studlab = author, data = dat.woods2010, sm = "OR")
-head(pw1)
+pw <- pairwise(treatment, event = r, n = N,
+  studlab = author, data = Woods2010, sm = "OR",
+  append = FALSE)
+head(pw)
 
 # Add information on network connectivity
-nc1 <- netconnection(pw1)
-pw1nc1 <- merge(pw1, nc1)
-head(pw1nc1)
+nc <- netconnection(pw)
+pw.nc <- merge(pw, nc)
+head(pw.nc)
 
 }
 \seealso{
 \code{\link[meta]{pairwise}}, \code{\link{netconnection}},
-  \code{\link[metadat]{dat.woods2010}}
+  \code{\link[metabook]{Woods2010}}
 }
 \author{
 Guido Schwarzer \email{guido.schwarzer@uniklinik-freiburg.de}

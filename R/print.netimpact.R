@@ -13,6 +13,7 @@
 #'   characters used to create unique treatment names (see Details).
 #' @param nchar.studlab A numeric defining the minimum number of
 #'   characters used to create unique study labels.
+#' @param lab.zero An optional character string to replace zero contributions.
 #' @param details.methods A logical specifying whether details on statistical
 #'   methods should be printed.
 #' @param legend A logical indicating whether a legend should be
@@ -44,6 +45,8 @@ print.netimpact <- function(x,
                             nchar.trts = x$nchar.trts,
                             nchar.studlab = x$nchar.studlab,
                             #
+                            lab.zero = NULL,
+                            #
                             details.methods = gs("details"),
                             legend = gs("legend"),
                             legend.studlab = TRUE,
@@ -66,6 +69,8 @@ print.netimpact <- function(x,
   ##
   ##
   chknumeric(digits, min = 0, length = 1)
+  if (!is.null(lab.zero))
+    chkchar(lab.zero, length = 1)
   chklogical(details.methods)
   chklogical(legend)
   chklogical(legend.studlab)
@@ -122,7 +127,10 @@ print.netimpact <- function(x,
     rownames(impact.common) <- studlab.abbr
     #
     colnames(impact.common) <- paste(treat1, treat2, sep = sep.trts)
-    ##
+    #
+    if (!is.null(lab.zero))
+      impact.common[is_zero(x$impact.common)] <- lab.zero
+    #
     prmatrix(impact.common, quote = FALSE, right = TRUE)
     if (random)
       cat("\n")
@@ -139,7 +147,10 @@ print.netimpact <- function(x,
     rownames(impact.random) <- studlab.abbr
     #
     colnames(impact.random) <- paste(treat1, treat2, sep = sep.trts)
-    ##
+    #
+    if (!is.null(lab.zero))
+      impact.random[is_zero(x$impact.random)] <- lab.zero
+    #
     prmatrix(impact.random, quote = FALSE, right = TRUE)
   }
   #

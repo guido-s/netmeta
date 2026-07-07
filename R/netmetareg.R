@@ -2,19 +2,17 @@
 #'
 #' @description
 #' Network meta-regression with a single continuous or binary covariate for
-#' objects of class \code{netmeta}. This is a wrapper function for the R
-#' function \code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
+#' objects of class \code{netmeta} (Kwarteng et al., 2026). This is a wrapper
+#' function for \code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
 #' (Viechtbauer 2010).
 #'
 #' @details
-#' This R function is a wrapper function for R function
-#' \code{\link[metafor]{rma.mv}} in the R package \bold{metafor}
-#' (Viechtbauer 2010).
+#' This R function is a wrapper function for \code{\link[metafor]{rma.mv}} in
+#' the R package \bold{metafor} (Viechtbauer 2010).
 #'
-#' Note, results are not back-transformed in printouts of
-#' network meta-analyses using summary measures with transformations, e.g.,
-#' log risk ratios are printed instead of the risk ratio if argument
-#' \code{sm = "RR"}.
+#' Note, results are not back-transformed in printouts of network meta-analyses
+#' using summary measures with transformations, e.g., log risk ratios are
+#' printed instead of the risk ratio if argument \code{sm = "RR"}.
 #'
 #' Argument '\dots{}' can be used to pass additional arguments to R
 #' function \code{\link[metafor]{rma.mv}}. For example, argument
@@ -25,7 +23,7 @@
 #' @param x An object of class \code{netmeta}.
 #' @param covar Continuous or binary covariate.
 #' @param consistency A logical indicating whether a consistency or
-#'   inconsistency model should be assumed.
+#'   unrelated mean interaction effect (UMIE) model should be assumed.
 #' @param assumption A character string indicating which assumption is done
 #'   for the covariate; either "independent" or "common" (can be abbreviated).
 #' @param method.tau A character string indicating which method is
@@ -34,6 +32,10 @@
 #' @param level The level used to calculate confidence intervals for regression
 #'   coefficients.
 #' @param reference.group Reference treatment.
+#' @param direction1 Directionality parameter for the first treatment group
+#'   when using UMIE models.
+#' @param direction2 Directionality parameter for the second treatment group
+#'   when using UMIE models.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
 #' @param digits Minimal number of significant digits, see
@@ -48,8 +50,7 @@
 #'   printed.
 #' @param details.methods A logical specifying whether details on statistical
 #'   methods should be printed.
-#' @param \dots Additional arguments passed to R function
-#'   \code{\link[metafor]{rma.uni}}.
+#' @param \dots Additional arguments passed to \code{\link[metafor]{rma.mv}}.
 #'
 #' @return
 #' An object of class \code{c("netmetareg", "rma.mv", "rma")}. Please
@@ -66,13 +67,19 @@
 #' \item{version.metafor}{Version of R package \bold{metafor} used to
 #'   create object.}
 #'
-#' @author Nana-Adjoa Kwarteng
-#'   \email{nana-adjoa.kwarteng@uniklinik-freiburg.de},
+#' @author Nana-adjoa Kwarteng
+#'   \email{nana-adjoa.kwarteng@@uniklinik-freiburg.de},
 #'   Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
 #'
 #' @seealso \code{\link{netmeta}}
 #'
 #' @references
+#' Kwarteng N, Evrenoglou T, Mueller J, Elsaesser M, Schramm E, Schwarzer G,
+#' Nikolakopoulou A (2026):
+#' Illustrating the assumptions of meta-regression in treatment networks.
+#' Preprint available at \emph{Research Square},
+#' \doi{10.21203/rs.3.rs-8235913/v1}
+#' 
 #' Viechtbauer W (2010):
 #' Conducting Meta-Analyses in R with the Metafor Package.
 #' \emph{Journal of Statistical Software},
@@ -81,7 +88,9 @@
 #' @keywords models regression
 #' 
 #' @examples
-#' \donttest{
+#' #
+#' # 1) Smoking cessation example
+#' #
 #' data(smokingcessation)
 #' # Add variable with (fictitious) risk of bias values
 #' # with 1 = "low risk" and 2 = "high risk"
@@ -92,12 +101,88 @@
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
 #'   data = smokingcessation, sm = "OR")
 #' 
-#' net1 <- netmeta(pw1, common = FALSE, ref = "A")
+#' # Run network meta-analysis (NMA)
+#' nma1 <- netmeta(pw1, common = FALSE, ref = "A")
 #' 
 #' # Network meta-regression with continuous covariate and assumption of
 #' # independent slopes
-#' nr1 <- netmetareg(net1, rob)
+#' nr1 <- netmetareg(nma1, rob)
 #' nr1
+#' 
+#' \donttest{
+#' # 2) Pain Prevention of Propofol Injection Example (Jalota2011)
+#' #
+#' # Create pairwise object
+#' pw2 <- pairwise(treat = trt, event =  pain, n = n,
+#'   studlab = id, data = Jalota2011, sm = "OR")
+#' 
+#' # Run network meta-analysis (NMA)
+#' nma2 <- netmeta(pw2, common = FALSE, ref = "Hand vein")
+#' 
+#' # NMR with independent and consistent assumption (default)
+#' nmr2_i <- netmetareg(nma2, covar = seTE, consistency = TRUE,
+#'   assumption = "i")
+#' # NMR with common and consistent assumption
+#' nmr2_c <- netmetareg(nma2, covar = seTE, consistency = TRUE,
+#'   assumption = "c")
+#' # NMR with independent UMIE model (no consistency in interactions) using
+#' # default treatment order
+#' nmr2_i_umie <- netmetareg(nma2, covar = seTE, consistency = FALSE,
+#'   assumption = "i")
+#'
+#' # 3) Physical therapy example (Hong 2015)
+#' #
+#' dat3 <- Hong2015
+#' # Externally create a customizable treatment order indicator variable,
+#' # which will later be modified
+#' dat3$trtnum <- as.numeric(as.factor(dat3$trt))
+#' dat3 <- do.call(rbind, lapply(split(dat3, dat3$id),
+#'   function(x) {
+#'     x$direction <- ifelse(x$trtnum == min(x$trtnum), 0, 1)
+#'   x}))
+#' 
+#' pw3 <- pairwise(treat = trt, mean = mean_pain, n = n, sd = sd_pain,
+#'   studlab=id, data = dat3, sm = "MD")
+#' # Create difference variable for covariate
+#' pw3$disability_diff <- pw3$mean_disability1 - pw3$mean_disability2
+#' 
+#' # Update directionality parameters so that they will exclude imputed values
+#' sel.NA <- is.na(pw3$disability_diff)
+#' pw3$direction1[sel.NA] <- 0
+#' pw3$direction2[sel.NA] <- 0
+#' 
+#' # Mean imputations for missing covariate values
+#' pw3$disability_diff[sel.NA] <- mean(pw3$disability_diff, na.rm = TRUE)
+#' 
+#' # NMA
+#' nma3 <- netmeta(pw3, common = FALSE, ref = "No treatment")
+#' 
+#' # NMR with independent and consistent assumption (default)
+#' nmr3_i <- netmetareg(nma3, covar = disability_diff, consistency = TRUE,
+#'   assumption = "i")
+#' # NMR with common and consistent assumption
+#' nmr3_c <- netmetareg(nma3, covar = disability_diff, consistency = TRUE,
+#'   assumption = "c")
+#' # NMR with independent UMIE model (no consistency in interactions) using
+#' # default treatment order variable
+#' nmr3_i_umie <- netmetareg(nma3, covar = disability_diff, consistency = FALSE,
+#'   assumption = "i")
+#' # NMR with independent UMIE model (no consistency in interactions) using
+#' # custom treatment order variable which excludes the mean imputations from
+#' # interaction estimation
+#' nmr3_i_umie_noimp <- netmetareg(nma3, covar = disability_diff,
+#'   consistency = FALSE, assumption = "i",
+#'    direction1 = "direction1", direction2 = "direction2")
+#' # NMR with common UMIE model (no consistency in interactions) using default
+#' # treatment order variable
+#' nmr3_c_umie <- netmetareg(nma3, covar = disability_diff, consistency = FALSE,
+#'   assumption = "c")
+#' # NMR with common UMIE model (no consistency in interactions) using custom
+#' # treatment order variable which excludes the mean imputations from
+#' # interaction estimation
+#' nmr3_c_umie_noimp <- netmetareg(nma3, covar = disability_diff,
+#'   consistency = FALSE, assumption = "c",
+#'   direction1 = "direction1", direction2 = "direction2")
 #' }
 #' 
 #' @rdname netmetareg
@@ -110,6 +195,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
                                method.tau = if (!x$random) "FE" else "REML",
                                level = x$level.ma,
                                reference.group = x$reference.group,
+                               direction1 = NULL, direction2 = NULL,
                                nchar.trts = x$nchar.trts, ...) {
   
   #
@@ -130,6 +216,15 @@ netmetareg.netmeta <- function(x, covar = NULL,
   chklevel(level)
   #
   sm <- x$sm
+  #
+  args <- list(...)
+  # Check whether first argument is a list. In this case only use
+  # this list as input.
+  if (length(args) > 0 && is.list(args[[1]]))
+    args <- args[[1]]
+  #
+  max.ia <- replaceNULL(args[["max.ia"]], FALSE)
+  chklogical(max.ia)
   
   
   #
@@ -137,7 +232,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   # (2) Return network meta-analysis object if covariate is missing
   #
   #
-
+  
   if (missing(covar)) {
     warning("No network meta-regresssion conducted as argument 'covar'",
             "is missing.")
@@ -235,22 +330,78 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$incr1 <- x$data$.incr1
     dat$incr2 <- x$data$.incr2
   }
+  
+  # import or create directionality parameters
+  if (!consistency) {
+    # Handle directionality parameters for inconsistency model
+    has_treat1_dir <- !is.null(direction1)
+    has_treat2_dir <- !is.null(direction2)
+    
+    if (has_treat1_dir & has_treat2_dir) {
+      # Use provided directionality parameters
+      dat$Ival1 <-
+        ifelse(x$data$treat1 == x$data$.treat1,
+               x$data[[substitute(direction1)]],
+               x$data[[substitute(direction2)]])
+      #
+      dat$Ival2 <-
+        ifelse(x$data$treat2 == x$data$.treat2,
+               x$data[[substitute(direction2)]],
+               x$data[[substitute(direction1)]])
+    }
+    else if (!has_treat1_dir & !has_treat2_dir) {
+      # Default to treatment order when no directionality specified
+      dat <- do.call(rbind, lapply(split(dat, dat$studlab), mkIval))
+      rownames(dat) <- NULL
+      warning("No directionality parameters specified. ",
+              "Defaulting to treatment order.")
+    }
+    # Validate directionality parameters
+    check_Ival(dat)
+  }
   #
   dat <- dat[order(dat$studlab, dat$treat1, dat$treat2), , drop = FALSE]
   #
   keep <- logical(0)
   wo <- logical(0)
   #
-  for (i in unique(dat$studlab)) {
-    d.i <- dat[dat$studlab == i, , drop = FALSE]
-    trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
-    if (reference.group %in% trts.i)
-      ref.i <- reference.group
-    else
-      ref.i <- rev(trts.i)[1]
+  if (consistency) {
+    # Check for constant covariate in reference treatment
+    if (length(unique(dat[dat$treat1 == reference.group |
+                          dat$treat2 == reference.group,
+                          covar.name])) == 1)
+      stop("Invalid reference treatment for interaction. ",
+           "Insufficient variation in observed covariate values for ",
+           "reference treatment.")
     #
-    keep.i <- !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
-    wo.i <- d.i$treat1 == ref.i
+    for (i in unique(dat$studlab)) {
+      d.i <- dat[dat$studlab == i, , drop = FALSE]
+      trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
+      if (reference.group %in% trts.i)
+        ref.i <- reference.group
+      else
+        ref.i <- rev(trts.i)[1]
+      #
+      keep.i <- !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
+      wo.i <- d.i$treat1 == ref.i
+      #
+      keep <- c(keep, keep.i)
+      wo <- c(wo, wo.i)
+    }
+    #
+  }
+  else if (!consistency) {
+    # calcV() is sensitive to the choice of reference treatment, but if we
+    # have study specific references we have to update the keep and wo
+    # statements
+    #
+    dat$Ival_diff <- dat$Ival1 - dat$Ival2
+    # Whether a row contains a reference.
+    # Equivalent !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
+    keep.i <- dat$Ival_diff != 0
+    # Whether the reference treatment is treat1.
+    # Equivalent to d.i$treat1 == ref.i
+    wo.i <- dat$Ival1 == 0
     #
     keep <- c(keep, keep.i)
     wo <- c(wo, wo.i)
@@ -262,13 +413,14 @@ netmetareg.netmeta <- function(x, covar = NULL,
   if (sum(wo) > 0) {
     dat$TE[wo] <- -dat$TE[wo]
     #
-    t2.i <- dat$treat2
-    e2.i <- dat$event2
-    n2.i <- dat$n2
-    mean2.i <- dat$mean2
-    sd2.i <- dat$sd2
-    time2.i <- dat$time2
-    incr2.i <- dat$incr2
+    t2.tmp <- dat$treat2
+    e2.tmp <- dat$event2
+    n2.tmp <- dat$n2
+    mean2.tmp <- dat$mean2
+    sd2.tmp <- dat$sd2
+    time2.tmp <- dat$time2
+    incr2.tmp <- dat$incr2
+    Ival2.tmp <- dat$Ival2
     #
     dat$treat2[wo] <- dat$treat1[wo]
     dat$event2[wo] <- dat$event1[wo]
@@ -277,25 +429,25 @@ netmetareg.netmeta <- function(x, covar = NULL,
     dat$sd2[wo] <- dat$sd1[wo]
     dat$time2[wo] <- dat$time1[wo]
     dat$incr2[wo] <- dat$incr1[wo]
+    dat$Ival2[wo] <- dat$Ival1[wo]
     #
-    dat$treat1[wo] <- t2.i[wo]
-    dat$event1[wo] <- e2.i[wo]
-    dat$n1[wo] <- n2.i[wo]
-    dat$mean1[wo] <- mean2.i[wo]
-    dat$sd1[wo] <- sd2.i[wo]
-    dat$time1[wo] <- time2.i[wo]
-    dat$incr1[wo] <- incr2.i[wo]
+    dat$treat1[wo] <- t2.tmp[wo]
+    dat$event1[wo] <- e2.tmp[wo]
+    dat$n1[wo] <- n2.tmp[wo]
+    dat$mean1[wo] <- mean2.tmp[wo]
+    dat$sd1[wo] <- sd2.tmp[wo]
+    dat$time1[wo] <- time2.tmp[wo]
+    dat$incr1[wo] <- incr2.tmp[wo]
+    dat$Ival1[wo] <- Ival2.tmp[wo]
   }
   #
   ncols1 <- ncol(dat)
   dat <- contrmat(dat, grp1 = "treat1", grp2 = "treat2")
-  ncols2 <- ncol(dat)
-  varnames <- names(dat)[(ncols1 + 1):ncols2]
-  #
   dat <- dat[order(dat$studlab), ]
+  trts.all <- names(dat)[(ncols1 + 1):ncol(dat)]
   #
-  trts.all <- varnames
-  trts <- varnames[-length(varnames)]
+  # Ensure that the reference treatment is correctly assigned
+  trts <- trts.all[trts.all != reference.group]
   
   
   #
@@ -311,19 +463,27 @@ netmetareg.netmeta <- function(x, covar = NULL,
                          paste(trts, collapse = " + "),
                          if (!is.null(covar))
                            paste0( " + ",
-                             paste(paste0(trts, ":", covar.name),
-                                 collapse = " + "))))
+                                   paste(paste0(trts, ":", covar.name),
+                                         collapse = " + "))))
     }
     else {
       #
       # The interaction is all non-reference treatments vs reference,
       # so we can define a variable indicating whether it is reference
       # or non-reference.
+      #
+      error <-
+        try(dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0),
+            silent = TRUE)
+      #
+      # Necessary, if reference treatment contains a white space
+      #
+      if (inherits(error, "try-error"))
+        dat$nonref <- as.numeric(dat[[gsub(" ", "_", reference.group)]] != 0)
+      #
       # Then get the interaction using the colon(:). The output has a
       # colon which is in the same format as the independent. Helpful
       # for later extraction
-      #
-      dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0)
       #
       formula.nmr_default <- # renamed for construction of manual matrix below
         as.formula(paste("~ 0 + ",
@@ -335,20 +495,46 @@ netmetareg.netmeta <- function(x, covar = NULL,
     }
   }
   else {
-    warning("Inconsistency models not yet implemented.")
-    return(NULL)
+    dat$Ival <- dat$Ival1 - dat$Ival2
+    if (assumption == "independent") {
+      dat$.comp_ <- paste(pmin(dat$treat1, dat$treat2),
+                          pmax(dat$treat1, dat$treat2),
+                          sep = "_vs_")
+      count_comp <- table(dat$.comp_)
+      # for dev use
+      if (!max.ia) {
+        # Requires at least two observations
+        dat$.comp_ <-
+          ifelse(dat$.comp_ %in% names(count_comp[count_comp >= 2]),
+                 dat$.comp_, "insufficient_data")
+      }
+      #
+      formula.nmr_default <-
+        as.formula(paste("~ 0 + ", paste(trts, collapse = " + "),
+                         if (!is.null(covar))
+                           paste0("+ .comp_:Ival:", covar.name))
+        )
+    }
+    else {
+      formula.nmr_default <-
+        as.formula(paste("~ 0 + ", paste(trts, collapse = " + "),
+                         if (!is.null(covar))
+                           paste0("+ Ival:", covar.name))
+        )
+    }
   }
   #
   # Checks for non-numeric covariate
   #
   mm <- model.matrix(formula.nmr_default, data = dat) # default model matrix
+  mm <- mm[, !grepl("insufficient_data", colnames(mm))]
   #
   # Drop interactions which contain the reference covariate level if covariate
   # is of mode factor, character, or logical
   #
   if (is.factor(covar))
-    mm <- mm[, !grepl(paste0(levels(covar)[1], "$"), colnames(mm)),
-             drop = FALSE]
+    mm <-
+    mm[, !grepl(paste0(levels(covar)[1], "$"), colnames(mm)), drop = FALSE]
   else if (is.character(covar))
     mm <- mm[, !grepl(paste0(min(covar, na.rm = TRUE), "$"), colnames(mm)),
              drop = FALSE]
@@ -375,7 +561,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   
   # Get rid of warning 'Undefined global functions or variables'
   #
-  treat1 <- treat2 <-  comparison <- NULL
+  treat1 <- treat2 <- comparison <- NULL
   #
   # Covariate 'x' makes problems without removing network meta-analysis object x
   #
@@ -387,10 +573,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   # Calculate Variance-Covariance matrix
   #
-  if (available.n &
-      (available.events | available.times | (available.sds))) {
+  if (available.n & (available.events | available.times | (available.sds)))
     V <- bldiag(lapply(split(dat, dat$studlab), calcV, sm = sm))
-  }
   else
     V <- dat$seTE^2
   #
@@ -509,7 +693,7 @@ print.netmetareg <- function(x,
   dat <- replaceNA(dat, ".")
   #
   names(dat)[names(dat) == "lower"] <-
-    paste0(round(100 * x$.netmeta$level, 1), "%-CI")
+    paste0(round(100 * x$.netmeta$level, 1), "% CI")
   #
   dat$z <- formatN(dat$z, digits = digits.stat)
   dat$pval <- formatPT(dat$pval, digits = digits.pval)
@@ -529,7 +713,9 @@ print.netmetareg <- function(x,
       cat("- Random effects model\n")
     #
     if (consistency)
-      cat(paste0("- ", if (consistency) "C" else "Inc", "onsistency model\n"))
+      cat("- Consistency model\n")
+    else
+      cat("- Unrelated mean interaction effect (UMIE) model\n")
     #
     if (assumption == "independent")
       cat("- Independent slopes\n")

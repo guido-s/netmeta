@@ -34,11 +34,10 @@ Network meta-analysis of 22 treatments (including placebo and usual
 care) for the primary care of depression.
 }
 \examples{
-data(Linde2016)
 head(Linde2016)
 
 # Example using pairwise(), netmeta() and netcomb():
-# example(dat.linde2016, run.dontrun = TRUE)
+# example(Linde2016, package = "metabook")
 }
 \seealso{
 \code{\link{netmeta}}, \code{\link{netcomb}}

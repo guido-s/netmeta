@@ -142,7 +142,7 @@ passed on to the printing function.
 }
 \examples{
 \donttest{
-# Define order of treatments in depression data set dat.linde2015
+# Define order of treatments in depression data set Linde2015
 #
 trts <- c("TCA", "SSRI", "SNRI", "NRI",
   "Low-dose SARI", "NaSSa", "rMAO-A", "Hypericum", "Placebo")
@@ -155,23 +155,23 @@ outcomes <- c("Early response", "Early remission")
 #
 pw1 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(resp1, resp2, resp3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net1 <- netmeta(pw1, common = FALSE,
+nma1 <- netmeta(pw1, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "undesirable")
 
 # (2) Early remission
 #
 pw2 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(remi1, remi2, remi3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net2 <- netmeta(pw2, common = FALSE,
+nma2 <- netmeta(pw2, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "undesirable")
 
 # Partial order of treatment rankings (two outcomes)
 #
-po12 <- netposet(netrank(net1), netrank(net2), outcomes = outcomes)
+po12 <- netposet(netrank(nma1), netrank(nma2), outcomes = outcomes)
 
 # Scatter plot
 #
@@ -207,37 +207,37 @@ outcomes <- c("Early response", "Early remission",
 #
 pw3 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(loss1, loss2, loss3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net3 <- netmeta(pw3, common = FALSE,
+nma3 <- netmeta(pw3, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "desirable")
 
 # (4) Loss to follow-up due to adverse events
 #
 pw4 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(loss.ae1, loss.ae2, loss.ae3), n = list(n1, n2, n3),
-  studlab = id, data = subset(dat.linde2015, id != 55), sm = "OR")
+  studlab = id, data = subset(Linde2015, id != 55), sm = "OR")
 #
-net4 <- netmeta(pw4, common = FALSE,
+nma4 <- netmeta(pw4, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "desirable")
 
 # (5) Adverse events
 #
 pw5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
   event = list(ae1, ae2, ae3), n = list(n1, n2, n3),
-  studlab = id, data = dat.linde2015, sm = "OR")
+  studlab = id, data = Linde2015, sm = "OR")
 #
-net5 <- netmeta(pw5, common = FALSE,
+nma5 <- netmeta(pw5, common = FALSE,
   seq = trts, ref = "Placebo", small.values = "desirable")
 
 # Partial order of treatment rankings (based on netrank() objects)
 #
-po.ranks <- netposet(netrank(net1), netrank(net2),
-  netrank(net3), netrank(net4), netrank(net5), outcomes = outcomes)
+po.ranks <- netposet(netrank(nma1), netrank(nma2),
+  netrank(nma3), netrank(nma4), netrank(nma5), outcomes = outcomes)
 
 # Same result (based on netmeta() objects)
 #
-po.nets <- netposet(net1, net2, net3, net4, net5,
+po.nets <- netposet(nma1, nma2, nma3, nma4, nma5,
   outcomes = outcomes)
 #
 all.equal(po.ranks, po.nets)
@@ -321,7 +321,7 @@ from multiple-treatment meta-analysis: an overview and tutorial.
 \seealso{
 \code{\link{netmeta}}, \code{\link{netrank}},
   \code{\link{plot.netrank}}, \code{\link{hasse}},
-  \code{\link{plot.netposet}}, \code{\link[metadat]{dat.linde2015}}
+  \code{\link{plot.netposet}}, \code{\link[metabook]{Linde2015}}
 }
 \author{
 Gerta Rücker \email{gerta.ruecker@uniklinik-freiburg.de}, Guido
