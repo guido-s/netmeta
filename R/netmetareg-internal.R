@@ -629,11 +629,12 @@ clean_var_names <- function(nms, covar.name = NULL) {
 }
 
 get_blup <- function(netmetareg_obj) {
-  all_trts<-netmetareg_obj$.netmeta$trts[netmetareg_obj$.netmeta$trts!=netmetareg_obj$.netmeta$reference.group]
-  all_trts<-make.names(all_trts)
+  
   reference.group<-netmetareg_obj$.netmeta$reference.group
   reference.group<-make.names(reference.group)
-  
+  all_trts<-make.names(netmetareg_obj$.netmeta$trts)
+  all_trts<-all_trts[all_trts!=reference.group]
+
   int_fixed <- netmetareg_obj$beta[grepl(":",rownames(netmetareg_obj$beta))==TRUE,]#fixed effect of interaction
   names(int_fixed)<-gsub(paste0("`|:",netmetareg_obj$.netmeta$covar.name),"",fix_interaction_names(names(int_fixed), covar_name = netmetareg_obj$.netmeta$covar.name))
   
@@ -657,9 +658,9 @@ get_blup <- function(netmetareg_obj) {
     
   } else if(netmetareg_obj$.netmeta$consistency==TRUE){
     withZ_slope<-FALSE
-    Z_slope<-matrix(0,nrow = nrow(netmetareg_obj$X), ncol=length(netmetareg_obj$.netmeta$trts)-1)
-    D<-(0 * diag(length(netmetareg_obj$.netmeta$trts)-1))
-    rownames(D)<-colnames(D)<-colnames(Z_slope)<-netmetareg_obj$.netmeta$trts[netmetareg_obj$.netmeta$trts!=netmetareg_obj$.netmeta$reference.group]
+    Z_slope<-matrix(0,nrow = nrow(netmetareg_obj$X), ncol=length(all_trts))
+    D<-(0 * diag(length(all_trts)))
+    rownames(D)<-colnames(D)<-colnames(Z_slope)<-all_trts
   }else if(netmetareg_obj$.netmeta$consistency==FALSE){
     withZ_slope<-FALSE
     Z_slope<-matrix(0,nrow = nrow(netmetareg_obj$X), ncol=length(netmetareg_obj$.netmeta$x$comparisons))
@@ -716,7 +717,7 @@ get_blup <- function(netmetareg_obj) {
     V_joint <- rbind(V_joint, matrix(0, ncol = ncol(V_joint), nrow = length(missing.design), dimnames = list(missing.design,NULL)))
     V_joint<-V_joint[rev(order(colnames(V_joint))),rev(order(colnames(V_joint)))]
     int_fixed[gsub(":.*","",missing.design)]<-0
-    n_FE<-(length(netmetareg_obj$.netmeta$trts)-1)*2
+    n_FE<-(length(all_trts))*2
   } else if(netmetareg_obj$.netmeta$assumption=="independent" & netmetareg_obj$.netmeta$consistency==FALSE){
     design.cols<-paste0("`.comp_",gsub(":","_vs_",netmetareg_obj$.netmeta$x$comparisons),":Ival:",covar.name,"`")
     missing.design <- setdiff(design.cols, colnames(V_joint))
@@ -724,13 +725,13 @@ get_blup <- function(netmetareg_obj) {
     V_joint <- rbind(V_joint, matrix(0, ncol = ncol(V_joint), nrow = length(missing.design), dimnames = list(missing.design,NULL)))
     V_joint<-V_joint[rev(order(colnames(V_joint))),rev(order(colnames(V_joint)))]
     int_fixed[gsub(":.*","",missing.design)]<-NA
-    n_FE<-(length(netmetareg_obj$.netmeta$trts)-1)*2
+    n_FE<-(length(all_trts))*2
   } else {
     n_FE<-length(netmetareg_obj$beta)
   }
   
   # Extract blocks
-  ntrt<-length(netmetareg_obj$.netmeta$trts)
+  ntrt<-length(netmetareg_obj$.netmeta$trts)#all_trts+1
   q<-ncol(V_joint) # total variance terms
   
   se_TE_fixed <- sqrt(diag(V_joint[1:(ntrt-1), 1:(ntrt-1), drop=FALSE])) #SE for fixed effect of TE
@@ -767,10 +768,10 @@ get_blup <- function(netmetareg_obj) {
     names_nu <- setNames(rep(0, nrow(V_joint)), rownames(V_joint))
     # var_nu will have either length= 1 or length = number of interactions
     if(netmetareg_obj$.netmeta$consistency){
-      se_int_ranef<- rep(0, length(netmetareg_obj$.netmeta$trts)-1)
-      cov_int_ranef_fixed<- rep(0, length(netmetareg_obj$.netmeta$trts)-1)
-      cov_TE_ranef<- rep(0, length(netmetareg_obj$.netmeta$trts)-1)
-      names(se_int_ranef)<-names(cov_int_ranef_fixed)<-names(cov_TE_ranef)<-netmetareg_obj$.netmeta$trts[netmetareg_obj$.netmeta$trts!=netmetareg_obj$.netmeta$reference.group]
+      se_int_ranef<- rep(0, length(all_trts))
+      cov_int_ranef_fixed<- rep(0, length(all_trts))
+      cov_TE_ranef<- rep(0, length(all_trts))
+      names(se_int_ranef)<-names(cov_int_ranef_fixed)<-names(cov_TE_ranef)<-all_trts
       
       var_nu <- sapply(rownames(V_joint)[ntrt:nrow(V_joint)], function(x) {
         # there are no ranefs
@@ -780,7 +781,7 @@ get_blup <- function(netmetareg_obj) {
       
       if (length(var_nu)==1){
         var_nu<-rep(var_nu,ntrt-1)
-        names(var_nu)<-netmetareg_obj$.netmeta$trts[netmetareg_obj$.netmeta$trts!=netmetareg_obj$.netmeta$reference.group]
+        names(var_nu)<-all_trts
       }
       
     } else{
@@ -807,7 +808,7 @@ get_blup <- function(netmetareg_obj) {
   if (length(int_fixed)==1){
     int_fixed<-rep(int_fixed,ntrt-1)
     se_int_fixed<-rep(se_int_fixed,ntrt-1)
-    names(int_fixed)<-names(se_int_fixed)<-netmetareg_obj$.netmeta$trts[netmetareg_obj$.netmeta$trts!=netmetareg_obj$.netmeta$reference.group]
+    names(int_fixed)<-names(se_int_fixed)<-all_trts
   }
   
   
@@ -1096,1150 +1097,1241 @@ check_Ival <- function(dat) {
   NULL
 }
 
-# synchronized metafor internal helpers ############
-expose_metafor_helpers <- function() {
-  # List every internal function that the original rma.mv/.ll.rma.mv code uses.
-  internal_funs <- c(
-    ".set.digits",".getx",".process.G.afterrmna",".process.G.aftersub",".anyNAv",
-    ".chkpd", ".make.unique", ".set.btt", ".expand1",".chkopt", ".chkconv",".con.E",
-    ".chkvccon", ".chksubset", ".getsubset",".getfromenv"
-  )
-  for (fn in internal_funs) {
-    obj <- getFromNamespace(fn, "metafor")
-    assign(fn, obj, envir = .GlobalEnv)
+# static metafor internal helpers#########
+.set.digits <-function (digits, dmiss) {
+  res <- c(est = 4, se = 4, test = 4, pval = 4, ci = 4, var = 4, 
+           sevar = 4, fit = 4, het = 4)
+  if (exists(".digits")) {
+    .digits <- get(".digits")
+    if (is.null(names(.digits)) && length(.digits) == 1L) {
+      res <- c(est = .digits, se = .digits, test = .digits, 
+               pval = .digits, ci = .digits, var = .digits, 
+               sevar = .digits, fit = .digits, het = .digits)
+    }
+    else if (any(names(.digits) != "") && any(names(.digits) == 
+                                              "")) {
+      pos <- pmatch(names(.digits), names(res))
+      res[c(na.omit(pos))] <- .digits[!is.na(pos)]
+      otherval <- .digits[names(.digits) == ""][1]
+      res[(1:9)[-c(na.omit(pos))]] <- otherval
+    }
+    else {
+      pos <- pmatch(names(.digits), names(res))
+      res[c(na.omit(pos))] <- .digits[!is.na(pos)]
+    }
   }
-  invisible(TRUE)
+  if (!dmiss) {
+    if (is.null(names(digits))) {
+      res <- c(est = digits[[1]], se = digits[[1]], test = digits[[1]], 
+               pval = digits[[1]], ci = digits[[1]], var = digits[[1]], 
+               sevar = digits[[1]], fit = digits[[1]], het = digits[[1]])
+    }
+    else {
+      pos <- pmatch(names(digits), names(res))
+      res[c(na.omit(pos))] <- digits[!is.na(pos)]
+    }
+  }
+  if (res["pval"] <= 1) 
+    res["pval"] <- 2
+  res
 }
-expose_metafor_helpers()
 
-# # static metafor internal helpers (alternative to synchronized) #########
-# .set.digits <-function (digits, dmiss) {
-#   res <- c(est = 4, se = 4, test = 4, pval = 4, ci = 4, var = 4, 
-#            sevar = 4, fit = 4, het = 4)
-#   if (exists(".digits")) {
-#     .digits <- get(".digits")
-#     if (is.null(names(.digits)) && length(.digits) == 1L) {
-#       res <- c(est = .digits, se = .digits, test = .digits, 
-#                pval = .digits, ci = .digits, var = .digits, 
-#                sevar = .digits, fit = .digits, het = .digits)
-#     }
-#     else if (any(names(.digits) != "") && any(names(.digits) == 
-#                                               "")) {
-#       pos <- pmatch(names(.digits), names(res))
-#       res[c(na.omit(pos))] <- .digits[!is.na(pos)]
-#       otherval <- .digits[names(.digits) == ""][1]
-#       res[(1:9)[-c(na.omit(pos))]] <- otherval
-#     }
-#     else {
-#       pos <- pmatch(names(.digits), names(res))
-#       res[c(na.omit(pos))] <- .digits[!is.na(pos)]
-#     }
-#   }
-#   if (!dmiss) {
-#     if (is.null(names(digits))) {
-#       res <- c(est = digits[[1]], se = digits[[1]], test = digits[[1]], 
-#                pval = digits[[1]], ci = digits[[1]], var = digits[[1]], 
-#                sevar = digits[[1]], fit = digits[[1]], het = digits[[1]])
-#     }
-#     else {
-#       pos <- pmatch(names(digits), names(res))
-#       res[c(na.omit(pos))] <- digits[!is.na(pos)]
-#     }
-#   }
-#   if (res["pval"] <= 1) 
-#     res["pval"] <- 2
-#   res
-# }
-# 
-# .getx <- function (x, mf, data, enclos = sys.frame(sys.parent(n = 2)), 
-#                    checknull = TRUE, checknumeric = FALSE, default) {
-#   mstyle <- .get.mstyle()
-#   mf.getx <- match.call()
-#   dname <- deparse1(mf.getx[[match("data", names(mf.getx))]])
-#   dname <- deparse1(mf[[match(dname, names(mf))]])
-#   mf.x <- mf[[match(x, names(mf))]]
-#   if (!is.null(dname) && dname %in% names(data) && grepl("$", 
-#                                                          deparse1(mf.x), fixed = TRUE) || grepl("[[", deparse1(mf.x), 
-#                                                                                                 fixed = TRUE)) 
-#     data <- NULL
-#   out <- try(eval(mf.x, data, enclos), silent = TRUE)
-#   if (inherits(out, "try-error") || is.function(out)) 
-#     stop(mstyle$stop(paste0("Cannot find the object/variable ('", 
-#                             deparse(mf.x), "') specified for the '", x, "' argument.")), 
-#          call. = FALSE)
-#   spec <- x %in% names(mf)
-#   if (is.null(out) && !spec && !missing(default)) 
-#     out <- default
-#   if (checknull) {
-#     if (spec && is.null(out)) {
-#       mf.txt <- deparse(mf.x)
-#       if (mf.txt == "NULL") {
-#         mf.txt <- " "
-#       }
-#       else {
-#         mf.txt <- paste0(" ('", mf.txt, "') ")
-#       }
-#       stop(mstyle$stop(paste0(deparse(mf)[1], ":\nThe object/variable", 
-#                               mf.txt, "specified for the '", x, "' argument is NULL.")), 
-#            call. = FALSE)
-#     }
-#   }
-#   if (checknumeric && !is.null(out) && !is.list(out) && !.is.numeric(out[1])) 
-#     stop(mstyle$stop(paste0("The object/variable specified for the '", 
-#                             x, "' argument is not numeric.")), call. = FALSE)
-#   return(out)
-# }
-# .process.G.afterrmna <- function (mf.g, g.nlevels, g.levels, g.values, struct, formula, 
-#                                   tau2, rho, Z.G1, Z.G2, isG, sparse, distspec, check.k.gtr.1, 
-#                                   verbose) {
-#   mstyle <- .get.mstyle()
-#   if (verbose > 1) 
-#     message(mstyle$message(paste0("Processing '", paste0(formula, 
-#                                                          collapse = ""), "' term (#2) ...")))
-#   nvars <- ncol(mf.g)
-#   g.nlevels.f <- g.nlevels
-#   g.levels.f <- g.levels
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
-#     mf.g <- data.frame(mf.g[-nvars], outer = factor(mf.g[[nvars]]))
-#   }
-#   else {
-#     mf.g <- data.frame(inner = factor(mf.g[[1]]), outer = factor(mf.g[[2]]))
-#   }
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
-#     g.nlevels <- c(length(unique(apply(mf.g[-nvars], 1, paste, 
-#                                        collapse = " + "))), length(unique(mf.g[[nvars]])))
-#   }
-#   else {
-#     g.nlevels <- c(length(unique(mf.g[[1]])), length(unique(mf.g[[2]])))
-#   }
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
-#     g.levels <- list(sort(unique(apply(mf.g[-nvars], 1, paste, 
-#                                        collapse = " + "))), sort(unique((mf.g[[nvars]]))))
-#   }
-#   else {
-#     g.levels <- list(as.character(sort(unique(mf.g[[1]]))), 
-#                      as.character(sort(unique(mf.g[[2]]))))
-#   }
-#   g.levels.r <- !is.element(g.levels.f[[1]], g.levels[[1]])
-#   if (any(g.levels.r) && !is.element(struct, c("AR", "CAR", 
-#                                                "SPEXP", "SPGAU", "SPLIN", "SPRAT", "SPSPH", "GEN", "GDIAG"))) 
-#     warning(mstyle$warning(paste0("One or more levels of inner factor (i.e., ", 
-#                                   paste(g.levels.f[[1]][g.levels.r], collapse = ", "), 
-#                                   ") removed due to NAs.")), call. = FALSE)
-#   if (is.element(struct, c("ID", "DIAG", "GDIAG"))) 
-#     rho <- 0
-#   if (g.nlevels[1] == 1 && is.element(struct, c("CS", "HCS", 
-#                                                 "AR", "HAR", "CAR")) && is.na(rho)) {
-#     rho <- 0
-#     warning(mstyle$warning(paste0("Inner factor has only a single level, so fixed value of ", 
-#                                   ifelse(isG, "rho", "phi"), " to 0.")), call. = FALSE)
-#   }
-#   if (g.nlevels[1] == 1 && is.element(struct, c("SPEXP", "SPGAU", 
-#                                                 "SPLIN", "SPRAT", "SPSPH", "PHYBM", "PHYPL", "PHYPD", 
-#                                                 "GEN", "GDIAG"))) 
-#     stop(mstyle$stop("Cannot fit model since inner term only has a single level."), 
-#          call. = FALSE)
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
-#     g.levels.k <- table(factor(apply(mf.g[-nvars], 1, paste, 
-#                                      collapse = " + "), levels = g.levels.f[[1]]))
-#   }
-#   else {
-#     g.levels.k <- apply(table(factor(mf.g[[1]], levels = g.levels.f[[1]]), 
-#                               mf.g[[2]]), 1, function(x) sum(x > 0L))
-#   }
-#   if (is.element(struct, c("HCS", "UN", "DIAG", "HAR")) && 
-#       check.k.gtr.1) {
-#     if (any(is.na(tau2) & g.levels.k == 1)) {
-#       tau2[is.na(tau2) & g.levels.k == 1] <- 0
-#       warning(mstyle$warning("Inner factor has k=1 for one or more levels. Corresponding 'tau2' value(s) fixed to 0."), 
-#               call. = FALSE)
-#     }
-#   }
-#   if (g.nlevels[2] == nrow(mf.g)) {
-#     if (is.element(struct, c("CS", "HCS", "AR", "HAR", "CAR")) && 
-#         is.na(rho)) {
-#       rho <- 0
-#       warning(mstyle$warning(paste0("Each level of the outer factor contains only a single level of the inner factor, so fixed value of ", 
-#                                     ifelse(isG, "rho", "phi"), " to 0.")), call. = FALSE)
-#     }
-#     if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                              "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) 
-#       stop(mstyle$stop("Cannot fit model since each level of the outer factor contains only a single level of the inner term."), 
-#            call. = FALSE)
-#   }
-#   g.levels.comb.k <- NULL
-#   if (!is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                             "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
-#     g.levels.comb.k <- crossprod(Z.G2, Z.G1)
-#     g.levels.comb.k <- split(g.levels.comb.k, seq_len(nrow(g.levels.comb.k)))
-#     g.levels.comb.k <- lapply(g.levels.comb.k, function(x) outer(x, 
-#                                                                  x, FUN = "&"))
-#     g.levels.comb.k <- Reduce("+", g.levels.comb.k)
-#     g.levels.comb.k <- g.levels.comb.k[lower.tri(g.levels.comb.k)]
-#     if (is.element(struct, c("UN", "UNR")) && any(g.levels.comb.k == 
-#                                                   0 & is.na(rho))) {
-#       rho[g.levels.comb.k == 0] <- 0
-#       warning(mstyle$warning(paste0("Some combinations of the levels of the inner factor never occurred. Corresponding ", 
-#                                     ifelse(isG, "rho", "phi"), " value(s) fixed to 0.")), 
-#               call. = FALSE)
-#     }
-#     if (is.element(struct, c("UN", "UNR")) && g.nlevels.f[1] == 
-#         1 && is.na(rho)) {
-#       rho <- 0
-#       warning(mstyle$warning(paste0("Inner factor has only a single level, so fixed value of ", 
-#                                     ifelse(isG, "rho", "phi"), " to 0.")), call. = FALSE)
-#     }
-#   }
-#   if (struct == "CS") {
-#     G <- matrix(rho * tau2, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
-#     diag(G) <- tau2
-#   }
-#   if (struct == "HCS") {
-#     G <- matrix(rho, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
-#     diag(G) <- 1
-#     G <- diag(sqrt(tau2), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1]) %*% 
-#       G %*% diag(sqrt(tau2), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
-#     diag(G) <- tau2
-#   }
-#   if (is.element(struct, c("UN", "GEN"))) {
-#     G <- .con.vcov.UN(tau2, rho)
-#   }
-#   if (struct == "UNR") {
-#     G <- .con.vcov.UNR(tau2, rho)
-#   }
-#   if (is.element(struct, c("GDIAG"))) {
-#     G <- diag(tau2, nrow = length(tau2), ncol = length(tau2))
-#   }
-#   if (is.element(struct, c("ID", "DIAG"))) {
-#     G <- diag(tau2, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
-#   }
-#   if (struct == "AR") {
-#     if (is.na(rho)) {
-#       G <- matrix(NA_real_, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
-#     }
-#     else {
-#       if (g.nlevels.f[1] > 1) {
-#         G <- toeplitz(ARMAacf(ar = rho, lag.max = g.nlevels.f[1] - 
-#                                 1))
-#       }
-#       else {
-#         G <- diag(1)
-#       }
-#     }
-#     G <- diag(sqrt(rep(tau2, g.nlevels.f[1])), nrow = g.nlevels.f[1], 
-#               ncol = g.nlevels.f[1]) %*% G %*% diag(sqrt(rep(tau2, 
-#                                                              g.nlevels.f[1])), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
-#     diag(G) <- tau2
-#   }
-#   if (struct == "HAR") {
-#     if (is.na(rho)) {
-#       G <- matrix(NA_real_, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
-#     }
-#     else {
-#       if (g.nlevels.f[1] > 1) {
-#         G <- toeplitz(ARMAacf(ar = rho, lag.max = g.nlevels.f[1] - 
-#                                 1))
-#       }
-#       else {
-#         G <- diag(1)
-#       }
-#     }
-#     G <- diag(sqrt(tau2), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1]) %*% 
-#       G %*% diag(sqrt(tau2), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
-#     diag(G) <- tau2
-#   }
-#   if (struct == "CAR") {
-#     if (is.na(rho)) {
-#       G <- matrix(NA_real_, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
-#     }
-#     else {
-#       if (g.nlevels.f[1] > 1) {
-#         G <- outer(g.values, g.values, function(x, y) rho^(abs(x - 
-#                                                                  y)))
-#       }
-#       else {
-#         G <- diag(1)
-#       }
-#     }
-#     G <- diag(sqrt(rep(tau2, g.nlevels.f[1])), nrow = g.nlevels.f[1], 
-#               ncol = g.nlevels.f[1]) %*% G %*% diag(sqrt(rep(tau2, 
-#                                                              g.nlevels.f[1])), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
-#     diag(G) <- tau2
-#   }
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) {
-#     formula <- as.formula(paste0(strsplit(paste0(formula, 
-#                                                  collapse = ""), "|", fixed = TRUE)[[1]][1], "- 1", 
-#                                  collapse = ""))
-#     if (.is.matrix(distspec)) {
-#       if (anyNA(distspec)) 
-#         stop(mstyle$stop("No missing values allowed in matrices specified via 'dist'."), 
-#              call. = FALSE)
-#       if (!.is.square(distspec)) 
-#         stop(mstyle$stop("Distance matrices specified via 'dist' must be square matrices."), 
-#              call. = FALSE)
-#       if (!isSymmetric(unname(distspec))) 
-#         stop(mstyle$stop("Distance matrices specified via 'dist' must be symmetric matrices."), 
-#              call. = FALSE)
-#       if (is.null(rownames(distspec))) 
-#         rownames(distspec) <- colnames(distspec)
-#       if (is.null(colnames(distspec))) 
-#         colnames(distspec) <- rownames(distspec)
-#       if (length(colnames(distspec)) != length(unique(colnames(distspec)))) 
-#         stop(mstyle$stop("Distance matrices specified via 'dist' must have unique dimension names."), 
-#              call. = FALSE)
-#       if (any(!is.element(as.character(mf.g[[1]]), colnames(distspec)))) 
-#         stop(mstyle$stop(paste0("There are levels in '", 
-#                                 colnames(mf.g)[1], "' for which there are no matching rows/columns in the corresponding 'dist' matrix.")), 
-#              call. = FALSE)
-#       if (is.element(struct, c("PHYBM", "PHYPL", "PHYPD")) && 
-#           !all.equal(min(distspec), 0)) 
-#         warning(mstyle$warning("Minimum value in the distance matrix is not 0."), 
-#                 call. = FALSE)
-#       if (is.element(struct, c("PHYBM", "PHYPL", "PHYPD")) && 
-#           !all.equal(max(distspec), 2)) 
-#         warning(mstyle$warning("Maximum value in the distance matrix is not 2."), 
-#                 call. = FALSE)
-#       Dmat <- distspec[as.character(mf.g[[1]]), as.character(mf.g[[1]])]
-#     }
-#     else {
-#       if (is.element(struct, c("PHYBM", "PHYPL", "PHYPD"))) 
-#         stop(mstyle$stop("Must supply distance matrix via 'dist' for phylogenetic correlation structures."), 
-#              call. = FALSE)
-#       Cmat <- model.matrix(formula, data = mf.g[-nvars])
-#       if (is.function(distspec)) {
-#         Dmat <- distspec(Cmat)
-#       }
-#       else {
-#         if (is.element(distspec, c("euclidean", "maximum", 
-#                                    "manhattan"))) 
-#           Dmat <- as.matrix(dist(Cmat, method = distspec))
-#         if (distspec == "gcd") 
-#           Dmat <- sp::spDists(Cmat, longlat = TRUE)
-#       }
-#     }
-#     if (sparse) 
-#       Dmat <- Matrix(Dmat, sparse = TRUE)
-#   }
-#   else {
-#     Dmat <- NULL
-#   }
-#   if (struct == "SPEXP") {
-#     Rmat <- exp(-Dmat/rho)
-#     G <- tau2 * Rmat * tcrossprod(Z.G2)
-#   }
-#   if (struct == "SPGAU") {
-#     Rmat <- exp(-Dmat^2/rho^2)
-#     G <- tau2 * Rmat * tcrossprod(Z.G2)
-#   }
-#   if (struct == "SPLIN") {
-#     Rmat <- (1 - Dmat/rho) * I(Dmat < rho)
-#     G <- tau2 * Rmat * tcrossprod(Z.G2)
-#   }
-#   if (struct == "SPRAT") {
-#     Rmat <- 1 - (Dmat/rho)^2/(1 + (Dmat/rho)^2)
-#     G <- tau2 * Rmat * tcrossprod(Z.G2)
-#   }
-#   if (struct == "SPSPH") {
-#     Rmat <- (1 - 3/2 * Dmat/rho + 1/2 * (Dmat/rho)^3) * I(Dmat < 
-#                                                             rho)
-#     G <- tau2 * Rmat * tcrossprod(Z.G2)
-#   }
-#   if (struct == "PHYBM") {
-#     rho <- max(Dmat)
-#     Rmat <- 1 - Dmat/rho
-#     G <- tau2 * Rmat * tcrossprod(Z.G2)
-#   }
-#   if (struct == "PHYPL") {
-#     Rmat <- rho * (1 - Dmat/max(Dmat))
-#     diag(Rmat) <- 1
-#     Rmat[Dmat == 0] <- 1
-#     G <- tau2 * Rmat * tcrossprod(Z.G2)
-#   }
-#   if (struct == "PHYPD") {
-#     Rmat <- 1 - Dmat/max(Dmat)
-#     G <- tau2 * Rmat^rho * tcrossprod(Z.G2)
-#   }
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) {
-#     if (struct == "PHYBM") 
-#       rho.init <- max(Dmat)
-#     if (struct == "PHYPL") 
-#       rho.init <- 0.5
-#     if (struct == "PHYPD") 
-#       rho.init <- 1
-#     if (!is.element(struct, c("PHYBM", "PHYPL", "PHYPD"))) 
-#       rho.init <- unname(suppressMessages(quantile(Dmat[lower.tri(Dmat)], 
-#                                                    0.25)))
-#   }
-#   else {
-#     rho.init <- NULL
-#   }
-#   if (any(g.levels.r) && is.element(struct, c("CS", "AR", "CAR", 
-#                                               "ID"))) {
-#     G[g.levels.r, ] <- 0
-#     G[, g.levels.r] <- 0
-#   }
-#   if (any(g.levels.r) && is.element(struct, c("HCS", "HAR", 
-#                                               "DIAG"))) {
-#     G[g.levels.r, ] <- 0
-#     G[, g.levels.r] <- 0
-#     tau2[g.levels.r] <- 0
-#     warning(mstyle$warning(paste0("Fixed ", ifelse(isG, "tau2", 
-#                                                    "gamma2"), " to 0 for removed level(s).")), call. = FALSE)
-#   }
-#   if (any(g.levels.r) && struct == "UN") {
-#     G[g.levels.r, ] <- 0
-#     G[, g.levels.r] <- 0
-#     tau2[g.levels.r] <- 0
-#     rho <- G[lower.tri(G)]
-#     warning(mstyle$warning(paste0("Fixed ", ifelse(isG, "tau2", 
-#                                                    "gamma2"), " and corresponding ", ifelse(isG, "rho", 
-#                                                                                             "phi"), " value(s) to 0 for removed level(s).")), 
-#             call. = FALSE)
-#   }
-#   if (any(g.levels.r) && struct == "UNR") {
-#     G[g.levels.r, ] <- 0
-#     G[, g.levels.r] <- 0
-#     diag(G) <- tau2
-#     rho <- G[lower.tri(G)]
-#     warning(mstyle$warning(paste0("Fixed ", ifelse(isG, "rho", 
-#                                                    "phi"), " value(s) to 0 for removed level(s).")), 
-#             call. = FALSE)
-#   }
-#   if (g.nlevels.f[1] == 2) {
-#     if (is.element(struct, c("CS", "AR", "CAR", "UNR")) && 
-#         !is.na(tau2) && tau2 == 0) 
-#       rho <- 0
-#     if (is.element(struct, c("HCS", "UN", "HAR")) && ((!is.na(tau2[1]) && 
-#                                                        tau2[1] == 0) || (!is.na(tau2[2]) && tau2[2] == 0))) 
-#       rho <- 0
-#   }
-#   return(list(mf.g = mf.g, g.nlevels = g.nlevels, g.nlevels.f = g.nlevels.f, 
-#               g.levels = g.levels, g.levels.f = g.levels.f, g.levels.r = g.levels.r, 
-#               g.levels.k = g.levels.k, g.levels.comb.k = g.levels.comb.k, 
-#               tau2 = tau2, rho = rho, G = G, Dmat = Dmat, rho.init = rho.init))
-# }
-# .process.G.aftersub <-function (mf.g, struct, formula, tau2, rho, isG, k, sparse, verbose) {
-#   mstyle <- .get.mstyle()
-#   if (verbose > 1) 
-#     message(mstyle$message(paste0("Processing '", paste0(formula, 
-#                                                          collapse = ""), "' term (#1) ...")))
-#   nvars <- ncol(mf.g)
-#   if (is.element(struct, c("CS", "HCS", "UN", "UNR", "AR", 
-#                            "HAR", "CAR", "ID", "DIAG", "PHYBM", "PHYPL", "PHYPD")) && 
-#       sum(sapply(mf.g, NCOL)) != 2) 
-#     stop(mstyle$stop(paste0("Only a single inner variable allowed for an '~ inner | outer' term when 'struct=\"", 
-#                             struct, "\"'.")), call. = FALSE)
-#   g.names <- names(mf.g)
-#   if (is.element(struct, c("CAR"))) {
-#     if (!is.numeric(mf.g[[1]])) 
-#       stop(mstyle$stop("Inner variable in '~ inner | outer' term must be numeric for 'struct=\"CAR\"'."), 
-#            call. = FALSE)
-#     g.values <- sort(unique(round(mf.g[[1]], digits = 8L)))
-#   }
-#   else {
-#     g.values <- NULL
-#   }
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
-#     mf.g <- data.frame(mf.g[-nvars], outer = factor(mf.g[[nvars]]))
-#   }
-#   else {
-#     mf.g <- data.frame(inner = factor(mf.g[[1]]), outer = factor(mf.g[[2]]))
-#   }
-#   if (anyNA(mf.g)) 
-#     stop(mstyle$stop("No NAs allowed in variables specified via the 'random' argument."), 
-#          call. = FALSE)
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
-#     g.nlevels <- c(length(unique(apply(mf.g[-nvars], 1, paste, 
-#                                        collapse = " + "))), length(unique(mf.g[[nvars]])))
-#   }
-#   else {
-#     g.nlevels <- c(length(unique(mf.g[[1]])), length(unique(mf.g[[2]])))
-#   }
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
-#     g.levels <- list(sort(unique(apply(mf.g[-nvars], 1, paste, 
-#                                        collapse = " + "))), sort(unique((mf.g[[nvars]]))))
-#   }
-#   else {
-#     g.levels <- list(as.character(sort(unique(mf.g[[1]]))), 
-#                      as.character(sort(unique(mf.g[[2]]))))
-#   }
-#   if (is.element(struct, c("CS", "ID", "AR", "CAR", "SPEXP", 
-#                            "SPGAU", "SPLIN", "SPRAT", "SPSPH", "PHYBM", "PHYPL", 
-#                            "PHYPD"))) {
-#     tau2s <- 1
-#     rhos <- 1
-#   }
-#   if (is.element(struct, c("HCS", "DIAG", "HAR"))) {
-#     tau2s <- g.nlevels[1]
-#     rhos <- 1
-#   }
-#   if (struct == "UN") {
-#     tau2s <- g.nlevels[1]
-#     rhos <- ifelse(g.nlevels[1] > 1, g.nlevels[1] * (g.nlevels[1] - 
-#                                                        1)/2, 1)
-#   }
-#   if (struct == "UNR") {
-#     tau2s <- 1
-#     rhos <- ifelse(g.nlevels[1] > 1, g.nlevels[1] * (g.nlevels[1] - 
-#                                                        1)/2, 1)
-#   }
-#   if (struct == "GEN") {
-#     p <- nvars - 1
-#     tau2s <- p
-#     rhos <- ifelse(p > 1, p * (p - 1)/2, 1)
-#   }
-#   if (struct == "GDIAG") {
-#     p <- nvars - 1
-#     tau2s <- p
-#     rhos <- 1
-#   }
-#   if (is.null(tau2)) 
-#     tau2 <- rep(NA_real_, tau2s)
-#   if (is.null(rho)) 
-#     rho <- rep(NA_real_, rhos)
-#   tau2 <- .expand1(tau2, tau2s)
-#   rho <- .expand1(rho, rhos)
-#   if (length(tau2) != tau2s) 
-#     stop(mstyle$stop(paste0("Length of the ", ifelse(isG, 
-#                                                      "tau2", "gamma2"), " argument (", length(tau2), ") does not match the actual number of variance components (", 
-#                             tau2s, ").")), call. = FALSE)
-#   if (length(rho) != rhos) 
-#     stop(mstyle$stop(paste0("Length of the ", ifelse(isG, 
-#                                                      "rho", "phi"), " argument (", length(rho), ") does not match the actual number of correlations (", 
-#                             rhos, ").")), call. = FALSE)
-#   if (any(tau2 < 0, na.rm = TRUE)) 
-#     stop(mstyle$stop(paste0("Specified value(s) of ", ifelse(isG, 
-#                                                              "tau2", "gamma2"), " must be >= 0.")), call. = FALSE)
-#   if (is.element(struct, c("CAR")) && any(rho > 1 | rho < 0, 
-#                                           na.rm = TRUE)) 
-#     stop(mstyle$stop(paste0("Specified value(s) of ", ifelse(isG, 
-#                                                              "rho", "phi"), " must be in [0,1].")), call. = FALSE)
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYPL", "PHYPD")) && any(rho < 0, na.rm = TRUE)) 
-#     stop(mstyle$stop(paste0("Specified value(s) of ", ifelse(isG, 
-#                                                              "rho", "phi"), " must be >= 0.")), call. = FALSE)
-#   if (!is.element(struct, c("CAR", "SPEXP", "SPGAU", "SPLIN", 
-#                             "SPRAT", "SPSPH", "PHYBM", "PHYPL", "PHYPD")) && any(rho > 
-#                                                                                  1 | rho < -1, na.rm = TRUE)) 
-#     stop(mstyle$stop(paste0("Specified value(s) of ", ifelse(isG, 
-#                                                              "rho", "phi"), " must be in [-1,1].")), call. = FALSE)
-#   if (is.element(struct, c("CS", "HCS", "UN", "UNR", "AR", 
-#                            "HAR", "CAR", "ID", "DIAG"))) {
-#     if (g.nlevels[1] == 1) {
-#       Z.G1 <- cbind(rep(1, k))
-#     }
-#     else {
-#       if (sparse) {
-#         Z.G1 <- sparse.model.matrix(~0 + mf.g[[1]])
-#       }
-#       else {
-#         Z.G1 <- model.matrix(~0 + mf.g[[1]])
-#       }
-#     }
-#   }
-#   if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                            "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) {
-#     if (sparse) {
-#       Z.G1 <- Diagonal(k)
-#     }
-#     else {
-#       Z.G1 <- diag(1, nrow = k, ncol = k)
-#     }
-#   }
-#   if (is.element(struct, c("GEN", "GDIAG"))) {
-#     if (sparse) {
-#       Z.G1 <- Matrix(as.matrix(mf.g[-nvars]), sparse = TRUE)
-#     }
-#     else {
-#       Z.G1 <- as.matrix(mf.g[-nvars])
-#     }
-#   }
-#   if (g.nlevels[2] == 1) {
-#     Z.G2 <- cbind(rep(1, k))
-#   }
-#   else {
-#     if (sparse) {
-#       Z.G2 <- sparse.model.matrix(~0 + mf.g[[nvars]])
-#     }
-#     else {
-#       Z.G2 <- model.matrix(~0 + mf.g[[nvars]])
-#     }
-#   }
-#   attr(Z.G1, "assign") <- NULL
-#   attr(Z.G1, "contrasts") <- NULL
-#   attr(Z.G2, "assign") <- NULL
-#   attr(Z.G2, "contrasts") <- NULL
-#   return(list(mf.g = mf.g, g.names = g.names, g.nlevels = g.nlevels, 
-#               g.levels = g.levels, g.values = g.values, tau2s = tau2s, 
-#               rhos = rhos, tau2 = tau2, rho = rho, Z.G1 = Z.G1, Z.G2 = Z.G2))
-# }
-# .anyNAv <-function (x) {
-#   k <- nrow(x)
-#   not.na <- not.na.diag <- !is.na(diag(x))
-#   for (i in seq_len(k)[not.na.diag]) {
-#     not.na[i] <- !anyNA(x[i, seq_len(k)[not.na.diag]])
-#   }
-#   return(!not.na)
-# }
-# 
-# .chkpd <-function (x, tol = .Machine$double.eps, corr = FALSE, nearpd = FALSE) {
-#   if (any(eigen(x, symmetric = TRUE, only.values = TRUE)$values <= 
-#           tol)) {
-#     ispd <- FALSE
-#     if (nearpd) {
-#       tmp <- nearPD(x, corr = corr)
-#       x <- as.matrix(tmp$mat)
-#       if (tmp$converged) 
-#         ispd <- TRUE
-#     }
-#   }
-#   else {
-#     ispd <- TRUE
-#   }
-#   if (nearpd) {
-#     return(list(ispd = ispd, x = x))
-#   }
-#   else {
-#     return(ispd)
-#   }
-# }
-# 
-# .make.unique <-function (x) {
-#   if (is.null(x)) 
-#     return(NULL)
-#   x <- as.character(x)
-#   ux <- unique(x)
-#   for (i in seq_along(ux)) {
-#     xiTF <- x %in% ux[i]
-#     xi <- x[xiTF]
-#     if (length(xi) == 1L) 
-#       next
-#     x[xiTF] <- paste(xi, seq_along(xi), sep = ".")
-#   }
-#   return(x)
-# }
-# 
-# .set.btt <- function (btt, p, int.incl, Xnames, fixed = FALSE) {
-#   mstyle <- .get.mstyle()
-#   if (missing(btt) || is.null(btt)) {
-#     if (p > 1L) {
-#       if (int.incl) {
-#         btt <- seq.int(from = 2, to = p)
-#       }
-#       else {
-#         btt <- seq_len(p)
-#       }
-#     }
-#     else {
-#       btt <- 1L
-#     }
-#   }
-#   else {
-#     if (is.character(btt)) {
-#       btt <- grep(btt, Xnames, fixed = fixed)
-#       if (length(btt) == 0L) 
-#         stop(mstyle$stop("Cannot identify coefficient(s) corresponding to the specified 'btt' string."), 
-#              call. = FALSE)
-#     }
-#     else {
-#       btt <- as.integer(sort(unique(round(btt))))
-#       if (any(btt < 0) && any(btt > 0)) 
-#         stop(mstyle$stop("Cannot mix positive and negative 'btt' values."), 
-#              call. = FALSE)
-#       btt <- seq_len(p)[btt]
-#       btt <- btt[!is.na(btt)]
-#       if (length(btt) == 0L) 
-#         stop(mstyle$stop("Non-existent coefficient(s) specified via 'btt'."), 
-#              call. = FALSE)
-#     }
-#   }
-#   return(btt)
-# }
-# .expand1 <-function (x, k) {
-#   if (is.list(k)) 
-#     k <- max(lengths(k, use.names = FALSE))
-#   if (length(x) == 1L) 
-#     x <- rep(x, k)
-#   return(x)
-# }
-# .chkopt <-function (optimizer, optcontrol, ineq = FALSE) {
-#   mstyle <- .get.mstyle()
-#   if (optimizer == "nloptr" && !is.element("algorithm", names(optcontrol))) {
-#     if (ineq) {
-#       optcontrol$algorithm <- "NLOPT_LN_COBYLA"
-#     }
-#     else {
-#       optcontrol$algorithm <- "NLOPT_LN_BOBYQA"
-#     }
-#   }
-#   if (optimizer == "nloptr" && !is.element("ftol_rel", names(optcontrol))) 
-#     optcontrol$ftol_rel <- 1e-08
-#   if (optimizer == "mads" && !is.element("trace", names(optcontrol))) 
-#     optcontrol$trace <- FALSE
-#   if (optimizer == "mads" && !is.element("tol", names(optcontrol))) 
-#     optcontrol$tol <- 1e-06
-#   if (optimizer == "subplex" && !is.element("reltol", names(optcontrol))) 
-#     optcontrol$reltol <- 1e-08
-#   if (optimizer == "BBoptim" && !is.element("trace", names(optcontrol))) 
-#     optcontrol$trace <- FALSE
-#   if (optimizer == "solnp" && !is.element("trace", names(optcontrol))) 
-#     optcontrol$trace <- FALSE
-#   if (is.element(optimizer, c("uobyqa", "newuoa", "bobyqa"))) {
-#     if (!requireNamespace("minqa", quietly = TRUE)) 
-#       stop(mstyle$stop("Please install the 'minqa' package to use this optimizer."), 
-#            call. = FALSE)
-#   }
-#   if (is.element(optimizer, c("nloptr", "ucminf", "lbfgsb3c", 
-#                               "subplex", "optimParallel"))) {
-#     if (!requireNamespace(optimizer, quietly = TRUE)) 
-#       stop(mstyle$stop(paste0("Please install the '", optimizer, 
-#                               "' package to use this optimizer.")), call. = FALSE)
-#   }
-#   if (is.element(optimizer, c("hjk", "nmk", "mads"))) {
-#     if (!requireNamespace("dfoptim", quietly = TRUE)) 
-#       stop(mstyle$stop("Please install the 'dfoptim' package to use this optimizer."), 
-#            call. = FALSE)
-#   }
-#   if (optimizer == "BBoptim") {
-#     if (!requireNamespace("BB", quietly = TRUE)) 
-#       stop(mstyle$stop("Please install the 'BB' package to use this optimizer."), 
-#            call. = FALSE)
-#   }
-#   if (optimizer == "solnp") {
-#     if (!requireNamespace("Rsolnp", quietly = TRUE)) 
-#       stop(mstyle$stop("Please install the 'Rsolnp' package to use this optimizer."), 
-#            call. = FALSE)
-#   }
-#   if (is.element(optimizer, c("constrOptim.nl", "auglag"))) {
-#     if (!requireNamespace("alabama", quietly = TRUE)) 
-#       stop(mstyle$stop("Please install the 'alabama' package to use this optimizer."), 
-#            call. = FALSE)
-#   }
-#   if (is.element(optimizer, c("Rcgmin", "Rvmmin"))) {
-#     if (!requireNamespace("optimx", quietly = TRUE)) 
-#       stop(mstyle$stop(paste0("Please install the 'optimx' package to use this optimizer.")), 
-#            call. = FALSE)
-#   }
-#   if (is.element(optimizer, c("optim", "constrOptim"))) {
-#     par.arg <- "par"
-#     ctrl.arg <- ", control=optcontrol"
-#   }
-#   if (optimizer == "nlminb") {
-#     par.arg <- "start"
-#     ctrl.arg <- ", control=optcontrol"
-#   }
-#   if (is.element(optimizer, c("uobyqa", "newuoa", "bobyqa"))) {
-#     par.arg <- "par"
-#     optimizer <- paste0("minqa::", optimizer)
-#     ctrl.arg <- ", control=optcontrol"
-#   }
-#   if (optimizer == "nloptr") {
-#     par.arg <- "x0"
-#     optimizer <- paste0("nloptr::nloptr")
-#     ctrl.arg <- ", opts=optcontrol"
-#   }
-#   if (optimizer == "nlm") {
-#     par.arg <- "p"
-#     ctrl.arg <- paste(names(optcontrol), unlist(optcontrol), 
-#                       sep = "=", collapse = ", ")
-#     if (nchar(ctrl.arg) != 0L) 
-#       ctrl.arg <- paste0(", ", ctrl.arg)
-#   }
-#   if (is.element(optimizer, c("hjk", "nmk", "mads"))) {
-#     par.arg <- "par"
-#     optimizer <- paste0("dfoptim::", optimizer)
-#     ctrl.arg <- ", control=optcontrol"
-#   }
-#   if (is.element(optimizer, c("ucminf", "lbfgsb3c", "subplex"))) {
-#     par.arg <- "par"
-#     optimizer <- paste0(optimizer, "::", optimizer)
-#     ctrl.arg <- ", control=optcontrol"
-#   }
-#   if (optimizer == "BBoptim") {
-#     par.arg <- "par"
-#     optimizer <- "BB::BBoptim"
-#     ctrl.arg <- ", quiet=TRUE, control=optcontrol"
-#   }
-#   if (optimizer == "solnp") {
-#     par.arg <- "pars"
-#     optimizer <- "Rsolnp::solnp"
-#     ctrl.arg <- ", control=optcontrol"
-#   }
-#   if (is.element(optimizer, c("constrOptim.nl", "auglag"))) {
-#     par.arg <- "par"
-#     optimizer <- paste0("alabama::", optimizer)
-#     if ("control.outer" %in% names(optcontrol)) {
-#       control.outer <- paste0("control.outer=list(", paste(names(optcontrol$control.outer), 
-#                                                            unlist(optcontrol$control.outer), sep = "=", 
-#                                                            collapse = ", "), ")")
-#       ctrl.arg <- paste0(", control.optim=optcontrol, ", 
-#                          control.outer)
-#       optcontrol$control.outer <- NULL
-#     }
-#     else {
-#       ctrl.arg <- ", control.optim=optcontrol, control.outer=list(trace=FALSE)"
-#     }
-#   }
-#   if (optimizer == "Rcgmin") {
-#     par.arg <- "par"
-#     optimizer <- "optimx::Rcgmin"
-#     ctrl.arg <- ", gr='grnd', control=optcontrol"
-#   }
-#   if (optimizer == "Rvmmin") {
-#     par.arg <- "par"
-#     optimizer <- "optimx::Rvmmin"
-#     ctrl.arg <- ", gr='grnd', control=optcontrol"
-#   }
-#   if (optimizer == "optimParallel") {
-#     par.arg <- "par"
-#     optimizer <- "optimParallel::optimParallel"
-#     ctrl.arg <- ", control=optcontrol, parallel=parallel"
-#   }
-#   return(list(optimizer = optimizer, optcontrol = optcontrol, 
-#               par.arg = par.arg, ctrl.arg = ctrl.arg))
-# }
-# 
-# .chkconv <-function (optimizer, opt.res, optcontrol, fun, verbose, paronly = TRUE) {
-#   mstyle <- .get.mstyle()
-#   if (optimizer == "optimParallel::optimParallel" && verbose) {
-#     tmp <- capture.output(print(opt.res$loginfo))
-#     .print.output(tmp, mstyle$verbose)
-#   }
-#   if (inherits(opt.res, "try-error")) 
-#     stop(mstyle$stop(paste0("Error during the optimization. Use verbose=TRUE and see\n       help(", 
-#                             fun, ") for more details on the optimization routines.")), 
-#          call. = FALSE)
-#   if (optimizer == "lbfgsb3c::lbfgsb3c" && is.null(opt.res$convergence)) 
-#     opt.res$convergence <- -99
-#   if (is.element(optimizer, c("optim", "constrOptim", "nlminb", 
-#                               "dfoptim::hjk", "dfoptim::nmk", "lbfgsb3c::lbfgsb3c", 
-#                               "subplex::subplex", "BB::BBoptim", "Rsolnp::solnp", "alabama::constrOptim.nl", 
-#                               "alabama::auglag", "optimx::Rcgmin", "optimx:Rvmmin", 
-#                               "optimParallel::optimParallel")) && opt.res$convergence != 
-#       0) 
-#     stop(mstyle$stop(paste0("Optimizer (", optimizer, ") did not achieve convergence (convergence = ", 
-#                             opt.res$convergence, ").")), call. = FALSE)
-#   if (is.element(optimizer, c("dfoptim::mads")) && opt.res$convergence > 
-#       optcontrol$tol) 
-#     stop(mstyle$stop(paste0("Optimizer (", optimizer, ") did not achieve convergence (convergence = ", 
-#                             opt.res$convergence, ").")), call. = FALSE)
-#   if (is.element(optimizer, c("minqa::uobyqa", "minqa::newuoa", 
-#                               "minqa::bobyqa")) && opt.res$ierr != 0) 
-#     stop(mstyle$stop(paste0("Optimizer (", optimizer, ") did not achieve convergence (ierr = ", 
-#                             opt.res$ierr, ").")), call. = FALSE)
-#   if (optimizer == "nloptr::nloptr" && !(opt.res$status >= 
-#                                          1 && opt.res$status <= 4)) 
-#     stop(mstyle$stop(paste0("Optimizer (", optimizer, ") did not achieve convergence (status = ", 
-#                             opt.res$status, ").")), call. = FALSE)
-#   if (optimizer == "ucminf::ucminf" && !(opt.res$convergence == 
-#                                          1 || opt.res$convergence == 2)) 
-#     stop(mstyle$stop(paste0("Optimizer (", optimizer, ") did not achieve convergence (convergence = ", 
-#                             opt.res$convergence, ").")), call. = FALSE)
-#   if (verbose > 2) {
-#     cat("\n")
-#     tmp <- capture.output(print(opt.res))
-#     .print.output(tmp, mstyle$verbose)
-#   }
-#   if (optimizer == "nloptr::nloptr") 
-#     opt.res$par <- opt.res$solution
-#   if (optimizer == "nlm") 
-#     opt.res$par <- opt.res$estimate
-#   if (optimizer == "Rsolnp::solnp") 
-#     opt.res$par <- opt.res$pars
-#   if (is.element(optimizer, c("nlminb", "nloptr::nloptr"))) 
-#     opt.res$value <- opt.res$objective
-#   if (is.element(optimizer, c("minqa::uobyqa", "minqa::newuoa", 
-#                               "minqa::bobyqa"))) 
-#     opt.res$value <- opt.res$fval
-#   if (optimizer == "nlm") 
-#     opt.res$value <- opt.res$minimum
-#   if (optimizer == "Rsolnp::solnp") 
-#     opt.res$value <- tail(opt.res$values, 1)
-#   if (paronly) {
-#     return(opt.res$par)
-#   }
-#   else {
-#     return(opt.res)
-#   }
-# }
-# 
-# .con.E <-function (v, r, v.arg, r.arg, Z1, Z2, levels.r, values, Dmat, 
-#                    struct, cholesky, vctransf, vccov, nearpd, sparse)  {
-#   if (!cholesky) {
-#     if (vctransf) {
-#       v <- ifelse(is.na(v.arg), exp(v), v.arg)
-#       if (struct == "CAR") 
-#         r <- ifelse(is.na(r.arg), plogis(r), r.arg)
-#       if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", 
-#                                "SPRAT", "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) 
-#         r <- ifelse(is.na(r.arg), exp(r), r.arg)
-#       if (!is.element(struct, c("CAR", "SPEXP", "SPGAU", 
-#                                 "SPLIN", "SPRAT", "SPSPH", "PHYBM", "PHYPL", 
-#                                 "PHYPD"))) 
-#         r <- ifelse(is.na(r.arg), tanh(r), r.arg)
-#     }
-#     else {
-#       v <- ifelse(is.na(v.arg), v, v.arg)
-#       r <- ifelse(is.na(r.arg), r, r.arg)
-#       v[v < 0] <- 0
-#       if (struct == "CAR") {
-#         r[r < 0] <- 0
-#         r[r > 1] <- 1
-#       }
-#       if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", 
-#                                "SPRAT", "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) {
-#         r[r < 0] <- 0
-#       }
-#       if (!is.element(struct, c("CAR", "SPEXP", "SPGAU", 
-#                                 "SPLIN", "SPRAT", "SPSPH", "PHYBM", "PHYPL", 
-#                                 "PHYPD")) && !vccov) {
-#         r[r < -1] <- -1
-#         r[r > 1] <- 1
-#       }
-#     }
-#     v <- ifelse(v <= .Machine$double.eps * 10, 0, v)
-#   }
-#   ncol.Z1 <- ncol(Z1)
-#   if (struct == "CS") {
-#     E <- matrix(r * v, nrow = ncol.Z1, ncol = ncol.Z1)
-#     diag(E) <- v
-#   }
-#   if (struct == "HCS") {
-#     E <- matrix(r, nrow = ncol.Z1, ncol = ncol.Z1)
-#     diag(E) <- 1
-#     E <- diag(sqrt(v), nrow = ncol.Z1, ncol = ncol.Z1) %*% 
-#       E %*% diag(sqrt(v), nrow = ncol.Z1, ncol = ncol.Z1)
-#     diag(E) <- v
-#   }
-#   if (is.element(struct, c("UN", "GEN"))) {
-#     if (cholesky) {
-#       E <- .con.vcov.UN.chol(v, r)
-#       v <- diag(E)
-#       r <- cov2cor(E)[lower.tri(E)]
-#       v[!is.na(v.arg)] <- v.arg[!is.na(v.arg)]
-#       r[!is.na(r.arg)] <- r.arg[!is.na(r.arg)]
-#     }
-#     E <- .con.vcov.UN(v, r, vccov)
-#     if (nearpd) {
-#       E <- as.matrix(nearPD(E)$mat)
-#       v <- diag(E)
-#       r <- cov2cor(E)[lower.tri(E)]
-#     }
-#   }
-#   if (struct == "UNR") {
-#     if (cholesky) {
-#       E <- .con.vcov.UNR.chol(v, r)
-#       v <- diag(E)[1, 1]
-#       r <- cov2cor(E)[lower.tri(E)]
-#       v[!is.na(v.arg)] <- v.arg[!is.na(v.arg)]
-#       r[!is.na(r.arg)] <- r.arg[!is.na(r.arg)]
-#     }
-#     E <- .con.vcov.UNR(v, r)
-#     if (nearpd) {
-#       E <- as.matrix(nearPD(E, keepDiag = TRUE)$mat)
-#       v <- E[1, 1]
-#       r <- cov2cor(E)[lower.tri(E)]
-#     }
-#   }
-#   if (struct == "GDIAG") {
-#     E <- diag(v, nrow = length(v), ncol = length(v))
-#   }
-#   if (is.element(struct, c("ID", "DIAG"))) 
-#     E <- diag(v, nrow = ncol.Z1, ncol = ncol.Z1)
-#   if (struct == "AR") {
-#     if (ncol.Z1 > 1) {
-#       E <- toeplitz(ARMAacf(ar = r, lag.max = ncol.Z1 - 
-#                               1))
-#     }
-#     else {
-#       E <- diag(1)
-#     }
-#     E <- diag(sqrt(rep(v, ncol.Z1)), nrow = ncol.Z1, ncol = ncol.Z1) %*% 
-#       E %*% diag(sqrt(rep(v, ncol.Z1)), nrow = ncol.Z1, 
-#                  ncol = ncol.Z1)
-#     diag(E) <- v
-#   }
-#   if (struct == "HAR") {
-#     if (ncol.Z1 > 1) {
-#       E <- toeplitz(ARMAacf(ar = r, lag.max = ncol.Z1 - 
-#                               1))
-#     }
-#     else {
-#       E <- diag(1)
-#     }
-#     E <- diag(sqrt(v), nrow = ncol.Z1, ncol = ncol.Z1) %*% 
-#       E %*% diag(sqrt(v), nrow = ncol.Z1, ncol = ncol.Z1)
-#     diag(E) <- v
-#   }
-#   if (struct == "CAR") {
-#     if (ncol.Z1 > 1) {
-#       E <- outer(values, values, function(x, y) r^(abs(x - 
-#                                                          y)))
-#     }
-#     else {
-#       E <- diag(1)
-#     }
-#     E <- diag(sqrt(rep(v, ncol.Z1)), nrow = ncol.Z1, ncol = ncol.Z1) %*% 
-#       E %*% diag(sqrt(rep(v, ncol.Z1)), nrow = ncol.Z1, 
-#                  ncol = ncol.Z1)
-#     diag(E) <- v
-#   }
-#   if (struct == "SPEXP") 
-#     E <- v * exp(-Dmat/r) * tcrossprod(Z2)
-#   if (struct == "SPGAU") 
-#     E <- v * exp(-Dmat^2/r^2) * tcrossprod(Z2)
-#   if (struct == "SPLIN") 
-#     E <- v * ((1 - Dmat/r) * I(Dmat < r)) * tcrossprod(Z2)
-#   if (struct == "SPRAT") 
-#     E <- v * (1 - (Dmat/r)^2/(1 + (Dmat/r)^2)) * tcrossprod(Z2)
-#   if (struct == "SPSPH") 
-#     E <- v * ((1 - 3/2 * Dmat/r + 1/2 * (Dmat/r)^3) * I(Dmat < 
-#                                                           r)) * tcrossprod(Z2)
-#   if (struct == "PHYBM") {
-#     r <- max(Dmat)
-#     E <- 1 - Dmat/r
-#     E <- v * E * tcrossprod(Z2)
-#   }
-#   if (struct == "PHYPL") {
-#     E <- r * (1 - Dmat/max(Dmat))
-#     diag(E) <- 1
-#     E[Dmat == 0] <- 1
-#     E <- v * E * tcrossprod(Z2)
-#   }
-#   if (struct == "PHYPD") {
-#     E <- 1 - Dmat/max(Dmat)
-#     E <- v * E^r * tcrossprod(Z2)
-#   }
-#   if (!is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
-#                             "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG")) && 
-#       any(levels.r)) {
-#     E[levels.r, ] <- 0
-#     E[, levels.r] <- 0
-#   }
-#   if (sparse) 
-#     E <- Matrix(E, sparse = TRUE)
-#   return(list(v = v, r = r, E = E))
-# }
-# 
-# .chkvccon <- function (ids, vcvals) {
-#   vcname <- as.character(match.call()[[3]])
-#   if (is.null(ids) || is.null(vcvals)) 
-#     return(vcvals)
-#   if (length(ids) != length(vcvals)) {
-#     mstyle <- .get.mstyle()
-#     stop(mstyle$stop(paste0("Length of 'vccon$", vcname, 
-#                             "' (", length(ids), ") does not match the length of ", 
-#                             vcname, " (", length(vcvals), ").")), call. = FALSE)
-#   }
-#   for (id in unique(ids)) vcvals[ids == id] <- mean(vcvals[ids == 
-#                                                              id], na.rm = TRUE)
-#   vcvals[is.nan(vcvals)] <- NA_real_
-#   return(vcvals)
-# }
-# 
-# .chksubset <- function (x, k, stoponk0 = TRUE) {
-#   if (is.null(x)) 
-#     return(x)
-#   mstyle <- .get.mstyle()
-#   argname <- deparse(substitute(x))
-#   if (length(x) == 0L) 
-#     stop(mstyle$stop(paste0("Argument '", argname, "' is of length 0.")), 
-#          call. = FALSE)
-#   if (is.character(x)) 
-#     stop(mstyle$stop(paste0("Argument '", argname, "' is not a logical or numeric vector.")), 
-#          call. = FALSE)
-#   if (is.logical(x)) {
-#     if (length(x) != k) 
-#       stop(mstyle$stop(paste0("Length of the '", argname, 
-#                               "' argument (", length(x), ") is not of length k = ", 
-#                               k, ".")), call. = FALSE)
-#     if (anyNA(x)) 
-#       x[is.na(x)] <- FALSE
-#   }
-#   if (is.numeric(x)) {
-#     if (anyNA(x)) 
-#       x <- x[!is.na(x)]
-#     x <- as.integer(round(x))
-#     x <- x[x != 0L]
-#     if (any(x > 0L) && any(x < 0L)) 
-#       stop(mstyle$stop(paste0("Cannot mix positive and negative values in '", 
-#                               argname, "' argument.")), call. = FALSE)
-#     if (all(x > 0L)) {
-#       if (any(x > k)) 
-#         stop(mstyle$stop(paste0("Argument '", argname, 
-#                                 "' includes values larger than k = ", k, ".")), 
-#              call. = FALSE)
-#       x <- is.element(seq_len(k), x)
-#     }
-#     else {
-#       if (any(x < -k)) 
-#         stop(mstyle$stop(paste0("Argument '", argname, 
-#                                 "' includes values larger than k = ", k, ".")), 
-#              call. = FALSE)
-#       x <- !is.element(seq_len(k), abs(x))
-#     }
-#   }
-#   if (stoponk0 && !any(x)) 
-#     stop(mstyle$stop(paste0("Stopped because k = 0 after subsetting.")), 
-#          call. = FALSE)
-#   return(x)
-# }
-# 
-# .getsubset <- function (x, subset, col = FALSE, drop = FALSE)  {
-#   if (is.null(x) || is.null(subset)) 
-#     return(x)
-#   mstyle <- .get.mstyle()
-#   xname <- deparse(substitute(x))
-#   k <- length(subset)
-#   if (.is.matrix(x) || is.data.frame(x)) {
-#     if (nrow(x) != k) 
-#       stop(mstyle$stop(paste0("Element '", xname, "' is not of length ", 
-#                               k, ".")), call. = FALSE)
-#     if (col) {
-#       x <- x[subset, subset, drop = drop]
-#     }
-#     else {
-#       x <- x[subset, , drop = drop]
-#     }
-#   }
-#   else {
-#     if (length(x) != k) 
-#       stop(mstyle$stop(paste0("Element '", xname, "' is not of length ", 
-#                               k, ".")), call. = FALSE)
-#     x <- x[subset]
-#   }
-#   return(x)
-# }
-# 
-# .getfromenv <-function (what, element, envir = .metafor, default = NULL)  {
-#   x <- try(get(what, envir = envir, inherits = FALSE), silent = TRUE)
-#   if (inherits(x, "try-error")) {
-#     return(default)
-#   }
-#   else {
-#     if (missing(element)) {
-#       return(x)
-#     }
-#     else {
-#       x <- x[[element]]
-#       if (is.null(x)) {
-#         return(default)
-#       }
-#       else {
-#         return(x)
-#       }
-#     }
-#   }
-# }
+.getx <- function (x, mf, data, enclos = sys.frame(sys.parent(n = 2)), 
+                   checknull = TRUE, checknumeric = FALSE, default) {
+  mf.getx <- match.call()
+  dname <- deparse1(mf.getx[[match("data", names(mf.getx))]])
+  dname <- deparse1(mf[[match(dname, names(mf))]])
+  mf.x <- mf[[match(x, names(mf))]]
+  if (!is.null(dname) && dname %in% names(data) && grepl("$", 
+                                                         deparse1(mf.x), fixed = TRUE) || grepl("[[", deparse1(mf.x), 
+                                                                                                fixed = TRUE)) 
+    data <- NULL
+  out <- try(eval(mf.x, data, enclos), silent = TRUE)
+  if (inherits(out, "try-error") || is.function(out)) 
+stop(paste0("Cannot find the object/variable ('", 
+                            deparse(mf.x), "') specified for the '", x, "' argument."))
+  spec <- x %in% names(mf)
+  if (is.null(out) && !spec && !missing(default)) 
+    out <- default
+  if (checknull) {
+    if (spec && is.null(out)) {
+      mf.txt <- deparse(mf.x)
+      if (mf.txt == "NULL") {
+        mf.txt <- " "
+      }
+      else {
+        mf.txt <- paste0(" ('", mf.txt, "') ")
+      }
+      stop(paste0(deparse(mf)[1], ":\nThe object/variable", 
+                              mf.txt, "specified for the '", x, "' argument is NULL."))
+    }
+  }
+  if (checknumeric && !is.null(out) && !is.list(out) && !is.numeric(out[1])) 
+    stop(paste0("The object/variable specified for the '", 
+                            x, "' argument is not numeric."), call. = FALSE)
+  return(out)
+}
+.process.G.afterrmna <- function (mf.g, g.nlevels, g.levels, g.values, struct, formula, 
+                                  tau2, rho, Z.G1, Z.G2, isG, sparse, distspec, check.k.gtr.1, 
+                                  verbose) {
+  nvars <- ncol(mf.g)
+  g.nlevels.f <- g.nlevels
+  g.levels.f <- g.levels
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
+    mf.g <- data.frame(mf.g[-nvars], outer = factor(mf.g[[nvars]]))
+  }
+  else {
+    mf.g <- data.frame(inner = factor(mf.g[[1]]), outer = factor(mf.g[[2]]))
+  }
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
+    g.nlevels <- c(length(unique(apply(mf.g[-nvars], 1, paste, 
+                                       collapse = " + "))), length(unique(mf.g[[nvars]])))
+  }
+  else {
+    g.nlevels <- c(length(unique(mf.g[[1]])), length(unique(mf.g[[2]])))
+  }
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
+    g.levels <- list(sort(unique(apply(mf.g[-nvars], 1, paste, 
+                                       collapse = " + "))), sort(unique((mf.g[[nvars]]))))
+  }
+  else {
+    g.levels <- list(as.character(sort(unique(mf.g[[1]]))), 
+                     as.character(sort(unique(mf.g[[2]]))))
+  }
+  g.levels.r <- !is.element(g.levels.f[[1]], g.levels[[1]])
+  if (any(g.levels.r) && !is.element(struct, c("AR", "CAR", 
+                                               "SPEXP", "SPGAU", "SPLIN", "SPRAT", "SPSPH", "GEN", "GDIAG"))) 
+    warning(paste0("One or more levels of inner factor (i.e., ", 
+                                  paste(g.levels.f[[1]][g.levels.r], collapse = ", "), 
+                                  ") removed due to NAs."), call. = FALSE)
+  if (is.element(struct, c("ID", "DIAG", "GDIAG"))) 
+    rho <- 0
+  if (g.nlevels[1] == 1 && is.element(struct, c("CS", "HCS", 
+                                                "AR", "HAR", "CAR")) && is.na(rho)) {
+    rho <- 0
+    warning(paste0("Inner factor has only a single level, so fixed value of ", 
+                                  ifelse(isG, "rho", "phi"), " to 0."), call. = FALSE)
+  }
+  if (g.nlevels[1] == 1 && is.element(struct, c("SPEXP", "SPGAU", 
+                                                "SPLIN", "SPRAT", "SPSPH", "PHYBM", "PHYPL", "PHYPD", 
+                                                "GEN", "GDIAG"))) 
+    stop("Cannot fit model since inner term only has a single level.", call. = FALSE)
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
+    g.levels.k <- table(factor(apply(mf.g[-nvars], 1, paste, 
+                                     collapse = " + "), levels = g.levels.f[[1]]))
+  }
+  else {
+    g.levels.k <- apply(table(factor(mf.g[[1]], levels = g.levels.f[[1]]), 
+                              mf.g[[2]]), 1, function(x) sum(x > 0L))
+  }
+  if (is.element(struct, c("HCS", "UN", "DIAG", "HAR")) && 
+      check.k.gtr.1) {
+    if (any(is.na(tau2) & g.levels.k == 1)) {
+      tau2[is.na(tau2) & g.levels.k == 1] <- 0
+      warning("Inner factor has k=1 for one or more levels. Corresponding 'tau2' value(s) fixed to 0.", 
+              call. = FALSE)
+    }
+  }
+  if (g.nlevels[2] == nrow(mf.g)) {
+    if (is.element(struct, c("CS", "HCS", "AR", "HAR", "CAR")) && 
+        is.na(rho)) {
+      rho <- 0
+      warning(paste0("Each level of the outer factor contains only a single level of the inner factor, so fixed value of ", 
+                                    ifelse(isG, "rho", "phi"), " to 0."), call. = FALSE)
+    }
+    if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                             "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) 
+      stop("Cannot fit model since each level of the outer factor contains only a single level of the inner term.", 
+           call. = FALSE)
+  }
+  g.levels.comb.k <- NULL
+  if (!is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                            "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
+    g.levels.comb.k <- crossprod(Z.G2, Z.G1)
+    g.levels.comb.k <- split(g.levels.comb.k, seq_len(nrow(g.levels.comb.k)))
+    g.levels.comb.k <- lapply(g.levels.comb.k, function(x) outer(x, 
+                                                                 x, FUN = "&"))
+    g.levels.comb.k <- Reduce("+", g.levels.comb.k)
+    g.levels.comb.k <- g.levels.comb.k[lower.tri(g.levels.comb.k)]
+    if (is.element(struct, c("UN", "UNR")) && any(g.levels.comb.k == 
+                                                  0 & is.na(rho))) {
+      rho[g.levels.comb.k == 0] <- 0
+      warning(paste0("Some combinations of the levels of the inner factor never occurred. Corresponding ", 
+                                    ifelse(isG, "rho", "phi"), " value(s) fixed to 0."), 
+              call. = FALSE)
+    }
+    if (is.element(struct, c("UN", "UNR")) && g.nlevels.f[1] == 
+        1 && is.na(rho)) {
+      rho <- 0
+      warning(paste0("Inner factor has only a single level, so fixed value of ", 
+                                    ifelse(isG, "rho", "phi"), " to 0."), call. = FALSE)
+    }
+  }
+  if (struct == "CS") {
+    G <- matrix(rho * tau2, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
+    diag(G) <- tau2
+  }
+  if (struct == "HCS") {
+    G <- matrix(rho, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
+    diag(G) <- 1
+    G <- diag(sqrt(tau2), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1]) %*% 
+      G %*% diag(sqrt(tau2), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
+    diag(G) <- tau2
+  }
+  if (is.element(struct, c("UN", "GEN"))) {
+    G <- .con.vcov.UN(tau2, rho)
+  }
+  if (struct == "UNR") {
+    G <- .con.vcov.UNR(tau2, rho)
+  }
+  if (is.element(struct, c("GDIAG"))) {
+    G <- diag(tau2, nrow = length(tau2), ncol = length(tau2))
+  }
+  if (is.element(struct, c("ID", "DIAG"))) {
+    G <- diag(tau2, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
+  }
+  if (struct == "AR") {
+    if (is.na(rho)) {
+      G <- matrix(NA_real_, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
+    }
+    else {
+      if (g.nlevels.f[1] > 1) {
+        G <- toeplitz(ARMAacf(ar = rho, lag.max = g.nlevels.f[1] - 
+                                1))
+      }
+      else {
+        G <- diag(1)
+      }
+    }
+    G <- diag(sqrt(rep(tau2, g.nlevels.f[1])), nrow = g.nlevels.f[1], 
+              ncol = g.nlevels.f[1]) %*% G %*% diag(sqrt(rep(tau2, 
+                                                             g.nlevels.f[1])), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
+    diag(G) <- tau2
+  }
+  if (struct == "HAR") {
+    if (is.na(rho)) {
+      G <- matrix(NA_real_, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
+    }
+    else {
+      if (g.nlevels.f[1] > 1) {
+        G <- toeplitz(ARMAacf(ar = rho, lag.max = g.nlevels.f[1] - 
+                                1))
+      }
+      else {
+        G <- diag(1)
+      }
+    }
+    G <- diag(sqrt(tau2), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1]) %*% 
+      G %*% diag(sqrt(tau2), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
+    diag(G) <- tau2
+  }
+  if (struct == "CAR") {
+    if (is.na(rho)) {
+      G <- matrix(NA_real_, nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
+    }
+    else {
+      if (g.nlevels.f[1] > 1) {
+        G <- outer(g.values, g.values, function(x, y) rho^(abs(x - 
+                                                                 y)))
+      }
+      else {
+        G <- diag(1)
+      }
+    }
+    G <- diag(sqrt(rep(tau2, g.nlevels.f[1])), nrow = g.nlevels.f[1], 
+              ncol = g.nlevels.f[1]) %*% G %*% diag(sqrt(rep(tau2, 
+                                                             g.nlevels.f[1])), nrow = g.nlevels.f[1], ncol = g.nlevels.f[1])
+    diag(G) <- tau2
+  }
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) {
+    formula <- as.formula(paste0(strsplit(paste0(formula, 
+                                                 collapse = ""), "|", fixed = TRUE)[[1]][1], "- 1", 
+                                 collapse = ""))
+    if (is.matrix(distspec)) {
+      if (anyNA(distspec)) 
+        stop("No missing values allowed in matrices specified via 'dist'.", 
+             call. = FALSE)
+      if (!NROW(distspec)==NCOL(distspec)) 
+        stop("Distance matrices specified via 'dist' must be square matrices.", 
+             call. = FALSE)
+      if (!isSymmetric(unname(distspec))) 
+        stop("Distance matrices specified via 'dist' must be symmetric matrices.", 
+             call. = FALSE)
+      if (is.null(rownames(distspec))) 
+        rownames(distspec) <- colnames(distspec)
+      if (is.null(colnames(distspec))) 
+        colnames(distspec) <- rownames(distspec)
+      if (length(colnames(distspec)) != length(unique(colnames(distspec)))) 
+        stop("Distance matrices specified via 'dist' must have unique dimension names.", 
+             call. = FALSE)
+      if (any(!is.element(as.character(mf.g[[1]]), colnames(distspec)))) 
+        stop(paste0("There are levels in '", 
+                                colnames(mf.g)[1], "' for which there are no matching rows/columns in the corresponding 'dist' matrix."), 
+             call. = FALSE)
+      if (is.element(struct, c("PHYBM", "PHYPL", "PHYPD")) && 
+          !all.equal(min(distspec), 0)) 
+        warning("Minimum value in the distance matrix is not 0.", 
+                call. = FALSE)
+      if (is.element(struct, c("PHYBM", "PHYPL", "PHYPD")) && 
+          !all.equal(max(distspec), 2)) 
+        warning("Maximum value in the distance matrix is not 2.", 
+                call. = FALSE)
+      Dmat <- distspec[as.character(mf.g[[1]]), as.character(mf.g[[1]])]
+    }
+    else {
+      if (is.element(struct, c("PHYBM", "PHYPL", "PHYPD"))) 
+        stop("Must supply distance matrix via 'dist' for phylogenetic correlation structures.", 
+             call. = FALSE)
+      Cmat <- model.matrix(formula, data = mf.g[-nvars])
+      if (is.function(distspec)) {
+        Dmat <- distspec(Cmat)
+      }
+      else {
+        if (is.element(distspec, c("euclidean", "maximum", 
+                                   "manhattan"))) 
+          Dmat <- as.matrix(dist(Cmat, method = distspec))
+        if (distspec == "gcd") 
+          Dmat <- sp::spDists(Cmat, longlat = TRUE)
+      }
+    }
+    if (sparse) 
+      Dmat <- Matrix(Dmat, sparse = TRUE)
+  }
+  else {
+    Dmat <- NULL
+  }
+  if (struct == "SPEXP") {
+    Rmat <- exp(-Dmat/rho)
+    G <- tau2 * Rmat * tcrossprod(Z.G2)
+  }
+  if (struct == "SPGAU") {
+    Rmat <- exp(-Dmat^2/rho^2)
+    G <- tau2 * Rmat * tcrossprod(Z.G2)
+  }
+  if (struct == "SPLIN") {
+    Rmat <- (1 - Dmat/rho) * I(Dmat < rho)
+    G <- tau2 * Rmat * tcrossprod(Z.G2)
+  }
+  if (struct == "SPRAT") {
+    Rmat <- 1 - (Dmat/rho)^2/(1 + (Dmat/rho)^2)
+    G <- tau2 * Rmat * tcrossprod(Z.G2)
+  }
+  if (struct == "SPSPH") {
+    Rmat <- (1 - 3/2 * Dmat/rho + 1/2 * (Dmat/rho)^3) * I(Dmat < 
+                                                            rho)
+    G <- tau2 * Rmat * tcrossprod(Z.G2)
+  }
+  if (struct == "PHYBM") {
+    rho <- max(Dmat)
+    Rmat <- 1 - Dmat/rho
+    G <- tau2 * Rmat * tcrossprod(Z.G2)
+  }
+  if (struct == "PHYPL") {
+    Rmat <- rho * (1 - Dmat/max(Dmat))
+    diag(Rmat) <- 1
+    Rmat[Dmat == 0] <- 1
+    G <- tau2 * Rmat * tcrossprod(Z.G2)
+  }
+  if (struct == "PHYPD") {
+    Rmat <- 1 - Dmat/max(Dmat)
+    G <- tau2 * Rmat^rho * tcrossprod(Z.G2)
+  }
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) {
+    if (struct == "PHYBM") 
+      rho.init <- max(Dmat)
+    if (struct == "PHYPL") 
+      rho.init <- 0.5
+    if (struct == "PHYPD") 
+      rho.init <- 1
+    if (!is.element(struct, c("PHYBM", "PHYPL", "PHYPD"))) 
+      rho.init <- unname(suppressMessages(quantile(Dmat[lower.tri(Dmat)], 
+                                                   0.25)))
+  }
+  else {
+    rho.init <- NULL
+  }
+  if (any(g.levels.r) && is.element(struct, c("CS", "AR", "CAR", 
+                                              "ID"))) {
+    G[g.levels.r, ] <- 0
+    G[, g.levels.r] <- 0
+  }
+  if (any(g.levels.r) && is.element(struct, c("HCS", "HAR", 
+                                              "DIAG"))) {
+    G[g.levels.r, ] <- 0
+    G[, g.levels.r] <- 0
+    tau2[g.levels.r] <- 0
+    warning(mstyle$warning(paste0("Fixed ", ifelse(isG, "tau2", 
+                                                   "gamma2"), " to 0 for removed level(s).")), call. = FALSE)
+  }
+  if (any(g.levels.r) && struct == "UN") {
+    G[g.levels.r, ] <- 0
+    G[, g.levels.r] <- 0
+    tau2[g.levels.r] <- 0
+    rho <- G[lower.tri(G)]
+    warning(mstyle$warning(paste0("Fixed ", ifelse(isG, "tau2", 
+                                                   "gamma2"), " and corresponding ", ifelse(isG, "rho", 
+                                                                                            "phi"), " value(s) to 0 for removed level(s).")), 
+            call. = FALSE)
+  }
+  if (any(g.levels.r) && struct == "UNR") {
+    G[g.levels.r, ] <- 0
+    G[, g.levels.r] <- 0
+    diag(G) <- tau2
+    rho <- G[lower.tri(G)]
+    warning(mstyle$warning(paste0("Fixed ", ifelse(isG, "rho", 
+                                                   "phi"), " value(s) to 0 for removed level(s).")), 
+            call. = FALSE)
+  }
+  if (g.nlevels.f[1] == 2) {
+    if (is.element(struct, c("CS", "AR", "CAR", "UNR")) && 
+        !is.na(tau2) && tau2 == 0) 
+      rho <- 0
+    if (is.element(struct, c("HCS", "UN", "HAR")) && ((!is.na(tau2[1]) && 
+                                                       tau2[1] == 0) || (!is.na(tau2[2]) && tau2[2] == 0))) 
+      rho <- 0
+  }
+  return(list(mf.g = mf.g, g.nlevels = g.nlevels, g.nlevels.f = g.nlevels.f, 
+              g.levels = g.levels, g.levels.f = g.levels.f, g.levels.r = g.levels.r, 
+              g.levels.k = g.levels.k, g.levels.comb.k = g.levels.comb.k, 
+              tau2 = tau2, rho = rho, G = G, Dmat = Dmat, rho.init = rho.init))
+}
+.process.G.aftersub <-function (mf.g, struct, formula, tau2, rho, isG, k, sparse, verbose) {
+  
+  if (verbose > 1) 
+    message(mstyle$message(paste0("Processing '", paste0(formula, 
+                                                         collapse = ""), "' term (#1) ...")))
+  nvars <- ncol(mf.g)
+  if (is.element(struct, c("CS", "HCS", "UN", "UNR", "AR", 
+                           "HAR", "CAR", "ID", "DIAG", "PHYBM", "PHYPL", "PHYPD")) && 
+      sum(sapply(mf.g, NCOL)) != 2) 
+    stop(mstyle$stop(paste0("Only a single inner variable allowed for an '~ inner | outer' term when 'struct=\"", 
+                            struct, "\"'.")), call. = FALSE)
+  g.names <- names(mf.g)
+  if (is.element(struct, c("CAR"))) {
+    if (!is.numeric(mf.g[[1]])) 
+      stop("Inner variable in '~ inner | outer' term must be numeric for 'struct=\"CAR\"'.", 
+           call. = FALSE)
+    g.values <- sort(unique(round(mf.g[[1]], digits = 8L)))
+  }
+  else {
+    g.values <- NULL
+  }
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
+    mf.g <- data.frame(mf.g[-nvars], outer = factor(mf.g[[nvars]]))
+  }
+  else {
+    mf.g <- data.frame(inner = factor(mf.g[[1]]), outer = factor(mf.g[[2]]))
+  }
+  if (anyNA(mf.g)) 
+    stop("No NAs allowed in variables specified via the 'random' argument.", 
+         call. = FALSE)
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
+    g.nlevels <- c(length(unique(apply(mf.g[-nvars], 1, paste, 
+                                       collapse = " + "))), length(unique(mf.g[[nvars]])))
+  }
+  else {
+    g.nlevels <- c(length(unique(mf.g[[1]])), length(unique(mf.g[[2]])))
+  }
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG"))) {
+    g.levels <- list(sort(unique(apply(mf.g[-nvars], 1, paste, 
+                                       collapse = " + "))), sort(unique((mf.g[[nvars]]))))
+  }
+  else {
+    g.levels <- list(as.character(sort(unique(mf.g[[1]]))), 
+                     as.character(sort(unique(mf.g[[2]]))))
+  }
+  if (is.element(struct, c("CS", "ID", "AR", "CAR", "SPEXP", 
+                           "SPGAU", "SPLIN", "SPRAT", "SPSPH", "PHYBM", "PHYPL", 
+                           "PHYPD"))) {
+    tau2s <- 1
+    rhos <- 1
+  }
+  if (is.element(struct, c("HCS", "DIAG", "HAR"))) {
+    tau2s <- g.nlevels[1]
+    rhos <- 1
+  }
+  if (struct == "UN") {
+    tau2s <- g.nlevels[1]
+    rhos <- ifelse(g.nlevels[1] > 1, g.nlevels[1] * (g.nlevels[1] - 
+                                                       1)/2, 1)
+  }
+  if (struct == "UNR") {
+    tau2s <- 1
+    rhos <- ifelse(g.nlevels[1] > 1, g.nlevels[1] * (g.nlevels[1] - 
+                                                       1)/2, 1)
+  }
+  if (struct == "GEN") {
+    p <- nvars - 1
+    tau2s <- p
+    rhos <- ifelse(p > 1, p * (p - 1)/2, 1)
+  }
+  if (struct == "GDIAG") {
+    p <- nvars - 1
+    tau2s <- p
+    rhos <- 1
+  }
+  if (is.null(tau2)) 
+    tau2 <- rep(NA_real_, tau2s)
+  if (is.null(rho)) 
+    rho <- rep(NA_real_, rhos)
+  tau2 <- .expand1(tau2, tau2s)
+  rho <- .expand1(rho, rhos)
+  if (length(tau2) != tau2s) 
+    stop(mstyle$stop(paste0("Length of the ", ifelse(isG, 
+                                                     "tau2", "gamma2"), " argument (", length(tau2), ") does not match the actual number of variance components (", 
+                            tau2s, ").")), call. = FALSE)
+  if (length(rho) != rhos) 
+    stop(mstyle$stop(paste0("Length of the ", ifelse(isG, 
+                                                     "rho", "phi"), " argument (", length(rho), ") does not match the actual number of correlations (", 
+                            rhos, ").")), call. = FALSE)
+  if (any(tau2 < 0, na.rm = TRUE)) 
+    stop(paste0("Specified value(s) of ", ifelse(isG, 
+                                                             "tau2", "gamma2"), " must be >= 0."), call. = FALSE)
+  if (is.element(struct, c("CAR")) && any(rho > 1 | rho < 0, 
+                                          na.rm = TRUE)) 
+    stop(paste0("Specified value(s) of ", ifelse(isG, 
+                                                             "rho", "phi"), " must be in [0,1]."), call. = FALSE)
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYPL", "PHYPD")) && any(rho < 0, na.rm = TRUE)) 
+    stop(paste0("Specified value(s) of ", ifelse(isG, 
+                                                             "rho", "phi"), " must be >= 0."), call. = FALSE)
+  if (!is.element(struct, c("CAR", "SPEXP", "SPGAU", "SPLIN", 
+                            "SPRAT", "SPSPH", "PHYBM", "PHYPL", "PHYPD")) && any(rho > 
+                                                                                 1 | rho < -1, na.rm = TRUE)) 
+    stop(paste0("Specified value(s) of ", ifelse(isG, 
+                                                             "rho", "phi"), " must be in [-1,1]."), call. = FALSE)
+  if (is.element(struct, c("CS", "HCS", "UN", "UNR", "AR", 
+                           "HAR", "CAR", "ID", "DIAG"))) {
+    if (g.nlevels[1] == 1) {
+      Z.G1 <- cbind(rep(1, k))
+    }
+    else {
+      if (sparse) {
+        Z.G1 <- sparse.model.matrix(~0 + mf.g[[1]])
+      }
+      else {
+        Z.G1 <- model.matrix(~0 + mf.g[[1]])
+      }
+    }
+  }
+  if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                           "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) {
+    if (sparse) {
+      Z.G1 <- Diagonal(k)
+    }
+    else {
+      Z.G1 <- diag(1, nrow = k, ncol = k)
+    }
+  }
+  if (is.element(struct, c("GEN", "GDIAG"))) {
+    if (sparse) {
+      Z.G1 <- Matrix(as.matrix(mf.g[-nvars]), sparse = TRUE)
+    }
+    else {
+      Z.G1 <- as.matrix(mf.g[-nvars])
+    }
+  }
+  if (g.nlevels[2] == 1) {
+    Z.G2 <- cbind(rep(1, k))
+  }
+  else {
+    if (sparse) {
+      Z.G2 <- sparse.model.matrix(~0 + mf.g[[nvars]])
+    }
+    else {
+      Z.G2 <- model.matrix(~0 + mf.g[[nvars]])
+    }
+  }
+  attr(Z.G1, "assign") <- NULL
+  attr(Z.G1, "contrasts") <- NULL
+  attr(Z.G2, "assign") <- NULL
+  attr(Z.G2, "contrasts") <- NULL
+  return(list(mf.g = mf.g, g.names = g.names, g.nlevels = g.nlevels, 
+              g.levels = g.levels, g.values = g.values, tau2s = tau2s, 
+              rhos = rhos, tau2 = tau2, rho = rho, Z.G1 = Z.G1, Z.G2 = Z.G2))
+}
+.anyNAv <-function (x) {
+  k <- nrow(x)
+  not.na <- not.na.diag <- !is.na(diag(x))
+  for (i in seq_len(k)[not.na.diag]) {
+    not.na[i] <- !anyNA(x[i, seq_len(k)[not.na.diag]])
+  }
+  return(!not.na)
+}
+
+.chkpd <-function (x, tol = .Machine$double.eps, corr = FALSE, nearpd = FALSE) {
+  if (any(eigen(x, symmetric = TRUE, only.values = TRUE)$values <= 
+          tol)) {
+    ispd <- FALSE
+    if (nearpd) {
+      tmp <- nearPD(x, corr = corr)
+      x <- as.matrix(tmp$mat)
+      if (tmp$converged) 
+        ispd <- TRUE
+    }
+  }
+  else {
+    ispd <- TRUE
+  }
+  if (nearpd) {
+    return(list(ispd = ispd, x = x))
+  }
+  else {
+    return(ispd)
+  }
+}
+
+.make.unique <-function (x) {
+  if (is.null(x)) 
+    return(NULL)
+  x <- as.character(x)
+  ux <- unique(x)
+  for (i in seq_along(ux)) {
+    xiTF <- x %in% ux[i]
+    xi <- x[xiTF]
+    if (length(xi) == 1L) 
+      next
+    x[xiTF] <- paste(xi, seq_along(xi), sep = ".")
+  }
+  return(x)
+}
+
+.set.btt <- function (btt, p, int.incl, Xnames, fixed = FALSE) {
+  
+  if (missing(btt) || is.null(btt)) {
+    if (p > 1L) {
+      if (int.incl) {
+        btt <- seq.int(from = 2, to = p)
+      }
+      else {
+        btt <- seq_len(p)
+      }
+    }
+    else {
+      btt <- 1L
+    }
+  }
+  else {
+    if (is.character(btt)) {
+      btt <- grep(btt, Xnames, fixed = fixed)
+      if (length(btt) == 0L) 
+        stop("Cannot identify coefficient(s) corresponding to the specified 'btt' string.", 
+             call. = FALSE)
+    }
+    else {
+      btt <- as.integer(sort(unique(round(btt))))
+      if (any(btt < 0) && any(btt > 0)) 
+        stop("Cannot mix positive and negative 'btt' values.", 
+             call. = FALSE)
+      btt <- seq_len(p)[btt]
+      btt <- btt[!is.na(btt)]
+      if (length(btt) == 0L) 
+        stop("Non-existent coefficient(s) specified via 'btt'.", 
+             call. = FALSE)
+    }
+  }
+  return(btt)
+}
+.expand1 <-function (x, k) {
+  if (is.list(k)) 
+    k <- max(lengths(k, use.names = FALSE))
+  if (length(x) == 1L) 
+    x <- rep(x, k)
+  return(x)
+}
+.chkopt <-function (optimizer, optcontrol, ineq = FALSE) {
+  
+  if (optimizer == "nloptr" && !is.element("algorithm", names(optcontrol))) {
+    if (ineq) {
+      optcontrol$algorithm <- "NLOPT_LN_COBYLA"
+    }
+    else {
+      optcontrol$algorithm <- "NLOPT_LN_BOBYQA"
+    }
+  }
+  if (optimizer == "nloptr" && !is.element("ftol_rel", names(optcontrol))) 
+    optcontrol$ftol_rel <- 1e-08
+  if (optimizer == "mads" && !is.element("trace", names(optcontrol))) 
+    optcontrol$trace <- FALSE
+  if (optimizer == "mads" && !is.element("tol", names(optcontrol))) 
+    optcontrol$tol <- 1e-06
+  if (optimizer == "subplex" && !is.element("reltol", names(optcontrol))) 
+    optcontrol$reltol <- 1e-08
+  if (optimizer == "BBoptim" && !is.element("trace", names(optcontrol))) 
+    optcontrol$trace <- FALSE
+  if (optimizer == "solnp" && !is.element("trace", names(optcontrol))) 
+    optcontrol$trace <- FALSE
+  if (is.element(optimizer, c("uobyqa", "newuoa", "bobyqa"))) {
+    if (!requireNamespace("minqa", quietly = TRUE)) 
+      stop("Please install the 'minqa' package to use this optimizer.", 
+           call. = FALSE)
+  }
+  if (is.element(optimizer, c("nloptr", "ucminf", "lbfgsb3c", 
+                              "subplex", "optimParallel"))) {
+    if (!requireNamespace(optimizer, quietly = TRUE)) 
+      stop(mstyle$stop(paste0("Please install the '", optimizer, 
+                              "' package to use this optimizer.")), call. = FALSE)
+  }
+  if (is.element(optimizer, c("hjk", "nmk", "mads"))) {
+    if (!requireNamespace("dfoptim", quietly = TRUE)) 
+      stop("Please install the 'dfoptim' package to use this optimizer.", 
+           call. = FALSE)
+  }
+  if (optimizer == "BBoptim") {
+    if (!requireNamespace("BB", quietly = TRUE)) 
+      stop("Please install the 'BB' package to use this optimizer.", 
+           call. = FALSE)
+  }
+  if (optimizer == "solnp") {
+    if (!requireNamespace("Rsolnp", quietly = TRUE)) 
+      stop("Please install the 'Rsolnp' package to use this optimizer.", 
+           call. = FALSE)
+  }
+  if (is.element(optimizer, c("constrOptim.nl", "auglag"))) {
+    if (!requireNamespace("alabama", quietly = TRUE)) 
+      stop("Please install the 'alabama' package to use this optimizer.", 
+           call. = FALSE)
+  }
+  if (is.element(optimizer, c("Rcgmin", "Rvmmin"))) {
+    if (!requireNamespace("optimx", quietly = TRUE)) 
+      stop(paste0("Please install the 'optimx' package to use this optimizer."), 
+           call. = FALSE)
+  }
+  if (is.element(optimizer, c("optim", "constrOptim"))) {
+    par.arg <- "par"
+    ctrl.arg <- ", control=optcontrol"
+  }
+  if (optimizer == "nlminb") {
+    par.arg <- "start"
+    ctrl.arg <- ", control=optcontrol"
+  }
+  if (is.element(optimizer, c("uobyqa", "newuoa", "bobyqa"))) {
+    par.arg <- "par"
+    optimizer <- paste0("minqa::", optimizer)
+    ctrl.arg <- ", control=optcontrol"
+  }
+  if (optimizer == "nloptr") {
+    par.arg <- "x0"
+    optimizer <- paste0("nloptr::nloptr")
+    ctrl.arg <- ", opts=optcontrol"
+  }
+  if (optimizer == "nlm") {
+    par.arg <- "p"
+    ctrl.arg <- paste(names(optcontrol), unlist(optcontrol), 
+                      sep = "=", collapse = ", ")
+    if (nchar(ctrl.arg) != 0L) 
+      ctrl.arg <- paste0(", ", ctrl.arg)
+  }
+  if (is.element(optimizer, c("hjk", "nmk", "mads"))) {
+    par.arg <- "par"
+    optimizer <- paste0("dfoptim::", optimizer)
+    ctrl.arg <- ", control=optcontrol"
+  }
+  if (is.element(optimizer, c("ucminf", "lbfgsb3c", "subplex"))) {
+    par.arg <- "par"
+    optimizer <- paste0(optimizer, "::", optimizer)
+    ctrl.arg <- ", control=optcontrol"
+  }
+  if (optimizer == "BBoptim") {
+    par.arg <- "par"
+    optimizer <- "BB::BBoptim"
+    ctrl.arg <- ", quiet=TRUE, control=optcontrol"
+  }
+  if (optimizer == "solnp") {
+    par.arg <- "pars"
+    optimizer <- "Rsolnp::solnp"
+    ctrl.arg <- ", control=optcontrol"
+  }
+  if (is.element(optimizer, c("constrOptim.nl", "auglag"))) {
+    par.arg <- "par"
+    optimizer <- paste0("alabama::", optimizer)
+    if ("control.outer" %in% names(optcontrol)) {
+      control.outer <- paste0("control.outer=list(", paste(names(optcontrol$control.outer), 
+                                                           unlist(optcontrol$control.outer), sep = "=", 
+                                                           collapse = ", "), ")")
+      ctrl.arg <- paste0(", control.optim=optcontrol, ", 
+                         control.outer)
+      optcontrol$control.outer <- NULL
+    }
+    else {
+      ctrl.arg <- ", control.optim=optcontrol, control.outer=list(trace=FALSE)"
+    }
+  }
+  if (optimizer == "Rcgmin") {
+    par.arg <- "par"
+    optimizer <- "optimx::Rcgmin"
+    ctrl.arg <- ", gr='grnd', control=optcontrol"
+  }
+  if (optimizer == "Rvmmin") {
+    par.arg <- "par"
+    optimizer <- "optimx::Rvmmin"
+    ctrl.arg <- ", gr='grnd', control=optcontrol"
+  }
+  if (optimizer == "optimParallel") {
+    par.arg <- "par"
+    optimizer <- "optimParallel::optimParallel"
+    ctrl.arg <- ", control=optcontrol, parallel=parallel"
+  }
+  return(list(optimizer = optimizer, optcontrol = optcontrol, 
+              par.arg = par.arg, ctrl.arg = ctrl.arg))
+}
+
+.chkconv <-function (optimizer, opt.res, optcontrol, fun, verbose, paronly = TRUE) {
+  
+  if (optimizer == "optimParallel::optimParallel" && verbose) {
+    tmp <- capture.output(print(opt.res$loginfo))
+    print(tmp)
+  }
+  if (inherits(opt.res, "try-error")) 
+    stop(mstyle$stop(paste0("Error during the optimization. Use verbose=TRUE and see\n       help(", 
+                            fun, ") for more details on the optimization routines.")), 
+         call. = FALSE)
+  if (optimizer == "lbfgsb3c::lbfgsb3c" && is.null(opt.res$convergence)) 
+    opt.res$convergence <- -99
+  if (is.element(optimizer, c("optim", "constrOptim", "nlminb", 
+                              "dfoptim::hjk", "dfoptim::nmk", "lbfgsb3c::lbfgsb3c", 
+                              "subplex::subplex", "BB::BBoptim", "Rsolnp::solnp", "alabama::constrOptim.nl", 
+                              "alabama::auglag", "optimx::Rcgmin", "optimx:Rvmmin", 
+                              "optimParallel::optimParallel")) && opt.res$convergence != 
+      0) 
+    stop(paste0("Optimizer (", optimizer, ") did not achieve convergence (convergence = ", 
+                            opt.res$convergence, ")."), call. = FALSE)
+  if (is.element(optimizer, c("dfoptim::mads")) && opt.res$convergence > 
+      optcontrol$tol) 
+    stop(paste0("Optimizer (", optimizer, ") did not achieve convergence (convergence = ", 
+                            opt.res$convergence, ")."), call. = FALSE)
+  if (is.element(optimizer, c("minqa::uobyqa", "minqa::newuoa", 
+                              "minqa::bobyqa")) && opt.res$ierr != 0) 
+    stop(paste0("Optimizer (", optimizer, ") did not achieve convergence (ierr = ", 
+                            opt.res$ierr, ")."), call. = FALSE)
+  if (optimizer == "nloptr::nloptr" && !(opt.res$status >= 
+                                         1 && opt.res$status <= 4)) 
+    stop(paste0("Optimizer (", optimizer, ") did not achieve convergence (status = ", 
+                            opt.res$status, ")."), call. = FALSE)
+  if (optimizer == "ucminf::ucminf" && !(opt.res$convergence == 
+                                         1 || opt.res$convergence == 2)) 
+    stop(paste0("Optimizer (", optimizer, ") did not achieve convergence (convergence = ", 
+                            opt.res$convergence, ")."), call. = FALSE)
+  if (verbose > 2) {
+    cat("\n")
+    tmp <- capture.output(print(opt.res))
+    print(tmp)
+  }
+  if (optimizer == "nloptr::nloptr") 
+    opt.res$par <- opt.res$solution
+  if (optimizer == "nlm") 
+    opt.res$par <- opt.res$estimate
+  if (optimizer == "Rsolnp::solnp") 
+    opt.res$par <- opt.res$pars
+  if (is.element(optimizer, c("nlminb", "nloptr::nloptr"))) 
+    opt.res$value <- opt.res$objective
+  if (is.element(optimizer, c("minqa::uobyqa", "minqa::newuoa", 
+                              "minqa::bobyqa"))) 
+    opt.res$value <- opt.res$fval
+  if (optimizer == "nlm") 
+    opt.res$value <- opt.res$minimum
+  if (optimizer == "Rsolnp::solnp") 
+    opt.res$value <- tail(opt.res$values, 1)
+  if (paronly) {
+    return(opt.res$par)
+  }
+  else {
+    return(opt.res)
+  }
+}
+
+.con.E <-function (v, r, v.arg, r.arg, Z1, Z2, levels.r, values, Dmat, 
+                   struct, cholesky, vctransf, vccov, nearpd, sparse)  {
+  if (!cholesky) {
+    if (vctransf) {
+      v <- ifelse(is.na(v.arg), exp(v), v.arg)
+      if (struct == "CAR") 
+        r <- ifelse(is.na(r.arg), plogis(r), r.arg)
+      if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", 
+                               "SPRAT", "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) 
+        r <- ifelse(is.na(r.arg), exp(r), r.arg)
+      if (!is.element(struct, c("CAR", "SPEXP", "SPGAU", 
+                                "SPLIN", "SPRAT", "SPSPH", "PHYBM", "PHYPL", 
+                                "PHYPD"))) 
+        r <- ifelse(is.na(r.arg), tanh(r), r.arg)
+    }
+    else {
+      v <- ifelse(is.na(v.arg), v, v.arg)
+      r <- ifelse(is.na(r.arg), r, r.arg)
+      v[v < 0] <- 0
+      if (struct == "CAR") {
+        r[r < 0] <- 0
+        r[r > 1] <- 1
+      }
+      if (is.element(struct, c("SPEXP", "SPGAU", "SPLIN", 
+                               "SPRAT", "SPSPH", "PHYBM", "PHYPL", "PHYPD"))) {
+        r[r < 0] <- 0
+      }
+      if (!is.element(struct, c("CAR", "SPEXP", "SPGAU", 
+                                "SPLIN", "SPRAT", "SPSPH", "PHYBM", "PHYPL", 
+                                "PHYPD")) && !vccov) {
+        r[r < -1] <- -1
+        r[r > 1] <- 1
+      }
+    }
+    v <- ifelse(v <= .Machine$double.eps * 10, 0, v)
+  }
+  ncol.Z1 <- ncol(Z1)
+  if (struct == "CS") {
+    E <- matrix(r * v, nrow = ncol.Z1, ncol = ncol.Z1)
+    diag(E) <- v
+  }
+  if (struct == "HCS") {
+    E <- matrix(r, nrow = ncol.Z1, ncol = ncol.Z1)
+    diag(E) <- 1
+    E <- diag(sqrt(v), nrow = ncol.Z1, ncol = ncol.Z1) %*% 
+      E %*% diag(sqrt(v), nrow = ncol.Z1, ncol = ncol.Z1)
+    diag(E) <- v
+  }
+  if (is.element(struct, c("UN", "GEN"))) {
+    if (cholesky) {
+      E <- .con.vcov.UN.chol(v, r)
+      v <- diag(E)
+      r <- cov2cor(E)[lower.tri(E)]
+      v[!is.na(v.arg)] <- v.arg[!is.na(v.arg)]
+      r[!is.na(r.arg)] <- r.arg[!is.na(r.arg)]
+    }
+    E <- .con.vcov.UN(v, r, vccov)
+    if (nearpd) {
+      E <- as.matrix(nearPD(E)$mat)
+      v <- diag(E)
+      r <- cov2cor(E)[lower.tri(E)]
+    }
+  }
+  if (struct == "UNR") {
+    if (cholesky) {
+      E <- .con.vcov.UNR.chol(v, r)
+      v <- diag(E)[1, 1]
+      r <- cov2cor(E)[lower.tri(E)]
+      v[!is.na(v.arg)] <- v.arg[!is.na(v.arg)]
+      r[!is.na(r.arg)] <- r.arg[!is.na(r.arg)]
+    }
+    E <- .con.vcov.UNR(v, r)
+    if (nearpd) {
+      E <- as.matrix(nearPD(E, keepDiag = TRUE)$mat)
+      v <- E[1, 1]
+      r <- cov2cor(E)[lower.tri(E)]
+    }
+  }
+  if (struct == "GDIAG") {
+    E <- diag(v, nrow = length(v), ncol = length(v))
+  }
+  if (is.element(struct, c("ID", "DIAG"))) 
+    E <- diag(v, nrow = ncol.Z1, ncol = ncol.Z1)
+  if (struct == "AR") {
+    if (ncol.Z1 > 1) {
+      E <- toeplitz(ARMAacf(ar = r, lag.max = ncol.Z1 - 
+                              1))
+    }
+    else {
+      E <- diag(1)
+    }
+    E <- diag(sqrt(rep(v, ncol.Z1)), nrow = ncol.Z1, ncol = ncol.Z1) %*% 
+      E %*% diag(sqrt(rep(v, ncol.Z1)), nrow = ncol.Z1, 
+                 ncol = ncol.Z1)
+    diag(E) <- v
+  }
+  if (struct == "HAR") {
+    if (ncol.Z1 > 1) {
+      E <- toeplitz(ARMAacf(ar = r, lag.max = ncol.Z1 - 
+                              1))
+    }
+    else {
+      E <- diag(1)
+    }
+    E <- diag(sqrt(v), nrow = ncol.Z1, ncol = ncol.Z1) %*% 
+      E %*% diag(sqrt(v), nrow = ncol.Z1, ncol = ncol.Z1)
+    diag(E) <- v
+  }
+  if (struct == "CAR") {
+    if (ncol.Z1 > 1) {
+      E <- outer(values, values, function(x, y) r^(abs(x - 
+                                                         y)))
+    }
+    else {
+      E <- diag(1)
+    }
+    E <- diag(sqrt(rep(v, ncol.Z1)), nrow = ncol.Z1, ncol = ncol.Z1) %*% 
+      E %*% diag(sqrt(rep(v, ncol.Z1)), nrow = ncol.Z1, 
+                 ncol = ncol.Z1)
+    diag(E) <- v
+  }
+  if (struct == "SPEXP") 
+    E <- v * exp(-Dmat/r) * tcrossprod(Z2)
+  if (struct == "SPGAU") 
+    E <- v * exp(-Dmat^2/r^2) * tcrossprod(Z2)
+  if (struct == "SPLIN") 
+    E <- v * ((1 - Dmat/r) * I(Dmat < r)) * tcrossprod(Z2)
+  if (struct == "SPRAT") 
+    E <- v * (1 - (Dmat/r)^2/(1 + (Dmat/r)^2)) * tcrossprod(Z2)
+  if (struct == "SPSPH") 
+    E <- v * ((1 - 3/2 * Dmat/r + 1/2 * (Dmat/r)^3) * I(Dmat < 
+                                                          r)) * tcrossprod(Z2)
+  if (struct == "PHYBM") {
+    r <- max(Dmat)
+    E <- 1 - Dmat/r
+    E <- v * E * tcrossprod(Z2)
+  }
+  if (struct == "PHYPL") {
+    E <- r * (1 - Dmat/max(Dmat))
+    diag(E) <- 1
+    E[Dmat == 0] <- 1
+    E <- v * E * tcrossprod(Z2)
+  }
+  if (struct == "PHYPD") {
+    E <- 1 - Dmat/max(Dmat)
+    E <- v * E^r * tcrossprod(Z2)
+  }
+  if (!is.element(struct, c("SPEXP", "SPGAU", "SPLIN", "SPRAT", 
+                            "SPSPH", "PHYBM", "PHYPL", "PHYPD", "GEN", "GDIAG")) && 
+      any(levels.r)) {
+    E[levels.r, ] <- 0
+    E[, levels.r] <- 0
+  }
+  if (sparse) 
+    E <- Matrix(E, sparse = TRUE)
+  return(list(v = v, r = r, E = E))
+}
+
+.chkvccon <- function (ids, vcvals) {
+  vcname <- as.character(match.call()[[3]])
+  if (is.null(ids) || is.null(vcvals)) 
+    return(vcvals)
+  if (length(ids) != length(vcvals)) {
+    
+    stop(mstyle$stop(paste0("Length of 'vccon$", vcname, 
+                            "' (", length(ids), ") does not match the length of ", 
+                            vcname, " (", length(vcvals), ").")), call. = FALSE)
+  }
+  for (id in unique(ids)) vcvals[ids == id] <- mean(vcvals[ids == 
+                                                             id], na.rm = TRUE)
+  vcvals[is.nan(vcvals)] <- NA_real_
+  return(vcvals)
+}
+
+.chksubset <- function (x, k, stoponk0 = TRUE) {
+  if (is.null(x)) 
+    return(x)
+  
+  argname <- deparse(substitute(x))
+  if (length(x) == 0L) 
+    stop(paste0("Argument '", argname, "' is of length 0."), 
+         call. = FALSE)
+  if (is.character(x)) 
+    stop(paste0("Argument '", argname, "' is not a logical or numeric vector."), 
+         call. = FALSE)
+  if (is.logical(x)) {
+    if (length(x) != k) 
+      stop(mstyle$stop(paste0("Length of the '", argname, 
+                              "' argument (", length(x), ") is not of length k = ", 
+                              k, ".")), call. = FALSE)
+    if (anyNA(x)) 
+      x[is.na(x)] <- FALSE
+  }
+  if (is.numeric(x)) {
+    if (anyNA(x)) 
+      x <- x[!is.na(x)]
+    x <- as.integer(round(x))
+    x <- x[x != 0L]
+    if (any(x > 0L) && any(x < 0L)) 
+      stop(mstyle$stop(paste0("Cannot mix positive and negative values in '", 
+                              argname, "' argument.")), call. = FALSE)
+    if (all(x > 0L)) {
+      if (any(x > k)) 
+        stop(mstyle$stop(paste0("Argument '", argname, 
+                                "' includes values larger than k = ", k, ".")), 
+             call. = FALSE)
+      x <- is.element(seq_len(k), x)
+    }
+    else {
+      if (any(x < -k)) 
+        stop(mstyle$stop(paste0("Argument '", argname, 
+                                "' includes values larger than k = ", k, ".")), 
+             call. = FALSE)
+      x <- !is.element(seq_len(k), abs(x))
+    }
+  }
+  if (stoponk0 && !any(x)) 
+    stop(paste0("Stopped because k = 0 after subsetting."), 
+         call. = FALSE)
+  return(x)
+}
+
+.getsubset <- function (x, subset, col = FALSE, drop = FALSE)  {
+  if (is.null(x) || is.null(subset)) 
+    return(x)
+  
+  xname <- deparse(substitute(x))
+  k <- length(subset)
+  if (is.matrix(x) || is.data.frame(x)) {
+    if (nrow(x) != k) 
+      stop(mstyle$stop(paste0("Element '", xname, "' is not of length ", 
+                              k, ".")), call. = FALSE)
+    if (col) {
+      x <- x[subset, subset, drop = drop]
+    }
+    else {
+      x <- x[subset, , drop = drop]
+    }
+  }
+  else {
+    if (length(x) != k) 
+      stop(mstyle$stop(paste0("Element '", xname, "' is not of length ", 
+                              k, ".")), call. = FALSE)
+    x <- x[subset]
+  }
+  return(x)
+}
+
+.getfromenv <-function (what, element, envir = .metafor, default = NULL)  {
+  x <- try(get(what, envir = envir, inherits = FALSE), silent = TRUE)
+  if (inherits(x, "try-error")) {
+    return(default)
+  }
+  else {
+    if (missing(element)) {
+      return(x)
+    }
+    else {
+      x <- x[[element]]
+      if (is.null(x)) {
+        return(default)
+      }
+      else {
+        return(x)
+      }
+    }
+  }
+}
+
+
+.con.vcov.UN <- function (vars, cors, vccov = FALSE) {
+    dims <- length(vars)
+    if (vccov) {
+        G <- matrix(0, nrow = dims, ncol = dims)
+        G[lower.tri(G)] <- cors
+        G[upper.tri(G)] <- t(G)[upper.tri(G)]
+        diag(G) <- vars
+        return(G)
+    }
+    else {
+        R <- matrix(1, nrow = dims, ncol = dims)
+        R[lower.tri(R)] <- cors
+        R[upper.tri(R)] <- t(R)[upper.tri(R)]
+        S <- diag(sqrt(vars), nrow = dims, ncol = dims)
+        return(S %*% R %*% S)
+    }
+}
+
+.con.vcov.UN.chol<- function (vars, covs) {
+    dims <- length(vars)
+    G <- matrix(0, nrow = dims, ncol = dims)
+    G[lower.tri(G)] <- covs
+    diag(G) <- vars
+    return(tcrossprod(G))
+}
+.con.vcov.UNR <- function (var, cors) 
+{
+    dims <- round((1 + sqrt(1 + 8 * length(cors)))/2)
+    G <- matrix(1, nrow = dims, ncol = dims)
+    G[lower.tri(G)] <- cors
+    G[upper.tri(G)] <- t(G)[upper.tri(G)]
+    return(var * G)
+}
+
+.con.vcov.UNR.chol <- function (var, cors) {
+    dims <- round((1 + sqrt(1 + 8 * length(cors)))/2)
+    G <- matrix(0, nrow = dims, ncol = dims)
+    G[lower.tri(G)] <- cors
+    diag(G) <- 1
+    return(var * tcrossprod(G))
+}
+.ddf.calc <-function (dfs, X, k, p, mf.s = NULL, mf.g = NULL, mf.h = NULL, 
+    beta = TRUE) {
+    
+    if (beta) {
+        if (is.numeric(dfs)) {
+            ddf <- dfs
+            ddf <- .expand1(ddf, p)
+            if (length(ddf) != p) 
+                stop(mstyle$stop(paste0("Length of the 'dfs' argument (", 
+                  length(dfs), ") does not match the number of model coefficient (", 
+                  p, ").")), call. = FALSE)
+        }
+        if (is.character(dfs) && dfs == "residual") 
+            ddf <- rep(k - p, p)
+        if (is.character(dfs) && dfs == "contain") {
+            if (!is.null(mf.g)) 
+                mf.g <- cbind(inner = apply(mf.g, 1, paste, collapse = " + "), 
+                  outer = mf.g[ncol(mf.g)])
+            if (!is.null(mf.h)) 
+                mf.h <- cbind(inner = apply(mf.h, 1, paste, collapse = " + "), 
+                  outer = mf.h[ncol(mf.h)])
+            s.nlevels <- sapply(mf.s, function(x) length(unique(x)))
+            g.nlevels <- c(length(unique(mf.g[[1]])), length(unique(mf.g[[2]])))
+            h.nlevels <- c(length(unique(mf.h[[1]])), length(unique(mf.h[[2]])))
+            s.ddf <- rep(k, p)
+            g.ddf <- rep(k, p)
+            h.ddf <- rep(k, p)
+            for (j in seq_len(p)) {
+                if (!is.null(mf.s)) {
+                  s.lvl <- sapply(seq_along(mf.s), function(i) all(apply(table(X[, 
+                    j], mf.s[[i]]) > 0, 2, sum) == 1))
+                  if (any(s.lvl)) 
+                    s.ddf[j] <- min(s.nlevels[s.lvl])
+                }
+                if (!is.null(mf.g)) {
+                  g.lvl <- sapply(seq_along(mf.g), function(i) all(apply(table(X[, 
+                    j], mf.g[[i]]) > 0, 2, sum) == 1))
+                  if (any(g.lvl)) 
+                    g.ddf[j] <- min(g.nlevels[g.lvl])
+                }
+                if (!is.null(mf.h)) {
+                  h.lvl <- sapply(seq_along(mf.h), function(i) all(apply(table(X[, 
+                    j], mf.h[[i]]) > 0, 2, sum) == 1))
+                  if (any(h.lvl)) 
+                    h.ddf[j] <- min(h.nlevels[h.lvl])
+                }
+            }
+            ddf <- pmin(s.ddf, g.ddf, h.ddf)
+            ddf <- ddf - p
+        }
+        names(ddf) <- colnames(X)
+    }
+    else {
+        if (is.numeric(dfs)) 
+            dfs <- "contain"
+        if (dfs == "residual") 
+            ddf <- k - p
+        if (dfs == "contain") {
+            if (!is.null(mf.s)) 
+                ddf <- length(unique(mf.s))
+            if (!is.null(mf.g)) 
+                ddf <- length(unique(mf.g))
+            if (!is.null(mf.h)) 
+                ddf <- length(unique(mf.h))
+            ddf <- ddf - p
+        }
+    }
+    ddf[ddf < 1] <- 1
+    return(ddf)
+}
+
+
 # modified rma.mv and optimization call for exchangeable interactions ################
 rma.mv.exch<-function (yi, V, W, 
                        mods, data, slab, subset, 
