@@ -282,7 +282,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   trts.abbr <- treats(x$trts, nchar.trts)
   #
   reference.group <- trts.abbr[trts == reference.group]
-  
+  reference.group <- make.names(reference.group)
   dat <- data.frame(studlab = x$data$.studlab,
                     treat1 = x$data$.treat1,
                     treat2 = x$data$.treat2,
@@ -698,6 +698,7 @@ print.netmetareg <- function(x,
                              digits.stat = gs("digits.stat"),
                              digits.pval = gs("digits.pval"),
                              print.se = FALSE,
+                             print.tau=TRUE,
                              details.methods = TRUE, ...) {
   
   chkclass(x, "netmetareg")
@@ -753,7 +754,22 @@ print.netmetareg <- function(x,
   #
   # Get rid of warning 'Undefined global functions or variables'
   comparison <- NULL
-  #
+  # add heterogeneity estimators
+  if(print.tau){
+    text.hetstat<-paste0("\nQuantifying heterogeneity:\n")
+    text.hetstat<-paste0(text.hetstat,
+      formatPT(x=x$tau2,
+        lab = TRUE, labval = "tau^2",
+        digits = 4,
+        lab.NA = "NA"),
+        # add tau
+        "; ", formatPT(x=sqrt(x$tau2),
+        lab = TRUE, labval = "tau",
+        digits = 4,
+        lab.NA = "NA")
+    )
+    cat(text.hetstat,"\n")
+}
   if (!is.null(covar) & details.methods) {
     cat("\nDetails on network meta-regression methods:\n")
     #
@@ -784,6 +800,9 @@ print.netmetareg <- function(x,
     else
       cat("- Random effects model\n")
   }
+
+  
+  
   #
   invisible(NULL)
 }
