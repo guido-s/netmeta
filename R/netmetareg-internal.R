@@ -631,9 +631,18 @@ clean_var_names <- function(nms, covar.name = NULL) {
 get_blup <- function(netmetareg_obj) {
   
   reference.group<-netmetareg_obj$.netmeta$reference.group
-  reference.group<-make.names(reference.group)
-  all_trts<-make.names(netmetareg_obj$.netmeta$trts)
+  all_trts<-make.names(treats(netmetareg_obj$.netmeta$trts, netmetareg_obj$.netmeta$nchar.trts))
   all_trts<-all_trts[all_trts!=reference.group]
+
+  # Split the netmeta comparison names by ":" and convert the resulting list to a matrix. update comparison name to match matrix friendly abbreviated names
+  comp_tbl <- data.frame(comparisons = netmetareg_obj$.netmeta$x$comparisons)
+  comp_tbl <- cbind.data.frame(comp_tbl, do.call(rbind.data.frame, strsplit(comp_tbl$comparisons, ":")))
+  names(comp_tbl)<-c("comparisons","treat1","treat2")
+  comp_tbl$treat1<-make.names(treats(comp_tbl$treat1, netmetareg_obj$.netmeta$nchar.trts))
+  comp_tbl$treat2<-make.names(treats(comp_tbl$treat2, netmetareg_obj$.netmeta$nchar.trts))
+  comp_tbl$comparisons_new<-paste0(comp_tbl$treat1,":",comp_tbl$treat2)
+  comp_tbl$comparisons_new
+  
 
   int_fixed <- netmetareg_obj$beta[grepl(":",rownames(netmetareg_obj$beta))==TRUE,]#fixed effect of interaction
   names(int_fixed)<-gsub(paste0("`|:",netmetareg_obj$.netmeta$covar.name),"",fix_interaction_names(names(int_fixed), covar_name = netmetareg_obj$.netmeta$covar.name))
@@ -663,11 +672,13 @@ get_blup <- function(netmetareg_obj) {
     rownames(D)<-colnames(D)<-colnames(Z_slope)<-all_trts
   }else if(netmetareg_obj$.netmeta$consistency==FALSE){
     withZ_slope<-FALSE
-    Z_slope<-matrix(0,nrow = nrow(netmetareg_obj$X), ncol=length(netmetareg_obj$.netmeta$x$comparisons))
-    D<-(0 * diag(length(netmetareg_obj$.netmeta$x$comparisons)))
-    rownames(D)<-colnames(D)<-colnames(Z_slope)<-paste0(".comp_",gsub(":","_vs_",netmetareg_obj$.netmeta$x$comparisons),":Ival")
+    Z_slope<-matrix(0,nrow = nrow(netmetareg_obj$X), ncol=length(comp_tbl$comparisons_new))
+    D<-(0 * diag(length(comp_tbl$comparisons_new)))
+    rownames(D)<-colnames(D)<-colnames(Z_slope)<-paste0(".comp_",gsub(":","_vs_",comp_tbl$comparisons_new),":Ival")
   }
   
+
+
   DZtW<-D%*%t(Z_slope)%*%  W
   BLUP<-(DZtW %*% (netmetareg_obj$yi-predict(netmetareg_obj)$pred))[,1]
   var_BLUP <- D - (DZtW %*% (I - Hmat) %*% Z_slope %*% D)
@@ -719,7 +730,7 @@ get_blup <- function(netmetareg_obj) {
     int_fixed[gsub(":.*","",missing.design)]<-0
     n_FE<-(length(all_trts))*2
   } else if(netmetareg_obj$.netmeta$assumption=="independent" & netmetareg_obj$.netmeta$consistency==FALSE){
-    design.cols<-paste0("`.comp_",gsub(":","_vs_",netmetareg_obj$.netmeta$x$comparisons),":Ival:",covar.name,"`")
+    design.cols<-paste0("`.comp_",gsub(":","_vs_",comp_tbl$comparisons_new),":Ival:",covar.name,"`")
     missing.design <- setdiff(design.cols, colnames(V_joint))
     V_joint <- cbind(V_joint, matrix(0, nrow = nrow(V_joint), ncol = length(missing.design), dimnames = list(NULL, missing.design)))
     V_joint <- rbind(V_joint, matrix(0, ncol = ncol(V_joint), nrow = length(missing.design), dimnames = list(missing.design,NULL)))
@@ -785,10 +796,10 @@ get_blup <- function(netmetareg_obj) {
       }
       
     } else{
-      se_int_ranef<- rep(0, length(netmetareg_obj$.netmeta$x$comparisons))
-      cov_int_ranef_fixed<- rep(0, length(netmetareg_obj$.netmeta$x$comparisons))
-      cov_TE_ranef<- rep(0, length(netmetareg_obj$.netmeta$x$comparisons))
-      names(se_int_ranef)<-names(cov_int_ranef_fixed)<-names(cov_TE_ranef)<-paste0("`.comp_",gsub(":","_vs_",netmetareg_obj$.netmeta$x$comparisons),":Ival:",covar.name,"`")
+      se_int_ranef<- rep(0, length(comp_tbl$comparisons_new))
+      cov_int_ranef_fixed<- rep(0, length(comp_tbl$comparisons_new))
+      cov_TE_ranef<- rep(0, length(comp_tbl$comparisons_new))
+      names(se_int_ranef)<-names(cov_int_ranef_fixed)<-names(cov_TE_ranef)<-paste0("`.comp_",gsub(":","_vs_",comp_tbl$comparisons_new),":Ival:",covar.name,"`")
       
       
       var_nu <- sapply(rownames(V_joint)[ntrt:nrow(V_joint)], function(x) {
@@ -799,8 +810,8 @@ get_blup <- function(netmetareg_obj) {
     }
     
     if (length(var_nu)==1){
-      var_nu<-rep(var_nu,length(netmetareg_obj$.netmeta$x$comparisons))
-      names(var_nu)<-paste0("`.comp_",gsub(":","_vs_",netmetareg_obj$.netmeta$x$comparisons),":Ival:",covar.name,"`")
+      var_nu<-rep(var_nu,length(comp_tbl$comparisons_new))
+      names(var_nu)<-paste0("`.comp_",gsub(":","_vs_",comp_tbl$comparisons_new),":Ival:",covar.name,"`")
     }
   }
   
@@ -852,7 +863,7 @@ get_blup <- function(netmetareg_obj) {
 
 nmr_full_results_new <- function(netmetareg_obj) {
   
-  reference.group<-make.names(netmetareg_obj$.netmeta$reference.group)
+  reference.group<-netmetareg_obj$.netmeta$reference.group#make.names(netmetareg_obj$.netmeta$reference.group)
   covar.name<-make.names(netmetareg_obj$.netmeta$covar.name)
   
   Z_slope<-netmetareg_obj$Z_slope
@@ -928,6 +939,9 @@ nmr_full_results_new <- function(netmetareg_obj) {
       select(treat1,treat2, beta=nu, se.beta=se_nu, var.beta=var_nu)%>%
       bind_rows(nu_df%>%select(treat2=treat1,treat1=treat2, beta=nu, se.beta=se_nu, var.beta=var_nu))
   }
+  res_beta<-res_beta%>%
+    mutate(se.beta=ifelse(is.na(beta),NA,se.beta),
+           var.beta=ifelse(is.na(beta),NA,var.beta))
   res_d <- data.frame()
   for (i in seq_len(nrow(mu_df))) {
     for (j in seq_len(nrow(mu_df))) {

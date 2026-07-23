@@ -274,15 +274,16 @@ netmetareg.netmeta <- function(x, covar = NULL,
   # Catch covariate
   #
   covar.name <- deparse(substitute(covar))
-  covar.name <- make.names(covar.name)
+  covar.name.internal <- make.names(covar.name) # R/matrix friendly covariate name
   #
   covar <- catch("covar", mc, data, sfsp)
   #
   trts <- x$trts
   trts.abbr <- treats(x$trts, nchar.trts)
+  trts.abbr <- make.names(trts.abbr)# R/matrix friendly reference treat names
   #
   reference.group <- trts.abbr[trts == reference.group]
-  reference.group <- make.names(reference.group)
+  reference.group.internal <- make.names(reference.group)# R/matrix friendly reference treat names
   dat <- data.frame(studlab = x$data$.studlab,
                     treat1 = x$data$.treat1,
                     treat2 = x$data$.treat2,
@@ -294,8 +295,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
   dat$treat2 <-
     as.character(factor(dat$treat2, levels = trts, labels = trts.abbr))
   #
-  dat$treat1 <- make.names(dat$treat1)#gsub(" ", "_", dat$treat1, fixed = TRUE)
-  dat$treat2 <- make.names(dat$treat2)#gsub(" ", "_", dat$treat2, fixed = TRUE)
+  # dat$treat1.internal <- make.names(dat$treat1)# R/matrix friendly treat names
+  # dat$treat2.internal <- make.names(dat$treat2)# R/matrix friendly treat names
   #
   if (length(unique(c(dat$treat1, dat$treat2))) != length(x$trts))
     stop("Number of treatments changes after replacing whitespaces with '_'.",
@@ -309,7 +310,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   # if (is.logical(covar)) # deprecated because model matrix is now constructed manually
   #  covar <- as.numeric(covar)
   #
-  dat[[covar.name]] <- covar
+  dat[[covar.name.internal]] <- covar
   #
   available.n <- available.events <- available.times <- available.sds <- FALSE
   if (!is.null(x$data$.n1) & !is.null(x$data$.n2)) {
@@ -382,9 +383,9 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   if (consistency) {
     # Check for constant covariate in reference treatment
-    if (length(unique(dat[dat$treat1 == reference.group |
-                          dat$treat2 == reference.group,
-                          covar.name])) == 1)
+    if (length(unique(dat[dat$treat1 == reference.group.internal |
+                          dat$treat2 == reference.group.internal,
+                          covar.name.internal])) == 1)
       stop("Invalid reference treatment for interaction. ",
            "Insufficient variation in observed covariate values for ",
            "reference treatment.")
@@ -392,8 +393,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
     for (i in unique(dat$studlab)) {
       d.i <- dat[dat$studlab == i, , drop = FALSE]
       trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
-      if (reference.group %in% trts.i)
-        ref.i <- reference.group
+      if (reference.group.internal %in% trts.i)
+        ref.i <- reference.group.internal
       else
         ref.i <- rev(trts.i)[1]
       #
@@ -462,7 +463,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   trts.all <- names(dat)[(ncols1 + 1):ncol(dat)]
   #
   # Ensure that the reference treatment is correctly assigned
-  trts <- trts.all[trts.all != make.names(reference.group)]
+  trts <- trts.all[trts.all !=reference.group.internal]
   
   
   #
@@ -478,7 +479,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
                          paste(trts, collapse = " + "),
                          if (!is.null(covar))
                            paste0( " + ",
-                                   paste(paste0(trts, ":", covar.name),
+                                   paste(paste0(trts, ":", covar.name.internal),
                                          collapse = " + "))))
     }
     else {
@@ -488,13 +489,13 @@ netmetareg.netmeta <- function(x, covar = NULL,
       # or non-reference.
       #
       error <-
-        try(dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0),
+        try(dat$nonref <- as.numeric(dat[[reference.group.internal]] != 0),
             silent = TRUE)
       #
       # Necessary, if reference treatment contains a white space
       #
       if (inherits(error, "try-error"))
-        dat$nonref <- as.numeric(dat[[gsub(" ", "_", reference.group)]] != 0)
+        dat$nonref <- as.numeric(dat[[reference.group.internal]] != 0)
       #
       # Then get the interaction using the colon(:). The output has a
       # colon which is in the same format as the independent. Helpful
@@ -505,12 +506,12 @@ netmetareg.netmeta <- function(x, covar = NULL,
                          paste(trts, collapse = " + "),
                          if (!is.null(covar))
                            paste0( " + ",
-                                   paste(paste0("nonref:", covar.name),
+                                   paste(paste0("nonref:", covar.name.internal),
                                          collapse = " + "))))
     } 
 	if(assumption=="exchangeable"){
       formula.independent_matrix <- as.formula(paste("~ 0 ", if (!is.null(covar)) 
-                                                paste0(" + ", paste(paste0(trts, ":", covar.name), 
+                                                paste0(" + ", paste(paste0(trts, ":", covar.name.internal), 
                                                                     collapse = " + "))))
     }
   }
@@ -531,19 +532,20 @@ netmetareg.netmeta <- function(x, covar = NULL,
       formula.nmr_default <-
         as.formula(paste("~ 0 + ", paste(trts, collapse = " + "),
                          if (!is.null(covar))
-                           paste0("+ .comp_:Ival:", covar.name))
+                           paste0("+ .comp_:Ival:", covar.name.internal))
         )
     }
     else {
       formula.nmr_default <-
         as.formula(paste("~ 0 + ", paste(trts, collapse = " + "),
                          if (!is.null(covar))
-                           paste0("+ Ival:", covar.name))
+                           paste0("+ Ival:", covar.name.internal))
         )
     }
 	if(assumption=="exchangeable"){
+	    stop("exchangeable UMIE not yet implemented")
       formula.independent_matrix<- as.formula(paste("~ 0 ", if (!is.null(covar)) 
-                                                      paste0("+ .comp_:Ival:", covar.name)))
+                                                      paste0("+ .comp_:Ival:", covar.name.internal)))
     }
   }
   
@@ -750,6 +752,14 @@ print.netmetareg <- function(x,
   dat$pval <- formatPT(dat$pval, digits = digits.pval)
   names(dat)[names(dat) == "pval"] <- "p-value"
   #
+  if(x$.netmeta$assumption%in%c("common","exchangeable") & x$.netmeta$consistency==TRUE){
+    rownames(dat)<-gsub("nonref:",paste0("Non-",x$.netmeta$reference.group,":"),rownames(dat))
+  }
+  if( x$.netmeta$consistency==FALSE){
+    rownames(dat)<-gsub("Ival:",paste0("Directionality:"),rownames(dat))
+    rownames(dat)<-gsub("\\.comp_","",rownames(dat))
+  }
+
   prmatrix(dat, quote = FALSE, right = TRUE, ...)
   #
   # Get rid of warning 'Undefined global functions or variables'
@@ -768,16 +778,31 @@ print.netmetareg <- function(x,
         digits = 4,
         lab.NA = "NA")
     )
+    if(x$.netmeta$assumption%in%c("exchangeable")){
+      text.hetstat<-paste0(text.hetstat,
+        "; ",
+      formatPT(x=x$tau2B,
+        lab = TRUE, labval = "tau.B^2",
+        digits = 4,
+        lab.NA = "NA"),
+        # add tau
+        "; ", formatPT(x=sqrt(x$tau2B),
+        lab = TRUE, labval = "tau.B",
+        digits = 4,
+        lab.NA = "NA")
+    )
+    }
     cat(text.hetstat,"\n")
 }
   if (!is.null(covar) & details.methods) {
     cat("\nDetails on network meta-regression methods:\n")
     #
-    if (x$.netmeta$method.tau == "FE")
+    if (x$.netmeta$method.tau == "FE"){
       cat("- Common effects model\n")
-    else
+    }else{
       cat("- Random effects model\n")
-    #
+      cat("- Restricted maximum-likelihood estimator for tau^2\n")
+      }
     if (consistency)
       cat("- Consistency model\n")
     else
@@ -795,11 +820,18 @@ print.netmetareg <- function(x,
   else if (details.methods) {
     cat("\nDetails on network meta-analysis methods:\n")
     #
-    if (x$.netmeta$method.tau == "FE")
+    if (x$.netmeta$method.tau == "FE"){
       cat("- Common effects model\n")
-    else
+    }else{
       cat("- Random effects model\n")
+      cat("- Restricted maximum-likelihood estimator for tau^2\n")
+      }
   }
+
+  showlegend<-sum(x$.netmeta$trts!=x$.netmeta$trts.abbr)>0# if any treatment names are modified (shortened or special characters)
+  legendabbr(unique(x$.netmeta$trts),
+             make.names(treats(x$.netmeta$trts, x$.netmeta$nchar.trts)),
+             condition=showlegend)
 
   
   
