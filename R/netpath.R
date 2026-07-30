@@ -4,10 +4,11 @@
 #' BRIEF DESCRIPTION (1-2 sentence(s)).
 #' 
 #' @param x A \code{netmeta} object.
-#' @param hm Hat matrix created with \code{\link{hatmatrix}}.
+#' @param random A logical indicating whether the path algorithm is
+#'   based on a random effects model.
 #' @param node1 First node.
 #' @param node2 Second node.
-#'
+#' 
 #' @return
 #' A netpath object.
 #' 
@@ -22,20 +23,26 @@
 #' data(Senn2013)
 #' nma1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
 #'   data = Senn2013, sm = "MD", random = FALSE, nchar.trts = 4)
-#' hm <- hatmatrix(nma1, method = "Davies", type = "full")
 #' 
-#' np1 <- netpath(nma1, hm, node1 = "Placebo", node2 = "Sulfonylurea")
+#' np1 <- netpath(nma1, node1 = "Placebo", node2 = "Sulfonylurea")
 #' np1
 #' }
 #' 
 #' @export netpath
 
-netpath <- function(x, hm, node1, node2) {
+netpath <- function(x, random = x$random, node1, node2) {
   chkclass(x, "netmeta")
-  chkclass(hm, "hatmatrix")
+  #
+  chklogical(random)
+  
+  if (random)
+    hm <- hatmatrix(x, method = "Davies", type = "full")$random
+  else
+    hm <- hatmatrix(x, method = "Davies", type = "full")$common
   
   # Run path inconsistency analysis
-  res <- run_path_inconsistency(x, hm$common, node1, node2)
+  #
+  res <- run_path_inconsistency(x, hm, node1, node2)
   #
   res
 }

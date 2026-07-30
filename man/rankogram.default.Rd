@@ -29,8 +29,8 @@ harmful (\code{"undesirable"}) effect, can be abbreviated.}
 \item{cumulative.rankprob}{A logical indicating whether cumulative
 ranking probabilities should be printed.}
 
-\item{keep.samples}{A logical indicating whether to keep the generated
-samples.}
+\item{keep.samples}{A logical indicating whether to keep the samples, i.e.,
+input to argument \code{x}.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
@@ -41,22 +41,37 @@ characters used to create unique treatment names.}
 An object of class \code{rankogram} with corresponding \code{print}
 and \code{plot} function. The object is a list containing the
 following components:
+\item{nsim, pooled}{As defined above.}
+\item{common, random}{Logical values for common or random effects model.}
+\item{small.values}{As defined above.}
+\item{cumulative.rankprob}{As defined above.}
+\item{nchar.trts}{As defined above.}
+\item{call}{Function call.}
+\item{version}{Version of R package \bold{netmeta} used to create object.}
+
+The following components are available if argument \code{pooled = "common"}:
+\item{ranking.common}{SUCRA values for the common effects model.}
 \item{ranking.matrix.common}{Numeric matrix giving the probability
   of each treatment being at each possible rank for the common
   effects model.}
-\item{ranking.common}{SUCRA values for the common effects model.}
+\item{cumrank.matrix.common}{Numeric matrix giving the cumulative ranking
+  probabilities for the common effects model.}
+\item{meanranks.common}{Mean ranks for the common effects model.}
+\item{medianranks.common}{Median ranks for the common effects model.}
+\item{samples.common}{Samples for the common effects model
+  (if \code{keep.samples = TRUE}).}
+
+The following components are available if argument \code{pooled != "common"}:
+\item{ranking.random}{SUCRA values for the random effects model.}
 \item{ranking.matrix.random}{Numeric matrix giving the probability
   of each treatment being at each possible rank for the random
   effects model.}
-\item{ranking.random}{SUCRA values for the random effects model.}
-\item{cumrank.matrix.common}{Numeric matrix giving the cumulative
-  ranking probability of each treatment for the
-  common effects model.}
-\item{cumrank.matrix.random}{Numeric matrix giving the cumulative
-  ranking probability of each treatment for the random effects
-  model.}
-\item{nsim, common, random}{As defined above},
-\item{small.values, x}{As defined above},
+\item{cumrank.matrix.random}{Numeric matrix giving the cumulative ranking
+  probabilities for the random effects model.}
+\item{meanranks.random}{Mean ranks for the random effects model.}
+\item{medianranks.random}{Median ranks for the random effects model.}
+\item{samples.random}{Samples for the random effects model
+  (if \code{keep.samples = TRUE}).}
 }
 \description{
 This function calculates the probabilities of each treatment being

@@ -8,6 +8,23 @@
  
 * R package **reshape2** added to Imports
 
+* Additional ranking metrics can be calculated with netrank():
+  - probabilities of being best
+  - mean and median ranks
+
+### User-visible changes
+
+* print.netrank():
+  - new argument 'digits.mean' to specify the digits for mean ranks
+
+* plot.netrank():
+  - new argument 'main.legend' to specify the heading for the legend
+  - mean and median ranks are shown with smaller values as favorable
+
+* netleague(), netposet(), plot.netposet():
+  - account for smaller values being favorable for mean and median ranks
+  - stop if non-comparable ranking metrics are combined
+
 
 ## netmeta, version 3.6-1 (2026-06-19)
 

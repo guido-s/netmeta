@@ -4,12 +4,13 @@
 \alias{netpath}
 \title{TITLE}
 \usage{
-netpath(x, hm, node1, node2)
+netpath(x, random = x$random, node1, node2)
 }
 \arguments{
 \item{x}{A \code{netmeta} object.}
 
-\item{hm}{Hat matrix created with \code{\link{hatmatrix}}.}
+\item{random}{A logical indicating whether the path algorithm is
+based on a random effects model.}
 
 \item{node1}{First node.}
 
@@ -26,9 +27,8 @@ BRIEF DESCRIPTION (1-2 sentence(s)).
 data(Senn2013)
 nma1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
   data = Senn2013, sm = "MD", random = FALSE, nchar.trts = 4)
-hm <- hatmatrix(nma1, method = "Davies", type = "full")
 
-np1 <- netpath(nma1, hm, node1 = "Placebo", node2 = "Sulfonylurea")
+np1 <- netpath(nma1, node1 = "Placebo", node2 = "Sulfonylurea")
 np1
 }
 
