@@ -78,7 +78,9 @@ see \code{\link[ggplot2]{scale_fill_gradient2}}.}
 \item{legend}{A logical indicating whether a legend should be
 printed.}
 
-\item{main.legend}{Title for legend.}
+\item{main.legend}{Title for legend. If missing, the ranking method is used
+for a single ranking method and "Ranking" for different ranking methods
+if comparable ranking methods are combined.}
 
 \item{axis.size}{Font size of axis text, see
 \code{\link[ggplot2]{element_text}}.}
@@ -140,9 +142,14 @@ This function produces an image plot of network rankings (Palpacuer
 et al., 2018, Figure 4). Note, a scatter plot of two network
 rankings can be generated with \code{\link{plot.netposet}}.
 
-By default, treatments are ordered by decreasing P-scores of the
-first network meta-analysis object. Argument \code{seq} can be used
-to specify a differenct treatment order.
+By default, treatments are ordered by the rankings of the first network
+meta-analysis object: decreasing for P-scores, SUCRAs, and probabilities of
+being best, and increasing for mean and median ranks. Argument \code{seq}
+can be used to specify a different treatment order.
+
+Comparable ranking methods can be shown in the same plot: P-scores, SUCRAs,
+and probabilities of being best can be combined, and mean and median ranks
+can be combined. These two groups of ranking metrics cannot be combined.
 }
 \examples{
 # Examples: example(netrank)

@@ -49,8 +49,9 @@ The following methods are implemented to rank treatments:
 \itemize{
 \item rankograms (\code{\link{rankogram}}) (Salanti et al., 2011);
 \item ranking of treatments (\code{\link{netrank}}) based on
-  P-scores (Rücker & Schwarzer, 2015) or the Surface Under the
-  Cumulative RAnking curve (SUCRA) (Salanti et al., 2011);
+  P-scores (Rücker & Schwarzer, 2015), the Surface Under the
+  Cumulative RAnking curve (SUCRA) (Salanti et al., 2011), and
+  other ranking metrics;
 \item partial order of treatment rankings (\code{\link{netposet}},
   \code{\link{plot.netposet}}) and Hasse diagram
   (\code{\link{hasse}}) according to Carlsen & Bruggemann (2014)

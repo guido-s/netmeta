@@ -176,7 +176,10 @@ in the upper triangle (see examples), e.g., the comparison B versus
 A.
 
 R function \code{\link{netrank}} can be used to change the order of
-rows and columns in the league table (see examples).
+rows and columns in the league table (see examples). If argument \code{seq}
+is a \code{netrank} object, treatments are ordered by decreasing P-scores,
+SUCRAs, or probabilities of being best, and by increasing mean or median
+ranks.
 }
 \examples{
 # Network meta-analysis of count mortality statistics

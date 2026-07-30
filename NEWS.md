@@ -2,7 +2,9 @@
 
 ### Major changes
 
-* Additional ranking metrics can be calculated with netrank()
+* Additional ranking metrics can be calculated with netrank():
+  - probabilities of being best
+  - mean and median ranks
 
 ### User-visible changes
 
@@ -11,6 +13,11 @@
 
 * plot.netrank():
   - new argument 'main.legend' to specify the heading for the legend
+  - mean and median ranks are shown with smaller values as favorable
+
+* netleague(), netposet(), plot.netposet():
+  - account for smaller values being favorable for mean and median ranks
+  - stop if non-comparable ranking metrics are combined
 
 
 ## netmeta, version 3.6-1 (2026-06-19)

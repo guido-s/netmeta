@@ -37,7 +37,7 @@
 #' \code{method = "SUCRA"} \tab Surface Under the Cumulative RAnking curve
 #'   (SUCRA) \cr
 #' \tab (Salanti et al. 2011) \cr
-#' \code{method = "best"} \tab Probability of best value (pBV) \cr
+#' \code{method = "best"} \tab Probability of being best (Pr(best)) \cr
 #' \code{method = "mean"} \tab Mean rank \cr
 #' \code{method = "median"} \tab Median rank
 #' }
@@ -70,6 +70,9 @@
 #' The P-score of treatment \emph{i} can be interpreted as the mean
 #' extent of certainty that treatment \emph{i} is better than another
 #' treatment.
+#'
+#' For P-scores, SUCRAs, and probabilities of being best, larger values are
+#' favorable. For mean and median ranks, smaller values are favorable.
 #' 
 #' @note
 #' Internally, \code{\link{rankogram}} is called for the ranking metrics
@@ -78,12 +81,12 @@
 #' @return
 #' An object of class \code{netrank} with corresponding \code{print}
 #' function. The object is a list containing the following components:
-#' \item{ranking.common}{A named numeric vector with P-scores or SUCRAs
-#'   for the common effects model.}
+#' \item{ranking.common}{A named numeric vector with ranking values for the
+#'   common effects model.}
 #' \item{Pmatrix.common}{Numeric matrix based on pairwise one-sided
 #'   p-values for the common effects model.}
-#' \item{ranking.random}{A named numeric vector with P-scores or
-#'   SUCRAs for the random effects model.}
+#' \item{ranking.random}{A named numeric vector with ranking values for the
+#'   random effects model.}
 #' \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided
 #'   p-values of the random effects model.}
 #' \item{small.values, method, x}{As defined above.}
@@ -509,7 +512,7 @@ print.netrank <- function(x,
     sign <- 1
   }
   else if (method == "best")
-    method <- "pBV"
+    method <- "Pr(best)"
   
   if (both) {
     if (is.character(sort)) {

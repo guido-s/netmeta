@@ -78,6 +78,11 @@
 #' harmfull (\code{"undesirable"}); see \code{\link{netrank}}. This
 #' argument is ignored for a ranking matrix and \code{netrank}
 #' objects.
+#'
+#' If argument \code{\dots{}} consists of \code{netrank} objects, either
+#' P-scores, SUCRAs, and probabilities of being best can be combined, or mean
+#' and median ranks. These two groups of ranking metrics cannot be
+#' combined together.
 #' 
 #' Arguments \code{common} and \code{random} can be used to define
 #' whether results should be printed and plotted for common and random
@@ -109,7 +114,11 @@
 #' \item{M.random}{"Full" Hasse matrix (random effects model).}
 #' \item{O.random}{Matrix with information about partial ordering
 #'   (random effects model).}
-#' \item{small.values, common, random}{As.defined above.}
+#' \item{small.values, common, random}{As defined above.}
+#' \item{ranking.type}{A character string indicating whether ranking metrics
+#'   are probabilities or ranks.}
+#' \item{larger.is.better}{A logical vector indicating the direction of the
+#'   ranking metric for each outcome.}
 #' \item{call}{Function call.}
 #' \item{version}{Version of R package netmeta used to create object.}
 #' 

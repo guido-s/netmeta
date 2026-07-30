@@ -29,7 +29,9 @@
 #'   \code{\link[ggplot2]{element_text}}.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
-#' @param main.legend Title for legend.
+#' @param main.legend Title for legend. If missing, the ranking method is used
+#'   for a single ranking method and "Ranking" for different comparable ranking
+#'   methods.
 #' @param axis.size Font size of axis text, see
 #'   \code{\link[ggplot2]{element_text}}.
 #' @param axis.col Colour of axis text, see
@@ -68,9 +70,14 @@
 #' et al., 2018, Figure 4). Note, a scatter plot of two network
 #' rankings can be generated with \code{\link{plot.netposet}}.
 #'
-#' By default, treatments are ordered by decreasing P-scores of the
-#' first network meta-analysis object. Argument \code{seq} can be used
-#' to specify a differenct treatment order.
+#' By default, treatments are ordered by the rankings of the first network
+#' meta-analysis object: decreasing for P-scores, SUCRAs, and probabilities of
+#' being best, and increasing for mean and median ranks. Argument \code{seq}
+#' can be used to specify a different treatment order.
+#'
+#' Comparable ranking methods can be shown in the same plot: either P-scores,
+#' SUCRAs, and probabilities of being best, or mean and median ranks. These two
+#' groups of ranking metrics cannot be combined.
 #' 
 #' @return
 #' A ggplot2 object or NULL if no ranking was conducted.
@@ -485,7 +492,7 @@ plot.netrank <- function(...,
                     },
                     character(1))
   #
-  methods[methods == "best"] <- "pBV"
+  methods[methods == "best"] <- "Pr(best)"
   #
   ranking.type <-
     unique(ifelse(methods %in% c("mean", "median"), "ranks", "probs"))

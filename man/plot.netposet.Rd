@@ -144,6 +144,10 @@ different outcomes to show on x- and y-axis in a 2-D scatter plot;
 argument \code{sel.z} can be used accordingly in a 3-D scatter
 plot. These arguments are ignored for a biplot.
 
+Scatter plots use axes from 0 to 1 for P-scores, SUCRAs, and probabilities
+of being best. For mean and median ranks, axes are reversed so that favorable
+rankings are shown towards the top or right of the plot.
+
 Note, in order to generate 3-D plots (argument \code{dim = "3d"}),
 R package \bold{rgl} is necessary. Note, under macOS the X.Org X
 Window System must be available (see
