@@ -157,9 +157,7 @@ plot.netposet <- function(x,
   n.outcomes   <- length(outcomes)
   n.treatments <- length(treatments)
   ##
-  larger.is.better <- x$larger.is.better
-  if (is.null(larger.is.better))
-    larger.is.better <- rep(TRUE, n.outcomes)
+  larger.is.better <- replaceNULL(x$ranking.type, "probs") == "probs"
   
   
   dim <- setchar(dim, c("2d", "3d"))
@@ -328,8 +326,8 @@ plot.netposet <- function(x,
     }
     else {
       ##
-      xlim <- if (larger.is.better[sel.x]) c(0, 1) else c(n.treatments, 1)
-      ylim <- if (larger.is.better[sel.y]) c(0, 1) else c(n.treatments, 1)
+      xlim <- if (larger.is.better) c(0, 1) else c(n.treatments, 1)
+      ylim <- if (larger.is.better) c(0, 1) else c(n.treatments, 1)
       ##
       plot(xvals, yvals,
            type = "n",
@@ -395,9 +393,9 @@ plot.netposet <- function(x,
                   ylab = outcomes[sel.y],
                   zlab = outcomes[sel.z])
     else {
-      xlim <- if (larger.is.better[sel.x]) c(0, 1) else c(n.treatments, 1)
-      ylim <- if (larger.is.better[sel.y]) c(0, 1) else c(n.treatments, 1)
-      zlim <- if (larger.is.better[sel.z]) c(0, 1) else c(n.treatments, 1)
+      xlim <- if (larger.is.better) c(0, 1) else c(n.treatments, 1)
+      ylim <- if (larger.is.better) c(0, 1) else c(n.treatments, 1)
+      zlim <- if (larger.is.better) c(0, 1) else c(n.treatments, 1)
       ##
       rgl::plot3d(xvals, yvals, zvals,
                   xlab = outcomes[sel.x],
