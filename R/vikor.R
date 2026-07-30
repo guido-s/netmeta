@@ -32,8 +32,8 @@
 #' all outcomes (Opricovic & Tzeng, 2004).
 #' 
 #' The standard VIKOR approach is applied when the \code{method} argument is
-#' equal to \code{"P-score"}, \code{"SUCRA"}, or \code{"best"} in
-#' \code{\link{netposet}}.
+#' equal to \code{"P-score"}, \code{"SUCRA"}, \code{"best"}, or
+#' \code{"ranking probabilities"} in \code{\link{netposet}}.
 #' 
 #' The final ranking list is calculated based on treatments
 #' common across all outcomes. Treatments not present across all outcomes are
@@ -42,10 +42,10 @@
 #' Using the argument 'weights' the users can specify the weight that each
 #' outcome should have in the decision making process. For each outcome this
 #' argument should have a value from 0 to 1 while the sum of all outcome
-#' weights should be 1. If the sum of all weights is not 1, then these are
-#' internally standardize to achieve this. The standardized weight values
-#' are returned as a message to the user. Finally, if NULL then equal weights
-#' are assumed across all outcomes.
+#' weights should be 1. If the sum of all weights is not 1, they are
+#' internally normalized to sum to 1 and a warning with the normalized weight
+#' values is printed. Finally, if NULL then equal weights are assumed across
+#' all outcomes.
 #'
 #' The argument 'v' specifies the weight of the decision making process.
 #' The VIKOR method is a compromise programming approach that aims to balance
