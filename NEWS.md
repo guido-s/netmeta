@@ -1,3 +1,18 @@
+## netmeta, version 3.7-0 (2026-mm-dd)
+
+### Major changes
+
+* Additional ranking metrics can be calculated with netrank()
+
+### User-visible changes
+
+* print.netrank():
+  - new argument 'digits.mean' to specify the digits for mean ranks
+
+* plot.netrank():
+  - new argument 'main.legend' to specify the heading for the legend
+
+
 ## netmeta, version 3.6-1 (2026-06-19)
 
 ### Bug fixes

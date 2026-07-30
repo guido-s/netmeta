@@ -294,7 +294,7 @@
 #' 
 #' @importFrom dplyr %>% filter select rename starts_with relocate last_col mutate if_else bind_rows pull case_when distinct count summarise inner_join
 #' 
-#' @importFrom stringr str_length
+#' @importFrom stringr str_length str_to_sentence
 #' 
 #' @importFrom tidyr pivot_longer
 #' 

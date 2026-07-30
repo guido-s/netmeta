@@ -4,7 +4,7 @@
 #' Produce an image plot of treatment ranking(s) generated with R
 #' function \code{netrank}.
 #' 
-#' @param ... A single netrank object or a list of netrank objects.
+#' @param ... One or more \code{\link{netrank}} objects.
 #' @param name An optional character vector providing descriptive
 #'   names for the network meta-analysis objects.
 #' @param common A logical indicating whether results for the common
@@ -13,12 +13,12 @@
 #'   effects model should be plotted.
 #' @param seq A character or numerical vector specifying the sequence
 #'   of treatments on the x-axis.
-#' @param low A character string defining the colour for a P-score of
-#'   0, see \code{\link[ggplot2]{scale_fill_gradient2}}.
-#' @param mid A character string defining the colour for a P-score of
-#'   0.5, see \code{\link[ggplot2]{scale_fill_gradient2}}.
-#' @param high A character string defining the colour for a P-score of
-#'   1, see \code{\link[ggplot2]{scale_fill_gradient2}}.
+#' @param low A character string defining the colour for unfavorable rankings,
+#'   see \code{\link[ggplot2]{scale_fill_gradient2}}.
+#' @param mid A character string defining the colour for average rankings,
+#'   see \code{\link[ggplot2]{scale_fill_gradient2}}.
+#' @param high A character string defining the colour for favorable rankings,
+#'   see \code{\link[ggplot2]{scale_fill_gradient2}}.
 #' @param col Colour of text.
 #' @param main Title.
 #' @param main.size Font size of title, see
@@ -29,6 +29,7 @@
 #'   \code{\link[ggplot2]{element_text}}.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
+#' @param main.legend Title for legend.
 #' @param axis.size Font size of axis text, see
 #'   \code{\link[ggplot2]{element_text}}.
 #' @param axis.col Colour of axis text, see
@@ -40,8 +41,7 @@
 #' @param angle Angle for text on x-axis, see
 #'   \code{\link[ggplot2]{element_text}}.
 #' @param hjust.x A numeric between 0 and 1 with horizontal
-#'   justification of text on x-axis, see
-#'   \code{\link[ggplot2]{element_text}}.
+#'   justification of text on x-axis, see \code{\link[ggplot2]{element_text}}.
 #' @param vjust.x A numeric between 0 and 1 with vertical
 #'   justification of text on x-axis, see
 #'   \code{\link[ggplot2]{element_text}}.
@@ -53,8 +53,10 @@
 #'   \code{\link[ggplot2]{element_text}}.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names.
-#' @param digits Minimal number of significant digits, see
-#'   \code{print.default}.
+#' @param digits Minimal number of significant digits for ranking probabilities,
+#'  P-scores, and SUCRAs, see \code{\link{print.default}}.
+#' @param digits.mean Minimal number of significant digits for mean or median
+#'   ranks, see \code{\link{print.default}}.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param fixed Deprecated argument (replaced by 'common').
@@ -113,6 +115,7 @@ plot.netrank <- function(...,
                          main.face = "bold",
                          ##
                          legend = TRUE,
+                         main.legend = NULL,
                          ##
                          axis.size = 12, axis.col = col,
                          axis.face = "plain",
@@ -127,6 +130,7 @@ plot.netrank <- function(...,
                          nchar.trts,
                          ##
                          digits = 3,
+                         digits.mean = 2,
                          ##
                          fixed,
                          comb.fixed, comb.random,
@@ -181,8 +185,9 @@ plot.netrank <- function(...,
                    "legend", "axis.size", "axis.col", "axis.face",
                    "na.value", "angle",
                    "hjust.x", "vjust.x", "hjust.y", "vjust.y",
-                   "nchar.trts", "digits",
-                   "fixed", "comb.fixed", "comb.random", "warn.deprecated")
+                   "nchar.trts", "digits", "digits.mean",
+                   "fixed", "comb.fixed", "comb.random", "warn.deprecated",
+                   "main.legend")
   ##
   for (i in n.i) {
     if (!is.netrank[i]) {
@@ -257,16 +262,20 @@ plot.netrank <- function(...,
         }
         else if (cm == 24)
           digits <- args[[i]]
-        else if (cm == 25) {
+        else if (cm == 25)
+          digits.mean <- args[[i]]
+        else if (cm == 26) {
           missing.comb.common <- FALSE
           comb.common <- args[[i]]
         }
-        else if (cm == 26) {
+        else if (cm == 27) {
           missing.comb.random <- FALSE
           comb.random <- args[[i]]
         }
-        else if (cm == 27)
+        else if (cm == 28)
           warn.deprecated <- args[[i]]
+        else if (cm == 29)
+          main.legend <- args[[i]]
       }
     }
   }
@@ -292,13 +301,14 @@ plot.netrank <- function(...,
   chknumeric(hjust.y, min = 0, max = 1, length = 1)
   chknumeric(vjust.y, min = 0, max = 1, length = 1)
   chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.mean, min = 0, length = 1)
   ##
   print.warning1 <- FALSE
   print.warning2 <- FALSE
   print.warning3 <- FALSE
   print.warning4 <- FALSE
   print.warning5 <- FALSE
-  
+    
   
   ##
   ##
@@ -323,7 +333,7 @@ plot.netrank <- function(...,
       name <- paste0("netmeta", seq_len(n.netrank))
     }
   }
-  
+    
   
   ##
   ##
@@ -411,7 +421,7 @@ plot.netrank <- function(...,
   chklogical(random)
   ##
   if (common & random) {
-    warning4 <- paste0("P-scores for random effects model displayed ",
+    warning4 <- paste0("Rankings for random effects model displayed ",
                        "as both common and random effects ",
                        "network meta-analysis was conducted.")
     print.warning4 <- TRUE
@@ -463,28 +473,60 @@ plot.netrank <- function(...,
   for (i in n.i)
     if (is.netrank[i])
       trts <- c(trts, names(args[[i]]$ranking.common))
-  ##
+  #
   trts <- unique(trts)
-  ##  
+  n.trts <- length(trts)
+  #
+  # Extract method used in first netrank object
+  #
+  first <- min(seq_along(is.netrank)[is.netrank])
+  #
+  method <- args[[first]]$method
+  #
+  if (method %in% c("mean", "median")) {
+    method <- paste(str_to_sentence(method), "rank")
+    #
+    sign <- 1
+    digits <- digits.mean
+    #
+    midpoint <- mean(seq_len(n.trts))
+    limits <- c(n.trts, 1)
+    #
+    low.tmp <- low
+    low <- high
+    high <- low.tmp
+  }
+  else {
+    sign <- -1
+    #
+    midpoint <- 0.5
+    limits <- c(0, 1)
+    #
+    if (method == "best")
+      method <- "pBV"
+  }
+  #
+  if (is.null(main.legend))
+    main.legend <- method
+  #
+  # Determine the order of treatments in the image plot
+  #
   if (!missing.seq)
     seq <- setseq(seq, trts)
   else {
     trts1 <- data.frame(treat = trts, ranking = NA,
                         row.names = trts,
                         stringsAsFactors = FALSE)
-    first <- min(seq_along(is.netrank)[is.netrank])
     trts.first <- names(args[[first]]$ranking.common)
     ##
     if (random)
       trts1[trts.first, "ranking"] <- args[[first]]$ranking.random
     else
       trts1[trts.first, "ranking"] <- args[[first]]$ranking.common
-    ##
-    trts1 <- trts1[rev(order(trts1$ranking, na.last = FALSE)), ]
+    #
+    trts1 <- trts1[order(sign * trts1$ranking, na.last = FALSE), ]
     seq <- trts1$treat
   }
-  ##
-  n.trts <- length(trts)
   
   
   ##
@@ -553,8 +595,8 @@ plot.netrank <- function(...,
                                       size = 7, face = "bold"),
           legend.text = element_text(colour = col, size = 10)) +
     scale_fill_gradient2(low = low, mid = mid, high = high,
-                         midpoint = 0.5, limit = c(0, 1),
-                         space = "Lab", name = "P-scores",
+                         midpoint = midpoint, limit = limits,
+                         space = "Lab", name = main.legend,
                          na.value = na.value)
   
   plt <- plt + geom_text(aes(x = treat, y = name, label = ranking),

@@ -19,6 +19,7 @@
   main.col = col,
   main.face = "bold",
   legend = TRUE,
+  main.legend = NULL,
   axis.size = 12,
   axis.col = col,
   axis.face = "plain",
@@ -30,6 +31,7 @@
   vjust.y = 0,
   nchar.trts,
   digits = 3,
+  digits.mean = 2,
   fixed,
   comb.fixed,
   comb.random,
@@ -37,7 +39,7 @@
 )
 }
 \arguments{
-\item{...}{A single netrank object or a list of netrank objects.}
+\item{...}{One or more \code{\link{netrank}} objects.}
 
 \item{name}{An optional character vector providing descriptive
 names for the network meta-analysis objects.}
@@ -51,14 +53,14 @@ effects model should be plotted.}
 \item{seq}{A character or numerical vector specifying the sequence
 of treatments on the x-axis.}
 
-\item{low}{A character string defining the colour for a P-score of
-0, see \code{\link[ggplot2]{scale_fill_gradient2}}.}
+\item{low}{A character string defining the colour for unfavorable rankings,
+see \code{\link[ggplot2]{scale_fill_gradient2}}.}
 
-\item{mid}{A character string defining the colour for a P-score of
-0.5, see \code{\link[ggplot2]{scale_fill_gradient2}}.}
+\item{mid}{A character string defining the colour for average rankings,
+see \code{\link[ggplot2]{scale_fill_gradient2}}.}
 
-\item{high}{A character string defining the colour for a P-score of
-1, see \code{\link[ggplot2]{scale_fill_gradient2}}.}
+\item{high}{A character string defining the colour for favorable rankings,
+see \code{\link[ggplot2]{scale_fill_gradient2}}.}
 
 \item{col}{Colour of text.}
 
@@ -76,6 +78,8 @@ of treatments on the x-axis.}
 \item{legend}{A logical indicating whether a legend should be
 printed.}
 
+\item{main.legend}{Title for legend.}
+
 \item{axis.size}{Font size of axis text, see
 \code{\link[ggplot2]{element_text}}.}
 
@@ -92,8 +96,7 @@ printed.}
 \code{\link[ggplot2]{element_text}}.}
 
 \item{hjust.x}{A numeric between 0 and 1 with horizontal
-justification of text on x-axis, see
-\code{\link[ggplot2]{element_text}}.}
+justification of text on x-axis, see \code{\link[ggplot2]{element_text}}.}
 
 \item{vjust.x}{A numeric between 0 and 1 with vertical
 justification of text on x-axis, see
@@ -110,8 +113,11 @@ justification of text on y-axis, see
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names.}
 
-\item{digits}{Minimal number of significant digits, see
-\code{print.default}.}
+\item{digits}{Minimal number of significant digits for ranking probabilities,
+P-scores, and SUCRAs, see \code{\link{print.default}}.}
+
+\item{digits.mean}{Minimal number of significant digits for mean or median
+ranks, see \code{\link{print.default}}.}
 
 \item{fixed}{Deprecated argument (replaced by 'common').}
 
