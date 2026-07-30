@@ -34,6 +34,7 @@ updateversion <- function(x, verbose = FALSE) {
   update.2.9.0 <- update_needed(x$version, 2, 9, verbose)
   update.3.0.0 <- update_needed(x$version, 3, 0, verbose)
   update.3.3.0 <- update_needed(x$version, 3, 3, verbose)
+  update.3.7.0 <- update_needed(x$version, 3, 7, verbose)
   
   
   ##
@@ -621,6 +622,11 @@ updateversion <- function(x, verbose = FALSE) {
     ##
     if (update.2.8.0)
       x$small.values <- setsv(x$small.values)
+    ##
+    if (update.3.7.0) {
+      x$method <- "ranking probabilities"
+      x$ranking.type <- "probs"
+    }
     ##
     return(x)
   }

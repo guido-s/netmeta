@@ -18,7 +18,8 @@
 #'   making process. Following guidance from the multi-criteria decision
 #'   analysis field it is set to 0.5.
 #' @param method A character string specifying the ranking metric. Either
-#'   \code{"P-score"}, \code{"SUCRA"}, \code{"best"}; can be abbreviated.
+#'   \code{"P-score"}, \code{"SUCRA"}, \code{"best"}, or
+#'   \code{"ranking probabilities"}; can be abbreviated.
 #' @param digits A numeric specifying the number of digits to print the
 #'   ranking matrix Q.
 #' @param \dots Additional arguments (ignored).
@@ -200,18 +201,23 @@ vikor.netposet <- function(x,
                            weights = NULL, v = 0.5, ...) {
   
   chkclass(x, "netposet")
+  x  <- updateversion(x)
   #
   pooled <- setchar(pooled, c("common", "random", "fixed"))
   pooled[pooled == "fixed"] <- "common"
+  #
+  chknumeric(v, min = 0, max = 1, length = 1)
   
-  if (x$method %in% c("P-score", "SUCRA", "best")) {
+  if (x$method %in% c("P-score", "SUCRA", "best", "ranking probabilities")) {
     if (pooled == "common")
       res <- vikor_internal(x$P.common, weights = weights, v = v)
     else
       res <- vikor_internal(x$P.random, weights = weights, v = v)
   }
   else {
-    return(NULL)
+    stop("VIKOR method is only available for P-scores, SUCRAs, ",
+         "probabilities of being best, and ranking probabilities.",
+         call. = FALSE)
   }
   #
   attr(res, "ranking.method") <- x$method
@@ -228,7 +234,10 @@ vikor.matrix <- function(x, weights = NULL, v = 0.5, method = "SUCRA", ...) {
   
   chkclass(x, "matrix")
   #
-  method <- setchar(method, c("P-score", "SUCRA", "best"))
+  chknumeric(v, min = 0, max = 1, length = 1)
+  #
+  method <-
+    setchar(method, c("P-score", "SUCRA", "best", "ranking probabilities"))
   #
   res <- vikor_internal(x, weights = weights, v = v)
   #
@@ -247,7 +256,10 @@ vikor.data.frame <- function(x, weights = NULL, v = 0.5,
   
   chkclass(x, "data.frame")
   #
-  method <- setchar(method, c("P-score", "SUCRA", "best"))
+  chknumeric(v, min = 0, max = 1, length = 1)
+  #
+  method <-
+    setchar(method, c("P-score", "SUCRA", "best", "ranking probabilities"))
   #
   res <- vikor_internal(as.matrix(x), weights = weights, v = v)
   #
@@ -273,7 +285,7 @@ print.vikor <- function(x, digits = 4, ...) {
   chkclass(x, "vikor")
   #
   chknumeric(digits, min = 0, length = 1)
-  
+    
   Q <- x %>% select(Q)
   S <- x %>% select(S)
   R <- x %>% select(R)
@@ -316,12 +328,23 @@ print.vikor <- function(x, digits = 4, ...) {
   
   res_mat <- cbind(Q, S, R)
   
-  if (attr(x, "ranking.method") %in% c("P-score", "SUCRA", "best"))
+  if (attr(x, "ranking.method") %in%
+      c("P-score", "SUCRA", "best", "ranking probabilities"))
     cat("VIKOR results\n\n")
   #
   prmatrix(round(res_mat, digits = digits), quote = FALSE, right = TRUE)
   #
   cat(paste0("\n", txt, "\n"))
+  #
+  drop_trts <- attr(x, "dropped_treatments")
+  if (length(drop_trts) > 0) {
+    cat(paste0("\nThe following treatment",
+               if (length(drop_trts) > 1) "s are" else " is",
+               " not considered in the VIKOR method due to ",
+               "missing information: ",
+               paste0("'", drop_trts, "'", collapse = ", "),
+               "\n"))
+  }
   #
   invisible(NULL)
 }

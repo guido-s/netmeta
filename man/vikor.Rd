@@ -43,7 +43,8 @@ analysis field it is set to 0.5.}
 \item{\dots}{Additional arguments (ignored).}
 
 \item{method}{A character string specifying the ranking metric. Either
-\code{"P-score"}, \code{"SUCRA"}, \code{"best"}; can be abbreviated.}
+\code{"P-score"}, \code{"SUCRA"}, \code{"best"}, or
+\code{"ranking probabilities"}; can be abbreviated.}
 
 \item{digits}{A numeric specifying the number of digits to print the
 ranking matrix Q.}

@@ -12,6 +12,12 @@ vikor_internal <- function(x, weights, v) {
       stop("Number of weights is different from the number of outcomes.",
            call. = FALSE)
     #
+    chknumeric(weights, min = 0, zero = TRUE)
+    #
+    if (is_zero(sum(weights)))
+      stop("Sum of weights must be larger than 0.",
+           call. = FALSE)
+    #
     if (!is_zero(sum(weights) - 1)) {
       weights.orig <- weights
       weights <- weights / sum(weights)
@@ -28,24 +34,44 @@ vikor_internal <- function(x, weights, v) {
   #
   wnm <- t(t(dist) * weights)
   #
-  Q <- R <- S <- vector("numeric", n.treatments)
+  res <- data.frame(Q = NA, S = apply(wnm, 1, sum), R = apply(wnm, 1, max),
+                    row.names = row.names(x))
   #
-  R <- apply(wnm, 1, max)
-  S <- apply(wnm, 1, sum, na.rm = TRUE)
+  dropped_treatments <- rownames(res %>% filter(if_any(c(S, R), is.na)))
   #
-  min.R <- min(R, na.rm = TRUE)
-  max.R <- max(R, na.rm = TRUE)
+  res %<>% drop_na(S, R)
   #
-  min.S <- min(S, na.rm = TRUE)
-  max.S <- max(S, na.rm = TRUE)
+  if (nrow(res) < 2)
+    stop("VIKOR method requires at least two treatments with ",
+         "complete rankings.",
+         call. = FALSE)
   #
-  Q <-
-    v * (S - min.S) / (max.S - min.S) + (1 - v) * (R - min.R) / (max.R - min.R)
+  min.R <- min(res$R, na.rm = TRUE)
+  max.R <- max(res$R, na.rm = TRUE)
   #
-  res <- data.frame(Q, S, R, row.names = row.names(x)) %>% arrange(Q)
+  min.S <- min(res$S, na.rm = TRUE)
+  max.S <- max(res$S, na.rm = TRUE)
+  #
+  if (is_zero(min.R - max.R))
+    stop("VIKOR method not applicable as all values of ranking statistic R ",
+         "are identical.",
+         call. = FALSE)
+  #
+  if (is_zero(min.S - max.S))
+    stop("VIKOR method not applicable as all values of ranking statistic S ",
+         "are identical.",
+         call. = FALSE)
+  #
+  res$Q <-
+    v * (res$S - min.S) / (max.S - min.S) +
+    (1 - v) * (res$R - min.R) / (max.R - min.R)
+  #
+  res %<>% arrange(Q)
+  #
   class(res) <- c("vikor", class(res))
   #
   attr(res, "weights") <- weights
+  attr(res, "dropped_treatments") <- dropped_treatments
   #
   res
 }

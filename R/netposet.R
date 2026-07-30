@@ -339,7 +339,7 @@ netposet <- function(..., outcomes, treatments, small.values,
     ranking.matrix <- args[[1]]
     #
     ranking.type <- "probs"
-    method <- "ranking matrix"
+    method <- "ranking probabilities"
     #
     if (any(ranking.matrix[!is.na(ranking.matrix)] > 1) |
         any(ranking.matrix[!is.na(ranking.matrix)] < 0))
