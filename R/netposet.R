@@ -40,16 +40,17 @@
 #' following:
 #' \itemize{
 #' \item arbitrary number of \code{netrank} objects providing
-#'   P-scores;
+#'   ranking metrics;
 #' \item arbitrary number of \code{netmeta} objects;
 #' \item single ranking matrix with each column providing P-scores
-#'   (Rücker & Schwarzer 2015) or SUCRA values (Salanti et al. 2011)
-#'   for an outcome and rows corresponding to treatments.
+#'   (Rücker & Schwarzer 2015), SUCRA values (Salanti et al. 2011),
+#'   or another ranking metric where larger values are favorable for
+#'   an outcome and rows corresponding to treatments.
 #' }
 #' Note, albeit in general a ranking matrix is not constrained to have
 #' values between 0 and 1, \code{netposet} stops with an error in this
-#' case as this function expects a matrix with P-scores or SUCRA
-#' values.
+#' case as this function expects a matrix with ranking values where larger
+#' values are favorable.
 #' 
 #' Argument \code{outcomes} can be used to label outcomes. If argument
 #' \code{outcomes} is missing,
@@ -264,10 +265,6 @@
 #' # carcinoma? An individual patient data network meta-analysis.
 #' # Journal of Clinical Oncology, 35, 498-505
 #' #
-#' outcomes <- c("OS", "PFS", "LC", "DC")
-#' treatments <- c("RT", "IC-RT", "IC-CRT", "CRT",
-#'   "CRT-AC", "RT-AC", "IC-RT-AC")
-#' #
 #' # P-scores (from Table 1)
 #' #
 #' pscore.os  <- c(15, 33, 63, 70, 96, 28, 45) / 100
@@ -276,8 +273,9 @@
 #' pscore.dc  <- c(16, 76, 95, 48, 72, 32, 10) / 100
 #' #
 #' pscore.matrix <- data.frame(pscore.os, pscore.pfs, pscore.lc, pscore.dc)
-#' rownames(pscore.matrix) <- treatments
-#' colnames(pscore.matrix) <- outcomes
+#' rownames(pscore.matrix) <-
+#'   c("RT", "IC-RT", "IC-CRT", "CRT", "CRT-AC", "RT-AC", "IC-RT-AC")
+#' colnames(pscore.matrix) <- c("OS", "PFS", "LC", "DC")
 #' pscore.matrix
 #' #
 #' po <- netposet(pscore.matrix)
@@ -344,6 +342,8 @@ netposet <- function(..., outcomes, treatments, small.values,
     ##
     n.outcomes <- ncol(ranking.matrix)
     n.treatments <- nrow(ranking.matrix)
+    ranking.type <- "probs"
+    larger.is.better <- rep(TRUE, n.outcomes)
     ##
     if (n.outcomes == 1)
       stop("Minimum number of two outcomes ",
@@ -403,6 +403,8 @@ netposet <- function(..., outcomes, treatments, small.values,
     ## (1) Check arguments
     ##
     n.outcomes <- length(args)
+    ranking.type <- rep("probs", n.outcomes)
+    larger.is.better <- rep(TRUE, n.outcomes)
     ##
     if (!missing(treatments))
       warning("Argument 'treatments' ignored (only needed if ",
@@ -466,25 +468,44 @@ netposet <- function(..., outcomes, treatments, small.values,
       args.i <- args[[i]]
       ##
       if (inherits(args.i, "netmeta")) {
-        ranking.list.common[[i]] <- netrank(args.i,
-                                            small.values =
-                                              small.values[i])$ranking.common
-        ranking.list.random[[i]] <- netrank(args.i,
-                                            small.values =
-                                              small.values[i])$ranking.random
+        ranking.i <- netrank(args.i, small.values = small.values[i])
+        ranking.list.common[i] <- list(ranking.i$ranking.common)
+        ranking.list.random[i] <- list(ranking.i$ranking.random)
         commons[i]  <- args.i$common
         randoms[i] <- args.i$random
       }
       else if (inherits(args.i, "netrank")) {
-        ranking.list.common[[i]] <- args.i$ranking.common
-        ranking.list.random[[i]] <- args.i$ranking.random
+        ranking.list.common[i] <- list(args.i$ranking.common)
+        ranking.list.random[i] <- list(args.i$ranking.random)
         commons[i]  <- args.i$x$common
         randoms[i] <- args.i$x$random
+        method.i <- if (is.null(args.i$method)) "P-score" else args.i$method
+        ranking.type[i] <-
+          if (method.i %in% c("mean", "median")) "ranks" else "probs"
+        larger.is.better[i] <- ranking.type[i] == "probs"
       }
     }
+    ##
+    ranking.type <- unique(ranking.type)
+    if (length(ranking.type) != 1)
+      stop("Ranking methods 'P-score', 'SUCRA', and 'best' cannot be ",
+           "combined with ranking methods 'mean' and 'median'.",
+           call. = FALSE)
     
     
-    ranking.treatments <- lapply(ranking.list.common, names)
+    ranking.list <- vector("list", length(args))
+    ##
+    for (i in seq_along(args)) {
+      ranking.i <- ranking.list.common[[i]]
+      if (is.null(ranking.i))
+        ranking.i <- ranking.list.random[[i]]
+      if (is.null(ranking.i))
+        stop("No rankings available in argument '...'.",
+             call. = FALSE)
+      ranking.list[i] <- list(ranking.i)
+    }
+    ##
+    ranking.treatments <- lapply(ranking.list, names)
     n.treatments <- unlist(lapply(ranking.treatments, length))
     ##
     if (length(unique(n.treatments)) != 1) {
@@ -501,16 +522,6 @@ netposet <- function(..., outcomes, treatments, small.values,
         if (any(treatments.j != treatments[!missing.j]))
           stop("Treatment names of all rankings must be in same order.",
                call. = FALSE)
-        ##
-        ranking.j <- ranking.list.common[[j]]
-        ranking.list.common[[j]] <- ranking.list.common[[sel.max]]
-        ranking.list.common[[j]][treatments[!missing.j]] <- ranking.j
-        ranking.list.common[[j]][treatments[missing.j]]  <- NA
-        ##
-        ranking.j <- ranking.list.random[[j]]
-        ranking.list.random[[j]] <- ranking.list.random[[sel.max]]
-        ranking.list.random[[j]][treatments[!missing.j]] <- ranking.j
-        ranking.list.random[[j]][treatments[missing.j]]  <- NA
         ##
         ranking.treatments[[j]] <- treatments
       }
@@ -535,6 +546,19 @@ netposet <- function(..., outcomes, treatments, small.values,
                      collapse = " - "),
                call. = FALSE)
       }
+    ##
+    add_rankings <- function(x) {
+      res <- rep(NA_real_, length(treatments))
+      names(res) <- treatments
+      ##
+      if (!is.null(x))
+        res[names(x)] <- x
+      ##
+      res
+    }
+    ##
+    ranking.list.common <- lapply(ranking.list.common, add_rankings)
+    ranking.list.random <- lapply(ranking.list.random, add_rankings)
     ##
     ranking.matrix.common <- matrix(unlist(ranking.list.common,
                                           use.names = FALSE),
@@ -600,7 +624,10 @@ netposet <- function(..., outcomes, treatments, small.values,
         for (k in 1:o)
           if (!is.na(ranking.matrix.common[i, k]) &
               !is.na(ranking.matrix.common[j, k]) &
-              ranking.matrix.common[i, k] >= ranking.matrix.common[j, k])
+              ((larger.is.better[k] &
+                ranking.matrix.common[i, k] >= ranking.matrix.common[j, k]) |
+               (!larger.is.better[k] &
+                ranking.matrix.common[i, k] <= ranking.matrix.common[j, k])))
             Pos.common[i, j] <- Pos.common[i, j] + 1
   ##
   for (i in 1:n)
@@ -609,7 +636,10 @@ netposet <- function(..., outcomes, treatments, small.values,
         for (k in 1:o)
           if (!is.na(ranking.matrix.random[i, k]) &
               !is.na(ranking.matrix.random[j, k]) &
-              ranking.matrix.random[i, k] >= ranking.matrix.random[j, k])
+              ((larger.is.better[k] &
+                ranking.matrix.random[i, k] >= ranking.matrix.random[j, k]) |
+               (!larger.is.better[k] &
+                ranking.matrix.random[i, k] <= ranking.matrix.random[j, k])))
             Pos.random[i, j] <- Pos.random[i, j] + 1
   
   
@@ -652,6 +682,8 @@ netposet <- function(..., outcomes, treatments, small.values,
               M.random = M.random,
               O.random = PO.random,
               small.values = small.values,
+              ranking.type = ranking.type,
+              larger.is.better = larger.is.better,
               common = common,
               random = random,
               call = match.call(),

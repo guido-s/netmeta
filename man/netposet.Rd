@@ -91,16 +91,17 @@ In function \code{netposet}, argument \code{\dots{}} can be any of the
 following:
 \itemize{
 \item arbitrary number of \code{netrank} objects providing
-  P-scores;
+  ranking metrics;
 \item arbitrary number of \code{netmeta} objects;
 \item single ranking matrix with each column providing P-scores
-  (Rücker & Schwarzer 2015) or SUCRA values (Salanti et al. 2011)
-  for an outcome and rows corresponding to treatments.
+  (Rücker & Schwarzer 2015), SUCRA values (Salanti et al. 2011),
+  or another ranking metric where larger values are favorable for
+  an outcome and rows corresponding to treatments.
 }
 Note, albeit in general a ranking matrix is not constrained to have
 values between 0 and 1, \code{netposet} stops with an error in this
-case as this function expects a matrix with P-scores or SUCRA
-values.
+case as this function expects a matrix with ranking values where larger
+values are favorable.
 
 Argument \code{outcomes} can be used to label outcomes. If argument
 \code{outcomes} is missing,
@@ -261,10 +262,6 @@ if (requireNamespace("Rgraphviz", quietly = TRUE))
 # carcinoma? An individual patient data network meta-analysis.
 # Journal of Clinical Oncology, 35, 498-505
 #
-outcomes <- c("OS", "PFS", "LC", "DC")
-treatments <- c("RT", "IC-RT", "IC-CRT", "CRT",
-  "CRT-AC", "RT-AC", "IC-RT-AC")
-#
 # P-scores (from Table 1)
 #
 pscore.os  <- c(15, 33, 63, 70, 96, 28, 45) / 100
@@ -273,8 +270,9 @@ pscore.lc  <- c( 9, 27, 47, 37, 82, 58, 90) / 100
 pscore.dc  <- c(16, 76, 95, 48, 72, 32, 10) / 100
 #
 pscore.matrix <- data.frame(pscore.os, pscore.pfs, pscore.lc, pscore.dc)
-rownames(pscore.matrix) <- treatments
-colnames(pscore.matrix) <- outcomes
+rownames(pscore.matrix) <-
+  c("RT", "IC-RT", "IC-CRT", "CRT", "CRT-AC", "RT-AC", "IC-RT-AC")
+colnames(pscore.matrix) <- c("OS", "PFS", "LC", "DC")
 pscore.matrix
 #
 po <- netposet(pscore.matrix)

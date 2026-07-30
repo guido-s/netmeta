@@ -115,18 +115,18 @@ to plot.}
 \item{\dots}{Additional graphical arguments.}
 }
 \description{
-This function generates a scatter plot or biplot of P-scores with
+This function generates a scatter plot or biplot of ranking metrics with
 an overlay describing partial order of treatment ranks.
 }
 \details{
 By default (arguments \code{plottype = "scatter"} and \code{dim =
-"2d"}), a scatter plot is created showing P-scores (see
+"2d"}), a scatter plot is created showing ranking metrics (see
 \code{\link{netrank}}) for the first two outcomes considered in the
 generation of a partially ordered set of treatment ranks (using
-\code{\link{netposet}}). In addition to the P-scores, the partially
+\code{\link{netposet}}). In addition to these rankings, the partial
 order of treatment ranks is shown as lines connecting treatments
 which is analogous to a Hasse diagram. If argument \code{dim =
-"3d"}), a 3-D scatter plot is generated showing P-scores for the
+"3d"}), a 3-D scatter plot is generated showing rankings for the
 first three outcomes.
 
 To overcome the restriction of two or three dimension, a biplot
