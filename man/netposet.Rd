@@ -134,11 +134,10 @@ harmfull (\code{"undesirable"}); see \code{\link{netrank}}. This
 argument is ignored for a ranking matrix and \code{netrank}
 objects.
 
-If argument \code{\dots{}} consists of \code{netrank} objects, P-scores,
-SUCRAs, and probabilities of being best can be combined, and mean and median
-ranks can be combined. These two groups of ranking metrics cannot be
-combined, as larger values are favorable in the first group and smaller
-values are favorable in the second group.
+If argument \code{\dots{}} consists of \code{netrank} objects, either
+P-scores, SUCRAs, and probabilities of being best can be combined, or mean
+and median ranks. These two groups of ranking metrics cannot be
+combined together.
 
 Arguments \code{common} and \code{random} can be used to define
 whether results should be printed and plotted for common and random

@@ -79,8 +79,8 @@ see \code{\link[ggplot2]{scale_fill_gradient2}}.}
 printed.}
 
 \item{main.legend}{Title for legend. If missing, the ranking method is used
-for a single ranking method and "Ranking" for different ranking methods
-if comparable ranking methods are combined.}
+for a single ranking method and "Ranking" for different comparable ranking
+methods.}
 
 \item{axis.size}{Font size of axis text, see
 \code{\link[ggplot2]{element_text}}.}
@@ -147,9 +147,9 @@ meta-analysis object: decreasing for P-scores, SUCRAs, and probabilities of
 being best, and increasing for mean and median ranks. Argument \code{seq}
 can be used to specify a different treatment order.
 
-Comparable ranking methods can be shown in the same plot: P-scores, SUCRAs,
-and probabilities of being best can be combined, and mean and median ranks
-can be combined. These two groups of ranking metrics cannot be combined.
+Comparable ranking methods can be shown in the same plot: either P-scores,
+SUCRAs, and probabilities of being best, or mean and median ranks. These two
+groups of ranking metrics cannot be combined.
 }
 \examples{
 # Examples: example(netrank)
