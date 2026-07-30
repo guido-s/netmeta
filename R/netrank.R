@@ -457,7 +457,7 @@ print.netrank <- function(x,
     chklogical(sort)
   ##
   chknumeric(digits, min = 0, length = 1)
-  chknumeric(digits.mean, min = 0, length =)
+  chknumeric(digits.mean, min = 0, length = 1)
   ##
   ## Check for deprecated arguments in '...'
   ##

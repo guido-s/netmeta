@@ -477,14 +477,28 @@ plot.netrank <- function(...,
   trts <- unique(trts)
   n.trts <- length(trts)
   #
-  # Extract method used in first netrank object
+  # Check that ranking methods are comparable
   #
-  first <- min(seq_along(is.netrank)[is.netrank])
+  methods <- vapply(args[is.netrank],
+                    function(x) {
+                      if (is.null(x$method)) "P-score" else x$method
+                    },
+                    character(1))
   #
-  method <- args[[first]]$method
+  methods[methods == "best"] <- "pBV"
   #
-  if (method %in% c("mean", "median")) {
-    method <- paste(str_to_sentence(method), "rank")
+  ranking.type <-
+    unique(ifelse(methods %in% c("mean", "median"), "ranks", "probs"))
+  #
+  if (length(ranking.type) != 1)
+    stop("Ranking methods 'P-score', 'SUCRA', and 'best' cannot be ",
+         "combined with ranking methods 'mean' and 'median'.",
+         call. = FALSE)
+  #
+  # Determine plot scale and ordering direction
+  #
+  if (ranking.type == "ranks") {
+    methods <- paste(str_to_sentence(methods), "rank")
     #
     sign <- 1
     digits <- digits.mean
@@ -501,13 +515,10 @@ plot.netrank <- function(...,
     #
     midpoint <- 0.5
     limits <- c(0, 1)
-    #
-    if (method == "best")
-      method <- "pBV"
   }
   #
   if (is.null(main.legend))
-    main.legend <- method
+    main.legend <- if (length(unique(methods)) == 1) methods[1] else "Ranking"
   #
   # Determine the order of treatments in the image plot
   #
@@ -517,6 +528,7 @@ plot.netrank <- function(...,
     trts1 <- data.frame(treat = trts, ranking = NA,
                         row.names = trts,
                         stringsAsFactors = FALSE)
+    first <- min(seq_along(is.netrank)[is.netrank])
     trts.first <- names(args[[first]]$ranking.common)
     ##
     if (random)
