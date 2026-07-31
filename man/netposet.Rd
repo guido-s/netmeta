@@ -90,7 +90,7 @@ to gain further insights in situations with apparently conflicting
 orderings. This implementation for rankings in network meta-analyis
 is described in Rücker & Schwarzer (2017).
 
-In function \code{netposet}, argument \code{\dots{}} can be any of the
+In function \code{netposet}, argument \code{\dots} can be any of the
 following:
 \itemize{
 \item arbitrary number of \code{netrank} objects providing
@@ -98,13 +98,12 @@ following:
 \item arbitrary number of \code{netmeta} objects;
 \item single ranking matrix with each column providing P-scores
   (Rücker & Schwarzer 2015), SUCRA values (Salanti et al. 2011),
-  or another ranking metric where larger values are favorable for
-  an outcome and rows corresponding to treatments.
+  or another probabilistic ranking metric where larger values are favorable
+  for an outcome and rows corresponding to treatments.
 }
 Note, albeit in general a ranking matrix is not constrained to have
 values between 0 and 1, \code{netposet} stops with an error in this
-case as this function expects a matrix with ranking values where larger
-values are favorable.
+case.
 
 Argument \code{outcomes} can be used to label outcomes. If argument
 \code{outcomes} is missing,
