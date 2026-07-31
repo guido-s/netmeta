@@ -124,7 +124,7 @@ if the first argument is a ranking matrix. If argument
 \item letters 'a', 'b', \dots{} are used as treatment labels and a
   corresponding warning is printed.
 }
-If argument \code{\dots{}} consists of \code{netmeta} objects,
+If argument \code{\dots} consists of \code{netmeta} objects,
 \code{netrank} is called internally to calculate P-scores. In this
 case, argument \code{small.values} can be used to specify for each
 outcome whether small values are beneficial (\code{"desirable"}) or
@@ -132,19 +132,19 @@ harmfull (\code{"undesirable"}); see \code{\link{netrank}}. This
 argument is ignored for a ranking matrix and \code{netrank}
 objects.
 
-If argument \code{\dots{}} consists of \code{netrank} objects, P-scores,
+If argument \code{\dots} consists of \code{netrank} objects, P-scores,
 SUCRAs, probabilities of being best, mean ranks, or median ranks can be
 used. The same ranking metric must be used for all outcomes.
 
 Arguments \code{common} and \code{random} can be used to define
 whether results should be printed and plotted for common and random
 effects model. If netmeta and netrank objects are provided in
-argument \code{\dots{}}, values for \code{common} and \code{random}
+argument \code{\dots}, values for \code{common} and \code{random}
 within these objects are considered; if these values are not
 unique, argument \code{common} or \code{random} are set to
 \code{TRUE}.
 
-In function \code{print.netposet}, argument \code{\dots{}} is
+In function \code{print.netposet}, argument \code{\dots} is
 passed on to the printing function.
 }
 \examples{
