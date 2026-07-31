@@ -1,5 +1,8 @@
 vikor_internal <- function(x, weights, v) {
   
+  # Get rid of warning 'no visible binding for global variable'
+  Q <- R <- S <- NULL
+  
   n.outcomes <- ncol(x)
   n.treatments <- nrow(x)
   #
