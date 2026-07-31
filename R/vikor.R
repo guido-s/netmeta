@@ -26,18 +26,17 @@
 #'
 #' @details
 #' This function takes a single mandatory argument, which is either an object
-#' of class \code{\link{netposet}} or a matrix. It then uses the multi-criteria
-#' decision analysis method VišeKriterijumska Optimizacija I Kompromisno
-#' Rešenje (VIKOR) to produce an amalgamated ranking list across
+#' of class \code{\link{netposet}}, a matrix, or a data frame. It then uses the
+#' multi-criteria decision analysis method VišeKriterijumska Optimizacija I
+#' Kompromisno Rešenje (VIKOR) to produce an amalgamated ranking list across
 #' all outcomes (Opricovic & Tzeng, 2004).
 #' 
-#' The standard VIKOR approach is applied when the \code{method} argument is
+#' The VIKOR approach is only applied when the \code{method} argument is
 #' equal to \code{"P-score"}, \code{"SUCRA"}, \code{"best"}, or
 #' \code{"ranking probabilities"} in \code{\link{netposet}}.
 #' 
-#' The final ranking list is calculated based on treatments
-#' common across all outcomes. Treatments not present across all outcomes are
-#' excluded internally.
+#' The final ranking list is calculated based on treatments common across all
+#' outcomes. Treatments not present across all outcomes are excluded internally.
 #' 
 #' Using the argument 'weights' the users can specify the weight that each
 #' outcome should have in the decision making process. For each outcome this
@@ -336,13 +335,16 @@ print.vikor <- function(x, digits = 4, ...) {
   #
   cat(paste0("\n", txt, "\n"))
   #
+  cat(paste("Threshold for acceptable advantage:",
+            round(1 / (nrow(res_mat) - 1), 3), "\n"))
+  #
   drop_trts <- attr(x, "dropped_treatments")
   if (length(drop_trts) > 0) {
     cat(paste0("\nThe following treatment",
                if (length(drop_trts) > 1) "s are" else " is",
                " not considered in the VIKOR method due to ",
                "missing information: ",
-               paste0("'", drop_trts, "'", collapse = ", "),
+               paste(drop_trts, collapse = ", "),
                "\n"))
   }
   #
