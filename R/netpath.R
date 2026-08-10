@@ -1,7 +1,26 @@
-#' TITLE
+#' Path-based test of inconsistency in network meta-analysis
 #' 
 #' @description
-#' BRIEF DESCRIPTION (1-2 sentence(s)).
+#' Performs a path-based test of inconsistency for a specific comparison
+#' (treatment pair) in a network meta-analysis, based on the decomposition of
+#' the hat matrix into independent paths connecting the two nodes.
+#' 
+#' @details
+#' This function implements a path-based approach to assess inconsistency in a
+#' network meta-analysis (Tahmasebi et al., 2025). Starting from the hat matrix
+#' of the network (as calculated by \code{\link{hatmatrix}} with
+#' \code{method = "Davies"} and \code{type = "full"}), the direct and indirect
+#' evidence contributing to the comparison between \code{node1} and \code{node2}
+#' is decomposed into a set of independent evidence paths. A depth-first search
+#' algorithm is then used to identify these paths. A test statistic Q is
+#' calculated to test whether the estimates derived from these independent paths
+#' are consistent with each other. Under the null hypothesis of consistency, Q
+#' approximately follows a chi-squared distribution with degrees of freedom
+#' equal to the number of independent paths minus one.
+#'
+#' Depending on the argument \code{random}, the network estimates are based on
+#' either the common effects model (\code{random = FALSE}) or the random effects
+#' model (\code{random = TRUE}).
 #' 
 #' @param x A \code{netmeta} object.
 #' @param random A logical indicating whether the path algorithm is
@@ -10,24 +29,41 @@
 #' @param node2 Second node.
 #' 
 #' @return
-#' A netpath object.
-#' 
+#' A list of class "netpath" containing the following elements:
+#' \item{results}{Data frame containing results of the Q tests}
+#' \item{path_matrix}{Path matrix}
+#' \item{Sigma}{Standardized matrix derived from the linearly independent paths}
+#' \item{theta_p}{Theta p}
+#'
 #' @author Noosheen R. Tahmasebi
 #'   \email{noosheen.rajabzadehtahmasebi@@uniklinik-freiburg.de},
 #'   Guido Schwarzer \email{guido.schwarzer@@uniklinik-freiburg.de}
-#' 
-#' @seealso \code{\link{netmeta}}
-#' 
+#'
+#' @seealso \code{\link{netmeta}}, \code{\link{heatplot.netpath}}
+#'
+#' @references
+#' Tahmasebi NR, Davies AL, Papakonstantinou T, Rücker G,
+#' Nikolakopoulou A (2025):
+#' Path-based approach for detecting and assessing inconsistency in network
+#' meta-analysis: A novel method.
+#' \emph{arXiv}, \doi{https://doi.org/10.48550/arXiv.2506.20364}
+#'
 #' @examples
 #' \dontrun{
-#' data(Senn2013)
-#' nma1 <- netmeta(TE, seTE, treat1.long, treat2.long, studlab,
-#'   data = Senn2013, sm = "MD", random = FALSE, nchar.trts = 4)
+#' # Transform data from long arm-based to contrast-based format
+#' #
+#' pw <- pairwise(studlab = study, treat = treatment,
+#'   n = n, mean = mean, sd = sd, data = Senn2013,
+#'   varnames = c("MD", "seMD"))
+#'
+#' # Conduct common effects network meta-analysis
+#' #
+#' nma <- netmeta(pw, random = FALSE, nchar.trts = 4)
 #' 
-#' np1 <- netpath(nma1, node1 = "Placebo", node2 = "Sulfonylurea")
-#' np1
+#' np <- netpath(nma, node1 = "Placebo", node2 = "Sulfonylurea")
+#' np
 #' }
-#' 
+#'
 #' @export netpath
 
 netpath <- function(x, random = x$random, node1, node2) {
@@ -56,7 +92,7 @@ print.netpath <- function(x, ...) {
   #
   cat("---------- Path-based inconsistency test ----------\n")
   cat("Comparison:", unique(x$results$comparison), "\n")
-  cat("Number of independent paths:", x$results$df + 1, "\n")
+  cat("Number of independent paths:", unique(x$results$df + 1), "\n")
   cat("Quadratic form Q:", x$results$Q, "\n")
   cat("Degrees of freedom:", x$results$df, "\n")
   cat("p-value:", x$results$pval, "\n")

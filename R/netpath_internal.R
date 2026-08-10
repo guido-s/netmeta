@@ -1,8 +1,8 @@
 # =========================
 # 1. Build directed network
 # =========================
-build_directed_network_from_hat_row <- function(hat_matrix, row_label) {
-  row_vals <- hat_matrix[row_label, , drop = FALSE]
+build_directed_network_from_hat_row <- function(H.matrix, row_label) {
+  row_vals <- H.matrix[row_label, , drop = FALSE]
   #
   edge_list <- c()
   for (col_label in colnames(row_vals)) {
@@ -36,18 +36,18 @@ get_edges_from_path <- function(x) {
   sapply(strsplit(edges, "-"), function(x) paste(sort(x), collapse = "-"))
 }
 
-# ======================================
+# =========================================
 # 3. Reduce matrix to full rank (if needed)
-# ======================================
+# =========================================
 reduce_to_full_rank <- function(x, tol = 1e-8) {
   qr_decomp <- qr(x, tol = tol)
   independent <- qr_decomp$pivot[seq_len(qr_decomp$rank)]
   x[independent, independent, drop = FALSE]
 }
 
-# =======================================
+# =========================================
 # 4. Construct variance-covariance matrix V
-# =======================================
+# =========================================
 construct_V_matrix <- function(x) {
   pairs <- t(combn(sort(x$trts), 2))
   pair_names <- apply(pairs, 1, paste0, collapse = ":")
@@ -84,9 +84,9 @@ get_theta_for_path <- function(x, TEs) {
 # =======================================
 # 6. Core function: compute Q and p-value
 # =======================================
-run_path_inconsistency <- function(net, hat_common, node1, node2) {
+run_path_inconsistency <- function(net, H.matrix, node1, node2) {
   comp_intr <- paste0(node1, ":", node2)
-  g <- build_directed_network_from_hat_row(hat_common, comp_intr)
+  g <- build_directed_network_from_hat_row(H.matrix, comp_intr)
   all_paths <- all_simple_paths(g, from = node1, to = node2)
   if (length(all_paths) == 0) {
     return(data.frame(Comparison = paste(node1, node2, sep = " - "),
@@ -144,15 +144,15 @@ run_path_inconsistency <- function(net, hat_common, node1, node2) {
   C <- C[, common_edges, drop = FALSE]
   V <- V[common_edges, common_edges, drop = FALSE]
 
-  # Compute S
-  S <- C %*% V %*% t(C)
+  # Compute Sigma
+  Sigma <- C %*% V %*% t(C)
   
-  if (det(S) < 1e-6) {
-    S_inv <- MASS::ginv(S)
-    note <- "Matrix S singular, pseudo-inverse used"
+  if (det(Sigma) < 1e-6) {
+    Sigma_inv <- MASS::ginv(Sigma)
+    note <- "Matrix Sigma singular, pseudo-inverse used"
   }
   else {
-    S_inv <- solve(S)
+    Sigma_inv <- solve(Sigma)
     note <- ""
   }
   
@@ -163,20 +163,20 @@ run_path_inconsistency <- function(net, hat_common, node1, node2) {
   theta_diff <- theta_p - net$TE.common[node1, node2]
 
   # Compute Q
-  Q <- t(theta_diff) %*% S_inv %*% theta_diff
-  df <- nrow(S) - 1
+  Q <- t(theta_diff) %*% Sigma_inv %*% theta_diff
+  df <- nrow(Sigma) - 1
   pval <- pchisq(Q, df = df, lower.tail = FALSE)
   
   res <-
     list(
       results =
         data.frame(comparison = paste(node1, node2, sep = " - "),
+                   path_index = kept_indices,
                    Q = as.numeric(Q), df = df,
                    pval = as.numeric(pval),
-                   path_index = kept_indices, #I(list(kept_indices)),
                    note = note),
       path_matrix = path_matrix,
-      S = S,
+      Sigma = Sigma,
       theta_p = theta_p
   )
   #
@@ -185,22 +185,22 @@ run_path_inconsistency <- function(net, hat_common, node1, node2) {
   res
 }
 
-# ======================================
+# ========================================
 # 7. Wrapper for single or all comparisons
-# ======================================
-run_all_path_inconsistencies <- function(net, hat_common,
+# ========================================
+run_all_path_inconsistencies <- function(net, H.matrix,
                                          node1 = NULL, node2 = NULL) {
   if (!is.null(node1) && !is.null(node2))
-    return(run_path_inconsistency(net, hat_common, node1, node2))
+    return(run_path_inconsistency(net, H.matrix, node1, node2))
   #
   stop("Error: A comparison of interest must be chosen. Please specify both 
           'node1' and 'node2'.")
 }
 
-# =============================================
+# ==============================
 # 8. Create standardized heatmap 
-# ============================================
-create_standardized_heatmap <- function(xhat, Sigma, indx) {
+# ==============================
+create_standardized_heatmap <- function(xhat, Sigma, idx) {
   # Input validation
   N <- length(xhat)
   if (!all(dim(Sigma) == c(N, N))) {
@@ -226,7 +226,7 @@ create_standardized_heatmap <- function(xhat, Sigma, indx) {
   colnames(melted_z) <- c("p_i", "p_j", "value")
   
   # Create the plot
-  mylabs <- as.expression(lapply(indx, function(i) bquote(pi[.(i)])))
+  mylabs <- as.expression(lapply(idx, function(i) bquote(pi[.(i)])))
   
   p <- ggplot(melted_z, aes(x = p_j, y = p_i, fill = value)) +
     geom_tile() +
@@ -250,7 +250,7 @@ create_standardized_heatmap <- function(xhat, Sigma, indx) {
           legend.text = element_text(size = 16),  
           panel.grid = element_blank()) +
     coord_fixed()
-
+  
   # Add text annotations
   for (i in seq_len(N)) {
     for (j in seq_len(N)) {
