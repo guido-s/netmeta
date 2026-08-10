@@ -286,15 +286,17 @@
 #'   
 #' @importFrom methods as
 #'
-#' @importFrom utils installed.packages packageDescription capture.output packageVersion
+#' @importFrom utils installed.packages packageDescription capture.output packageVersion combn
+#' 
+#' @importFrom reshape2 melt
 #'
-#' @importFrom igraph E<- V<- E V all_simple_paths delete_edges get.shortest.paths graph_from_adjacency_matrix graph_from_edgelist gsize set_edge_attr set_vertex_attr head_of tail_of
+#' @importFrom igraph E<- V<- E V all_simple_paths delete_edges get.shortest.paths graph graph_from_adjacency_matrix graph_from_edgelist gsize set_edge_attr set_vertex_attr head_of tail_of
 #'
 #' @importFrom grDevices colours col2rgb heat.colors rainbow rgb xy.coords
 #'
 #' @importFrom graphics axis box lines par points plot polygon rect text strheight strwidth title
 #'
-#' @importFrom ggplot2 ggplot aes xlab ylab labs element_blank element_line element_rect element_text expand_limits geom_col geom_line geom_step geom_tile geom_text ggtitle geom_abline geom_hline geom_point geom_vline scale_fill_gradient2 scale_x_discrete scale_y_discrete scale_x_continuous scale_x_discrete scale_y_discrete theme theme_classic theme_dark scale_color_manual coord_cartesian guide_legend guides margin
+#' @importFrom ggplot2 annotate coord_fixed ggplot aes xlab ylab labs element_blank element_line element_rect element_text expand_limits geom_col geom_line geom_step geom_tile geom_text ggtitle geom_abline geom_hline geom_point geom_vline scale_fill_gradient scale_fill_gradient2 scale_x_discrete scale_y_discrete scale_x_continuous scale_x_discrete scale_y_discrete theme theme_classic theme_dark theme_minimal scale_color_manual scale_y_continuous coord_cartesian guide_legend guides margin
 #' 
 #' @importFrom ggrepel geom_text_repel
 #'

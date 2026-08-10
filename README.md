@@ -3,7 +3,7 @@ Official Git repository of R package **netmeta**
 
 [![License: GPL (>=2)](https://img.shields.io/badge/license-GPL-blue)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![CRAN Version](https://www.r-pkg.org/badges/version/netmeta)](https://cran.r-project.org/package=netmeta)
-[![GitHub develop](https://img.shields.io/badge/develop-3.6--2-purple)](https://img.shields.io/badge/develop-3.6--2-purple)
+[![GitHub develop](https://img.shields.io/badge/develop-3.7--0-purple)](https://img.shields.io/badge/develop-3.7--0-purple)
 [![Monthly Downloads](https://cranlogs.r-pkg.org/badges/netmeta)](https://cranlogs.r-pkg.org/badges/netmeta)
 [![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/netmeta)](https://cranlogs.r-pkg.org/badges/grand-total/netmeta)
 
@@ -89,7 +89,10 @@ R package **netmeta** ([Balduzzi et al., 2023](https://www.doi.org/10.18637/jss.
     ([Wilson et al., 2026](https://doi.org/10.1017/rsm.2026.10082));
 
   - net heat plot and design-based decomposition of Cochran's Q
-    ([Krahn et al., 2013](https://doi.org/10.1186/1471-2288-13-35)).
+    ([Krahn et al., 2013](https://doi.org/10.1186/1471-2288-13-35));
+
+  - path-based approach for detecting and assessing inconsistency
+    [(Tahmasebi et al., 2025)](https://doi.org/10.48550/arXiv.2506.20364).
 
 
 ### Additional methods
@@ -116,7 +119,7 @@ R package **netmeta** ([Balduzzi et al., 2023](https://www.doi.org/10.18637/jss.
 install.packages("netmeta")
 ```
 
-### Current [![GitHub develop](https://img.shields.io/badge/develop-3.6--2-purple)](https://img.shields.io/badge/develop-3.6--2-purple) release on GitHub:
+### Current [![GitHub develop](https://img.shields.io/badge/develop-3.7--0-purple)](https://img.shields.io/badge/develop-3.7--0-purple) release on GitHub:
 
 Installation using R package
 [**remotes**](https://cran.r-project.org/package=remotes):
@@ -195,3 +198,5 @@ bug.report(package = "netmeta")
 [Salanti G, Ades AE, Ioannidis JPA (2011): Graphical methods and numerical summaries for presenting results from multiple-treatment meta-analysis: an overview and tutorial. *Journal of Clinical Epidemiology*, **64**, 163-71](https://doi.org/10.1016/j.jclinepi.2010.03.016)
 
 [Schwarzer G, Carpenter JR and Rücker G (2015): *Meta-Analysis with R (Use R!)*. Springer International Publishing, Switzerland](https://link.springer.com/book/10.1007/978-3-319-21416-0)
+
+[Tahmasebi NR, Davies AL, Papakonstantinou T, Rücker G, Nikolakopoulou A (2025)](https://doi.org/10.48550/arXiv.2506.20364)
