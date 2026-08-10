@@ -2,9 +2,21 @@
 % Please edit documentation in R/netpath.R
 \name{netpath}
 \alias{netpath}
+\alias{print.netpath}
 \title{Path-based test of inconsistency in network meta-analysis}
 \usage{
-netpath(x, random = x$random, node1, node2)
+netpath(x, random = x$random, node1, node2, nchar.trts = x$nchar.trts)
+
+\method{print}{netpath}(
+  x,
+  nchar.trts = x$nchar.trts,
+  sep.trts = x$sep.trts,
+  digits.Q = gs("digits.Q"),
+  digits.pval.Q = gs("digits.pval.Q"),
+  details.methods = gs("details"),
+  legend = gs("legend"),
+  ...
+)
 }
 \arguments{
 \item{x}{A \code{netmeta} object.}
@@ -15,13 +27,37 @@ based on a random effects model.}
 \item{node1}{First node.}
 
 \item{node2}{Second node.}
+
+\item{nchar.trts}{A numeric defining the minimum number of
+characters used to create unique treatment names (see Details).}
+
+\item{sep.trts}{A character used in comparison names as separator
+between treatment labels.}
+
+\item{digits.Q}{Minimal number of significant digits for
+heterogeneity statistics, see \code{print.default}.}
+
+\item{digits.pval.Q}{Minimal number of significant digits for
+p-value of heterogeneity tests, see \code{print.default}.}
+
+\item{details.methods}{A logical specifying whether details on statistical
+methods should be printed.}
+
+\item{legend}{A logical indicating whether a legend should be
+printed.}
+
+\item{\dots}{Additional arguments (igored).}
 }
 \value{
-A netpath object which is a list containing the following elements:
+A list of class "netpath" containing the following elements:
 \item{results}{Data frame containing results of the Q tests}
-\item{path_matrix}{Path matrix}
-\item{Sigma}{standardized matrix derived from the linearly independent paths}
+\item{A.matrix}{Path-adjacency matrix}
+\item{Sigma}{Standardized matrix derived from the linearly independent paths}
 \item{theta_p}{Theta p}
+\item{random, node1, node2}{As defined above.}
+\item{nchar.trts}{As defined above.}
+\item{call}{Function call.}
+\item{version}{Version of R package netmeta used to create object.}
 }
 \description{
 Performs a path-based test of inconsistency for a specific comparison
@@ -44,6 +80,12 @@ equal to the number of independent paths minus one.
 Depending on the argument \code{random}, the network estimates are based on
 either the common effects model (\code{random = FALSE}) or the random effects
 model (\code{random = TRUE}).
+
+In order to get more concise printouts, argument \code{nchar.trts} can be
+used to define the minimum number of characters for abbreviated treatment
+names (see \code{\link{abbreviate}}, argument \code{minlength}). R function
+\code{\link{treats}} is utilised internally to create abbreviated
+treatment names.
 }
 \examples{
 \dontrun{

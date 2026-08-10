@@ -1,12 +1,12 @@
 # =========================
 # 1. Build directed network
 # =========================
-build_directed_network_from_hat_row <- function(H.matrix, row_label) {
+build_directed_network_from_hat_row <- function(H.matrix, row_label, sep.trts) {
   row_vals <- H.matrix[row_label, , drop = FALSE]
   #
   edge_list <- c()
   for (col_label in colnames(row_vals)) {
-    nodes <- unlist(strsplit(col_label, ":"))
+    nodes <- unlist(strsplit(col_label, sep.trts))
     #
     if (length(nodes) == 2) {
       i <- nodes[1]; j <- nodes[2]; val <- row_vals[1, col_label]
@@ -25,15 +25,15 @@ build_directed_network_from_hat_row <- function(H.matrix, row_label) {
 # ==========================================
 # 2. Extract edge sets from igraph path list
 # ==========================================
-get_edges_from_path <- function(x) {
+get_edges_from_path <- function(x, sep.trts) {
   nodes <- as.vector(x)
   if (length(nodes) < 2)
     return(character(0))
   #
-  edges <- mapply(function(a, b) paste(a, b, sep = "-"),
+  edges <- mapply(function(a, b) paste(a, b, sep = sep.trts),
                   nodes[-length(nodes)], nodes[-1])
   # Standardize to alphabetical order
-  sapply(strsplit(edges, "-"), function(x) paste(sort(x), collapse = "-"))
+  sapply(strsplit(edges, sep.trts), function(x) paste(sort(x), collapse = sep.trts))
 }
 
 # =========================================
@@ -84,40 +84,43 @@ get_theta_for_path <- function(x, TEs) {
 # =======================================
 # 6. Core function: compute Q and p-value
 # =======================================
-run_path_inconsistency <- function(net, H.matrix, node1, node2) {
-  comp_intr <- paste0(node1, ":", node2)
-  g <- build_directed_network_from_hat_row(H.matrix, comp_intr)
+run_path_inconsistency <- function(net, H.matrix, node1, node2, sep.trts) {
+  comp_intr <- paste(node1, node2, sep = sep.trts)
+  #
+  g <- build_directed_network_from_hat_row(H.matrix, comp_intr, sep.trts)
+  #
   all_paths <- all_simple_paths(g, from = node1, to = node2)
   if (length(all_paths) == 0) {
-    return(data.frame(Comparison = paste(node1, node2, sep = " - "),
-                      Q = NA, df = NA, p_value = NA,
-                      Note = "No path found"))
+    return(data.frame(comparison = paste(node1, node2, sep.trts),
+                      path.index = NA,
+                      Q = NA, df = NA, pval = NA,
+                      note = "No path found"))
   }
   #
   path_list <- lapply(all_paths, function(x) V(g)[x]$name)
 
   # Build path overlap matrix
-  edge_sets <- lapply(all_paths, get_edges_from_path)
+  edge_sets <- lapply(all_paths, get_edges_from_path, sep.trts = sep.trts)
   n <- length(edge_sets)
-  path_matrix <- matrix(0, n, n)
+  A.matrix <- matrix(0, n, n)
   for (i in seq_len(n)) {
     for (j in seq_len(n)) {
       if (i == j)
-        path_matrix[i, j] <- length(edge_sets[[i]])
+        A.matrix[i, j] <- length(edge_sets[[i]])
       else
-        path_matrix[i, j] <- length(intersect(edge_sets[[i]], edge_sets[[j]]))
+        A.matrix[i, j] <- length(intersect(edge_sets[[i]], edge_sets[[j]]))
     }
   }
   #
-  rownames(path_matrix) <- colnames(path_matrix) <- paste0("Path", seq_len(n))
+  rownames(A.matrix) <- colnames(A.matrix) <- paste0("Path", seq_len(n))
   
   # Rank reduction if singular
-  det_val <- det(path_matrix)
+  det_val <- det(A.matrix)
   if (abs(det_val) < 1e-6) {
-    reduced_matrix <- reduce_to_full_rank(path_matrix)
+    reduced_matrix <- reduce_to_full_rank(A.matrix)
   }
   else {
-    reduced_matrix <- path_matrix
+    reduced_matrix <- A.matrix
   }
   #
   kept_paths <- rownames(reduced_matrix)
@@ -125,17 +128,17 @@ run_path_inconsistency <- function(net, H.matrix, node1, node2) {
   kept_path_list <- path_list[kept_indices]
   
   # Construct C matrix
-  comp_edges <- gsub(":", "-", net$comparisons)
-  comp_edges_std <- sapply(strsplit(comp_edges, "-"), function(x) paste(sort(x), collapse = "-"))
-  C <- matrix(0, nrow = length(kept_paths), ncol = length(comp_edges_std))
+  comp_edges <- net$comparisons
+  C <- matrix(0, nrow = length(kept_paths), ncol = length(comp_edges))
   rownames(C) <- kept_paths
-  colnames(C) <- net$comparisons
+  colnames(C) <- comp_edges
   #
-  edge_sets_std <- lapply(kept_path_list, get_edges_from_path)
+  edge_sets_std <-
+    lapply(kept_path_list, get_edges_from_path, sep.trts = sep.trts)
   for (i in seq_along(kept_paths)) {
-    C[i, comp_edges_std %in% edge_sets_std[[i]]] <- 1
+    C[i, comp_edges %in% edge_sets_std[[i]]] <- 1
   }
-
+  
   # Construct V and align with C
   V <- construct_V_matrix(net)
   #
@@ -170,17 +173,14 @@ run_path_inconsistency <- function(net, H.matrix, node1, node2) {
   res <-
     list(
       results =
-        data.frame(comparison = paste(node1, node2, sep = " - "),
+        data.frame(comparison = paste(node1, node2, sep = sep.trts),
                    path_index = kept_indices,
-                   Q = as.numeric(Q), df = df,
-                   pval = as.numeric(pval),
+                   Q = as.numeric(Q), df = df, pval = as.numeric(pval),
                    note = note),
-      path_matrix = path_matrix,
+      A.matrix = A.matrix,
       Sigma = Sigma,
       theta_p = theta_p
   )
-  #
-  class(res) <- "netpath"
   #
   res
 }
