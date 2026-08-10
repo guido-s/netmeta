@@ -71,8 +71,7 @@ containing the following components:
 \item{small.values, common, random}{As defined above.}
 \item{ranking.type}{A character string indicating whether ranking metrics
   are probabilities or ranks.}
-\item{larger.is.better}{A logical vector indicating the direction of the
-  ranking metric for each outcome.}
+\item{method}{Ranking metric used for all outcomes.}
 \item{call}{Function call.}
 \item{version}{Version of R package netmeta used to create object.}
 }
@@ -91,7 +90,7 @@ to gain further insights in situations with apparently conflicting
 orderings. This implementation for rankings in network meta-analyis
 is described in Rücker & Schwarzer (2017).
 
-In function \code{netposet}, argument \code{\dots{}} can be any of the
+In function \code{netposet}, argument \code{\dots} can be any of the
 following:
 \itemize{
 \item arbitrary number of \code{netrank} objects providing
@@ -99,13 +98,12 @@ following:
 \item arbitrary number of \code{netmeta} objects;
 \item single ranking matrix with each column providing P-scores
   (Rücker & Schwarzer 2015), SUCRA values (Salanti et al. 2011),
-  or another ranking metric where larger values are favorable for
-  an outcome and rows corresponding to treatments.
+  or another probabilistic ranking metric where larger values are favorable
+  for an outcome and rows corresponding to treatments.
 }
 Note, albeit in general a ranking matrix is not constrained to have
 values between 0 and 1, \code{netposet} stops with an error in this
-case as this function expects a matrix with ranking values where larger
-values are favorable.
+case.
 
 Argument \code{outcomes} can be used to label outcomes. If argument
 \code{outcomes} is missing,
@@ -126,7 +124,7 @@ if the first argument is a ranking matrix. If argument
 \item letters 'a', 'b', \dots{} are used as treatment labels and a
   corresponding warning is printed.
 }
-If argument \code{\dots{}} consists of \code{netmeta} objects,
+If argument \code{\dots} consists of \code{netmeta} objects,
 \code{netrank} is called internally to calculate P-scores. In this
 case, argument \code{small.values} can be used to specify for each
 outcome whether small values are beneficial (\code{"desirable"}) or
@@ -134,20 +132,19 @@ harmfull (\code{"undesirable"}); see \code{\link{netrank}}. This
 argument is ignored for a ranking matrix and \code{netrank}
 objects.
 
-If argument \code{\dots{}} consists of \code{netrank} objects, either
-P-scores, SUCRAs, and probabilities of being best can be combined, or mean
-and median ranks. These two groups of ranking metrics cannot be
-combined together.
+If argument \code{\dots} consists of \code{netrank} objects, P-scores,
+SUCRAs, probabilities of being best, mean ranks, or median ranks can be
+used. The same ranking metric must be used for all outcomes.
 
 Arguments \code{common} and \code{random} can be used to define
 whether results should be printed and plotted for common and random
 effects model. If netmeta and netrank objects are provided in
-argument \code{\dots{}}, values for \code{common} and \code{random}
+argument \code{\dots}, values for \code{common} and \code{random}
 within these objects are considered; if these values are not
 unique, argument \code{common} or \code{random} are set to
 \code{TRUE}.
 
-In function \code{print.netposet}, argument \code{\dots{}} is
+In function \code{print.netposet}, argument \code{\dots} is
 passed on to the printing function.
 }
 \examples{

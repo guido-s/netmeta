@@ -12,7 +12,13 @@
   - probabilities of being best
   - mean and median ranks
 
+* VišeKriterijumska Optimizacija I Kompromisno Rešenje (VIKOR) multi-criteria
+  decision analysis method implemented to find compromise solution for
+  conflicting treatment rankings
+
 ### User-visible changes
+
+* New functions vikor() and print.vikor() for the VIKOR method
 
 * print.netrank():
   - new argument 'digits.mean' to specify the digits for mean ranks
