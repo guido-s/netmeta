@@ -1,7 +1,7 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
 Version: 3.7-0
-Date: 2026-08-10
+Date: 2026-09-17
 Depends: R (>= 4.0.0), meta (>= 8.5-0)
 Imports: Matrix, metafor, MASS, mvtnorm, magic, igraph, 
   ggplot2, colorspace, grid, dplyr, magrittr, methods,
@@ -65,4 +65,4 @@ Description: A comprehensive set of functions providing frequentist methods for 
 License: GPL (>= 2) | file LICENSE
 Encoding: UTF-8
 VignetteBuilder: R.rsp, knitr
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

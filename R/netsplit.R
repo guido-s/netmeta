@@ -286,32 +286,34 @@
 #' }
 #' 
 #' @rdname netsplit
-#' @export netsplit
+#' @method netsplit netmeta
+#' @export
 
-netsplit <- function(x, method,
-                     upper = TRUE,
-                     reference.group = x$reference.group,
-                     baseline.reference = x$baseline.reference,
-                     #
-                     show = gs("show"),
-                     overall = TRUE,
-                     direct = TRUE,
-                     indirect = TRUE,
-                     only.reference = FALSE,
-                     ci = FALSE,
-                     test = show %in% c("all", "with.direct", "both"),
-                     #
-                     order = NULL,
-                     #
-                     nchar.trts = x$nchar.trts,
-                     sep.trts = x$sep.trts, quote.trts = "",
-                     tol.direct = 0.0005,
-                     common = x$common,
-                     random = x$random,
-                     backtransf = x$backtransf,
-                     warn = FALSE, warn.deprecated = gs("warn.deprecated"),
-                     verbose = FALSE,
-                     ...) {
+netsplit.netmeta <- function(x, method,
+                             upper = TRUE,
+                             reference.group = x$reference.group,
+                             baseline.reference = x$baseline.reference,
+                             #
+                             show = gs("show"),
+                             overall = TRUE,
+                             direct = TRUE,
+                             indirect = TRUE,
+                             only.reference = FALSE,
+                             ci = FALSE,
+                             test = show %in% c("all", "with.direct", "both"),
+                             #
+                             order = NULL,
+                             #
+                             nchar.trts = x$nchar.trts,
+                             sep.trts = x$sep.trts, quote.trts = "",
+                             tol.direct = 0.0005,
+                             common = x$common,
+                             random = x$random,
+                             backtransf = x$backtransf,
+                             warn = FALSE,
+                             warn.deprecated = gs("warn.deprecated"),
+                             verbose = FALSE,
+                             ...) {
   
   ##
   ##
@@ -1145,3 +1147,9 @@ print.netsplit <- function(x,
   
   invisible(NULL)
 }
+
+
+#' @export netsplit
+
+netsplit <- function(x, ...)
+  UseMethod("netsplit")

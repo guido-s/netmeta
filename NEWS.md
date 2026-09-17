@@ -1,12 +1,10 @@
-## netmeta, version 3.7-0 (2026-mm-dd)
+## netmeta, version 3.7-0 (2026-09-17)
 
 ### Major changes
 
 * New R functions netpath() and heatplot.netpath() implemented for path-based
   approach for detecting and assessing inconsistency in network meta-analysis
   [(Tahmasebi et al., 2025)](https://doi.org/10.48550/arXiv.2506.20364).
-
-* R package **reshape2** added to Imports.
 
 * VišeKriterijumska Optimizacija I Kompromisno Rešenje (VIKOR) multi-criteria
   decision analysis method implemented to find compromise solution for
@@ -15,6 +13,8 @@
 * Additional ranking metrics can be calculated with netrank():
   - probabilities of being best
   - mean and median ranks
+
+* R package **reshape2** added to Imports.
 
 ### User-visible changes
 
@@ -30,6 +30,11 @@
 * netleague(), netposet(), plot.netposet():
   - account for smaller values being favorable for mean and median ranks
   - stop if non-comparable ranking metrics are combined
+
+### Internal changes
+
+* netsplit() is now an S3 generic function; the previous implementation is now
+  available as the method netsplit.netmeta()
 
 
 ## netmeta, version 3.6-1 (2026-06-19)
@@ -1544,8 +1549,8 @@
 
 ### User-visible changes
 
-* netgraph() is a generic function and original function netgraph()
-  renamed to netgraph.netmeta()
+* netgraph() is now an S3 generic function; the previous implementation is now
+  available as the method netgraph.netmeta()
 
 * netgraph.netmeta():
   - new argument 'bg.points'
