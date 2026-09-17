@@ -170,11 +170,12 @@
 #' #
 #' print(netrank(nma0), common = FALSE)
 #' 
-#' # Create a CSV file with league table for random effects model
+#' # Create a temporary CSV file with league table for random effects model
 #' #
 #' league0 <- netleague(nma0, digits = 2, bracket = "(", separator = " to ")
 #' #
-#' write.table(league0$random, file = "league0-random.csv",
+#' .tmp_file_csv <- tempfile(fileext = ".csv")
+#' write.table(league0$random, file = .tmp_file_csv,
 #'   row.names = FALSE, col.names = FALSE, sep = ",")
 #' #
 #' # Create Excel files with league tables
