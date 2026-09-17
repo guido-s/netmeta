@@ -1,7 +1,7 @@
 #' Scatter plot or biplot showing partially order of treatment ranks
 #' 
 #' @description
-#' This function generates a scatter plot or biplot of P-scores with
+#' This function generates a scatter plot or biplot of ranking metrics with
 #' an overlay describing partial order of treatment ranks.
 #' 
 #' @param x An object of class \code{netmeta} (mandatory).
@@ -57,13 +57,13 @@
 #' 
 #' @details
 #' By default (arguments \code{plottype = "scatter"} and \code{dim =
-#' "2d"}), a scatter plot is created showing P-scores (see
+#' "2d"}), a scatter plot is created showing ranking metrics (see
 #' \code{\link{netrank}}) for the first two outcomes considered in the
 #' generation of a partially ordered set of treatment ranks (using
-#' \code{\link{netposet}}). In addition to the P-scores, the partially
+#' \code{\link{netposet}}). In addition to these rankings, the partial
 #' order of treatment ranks is shown as lines connecting treatments
 #' which is analogous to a Hasse diagram. If argument \code{dim =
-#' "3d"}), a 3-D scatter plot is generated showing P-scores for the
+#' "3d"}), a 3-D scatter plot is generated showing rankings for the
 #' first three outcomes.
 #' 
 #' To overcome the restriction of two or three dimension, a biplot
@@ -80,6 +80,10 @@
 #' different outcomes to show on x- and y-axis in a 2-D scatter plot;
 #' argument \code{sel.z} can be used accordingly in a 3-D scatter
 #' plot. These arguments are ignored for a biplot.
+#'
+#' Scatter plots use axes from 0 to 1 for P-scores, SUCRAs, and probabilities
+#' of being best. For mean and median ranks, axes are reversed so that favorable
+#' rankings are shown towards the top or right of the plot.
 #' 
 #' Note, in order to generate 3-D plots (argument \code{dim = "3d"}),
 #' R package \bold{rgl} is necessary. Note, under macOS the X.Org X
@@ -152,6 +156,8 @@ plot.netposet <- function(x,
   ##
   n.outcomes   <- length(outcomes)
   n.treatments <- length(treatments)
+  ##
+  larger.is.better <- replaceNULL(x$ranking.type, "probs") == "probs"
   
   
   dim <- setchar(dim, c("2d", "3d"))
@@ -320,20 +326,26 @@ plot.netposet <- function(x,
     }
     else {
       ##
+      xlim <- if (larger.is.better) c(0, 1) else c(n.treatments, 1)
+      ylim <- if (larger.is.better) c(0, 1) else c(n.treatments, 1)
+      ##
       plot(xvals, yvals,
            type = "n",
            xlab = outcomes[sel.x], ylab = outcomes[sel.y],
-           xlim = c(0, 1), ylim = c(0, 1),
+           xlim = xlim, ylim = ylim,
            ...)
     }
     
     if (grid & !is_biplot) {
+      x0 <- xlim[1]
+      y0 <- ylim[1]
+      ##
       for (i in seq.treats) {
         lines(x = c(xvals[i], xvals[i]),
-              y = c(0, yvals[i]),
+              y = c(y0, yvals[i]),
               col = col.grid, lty = lty.grid, lwd = lwd.grid)
         ##
-        lines(x = c(0, xvals[i]),
+        lines(x = c(x0, xvals[i]),
               y = c(yvals[i], yvals[i]),
               col = col.grid, lty = lty.grid, lwd = lwd.grid)
       }
@@ -375,10 +387,22 @@ plot.netposet <- function(x,
     yvals <- p.matrix[, sel.y]
     zvals <- p.matrix[, sel.z]
     ##
-    rgl::plot3d(xvals, yvals, zvals,
-                xlab = outcomes[sel.x],
-                ylab = outcomes[sel.y],
-                zlab = outcomes[sel.z])
+    if (is_biplot)
+      rgl::plot3d(xvals, yvals, zvals,
+                  xlab = outcomes[sel.x],
+                  ylab = outcomes[sel.y],
+                  zlab = outcomes[sel.z])
+    else {
+      xlim <- if (larger.is.better) c(0, 1) else c(n.treatments, 1)
+      ylim <- if (larger.is.better) c(0, 1) else c(n.treatments, 1)
+      zlim <- if (larger.is.better) c(0, 1) else c(n.treatments, 1)
+      ##
+      rgl::plot3d(xvals, yvals, zvals,
+                  xlab = outcomes[sel.x],
+                  ylab = outcomes[sel.y],
+                  zlab = outcomes[sel.z],
+                  xlim = xlim, ylim = ylim, zlim = zlim)
+    }
     ##
     if (use_pch)
       for (i in seq.treats)

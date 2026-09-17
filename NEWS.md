@@ -1,3 +1,42 @@
+## netmeta, version 3.7-0 (2026-09-17)
+
+### Major changes
+
+* New R functions netpath() and heatplot.netpath() implemented for path-based
+  approach for detecting and assessing inconsistency in network meta-analysis
+  [(Tahmasebi et al., 2025)](https://doi.org/10.48550/arXiv.2506.20364).
+
+* VišeKriterijumska Optimizacija I Kompromisno Rešenje (VIKOR) multi-criteria
+  decision analysis method implemented to find compromise solution for
+  conflicting treatment rankings.
+
+* Additional ranking metrics can be calculated with netrank():
+  - probabilities of being best
+  - mean and median ranks
+
+* R package **reshape2** added to Imports.
+
+### User-visible changes
+
+* New functions vikor() and print.vikor() for the VIKOR method
+
+* print.netrank():
+  - new argument 'digits.mean' to specify the digits for mean ranks
+
+* plot.netrank():
+  - new argument 'main.legend' to specify the heading for the legend
+  - mean and median ranks are shown with smaller values as favorable
+
+* netleague(), netposet(), plot.netposet():
+  - account for smaller values being favorable for mean and median ranks
+  - stop if non-comparable ranking metrics are combined
+
+### Internal changes
+
+* netsplit() is now an S3 generic function; the previous implementation is now
+  available as the method netsplit.netmeta()
+
+
 ## netmeta, version 3.6-1 (2026-06-19)
 
 ### Bug fixes
@@ -78,6 +117,9 @@
 ## netmeta, version 3.3-1 (2026-01-27)
 
 ### Major changes
+
+* [Noosheen R. Tahmasebi](https://orcid.org/0009-0000-9660-3655) added as
+  a contributor to the R package **netmeta**
 
 * Contributions of individual studies or paths on each comparison in the
   network can be calculated for the shortest path algorithm
@@ -1507,8 +1549,8 @@
 
 ### User-visible changes
 
-* netgraph() is a generic function and original function netgraph()
-  renamed to netgraph.netmeta()
+* netgraph() is now an S3 generic function; the previous implementation is now
+  available as the method netgraph.netmeta()
 
 * netgraph.netmeta():
   - new argument 'bg.points'
