@@ -10,40 +10,52 @@
 #' @param small.values A character string specifying whether small
 #'   treatment effects indicate a beneficial (\code{"desirable"}) or
 #'   harmful (\code{"undesirable"}) effect, can be abbreviated.
-#' @param method A character string specifying whether the
-#'   \code{"P-score"} or \code{"SUCRA"} ranking metric will be
-#'   calculated.
-#' @param nsim Number of repetitions to calculate SUCRAs.
-#' @param common A logical indicating whether to print P-scores or
-#'   SUCRAs for the common effects model.
-#' @param random A logical indicating whether to print P-scores or
-#'   SUCRAs for the random effects model.
+#' @param method A character string specifying the ranking metric (see Details).
+#' @param nsim Number of repetitions for ranking metrics based on resampling.
+#' @param common A logical indicating whether to print the rankings for the
+#'   common effects model.
+#' @param random A logical indicating whether to print the rankings for the
+#'   random effects model.
 #' @param sort A logical indicating whether printout should be sorted
-#'   by decreasing P-score.
-#' @param digits Minimal number of significant digits, see
-#'   \code{\link{print.default}}.
+#'   by decreasing rankings.
+#' @param digits Minimal number of significant digits for ranking probabilities,
+#'  P-scores, and SUCRAs, see \code{\link{print.default}}.
+#' @param digits.mean Minimal number of significant digits for mean or median
+#'   ranks, see \code{\link{print.default}}.
 #' @param warn.deprecated A logical indicating whether warnings should
 #'   be printed if deprecated arguments are used.
 #' @param \dots Additional arguments passed on to
 #'   \code{\link{print.data.frame}} function (used internally).
 #' 
 #' @details
+#' Treatments considered in a network meta-analysis are ranked by one of the
+#' following ranking metrics:
 #' 
-#' Treatments are ranked based on a network meta-analysis. Ranking is
-#' performed by a ranking metric: P-score or SUCRA.
-#'
+#' \tabular{ll}{
+#' \bold{Argument} \tab \bold{Ranking metric} \cr
+#' \code{method = "P-score"} \tab P-score (Rücker and Schwarzer 2015) \cr
+#' \code{method = "SUCRA"} \tab Surface Under the Cumulative RAnking curve
+#'   (SUCRA) \cr
+#' \tab (Salanti et al. 2011) \cr
+#' \code{method = "best"} \tab Probability of being best (Pr(best)) \cr
+#' \code{method = "mean"} \tab Mean rank \cr
+#' \code{method = "median"} \tab Median rank
+#' }
+#' 
 #' P-scores are based solely on the point estimates and standard
 #' errors of the network estimates. They measure the extent of
 #' certainty that a treatment is better than another treatment,
 #' averaged over all competing treatments (Rücker and Schwarzer 2015).
-#'
+#' 
+#' Resampling methods are used for all other ranking metrics.
+#' 
 #' The Surface Under the Cumulative RAnking curve (SUCRA) is the rank
 #' of treatment \emph{i} within the range of treatments, measured on a
 #' scale from 0 (worst) to 1 (best) (Salanti et al. 2011). A
 #' resampling method is used to calculate SUCRAs for frequentist
 #' network meta-analysis. The number of repetitions is determine by
 #' argument \code{nsim}.
-#'
+#' 
 #' The interpretation of P-scores and SUCRAs is comparable.
 #' 
 #' The P-score of treatment \emph{i} is defined as the mean of all 1 -
@@ -59,15 +71,22 @@
 #' extent of certainty that treatment \emph{i} is better than another
 #' treatment.
 #'
+#' For P-scores, SUCRAs, and probabilities of being best, larger values are
+#' favorable. For mean and median ranks, smaller values are favorable.
+#' 
+#' @note
+#' Internally, \code{\link{rankogram}} is called for the ranking metrics
+#' based on resampling methods.
+#' 
 #' @return
 #' An object of class \code{netrank} with corresponding \code{print}
 #' function. The object is a list containing the following components:
-#' \item{ranking.common}{A named numeric vector with P-scores or SUCRAs
-#'   for the common effects model.}
+#' \item{ranking.common}{A named numeric vector with ranking values for the
+#'   common effects model.}
 #' \item{Pmatrix.common}{Numeric matrix based on pairwise one-sided
 #'   p-values for the common effects model.}
-#' \item{ranking.random}{A named numeric vector with P-scores or
-#'   SUCRAs for the random effects model.}
+#' \item{ranking.random}{A named numeric vector with ranking values for the
+#'   random effects model.}
 #' \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided
 #'   p-values of the random effects model.}
 #' \item{small.values, method, x}{As defined above.}
@@ -162,7 +181,7 @@
 #' nma5 <- netmeta(pw5, common = FALSE, seq = trts, ref = "Placebo",
 #'   small.values = "desirable")
 #' 
-#' # Image plot of treatment rankings (two outcomes)
+#' # Image plot of treatment rankings (five outcomes)
 #' #
 #' plot(netrank(nma1), netrank(nma2), netrank(nma3),
 #'   netrank(nma4), netrank(nma5),
@@ -200,7 +219,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
       method <- "SUCRA"
   }
   else
-    method <- setchar(method, c("P-score", "SUCRA"))
+    method <- setchar(method, c("P-score", "SUCRA", "best", "mean", "median"))
   #
   small.values <- setsv(small.values)
   ##
@@ -251,7 +270,7 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
   }
   
   
-  if (method == "SUCRA") {
+  if (method != "P-score") {
     ##
     ## SUCRAs
     ##
@@ -266,10 +285,16 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
         #
         nsim <- rnk$nsim
         #
-        if (common)
+        if (common) {
           rnk$ranking.random <- setNA(rnk$ranking.common)
-        else
+          rnk$meanranks.random <- setNA(rnk$meanranks.common)
+          rnk$medianranks.random <- setNA(rnk$medianranks.common)
+        }
+        else {
           rnk$ranking.common <- setNA(rnk$ranking.random)
+          rnk$meanranks.common <- setNA(rnk$meanranks.random)
+          rnk$medianranks.common <- setNA(rnk$medianranks.random)
+        }
       }
       else {
         if (missing(nsim))
@@ -292,9 +317,23 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
     ##
     P.common <- NULL
     P.random <- NULL
-    ##
-    ranking.common <- rnk$ranking.common
-    ranking.random <- rnk$ranking.random
+    #
+    if (method == "SUCRA") {
+      ranking.common <- rnk$ranking.common
+      ranking.random <- rnk$ranking.random
+    }
+    else if (method == "best") {
+      ranking.common <- rnk$ranking.matrix.common[, 1]
+      ranking.random <- rnk$ranking.matrix.random[, 1]
+    }
+    else if (method == "mean") {
+      ranking.common <- rnk$meanranks.common
+      ranking.random <- rnk$meanranks.random
+    }
+    else if (method == "median") {
+      ranking.common <- rnk$medianranks.common
+      ranking.random <- rnk$medianranks.random
+    }
   }
   else {
     ##
@@ -307,7 +346,6 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
     ##
     TE.random <- x$TE.random
     pval.random <- x$pval.random
-    
     
     ## Calculate one-sided p-values
     ##
@@ -330,7 +368,6 @@ netrank <- function(x, small.values = x$small.values, method, nsim,
     else
       P.random <-
         w.random * (1 - p.random / 2) + (1 - w.random) * p.random / 2
-    
     
     ## Row means provide P-scores
     ##
@@ -397,6 +434,7 @@ print.netrank <- function(x,
                           random = x$random,
                           sort = TRUE,
                           digits = gs("digits.prop"),
+                          digits.mean = 2,
                           warn.deprecated = gs("warn.deprecated"),
                           ...) {
   
@@ -421,7 +459,8 @@ print.netrank <- function(x,
   else
     chklogical(sort)
   ##
-  chknumeric(digits, length = 1)
+  chknumeric(digits, min = 0, length = 1)
+  chknumeric(digits.mean, min = 0, length = 1)
   ##
   ## Check for deprecated arguments in '...'
   ##
@@ -458,18 +497,28 @@ print.netrank <- function(x,
     sort <- "random"
 
 
-  if (is.null(x$method)) {
-    x$method <- "P-score"
+  method <- x$method
+  sign <- -1
+  #
+  if (is.null(method)) {
+    method <- "P-score"
     x$ranking.common <- x$Pscore.common
     x$ranking.random <- x$Pscore.random
   }
-  
+  else if (method %in% c("mean", "median")) {
+    method <- paste(str_to_sentence(x$method), "rank")
+    #
+    digits <- digits.mean
+    sign <- 1
+  }
+  else if (method == "best")
+    method <- "Pr(best)"
   
   if (both) {
     if (is.character(sort)) {
       res.both <- data.frame(common = round(x$ranking.common, digits),
                              random = round(x$ranking.random, digits))
-      res.both <- res.both[order(-res.both[, sort]), ]
+      res.both <- res.both[order(sign * res.both[, sort]), ]
     }
     else if (!sort) {
       res.both <- data.frame(common = round(x$ranking.common[x$x$seq], digits),
@@ -477,19 +526,19 @@ print.netrank <- function(x,
     }
     ##
     colnames(res.both) <-
-      paste(x$method,
+      paste(method,
             paste0("(", c(gs("text.w.common"), gs("text.w.random")), ")"))
   }
   else {
     if (sort) {
       if (common)
         res.common <-
-          as.data.frame(round(x$ranking.common[order(-x$ranking.common)],
-                              digits))
+          as.data.frame(
+            round(x$ranking.common[order(sign * x$ranking.common)], digits))
       if (random)
         res.random <-
-          as.data.frame(round(x$ranking.random[order(-x$ranking.random)],
-                              digits))
+          as.data.frame(
+            round(x$ranking.random[order(sign * x$ranking.random)], digits))
     }
     else {
       if (common)
@@ -499,9 +548,9 @@ print.netrank <- function(x,
     }
     ##
     if (common)
-      colnames(res.common)  <- x$method
+      colnames(res.common) <- method
     if (random)
-      colnames(res.random) <- x$method
+      colnames(res.random) <- method
   }
   ##
   matitle(x)
@@ -519,11 +568,10 @@ print.netrank <- function(x,
     prmatrix(res.random, quote = FALSE, ...)
   }
 
-  if (x$method == "SUCRA" & !is.null(x$nsim))
+  if (method != "P-score" & !is.null(x$nsim))
     cat("\n- based on ", x$nsim,
         " repetition", if (x$nsim > 1) "s", "\n",
         sep = "")
-  
   
   invisible(NULL)
 }
