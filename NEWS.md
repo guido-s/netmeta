@@ -1,3 +1,12 @@
+## netmeta, version 3.7-1 (2026-mm-dd)
+
+### User-visible changes
+
+* netconnection():
+  - treatments in a single connected network are now returned in
+    alphanumeric order in list element 'seq'
+
+
 ## netmeta, version 3.7-0 (2026-09-17)
 
 ### Major changes
