@@ -14,7 +14,9 @@ nma.ruecker <- function(TE, W, seTE,
   
   m <- length(TE)                        # Number of pairwise comparisons (edges)
   n <- length(unique(c(treat1, treat2))) # Number of treatments (vertices)
-  df1 <- 2 * sum(1 / narms)              # Sum of degrees of freedom per study
+  # Count each study's independent contrasts once, avoiding roundoff from
+  # summing reciprocal arm counts over all pairwise comparisons.
+  df1 <- sum(narms[!duplicated(studlab)] - 1)
   
   
   ##
@@ -399,7 +401,9 @@ nma_ruecker <- function(TE, W, seTE,
   
   m <- length(TE)                        # Number of pairwise comparisons (edges)
   n <- length(unique(c(treat1, treat2))) # Number of treatments (vertices)
-  df1 <- 2 * sum(1 / narms)              # Sum of degrees of freedom per study
+  # Count each study's independent contrasts once, avoiding roundoff from
+  # summing reciprocal arm counts over all pairwise comparisons.
+  df1 <- sum(narms[!duplicated(studlab)] - 1)
   df.Q <- df1 - (n - 1)                  # Degrees of freedom for Q test
   
   # Drop Matrix attributes

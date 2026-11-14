@@ -1,3 +1,12 @@
+## Development version
+
+### Bug fixes
+
+* netmeta():
+  - count study degrees of freedom without floating-point roundoff, preserving
+    the zero-degree-of-freedom handling in saturated multi-arm networks
+
+
 ## netmeta, version 3.7-0 (2026-09-17)
 
 ### Major changes
