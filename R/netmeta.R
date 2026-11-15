@@ -1474,6 +1474,7 @@ netmeta <- function(TE, seTE,
       #
       keep <- logical(0)
       wo <- logical(0)
+      V.list <- list()
       #
       for (i in unique(dat.tau$studlab)) {
         d.i <- dat.tau[dat.tau$studlab == i, , drop = FALSE]
@@ -1485,6 +1486,15 @@ netmeta <- function(TE, seTE,
         #
         keep.i <- !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
         wo.i <- d.i$treat1 == ref.i
+        # Covariance of the retained contrasts, all oriented against ref.i.
+        v.i <- matrix(0, length(trts.i), length(trts.i),
+                       dimnames = list(trts.i, trts.i))
+        v.i[cbind(d.i$treat1, d.i$treat2)] <- d.i$seTE^2
+        v.i <- v.i + t(v.i)
+        trts.keep <- ifelse(wo.i[keep.i], d.i$treat2[keep.i], d.i$treat1[keep.i])
+        v.ref <- v.i[trts.keep, ref.i]
+        V.list[[length(V.list) + 1L]] <-
+          (outer(v.ref, v.ref, "+") - v.i[trts.keep, trts.keep, drop = FALSE]) / 2
         #
         keep <- c(keep, keep.i)
         wo <- c(wo, wo.i)
@@ -1536,7 +1546,7 @@ netmeta <- function(TE, seTE,
         V <- bldiag(lapply(split(dat.tau, dat.tau$studlab), calcV, sm = sm))
       }
       else
-        V <- dat.tau$seTE^2
+        V <- bldiag(V.list)
       #
       dat.tau.TE <- dat.tau$TE
       dat.tau$comparison <- paste(dat.tau$treat1, dat.tau$treat2, sep = " vs ")
