@@ -140,8 +140,15 @@ A BibTeX entry for LaTeX users is provided by
 citation(package = "netmeta")
 ```
 
+## AI Assistance
 
-### Bug Reports:
+Since version 3.7-1, OpenCode and ChatGPT have been used to assist with
+code development, refactoring, test development, and documentation in
+**netmeta**. All resulting contributions have been reviewed and, where
+appropriate, modified and tested by the package maintainer, who takes
+responsibility for the package contents.
+
+## Bug Reports:
 
 You can report bugs on GitHub under
 [Issues](https://github.com/guido-s/netmeta/issues).
