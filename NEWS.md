@@ -1,10 +1,26 @@
-## Development version
+## netmeta, version 3.7-1 (2026-mm-dd)
+
+### Major changes
+
+* R package **netmeta** now requires R (>= 4.1.0) and R package **meta** (>= 9.0-0).
+
+### User-visible changes
+
+* netconnection():
+  - treatments in a single connected network are now returned in
+    alphanumeric order in list element 'seq'
 
 ### Bug fixes
 
 * netmeta():
   - count study degrees of freedom without floating-point roundoff, preserving
     the zero-degree-of-freedom handling in saturated multi-arm networks
+
+### Internal changes
+
+* Use R package **testthat** for unit tests.
+
+* R packages **testthat** and **corpcor** added to Suggests.
 
 
 ## netmeta, version 3.7-0 (2026-09-17)
