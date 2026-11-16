@@ -10,6 +10,12 @@
   - treatments in a single connected network are now returned in
     alphanumeric order in list element 'seq'
 
+### Bug fixes
+
+* netmeta():
+  - count study degrees of freedom without floating-point roundoff, preserving
+    the zero-degree-of-freedom handling in saturated multi-arm networks
+
 ### Internal changes
 
 * Use R package **testthat** for unit tests.
