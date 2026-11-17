@@ -1,4 +1,4 @@
-## netmeta, version 3.7-1 (2026-mm-dd)
+## netmeta, version 3.8-0 (2026-mm-dd)
 
 ### Major changes
 
@@ -6,21 +6,38 @@
 
 ### User-visible changes
 
-* netconnection():
-  - treatments in a single connected network are now returned in
-    alphanumeric order in list element 'seq'
+* `netmeta()`, `netmetabin()`, `netcomb()`, `discomb()`: argument `func.inverse`
+  now also accepts character strings specifying a function with its package
+  name, e.g., `"MASS::ginv"`.
+
+* `hatmatrix()`: new argument `func.inverse` allows specification of the
+  pseudoinverse function for the Davies method. By default, the function
+  stored in the network meta-analysis object is used. Explicit input is
+  ignored with a warning for the Ruecker and Krahn methods.
+
+* `netcomb()`: by default, argument `func.inverse` now uses the function
+  stored in the supplied network meta-analysis object.
+
+* `netconnection()`: treatments in a single connected network are now returned
+  in alphanumeric order in the list element `seq`.
+
+* Updated documentation for `netmeta()` and `hatmatrix()`.
 
 ### Bug fixes
 
-* netmeta():
-  - count study degrees of freedom without floating-point roundoff, preserving
-    the zero-degree-of-freedom handling in saturated multi-arm networks
+* `netmeta()`: count study degrees of freedom without floating-point roundoff,
+  preserving the zero-degrees-of-freedom handling in saturated multi-arm
+  networks.
 
+* `netmetabin()`, `discomb()`: argument `func.inverse` was not forwarded
+  to some internal calls to `netmeta()`, causing the default inverse
+  function to be used instead of the specified function.
+  
 ### Internal changes
 
 * Use R package **testthat** for unit tests.
 
-* R packages **testthat** and **corpcor** added to Suggests.
+* R packages **testthat** and **corpcor** added to the Suggests field.
 
 
 ## netmeta, version 3.7-0 (2026-09-17)

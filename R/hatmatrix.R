@@ -17,6 +17,9 @@
 #'   characters used to create unique treatment names.
 #' @param nchar.studlab A numeric defining the minimum number of
 #'   characters used to create unique study labels.
+#' @param func.inverse A function or character string specifying the function
+#'   used to calculate the pseudoinverse of the Laplacian matrix L
+#'   (see \code{\link{netmeta}}).
 #' @param digits Minimal number of significant digits, see
 #'   \code{print.default}.
 #' @param legend A logical indicating whether a legend should be
@@ -166,7 +169,15 @@ hatmatrix <- function(x, method = "Ruecker", type,
                       common = x$common,
                       random = x$random,
                       nchar.trts = x$nchar.trts,
-                      nchar.studlab = x$nchar.studlab) {
+                      nchar.studlab = x$nchar.studlab,
+                      #
+                      func.inverse = x$func.inverse) {
+  
+  #
+  #
+  # (1) Check and set arguments
+  #
+  #
   
   chkclass(x, "netmeta")
   x <- updateversion(x)
@@ -211,7 +222,58 @@ hatmatrix <- function(x, method = "Ruecker", type,
   ##
   nchar.studlab <- replaceNULL(nchar.studlab, 666)
   chknumeric(nchar.studlab, min = 1, length = 1)
+  #
+  missing.func.inverse <- missing(func.inverse)
+  #
+  if (!missing.func.inverse && method == "Krahn")
+        warning("Input to argument 'func.inverse' ignored for ",
+                "hat matrices by Krahn et al. (2013).",
+                call. = FALSE)
+  #
+  if (!missing.func.inverse && method == "Ruecker")
+    warning("Argument 'func.inverse' ignored for argument method = \"Ruecker\".",
+            call. = FALSE)
+  #
+  if (method == "Davies") {
+    if (is.character(func.inverse))
+      func.inverse <- eval(str2lang(func.inverse))
+    #
+    if (!is.function(func.inverse))
+      stop("Argument 'func.inverse' must specify a function.", call. = FALSE)
+    #
+    # Prepare the function for storage in the hatmatrix object
+    #
+    func.inverse.stored <- func.inverse
+    #
+    env <- environment(func.inverse)
+    #
+    if (isNamespace(env)) {
+      pkg <- getNamespaceName(env)
+      exports <- getNamespaceExports(pkg)
+      #
+      matches <- vapply(
+        exports,
+        function(nam)
+          identical(func.inverse, getExportedValue(pkg, nam)),
+        logical(1)
+      )
+      #
+      if (any(matches)) {
+        nam <- exports[which(matches)[1L]]
+        func.inverse.stored <- paste0(pkg, "::", nam)
+      }
+    }
+  }
+  else if (method == "Ruecker")
+    func.inverse.stored <- x$func.inverse
+  else
+    func.inverse.stored <- NULL
   
+  #
+  #
+  # (2) Calculate and return hat matrix
+  #
+  #
   
   res <- list()
   ##
@@ -230,8 +292,8 @@ hatmatrix <- function(x, method = "Ruecker", type,
     }
   }
   else if (method == "Davies") {
-    res$common <- hatmatrix.aggr(x, "common", type)
-    res$random <- hatmatrix.aggr(x, "random", type)
+    res$common <- hatmatrix.aggr(x, "common", type, func.inverse)
+    res$random <- hatmatrix.aggr(x, "random", type, func.inverse)
   }
   ##
   res$method <- method
@@ -242,6 +304,9 @@ hatmatrix <- function(x, method = "Ruecker", type,
   res$x$random <- random
   res$x$nchar.trts <- nchar.trts
   res$x$nchar.studlab <- nchar.studlab
+  #
+  if (!is.null(func.inverse.stored))
+    res$func.inverse <- func.inverse.stored
   #
   res$call <- match.call()
   res$version <- packageDescription("netmeta")$Version
@@ -393,7 +458,7 @@ print.hatmatrix <- function(x,
 }
 
 
-hatmatrix.aggr <- function(x, model, type) {
+hatmatrix.aggr <- function(x, model, type, func.inverse = invmat) {
   
   model <- setchar(model, c("common", "random"))
   type <- setchar(type, c("full", "long", "short"))
@@ -439,7 +504,7 @@ hatmatrix.aggr <- function(x, model, type) {
   ##
   L <- t(B) %*% W %*% B
   ## Pseudo-Inverse of L 
-  L.plus <- invmat(L)
+  L.plus <- do.call(func.inverse, list(X = L))
   L.plus[is_zero(L.plus)] <- 0
   ##
   ## Aggregate Hat matrix
