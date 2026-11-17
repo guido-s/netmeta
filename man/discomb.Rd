@@ -134,8 +134,9 @@ Details).}
 
 \item{sep.ia}{A single character to define separator for interactions.}
 
-\item{func.inverse}{R function used to calculate the pseudoinverse
-of the Laplacian matrix L (see \code{\link{netmeta}}).}
+\item{func.inverse}{A function or character string specifying the function
+used to calculate the pseudoinverse of the Laplacian matrix L
+(see \code{\link{netmeta}}).}
 
 \item{n1}{Number of observations in first treatment group.}
 

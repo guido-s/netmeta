@@ -376,6 +376,8 @@ netconnection.default <- function(data = NULL, treat1, treat2, studlab = NULL,
     dat.i <- dat.subnet[dat.subnet$subnet == i, ]
     seq <- c(seq, unique(c(dat.i$treat1, dat.i$treat2)))
   }
+  if (n.subsets == 1)
+    seq <- sort(seq)
   #
   A <- A[seq, seq]
   D <- D[seq, seq]

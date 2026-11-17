@@ -2,17 +2,17 @@
 #' 
 #' @description
 #' Network meta-analysis is a generalisation of pairwise meta-analysis
-#' that compares all pairs of treatments within a number of treatments
+#' that compares all pairs of treatments among a set of treatments
 #' for the same condition. The graph-theoretical approach for network
 #' meta-analysis uses methods that were originally developed in
-#' electrical network theory. It has been found to be equivalent to
-#' the frequentist approach to network meta-analysis which is based on
-#' weighted least squares regression (Rücker, 2012). An extension for
-#' multi-arm studies with correlated treatment arms is also implemented
-#' (Rücker & Schwarzer, 2025, unpublished).
+#' electrical network theory. It is equivalent to weighted least squares
+#' regression (Rücker, 2012) and yields identical results to multivariate
+#' meta-regression based on basic contrasts (Rücker & Schwarzer, 2014).
+#' An extension for multi-arm studies with correlated treatment arms is
+#' also implemented (Rücker & Schwarzer, 2025).
 #' 
 #' @param TE Estimate of treatment effect, i.e. difference between
-#'   first and second treatment (e.g. log odds ratio, mean difference,
+#'   first and second treatment (e.g., log odds ratio, mean difference,
 #'   or log hazard ratio). Or an R object created with
 #'   \code{\link[meta]{pairwise}}.
 #' @param seTE Standard error of treatment estimate.
@@ -50,8 +50,8 @@
 #' @param small.values A character string specifying whether small
 #'   treatment effects indicate a beneficial (\code{"desirable"}) or
 #'   harmful (\code{"undesirable"}) effect (passed on to
-#'   \code{\link{netrank}}, can be abbreviated.
-#' @param all.treatments A logical or \code{"NULL"}. If \code{TRUE},
+#'   \code{\link{netrank}}); can be abbreviated.
+#' @param all.treatments A logical or \code{NULL}. If \code{TRUE},
 #'   matrices with all treatment effects, and confidence limits will
 #'   be printed.
 #' @param seq A character or numerical vector specifying the sequence
@@ -61,10 +61,10 @@
 #'   square root \eqn{\tau}. Either \code{"DL"}, \code{"REML"}, or
 #'   \code{"ML"}, can be abbreviated.
 #' @param method.random.ci A character string indicating which method
-#'   is used to calculate confidence interval and test statistic for
-#'   random effects estimate; either \code{"classic"} for standard normal
-#'   quantiles or \code{"t-dist"} for quantiles from the t-distribution, can
-#'   be abbreviated.
+#'   is used to calculate the confidence interval and test statistic for
+#'   the random effects estimate; either \code{"classic"} for standard
+#'   normal quantiles or \code{"t-dist"} for quantiles from the
+#'   t-distribution, can be abbreviated.
 #' @param tau.preset An optional value for manually setting the
 #'   square-root of the between-study variance \eqn{\tau^2}.
 #' @param tol.multiarm A numeric for the tolerance for consistency of
@@ -91,8 +91,9 @@
 #'   characters used to create unique treatment names (see Details).
 #' @param nchar.studlab A numeric defining the minimum number of
 #'   characters used to create unique study labels.
-#' @param func.inverse R function used to calculate the pseudoinverse
-#'   of the Laplacian matrix L (see Details).
+#' @param func.inverse A function or character string specifying the function
+#'   used to calculate the pseudoinverse of the Laplacian matrix \strong{L}
+#'   (see Details).
 #' @param n1 Number of observations in first treatment group.
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
@@ -124,7 +125,8 @@
 #' 
 #' @details
 #' Network meta-analysis using R package \bold{netmeta} is described
-#' in detail in Schwarzer et al. (2015), Chapter 8.
+#' in detail in Balduzzi et al. (2023). An earlier introduction is provided in
+#' Chapter 8 of Schwarzer et al. (2015).
 #' 
 #' \subsection{Network meta-analysis model}{
 #' Let \emph{n} be the number of different treatments (nodes,
@@ -135,28 +137,33 @@
 #' be the \emph{m}x\emph{m} diagonal matrix that contains the inverse
 #' variance 1 / seTE^2.
 #' 
-#' The given comparisons define the network structure. Therefrom an
-#' \emph{m}x\emph{n} design matrix X (edge-vertex incidence matrix) is
-#' formed; for more precise information, see Rücker (2012). Moreover,
-#' the \emph{n}x\emph{n} Laplacian matrix L and its Moore-Penrose
-#' pseudoinverse L+ are calculated (both matrices play an important
-#' role in graph theory and electrical network theory). Using these
-#' matrices, the variances based on both direct and indirect
-#' comparisons can be estimated. Moreover, the hat matrix H can be
-#' estimated by \strong{H = XL+X^tW = X(X^t W X)^+X^tW} and finally
-#' consistent treatment effects can be estimated by applying the hat
-#' matrix to the observed (potentially inconsistent) effects. H is a
-#' projection matrix which maps the observed effects onto the
-#' consistent (n-1)-dimensional subspace. This is the Aitken estimator
+#' The given comparisons define the network structure. From these, an
+#' \emph{m}x\emph{n} design matrix \strong{X} (edge-vertex incidence
+#' matrix) is formed; for further details, see Rücker (2012). Moreover,
+#' the \emph{n}x\emph{n} Laplacian matrix \strong{L} and its Moore-Penrose
+#' pseudoinverse \strong{L+} are calculated (both matrices play an
+#' important role in graph theory and electrical network theory). By
+#' default, the pseudoinverse is calculated using \code{\link{invmat}};
+#' an alternative function, such as \code{\link[MASS]{ginv}}, can be
+#' specified via argument \code{func.inverse}.
+#'
+#' Using matrices \strong{L} and \strong{L+}, the variances based on both
+#' direct and indirect comparisons can be estimated. Moreover, the hat
+#' matrix \strong{H} can be calculated as
+#' \strong{H = XL+X^tW = X(X^t W X)^+X^tW}. Consistent treatment effects
+#' can then be estimated by applying the hat matrix to the observed
+#' (potentially inconsistent) effects. \strong{H} is a projection matrix
+#' which maps the observed effects onto the consistent
+#' (n-1)-dimensional subspace. This is the Aitken estimator
 #' (Senn et al., 2013). As in pairwise meta-analysis, the Q statistic
 #' measures the deviation from consistency. Q can be separated into
-#' parts for each pairwise meta-analysis and a part for remaining
+#' parts for each pairwise meta-analysis and a part for the remaining
 #' inconsistency between comparisons.
 #' 
 #' A simple random effects model assuming that a constant
 #' heterogeneity variance is added to each comparison of the network
-#' can be defined via a generalised methods of moments estimate of the
-#' between-studies variance \eqn{\tau^2} (Jackson et al., 2012). This
+#' can be defined via a generalised method of moments estimate of the
+#' between-study variance \eqn{\tau^2} (Jackson et al., 2012). This
 #' is added to the observed sampling variance \code{seTE^2} of each
 #' comparison in the network (before appropriate adjustment for
 #' multi-arm studies). Then, as in standard pairwise meta-analysis,
@@ -181,11 +188,11 @@
 #' important to use identical study labels for all comparisons
 #' belonging to the same multi-arm study, e.g., study label
 #' "Willms1999" for the three-arm study in the data example (Senn et
-#' al., 2013). The function netmeta then automatically accounts for
+#' al., 2013). The function \code{netmeta} then automatically accounts for
 #' within-study correlation by reweighting all comparisons of each
 #' multi-arm study.
 #' 
-#' Note, all pairwise comparisons must be provided for a multi-arm
+#' Note that all pairwise comparisons must be provided for a multi-arm
 #' study. Consider a multi-arm study of \emph{p} treatments with known
 #' variances. For this study, treatment effects and standard errors
 #' must be provided for each of \emph{p}(\emph{p} - 1) / 2 possible
@@ -204,11 +211,11 @@
 #' not the sum of the arm-based variances, but comes with a correlation term
 #' which may lead to the violation of variance consistency. Using argument
 #' \code{correlated}, an alternative method is used for studies with correlated
-#' treatment arms (Rücker & Schwarzer, 2025, unpublished).
+#' treatment arms (Rücker & Schwarzer, 2025).
 #' 
 #' Argument \code{correlated}, which must be of the same length as arguments
-#' \code{TE}, \code{seTE}, etc., is a logical vector which must be TRUE for
-#' trials with correlated arms and FALSE otherwise. This can be easily done
+#' \code{TE}, \code{seTE}, etc., is a logical vector which must be \code{TRUE} for
+#' trials with correlated arms and \code{FALSE} otherwise. This can be easily done
 #' using a variable with design information like
 #' \code{correlated = design != "Parallel"}.
 #' }
@@ -218,12 +225,12 @@
 #' that is, data are given as contrasts (differences) between two
 #' treatments (argument \code{TE}) with standard error (argument
 #' \code{seTE}). In principle, meta-analysis functions from R package
-#' \bold{meta}, e.g. \code{\link[meta]{metabin}} for binary outcomes or
+#' \bold{meta}, e.g., \code{\link[meta]{metabin}} for binary outcomes or
 #' \code{\link[meta]{metacont}} for continuous outcomes, can be used to
 #' calculate treatment effects separately for each treatment
 #' comparison which is a rather tedious enterprise. If data are
 #' provided in \emph{arm-based} format, that is, data are given for
-#' each treatment arm separately (e.g. number of events and
+#' each treatment arm separately (e.g., number of events and
 #' participants for binary outcomes), a much more convenient way to
 #' transform data into contrast-based form is available. Function
 #' \code{\link[meta]{pairwise}} can automatically transform data with binary
@@ -243,7 +250,7 @@
 #' an object of class \code{"netmeta"} even if argument \code{random =
 #' FALSE}. However, all functions in R package \bold{netmeta} will
 #' adequately consider the values for \code{common} and
-#' \code{random}. E.g. function \code{\link{print.summary.netmeta}}
+#' \code{random}. For example, function \code{\link{print.summary.netmeta}}
 #' will not print results for the random effects model if \code{random
 #' = FALSE}.
 #' 
@@ -261,7 +268,7 @@
 #' used in the covariance matrices \code{Cov.common} and
 #' \code{Cov.random} and in some R functions, e.g,
 #' \code{\link{decomp.design}}. By default, a colon is used as the
-#' separator. If any treatment label contains a colon the following
+#' separator. If any treatment label contains a colon, the following
 #' characters are used as separator (in consecutive order):
 #' \code{"-"}, \code{"_"}, \code{"/"}, \code{"+"}, \code{"."},
 #' \code{"|"}, and \code{"*"}. If all of these characters are used in
@@ -271,7 +278,7 @@
 #'
 #' @note
 #' R function \code{\link[metafor]{rma.mv}} from R package
-#' \pkg{metafor} (Viechtbauer 2010) is called internally to estimate
+#' \pkg{metafor} (Viechtbauer, 2010) is called internally to estimate
 #' the between-study variance \eqn{\tau^2} for the (restricted)
 #' maximum likelihood method. For binary outcomes, incidence rates,
 #' and the mean difference, the variance-covariance matrix is
@@ -279,7 +286,7 @@
 #' and \code{n2} (binary outcomes); \code{event1}, \code{event2},
 #' \code{time1}, and \code{time2} (incidence rates); \code{n1},
 #' \code{n2}, \code{sd1}, and \code{sd2} (mean difference) are
-#' provided. For datasets preprocessed with \code{\link[meta]{pairwise}}
+#' provided. For datasets preprocessed with \code{\link[meta]{pairwise}},
 #' the respective variables are selected automatically.
 #'
 #' @return
@@ -460,6 +467,13 @@
 #'   \code{\link{dietaryfat}}
 #' 
 #' @references
+#' Balduzzi S, Rücker G, Nikolakopoulou A, Papakonstantinou T, Salanti
+#' G, Efthimiou O, Schwarzer G (2023):
+#' netmeta: An R Package for network meta-analysis using frequentist
+#' methods.
+#' \emph{Journal of Statistical Software},
+#' \bold{106}, 1--40
+#' 
 #' Jackson D, White IR, Riley RD (2012):
 #' Quantifying the impact of between-study heterogeneity in
 #' multivariate meta-analyses.
@@ -480,6 +494,12 @@
 #' Schwarzer G, Carpenter JR, Rücker G (2015):
 #' \emph{Meta-Analysis with R (Use R!)}.
 #' Springer International Publishing, Switzerland
+#' 
+#' Rücker G, Schwarzer G (2025):
+#' Trials and triangles: Network meta-analysis of multi-arm trials with
+#' correlated arms.
+#' \emph{Research Synthesis Methods},
+#' \bold{16}, 961--974
 #' 
 #' Senn S, Gavini F, Magrez D, Scheen A (2013):
 #' Issues in performing a network meta-analysis.
@@ -800,7 +820,12 @@ netmeta <- function(TE, seTE,
     deprecated2(nchar.trts, missing.nchar.trts, nchar, missing(nchar),
                 warn.deprecated)
   chknumeric(nchar.trts, min = 1, length = 1)
-  
+  #
+  if (is.character(func.inverse))
+    func.inverse <- eval(str2lang(func.inverse))
+  #
+  if (!is.function(func.inverse))
+    stop("Argument 'func.inverse' must specify a function.", call. = FALSE)
   
   #
   #
@@ -1376,10 +1401,36 @@ netmeta <- function(TE, seTE,
   if (reference.group != "")
     reference.group <- setref(reference.group, labels)
   
+  #
+  #
+  # (5) Prepare the function for storage in the netmeta object
+  #
+  #
+  
+  func.inverse.stored <- func.inverse
+  #
+  env <- environment(func.inverse)
+  #
+  if (isNamespace(env)) {
+    pkg <- getNamespaceName(env)
+    exports <- getNamespaceExports(pkg)
+    #
+    matches <- vapply(
+      exports,
+      function(nam)
+        identical(func.inverse, getExportedValue(pkg, nam)),
+      logical(1)
+    )
+    #
+    if (any(matches)) {
+      nam <- exports[which(matches)[1L]]
+      func.inverse.stored <- paste0(pkg, "::", nam)
+    }
+  }
   
   #
   #
-  # (5) Generate analysis dataset
+  # (6) Generate analysis dataset
   #
   #
   #
@@ -1415,7 +1466,7 @@ netmeta <- function(TE, seTE,
   
   #
   #
-  # (6) Conduct network meta-analysis
+  # (7) Conduct network meta-analysis
   #
   
   # Common effects model
@@ -1616,7 +1667,7 @@ netmeta <- function(TE, seTE,
 
   #
   #
-  # (7) Generate R object
+  # (8) Generate R object
   #
   #
   o <- order(dat.c$order)
@@ -1834,7 +1885,7 @@ netmeta <- function(TE, seTE,
               tol.multiarm.se = tol.multiarm.se,
               details.chkmultiarm = details.chkmultiarm,
               #
-              func.inverse = deparse(substitute(func.inverse)),
+              func.inverse = func.inverse.stored,
               #
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,
