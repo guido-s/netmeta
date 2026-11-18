@@ -57,7 +57,7 @@ nma_ruecker <- function(TE, W, seTE,
   W.cov <- matrix(0, nrow = m, ncol = m)
   for (s in unique(studlab)) {
     sel <- studlab == s
-    W.cov[sel, sel] <- ginv(Cov0[sel, sel, drop = FALSE])
+    W.cov[sel, sel] <- do.call(func.inverse, list(Cov0[sel, sel, drop = FALSE]))
   }
   L1 <- t(B) %*% W.cov %*% B
   Lplus1 <- do.call(func.inverse, list(L1))
