@@ -50,7 +50,7 @@ nma_ruecker <- function(TE, W, seTE,
   ## Lplus is its Moore-Penrose pseudoinverse
   ##
   L <- t(B) %*% W %*% B
-  Lplus <- do.call(func.inverse, list(X = L))
+  Lplus <- do.call(func.inverse, list(L))
   Lplus[is_zero(Lplus)] <- 0
   #
   # Invert independent study blocks separately to avoid cross-study truncation.
@@ -60,7 +60,7 @@ nma_ruecker <- function(TE, W, seTE,
     W.cov[sel, sel] <- ginv(Cov0[sel, sel, drop = FALSE])
   }
   L1 <- t(B) %*% W.cov %*% B
-  Lplus1 <- do.call(func.inverse, list(X = L1))
+  Lplus1 <- do.call(func.inverse, list(L1))
   Lplus1[is_zero(Lplus1)] <- 0
   #
   # R resistance distance (variance) matrix (n x n)

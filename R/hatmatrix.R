@@ -504,7 +504,7 @@ hatmatrix.aggr <- function(x, model, type, func.inverse = invmat) {
   ##
   L <- t(B) %*% W %*% B
   ## Pseudo-Inverse of L 
-  L.plus <- do.call(func.inverse, list(X = L))
+  L.plus <- do.call(func.inverse, list(L))
   L.plus[is_zero(L.plus)] <- 0
   ##
   ## Aggregate Hat matrix
