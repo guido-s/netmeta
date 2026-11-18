@@ -504,13 +504,17 @@ netgraph(nma2, seq = c(1, 3, 5, 2, 9, 4, 7, 6, 8, 10),
 # Rotate treatment labels (orthogonal to circle)
 #
 netgraph(nma2, srt.labels = "o")
+}
 
+\dontrun{
 # Network graph in 3-D (opens a new device, where you may rotate and
 # zoom the plot using the mouse / the mouse wheel).
 # The rgl package must be installed for 3-D plots.
 #
-if (requireNamespace("rgl", quietly = TRUE))
+if (requireNamespace("rgl", quietly = TRUE)) {
   netgraph(nma2, dim = "3d")
+  rgl::rglwidget()
+}
 }
 
 }

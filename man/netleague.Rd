@@ -176,7 +176,10 @@ in the upper triangle (see examples), e.g., the comparison B versus
 A.
 
 R function \code{\link{netrank}} can be used to change the order of
-rows and columns in the league table (see examples).
+rows and columns in the league table (see examples). If argument \code{seq}
+is a \code{netrank} object, treatments are ordered by decreasing P-scores,
+SUCRAs, or probabilities of being best, or by increasing mean or median
+ranks.
 }
 \examples{
 # Network meta-analysis of count mortality statistics
@@ -206,11 +209,12 @@ netleague(nma0, common = FALSE, digits = 2, seq = netrank(nma0))
 #
 print(netrank(nma0), common = FALSE)
 
-# Create a CSV file with league table for random effects model
+# Create a temporary CSV file with league table for random effects model
 #
 league0 <- netleague(nma0, digits = 2, bracket = "(", separator = " to ")
 #
-write.table(league0$random, file = "league0-random.csv",
+.tmp_file_csv <- tempfile(fileext = ".csv")
+write.table(league0$random, file = .tmp_file_csv,
   row.names = FALSE, col.names = FALSE, sep = ",")
 #
 # Create Excel files with league tables

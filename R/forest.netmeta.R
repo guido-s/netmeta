@@ -289,7 +289,9 @@ forest.netmeta <- function(x,
   if (pooled == "common") {
     TE   <- x$TE.common
     seTE <- x$seTE.common
-    ##
+    lower <- x$lower.common
+    upper <- x$upper.common
+    #
     prop.direct <- x$P.common
     ##
     if (calcPscore)
@@ -308,7 +310,9 @@ forest.netmeta <- function(x,
   if (pooled == "random") {
     TE   <- x$TE.random
     seTE <- x$seTE.random
-    ##
+    lower <- x$lower.random
+    upper <- x$upper.random
+    #
     prop.direct <- x$P.random
     ##
     ##
@@ -447,6 +451,7 @@ forest.netmeta <- function(x,
   dat <- data.frame(comparison = character(0),
                     treat = character(0),
                     TE = numeric(0), seTE = numeric(0),
+                    lower = numeric(0), upper = numeric(0),
                     Pscore = numeric(0),
                     SUCRA = numeric(0),
                     k = numeric(0),
@@ -462,6 +467,8 @@ forest.netmeta <- function(x,
                           labels = labels,
                           TE = TE[, colnames(TE) == rg.i],
                           seTE = seTE[, colnames(seTE) == rg.i],
+                          lower = lower[, colnames(lower) == rg.i],
+                          upper = upper[, colnames(upper) == rg.i],
                           Pscore = if (calcPscore) Pscore else NA,
                           SUCRA = if (calcSUCRA) SUCRA else NA,
                           k = x$A.matrix[, colnames(TE) == rg.i],
@@ -475,6 +482,8 @@ forest.netmeta <- function(x,
                           labels = labels,
                           TE = TE[rownames(TE) == rg.i, ],
                           seTE = seTE[rownames(seTE) == rg.i, ],
+                          lower = lower[rownames(lower) == rg.i, ],
+                          upper = upper[rownames(upper) == rg.i, ],
                           Pscore = if (calcPscore) Pscore else NA,
                           SUCRA = if (calcSUCRA) SUCRA else NA,
                           k = x$A.matrix[rownames(TE) == rg.i, ],
@@ -569,6 +578,8 @@ forest.netmeta <- function(x,
   ##
   rm(TE)
   rm(seTE)
+  rm(lower)
+  rm(upper)
   
   
   ##
@@ -580,12 +591,14 @@ forest.netmeta <- function(x,
   ##
   if (one.rg)
     m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
+                                   lower = lower, upper = upper,
                                    sm = x$sm,
                                    studlab = labels, backtransf = backtransf,
                                    method.tau = "DL", method.tau.ci = "",
                                    warn = FALSE))
   else
     m1 <- suppressWarnings(metagen(TE, seTE, data = dat,
+                                   lower = lower, upper = upper,
                                    subgroup = dat$comparison,
                                    sm = x$sm,
                                    studlab = labels, backtransf = backtransf,

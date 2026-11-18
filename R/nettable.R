@@ -167,11 +167,12 @@
 #' print(nt, common = FALSE)
 #' print(nt, random = FALSE)
 #' 
-#' # Create a CSV file with network table from random effects model
+#' # Create a temporary CSV file with network table from random effects model
 #' #
 #' table <- nettable(nma, digits = 2, bracket = "(", separator = " to ")
 #' #
-#' write.table(table$random, file = "table-random.csv",
+#' .tmp_file_csv <- tempfile(fileext = ".csv")
+#' write.table(table$random, file = .tmp_file_csv,
 #'   row.names = FALSE, col.names = TRUE, sep = ",")
 #' #
 #' # Create Excel files with network tables

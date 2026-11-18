@@ -75,8 +75,9 @@
 #'   characters used to create unique names for components (see
 #'   Details).
 #' @param sep.ia A single character to define separator for interactions.
-#' @param func.inverse R function used to calculate the pseudoinverse
-#'   of the Laplacian matrix L (see \code{\link{netmeta}}).
+#' @param func.inverse A function or character string specifying the function
+#'   used to calculate the pseudoinverse of the Laplacian matrix L
+#'   (see \code{\link{netmeta}}).
 #' @param n1 Number of observations in first treatment group.
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
@@ -500,6 +501,12 @@ discomb <- function(TE, seTE,
   #
   missing.sep.ia <- missing(sep.ia)
   chkchar(sep.ia, nchar = 0:1, length = 1)
+  #
+  if (is.character(func.inverse))
+    func.inverse <- eval(str2lang(func.inverse))
+  #
+  if (!is.function(func.inverse))
+    stop("Argument 'func.inverse' must specify a function.", call. = FALSE)
   
   
   ##
@@ -952,10 +959,37 @@ discomb <- function(TE, seTE,
   if (reference.group != "")
     reference.group <- setref(reference.group, trts)
   
+  #
+  #
+  # (5) Prepare the function for storage in the discomb object
+  #
+  #
+  
+  func.inverse.stored <- func.inverse
+  #
+  env <- environment(func.inverse)
+  #
+  if (isNamespace(env)) {
+    pkg <- getNamespaceName(env)
+    exports <- getNamespaceExports(pkg)
+    #
+    matches <- vapply(
+      exports,
+      function(nam)
+        identical(func.inverse, getExportedValue(pkg, nam)),
+      logical(1)
+    )
+    #
+    if (any(matches)) {
+      nam <- exports[which(matches)[1L]]
+      func.inverse.stored <- paste0(pkg, "::", nam)
+    }
+  }
+  
   
   ##
   ##
-  ## (5) Create C.matrix, B.matrix and Design matrix
+  ## (6) Create C.matrix, B.matrix and Design matrix
   ##
   ##
   netc <- netconnection(treat1, treat2, studlab)
@@ -1034,7 +1068,7 @@ discomb <- function(TE, seTE,
   
   ##
   ##
-  ## (6) Conduct network meta-analyses
+  ## (7) Conduct network meta-analyses
   ##
   ##
   tdata <- data.frame(studies = dat.c$studlab, narms = dat.c$narms,
@@ -1058,6 +1092,7 @@ discomb <- function(TE, seTE,
   ##
   if (netc$n.subnets == 1) {
     net <- netmeta(TE, seTE, treat1, treat2, studlab,
+                   func.inverse = func.inverse,
                    tol.multiarm = tol.multiarm,
                    tol.multiarm.se = tol.multiarm.se,
                    details.chkmultiarm = details.chkmultiarm)
@@ -1142,7 +1177,7 @@ discomb <- function(TE, seTE,
   
   ##
   ##
-  ## (7) Generate CNMA object
+  ## (8) Generate CNMA object
   ##
   ##
   n.comps <- table(dat.c$studlab)
@@ -1336,7 +1371,7 @@ discomb <- function(TE, seTE,
               #
               inactive = inactive,
               #
-              func.inverse = deparse(substitute(func.inverse)),
+              func.inverse = func.inverse.stored,
               #
               overall.hetstat = overall.hetstat,
               backtransf = backtransf, 

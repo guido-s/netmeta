@@ -22,6 +22,7 @@ netrank(
   random = x$random,
   sort = TRUE,
   digits = gs("digits.prop"),
+  digits.mean = 2,
   warn.deprecated = gs("warn.deprecated"),
   ...
 )
@@ -33,17 +34,15 @@ netrank(
 treatment effects indicate a beneficial (\code{"desirable"}) or
 harmful (\code{"undesirable"}) effect, can be abbreviated.}
 
-\item{method}{A character string specifying whether the
-\code{"P-score"} or \code{"SUCRA"} ranking metric will be
-calculated.}
+\item{method}{A character string specifying the ranking metric (see Details).}
 
-\item{nsim}{Number of repetitions to calculate SUCRAs.}
+\item{nsim}{Number of repetitions for ranking metrics based on resampling.}
 
-\item{common}{A logical indicating whether to print P-scores or
-SUCRAs for the common effects model.}
+\item{common}{A logical indicating whether to print the rankings for the
+common effects model.}
 
-\item{random}{A logical indicating whether to print P-scores or
-SUCRAs for the random effects model.}
+\item{random}{A logical indicating whether to print the rankings for the
+random effects model.}
 
 \item{warn.deprecated}{A logical indicating whether warnings should
 be printed if deprecated arguments are used.}
@@ -52,20 +51,23 @@ be printed if deprecated arguments are used.}
 \code{\link{print.data.frame}} function (used internally).}
 
 \item{sort}{A logical indicating whether printout should be sorted
-by decreasing P-score.}
+by decreasing rankings.}
 
-\item{digits}{Minimal number of significant digits, see
-\code{\link{print.default}}.}
+\item{digits}{Minimal number of significant digits for ranking probabilities,
+P-scores, and SUCRAs, see \code{\link{print.default}}.}
+
+\item{digits.mean}{Minimal number of significant digits for mean or median
+ranks, see \code{\link{print.default}}.}
 }
 \value{
 An object of class \code{netrank} with corresponding \code{print}
 function. The object is a list containing the following components:
-\item{ranking.common}{A named numeric vector with P-scores or SUCRAs
-  for the common effects model.}
+\item{ranking.common}{A named numeric vector with ranking values for the
+  common effects model.}
 \item{Pmatrix.common}{Numeric matrix based on pairwise one-sided
   p-values for the common effects model.}
-\item{ranking.random}{A named numeric vector with P-scores or
-  SUCRAs for the random effects model.}
+\item{ranking.random}{A named numeric vector with ranking values for the
+  random effects model.}
 \item{Pmatrix.random}{Numeric matrix based on pairwise one-sided
   p-values of the random effects model.}
 \item{small.values, method, x}{As defined above.}
@@ -76,13 +78,26 @@ Ranking treatments in frequentist network meta-analysis with and
 without resampling methods.
 }
 \details{
-Treatments are ranked based on a network meta-analysis. Ranking is
-performed by a ranking metric: P-score or SUCRA.
+Treatments considered in a network meta-analysis are ranked by one of the
+following ranking metrics:
+
+\tabular{ll}{
+\bold{Argument} \tab \bold{Ranking metric} \cr
+\code{method = "P-score"} \tab P-score (Rücker and Schwarzer 2015) \cr
+\code{method = "SUCRA"} \tab Surface Under the Cumulative RAnking curve
+  (SUCRA) \cr
+\tab (Salanti et al. 2011) \cr
+\code{method = "best"} \tab Probability of being best (Pr(best)) \cr
+\code{method = "mean"} \tab Mean rank \cr
+\code{method = "median"} \tab Median rank
+}
 
 P-scores are based solely on the point estimates and standard
 errors of the network estimates. They measure the extent of
 certainty that a treatment is better than another treatment,
 averaged over all competing treatments (Rücker and Schwarzer 2015).
+
+Resampling methods are used for all other ranking metrics.
 
 The Surface Under the Cumulative RAnking curve (SUCRA) is the rank
 of treatment \emph{i} within the range of treatments, measured on a
@@ -105,6 +120,13 @@ the P-score is small.
 The P-score of treatment \emph{i} can be interpreted as the mean
 extent of certainty that treatment \emph{i} is better than another
 treatment.
+
+For P-scores, SUCRAs, and probabilities of being best, larger values are
+favorable. For mean and median ranks, smaller values are favorable.
+}
+\note{
+Internally, \code{\link{rankogram}} is called for the ranking metrics
+based on resampling methods.
 }
 \examples{
 \donttest{
@@ -175,7 +197,7 @@ pw5 <- pairwise(treat = list(treatment1, treatment2, treatment3),
 nma5 <- netmeta(pw5, common = FALSE, seq = trts, ref = "Placebo",
   small.values = "desirable")
 
-# Image plot of treatment rankings (two outcomes)
+# Image plot of treatment rankings (five outcomes)
 #
 plot(netrank(nma1), netrank(nma2), netrank(nma3),
   netrank(nma4), netrank(nma5),

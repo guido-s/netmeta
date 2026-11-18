@@ -111,7 +111,10 @@
 #' A.
 #' 
 #' R function \code{\link{netrank}} can be used to change the order of
-#' rows and columns in the league table (see examples).
+#' rows and columns in the league table (see examples). If argument \code{seq}
+#' is a \code{netrank} object, treatments are ordered by decreasing P-scores,
+#' SUCRAs, or probabilities of being best, or by increasing mean or median
+#' ranks.
 #'
 #' @return
 #' An object of class \code{netleague} with corresponding \code{print}
@@ -167,11 +170,12 @@
 #' #
 #' print(netrank(nma0), common = FALSE)
 #' 
-#' # Create a CSV file with league table for random effects model
+#' # Create a temporary CSV file with league table for random effects model
 #' #
 #' league0 <- netleague(nma0, digits = 2, bracket = "(", separator = " to ")
 #' #
-#' write.table(league0$random, file = "league0-random.csv",
+#' .tmp_file_csv <- tempfile(fileext = ".csv")
+#' write.table(league0$random, file = .tmp_file_csv,
 #'   row.names = FALSE, col.names = FALSE, sep = ",")
 #' #
 #' # Create Excel files with league tables
@@ -308,8 +312,16 @@ netleague <- function(x, y,
       ranking.c <- seq$ranking.common
       ranking.r <- seq$ranking.random
       ##
-      seq.c <- setseq(names(ranking.c)[rev(order(ranking.c))], x$seq)
-      seq.r <- setseq(names(ranking.r)[rev(order(ranking.r))], x$seq)
+      method <- if (is.null(seq$method)) "P-score" else seq$method
+      sign <- -1
+      ##
+      if (method %in% c("mean", "median"))
+        sign <- 1
+      ##
+      seq.c <- if (is.null(ranking.c)) x$seq else
+        setseq(names(ranking.c)[order(sign * ranking.c)], x$seq)
+      seq.r <- if (is.null(ranking.r)) x$seq else
+        setseq(names(ranking.r)[order(sign * ranking.r)], x$seq)
     }
     else
       seq.c <- seq.r <- setseq(seq, x$seq)

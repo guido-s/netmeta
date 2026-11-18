@@ -30,8 +30,9 @@
 #'   characters used to create unique names for components (see
 #'   Details).
 #' @param sep.ia A single character to define separator for interactions.
-#' @param func.inverse R function used to calculate the pseudoinverse
-#'   of the Laplacian matrix L (see \code{\link{netmeta}}).
+#' @param func.inverse A function or character string specifying the function
+#'   used to calculate the pseudoinverse of the Laplacian matrix L
+#'   (see \code{\link{netmeta}}).
 #' @param na.unident A logical indicating whether unidentifiable
 #'   components and combinations should be set to missing values.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -389,7 +390,7 @@ netcomb <- function(x,
                     #
                     sep.ia = gs("sep.ia"),
                     #
-                    func.inverse = invmat,
+                    func.inverse = x$func.inverse,
                     overall.hetstat = x$overall.hetstat,
                     backtransf = x$backtransf,
                     ##
@@ -438,6 +439,12 @@ netcomb <- function(x,
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
+  #
+  if (is.character(func.inverse))
+    func.inverse <- eval(str2lang(func.inverse))
+  #
+  if (!is.function(func.inverse))
+    stop("Argument 'func.inverse' must specify a function.", call. = FALSE)
   
   
   ##
@@ -526,10 +533,37 @@ netcomb <- function(x,
   else
     comps.unident <- NULL
   
+  #
+  #
+  # (4) Prepare the function for storage in the netcomb object
+  #
+  #
+  
+  func.inverse.stored <- func.inverse
+  #
+  env <- environment(func.inverse)
+  #
+  if (isNamespace(env)) {
+    pkg <- getNamespaceName(env)
+    exports <- getNamespaceExports(pkg)
+    #
+    matches <- vapply(
+      exports,
+      function(nam)
+        identical(func.inverse, getExportedValue(pkg, nam)),
+      logical(1)
+    )
+    #
+    if (any(matches)) {
+      nam <- exports[which(matches)[1L]]
+      func.inverse.stored <- paste0(pkg, "::", nam)
+    }
+  }
+  
   
   ##
   ##
-  ## (4) Conduct CNMA
+  ## (5) Conduct CNMA
   ##
   ##
   df.Q.additive <- x$df.Q + x$n - 1 - qr(X.matrix)$rank
@@ -623,7 +657,7 @@ netcomb <- function(x,
   
   ##
   ##
-  ## (5) Generate CNMA object
+  ## (6) Generate CNMA object
   ##
   ##
   o <- order(dat.c$order)
@@ -809,7 +843,7 @@ netcomb <- function(x,
               #
               inactive = inactive,
               ##
-              func.inverse = deparse(substitute(func.inverse)),
+              func.inverse = func.inverse.stored,
               #
               overall.hetstat = overall.hetstat,
               backtransf = backtransf,

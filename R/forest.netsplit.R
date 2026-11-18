@@ -614,6 +614,7 @@ forest.netsplit <- function(x,
     if (n.subgroup > 1)
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 lower = dat$lower, upper = dat$upper,
                                  studlab = dat$evidence, data = dat,
                                  sm = x$sm,
                                  common = FALSE, random = FALSE,
@@ -623,6 +624,7 @@ forest.netsplit <- function(x,
     else
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 lower = dat$lower, upper = dat$upper,
                                  studlab = dat$comps, data = dat, sm = x$sm,
                                  common = FALSE, random = FALSE,
                                  method.tau = "DL", method.tau.ci = ""))
@@ -674,6 +676,7 @@ forest.netsplit <- function(x,
     if (n.subgroup > 1)
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 lower = dat$lower, upper = dat$upper,
                                  studlab = dat$comps, data = dat,
                                  sm = x$sm,
                                  common = FALSE, random = FALSE,
@@ -683,6 +686,7 @@ forest.netsplit <- function(x,
     else
       m <-
         suppressWarnings(metagen(dat$TE, dat$seTE,
+                                 lower = dat$lower, upper = dat$upper,
                                  studlab = dat$comps, data = dat, sm = x$sm,
                                  common = FALSE, random = FALSE,
                                  method.tau = "DL", method.tau.ci = ""))

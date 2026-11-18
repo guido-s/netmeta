@@ -21,6 +21,7 @@ S3method(funnel,netmeta)
 S3method(funnel,netpairwise)
 S3method(hasse,netposet)
 S3method(heatplot,netmeta)
+S3method(heatplot,netpath)
 S3method(merge,pairwise)
 S3method(metabias,netmeta)
 S3method(metabias,netpairwise)
@@ -44,6 +45,7 @@ S3method(netmetareg,default)
 S3method(netmetareg,netmeta)
 S3method(netpairwise,netmeta)
 S3method(netpairwise,netmetabin)
+S3method(netsplit,netmeta)
 S3method(plot,netbind)
 S3method(plot,netcomb)
 S3method(plot,netcomparison)
@@ -73,6 +75,7 @@ S3method(print,netleague)
 S3method(print,netmeta)
 S3method(print,netmetareg)
 S3method(print,netpairwise)
+S3method(print,netpath)
 S3method(print,netposet)
 S3method(print,netrank)
 S3method(print,netsplit)
@@ -87,6 +90,7 @@ S3method(print,summary.netmetareg)
 S3method(print,summary.netpairwise)
 S3method(print,summary.rankogram)
 S3method(print,trimfill.netpairwise)
+S3method(print,vikor)
 S3method(radial,netmeta)
 S3method(radial,netpairwise)
 S3method(rankogram,default)
@@ -99,6 +103,9 @@ S3method(summary,netmetareg)
 S3method(summary,netpairwise)
 S3method(summary,rankogram)
 S3method(trimfill,netpairwise)
+S3method(vikor,data.frame)
+S3method(vikor,matrix)
+S3method(vikor,netposet)
 export(combinations)
 export(comps)
 export(createC)
@@ -127,6 +134,7 @@ export(netmeta)
 export(netmetabin)
 export(netmetareg)
 export(netpairwise)
+export(netpath)
 export(netposet)
 export(netrank)
 export(netsplit)
@@ -135,169 +143,208 @@ export(rankogram)
 export(settings.netmeta)
 export(subgroup)
 export(treats)
+export(vikor)
 importFrom(MASS,ginv)
 importFrom(Matrix,bdiag)
-importFrom(colorspace,choose_palette)
-importFrom(colorspace,diverge_hcl)
-importFrom(colorspace,diverge_hsv)
-importFrom(colorspace,heat_hcl)
-importFrom(colorspace,rainbow_hcl)
-importFrom(colorspace,sequential_hcl)
-importFrom(colorspace,terrain_hcl)
-importFrom(dplyr,"%>%")
-importFrom(dplyr,bind_rows)
-importFrom(dplyr,case_when)
-importFrom(dplyr,count)
-importFrom(dplyr,distinct)
-importFrom(dplyr,filter)
-importFrom(dplyr,if_else)
-importFrom(dplyr,inner_join)
-importFrom(dplyr,last_col)
-importFrom(dplyr,mutate)
-importFrom(dplyr,pull)
-importFrom(dplyr,relocate)
-importFrom(dplyr,rename)
-importFrom(dplyr,select)
-importFrom(dplyr,starts_with)
-importFrom(dplyr,summarise)
-importFrom(ggplot2,aes)
-importFrom(ggplot2,coord_cartesian)
-importFrom(ggplot2,element_blank)
-importFrom(ggplot2,element_line)
-importFrom(ggplot2,element_rect)
-importFrom(ggplot2,element_text)
-importFrom(ggplot2,expand_limits)
-importFrom(ggplot2,geom_abline)
-importFrom(ggplot2,geom_col)
-importFrom(ggplot2,geom_hline)
-importFrom(ggplot2,geom_line)
-importFrom(ggplot2,geom_point)
-importFrom(ggplot2,geom_step)
-importFrom(ggplot2,geom_text)
-importFrom(ggplot2,geom_tile)
-importFrom(ggplot2,geom_vline)
-importFrom(ggplot2,ggplot)
-importFrom(ggplot2,ggtitle)
-importFrom(ggplot2,guide_legend)
-importFrom(ggplot2,guides)
-importFrom(ggplot2,labs)
-importFrom(ggplot2,margin)
-importFrom(ggplot2,scale_color_manual)
-importFrom(ggplot2,scale_fill_gradient2)
-importFrom(ggplot2,scale_x_continuous)
-importFrom(ggplot2,scale_x_discrete)
-importFrom(ggplot2,scale_y_discrete)
-importFrom(ggplot2,theme)
-importFrom(ggplot2,theme_classic)
-importFrom(ggplot2,theme_dark)
-importFrom(ggplot2,xlab)
-importFrom(ggplot2,ylab)
+importFrom(colorspace,
+  choose_palette,
+  diverge_hcl,
+  diverge_hsv,
+  heat_hcl,
+  rainbow_hcl,
+  sequential_hcl,
+  terrain_hcl
+)
+importFrom(dplyr,
+  "%>%",
+  arrange,
+  bind_rows,
+  case_when,
+  count,
+  distinct,
+  filter,
+  if_any,
+  if_else,
+  inner_join,
+  last_col,
+  mutate,
+  pull,
+  relocate,
+  rename,
+  select,
+  starts_with,
+  summarise
+)
+importFrom(ggplot2,
+  aes,
+  annotate,
+  coord_cartesian,
+  coord_fixed,
+  element_blank,
+  element_line,
+  element_rect,
+  element_text,
+  expand_limits,
+  geom_abline,
+  geom_col,
+  geom_hline,
+  geom_line,
+  geom_point,
+  geom_step,
+  geom_text,
+  geom_tile,
+  geom_vline,
+  ggplot,
+  ggtitle,
+  guide_legend,
+  guides,
+  labs,
+  margin,
+  scale_color_manual,
+  scale_fill_gradient,
+  scale_fill_gradient2,
+  scale_x_continuous,
+  scale_x_discrete,
+  scale_y_continuous,
+  scale_y_discrete,
+  theme,
+  theme_classic,
+  theme_dark,
+  theme_minimal,
+  xlab,
+  ylab
+)
 importFrom(ggrepel,geom_text_repel)
-importFrom(grDevices,col2rgb)
-importFrom(grDevices,colours)
-importFrom(grDevices,heat.colors)
-importFrom(grDevices,rainbow)
-importFrom(grDevices,rgb)
-importFrom(grDevices,xy.coords)
-importFrom(graphics,axis)
-importFrom(graphics,box)
-importFrom(graphics,lines)
-importFrom(graphics,par)
-importFrom(graphics,plot)
-importFrom(graphics,points)
-importFrom(graphics,polygon)
-importFrom(graphics,rect)
-importFrom(graphics,strheight)
-importFrom(graphics,strwidth)
-importFrom(graphics,text)
-importFrom(graphics,title)
-importFrom(grid,arrow)
-importFrom(grid,convertHeight)
-importFrom(grid,convertWidth)
-importFrom(grid,convertX)
-importFrom(grid,convertY)
-importFrom(grid,drawDetails)
-importFrom(grid,gpar)
-importFrom(grid,grid.clip)
-importFrom(grid,grid.draw)
-importFrom(grid,grid.lines)
-importFrom(grid,grid.newpage)
-importFrom(grid,grid.rect)
-importFrom(grid,grid.roundrect)
-importFrom(grid,grid.text)
-importFrom(grid,grob)
-importFrom(grid,popViewport)
-importFrom(grid,pushViewport)
-importFrom(grid,stringWidth)
-importFrom(grid,unit)
-importFrom(grid,viewport)
-importFrom(igraph,"E<-")
-importFrom(igraph,"V<-")
-importFrom(igraph,E)
-importFrom(igraph,V)
-importFrom(igraph,all_simple_paths)
-importFrom(igraph,delete_edges)
-importFrom(igraph,get.shortest.paths)
-importFrom(igraph,graph_from_adjacency_matrix)
-importFrom(igraph,graph_from_edgelist)
-importFrom(igraph,gsize)
-importFrom(igraph,head_of)
-importFrom(igraph,set_edge_attr)
-importFrom(igraph,set_vertex_attr)
-importFrom(igraph,tail_of)
+importFrom(grDevices,
+  col2rgb,
+  colours,
+  heat.colors,
+  rainbow,
+  rgb,
+  xy.coords
+)
+importFrom(graphics,
+  axis,
+  box,
+  lines,
+  par,
+  plot,
+  points,
+  polygon,
+  rect,
+  strheight,
+  strwidth,
+  text,
+  title
+)
+importFrom(grid,
+  arrow,
+  convertHeight,
+  convertWidth,
+  convertX,
+  convertY,
+  drawDetails,
+  gpar,
+  grid.clip,
+  grid.draw,
+  grid.lines,
+  grid.newpage,
+  grid.rect,
+  grid.roundrect,
+  grid.text,
+  grob,
+  popViewport,
+  pushViewport,
+  stringWidth,
+  unit,
+  viewport
+)
+importFrom(igraph,
+  "E<-",
+  "V<-",
+  E,
+  V,
+  all_simple_paths,
+  delete_edges,
+  get.shortest.paths,
+  graph,
+  graph_from_adjacency_matrix,
+  graph_from_edgelist,
+  gsize,
+  head_of,
+  set_edge_attr,
+  set_vertex_attr,
+  tail_of
+)
 importFrom(magic,adiag)
 importFrom(magrittr,"%<>%")
-importFrom(meta,backtransf)
-importFrom(meta,baujat)
-importFrom(meta,ci)
-importFrom(meta,cilayout)
-importFrom(meta,forest)
-importFrom(meta,funnel)
-importFrom(meta,gs)
-importFrom(meta,longarm)
-importFrom(meta,metabias)
-importFrom(meta,metabin)
-importFrom(meta,metacont)
-importFrom(meta,metacum)
-importFrom(meta,metagen)
-importFrom(meta,metainc)
-importFrom(meta,metainf)
-importFrom(meta,metareg)
-importFrom(meta,pairwise)
-importFrom(meta,radial)
-importFrom(meta,settings.meta)
-importFrom(meta,trimfill)
-importFrom(metafor,bldiag)
-importFrom(metafor,contrmat)
-importFrom(metafor,rma.mv)
-importFrom(metafor,rma.uni)
+importFrom(meta,
+  backtransf,
+  baujat,
+  ci,
+  cilayout,
+  forest,
+  funnel,
+  gs,
+  longarm,
+  metabias,
+  metabin,
+  metacont,
+  metacum,
+  metagen,
+  metainc,
+  metainf,
+  metareg,
+  pairwise,
+  radial,
+  settings.meta,
+  trimfill
+)
+importFrom(metafor,
+  bldiag,
+  contrmat,
+  rma.mv,
+  rma.uni
+)
 importFrom(methods,as)
 importFrom(mvtnorm,rmvnorm)
-importFrom(stats,aggregate)
-importFrom(stats,as.formula)
-importFrom(stats,binomial)
-importFrom(stats,coef)
-importFrom(stats,dist)
-importFrom(stats,fitted)
-importFrom(stats,glm)
-importFrom(stats,hclust)
-importFrom(stats,model.matrix)
-importFrom(stats,optim)
-importFrom(stats,optimize)
-importFrom(stats,pchisq)
-importFrom(stats,prcomp)
-importFrom(stats,quantile)
-importFrom(stats,relevel)
-importFrom(stats,reshape)
-importFrom(stats,residuals)
-importFrom(stats,rnorm)
-importFrom(stats,sd)
-importFrom(stats,setNames)
-importFrom(stats,update)
-importFrom(stats,vcov)
-importFrom(stringr,str_length)
-importFrom(tidyr,pivot_longer)
-importFrom(utils,capture.output)
-importFrom(utils,installed.packages)
-importFrom(utils,packageDescription)
-importFrom(utils,packageVersion)
+importFrom(reshape2,melt)
+importFrom(stats,
+  aggregate,
+  as.formula,
+  binomial,
+  coef,
+  dist,
+  fitted,
+  glm,
+  hclust,
+  model.matrix,
+  optim,
+  optimize,
+  pchisq,
+  prcomp,
+  quantile,
+  relevel,
+  reshape,
+  residuals,
+  rnorm,
+  sd,
+  setNames,
+  update,
+  vcov
+)
+importFrom(stringr,
+  str_length,
+  str_to_sentence
+)
+importFrom(tidyr,
+  drop_na,
+  pivot_longer
+)
+importFrom(utils,
+  capture.output,
+  combn,
+  installed.packages,
+  packageDescription,
+  packageVersion
+)

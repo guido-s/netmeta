@@ -88,8 +88,9 @@
 #'   between treatment labels.
 #' @param nchar.trts A numeric defining the minimum number of
 #'   characters used to create unique treatment names (see Details).
-#' @param func.inverse R function used to calculate the pseudoinverse
-#'   of the Laplacian matrix L (see \code{\link{netmeta}}).
+#' @param func.inverse A function or character string specifying the function
+#'   used to calculate the pseudoinverse of the Laplacian matrix L
+#'   (see \code{\link{netmeta}}).
 #' @param overall.hetstat A logical indicating whether to print heterogeneity
 #'   measures.
 #' @param backtransf A logical indicating whether results should be
@@ -515,6 +516,12 @@ netmetabin <- function(event1, n1, event2, n2,
   chkchar(title)
   chklogical(keepdata)
   chklogical(warn)
+  #
+  if (is.character(func.inverse))
+    func.inverse <- eval(str2lang(func.inverse))
+  #
+  if (!is.function(func.inverse))
+    stop("Argument 'func.inverse' must specify a function.", call. = FALSE)
   
   
   ##
@@ -768,7 +775,7 @@ netmetabin <- function(event1, n1, event2, n2,
   
   ##
   ##
-  ## (2b) Store complete dataset in list object data
+  ## (3) Store complete dataset in list object data
   ##
   ##
   if (nulldata & !is.pairwise)
@@ -815,7 +822,7 @@ netmetabin <- function(event1, n1, event2, n2,
   
   ##
   ##
-  ## (3) Use subset for analysis
+  ## (4) Use subset for analysis
   ##
   ##
   if (!missing.subset) {
@@ -924,7 +931,7 @@ netmetabin <- function(event1, n1, event2, n2,
 
   ##
   ##
-  ## (4) Additional checks
+  ## (5) Additional checks
   ##
   ##
   if (any(treat1 == treat2))
@@ -987,7 +994,7 @@ netmetabin <- function(event1, n1, event2, n2,
 
   ##
   ##
-  ## (5) Create analysis dataset
+  ## (6) Create analysis dataset
   ##
   ##
   dat.long <- rbind(data.frame(studlab, treat = treat1, event = event1, n = n1,
@@ -1046,6 +1053,7 @@ netmetabin <- function(event1, n1, event2, n2,
       netmeta(pairwise(studlab = x$studlab, treat = x$treat,
                        event = x$event, n = x$n,
                        sm = "RD"),
+              func.inverse = func.inverse,
               warn = FALSE)
     ##
     if (net1$n == 2)
@@ -1103,7 +1111,7 @@ netmetabin <- function(event1, n1, event2, n2,
   
   ##
   ##
-  ## (6) Stage I: setting up the data (Efthimiou et al., 2019)
+  ## (7) Stage I: setting up the data (Efthimiou et al., 2019)
   ##
   ##
   ## Step i. Remove all-zero or all-event studies (only MH and NCH methods)
@@ -1410,7 +1418,7 @@ netmetabin <- function(event1, n1, event2, n2,
   
   ##
   ##
-  ## (7) Conduct classic network meta-analysis using inverse variance
+  ## (8) Conduct classic network meta-analysis using inverse variance
   ##     method
   ##
   ##
@@ -1444,6 +1452,7 @@ netmetabin <- function(event1, n1, event2, n2,
                       details.chkmultiarm = details.chkmultiarm,
                       sep.trts = sep.trts,
                       nchar.trts = nchar.trts,
+                      func.inverse = func.inverse,
                       overall.hetstat = overall.hetstat,
                       backtransf = backtransf,
                       title = title,
@@ -1456,7 +1465,7 @@ netmetabin <- function(event1, n1, event2, n2,
   
   ##
   ##
-  ## (8) Stage 2: Direct meta-analyses per design (MH and NCH methods)
+  ## (9) Stage 2: Direct meta-analyses per design (MH and NCH methods)
   ##
   ##
   n.d <- tapply(dat.long$treat,   dat.long$design, lengthunique)
@@ -2027,7 +2036,7 @@ netmetabin <- function(event1, n1, event2, n2,
     
   ##
   ##
-  ## (9) Inconsistency evaluation: direct MH estimates
+  ## (10) Inconsistency evaluation: direct MH estimates
   ##
   ##
   B.matrix <- createB(treat1.pos, treat2.pos)
@@ -2117,6 +2126,38 @@ netmetabin <- function(event1, n1, event2, n2,
     rownames(H) <- sapply(compsplit(comps, sep.trts), secondfirst,
                           sep = sep.trts)
   
+  #
+  #
+  # (11) Prepare the function for storage in the netmetabin object
+  #
+  #
+  
+  func.inverse.stored <- func.inverse
+  #
+  env <- environment(func.inverse)
+  #
+  if (isNamespace(env)) {
+    pkg <- getNamespaceName(env)
+    exports <- getNamespaceExports(pkg)
+    #
+    matches <- vapply(
+      exports,
+      function(nam)
+        identical(func.inverse, getExportedValue(pkg, nam)),
+      logical(1)
+    )
+    #
+    if (any(matches)) {
+      nam <- exports[which(matches)[1L]]
+      func.inverse.stored <- paste0(pkg, "::", nam)
+    }
+  }
+  
+  #
+  #
+  # (12) Create netmetabin object
+  #
+  #
   
   res <- list(studlab = studlab,
               treat1 = treat1,
@@ -2270,7 +2311,7 @@ netmetabin <- function(event1, n1, event2, n2,
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,
               ##
-              func.inverse = deparse(substitute(func.inverse)),
+              func.inverse = func.inverse.stored,
               #
               overall.hetstat = overall.hetstat,
               backtransf = backtransf,
@@ -2420,8 +2461,6 @@ netmetabin <- function(event1, n1, event2, n2,
     #
     res$P.random <- P.random
   }
-  
-  
   ##
   ## Study overview
   ##

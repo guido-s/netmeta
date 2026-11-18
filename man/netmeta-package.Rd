@@ -49,12 +49,16 @@ The following methods are implemented to rank treatments:
 \itemize{
 \item rankograms (\code{\link{rankogram}}) (Salanti et al., 2011);
 \item ranking of treatments (\code{\link{netrank}}) based on
-  P-scores (Rücker & Schwarzer, 2015) or the Surface Under the
-  Cumulative RAnking curve (SUCRA) (Salanti et al., 2011);
+  P-scores (Rücker & Schwarzer, 2015), the Surface Under the
+  Cumulative RAnking curve (SUCRA) (Salanti et al., 2011), and
+  other ranking metrics;
 \item partial order of treatment rankings (\code{\link{netposet}},
   \code{\link{plot.netposet}}) and Hasse diagram
   (\code{\link{hasse}}) according to Carlsen & Bruggemann (2014)
-  and Rücker & Schwarzer (2017).
+  and Rücker & Schwarzer (2017);
+\item VišeKriterijumska Optimizacija I Kompromisno Rešenje (VIKOR)
+  multi-criteria decision analysis method (\code{\link{vikor}})
+  (Opricovic & Tzeng, 2004).
 }
 
 Available functions to evaluate network inconsistency:
@@ -113,12 +117,28 @@ R package \bold{netmeta} provides two vignettes:
 Functions and datasets from \bold{netmeta} are utilised in
 Schwarzer et al. (2015), Chapter 8 "Network Meta-Analysis",
 \url{https://link.springer.com/book/10.1007/978-3-319-21416-0}.
+}
+\note{
+Balduzzi et al. (2023) is the preferred citation in publications
+for \bold{netmeta}. Type \code{citation("netmeta")} for a BibTeX entry of
+this publication.
 
 Type \code{help(package = "netmeta")} for a listing of all R
 functions available in \bold{netmeta}.
 
-Type \code{citation("netmeta")} on how to cite \bold{netmeta} in
-publications.
+R package \bold{netmeta} uses functions from \bold{metafor}
+(Viechtbauer, 2010) to
+\itemize{
+\item estimate the between-study variance \eqn{\tau^2} using maximum
+  likelihood or restricted maximum likelihood,
+\item conduct network meta-regression.
+}
+
+Since version 3.7-1, OpenCode and ChatGPT have been used to assist with
+code development, refactoring, test development, and documentation in
+\bold{netmeta}. All resulting contributions have been reviewed and, where
+appropriate, modified and tested by the package maintainer, who takes
+responsibility for the package contents.
 
 To report problems and bugs
 \itemize{
@@ -188,6 +208,12 @@ Nikolakopoulou A (2026):
 Illustrating the assumptions of meta-regression in treatment networks.
 Preprint available at \emph{Research Square},
 \doi{10.21203/rs.3.rs-8235913/v1}
+ 
+Opricovic S, Tzeng GH (2004):
+Compromise solution by MCDM methods: A comparative analysis of VIKOR and
+TOPSIS.
+\emph{European Journal of Operational Research},
+\bold{156}, 445--55
 
 Papakonstantinou, T., Nikolakopoulou, A., Rücker, G., Chaimani, A.,
 Schwarzer, G., Egger, M., Salanti, G. (2018):

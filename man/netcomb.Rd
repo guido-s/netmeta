@@ -15,7 +15,7 @@ netcomb(
   details.chkident = FALSE,
   nchar.comps = x$nchar.trts,
   sep.ia = gs("sep.ia"),
-  func.inverse = invmat,
+  func.inverse = x$func.inverse,
   overall.hetstat = x$overall.hetstat,
   backtransf = x$backtransf,
   na.unident = gs("na.unident"),
@@ -52,8 +52,9 @@ Details).}
 
 \item{sep.ia}{A single character to define separator for interactions.}
 
-\item{func.inverse}{R function used to calculate the pseudoinverse
-of the Laplacian matrix L (see \code{\link{netmeta}}).}
+\item{func.inverse}{A function or character string specifying the function
+used to calculate the pseudoinverse of the Laplacian matrix L
+(see \code{\link{netmeta}}).}
 
 \item{overall.hetstat}{A logical indicating whether to print heterogeneity
 measures.}
