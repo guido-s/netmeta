@@ -53,13 +53,8 @@ nma_ruecker <- function(TE, W, seTE,
   Lplus <- do.call(func.inverse, list(L))
   Lplus[is_zero(Lplus)] <- 0
   #
-  # Invert independent study blocks separately to avoid cross-study truncation.
-  W.cov <- matrix(0, nrow = m, ncol = m)
-  for (s in unique(studlab)) {
-    sel <- studlab == s
-    W.cov[sel, sel] <- do.call(func.inverse, list(Cov0[sel, sel, drop = FALSE]))
-  }
-  L1 <- t(B) %*% W.cov %*% B
+  L1 <- t(B) %*% pseudoinverse(Cov0) %*% B
+  #
   Lplus1 <- do.call(func.inverse, list(L1))
   Lplus1[is_zero(Lplus1)] <- 0
   #

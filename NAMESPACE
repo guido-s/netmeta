@@ -155,6 +155,7 @@ importFrom(colorspace,
   sequential_hcl,
   terrain_hcl
 )
+importFrom(corpcor,pseudoinverse)
 importFrom(dplyr,
   "%>%",
   arrange,
