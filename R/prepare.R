@@ -1,5 +1,5 @@
 prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
-                    correlated = FALSE, func.inverse) {
+                    correlated = FALSE) {
   
   if (is.na(tau))
     tau <- 0
@@ -48,7 +48,7 @@ prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
     if (correlated.s & sum(sel.s) == 1)
       correlated.s <- FALSE
     #
-    res.s <- covar_study(1 / data$weights[sel.s], s, correlated.s, func.inverse)
+    res.s <- covar_study(1 / data$weights[sel.s], s, correlated.s)
     #
     W.list[[s]] <- res.s$W
     C.list[[s]] <- res.s$Cov
@@ -63,7 +63,7 @@ prepare <- function(TE, seTE, treat1, treat2, studlab, tau = 0,
 }
 
 
-covar_study <- function(v, studlab, correlated, func.inverse) {
+covar_study <- function(v, studlab, correlated) {
   m <- length(v)
   n <- (1 + sqrt(8 * m + 1)) / 2
   #
@@ -104,7 +104,7 @@ covar_study <- function(v, studlab, correlated, func.inverse) {
     }
     #
     if (qr(Cov)$rank == n - 1)
-      W <- ginv(as.matrix(Cov))
+      W <- pseudoinverse(as.matrix(Cov))
     else {
       if (length(v) > 1)
         W <- diag(1 / v)
@@ -116,7 +116,7 @@ covar_study <- function(v, studlab, correlated, func.inverse) {
   }
   else {
     if (length(v) > 1) {
-      v <- multiarm(v, studlab, func.inverse)$v
+      v <- multiarm(v, studlab)$v
       Cov <- diag(v)
       W <- diag(1 / v)
     }

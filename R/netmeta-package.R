@@ -327,6 +327,8 @@
 #' @importFrom tidyr pivot_longer drop_na
 #' 
 #' @importFrom magrittr %<>%
+#'
+#' @importFrom BigDataStatMeth pseudoinverse
 
 "_PACKAGE"
 

@@ -13,7 +13,7 @@ hatmatrix(
   random = x$random,
   nchar.trts = x$nchar.trts,
   nchar.studlab = x$nchar.studlab,
-  func.inverse = x$func.inverse
+  ...
 )
 
 \method{print}{hatmatrix}(
@@ -50,9 +50,7 @@ characters used to create unique treatment names.}
 \item{nchar.studlab}{A numeric defining the minimum number of
 characters used to create unique study labels.}
 
-\item{func.inverse}{A function or character string specifying the function
-used to calculate the pseudoinverse of the Laplacian matrix L
-(see \code{\link{netmeta}}).}
+\item{\dots}{Additional arguments (ignored).}
 
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
@@ -62,8 +60,6 @@ printed.}
 
 \item{legend.studlab}{A logical indicating whether a legend should
 be printed for abbreviated study labels.}
-
-\item{\dots}{Additional arguments (ignored).}
 }
 \value{
 A list with two hat matrices: \code{common} (common effects model)

@@ -418,3 +418,28 @@ if (FALSE) {
   tau2.direct = res.r$tau2.direct
   I2.direct = res.r$I2.direct
 }
+
+drop_from_dots <- function(x, drop = NULL, replace = list(),
+                           deprecated = FALSE, text.deprecated = NULL) {
+  for (old in drop) {
+    if (!is.null(x[[old]])) {
+      new <- replace[[old]]
+      if (!is.null(new) && length(new) == 1 && nzchar(new))
+        warning("Argument '", old, "' ignored; please use argument '",
+                new, "' instead.",
+                call. = FALSE)
+      else if (deprecated)
+        warning("Argument '", old, "' is deprecated and ignored.",
+                if (!is.null(text.deprecated))
+                  paste0(" ", text.deprecated),
+                call. = FALSE)
+      else
+        warning("Argument '", old, "' ignored as it is set internally.",
+                call. = FALSE)
+      #
+      x[[old]] <- NULL
+    }
+  }
+  #
+  x
+}

@@ -6,7 +6,6 @@ nma_ruecker <- function(TE, W, seTE,
                         level, level.ma,
                         seTE.orig, tau.direct = 0, sep.trts = ":",
                         method.tau = "DL",
-                        func.inverse,
                         Cov0,
                         method.random.ci = "classic") {
   
@@ -50,11 +49,12 @@ nma_ruecker <- function(TE, W, seTE,
   ## Lplus is its Moore-Penrose pseudoinverse
   ##
   L <- t(B) %*% W %*% B
-  Lplus <- do.call(func.inverse, list(X = L))
+  Lplus <- pseudoinverse(L)
   Lplus[is_zero(Lplus)] <- 0
   #
-  L1 <- t(B) %*% ginv(Cov0) %*% B
-  Lplus1 <- do.call(func.inverse, list(X = L1))
+  L1 <- t(B) %*% pseudoinverse(Cov0) %*% B
+  #
+  Lplus1 <- pseudoinverse(L1)
   Lplus1[is_zero(Lplus1)] <- 0
   #
   # R resistance distance (variance) matrix (n x n)
@@ -312,7 +312,6 @@ nma_ruecker <- function(TE, W, seTE,
       tau2.direct[sel.treat2, sel.treat1] <- m.i$tau2
     I2.direct[sel.treat1, sel.treat2] <-
       I2.direct[sel.treat2, sel.treat1] <- m.i$I2
-    
   }
   ##
   ci.direct <- ci(TE.direct, seTE.direct, level = level.ma)
