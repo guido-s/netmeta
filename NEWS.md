@@ -1,3 +1,80 @@
+## netmeta, version 3.9-0 (2026-mm-dd)
+
+### Major changes
+
+* Moore-Penrose pseudoinverses of Laplacian and sampling covariance matrices
+  are now calculated using `pseudoinverse()` from the R package
+  **BigDataStatMeth**. These calculations are used for multi-arm adjustments,
+  network estimates and their standard errors, and hat matrices.
+
+### User-visible changes
+
+* `netmeta()`, `netmetabin()`, `netcomb()`, `discomb()`, `hatmatrix()`:
+  argument `func.inverse` is deprecated and ignored, as pseudoinverses
+  are now calculated using `BigDataStatMeth::pseudoinverse()`. A warning
+  is issued if the argument is supplied explicitly.
+
+### Bug fixes
+
+* `netimpact()`: now calculates study impacts correctly
+  [(issue #43)](https://github.com/guido-s/netmeta/issues/43).
+  The fix uses `BigDataStatMeth::pseudoinverse()` rather than the
+  blockwise inversion proposed in pull request
+  [#44](https://github.com/guido-s/netmeta/pull/44).
+
+### Internal changes
+
+* R package **BigDataStatMeth** added to the Imports field.
+
+* R package **corpcor** removed from the Suggests field.
+
+
+## netmeta, version 3.8-0 (2026-11-17)
+
+Only released on GitHub.
+
+### Major changes
+
+* R package **netmeta** now requires R (>= 4.1.0) and R package **meta** (>= 9.0-0).
+
+### User-visible changes
+
+* `netmeta()`, `netmetabin()`, `netcomb()`, `discomb()`: argument `func.inverse`
+  now also accepts character strings specifying a function with its package
+  name, e.g., `"MASS::ginv"`.
+
+* `hatmatrix()`: new argument `func.inverse` allows specification of the
+  pseudoinverse function for the Davies method. By default, the function
+  stored in the network meta-analysis object is used. Explicit input is
+  ignored with a warning for the Ruecker and Krahn methods.
+
+* `netcomb()`: by default, argument `func.inverse` now uses the function
+  stored in the supplied network meta-analysis object.
+
+* `netconnection()`: treatments in a single connected network are now returned
+  in alphanumeric order in the list element `seq`.
+
+* Updated documentation for `netmeta()` and `hatmatrix()`.
+
+### Bug fixes
+
+* `netmeta()`: count study degrees of freedom without floating-point roundoff,
+  preserving the zero-degrees-of-freedom handling in saturated multi-arm
+  networks [(issue #37)](https://github.com/guido-s/netmeta/issues/37).
+  The fix uses the proposed calculation of the degrees of freedom in pull
+  request [#38](https://github.com/guido-s/netmeta/pull/38).
+
+* `netmetabin()`, `discomb()`: argument `func.inverse` was not forwarded
+  to some internal calls to `netmeta()`, causing the default inverse
+  function to be used instead of the specified function.
+  
+### Internal changes
+
+* Use R package **testthat** for unit tests.
+
+* R packages **testthat** and **corpcor** added to the Suggests field.
+
+
 ## netmeta, version 3.7-0 (2026-09-17)
 
 ### Major changes
