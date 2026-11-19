@@ -1,4 +1,37 @@
-## netmeta, version 3.8-0 (2026-mm-dd)
+## netmeta, version 3.9-0 (2026-mm-dd)
+
+### Major changes
+
+* Moore-Penrose pseudoinverses of Laplacian and sampling covariance matrices
+  are now calculated using `pseudoinverse()` from the R package
+  **BigDataStatMeth**. These calculations are used for multi-arm adjustments,
+  network estimates and their standard errors, and hat matrices.
+
+### User-visible changes
+
+* `netmeta()`, `netmetabin()`, `netcomb()`, `discomb()`, `hatmatrix()`:
+  argument `func.inverse` is deprecated and ignored, as pseudoinverses
+  are now calculated using `BigDataStatMeth::pseudoinverse()`. A warning
+  is issued if the argument is supplied explicitly.
+
+### Bug fixes
+
+* `netimpact()`: now calculates study impacts correctly
+  [(issue #43)](https://github.com/guido-s/netmeta/issues/43).
+  The fix uses `BigDataStatMeth::pseudoinverse()` rather than the
+  blockwise inversion proposed in pull request
+  [#44](https://github.com/guido-s/netmeta/pull/44).
+
+### Internal changes
+
+* R package **BigDataStatMeth** added to the Imports field.
+
+* R package **corpcor** removed from the Suggests field.
+
+
+## netmeta, version 3.8-0 (2026-11-17)
+
+Only released on GitHub.
 
 ### Major changes
 
@@ -27,7 +60,9 @@
 
 * `netmeta()`: count study degrees of freedom without floating-point roundoff,
   preserving the zero-degrees-of-freedom handling in saturated multi-arm
-  networks.
+  networks [(issue #37)](https://github.com/guido-s/netmeta/issues/37).
+  The fix uses the proposed calculation of the degrees of freedom in pull
+  request [#38](https://github.com/guido-s/netmeta/pull/38).
 
 * `netmetabin()`, `discomb()`: argument `func.inverse` was not forwarded
   to some internal calls to `netmeta()`, causing the default inverse

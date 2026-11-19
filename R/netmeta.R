@@ -91,9 +91,6 @@
 #'   characters used to create unique treatment names (see Details).
 #' @param nchar.studlab A numeric defining the minimum number of
 #'   characters used to create unique study labels.
-#' @param func.inverse A function or character string specifying the function
-#'   used to calculate the pseudoinverse of the Laplacian matrix \strong{L}
-#'   (see Details).
 #' @param n1 Number of observations in first treatment group.
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
@@ -142,10 +139,10 @@
 #' matrix) is formed; for further details, see Rücker (2012). Moreover,
 #' the \emph{n}x\emph{n} Laplacian matrix \strong{L} and its Moore-Penrose
 #' pseudoinverse \strong{L+} are calculated (both matrices play an
-#' important role in graph theory and electrical network theory). By
-#' default, the pseudoinverse is calculated using \code{\link{invmat}};
-#' an alternative function, such as \code{\link[MASS]{ginv}}, can be
-#' specified via argument \code{func.inverse}.
+#' important role in graph theory and electrical network theory). The
+#' pseudoinverse is calculated using
+#' \code{\link[BigDataStatMeth]{pseudoinverse}} from R package
+#' \bold{BigDataStatMeth}.
 #'
 #' Using matrices \strong{L} and \strong{L+}, the variances based on both
 #' direct and indirect comparisons can be estimated. Moreover, the hat
@@ -713,8 +710,6 @@ netmeta <- function(TE, seTE,
                     nchar.trts = gs("nchar.trts"),
                     nchar.studlab = gs("nchar.studlab"),
                     #
-                    func.inverse = invmat,
-                    #
                     n1 = NULL,
                     n2 = NULL,
                     event1 = NULL,
@@ -739,13 +734,13 @@ netmeta <- function(TE, seTE,
                     #
                     nchar = nchar.trts,
                     ...) {
-
-
+  
   #
   #
   # (1) Check arguments
   #
   #
+  
   chklevel(level)
   chklevel(level.predict)
   #
@@ -797,6 +792,9 @@ netmeta <- function(TE, seTE,
   # Check for deprecated arguments in '...'
   #
   args <- list(...)
+  #
+  drop_from_dots(args, "func.inverse", deprecated = TRUE)
+  #
   chklogical(warn.deprecated)
   #
   level.ma <- deprecated(level.ma, missing(level.ma), args, "level.comb",
@@ -820,18 +818,13 @@ netmeta <- function(TE, seTE,
     deprecated2(nchar.trts, missing.nchar.trts, nchar, missing(nchar),
                 warn.deprecated)
   chknumeric(nchar.trts, min = 1, length = 1)
-  #
-  if (is.character(func.inverse))
-    func.inverse <- eval(str2lang(func.inverse))
-  #
-  if (!is.function(func.inverse))
-    stop("Argument 'func.inverse' must specify a function.", call. = FALSE)
   
   #
   #
   # (2) Read data
   #
   #
+  
   nulldata <- is.null(data)
   sfsp <- sys.frame(sys.parent())
   mc <- match.call()
@@ -1017,13 +1010,12 @@ netmeta <- function(TE, seTE,
   else
     available.times <- FALSE
   
+  #
+  #
+  # (3) Store complete dataset in list object data
+  #     (if argument keepdata is TRUE)
+  #
   
-  #
-  #
-  # (2b) Store complete dataset in list object data
-  #      (if argument keepdata is TRUE)
-  #
-  #
   if (keepdata) {
     if (nulldata & !is.pairwise)
       data <- data.frame(.studlab = studlab, stringsAsFactors = FALSE)
@@ -1110,12 +1102,12 @@ netmeta <- function(TE, seTE,
     }
   }
   
+  #
+  #
+  # (4) Use subset for analysis
+  #
+  #
   
-  #
-  #
-  # (3) Use subset for analysis
-  #
-  #
   if (!missing.subset) {
     if ((is.logical(subset) & (sum(subset) > k.Comp)) ||
         (length(subset) > k.Comp))
@@ -1168,12 +1160,12 @@ netmeta <- function(TE, seTE,
   #
   sep.trts <- setsep(labels, sep.trts, missing = missing.sep.trts)
   
+  #
+  #
+  # (5) Additional checks
+  #
+  #
   
-  #
-  #
-  # (4) Additional checks
-  #
-  #
   if (any(treat1 == treat2))
     stop("Treatments must be different (arguments 'treat1' and 'treat2').",
          call. = FALSE)
@@ -1403,43 +1395,15 @@ netmeta <- function(TE, seTE,
   
   #
   #
-  # (5) Prepare the function for storage in the netmeta object
-  #
-  #
-  
-  func.inverse.stored <- func.inverse
-  #
-  env <- environment(func.inverse)
-  #
-  if (isNamespace(env)) {
-    pkg <- getNamespaceName(env)
-    exports <- getNamespaceExports(pkg)
-    #
-    matches <- vapply(
-      exports,
-      function(nam)
-        identical(func.inverse, getExportedValue(pkg, nam)),
-      logical(1)
-    )
-    #
-    if (any(matches)) {
-      nam <- exports[which(matches)[1L]]
-      func.inverse.stored <- paste0(pkg, "::", nam)
-    }
-  }
-  
-  #
-  #
   # (6) Generate analysis dataset
   #
   #
-  #
+  
   # Calculate weight matrix and generate ordered dataset, with added numbers
   # of arms per study
   #
   p0 <- prepare(TE, seTE, treat1, treat2, studlab,
-                correlated = correlated,
-                func.inverse = func.inverse)
+                correlated = correlated)
   #
   W.matrix.common <- as.matrix(p0$W)
   Cov.matrix.common <- as.matrix(p0$Cov)
@@ -1463,17 +1427,23 @@ netmeta <- function(TE, seTE,
   studies <- tdata$studies[order(tdata$order)]
   narms <- tdata$narms[order(tdata$order)]
   
-  
   #
   #
   # (7) Conduct network meta-analysis
   #
+  #
   
   # Common effects model
   #
+  weight.c <- dat.c$weights
+  se.c <- rep(NaN, length(weight.c))
+  #
+  pos.weight.c <- !is.na(weight.c) & weight.c >= 0
+  se.c[pos.weight.c] <- sqrt(1 / weight.c[pos.weight.c])
+  #
   res.c <- nma_ruecker(dat.c$TE,
                        W.matrix.common,
-                       sqrt(1 / dat.c$weights),
+                       se.c,
                        dat.c$treat1, dat.c$treat2,
                        dat.c$treat1.pos, dat.c$treat2.pos,
                        dat.c$narms, dat.c$studlab,
@@ -1481,7 +1451,7 @@ netmeta <- function(TE, seTE,
                        level, level.ma,
                        dat.c$seTE, 0, sep.trts,
                        method.tau,
-                       func.inverse, Cov0 = p0$Cov)
+                       Cov0 = p0$Cov)
   trts <- rownames(res.c$A.matrix)
   #
   #
@@ -1620,16 +1590,21 @@ netmeta <- function(TE, seTE,
     tau <- tau.preset
   #
   p1 <- prepare(TE, seTE, treat1, treat2, studlab,
-                tau = tau, correlated = correlated,
-                func.inverse = func.inverse)
+                tau = tau, correlated = correlated)
   #
   W.matrix.random <- as.matrix(p1$W)
   Cov.matrix.random <- as.matrix(p1$Cov)
   dat.r <- p1$data
   #
+  weight.r <- dat.r$weights
+  se.r <- rep(NaN, length(weight.r))
+  #
+  pos.weight.r <- !is.na(weight.r) & weight.r >= 0
+  se.r[pos.weight.r] <- sqrt(1 / weight.r[pos.weight.r])
+  #
   res.r <- nma_ruecker(dat.r$TE,
                        W.matrix.random,
-                       sqrt(1 / dat.r$weights),
+                       se.r,
                        dat.r$treat1, dat.r$treat2,
                        dat.r$treat1.pos, dat.r$treat2.pos,
                        dat.r$narms, dat.r$studlab,
@@ -1637,7 +1612,7 @@ netmeta <- function(TE, seTE,
                        level, level.ma,
                        dat.r$seTE, tau, sep.trts,
                        method.tau,
-                       func.inverse, Cov0 = p1$Cov,
+                       Cov0 = p1$Cov,
                        method.random.ci = method.random.ci)
   #
   TE.random <- res.r$TE.pooled
@@ -1663,13 +1638,13 @@ netmeta <- function(TE, seTE,
     p.lower[!is.na(p.lower)] <- NA
     p.upper[!is.na(p.upper)] <- NA
   }
-
-
+  
   #
   #
   # (8) Generate R object
   #
   #
+  
   o <- order(dat.c$order)
   #
   designs <- designs(res.c$treat1, res.c$treat2, res.c$studlab,
@@ -1884,8 +1859,6 @@ netmeta <- function(TE, seTE,
               tol.multiarm = tol.multiarm,
               tol.multiarm.se = tol.multiarm.se,
               details.chkmultiarm = details.chkmultiarm,
-              #
-              func.inverse = func.inverse.stored,
               #
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,

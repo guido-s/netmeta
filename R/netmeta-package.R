@@ -328,7 +328,7 @@
 #' 
 #' @importFrom magrittr %<>%
 #'
-#' @importFrom corpcor pseudoinverse
+#' @importFrom BigDataStatMeth pseudoinverse
 
 "_PACKAGE"
 

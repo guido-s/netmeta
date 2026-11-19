@@ -40,7 +40,7 @@ se.base <- c(0.8, 0.4, 0.04, 0.1)
 # 1) Comparison with GLS
 #
 
-test_that("block covariance inversion agrees with GLS regardless of row order", {
+test_that("covariance inversion agrees with GLS regardless of row order", {
   rows <- seq_len(nrow(dat))
   #
   for (rows.i in list(rows, rev(rows))) {

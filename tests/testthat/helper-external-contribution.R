@@ -1,4 +1,4 @@
-corpcor_results <- function(data, pw, contr){
+BigDataStatMeth_results <- function(data, pw, contr){
   # The B matrix for 3-arm studies described in Rucker, Schwarzer (2014)
   B_matrix_3_arms <- matrix(
     c(1, -1, 0,
@@ -29,7 +29,7 @@ corpcor_results <- function(data, pw, contr){
   # Inverse Laplacian for StudyABC1
   pseudo_inverse_laplacian_ABC1 <- -t(B_matrix_3_arms) %*% B_matrix_3_arms %*% variance_matrix_ABC1 %*% t(B_matrix_3_arms) %*% B_matrix_3_arms / (2 * n_arms_ABC1 ^ 2)
   # Laplacian for StudyABC1
-  laplacian_ABC1 <- corpcor::pseudoinverse(pseudo_inverse_laplacian_ABC1)
+  laplacian_ABC1 <- BigDataStatMeth::pseudoinverse(pseudo_inverse_laplacian_ABC1)
   rownames(laplacian_ABC1) <- treatments_ABC1
   colnames(laplacian_ABC1) <- treatments_ABC1
   
@@ -53,7 +53,7 @@ corpcor_results <- function(data, pw, contr){
     -t(B_matrix_3_arms) %*% B_matrix_3_arms %*% variance_matrix_ABC2 %*%
     t(B_matrix_3_arms) %*% B_matrix_3_arms / (2 * n_arms_ABC2 ^ 2)
   # Laplacian for StudyABC2
-  laplacian_ABC2 <- corpcor::pseudoinverse(pseudo_inverse_laplacian_ABC2)
+  laplacian_ABC2 <- BigDataStatMeth::pseudoinverse(pseudo_inverse_laplacian_ABC2)
   rownames(laplacian_ABC2) <- treatments_ABC2
   colnames(laplacian_ABC2) <- treatments_ABC2
   
