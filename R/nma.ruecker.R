@@ -290,11 +290,12 @@ nma_ruecker <- function(TE, W, seTE,
     selstud <- treat1 == sel.treat1 & treat2 == sel.treat2
     ##
     m.i.tau.preset <-
-      suppressWarnings(metagen(TE, seTE.orig, subset = selstud,
-                               tau.preset = tau.direct,
-                               method.tau = "DL", method.tau.ci = "",
-                               method.I2 = "Q"))
-    ##
+      suppressWarnings(
+        metagen(TE, seTE.orig, subset = selstud,
+                tau.preset = if (is.na(tau.direct)) 0 else tau.direct,
+                method.tau = "DL", method.tau.ci = "",
+                method.I2 = "Q"))
+    #
     if (direct.common) {
       TE.i   <- m.i.tau.preset$TE.common
       seTE.i <- m.i.tau.preset$seTE.common
