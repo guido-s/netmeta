@@ -4,9 +4,14 @@ nma_ruecker <- function(TE, W, seTE,
                         narms, studlab,
                         sm = "",
                         level, level.ma,
-                        seTE.orig, tau.direct = 0, sep.trts = ":",
+                        seTE.orig,
+                        #
+                        tau.direct = 0,
+                        #
+                        sep.trts = ":",
                         method.tau = "DL",
                         Cov0,
+                        #
                         method.random.ci = "classic") {
   
   
@@ -273,7 +278,9 @@ nma_ruecker <- function(TE, W, seTE,
     names.treat
   ##
   C.matrix <- B.matrix[!duplicated(B.matrix), , drop = FALSE]
-  ##
+  #
+  direct.common <- missing(tau.direct)
+  #
   for (i in 1:dim(C.matrix)[1]) {
     sel1 <- C.matrix[i, ] ==  1
     sel2 <- C.matrix[i, ] == -1
@@ -285,9 +292,10 @@ nma_ruecker <- function(TE, W, seTE,
     m.i.tau.preset <-
       suppressWarnings(metagen(TE, seTE.orig, subset = selstud,
                                tau.preset = tau.direct,
-                               method.tau = "DL", method.tau.ci = ""))
+                               method.tau = "DL", method.tau.ci = "",
+                               method.I2 = "Q"))
     ##
-    if (is.na(tau.direct) | tau.direct == 0) {
+    if (direct.common) {
       TE.i   <- m.i.tau.preset$TE.common
       seTE.i <- m.i.tau.preset$seTE.common
     }
@@ -301,17 +309,35 @@ nma_ruecker <- function(TE, W, seTE,
     ##
     TE.direct[sel.treat2, sel.treat1]   <- -TE.i
     seTE.direct[sel.treat2, sel.treat1] <- seTE.i
-    ##
-    m.i <-
-      suppressWarnings(metagen(TE, seTE.orig, subset = selstud,
-                               method.tau = method.tau, method.tau.ci = ""))
-    ##
-    Q.direct[sel.treat1, sel.treat2] <-
-      Q.direct[sel.treat2, sel.treat1] <- m.i$Q
-    tau2.direct[sel.treat1, sel.treat2] <-
-      tau2.direct[sel.treat2, sel.treat1] <- m.i$tau2
-    I2.direct[sel.treat1, sel.treat2] <-
-      I2.direct[sel.treat2, sel.treat1] <- m.i$I2
+    #
+    Q.direct[sel.treat1, sel.treat2] <- Q.direct[sel.treat2, sel.treat1] <-
+      m.i.tau.preset$Q
+    #
+    I2.direct[sel.treat1, sel.treat2] <- I2.direct[sel.treat2, sel.treat1] <-
+      m.i.tau.preset$I2
+    #
+    if (!direct.common) {
+      m.i <- tryCatch(
+        suppressWarnings(
+          metagen(TE, seTE.orig, subset = selstud,
+                  method.tau = method.tau, method.tau.ci = "")
+        ),
+        error = function(e) {
+          warning("Estimation of between-study variance using the ",
+                  method.tau, " method failed for comparison '",
+                  sel.treat1, "' versus '", sel.treat2, "': ",
+                  conditionMessage(e),
+                  " Setting the corresponding entries in 'tau2.direct' and ",
+                  "'tau.direct' to NA.",
+                  call. = FALSE)
+          #
+          list(tau2 = NA_real_)
+        }
+      )
+      #
+      tau2.direct[sel.treat1, sel.treat2] <-
+        tau2.direct[sel.treat2, sel.treat1] <- m.i$tau2
+    }
   }
   ##
   ci.direct <- ci(TE.direct, seTE.direct, level = level.ma)
@@ -386,11 +412,11 @@ nma_ruecker <- function(TE, W, seTE,
               upper.direct = upper.direct,
               statistic.direct = statistic.direct,
               pval.direct = pval.direct,
-              ##
-              Q.direct = Q.direct,
-              tau2.direct = tau2.direct,
-              I2.direct = I2.direct,
-              ##
+              #
+              Q.direct = if (direct.common) NULL else Q.direct,
+              tau2.direct = if (direct.common) NULL else tau2.direct,
+              I2.direct = if (direct.common) NULL else I2.direct,
+              #
               Q.decomp = Q.decomp
   )
   
