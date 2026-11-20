@@ -1449,8 +1449,10 @@ netmeta <- function(TE, seTE,
                        dat.c$narms, dat.c$studlab,
                        sm,
                        level, level.ma,
-                       dat.c$seTE, 0, sep.trts,
-                       method.tau,
+                       dat.c$seTE,
+                       #
+                       sep.trts = sep.trts,
+                       method.tau = method.tau,
                        Cov0 = p0$Cov)
   trts <- rownames(res.c$A.matrix)
   #
@@ -1462,7 +1464,8 @@ netmeta <- function(TE, seTE,
       #
       dat.tau <-
         data.frame(studlab = studlab,
-                   treat1 = treat1, treat2 = treat2,
+                   treat1 = as.character(treat1),
+                   treat2 = as.character(treat2),
                    TE = TE, seTE = seTE)
       if (available.n) {
         dat.tau$n1 <- n1
@@ -1496,16 +1499,40 @@ netmeta <- function(TE, seTE,
       keep <- logical(0)
       wo <- logical(0)
       #
-      for (i in unique(dat.tau$studlab)) {
-        d.i <- dat.tau[dat.tau$studlab == i, , drop = FALSE]
-        trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
+      studies.tau <- unique(dat.tau$studlab)
+      n.studies.tau <- length(studies.tau)
+      #
+      V.list <- vector("list", n.studies.tau)
+      #
+      for (i in seq_len(n.studies.tau)) {
+        study.i <- studies.tau[i]
+        dat.i <- dat.tau[dat.tau$studlab == study.i, , drop = FALSE]
+        #
+        trts.i <- unique(sort(c(dat.i$treat1, dat.i$treat2)))
+        #
         if (reference.group %in% trts.i)
-          ref.i <- reference.group
+          ref.i <- as.character(reference.group)
         else
           ref.i <- rev(trts.i)[1]
         #
-        keep.i <- !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
-        wo.i <- d.i$treat1 == ref.i
+        keep.i <- !(dat.i$treat1 != ref.i & dat.i$treat2 != ref.i)
+        wo.i <- dat.i$treat1 == ref.i
+        #
+        # Covariance of the retained contrasts, all oriented relative to ref.i
+        #
+        V.i <- matrix(0, length(trts.i), length(trts.i),
+                      dimnames = list(trts.i, trts.i))
+        V.i[cbind(dat.i$treat1, dat.i$treat2)] <- dat.i$seTE^2
+        V.i <- V.i + t(V.i)
+        #
+        trts.keep <-
+          ifelse(wo.i[keep.i], dat.i$treat2[keep.i], dat.i$treat1[keep.i])
+        #
+        vars.ref <- V.i[trts.keep, ref.i]
+        #
+        V.list[[i]] <-
+          (outer(vars.ref, vars.ref, "+") -
+             V.i[trts.keep, trts.keep, drop = FALSE]) / 2
         #
         keep <- c(keep, keep.i)
         wo <- c(wo, wo.i)
@@ -1514,6 +1541,7 @@ netmeta <- function(TE, seTE,
       dat.tau <- dat.tau[keep, , drop = FALSE]
       #
       wo <- wo[keep]
+      #
       if (sum(wo) > 0) {
         dat.tau$TE[wo] <- -dat.tau$TE[wo]
         #
@@ -1557,7 +1585,7 @@ netmeta <- function(TE, seTE,
         V <- bldiag(lapply(split(dat.tau, dat.tau$studlab), calcV, sm = sm))
       }
       else
-        V <- dat.tau$seTE^2
+        V <- bldiag(V.list)
       #
       dat.tau.TE <- dat.tau$TE
       dat.tau$comparison <- paste(dat.tau$treat1, dat.tau$treat2, sep = " vs ")
@@ -1610,9 +1638,14 @@ netmeta <- function(TE, seTE,
                        dat.r$narms, dat.r$studlab,
                        sm,
                        level, level.ma,
-                       dat.r$seTE, tau, sep.trts,
-                       method.tau,
+                       dat.r$seTE,
+                       #
+                       tau,
+                       #
+                       sep.trts = sep.trts,
+                       method.tau = method.tau,
                        Cov0 = p1$Cov,
+                       #
                        method.random.ci = method.random.ci)
   #
   TE.random <- res.r$TE.pooled

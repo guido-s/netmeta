@@ -16,6 +16,16 @@
 
 ### Bug fixes
 
+* `netmeta()`:
+  - The between-study variance estimate using REML or ML is now
+    invariant to the choice of reference treatment
+    [(issue #39)](https://github.com/guido-s/netmeta/issues/39).
+    The fix is based on pull request
+    [#40](https://github.com/guido-s/netmeta/pull/40).
+  - If estimation of the between-study variance for a direct comparison
+    fails, the corresponding entries in `tau2.direct` and `tau.direct`
+    are set to `NA`. A warning is issued.
+
 * `netimpact()`: now calculates study impacts correctly
   [(issue #43)](https://github.com/guido-s/netmeta/issues/43).
   The fix uses `BigDataStatMeth::pseudoinverse()` rather than the
