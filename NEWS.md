@@ -13,6 +13,9 @@
   argument `func.inverse` is deprecated and ignored, as pseudoinverses
   are now calculated using `BigDataStatMeth::pseudoinverse()`. A warning
   is issued if the argument is supplied explicitly.
+  
+* `print.netcomparison()`, `print.netcomplex()`: new argument `lab.NA`
+  specifies the text printed for missing results.
 
 ### Bug fixes
 

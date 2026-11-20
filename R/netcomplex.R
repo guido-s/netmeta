@@ -38,6 +38,7 @@
 #'   combination effect should be printed according to JAMA reporting
 #'   standards.
 #' @param big.mark A character used as thousands separator.
+#' @param lab.NA Label for missing values.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -361,7 +362,9 @@ print.netcomplex <- function(x,
                              JAMA.pval = gs("JAMA.pval"),
                              ##
                              big.mark = gs("big.mark"),
-                             ##
+                             #
+                             lab.NA = gs("lab.NA"),
+                             #
                              legend = gs("legend"),
                              warn.deprecated = gs("warn.deprecated"),
                              ##
@@ -389,7 +392,11 @@ print.netcomplex <- function(x,
   chklogical(scientific.pval)
   chklogical(zero.pval)
   chklogical(JAMA.pval)
-  ##
+  #
+  chkchar(big.mark, length = 1)
+  #
+  chkchar(lab.NA, length = 1)
+  #
   chklogical(legend)
   
   
@@ -490,20 +497,21 @@ print.netcomplex <- function(x,
     pval.f <- formatPT(x$pval.Comb.common, digits = digits.pval,
                        scientific = scientific.pval,
                        zero = zero.pval, JAMA = JAMA.pval,
-                       lab.NA = "")
+                       lab.NA = lab.NA)
     ##
     res.f <-
       cbind(Comb = formatN(Comb.common, digits = digits,
-                           "NA", big.mark = big.mark),
+                           text.NA = lab.NA, big.mark = big.mark),
             CI = formatCI(formatN(round(lower.Comb.common, digits),
-                                  digits, "NA",
+                                  digits, text.NA = lab.NA,
                                   big.mark = big.mark),
                           formatN(round(upper.Comb.common, digits),
-                                  digits, "NA",
+                                  digits, text.NA = lab.NA,
                                   big.mark = big.mark)),
             zval = formatN(x$statistic.Comb.common, digits = digits.stat,
-                           "NA", big.mark = big.mark),
-            pval = pval.f)
+                           text.NA = lab.NA, big.mark = big.mark),
+             pval = pval.f)
+    res.f[is.na(lower.Comb.common) | is.na(upper.Comb.common), "CI"] <- lab.NA
     ##
     cat(msg)
     ##
@@ -523,20 +531,21 @@ print.netcomplex <- function(x,
     pval.r <- formatPT(x$pval.Comb.random, digits = digits.pval,
                        scientific = scientific.pval,
                        zero = zero.pval, JAMA = JAMA.pval,
-                       lab.NA = "")
+                       lab.NA = lab.NA)
     ##
     res.r <-
       cbind(Comb = formatN(Comb.random, digits = digits,
-                           "NA", big.mark = big.mark),
+                           text.NA = lab.NA, big.mark = big.mark),
             CI = formatCI(formatN(round(lower.Comb.random, digits),
-                                  digits, "NA",
+                                  digits, text.NA = lab.NA,
                                   big.mark = big.mark),
                           formatN(round(upper.Comb.random, digits),
-                                  digits, "NA",
+                                  digits, text.NA = lab.NA,
                                   big.mark = big.mark)),
             zval = formatN(x$statistic.Comb.random, digits = digits.stat,
-                           "NA", big.mark = big.mark),
-            pval = pval.r)
+                           text.NA = lab.NA, big.mark = big.mark),
+             pval = pval.r)
+    res.r[is.na(lower.Comb.random) | is.na(upper.Comb.random), "CI"] <- lab.NA
     ##
     dimnames(res.r)[[1]] <- complex
     dimnames(res.r)[[2]] <- c(sm.lab, ci.lab, "z", "p-value")
