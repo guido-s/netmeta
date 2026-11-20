@@ -166,7 +166,15 @@ hatmatrix <- function(x, method = "Ruecker", type,
                       common = x$common,
                       random = x$random,
                       nchar.trts = x$nchar.trts,
-                      nchar.studlab = x$nchar.studlab) {
+                      nchar.studlab = x$nchar.studlab,
+                      #
+                      ...) {
+  
+  #
+  #
+  # (1) Check and set arguments
+  #
+  #
   
   chkclass(x, "netmeta")
   x <- updateversion(x)
@@ -211,7 +219,14 @@ hatmatrix <- function(x, method = "Ruecker", type,
   ##
   nchar.studlab <- replaceNULL(nchar.studlab, 666)
   chknumeric(nchar.studlab, min = 1, length = 1)
+  #
+  drop_from_dots(list(...), "func.inverse", deprecated = TRUE)
   
+  #
+  #
+  # (2) Calculate and return hat matrix
+  #
+  #
   
   res <- list()
   ##
@@ -439,7 +454,7 @@ hatmatrix.aggr <- function(x, model, type) {
   ##
   L <- t(B) %*% W %*% B
   ## Pseudo-Inverse of L 
-  L.plus <- invmat(L)
+  L.plus <- pseudoinverse(L)
   L.plus[is_zero(L.plus)] <- 0
   ##
   ## Aggregate Hat matrix

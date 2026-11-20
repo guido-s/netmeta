@@ -30,8 +30,6 @@
 #'   characters used to create unique names for components (see
 #'   Details).
 #' @param sep.ia A single character to define separator for interactions.
-#' @param func.inverse R function used to calculate the pseudoinverse
-#'   of the Laplacian matrix L (see \code{\link{netmeta}}).
 #' @param na.unident A logical indicating whether unidentifiable
 #'   components and combinations should be set to missing values.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -389,30 +387,29 @@ netcomb <- function(x,
                     #
                     sep.ia = gs("sep.ia"),
                     #
-                    func.inverse = invmat,
                     overall.hetstat = x$overall.hetstat,
                     backtransf = x$backtransf,
-                    ##
+                    #
                     na.unident = gs("na.unident"),
                     warn.deprecated = gs("warn.deprecated"),
                     ...) {
   
+  #
+  #
+  # (1) Check arguments
+  #
+  #
   
-  ##
-  ##
-  ## (1) Check arguments
-  ##
-  ##
   chkclass(x, "netmeta")
   chksuitable(x, "Component network meta-analysis", classes = gs(".other_nma"))
   #
   x <- updateversion(x)
-  ##
+  #
   chkchar(sep.comps, nchar = 0:1, length = 1)
-  ##
+  #
   if (!is.null(tau.preset))
     chknumeric(tau.preset, min = 0, length = 1)
-  ##
+  #
   chklogical(details.chkident)
   nchar.comps <- replaceNULL(nchar.comps, 666)
   chknumeric(nchar.comps, min = 1, length = 1)
@@ -423,28 +420,31 @@ netcomb <- function(x,
   chklogical(overall.hetstat)
   chklogical(backtransf)
   chklogical(na.unident)
-  ##
-  ## Check for deprecated arguments in '...'
-  ##
+  #
+  # Check for deprecated arguments in '...'
+  #
   args  <- list(...)
+  #
+  drop_from_dots(args, "func.inverse", deprecated = TRUE)
+  #
   chklogical(warn.deprecated)
-  ##
+  #
   missing.common <- missing(common)
   common <- deprecated(common, missing.common, args, "comb.fixed",
                        warn.deprecated)
   common <- deprecated(common, missing.common, args, "fixed", warn.deprecated)
   chklogical(common)
-  ##
+  #
   random <-
     deprecated(random, missing(random), args, "comb.random", warn.deprecated)
   chklogical(random)
   
+  #
+  #
+  # (2) Create C.matrix
+  #
+  #
   
-  ##
-  ##
-  ## (2) Create C.matrix
-  ##
-  ##
   if (missing(C.matrix)) {
     #
     # Create C-matrix from netmeta object
@@ -461,22 +461,22 @@ netcomb <- function(x,
     C.matrix <- as.matrix(C.matrix)[x$trts, , drop = FALSE]
   }
   else {
-    ##
-    ## Check if appropriate C.matrix is provided
-    ##
+    #
+    # Check if appropriate C.matrix is provided
+    #
     if (!(is.matrix(C.matrix) | is.data.frame(C.matrix)))
       stop("Argument 'C.matrix' must be a matrix or data frame.",
            call. = FALSE)
-    ##
+    #
     if (nrow(C.matrix) != x$n)
       stop("Argument 'C.matrix' has wrong number of rows",
            " (must be equal to number of treatments).",
            call. = FALSE)
-    ##
-    ## Row names must be a permutation of treatments
-    ##
+    #
+    # Row names must be a permutation of treatments
+    #
     wrong.labels <- FALSE
-    ##
+    #
     if (is.null(rownames(C.matrix)))
       wrong.labels <- TRUE
     else {
@@ -484,37 +484,37 @@ netcomb <- function(x,
           length(unique(tolower(x$trts))) &&
           length(unique(rownames(C.matrix))) ==
           length(unique(tolower(rownames(C.matrix))))
-          )
+      )
         idx <- charmatch(tolower(rownames(C.matrix)),
                          tolower(x$trts), nomatch = NA)
       else
         idx <- charmatch(rownames(C.matrix), x$trts, nomatch = NA)
-      ##
+      #
       if (any(is.na(idx)) || any(idx == 0))
         wrong.labels <- TRUE
     }
-    ##
+    #
     if (wrong.labels)
       stop("Row names of argument 'C.matrix' must be a ",
            "permutation of treatment names:\n  ",
            paste(paste0("'", x$trts, "'"),
                  collapse = " - "),
            call. = FALSE)
-    ##
+    #
     C.matrix <- C.matrix[x$trts, , drop = FALSE]
-    ##
+    #
     if (is.data.frame(C.matrix))
       C.matrix <- as.matrix(C.matrix)
   }
-  ##
+  #
   c <- ncol(C.matrix) # number of components
   
+  #
+  #
+  # (3) Create design matrix based on treatment components
+  #
+  #
   
-  ##
-  ##
-  ## (3) Create design matrix based on treatment components
-  ##
-  ##
   X.matrix <- x$B.matrix %*% C.matrix
   colnames(X.matrix) <- colnames(C.matrix)
   rownames(X.matrix) <- x$studlab
@@ -526,17 +526,16 @@ netcomb <- function(x,
   else
     comps.unident <- NULL
   
+  #
+  #
+  # (4) Conduct CNMA
+  #
+  #
   
-  ##
-  ##
-  ## (4) Conduct CNMA
-  ##
-  ##
   df.Q.additive <- x$df.Q + x$n - 1 - qr(X.matrix)$rank
   df.Q.diff <- x$n - 1 - qr(X.matrix)$rank
-  ##
-  p0 <- prepare(x$TE, x$seTE, x$treat1, x$treat2, x$studlab,
-                func.inverse = func.inverse)
+  #
+  p0 <- prepare(x$TE, x$seTE, x$treat1, x$treat2, x$studlab)
   #
   W.matrix.common <- p0$W
   dat.c <- p0$data
@@ -550,16 +549,16 @@ netcomb <- function(x,
                         X.matrix[dat.c$order, , drop = FALSE],
                         C.matrix, x$B.matrix[dat.c$order, , drop = FALSE],
                         df.Q.additive, x$n, x$sep.trts)
-  ##
-  ## Calculate heterogeneity statistics (additive model)
-  ##
+  #
+  # Calculate heterogeneity statistics (additive model)
+  #
   Q.additive <- res.c$Q.additive
-  ##
+  #
   if (!is.null(tau.preset))
     tau <- tau.preset
   else
     tau <- res.c$tau
-  ##
+  #
   I2 <- res.c$I2
   lower.I2 <- res.c$lower.I2
   upper.I2 <- res.c$upper.I2
@@ -567,8 +566,7 @@ netcomb <- function(x,
   # Random effects models
   #
   p1 <- prepare(x$TE, x$seTE, x$treat1, x$treat2, x$studlab,
-                tau = if (is.na(tau)) 0 else tau,
-                func.inverse = func.inverse)
+                tau = if (is.na(tau)) 0 else tau)
   #
   W.matrix.random <- p1$W
   dat.r <- p1$data
@@ -591,9 +589,9 @@ netcomb <- function(x,
     pval.Q.diff <- NA
   else
     pval.Q.diff <- 1 - pchisq(Q.diff, df.Q.diff)
-  ##
-  ## Set unidentifiable components and combinations to NA
-  ##
+  #
+  # Set unidentifiable components and combinations to NA
+  #
   if (na.unident & length(comps.unident) > 0) {
     trts <- names(res.c$combinations$TE)
     unident.pattern <- paste0("^", comps.unident, "$", collapse = "|")
@@ -601,14 +599,14 @@ netcomb <- function(x,
       trts[unlist(lapply(lapply(compsplit(trts, sep.comps),
                                 grepl,
                                 pattern = unident.pattern), any))]
-    ##
+    #
     res.c$components <- lapply(res.c$components, setNA_vars, comps.unident)
     res.c$combinations <- lapply(res.c$combinations, setNA_vars, unident.combs)
-    ##
+    #
     res.r$components <- lapply(res.r$components, setNA_vars, comps.unident)
     res.r$combinations <- lapply(res.r$combinations, setNA_vars, unident.combs)
   }
-  ##
+  #
   if (length(comps.unident) == 0)
     comps.unident <- NULL
   #
@@ -620,12 +618,12 @@ netcomb <- function(x,
   #
   sep.ia <- setsep(comps, sep.ia, missing = missing.sep.ia)
   
+  #
+  #
+  # (5) Generate CNMA object
+  #
+  #
   
-  ##
-  ##
-  ## (5) Generate CNMA object
-  ##
-  ##
   o <- order(dat.c$order)
   #
   W.matrix.common <- W.matrix.common[o, o, drop = FALSE]
@@ -637,127 +635,127 @@ netcomb <- function(x,
   res <- list(studlab = x$studlab,
               treat1 = x$treat1,
               treat2 = x$treat2,
-              ##
+              #
               TE = dat.c$TE[o],
               seTE = dat.c$seTE[o],
               seTE.adj = sqrt(1 / dat.c$weights[o]),
               seTE.adj.common = sqrt(1 / dat.c$weights[o]),
               seTE.adj.random = sqrt(1 / dat.r$weights[o]),
-              ##
+              #
               design = x$design,
-              ##
+              #
               event1 = x$event1,
               event2 = x$event2,
               n1 = x$n1,
               n2 = x$n2,
               incr = x$incr,
-              ##
+              #
               k = x$k,
               m = x$m,
               n = x$n,
               d = x$d,
               c = c,
-              ##
+              #
               trts = x$trts,
               k.trts = x$k.trts,
               n.trts = x$n.trts,
               events.trts = x$events.trts,
-              ##
+              #
               n.arms = x$n.arms,
               multiarm = x$multiarm,
-              ##
+              #
               studies = x$studies,
               narms = x$narms,
-              ##
+              #
               designs = x$designs,
-              ##
+              #
               comps = comps,
               k.comps = NA,
               n.comps = NA,
               events.comps = NA,
               na.unident = na.unident,
               comps.unident = comps.unident,
-              ##
+              #
               TE.nma.common = x$TE.nma.common,
               seTE.nma.common = x$seTE.nma.common,
               lower.nma.common = x$lower.nma.common,
               upper.nma.common = x$upper.nma.common,
               statistic.nma.common = x$statistic.nma.common,
               pval.nma.common = x$pval.nma.common,
-              ##
+              #
               TE.cnma.common = res.c$comparisons$TE[o],
               seTE.cnma.common = res.c$comparisons$seTE[o],
               lower.cnma.common = res.c$comparisons$lower[o],
               upper.cnma.common = res.c$comparisons$upper[o],
               statistic.cnma.common = res.c$comparisons$statistic[o],
               pval.cnma.common = res.c$comparisons$p[o],
-              ##
+              #
               TE.common = res.c$all.comparisons$TE,
               seTE.common = res.c$all.comparisons$seTE,
               lower.common = res.c$all.comparisons$lower,
               upper.common = res.c$all.comparisons$upper,
               statistic.common = res.c$all.comparisons$statistic,
               pval.common = res.c$all.comparisons$p,
-              ##
+              #
               TE.nma.random = x$TE.nma.random,
               seTE.nma.random = x$seTE.nma.random,
               lower.nma.random = x$lower.nma.random,
               upper.nma.random = x$upper.nma.random,
               statistic.nma.random = x$statistic.nma.random,
               pval.nma.random = x$pval.nma.random,
-              ##
+              #
               TE.cnma.random = res.r$comparisons$TE[o],
               seTE.cnma.random = res.r$comparisons$seTE[o],
               lower.cnma.random = res.r$comparisons$lower[o],
               upper.cnma.random = res.r$comparisons$upper[o],
               statistic.cnma.random = res.r$comparisons$statistic[o],
               pval.cnma.random = res.r$comparisons$p[o],
-              ##
+              #
               TE.random = res.r$all.comparisons$TE,
               seTE.random = res.r$all.comparisons$seTE,
               lower.random = res.r$all.comparisons$lower,
               upper.random = res.r$all.comparisons$upper,
               statistic.random = res.r$all.comparisons$statistic,
               pval.random = res.r$all.comparisons$p,
-              ##
+              #
               Comp.common = unname(res.c$components$TE),
               seComp.common = unname(res.c$components$seTE),
               lower.Comp.common = unname(res.c$components$lower),
               upper.Comp.common = unname(res.c$components$upper),
               statistic.Comp.common = unname(res.c$components$statistic),
               pval.Comp.common = unname(res.c$components$p),
-              ##
+              #
               Comp.random = unname(res.r$components$TE),
               seComp.random = unname(res.r$components$seTE),
               lower.Comp.random = unname(res.r$components$lower),
               upper.Comp.random = unname(res.r$components$upper),
               statistic.Comp.random = unname(res.r$components$statistic),
               pval.Comp.random = unname(res.r$components$p),
-              ##
+              #
               Comb.common = unname(res.c$combinations$TE),
               seComb.common = unname(res.c$combinations$seTE),
               lower.Comb.common = unname(res.c$combinations$lower),
               upper.Comb.common = unname(res.c$combinations$upper),
               statistic.Comb.common = unname(res.c$combinations$statistic),
               pval.Comb.common = unname(res.c$combinations$p),
-              ##
+              #
               Comb.random = unname(res.r$combinations$TE),
               seComb.random = unname(res.r$combinations$seTE),
               lower.Comb.random = unname(res.r$combinations$lower),
               upper.Comb.random = unname(res.r$combinations$upper),
               statistic.Comb.random = unname(res.r$combinations$statistic),
               pval.Comb.random = unname(res.r$combinations$p),
-              ##
+              #
               Q.additive = Q.additive,
               df.Q.additive = df.Q.additive,
               pval.Q.additive = res.c$pval.Q.additive,
               tau = tau,
               I2 = I2, lower.I2 = lower.I2, upper.I2 = upper.I2,
-              ##
+              #
               Q.standard = x$Q,
               df.Q.standard = x$df.Q,
               pval.Q.standard = x$pval.Q,
-              ##
+              #
               Q.diff = Q.diff,
               df.Q.diff = df.Q.diff,
               pval.Q.diff = pval.Q.diff, 
@@ -769,28 +767,28 @@ netcomb <- function(x,
               X.matrix = X.matrix,
               B.matrix = x$B.matrix,
               C.matrix = C.matrix,
-              ##
+              #
               L.matrix.common = res.c$L.matrix,
               Lplus.matrix.common = res.c$Lplus.matrix,
               L.matrix.random = res.r$L.matrix,
               Lplus.matrix.random = res.r$Lplus.matrix,
-              ##
+              #
               H.matrix.common = res.c$H.matrix[o, o, drop = FALSE],
               H.matrix.random = res.r$H.matrix[o, o, drop = FALSE],
-              ##
+              #
               n.matrix = x$n.matrix,
               events.matrix = x$events.matrix,
-              ##
+              #
               Cov.common = res.c$Cov,
               Cov.random = res.r$Cov,
-              ##
+              #
               sm = x$sm,
               method = "Inverse",
               level = x$level,
               level.ma = x$level.ma,
               common = common,
               random = random,
-              ##
+              #
               reference.group = x$reference.group,
               baseline.reference = x$baseline.reference,
               all.treatments = NULL,
@@ -798,38 +796,36 @@ netcomb <- function(x,
               #
               method.tau = x$method.tau,
               tau.preset = tau.preset,
-              ##
+              #
               tol.multiarm = x$tol.multiarm,
               details.chkmultiarm = x$details.chkmultiarm,
-              ##
+              #
               sep.trts = x$sep.trts,
               sep.comps = sep.comps,
               nchar.comps = nchar.comps,
               sep.ia = sep.ia,
               #
               inactive = inactive,
-              ##
-              func.inverse = deparse(substitute(func.inverse)),
               #
               overall.hetstat = overall.hetstat,
               backtransf = backtransf,
               #
               title = x$title,
-              ##
+              #
               x = x,
               call = match.call(),
               version = packageDescription("netmeta")$Version
-              )
+  )
   #
   if (!is.null(x$data))
     res$data <- x$data
-  ##
-  ## Backward compatibility
-  ##
+  #
+  # Backward compatibility
+  #
   res$fixed <- res$common
   res$comb.fixed <- res$common
   res$comb.random <- res$random
-  ##
+  #
   res$seTE.adj.fixed <- res$seTE.adj.common
   res$TE.nma.fixed <- res$TE.nma.common
   res$seTE.nma.fixed <- res$seTE.nma.common
@@ -843,34 +839,33 @@ netcomb <- function(x,
   res$upper.cnma.fixed <- res$upper.cnma.common
   res$statistic.cnma.fixed <- res$statistic.cnma.common
   res$pval.cnma.fixed <- res$pval.cnma.common
-  ##
+  #
   res$TE.fixed <- res$TE.common
   res$seTE.fixed <- res$seTE.common
   res$lower.fixed <- res$lower.common
   res$upper.fixed <- res$upper.common
   res$statistic.fixed <- res$statistic.common
   res$pval.fixed <- res$pval.common
-  ##
+  #
   res$Comp.fixed <- res$Comp.common
   res$seComp.fixed <- res$seComp.common
   res$lower.Comp.fixed <- res$lower.Comp.common
   res$upper.Comp.fixed <- res$upper.Comp.common
   res$statistic.Comp.fixed <- res$statistic.Comp.common
   res$pval.Comp.fixed <- res$pval.Comp.common
-  ##
+  #
   res$Comb.fixed <- res$Comb.common
   res$seComb.fixed <- res$seComb.common
   res$lower.Comb.fixed <- res$lower.Comb.common
   res$upper.Comb.fixed <- res$upper.Comb.common
   res$statistic.Comb.fixed <- res$statistic.Comb.common
   res$pval.Comb.fixed <- res$pval.Comb.common
-  ##
+  #
   res$L.matrix.fixed <- res$L.matrix.common
   res$Lplus.matrix.fixed <- res$Lplus.matrix.common
   res$H.matrix.fixed <- res$H.matrix.common        
-  ##
+  #
   class(res) <- "netcomb"
-  
   
   res
 }

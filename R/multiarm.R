@@ -1,4 +1,4 @@
-multiarm <- function(r, studlab, func.inverse) {
+multiarm <- function(r, studlab) {
   ##
   ## Dimension of r and R
   ##
@@ -21,22 +21,16 @@ multiarm <- function(r, studlab, func.inverse) {
   ##
   ## Construct pseudoinverse Lt from given variance (resistance) matrix R
   ## using a theorem equivalent to Theorem 7 by Gutman & Xiao
-  ## Lt <- -0.5 * (R - (R %*% J + J %*% R) / k + J %*%R %*% J / k^2)
   ##
   Lt <- -0.5 * t(B) %*% B %*% R %*% t(B) %*% B / k^2
   ##
   ## Compute Laplacian matrix L from Lt
   ##
-  L <- do.call(func.inverse, list(X = Lt))
+  L <- pseudoinverse(Lt)
   ##
   ## Compute weight matrix W and variance matrix V from Laplacian L
   ## 
   W <- diag(diag(L)) - L
-  ##
-  ## Replace small negative weights with zeros
-  ## (i.e., if an absolute negative weight contributes less than 0.1%)
-  ##
-  W[W < 0 & (abs(W) / sum(abs(W)[lower.tri(W)])) < 0.001] <- 0
   #
   V <- 1 / W
   ##

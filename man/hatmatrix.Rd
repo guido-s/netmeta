@@ -12,7 +12,8 @@ hatmatrix(
   common = x$common,
   random = x$random,
   nchar.trts = x$nchar.trts,
-  nchar.studlab = x$nchar.studlab
+  nchar.studlab = x$nchar.studlab,
+  ...
 )
 
 \method{print}{hatmatrix}(
@@ -49,6 +50,8 @@ characters used to create unique treatment names.}
 \item{nchar.studlab}{A numeric defining the minimum number of
 characters used to create unique study labels.}
 
+\item{\dots}{Additional arguments (ignored).}
+
 \item{digits}{Minimal number of significant digits, see
 \code{print.default}.}
 
@@ -57,8 +60,6 @@ printed.}
 
 \item{legend.studlab}{A logical indicating whether a legend should
 be printed for abbreviated study labels.}
-
-\item{\dots}{Additional arguments (ignored).}
 }
 \value{
 A list with two hat matrices: \code{common} (common effects model)

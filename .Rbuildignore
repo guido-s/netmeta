@@ -4,11 +4,9 @@ README.md
 .*[.]Rproj
 .Rproj.user
 roxygen2.*[.]R
-^cran-comments\.md$
-^CRAN-SUBMISSION$
 install-rgraphviz.sh
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^tests/testthat$
+^tests/testthat/(test|helper)-local-.*[.]R$
 ^\.positai$
 ^\.claude$

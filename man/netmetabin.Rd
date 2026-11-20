@@ -38,7 +38,6 @@ netmetabin(
   details.chkdata = TRUE,
   sep.trts = ":",
   nchar.trts = 666,
-  func.inverse = invmat,
   overall.hetstat = gs("overall.hetstat"),
   backtransf = gs("backtransf"),
   title = gs("title"),
@@ -165,9 +164,6 @@ between treatment labels.}
 
 \item{nchar.trts}{A numeric defining the minimum number of
 characters used to create unique treatment names (see Details).}
-
-\item{func.inverse}{R function used to calculate the pseudoinverse
-of the Laplacian matrix L (see \code{\link{netmeta}}).}
 
 \item{overall.hetstat}{A logical indicating whether to print heterogeneity
 measures.}

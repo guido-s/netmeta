@@ -32,7 +32,6 @@ discomb(
   sep.trts = gs("sep.trts"),
   nchar.comps = gs("nchar.comps"),
   sep.ia = gs("sep.ia"),
-  func.inverse = invmat,
   n1 = NULL,
   n2 = NULL,
   event1 = NULL,
@@ -133,9 +132,6 @@ characters used to create unique names for components (see
 Details).}
 
 \item{sep.ia}{A single character to define separator for interactions.}
-
-\item{func.inverse}{R function used to calculate the pseudoinverse
-of the Laplacian matrix L (see \code{\link{netmeta}}).}
 
 \item{n1}{Number of observations in first treatment group.}
 
