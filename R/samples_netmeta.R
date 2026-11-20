@@ -7,10 +7,12 @@ samples_netmeta <- function(x, nsim, pooled) {
   if (pooled == "common") {
     TE.pooled <- x$TE.common
     Cov.pooled <- x$Cov.common
+    seTE.pooled <- x$seTE.common
   }
   else {
     TE.pooled <- x$TE.random
     Cov.pooled <- x$Cov.random
+    seTE.pooled <- x$seTE.random
   }
   #
   theta <- TE.pooled[, 1]
@@ -23,9 +25,10 @@ samples_netmeta <- function(x, nsim, pooled) {
   for (i in seq_len(nrow(Cov.pooled)))
     compMatrix[i, allcomps[[i]]] <- 1
   #
-  var.theta <- as.vector(ginv(compMatrix) %*% diag(Cov.pooled))
-  
-  samples <- rmvnorm(nsim, theta, diag(var.theta))
+  V <- seTE.pooled^2
+  # Covariance of treatment effects relative to the first treatment.
+  Sigma <- (outer(V[, 1], V[, 1], "+") - V) / 2
+  samples <- rmvnorm(nsim, theta, Sigma)
   rownames(samples) <- seq_len(nrow(samples))
   colnames(samples) <- x$trts
   
