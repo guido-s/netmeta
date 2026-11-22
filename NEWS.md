@@ -54,6 +54,12 @@
   The fix uses `outer()`, as proposed in pull request
   [#42](https://github.com/guido-s/netmeta/pull/42).
 
+* `netmetareg()`: now respects study subsets and exclusions from the original
+  network meta-analysis and keeps covariates aligned with the retained data.
+  This fixes a misleading treatment-name error when an excluded comparison
+  contains a treatment absent from the analysed network
+  [(issue #45)](https://github.com/guido-s/netmeta/issues/45).
+
 * `plot.netsplit()`: changing the confidence level now preserves the selected
   method for calculating random-effects confidence intervals.
 
