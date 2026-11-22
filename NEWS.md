@@ -22,6 +22,13 @@
   blockwise inversion proposed in pull request
   [#44](https://github.com/guido-s/netmeta/pull/44).
 
+* `samples_netmeta()`: this internal function now accounts for covariances
+  when generating samples used by `rankogram()` to calculate ranking
+  probabilities and by `netrank()` to calculate SUCRAs
+  [(issue #41)](https://github.com/guido-s/netmeta/issues/41).
+  The fix uses `outer()`, as proposed in pull request
+  [#42](https://github.com/guido-s/netmeta/pull/42).
+
 ### Internal changes
 
 * R package **BigDataStatMeth** added to the Imports field.
