@@ -2264,6 +2264,8 @@ netmetabin <- function(event1, n1, event2, n2,
               method.tau = "DL",
               tau.preset = tau.preset,
               #
+              method.random.ci = "classic",
+              #
               tol.multiarm = tol.multiarm,
               tol.multiarm.se = tol.multiarm.se,
               details.chkmultiarm = details.chkmultiarm,

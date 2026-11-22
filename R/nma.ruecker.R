@@ -340,9 +340,14 @@ nma_ruecker <- function(TE, W, seTE,
         tau2.direct[sel.treat2, sel.treat1] <- m.i$tau2
     }
   }
-  ##
-  ci.direct <- ci(TE.direct, seTE.direct, level = level.ma)
-  ##
+  #
+  if (direct.common || method.random.ci == "classic") {
+    ci.direct <- ci(TE.direct, seTE.direct, level = level.ma)
+  }
+  else {
+    ci.direct <- ci(TE.direct, seTE.direct, level = level.ma, df = df.Q)
+  }
+  #
   lower.direct <- ci.direct$lower
   upper.direct <- ci.direct$upper
   statistic.direct <- ci.direct$statistic

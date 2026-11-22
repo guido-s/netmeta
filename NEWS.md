@@ -14,6 +14,9 @@
   are now calculated using `BigDataStatMeth::pseudoinverse()`. A warning
   is issued if the argument is supplied explicitly.
   
+* `netmeta()`: prediction intervals are now available with one residual
+  degree of freedom (`df.Q = 1`), rather than requiring at least two.
+
 * `print.netcomparison()`, `print.netcomplex()`: new argument `lab.NA`
   specifies the text printed for missing results.
 
@@ -25,9 +28,18 @@
     [(issue #39)](https://github.com/guido-s/netmeta/issues/39).
     The fix is based on pull request
     [#40](https://github.com/guido-s/netmeta/pull/40).
+  - The setting `method.random.ci = "t-dist"` is now consistently respected
+    in stored random-effects confidence intervals and p-values and in
+    results returned by `netsplit()` and `nettable()`, including tests for
+    disagreement between direct and indirect estimates. Common-effect
+    inference remains normal-based. This also corrects direct confidence
+    intervals displayed by `netleague()`
+    [(issue #35)](https://github.com/guido-s/netmeta/issues/35).
   - If estimation of the between-study variance for a direct comparison
     fails, the corresponding entries in `tau2.direct` and `tau.direct`
     are set to `NA`. A warning is issued.
+  - Stored indirect confidence intervals now use `level.ma` rather than
+    `level`.
 
 * `netimpact()`: now calculates study impacts correctly
   [(issue #43)](https://github.com/guido-s/netmeta/issues/43).
@@ -41,6 +53,12 @@
   [(issue #41)](https://github.com/guido-s/netmeta/issues/41).
   The fix uses `outer()`, as proposed in pull request
   [#42](https://github.com/guido-s/netmeta/pull/42).
+
+* `plot.netsplit()`: changing the confidence level now preserves the selected
+  method for calculating random-effects confidence intervals.
+
+* `print.netmeta()`, `print.netsplit()`: random-effects test statistics are
+  now labelled `t` rather than `z` when `method.random.ci = "t-dist"`.
 
 ### Internal changes
 

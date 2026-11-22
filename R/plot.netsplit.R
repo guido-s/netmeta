@@ -19,7 +19,7 @@
 #' @param only.reference A logical indicating whether only comparisons
 #'   with the reference group should be considered.
 #' @param level The level used to calculate confidence intervals for local
-#'   local inconsistency.
+#'   inconsistency.
 #' @param vertical A logical indicating whether confidence intervals should be
 #'   plotted vertically or horizontally; only considered if argument
 #'   \code{type = "Wilson"}. The interpretation is the same.
@@ -258,7 +258,11 @@ plot.netsplit <- function(x,
     rename(indirect = TE)
   #
   if (calculate.ci) {
-    ci.diff <- ci(dat.diff$TE, dat.diff$seTE, level = level)
+    if (pooled == "common" || x$x$method.random.ci == "classic")
+      ci.diff <- ci(dat.diff$TE, dat.diff$seTE, level = level)
+    else
+      ci.diff <- ci(dat.diff$TE, dat.diff$seTE, level = level, df = x$x$df.Q)
+    #
     dat.diff %<>% mutate(lower = ci.diff$lower, upper = ci.diff$upper)
   }
   #

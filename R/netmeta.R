@@ -1657,7 +1657,7 @@ netmeta <- function(TE, seTE,
   if (df.Q == 0)
     prediction <- FALSE
   #
-  if (df.Q >= 2) {
+  if (df.Q >= 1) {
     seTE.predict <- sqrt(seTE.random^2 + tau^2)
     ci.p <- ci(TE.random, seTE.predict, level.predict, df.Q)
     p.lower <- ci.p$lower
@@ -1979,33 +1979,43 @@ netmeta <- function(TE, seTE,
   #
   # Common effects model
   #
-  ci.if <- ci((res$TE.common - P.common * TE.direct.common) / (1 - P.common),
-              sqrt(res$seTE.common^2 / (1 - P.common)),
-              level = level)
+  ci.indirect.c <-
+    ci((res$TE.common - P.common * TE.direct.common) / (1 - P.common),
+       sqrt(res$seTE.common^2 / (1 - P.common)),
+       level = level.ma)
   #
-  res$TE.indirect.common   <- ci.if$TE
-  res$seTE.indirect.common <- ci.if$seTE
+  res$TE.indirect.common   <- ci.indirect.c$TE
+  res$seTE.indirect.common <- ci.indirect.c$seTE
   #
-  res$lower.indirect.common <- ci.if$lower
-  res$upper.indirect.common <- ci.if$upper
+  res$lower.indirect.common <- ci.indirect.c$lower
+  res$upper.indirect.common <- ci.indirect.c$upper
   #
-  res$statistic.indirect.common <- ci.if$statistic
-  res$pval.indirect.common <- ci.if$p
+  res$statistic.indirect.common <- ci.indirect.c$statistic
+  res$pval.indirect.common <- ci.indirect.c$p
   #
   # Random effects model
   #
-  ci.ir <- ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
-              sqrt(res$seTE.random^2 / (1 - P.random)),
-              level = level)
+  if (method.random.ci == "classic") {
+    ci.indirect.r <-
+      ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
+         sqrt(res$seTE.random^2 / (1 - P.random)),
+         level = level.ma)
+  }
+  else {
+    ci.indirect.r <-
+      ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
+         sqrt(res$seTE.random^2 / (1 - P.random)),
+         level = level.ma, df = df.Q)
+  }
   #
-  res$TE.indirect.random   <- ci.ir$TE
-  res$seTE.indirect.random <- ci.ir$seTE
+  res$TE.indirect.random   <- ci.indirect.r$TE
+  res$seTE.indirect.random <- ci.indirect.r$seTE
   #
-  res$lower.indirect.random <- ci.ir$lower
-  res$upper.indirect.random <- ci.ir$upper
+  res$lower.indirect.random <- ci.indirect.r$lower
+  res$upper.indirect.random <- ci.indirect.r$upper
   #
-  res$statistic.indirect.random <- ci.ir$statistic
-  res$pval.indirect.random <- ci.ir$p
+  res$statistic.indirect.random <- ci.indirect.r$statistic
+  res$pval.indirect.random <- ci.indirect.r$p
   #
   # Additional assignments
   #

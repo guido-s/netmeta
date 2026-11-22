@@ -1019,7 +1019,9 @@ print.netsplit <- function(x,
       random$p <- formatPT(pval.compare.random, digits = digits.pval,
                            scientific = scientific.pval)
       random$p[rmSpace(random$p) == "--"] <- text.NA
-      names.random <- c(names.random, c("z", "p-value"))
+      names.random <-
+        c(names.random,
+          c(if (x$x$method.random.ci == "classic") "z" else "t", "p-value"))
     }
     random <- as.data.frame(random)
     names(random) <- names.random

@@ -52,7 +52,7 @@ comparisons).}
 with the reference group should be considered.}
 
 \item{level}{The level used to calculate confidence intervals for local
-local inconsistency.}
+inconsistency.}
 
 \item{vertical}{A logical indicating whether confidence intervals should be
 plotted vertically or horizontally; only considered if argument
