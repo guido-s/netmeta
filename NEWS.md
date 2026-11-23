@@ -1,4 +1,4 @@
-## netmeta, version 3.9-0 (2026-mm-dd)
+## netmeta, version 3.9-0 (2026-11-23)
 
 ### Major changes
 
@@ -6,6 +6,14 @@
   are now calculated using `pseudoinverse()` from the R package
   **BigDataStatMeth**. These calculations are used for multi-arm adjustments,
   network estimates and their standard errors, and hat matrices.
+
+* [Paul Schneider](https://bitowaqr.github.io/) added as a contributor to
+  R package **netmeta** in recognition of his contributions through pull
+  requests
+  [#38](https://github.com/guido-s/netmeta/pull/38),
+  [#40](https://github.com/guido-s/netmeta/pull/40),
+  [#42](https://github.com/guido-s/netmeta/pull/42), and
+  [#44](https://github.com/guido-s/netmeta/pull/44).
 
 ### User-visible changes
 
