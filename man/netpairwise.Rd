@@ -216,9 +216,10 @@ data(smokingcessation)
 
 # Transform data from arm-based format to contrast-based format
 #
+sel <- seq_len(nrow(smokingcessation)) < 6
 pw1 <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
-  data = smokingcessation, sm = "OR")
+  data = subset(smokingcessation, sel), sm = "OR")
 
 # Conduct random effects network meta-analysis
 #
@@ -229,9 +230,10 @@ nma1 <- netmeta(pw1, common = FALSE)
 #
 np1 <- netpairwise(nma1)
 np1
-print(np1, details.method = FALSE)
 
 \donttest{
+print(np1, details.method = FALSE)
+
 # Random effects model
 #
 pw2 <- pairwise(studlab = study, treat = treatment,

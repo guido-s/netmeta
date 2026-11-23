@@ -81,7 +81,7 @@
 #' \doi{10.21203/rs.3.rs-8235913/v1}
 #' 
 #' Viechtbauer W (2010):
-#' Conducting Meta-Analyses in R with the Metafor Package.
+#' Conducting meta-analyses in R with the metafor package.
 #' \emph{Journal of Statistical Software},
 #' \bold{36}, 1--48
 #'
@@ -97,9 +97,10 @@
 #' #
 #' smokingcessation$rob <- rep(1:2, 12)
 #' 
+#' sel <- seq_len(nrow(smokingcessation)) < 6
 #' pw1 <- pairwise(list(treat1, treat2, treat3),
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
-#'   data = smokingcessation, sm = "OR")
+#'   data = subset(smokingcessation, sel), sm = "OR")
 #' 
 #' # Run network meta-analysis (NMA)
 #' nma1 <- netmeta(pw1, common = FALSE, ref = "A")
