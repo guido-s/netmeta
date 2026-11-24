@@ -25,7 +25,7 @@
 #' @param consistency A logical indicating whether a consistency or
 #'   unrelated mean interaction effect (UMIE) model should be assumed.
 #' @param assumption A character string indicating which assumption is done
-#'   for the covariate; either "independent" or "common" (can be abbreviated).
+#'   for the covariate; either "independent", "common", or "exchangeable" (can be abbreviated).
 #' @param method.tau A character string indicating which method is
 #'   used to estimate the between-study variance tau-squared. Either
 #'   \code{"FE"}, \code{"REML"}, or \code{"ML"}.
@@ -125,6 +125,11 @@
 #' # NMR with common and consistent assumption
 #' nmr2_c <- netmetareg(nma2, covar = seTE, consistency = TRUE,
 #'   assumption = "c")
+#'   
+#' # NMR with exchangeable and consistent assumption
+#' nmr2_e <- netmetareg(nma2, covar = seTE, consistency = TRUE,
+#'   assumption = "e")
+#'   
 #' # NMR with independent UMIE model (no consistency in interactions) using
 #' # default treatment order
 #' nmr2_i_umie <- netmetareg(nma2, covar = seTE, consistency = FALSE,
@@ -163,6 +168,9 @@
 #' # NMR with common and consistent assumption
 #' nmr3_c <- netmetareg(nma3, covar = disability_diff, consistency = TRUE,
 #'   assumption = "c")
+#' # NMR with exchangeable and consistent assumption
+#' nmr3_e <- netmetareg(nma3, covar = disability_diff, consistency = TRUE,
+#'   assumption = "e")
 #' # NMR with independent UMIE model (no consistency in interactions) using
 #' # default treatment order variable
 #' nmr3_i_umie <- netmetareg(nma3, covar = disability_diff, consistency = FALSE,
@@ -182,6 +190,16 @@
 #' # interaction estimation
 #' nmr3_c_umie_noimp <- netmetareg(nma3, covar = disability_diff,
 #'   consistency = FALSE, assumption = "c",
+#'   direction1 = "direction1", direction2 = "direction2")
+#'   #' # NMR with exchangeable UMIE model (no consistency in interactions) using default
+#' # treatment order variable
+#' nmr3_e_umie <- netmetareg(nma3, covar = disability_diff, consistency = FALSE,
+#'   assumption = "e")
+#' # NMR with exchangeable UMIE model (no consistency in interactions) using custom
+#' # treatment order variable which excludes the mean imputations from
+#' # interaction estimation
+#' nmr3_e_umie_noimp <- netmetareg(nma3, covar = disability_diff,
+#'   consistency = FALSE, assumption = "e",
 #'   direction1 = "direction1", direction2 = "direction2")
 #' }
 #' 
@@ -209,7 +227,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   x <- updateversion(x)
   #
   chklogical(consistency)
-  assumption <- setchar(assumption, c("independent", "common"))
+  assumption <- setchar(assumption, c("independent", "common", "exchangeable"))
   #
   reference.group <- setref(reference.group, x$trts)
   method.tau <- setchar(method.tau, c("REML", "ML", "FE"))
@@ -251,6 +269,16 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   #
   
+  # check for missing TEs, seTEs ###########
+  x$data$.excl <- is.na(x$data$seTE)|is.na(x$data$TE)|(x$data$seTE<0)
+  x$data<-x$data[!x$data$.excl,]
+  tabnarms <- table(x$data$studlab)
+  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
+  if (sum(sel.narms) >= 1){
+    stop("After removing comparisons with missing treatment effects, standard errors, or covariate calues \n",
+         "at least 1 study has a wrong number of comparisons. Please check data")}
+  
+  
   data <- x$data
   sfsp <- sys.frame(sys.parent())
   mc <- match.call()
@@ -260,11 +288,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   # Catch covariate
   #
-  covar.name <- gsub("\"", "", deparse(substitute(covar)), fixed = TRUE)
-  covar.name <- gsub("$", ".", covar.name, fixed = TRUE)
-  covar.name <- gsub("+", "_", covar.name, fixed = TRUE)
-  covar.name <- gsub("-", "_", covar.name, fixed = TRUE)
-  covar.name <- gsub(":", "_", covar.name, fixed = TRUE)
+  covar.name <- deparse(substitute(covar))
+  covar.name.internal <- make.names(covar.name) # R/matrix friendly covariate name
   #
   covar <- catch("covar", mc, data, sfsp)
   #
@@ -282,6 +307,13 @@ netmetareg.netmeta <- function(x, covar = NULL,
     x$data <- data
   }
   #
+  trts <- x$trts
+  trts.abbr <- treats(x$trts, nchar.trts)
+  trts.abbr <- make.names(trts.abbr)# R/matrix friendly reference treat names
+  #
+  reference.group <- trts.abbr[trts == reference.group]
+  reference.group.internal <- make.names(reference.group)# R/matrix friendly reference treat names
+  
   dat <- data.frame(studlab = data$.studlab,
                     treat1 = data$.treat1,
                     treat2 = data$.treat2,
@@ -293,8 +325,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
   dat$treat2 <-
     as.character(factor(dat$treat2, levels = trts, labels = trts.abbr))
   #
-  dat$treat1 <- gsub(" ", "_", dat$treat1, fixed = TRUE)
-  dat$treat2 <- gsub(" ", "_", dat$treat2, fixed = TRUE)
+  # dat$treat1.internal <- make.names(dat$treat1)# R/matrix friendly treat names
+  # dat$treat2.internal <- make.names(dat$treat2)# R/matrix friendly treat names
   #
   if (length(unique(c(dat$treat1, dat$treat2))) != length(x$trts))
     stop("Number of treatments changes after replacing whitespaces with '_'.",
@@ -308,8 +340,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
   # if (is.logical(covar)) # deprecated because model matrix is now constructed manually
   #  covar <- as.numeric(covar)
   #
-  dat[[covar.name]] <- covar
-  #
+  dat[[covar.name.internal]] <- covar
+  
   available.n <- available.events <- available.times <- available.sds <- FALSE
   if (!is.null(data$.n1) && !is.null(data$.n2)) {
     dat$n1 <- data$.n1
@@ -348,8 +380,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
   # import or create directionality parameters
   if (!consistency) {
     # Handle directionality parameters for inconsistency model
-    has_treat1_dir <- !is.null(direction1)
-    has_treat2_dir <- !is.null(direction2)
+    has_treat1_dir <- !is.null(substitute(direction1))
+    has_treat2_dir <- !is.null(substitute(direction2))
     
     if (has_treat1_dir & has_treat2_dir) {
       # Use provided directionality parameters
@@ -381,9 +413,9 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   if (consistency) {
     # Check for constant covariate in reference treatment
-    if (length(unique(dat[dat$treat1 == reference.group |
-                          dat$treat2 == reference.group,
-                          covar.name])) == 1)
+    if (length(unique(dat[dat$treat1 == reference.group.internal |
+                          dat$treat2 == reference.group.internal,
+                          covar.name.internal])) == 1)
       stop("Invalid reference treatment for interaction. ",
            "Insufficient variation in observed covariate values for ",
            "reference treatment.")
@@ -391,8 +423,8 @@ netmetareg.netmeta <- function(x, covar = NULL,
     for (i in unique(dat$studlab)) {
       d.i <- dat[dat$studlab == i, , drop = FALSE]
       trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
-      if (reference.group %in% trts.i)
-        ref.i <- reference.group
+      if (reference.group.internal %in% trts.i)
+        ref.i <- reference.group.internal
       else
         ref.i <- rev(trts.i)[1]
       #
@@ -410,15 +442,49 @@ netmetareg.netmeta <- function(x, covar = NULL,
     # statements
     #
     dat$Ival_diff <- dat$Ival1 - dat$Ival2
-    # Whether a row contains a reference.
-    # Equivalent !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
-    keep.i <- dat$Ival_diff != 0
-    # Whether the reference treatment is treat1.
+    
+    
+    # Basic Grouping info, identify multi arm and directionality
+    is_multi <- ave(seq_along(dat$studlab), dat$studlab, FUN = function(x) length(x) > 1)
+    has_diff <- ave(seq_along(dat$Ival_diff), dat$studlab, FUN = function(x) any(dat$Ival_diff[x] != 0))
+    
+    # Equivalent !(d.i$treat1 != ref.i & d.i$treat2 != ref.i) from netmeta
+    get_ref_name <- function(stud_idx) {
+      # Subset treatments for just this study
+      trts <- unique(sort(c(dat$treat1[stud_idx], dat$treat2[stud_idx])))
+      if (reference.group.internal %in% trts) {
+        return(reference.group.internal)
+      } else {
+        return(rev(trts)[1])
+      }
+    }
+    
+    # Create a vector of the reference treatment name for every row
+    ref_names <- ave(dat$studlab, dat$studlab, FUN = function(x) {
+      idx <- which(dat$studlab == x[1]) 
+      get_ref_name(idx)
+    })
+    
+    # Logic for the fallback: Keep if either treatment matches the named reference
+    keep_named <- (dat$treat1 == ref_names | dat$treat2 == ref_names)
+    
+    # Condition A: 2-Arm study -> Always keep, even if Ival_diff is 0 so that the treatment effect remains
+    # Condition B: Multi-Arm AND has a difference -> Keep if Ival_diff != 0, this was the original behavior
+    # Condition C: Multi-Arm AND all are 0 -> Use the Named Reference Fallback o that so that the treatment effect remains
+    keep.i <- !is_multi | 
+      (is_multi & has_diff & dat$Ival_diff != 0) | 
+      (is_multi & !has_diff & keep_named)
+    
     # Equivalent to d.i$treat1 == ref.i
-    wo.i <- dat$Ival1 == 0
-    #
+    # If Multi-Arm and all are 0, use the named reference for the 'wo' flag
+    # Otherwise, use Ival1 == 0
+    wo.i <- ifelse(is_multi & !has_diff, 
+                   dat$treat1 == ref_names, # use the name if the reference isn't defined by Ival
+                   dat$Ival1 == 0) # old logic
+    
     keep <- c(keep, keep.i)
     wo <- c(wo, wo.i)
+    
   }
   #
   dat <- dat[keep, , drop = FALSE]
@@ -461,7 +527,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
   trts.all <- names(dat)[(ncols1 + 1):ncol(dat)]
   #
   # Ensure that the reference treatment is correctly assigned
-  trts <- trts.all[trts.all != reference.group]
+  trts <- trts.all[trts.all !=reference.group.internal]
   
   
   #
@@ -477,7 +543,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
                          paste(trts, collapse = " + "),
                          if (!is.null(covar))
                            paste0( " + ",
-                                   paste(paste0(trts, ":", covar.name),
+                                   paste(paste0(trts, ":", covar.name.internal),
                                          collapse = " + "))))
     }
     else {
@@ -487,13 +553,13 @@ netmetareg.netmeta <- function(x, covar = NULL,
       # or non-reference.
       #
       error <-
-        try(dat$nonref <- as.numeric(dat[[make.names(reference.group)]] != 0),
+        try(dat$nonref <- as.numeric(dat[[reference.group.internal]] != 0),
             silent = TRUE)
       #
       # Necessary, if reference treatment contains a white space
       #
       if (inherits(error, "try-error"))
-        dat$nonref <- as.numeric(dat[[gsub(" ", "_", reference.group)]] != 0)
+        dat$nonref <- as.numeric(dat[[reference.group.internal]] != 0)
       #
       # Then get the interaction using the colon(:). The output has a
       # colon which is in the same format as the independent. Helpful
@@ -504,13 +570,17 @@ netmetareg.netmeta <- function(x, covar = NULL,
                          paste(trts, collapse = " + "),
                          if (!is.null(covar))
                            paste0( " + ",
-                                   paste(paste0("nonref:", covar.name),
+                                   paste(paste0("nonref:", covar.name.internal),
                                          collapse = " + "))))
+    } 
+	if(assumption=="exchangeable"){
+      formula.independent_matrix <- as.formula(paste("~ 0 ", if (!is.null(covar)) 
+                                                paste0(" + ", paste(paste0(trts, ":", covar.name.internal), 
+                                                                    collapse = " + "))))
     }
   }
   else {
     dat$Ival <- dat$Ival1 - dat$Ival2
-    if (assumption == "independent") {
       dat$.comp_ <- paste(pmin(dat$treat1, dat$treat2),
                           pmax(dat$treat1, dat$treat2),
                           sep = "_vs_")
@@ -522,21 +592,42 @@ netmetareg.netmeta <- function(x, covar = NULL,
           ifelse(dat$.comp_ %in% names(count_comp[count_comp >= 2]),
                  dat$.comp_, "insufficient_data")
       }
-      #
+    if(assumption=="independent"){
       formula.nmr_default <-
         as.formula(paste("~ 0 + ", paste(trts, collapse = " + "),
                          if (!is.null(covar))
-                           paste0("+ .comp_:Ival:", covar.name))
+                           paste0("+ .comp_:Ival:", covar.name.internal))
         )
     }
     else {
       formula.nmr_default <-
         as.formula(paste("~ 0 + ", paste(trts, collapse = " + "),
                          if (!is.null(covar))
-                           paste0("+ Ival:", covar.name))
+                           paste0("+ Ival:", covar.name.internal))
         )
     }
+    if(assumption=="exchangeable"){
+      stop("exchangeable UMIE not yet implemented")
+      formula.independent_matrix<- as.formula(paste("~ 0 ", if (!is.null(covar)) 
+        paste0("+ .comp_:Ival:", covar.name.internal)))
+    }
   }
+  
+  # irrespective of consistency
+  if(assumption=="exchangeable") {
+    Z_slope_matrix <- model.matrix(formula.independent_matrix, data = dat)
+    Z_slope_matrix <- Z_slope_matrix[, grepl("insufficient_data", colnames(Z_slope_matrix)) == FALSE]
+    if (is.factor(covar)) 
+      Z_slope_matrix <- Z_slope_matrix[, !grepl(paste0(levels(covar)[1], "$"), colnames(Z_slope_matrix)), 
+                                       drop = FALSE]
+    else if (is.character(covar)) 
+      Z_slope_matrix <- Z_slope_matrix[, !grepl(paste0(min(covar, na.rm = TRUE), "$"), 
+                                                colnames(Z_slope_matrix)), drop = FALSE]
+    else if (is.logical(covar)) 
+      Z_slope_matrix <- Z_slope_matrix[, !grepl(paste0(as.logical(min(covar)), "$"), 
+                                                colnames(Z_slope_matrix)), drop = FALSE]
+  }
+  
   #
   # Checks for non-numeric covariate
   #
@@ -591,19 +682,30 @@ netmetareg.netmeta <- function(x, covar = NULL,
     V <- bldiag(lapply(split(dat, dat$studlab), calcV, sm = sm))
   else
     V <- dat$seTE^2
-  #
-  suppressWarnings(
-    res <-
-      runNN(rma.mv,
-            list(yi = dat.TE, V = V,
-                 data = dat,
-                 mods = formula.nmr,
-                 random = as.call(~ factor(comparison) | studlab),
-                 rho = 0.5,
-                 method = method.tau,
-                 level = 100 * level,
-                 ...)))
-  #
+  
+  if(assumption %in% c("independent", "common")){
+    suppressWarnings(
+      res <-
+        runNN(rma.mv,
+              list(yi = dat.TE, V = V,
+                   data = dat,
+                   mods = formula.nmr,
+                   random = as.call(~ factor(comparison) | studlab),
+                   rho = 0.5,
+                   method = method.tau,
+                   level = 100 * level,
+                   ...)))
+    res$tau2B<-0
+  } else{
+    suppressWarnings(res <- runNN(rma.mv.exch, list(yi = dat.TE,
+                                                    V = V,
+                                                    data = dat,
+                                                    mods = formula.nmr,
+                                                    random = as.call(~factor(comparison) |studlab),
+                                                    Z_slope=Z_slope_matrix,
+                                                    rho = 0.5, method = method.tau, level = 100 *level,
+                                                    ...)))
+  }
   X <- res$X.f
   rownames(X) <- dat$studlab
   X <- X[rev(do.call(order, as.data.frame(X))), , drop = FALSE]
@@ -626,7 +728,7 @@ netmetareg.netmeta <- function(x, covar = NULL,
                        version.metafor = packageDescription("metafor")$Version)
   #
   res$results <- nmr_results(res)
-  res$full_results <- nmr_full_results(res)
+  res$full_results <- nmr_full_results_new(res)
   #
   class(res) <- c("netmetareg", class(res))
   res$call <- NULL
@@ -662,6 +764,7 @@ print.netmetareg <- function(x,
                              digits.stat = gs("digits.stat"),
                              digits.pval = gs("digits.pval"),
                              print.se = FALSE,
+                             print.tau=TRUE,
                              details.methods = TRUE, ...) {
   
   chkclass(x, "netmetareg")
@@ -713,19 +816,57 @@ print.netmetareg <- function(x,
   dat$pval <- formatPT(dat$pval, digits = digits.pval)
   names(dat)[names(dat) == "pval"] <- "p-value"
   #
+  if(x$.netmeta$assumption%in%c("common","exchangeable") & x$.netmeta$consistency==TRUE){
+    rownames(dat)<-gsub("nonref:",paste0("Non-",x$.netmeta$reference.group,":"),rownames(dat))
+  }
+  if( x$.netmeta$consistency==FALSE){
+    rownames(dat)<-gsub("Ival:",paste0("Directionality:"),rownames(dat))
+    rownames(dat)<-gsub("\\.comp_","",rownames(dat))
+  }
+  
   prmatrix(dat, quote = FALSE, right = TRUE, ...)
   #
   # Get rid of warning 'Undefined global functions or variables'
   comparison <- NULL
-  #
+  # add heterogeneity estimators
+  if(print.tau){
+    text.hetstat<-paste0("\nQuantifying heterogeneity:\n")
+    text.hetstat<-paste0(text.hetstat,
+                         formatPT(x=x$tau2,
+                                  lab = TRUE, labval = "tau^2",
+                                  digits = 4,
+                                  lab.NA = "NA"),
+                         # add tau
+                         "; ", formatPT(x=sqrt(x$tau2),
+                                        lab = TRUE, labval = "tau",
+                                        digits = 4,
+                                        lab.NA = "NA")
+    )
+    if(x$.netmeta$assumption%in%c("exchangeable")){
+      text.hetstat<-paste0(text.hetstat,
+                           "; ",
+                           formatPT(x=x$tau2B,
+                                    lab = TRUE, labval = "tau.B^2",
+                                    digits = 4,
+                                    lab.NA = "NA"),
+                           # add tau
+                           "; ", formatPT(x=sqrt(x$tau2B),
+                                          lab = TRUE, labval = "tau.B",
+                                          digits = 4,
+                                          lab.NA = "NA")
+      )
+    }
+    cat(text.hetstat,"\n")
+  }
   if (!is.null(covar) & details.methods) {
     cat("\nDetails on network meta-regression methods:\n")
     #
-    if (x$.netmeta$method.tau == "FE")
+    if (x$.netmeta$method.tau == "FE"){
       cat("- Common effects model\n")
-    else
+    }else{
       cat("- Random effects model\n")
-    #
+      cat("- Restricted maximum-likelihood estimator for tau^2\n")
+    }
     if (consistency)
       cat("- Consistency model\n")
     else
@@ -733,19 +874,31 @@ print.netmetareg <- function(x,
     #
     if (assumption == "independent")
       cat("- Independent slopes\n")
-    else
+    else if (assumption == "common")
       cat("- Common slope\n")
+    else if (assumption == "exchangeable")
+      cat("- Exchangeable slope\n")
     #
     cat(paste0("- Reference group: ", x$.netmeta$reference.group, "\n"))
   }
   else if (details.methods) {
     cat("\nDetails on network meta-analysis methods:\n")
     #
-    if (x$.netmeta$method.tau == "FE")
+    if (x$.netmeta$method.tau == "FE"){
       cat("- Common effects model\n")
-    else
+    }else{
       cat("- Random effects model\n")
+      cat("- Restricted maximum-likelihood estimator for tau^2\n")
+    }
   }
+  
+  showlegend<-sum(x$.netmeta$trts!=x$.netmeta$trts.abbr)>0# if any treatment names are modified (shortened or special characters)
+  legendabbr(unique(x$.netmeta$trts),
+             make.names(treats(x$.netmeta$trts, x$.netmeta$nchar.trts)),
+             condition=showlegend)
+  
+  
+  
   #
   invisible(NULL)
 }
