@@ -269,16 +269,6 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   #
   
-  # check for missing TEs, seTEs ###########
-  x$data$.excl <- is.na(x$data$seTE)|is.na(x$data$TE)|(x$data$seTE<0)
-  x$data<-x$data[!x$data$.excl,]
-  tabnarms <- table(x$data$studlab)
-  sel.narms <- !is_wholenumber((1 + sqrt(8 * tabnarms + 1)) / 2)
-  if (sum(sel.narms) >= 1){
-    stop("After removing comparisons with missing treatment effects, standard errors, or covariate calues \n",
-         "at least 1 study has a wrong number of comparisons. Please check data")}
-  
-  
   data <- x$data
   sfsp <- sys.frame(sys.parent())
   mc <- match.call()
