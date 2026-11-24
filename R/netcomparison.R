@@ -40,6 +40,7 @@
 #'   combination effect should be printed according to JAMA reporting
 #'   standards.
 #' @param big.mark A character used as thousands separator.
+#' @param lab.NA Label for missing values.
 #' @param legend A logical indicating whether a legend should be
 #'   printed.
 #' @param warn.deprecated A logical indicating whether warnings should
@@ -452,7 +453,9 @@ print.netcomparison <- function(x,
                                 zero.pval = gs("zero.pval"),
                                 JAMA.pval = gs("JAMA.pval"),
                                 big.mark = gs("big.mark"),
-                                ##
+                                #
+                                lab.NA = gs("lab.NA"),
+                                #
                                 legend = gs("legend"),
                                 warn.deprecated = gs("warn.deprecated"),
                                 ...) {
@@ -477,7 +480,11 @@ print.netcomparison <- function(x,
   chklogical(scientific.pval)
   chklogical(zero.pval)
   chklogical(JAMA.pval)
-  ##
+  #
+  chkchar(big.mark, length = 1)
+  #
+  chkchar(lab.NA, length = 1)
+  #
   chklogical(legend)
   
   
@@ -589,23 +596,24 @@ print.netcomparison <- function(x,
     pval.f <- formatPT(x$pval.common, digits = digits.pval,
                        scientific = scientific.pval,
                        zero = zero.pval, JAMA = JAMA.pval,
-                       lab.NA = "")
+                       lab.NA = lab.NA)
     ##
     res.c <-
       cbind(comparison = comparison,
             treat1 = treat1,
             treat2 = treat2,
             Comb = formatN(TE.common, digits = digits,
-                           "NA", big.mark = big.mark),
+                           text.NA = lab.NA, big.mark = big.mark),
             CI = formatCI(formatN(round(lower.common, digits),
-                                  digits, "NA",
+                                  digits, text.NA = lab.NA,
                                   big.mark = big.mark),
                           formatN(round(upper.common, digits),
-                                  digits, "NA",
+                                  digits, text.NA = lab.NA,
                                   big.mark = big.mark)),
             zval = formatN(x$statistic.common, digits = digits.stat,
-                           "NA", big.mark = big.mark),
-            pval = pval.f)
+                           text.NA = lab.NA, big.mark = big.mark),
+             pval = pval.f)
+    res.c[is.na(lower.common) | is.na(upper.common), "CI"] <- lab.NA
     ##
     dimnames(res.c) <- list(rep("", nrow(res.c)),
                             c("comparison", "treat1", "treat2",
@@ -628,23 +636,24 @@ print.netcomparison <- function(x,
     pval.r <- formatPT(x$pval.random, digits = digits.pval,
                        scientific = scientific.pval,
                        zero = zero.pval, JAMA = JAMA.pval,
-                       lab.NA = "")
+                       lab.NA = lab.NA)
     ##
     res.r <-
       cbind(comparison = comparison,
             treat1 = treat1,
             treat2 = treat2,
             Comb = formatN(TE.random, digits = digits,
-                           "NA", big.mark = big.mark),
+                           text.NA = lab.NA, big.mark = big.mark),
             CI = formatCI(formatN(round(lower.random, digits),
-                                  digits, "NA",
+                                  digits, text.NA = lab.NA,
                                   big.mark = big.mark),
                           formatN(round(upper.random, digits),
-                                  digits, "NA",
+                                  digits, text.NA = lab.NA,
                                   big.mark = big.mark)),
             zval = formatN(x$statistic.random, digits = digits.stat,
-                           "NA", big.mark = big.mark),
-            pval = pval.r)
+                           text.NA = lab.NA, big.mark = big.mark),
+             pval = pval.r)
+    res.r[is.na(lower.random) | is.na(upper.random), "CI"] <- lab.NA
     ##
     dimnames(res.r) <- list(rep("", nrow(res.r)),
                             c("comparison", "treat1", "treat2",
