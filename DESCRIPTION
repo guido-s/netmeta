@@ -1,13 +1,14 @@
 Package: netmeta
 Title: Network Meta-Analysis using Frequentist Methods
-Version: 3.8-0
-Date: 2026-11-17
+Version: 3.9-0
+Date: 2026-11-23
 Depends: R (>= 4.1.0), meta (>= 9.0-0)
 Imports: Matrix, metafor, MASS, mvtnorm, magic, igraph, 
   ggplot2, colorspace, grid, dplyr, magrittr, methods,
-  stringr, tidyr, ggrepel, reshape2
+  stringr, tidyr, ggrepel, reshape2, BigDataStatMeth
 Suggests: Rgraphviz, graph, rgl, gridExtra, tictoc, writexl,
-  R.rsp, cccp, brglm2, crossnma, gemtc, rmarkdown, knitr, testthat, corpcor
+  R.rsp, cccp, brglm2, crossnma, gemtc, rmarkdown, knitr, testthat,
+  corpcor
 Config/testthat/edition: 3
 Authors@R: c(person("Gerta", "Rücker",
                     role = "aut",
@@ -40,6 +41,9 @@ Authors@R: c(person("Gerta", "Rücker",
              person("Noosheen R.", "Tahmasebi",
                     role = "ctb",
                     comment = c(ORCID = "0009-0000-9660-3655")),
+             person("Paul", "Schneider",
+                    role = "ctb",
+                    comment = c(URL = "https://github.com/bitowaqr")),
              person("Guido", "Schwarzer",
                     role = c("aut", "cre"),
                     email = "guido.schwarzer@uniklinik-freiburg.de",

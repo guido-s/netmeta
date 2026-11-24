@@ -13,7 +13,7 @@ cm <- netcontrib(nma)
 # The current version of CINeMA uses the old hat matrix
 # cm <- netcontrib(nma, hatmatrix.F1000 = TRUE)
 #
-tomsTest <- corpcor_results(dat, pw, cm)
+tomsTest <- BigDataStatMeth_results(dat, pw, cm)
 
 #
 # Tests

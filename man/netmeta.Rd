@@ -34,7 +34,6 @@ netmeta(
   sep.trts = gs("sep.trts"),
   nchar.trts = gs("nchar.trts"),
   nchar.studlab = gs("nchar.studlab"),
-  func.inverse = invmat,
   n1 = NULL,
   n2 = NULL,
   event1 = NULL,
@@ -160,10 +159,6 @@ characters used to create unique treatment names (see Details).}
 
 \item{nchar.studlab}{A numeric defining the minimum number of
 characters used to create unique study labels.}
-
-\item{func.inverse}{A function or character string specifying the function
-used to calculate the pseudoinverse of the Laplacian matrix \strong{L}
-(see Details).}
 
 \item{n1}{Number of observations in first treatment group.}
 
@@ -420,10 +415,10 @@ The given comparisons define the network structure. From these, an
 matrix) is formed; for further details, see Rücker (2012). Moreover,
 the \emph{n}x\emph{n} Laplacian matrix \strong{L} and its Moore-Penrose
 pseudoinverse \strong{L+} are calculated (both matrices play an
-important role in graph theory and electrical network theory). By
-default, the pseudoinverse is calculated using \code{\link{invmat}};
-an alternative function, such as \code{\link[MASS]{ginv}}, can be
-specified via argument \code{func.inverse}.
+important role in graph theory and electrical network theory). The
+pseudoinverse is calculated using
+\code{\link[BigDataStatMeth]{pseudoinverse}} from R package
+\bold{BigDataStatMeth}.
 
 Using matrices \strong{L} and \strong{L+}, the variances based on both
 direct and indirect comparisons can be estimated. Moreover, the hat

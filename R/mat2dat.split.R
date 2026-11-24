@@ -5,8 +5,7 @@ mat2dat.split <- function(x, pooled = "common", dat.trts) {
   name.n <- paste0("nma.", pooled)
   name.d <- paste0("direct.", pooled)
   name.i <- paste0("indirect.", pooled)
-  
-  
+
   nma <- direct <- indirect <-
     data.frame(comparison = dat.trts$comparison,
                TE = NA, seTE = NA, lower = NA, upper = NA,
@@ -60,25 +59,29 @@ mat2dat.split <- function(x, pooled = "common", dat.trts) {
       predict$upper[i] <- x$x$upper.predict[t1.i, t2.i]
     }
   }
-  ##
-  m <-
-    suppressWarnings(metagen(direct$TE - indirect$TE,
-                             sqrt(direct$seTE^2 +
-                                  indirect$seTE^2),
-                             level = x$x$level.ma,
-                             method.tau = "DL", method.tau.ci = ""))
-  ##
+  #
+  if (pooled == "common" || x$x$method.random.ci == "classic") {
+    ci.compare <-
+      ci(direct$TE - indirect$TE, sqrt(direct$seTE^2 + indirect$seTE^2),
+         x$x$level.ma)
+  }
+  else {
+    ci.compare <-
+      ci(direct$TE - indirect$TE, sqrt(direct$seTE^2 + indirect$seTE^2),
+         x$x$level.ma, x$x$df.Q)
+  }
+  #
   compare <-
     data.frame(comparison = dat.trts$comparison,
-               TE = m$TE, seTE = m$seTE,
-               lower = m$lower, upper = m$upper,
-               statistic = m$statistic, p = m$pval,
-               z = m$statistic,
+               TE = ci.compare$TE, seTE = ci.compare$seTE,
+               lower = ci.compare$lower, upper = ci.compare$upper,
+               statistic = ci.compare$statistic, p = ci.compare$p,
                stringsAsFactors = FALSE)
 
   res <- list(k = k, nma = nma,
               direct = direct, indirect = indirect,
-              compare = compare, predict = predict)
+              compare = compare, predict = predict,
+              method.random.ci = x$x$method.random.ci)
   ##
   res
 }

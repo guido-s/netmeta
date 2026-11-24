@@ -6,7 +6,9 @@ mat2dat.table <- function(x, pooled = "common", dat.trts,
                           writexl) {
   
   pooled <- setchar(pooled, c("common", "random"))
-  ##
+  #
+  method.random.ci <- replaceNULL(x$x$method.random.ci, "classic")
+  #
   name.n <- paste0("nma.", pooled)
   name.d <- paste0("direct.", pooled)
   name.i <- paste0("indirect.", pooled)
@@ -59,15 +61,22 @@ mat2dat.table <- function(x, pooled = "common", dat.trts,
     res$lower.nma[i] <- x[[name.n]]$lower[t1.i, t2.i]
     res$upper.nma[i] <- x[[name.n]]$upper[t1.i, t2.i]
   }
-  ##
+  #
+  if (pooled == "common" || method.random.ci == "classic") {
+    ci.compare <-
+      ci(res$TE.direct - res$TE.indirect,
+         sqrt(res$seTE.direct^2 + res$seTE.indirect^2),
+         x$x$level.ma)
+  }
+  else {
+    ci.compare <-
+      ci(res$TE.direct - res$TE.indirect,
+         sqrt(res$seTE.direct^2 + res$seTE.indirect^2),
+         x$x$level.ma, x$x$df.Q)
+  }
+  #
   res$p.value <-
-    suppressWarnings(
-      metagen(res$TE.direct - res$TE.indirect,
-              sqrt(res$seTE.direct^2 + res$seTE.indirect^2),
-              level = x$x$level.ma,
-              method.tau = "DL", method.tau.ci = "")$pval)
-  res$p.value <-
-    formatPT(res$p.value, digits = digits.pval,
+    formatPT(ci.compare$p, digits = digits.pval,
              scientific = scientific.pval,
              zero = zero.pval, JAMA = JAMA.pval,
              lab.NA = text.NA)

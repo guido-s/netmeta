@@ -91,9 +91,6 @@
 #'   characters used to create unique treatment names (see Details).
 #' @param nchar.studlab A numeric defining the minimum number of
 #'   characters used to create unique study labels.
-#' @param func.inverse A function or character string specifying the function
-#'   used to calculate the pseudoinverse of the Laplacian matrix \strong{L}
-#'   (see Details).
 #' @param n1 Number of observations in first treatment group.
 #' @param n2 Number of observations in second treatment group.
 #' @param event1 Number of events in first treatment group.
@@ -142,10 +139,10 @@
 #' matrix) is formed; for further details, see Rücker (2012). Moreover,
 #' the \emph{n}x\emph{n} Laplacian matrix \strong{L} and its Moore-Penrose
 #' pseudoinverse \strong{L+} are calculated (both matrices play an
-#' important role in graph theory and electrical network theory). By
-#' default, the pseudoinverse is calculated using \code{\link{invmat}};
-#' an alternative function, such as \code{\link[MASS]{ginv}}, can be
-#' specified via argument \code{func.inverse}.
+#' important role in graph theory and electrical network theory). The
+#' pseudoinverse is calculated using
+#' \code{\link[BigDataStatMeth]{pseudoinverse}} from R package
+#' \bold{BigDataStatMeth}.
 #'
 #' Using matrices \strong{L} and \strong{L+}, the variances based on both
 #' direct and indirect comparisons can be estimated. Moreover, the hat
@@ -713,8 +710,6 @@ netmeta <- function(TE, seTE,
                     nchar.trts = gs("nchar.trts"),
                     nchar.studlab = gs("nchar.studlab"),
                     #
-                    func.inverse = invmat,
-                    #
                     n1 = NULL,
                     n2 = NULL,
                     event1 = NULL,
@@ -739,13 +734,13 @@ netmeta <- function(TE, seTE,
                     #
                     nchar = nchar.trts,
                     ...) {
-
-
+  
   #
   #
   # (1) Check arguments
   #
   #
+  
   chklevel(level)
   chklevel(level.predict)
   #
@@ -797,6 +792,9 @@ netmeta <- function(TE, seTE,
   # Check for deprecated arguments in '...'
   #
   args <- list(...)
+  #
+  drop_from_dots(args, "func.inverse", deprecated = TRUE)
+  #
   chklogical(warn.deprecated)
   #
   level.ma <- deprecated(level.ma, missing(level.ma), args, "level.comb",
@@ -820,18 +818,13 @@ netmeta <- function(TE, seTE,
     deprecated2(nchar.trts, missing.nchar.trts, nchar, missing(nchar),
                 warn.deprecated)
   chknumeric(nchar.trts, min = 1, length = 1)
-  #
-  if (is.character(func.inverse))
-    func.inverse <- eval(str2lang(func.inverse))
-  #
-  if (!is.function(func.inverse))
-    stop("Argument 'func.inverse' must specify a function.", call. = FALSE)
   
   #
   #
   # (2) Read data
   #
   #
+  
   nulldata <- is.null(data)
   sfsp <- sys.frame(sys.parent())
   mc <- match.call()
@@ -1017,13 +1010,12 @@ netmeta <- function(TE, seTE,
   else
     available.times <- FALSE
   
+  #
+  #
+  # (3) Store complete dataset in list object data
+  #     (if argument keepdata is TRUE)
+  #
   
-  #
-  #
-  # (2b) Store complete dataset in list object data
-  #      (if argument keepdata is TRUE)
-  #
-  #
   if (keepdata) {
     if (nulldata & !is.pairwise)
       data <- data.frame(.studlab = studlab, stringsAsFactors = FALSE)
@@ -1110,12 +1102,12 @@ netmeta <- function(TE, seTE,
     }
   }
   
+  #
+  #
+  # (4) Use subset for analysis
+  #
+  #
   
-  #
-  #
-  # (3) Use subset for analysis
-  #
-  #
   if (!missing.subset) {
     if ((is.logical(subset) & (sum(subset) > k.Comp)) ||
         (length(subset) > k.Comp))
@@ -1168,12 +1160,12 @@ netmeta <- function(TE, seTE,
   #
   sep.trts <- setsep(labels, sep.trts, missing = missing.sep.trts)
   
+  #
+  #
+  # (5) Additional checks
+  #
+  #
   
-  #
-  #
-  # (4) Additional checks
-  #
-  #
   if (any(treat1 == treat2))
     stop("Treatments must be different (arguments 'treat1' and 'treat2').",
          call. = FALSE)
@@ -1403,43 +1395,15 @@ netmeta <- function(TE, seTE,
   
   #
   #
-  # (5) Prepare the function for storage in the netmeta object
-  #
-  #
-  
-  func.inverse.stored <- func.inverse
-  #
-  env <- environment(func.inverse)
-  #
-  if (isNamespace(env)) {
-    pkg <- getNamespaceName(env)
-    exports <- getNamespaceExports(pkg)
-    #
-    matches <- vapply(
-      exports,
-      function(nam)
-        identical(func.inverse, getExportedValue(pkg, nam)),
-      logical(1)
-    )
-    #
-    if (any(matches)) {
-      nam <- exports[which(matches)[1L]]
-      func.inverse.stored <- paste0(pkg, "::", nam)
-    }
-  }
-  
-  #
-  #
   # (6) Generate analysis dataset
   #
   #
-  #
+  
   # Calculate weight matrix and generate ordered dataset, with added numbers
   # of arms per study
   #
   p0 <- prepare(TE, seTE, treat1, treat2, studlab,
-                correlated = correlated,
-                func.inverse = func.inverse)
+                correlated = correlated)
   #
   W.matrix.common <- as.matrix(p0$W)
   Cov.matrix.common <- as.matrix(p0$Cov)
@@ -1463,25 +1427,33 @@ netmeta <- function(TE, seTE,
   studies <- tdata$studies[order(tdata$order)]
   narms <- tdata$narms[order(tdata$order)]
   
-  
   #
   #
   # (7) Conduct network meta-analysis
   #
+  #
   
   # Common effects model
   #
+  weight.c <- dat.c$weights
+  se.c <- rep(NaN, length(weight.c))
+  #
+  pos.weight.c <- !is.na(weight.c) & weight.c >= 0
+  se.c[pos.weight.c] <- sqrt(1 / weight.c[pos.weight.c])
+  #
   res.c <- nma_ruecker(dat.c$TE,
                        W.matrix.common,
-                       sqrt(1 / dat.c$weights),
+                       se.c,
                        dat.c$treat1, dat.c$treat2,
                        dat.c$treat1.pos, dat.c$treat2.pos,
                        dat.c$narms, dat.c$studlab,
                        sm,
                        level, level.ma,
-                       dat.c$seTE, 0, sep.trts,
-                       method.tau,
-                       func.inverse, Cov0 = p0$Cov)
+                       dat.c$seTE,
+                       #
+                       sep.trts = sep.trts,
+                       method.tau = method.tau,
+                       Cov0 = p0$Cov)
   trts <- rownames(res.c$A.matrix)
   #
   #
@@ -1492,7 +1464,8 @@ netmeta <- function(TE, seTE,
       #
       dat.tau <-
         data.frame(studlab = studlab,
-                   treat1 = treat1, treat2 = treat2,
+                   treat1 = as.character(treat1),
+                   treat2 = as.character(treat2),
                    TE = TE, seTE = seTE)
       if (available.n) {
         dat.tau$n1 <- n1
@@ -1526,16 +1499,40 @@ netmeta <- function(TE, seTE,
       keep <- logical(0)
       wo <- logical(0)
       #
-      for (i in unique(dat.tau$studlab)) {
-        d.i <- dat.tau[dat.tau$studlab == i, , drop = FALSE]
-        trts.i <- unique(sort(c(d.i$treat1, d.i$treat2)))
+      studies.tau <- unique(dat.tau$studlab)
+      n.studies.tau <- length(studies.tau)
+      #
+      V.list <- vector("list", n.studies.tau)
+      #
+      for (i in seq_len(n.studies.tau)) {
+        study.i <- studies.tau[i]
+        dat.i <- dat.tau[dat.tau$studlab == study.i, , drop = FALSE]
+        #
+        trts.i <- unique(sort(c(dat.i$treat1, dat.i$treat2)))
+        #
         if (reference.group %in% trts.i)
-          ref.i <- reference.group
+          ref.i <- as.character(reference.group)
         else
           ref.i <- rev(trts.i)[1]
         #
-        keep.i <- !(d.i$treat1 != ref.i & d.i$treat2 != ref.i)
-        wo.i <- d.i$treat1 == ref.i
+        keep.i <- !(dat.i$treat1 != ref.i & dat.i$treat2 != ref.i)
+        wo.i <- dat.i$treat1 == ref.i
+        #
+        # Covariance of the retained contrasts, all oriented relative to ref.i
+        #
+        V.i <- matrix(0, length(trts.i), length(trts.i),
+                      dimnames = list(trts.i, trts.i))
+        V.i[cbind(dat.i$treat1, dat.i$treat2)] <- dat.i$seTE^2
+        V.i <- V.i + t(V.i)
+        #
+        trts.keep <-
+          ifelse(wo.i[keep.i], dat.i$treat2[keep.i], dat.i$treat1[keep.i])
+        #
+        vars.ref <- V.i[trts.keep, ref.i]
+        #
+        V.list[[i]] <-
+          (outer(vars.ref, vars.ref, "+") -
+             V.i[trts.keep, trts.keep, drop = FALSE]) / 2
         #
         keep <- c(keep, keep.i)
         wo <- c(wo, wo.i)
@@ -1544,6 +1541,7 @@ netmeta <- function(TE, seTE,
       dat.tau <- dat.tau[keep, , drop = FALSE]
       #
       wo <- wo[keep]
+      #
       if (sum(wo) > 0) {
         dat.tau$TE[wo] <- -dat.tau$TE[wo]
         #
@@ -1587,7 +1585,7 @@ netmeta <- function(TE, seTE,
         V <- bldiag(lapply(split(dat.tau, dat.tau$studlab), calcV, sm = sm))
       }
       else
-        V <- dat.tau$seTE^2
+        V <- bldiag(V.list)
       #
       dat.tau.TE <- dat.tau$TE
       dat.tau$comparison <- paste(dat.tau$treat1, dat.tau$treat2, sep = " vs ")
@@ -1620,24 +1618,34 @@ netmeta <- function(TE, seTE,
     tau <- tau.preset
   #
   p1 <- prepare(TE, seTE, treat1, treat2, studlab,
-                tau = tau, correlated = correlated,
-                func.inverse = func.inverse)
+                tau = tau, correlated = correlated)
   #
   W.matrix.random <- as.matrix(p1$W)
   Cov.matrix.random <- as.matrix(p1$Cov)
   dat.r <- p1$data
   #
+  weight.r <- dat.r$weights
+  se.r <- rep(NaN, length(weight.r))
+  #
+  pos.weight.r <- !is.na(weight.r) & weight.r >= 0
+  se.r[pos.weight.r] <- sqrt(1 / weight.r[pos.weight.r])
+  #
   res.r <- nma_ruecker(dat.r$TE,
                        W.matrix.random,
-                       sqrt(1 / dat.r$weights),
+                       se.r,
                        dat.r$treat1, dat.r$treat2,
                        dat.r$treat1.pos, dat.r$treat2.pos,
                        dat.r$narms, dat.r$studlab,
                        sm,
                        level, level.ma,
-                       dat.r$seTE, tau, sep.trts,
-                       method.tau,
-                       func.inverse, Cov0 = p1$Cov,
+                       dat.r$seTE,
+                       #
+                       tau,
+                       #
+                       sep.trts = sep.trts,
+                       method.tau = method.tau,
+                       Cov0 = p1$Cov,
+                       #
                        method.random.ci = method.random.ci)
   #
   TE.random <- res.r$TE.pooled
@@ -1649,7 +1657,7 @@ netmeta <- function(TE, seTE,
   if (df.Q == 0)
     prediction <- FALSE
   #
-  if (df.Q >= 2) {
+  if (df.Q >= 1) {
     seTE.predict <- sqrt(seTE.random^2 + tau^2)
     ci.p <- ci(TE.random, seTE.predict, level.predict, df.Q)
     p.lower <- ci.p$lower
@@ -1663,13 +1671,13 @@ netmeta <- function(TE, seTE,
     p.lower[!is.na(p.lower)] <- NA
     p.upper[!is.na(p.upper)] <- NA
   }
-
-
+  
   #
   #
   # (8) Generate R object
   #
   #
+  
   o <- order(dat.c$order)
   #
   designs <- designs(res.c$treat1, res.c$treat2, res.c$studlab,
@@ -1885,8 +1893,6 @@ netmeta <- function(TE, seTE,
               tol.multiarm.se = tol.multiarm.se,
               details.chkmultiarm = details.chkmultiarm,
               #
-              func.inverse = func.inverse.stored,
-              #
               sep.trts = sep.trts,
               nchar.trts = nchar.trts,
               nchar.studlab = nchar.studlab,
@@ -1973,33 +1979,43 @@ netmeta <- function(TE, seTE,
   #
   # Common effects model
   #
-  ci.if <- ci((res$TE.common - P.common * TE.direct.common) / (1 - P.common),
-              sqrt(res$seTE.common^2 / (1 - P.common)),
-              level = level)
+  ci.indirect.c <-
+    ci((res$TE.common - P.common * TE.direct.common) / (1 - P.common),
+       sqrt(res$seTE.common^2 / (1 - P.common)),
+       level = level.ma)
   #
-  res$TE.indirect.common   <- ci.if$TE
-  res$seTE.indirect.common <- ci.if$seTE
+  res$TE.indirect.common   <- ci.indirect.c$TE
+  res$seTE.indirect.common <- ci.indirect.c$seTE
   #
-  res$lower.indirect.common <- ci.if$lower
-  res$upper.indirect.common <- ci.if$upper
+  res$lower.indirect.common <- ci.indirect.c$lower
+  res$upper.indirect.common <- ci.indirect.c$upper
   #
-  res$statistic.indirect.common <- ci.if$statistic
-  res$pval.indirect.common <- ci.if$p
+  res$statistic.indirect.common <- ci.indirect.c$statistic
+  res$pval.indirect.common <- ci.indirect.c$p
   #
   # Random effects model
   #
-  ci.ir <- ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
-              sqrt(res$seTE.random^2 / (1 - P.random)),
-              level = level)
+  if (method.random.ci == "classic") {
+    ci.indirect.r <-
+      ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
+         sqrt(res$seTE.random^2 / (1 - P.random)),
+         level = level.ma)
+  }
+  else {
+    ci.indirect.r <-
+      ci((res$TE.random - P.random * TE.direct.random) / (1 - P.random),
+         sqrt(res$seTE.random^2 / (1 - P.random)),
+         level = level.ma, df = df.Q)
+  }
   #
-  res$TE.indirect.random   <- ci.ir$TE
-  res$seTE.indirect.random <- ci.ir$seTE
+  res$TE.indirect.random   <- ci.indirect.r$TE
+  res$seTE.indirect.random <- ci.indirect.r$seTE
   #
-  res$lower.indirect.random <- ci.ir$lower
-  res$upper.indirect.random <- ci.ir$upper
+  res$lower.indirect.random <- ci.indirect.r$lower
+  res$upper.indirect.random <- ci.indirect.r$upper
   #
-  res$statistic.indirect.random <- ci.ir$statistic
-  res$pval.indirect.random <- ci.ir$p
+  res$statistic.indirect.random <- ci.indirect.r$statistic
+  res$pval.indirect.random <- ci.indirect.r$p
   #
   # Additional assignments
   #
