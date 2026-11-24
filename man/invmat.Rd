@@ -13,28 +13,40 @@ invmat(X)
 The Moore-Penrose pseudoinverse for matrix \strong{X}.
 }
 \description{
-Calculates the Moore-Penrose pseudoinverse of a square matrix
-\strong{X}.
+Calculates the Moore-Penrose pseudoinverse of a square matrix \strong{X}.
 }
 \details{
-This function is used by default in R package \strong{netmeta} to
-calculate the Moore-Penrose pseudoinverse \strong{L\eqn{^+}} of the
-Laplacian matrix \strong{L} (Rücker, 2012):
+Since version 3.9-0, \bold{netmeta} uses
+\code{\link[BigDataStatMeth]{pseudoinverse}} from R package
+\bold{BigDataStatMeth} to calculate Moore-Penrose pseudoinverses.
+Older versions used \code{invmat()}.
 
-\strong{L\eqn{^+} = (X - J / \emph{n})\eqn{^{-1}} + J / \emph{n}}
-with identity matrix \strong{J} of dimension \emph{n}x\emph{n}.
+For the Laplacian matrix \strong{L} of a connected network,
+\code{invmat} calculates its Moore-Penrose pseudoinverse as
+(Rücker, 2012):
+
+\strong{L\eqn{^+} = (L - J / \emph{n})\eqn{^{-1}} + J / \emph{n}},
+
+where \strong{J} is the \emph{n}x\emph{n} matrix of ones.
 }
 \examples{
 \donttest{
 data(smokingcessation)
 
+# Only consider first five studies (to reduce runtime of example)
+#
+smoke5 <- head(smokingcessation, n = 5)
+
+# Transform data from arm-based format to contrast-based format
+#
 pw <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
-  data = smokingcessation, sm = "OR")
-net <- netmeta(pw)
+  data = smoke5, sm = "OR")
 
-L1 <- net$L.matrix.common
-L2 <- invmat(net$Lplus.matrix.common)
+nma <- netmeta(pw)
+
+L1 <- nma$L.matrix.common
+L2 <- invmat(nma$Lplus.matrix.common)
 all.equal(round(L1, 10), round(L2, 10))
 }
 

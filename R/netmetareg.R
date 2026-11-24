@@ -92,15 +92,21 @@
 #' # 1) Smoking cessation example
 #' #
 #' data(smokingcessation)
+#' 
 #' # Add variable with (fictitious) risk of bias values
 #' # with 1 = "low risk" and 2 = "high risk"
 #' #
 #' smokingcessation$rob <- rep(1:2, 12)
 #' 
-#' sel <- seq_len(nrow(smokingcessation)) < 6
+#' # Only consider first five studies (to reduce runtime of example)
+#' #
+#' smoke5 <- head(smokingcessation, n = 5)
+#' 
+#' # Transform data from arm-based format to contrast-based format
+#' #
 #' pw1 <- pairwise(list(treat1, treat2, treat3),
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
-#'   data = subset(smokingcessation, sel), sm = "OR")
+#'   data = smoke5, sm = "OR")
 #' 
 #' # Run network meta-analysis (NMA)
 #' nma1 <- netmeta(pw1, common = FALSE, ref = "A")
