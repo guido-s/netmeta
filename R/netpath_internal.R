@@ -151,7 +151,7 @@ run_path_inconsistency <- function(net, H.matrix, node1, node2, sep.trts) {
   Sigma <- C %*% V %*% t(C)
   
   if (det(Sigma) < 1e-6) {
-    Sigma_inv <- MASS::ginv(Sigma)
+    Sigma_inv <- pseudoinverse(Sigma)
     note <- "Matrix Sigma singular, pseudo-inverse used"
   }
   else {

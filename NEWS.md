@@ -1,3 +1,132 @@
+## netmeta, version 3.9-0 (2026-11-23)
+
+### Major changes
+
+* Moore-Penrose pseudoinverses of Laplacian and sampling covariance matrices
+  are now calculated using `pseudoinverse()` from the R package
+  **BigDataStatMeth**. These calculations are used for multi-arm adjustments,
+  network estimates and their standard errors, and hat matrices.
+
+* [Paul Schneider](https://bitowaqr.github.io/) added as a contributor to
+  R package **netmeta** in recognition of his contributions through pull
+  requests
+  [#38](https://github.com/guido-s/netmeta/pull/38),
+  [#40](https://github.com/guido-s/netmeta/pull/40),
+  [#42](https://github.com/guido-s/netmeta/pull/42), and
+  [#44](https://github.com/guido-s/netmeta/pull/44).
+
+### User-visible changes
+
+* `netmeta()`, `netmetabin()`, `netcomb()`, `discomb()`, `hatmatrix()`:
+  argument `func.inverse` is deprecated and ignored, as pseudoinverses
+  are now calculated using `BigDataStatMeth::pseudoinverse()`. A warning
+  is issued if the argument is supplied explicitly.
+  
+* `netmeta()`: prediction intervals are now available with one residual
+  degree of freedom (`df.Q = 1`), rather than requiring at least two.
+
+* `print.netcomparison()`, `print.netcomplex()`: new argument `lab.NA`
+  specifies the text printed for missing results.
+
+### Bug fixes
+
+* `netmeta()`:
+  - The between-study variance estimate using REML or ML is now
+    invariant to the choice of reference treatment
+    [(issue #39)](https://github.com/guido-s/netmeta/issues/39).
+    The fix is based on pull request
+    [#40](https://github.com/guido-s/netmeta/pull/40).
+  - The setting `method.random.ci = "t-dist"` is now consistently respected
+    in stored random-effects confidence intervals and p-values and in
+    results returned by `netsplit()` and `nettable()`, including tests for
+    disagreement between direct and indirect estimates. Common-effect
+    inference remains normal-based. This also corrects direct confidence
+    intervals displayed by `netleague()`
+    [(issue #35)](https://github.com/guido-s/netmeta/issues/35).
+  - If estimation of the between-study variance for a direct comparison
+    fails, the corresponding entries in `tau2.direct` and `tau.direct`
+    are set to `NA`. A warning is issued.
+  - Stored indirect confidence intervals now use `level.ma` rather than
+    `level`.
+
+* `netimpact()`: now calculates study impacts correctly
+  [(issue #43)](https://github.com/guido-s/netmeta/issues/43).
+  The fix uses `BigDataStatMeth::pseudoinverse()` rather than the
+  blockwise inversion proposed in pull request
+  [#44](https://github.com/guido-s/netmeta/pull/44).
+
+* `samples_netmeta()`: this internal function now accounts for covariances
+  when generating samples used by `rankogram()` to calculate ranking
+  probabilities and by `netrank()` to calculate SUCRAs
+  [(issue #41)](https://github.com/guido-s/netmeta/issues/41).
+  The fix uses `outer()`, as proposed in pull request
+  [#42](https://github.com/guido-s/netmeta/pull/42).
+
+* `netmetareg()`: now respects study subsets and exclusions from the original
+  network meta-analysis and keeps covariates aligned with the retained data.
+  This fixes a misleading treatment-name error when an excluded comparison
+  contains a treatment absent from the analysed network
+  [(issue #45)](https://github.com/guido-s/netmeta/issues/45).
+
+* `plot.netsplit()`: changing the confidence level now preserves the selected
+  method for calculating random-effects confidence intervals.
+
+* `print.netmeta()`, `print.netsplit()`: random-effects test statistics are
+  now labelled `t` rather than `z` when `method.random.ci = "t-dist"`.
+
+### Internal changes
+
+* R package **BigDataStatMeth** added to the Imports field.
+
+* R package **corpcor** removed from the Suggests field.
+
+
+## netmeta, version 3.8-0 (2026-11-17)
+
+Only released on GitHub.
+
+### Major changes
+
+* R package **netmeta** now requires R (>= 4.1.0) and R package **meta** (>= 9.0-0).
+
+### User-visible changes
+
+* `netmeta()`, `netmetabin()`, `netcomb()`, `discomb()`: argument `func.inverse`
+  now also accepts character strings specifying a function with its package
+  name, e.g., `"MASS::ginv"`.
+
+* `hatmatrix()`: new argument `func.inverse` allows specification of the
+  pseudoinverse function for the Davies method. By default, the function
+  stored in the network meta-analysis object is used. Explicit input is
+  ignored with a warning for the Ruecker and Krahn methods.
+
+* `netcomb()`: by default, argument `func.inverse` now uses the function
+  stored in the supplied network meta-analysis object.
+
+* `netconnection()`: treatments in a single connected network are now returned
+  in alphanumeric order in the list element `seq`.
+
+* Updated documentation for `netmeta()` and `hatmatrix()`.
+
+### Bug fixes
+
+* `netmeta()`: count study degrees of freedom without floating-point roundoff,
+  preserving the zero-degrees-of-freedom handling in saturated multi-arm
+  networks [(issue #37)](https://github.com/guido-s/netmeta/issues/37).
+  The fix uses the proposed calculation of the degrees of freedom in pull
+  request [#38](https://github.com/guido-s/netmeta/pull/38).
+
+* `netmetabin()`, `discomb()`: argument `func.inverse` was not forwarded
+  to some internal calls to `netmeta()`, causing the default inverse
+  function to be used instead of the specified function.
+  
+### Internal changes
+
+* Use R package **testthat** for unit tests.
+
+* R packages **testthat** and **corpcor** added to the Suggests field.
+
+
 ## netmeta, version 3.7-0 (2026-09-17)
 
 ### Major changes

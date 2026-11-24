@@ -233,10 +233,7 @@ print.netmeta <- function(x,
     sm.lab <- paste0("log", if (sm == "VE") "VR" else sm)
   ##
   ci.lab <- paste0(round(100 * x$level.ma, 1), "% CI")
-  #
-  zlab <- "z"
-  
-  
+
   ##
   ##
   ## (4) Set and backtransform results of meta-analysis
@@ -526,7 +523,7 @@ print.netmeta <- function(x,
           list(colnames(TE.common),
                c(sm.lab, ci.lab,
                  if (!all(is.na(statistic.common.b)))
-                   zlab,
+                   "z",
                  if (!all(is.na(pval.common.b)))
                    "p-value"))
         ##
@@ -689,7 +686,7 @@ print.netmeta <- function(x,
           list(colnames(TE.random),
                c(sm.lab, ci.lab,
                  if (!all(is.na(statistic.random.b)))
-                   zlab,
+                   if (x$method.random.ci == "classic") "z" else "t",
                  if (!all(is.na(pval.random.b)))
                    "p-value"))
         ##

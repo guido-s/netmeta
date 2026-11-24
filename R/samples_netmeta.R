@@ -6,30 +6,41 @@ samples_netmeta <- function(x, nsim, pooled) {
   #
   if (pooled == "common") {
     TE.pooled <- x$TE.common
-    Cov.pooled <- x$Cov.common
+    seTE.pooled <- x$seTE.common
   }
   else {
     TE.pooled <- x$TE.random
-    Cov.pooled <- x$Cov.random
+    seTE.pooled <- x$seTE.random
   }
   #
   theta <- TE.pooled[, 1]
   
-  compMatrix <- matrix(0, nrow = nrow(Cov.pooled), ncol = length(x$trts))
-  rownames(compMatrix) <- rownames(Cov.pooled)
-  colnames(compMatrix) <- x$trts
+  # Comparison matrix with all pairwise comparisons in rows and treatments
+  # in columns
   #
-  allcomps <- compsplit(rownames(compMatrix), x$sep.trts)
-  for (i in seq_len(nrow(Cov.pooled)))
-    compMatrix[i, allcomps[[i]]] <- 1
+  pairs <- combn(x$trts, 2)
+  n.pairs <- ncol(pairs)
   #
-  var.theta <- as.vector(ginv(compMatrix) %*% diag(Cov.pooled))
+  compMatrix <- matrix(0, nrow = n.pairs, ncol = length(x$trts),
+    dimnames = list(apply(pairs, 2, paste, collapse = x$sep.trts), x$trts))
+  #
+  for (i in seq_len(n.pairs))
+    compMatrix[i, pairs[, i]] <- 1
   
-  samples <- rmvnorm(nsim, theta, diag(var.theta))
+  # Covariance of treatment effects relative to the first treatment
+  #
+  V <- seTE.pooled^2
+  #
+  Sigma <- (outer(V[, 1], V[, 1], "+") - V) / 2
+  
+  # Generate samples
+  #
+  samples <- rmvnorm(nsim, theta, Sigma)
   rownames(samples) <- seq_len(nrow(samples))
   colnames(samples) <- x$trts
   
-  res <- list(samples = samples, compMatrix = compMatrix)
+  # Return samples
   #
+  res <- list(samples = samples, compMatrix = compMatrix)
   res
 }

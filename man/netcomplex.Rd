@@ -31,6 +31,7 @@ netcomplex(
   zero.pval = gs("zero.pval"),
   JAMA.pval = gs("JAMA.pval"),
   big.mark = gs("big.mark"),
+  lab.NA = gs("lab.NA"),
   legend = gs("legend"),
   warn.deprecated = gs("warn.deprecated"),
   ...
@@ -87,6 +88,8 @@ combination effect should be printed according to JAMA reporting
 standards.}
 
 \item{big.mark}{A character used as thousands separator.}
+
+\item{lab.NA}{Label for missing values.}
 
 \item{legend}{A logical indicating whether a legend should be
 printed.}

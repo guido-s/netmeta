@@ -81,7 +81,7 @@
 #' \doi{10.21203/rs.3.rs-8235913/v1}
 #' 
 #' Viechtbauer W (2010):
-#' Conducting Meta-Analyses in R with the Metafor Package.
+#' Conducting meta-analyses in R with the metafor package.
 #' \emph{Journal of Statistical Software},
 #' \bold{36}, 1--48
 #'
@@ -97,9 +97,10 @@
 #' #
 #' smokingcessation$rob <- rep(1:2, 12)
 #' 
+#' sel <- seq_len(nrow(smokingcessation)) < 6
 #' pw1 <- pairwise(list(treat1, treat2, treat3),
 #'   event = list(event1, event2, event3), n = list(n1, n2, n3),
-#'   data = smokingcessation, sm = "OR")
+#'   data = subset(smokingcessation, sel), sm = "OR")
 #' 
 #' # Run network meta-analysis (NMA)
 #' nma1 <- netmeta(pw1, common = FALSE, ref = "A")
@@ -225,6 +226,11 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   max.ia <- replaceNULL(args[["max.ia"]], FALSE)
   chklogical(max.ia)
+  #
+  trts <- x$trts
+  trts.abbr <- treats(x$trts, nchar.trts)
+  #
+  reference.group <- trts.abbr[trts == reference.group]
   
   
   #
@@ -263,16 +269,25 @@ netmetareg.netmeta <- function(x, covar = NULL,
   #
   covar <- catch("covar", mc, data, sfsp)
   #
-  trts <- x$trts
-  trts.abbr <- treats(x$trts, nchar.trts)
+  if (!is.null(x$data)) {
+    sel.data <- rep(TRUE, nrow(data))
+    if (isCol(data, ".subset"))
+      sel.data <- sel.data & data$.subset %in% TRUE
+    if (isCol(data, ".excl"))
+      sel.data <- sel.data & data$.excl %in% FALSE
+    #
+    if (length(covar) > 1L)
+      covar <- covar[sel.data]
+    data <- data[sel.data, , drop = FALSE]
+    #
+    x$data <- data
+  }
   #
-  reference.group <- trts.abbr[trts == reference.group]
-  
-  dat <- data.frame(studlab = x$data$.studlab,
-                    treat1 = x$data$.treat1,
-                    treat2 = x$data$.treat2,
-                    TE = x$data$.TE,
-                    seTE = x$data$.seTE)
+  dat <- data.frame(studlab = data$.studlab,
+                    treat1 = data$.treat1,
+                    treat2 = data$.treat2,
+                    TE = data$.TE,
+                    seTE = data$.seTE)
   #
   dat$treat1 <-
     as.character(factor(dat$treat1, levels = trts, labels = trts.abbr))
@@ -297,38 +312,38 @@ netmetareg.netmeta <- function(x, covar = NULL,
   dat[[covar.name]] <- covar
   #
   available.n <- available.events <- available.times <- available.sds <- FALSE
-  if (!is.null(x$data$.n1) & !is.null(x$data$.n2)) {
-    dat$n1 <- x$data$.n1
-    dat$n2 <- x$data$.n2
+  if (!is.null(data$.n1) && !is.null(data$.n2)) {
+    dat$n1 <- data$.n1
+    dat$n2 <- data$.n2
     available.n <- TRUE
   }
   #
-  if (!is.null(x$data$.mean1) & !is.null(x$data$.mean2)) {
-    dat$mean1 <- x$data$.mean1
-    dat$mean2 <- x$data$.mean2
+  if (!is.null(data$.mean1) && !is.null(data$.mean2)) {
+    dat$mean1 <- data$.mean1
+    dat$mean2 <- data$.mean2
   }
   #
-  if (!is.null(x$data$.sd1) & !is.null(x$data$.sd2)) {
-    dat$sd1 <- x$data$.sd1
-    dat$sd2 <- x$data$.sd2
+  if (!is.null(data$.sd1) && !is.null(data$.sd2)) {
+    dat$sd1 <- data$.sd1
+    dat$sd2 <- data$.sd2
     available.sds <- TRUE
   }
   #
-  if (!is.null(x$data$.event1) & !is.null(x$data$.event2)) {
-    dat$event1 <- x$data$.event1
-    dat$event2 <- x$data$.event2
+  if (!is.null(data$.event1) && !is.null(data$.event2)) {
+    dat$event1 <- data$.event1
+    dat$event2 <- data$.event2
     available.events <- TRUE
   }
   #
-  if (!is.null(x$data$.time1) & !is.null(x$data$.time2)) {
-    dat$time1 <- x$data$.time1
-    dat$time2 <- x$data$.time2
+  if (!is.null(data$.time1) && !is.null(data$.time2)) {
+    dat$time1 <- data$.time1
+    dat$time2 <- data$.time2
     available.times <- TRUE
   }
   #
-  if (!is.null(x$data$.incr1) & !is.null(x$data$.incr2)) {
-    dat$incr1 <- x$data$.incr1
-    dat$incr2 <- x$data$.incr2
+  if (!is.null(data$.incr1) && !is.null(data$.incr2)) {
+    dat$incr1 <- data$.incr1
+    dat$incr2 <- data$.incr2
   }
   
   # import or create directionality parameters
@@ -340,14 +355,14 @@ netmetareg.netmeta <- function(x, covar = NULL,
     if (has_treat1_dir & has_treat2_dir) {
       # Use provided directionality parameters
       dat$Ival1 <-
-        ifelse(x$data$treat1 == x$data$.treat1,
-               x$data[[substitute(direction1)]],
-               x$data[[substitute(direction2)]])
+        ifelse(data$treat1 == data$.treat1,
+               data[[substitute(direction1)]],
+               data[[substitute(direction2)]])
       #
       dat$Ival2 <-
-        ifelse(x$data$treat2 == x$data$.treat2,
-               x$data[[substitute(direction2)]],
-               x$data[[substitute(direction1)]])
+        ifelse(data$treat2 == data$.treat2,
+               data[[substitute(direction2)]],
+               data[[substitute(direction1)]])
     }
     else if (!has_treat1_dir & !has_treat2_dir) {
       # Default to treatment order when no directionality specified

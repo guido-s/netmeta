@@ -130,9 +130,10 @@ data(smokingcessation)
 #
 smokingcessation$rob <- rep(1:2, 12)
 
+sel <- seq_len(nrow(smokingcessation)) < 6
 pw1 <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
-  data = smokingcessation, sm = "OR")
+  data = subset(smokingcessation, sel), sm = "OR")
 
 # Run network meta-analysis (NMA)
 nma1 <- netmeta(pw1, common = FALSE, ref = "A")

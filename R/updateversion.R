@@ -35,6 +35,7 @@ updateversion <- function(x, verbose = FALSE) {
   update.3.0.0 <- update_needed(x$version, 3, 0, verbose)
   update.3.3.0 <- update_needed(x$version, 3, 3, verbose)
   update.3.7.0 <- update_needed(x$version, 3, 7, verbose)
+  update.3.9.0 <- update_needed(x$version, 3, 9, verbose)
   
   
   ##
@@ -213,6 +214,10 @@ updateversion <- function(x, verbose = FALSE) {
       }
     }
     #
+    if (update.3.9.0) {
+      x$method.random.ci <- replaceNULL(x$method.random.ci, "classic")
+    }
+    #
     return(x)
   }
   
@@ -249,6 +254,10 @@ updateversion <- function(x, verbose = FALSE) {
         else if (is.logical(x$allincr) && x$allincr)
           method.incr <- "if0all"
       }
+    }
+    #
+    if (update.3.9.0) {
+      x$x$method.random.ci <- replaceNULL(x$x$method.random.ci, "classic")
     }
     #
     return(x)
@@ -479,7 +488,11 @@ updateversion <- function(x, verbose = FALSE) {
       x$show <- gs("show.netsplit")
       x$only.reference <- FALSE
     }
-    ##
+    #
+    if (update.3.9.0) {
+      x$x$method.random.ci <- replaceNULL(x$x$method.random.ci, "classic")
+    }
+    #
     return(x)
   }
   
