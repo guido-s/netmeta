@@ -32,6 +32,7 @@ netmetareg(x, ...)
   digits.stat = gs("digits.stat"),
   digits.pval = gs("digits.pval"),
   print.se = FALSE,
+  print.tau = TRUE,
   details.methods = TRUE,
   ...
 )
@@ -45,7 +46,7 @@ netmetareg(x, ...)
 unrelated mean interaction effect (UMIE) model should be assumed.}
 
 \item{assumption}{A character string indicating which assumption is done
-for the covariate; either "independent" or "common" (can be abbreviated).}
+for the covariate; either "independent", "common", or "exchangeable" (can be abbreviated).}
 
 \item{method.tau}{A character string indicating which method is
 used to estimate the between-study variance tau-squared. Either
@@ -165,6 +166,11 @@ nmr2_i <- netmetareg(nma2, covar = seTE, consistency = TRUE,
 # NMR with common and consistent assumption
 nmr2_c <- netmetareg(nma2, covar = seTE, consistency = TRUE,
   assumption = "c")
+  
+# NMR with exchangeable and consistent assumption
+nmr2_e <- netmetareg(nma2, covar = seTE, consistency = TRUE,
+  assumption = "e")
+  
 # NMR with independent UMIE model (no consistency in interactions) using
 # default treatment order
 nmr2_i_umie <- netmetareg(nma2, covar = seTE, consistency = FALSE,
@@ -203,6 +209,9 @@ nmr3_i <- netmetareg(nma3, covar = disability_diff, consistency = TRUE,
 # NMR with common and consistent assumption
 nmr3_c <- netmetareg(nma3, covar = disability_diff, consistency = TRUE,
   assumption = "c")
+# NMR with exchangeable and consistent assumption
+nmr3_e <- netmetareg(nma3, covar = disability_diff, consistency = TRUE,
+  assumption = "e")
 # NMR with independent UMIE model (no consistency in interactions) using
 # default treatment order variable
 nmr3_i_umie <- netmetareg(nma3, covar = disability_diff, consistency = FALSE,
@@ -222,6 +231,16 @@ nmr3_c_umie <- netmetareg(nma3, covar = disability_diff, consistency = FALSE,
 # interaction estimation
 nmr3_c_umie_noimp <- netmetareg(nma3, covar = disability_diff,
   consistency = FALSE, assumption = "c",
+  direction1 = "direction1", direction2 = "direction2")
+  #' # NMR with exchangeable UMIE model (no consistency in interactions) using default
+# treatment order variable
+nmr3_e_umie <- netmetareg(nma3, covar = disability_diff, consistency = FALSE,
+  assumption = "e")
+# NMR with exchangeable UMIE model (no consistency in interactions) using custom
+# treatment order variable which excludes the mean imputations from
+# interaction estimation
+nmr3_e_umie_noimp <- netmetareg(nma3, covar = disability_diff,
+  consistency = FALSE, assumption = "e",
   direction1 = "direction1", direction2 = "direction2")
 }
 
