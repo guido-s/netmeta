@@ -1524,8 +1524,8 @@ stop(paste0("Cannot find the object/variable ('",
   if (is.element(struct, c("CS", "HCS", "UN", "UNR", "AR", 
                            "HAR", "CAR", "ID", "DIAG", "PHYBM", "PHYPL", "PHYPD")) && 
       sum(sapply(mf.g, NCOL)) != 2) 
-    stop(mstyle$stop(paste0("Only a single inner variable allowed for an '~ inner | outer' term when 'struct=\"", 
-                            struct, "\"'.")), call. = FALSE)
+    stop(paste0("Only a single inner variable allowed for an '~ inner | outer' term when 'struct=\"", 
+                            struct, "\"'."), call. = FALSE)
   g.names <- names(mf.g)
   if (is.element(struct, c("CAR"))) {
     if (!is.numeric(mf.g[[1]])) 
@@ -1600,13 +1600,13 @@ stop(paste0("Cannot find the object/variable ('",
   tau2 <- .expand1(tau2, tau2s)
   rho <- .expand1(rho, rhos)
   if (length(tau2) != tau2s) 
-    stop(mstyle$stop(paste0("Length of the ", ifelse(isG, 
+    stop(paste0("Length of the ", ifelse(isG, 
                                                      "tau2", "gamma2"), " argument (", length(tau2), ") does not match the actual number of variance components (", 
-                            tau2s, ").")), call. = FALSE)
+                            tau2s, ")."), call. = FALSE)
   if (length(rho) != rhos) 
-    stop(mstyle$stop(paste0("Length of the ", ifelse(isG, 
+    stop(paste0("Length of the ", ifelse(isG, 
                                                      "rho", "phi"), " argument (", length(rho), ") does not match the actual number of correlations (", 
-                            rhos, ").")), call. = FALSE)
+                            rhos, ")."), call. = FALSE)
   if (any(tau2 < 0, na.rm = TRUE)) 
     stop(paste0("Specified value(s) of ", ifelse(isG, 
                                                              "tau2", "gamma2"), " must be >= 0."), call. = FALSE)
@@ -1792,8 +1792,8 @@ stop(paste0("Cannot find the object/variable ('",
   if (is.element(optimizer, c("nloptr", "ucminf", "lbfgsb3c", 
                               "subplex", "optimParallel"))) {
     if (!requireNamespace(optimizer, quietly = TRUE)) 
-      stop(mstyle$stop(paste0("Please install the '", optimizer, 
-                              "' package to use this optimizer.")), call. = FALSE)
+      stop(paste0("Please install the '", optimizer, 
+                              "' package to use this optimizer."), call. = FALSE)
   }
   if (is.element(optimizer, c("hjk", "nmk", "mads"))) {
     if (!requireNamespace("dfoptim", quietly = TRUE)) 
@@ -1906,8 +1906,7 @@ stop(paste0("Cannot find the object/variable ('",
     print(tmp)
   }
   if (inherits(opt.res, "try-error")) 
-    stop(mstyle$stop(paste0("Error during the optimization. Use verbose=TRUE and see\n       help(", 
-                            fun, ") for more details on the optimization routines.")), 
+    stop(paste0("Error during the optimization."), 
          call. = FALSE)
   if (optimizer == "lbfgsb3c::lbfgsb3c" && is.null(opt.res$convergence)) 
     opt.res$convergence <- -99
@@ -2127,9 +2126,9 @@ stop(paste0("Cannot find the object/variable ('",
     return(vcvals)
   if (length(ids) != length(vcvals)) {
     
-    stop(mstyle$stop(paste0("Length of 'vccon$", vcname, 
+    stop(paste0("Length of 'vccon$", vcname, 
                             "' (", length(ids), ") does not match the length of ", 
-                            vcname, " (", length(vcvals), ").")), call. = FALSE)
+                            vcname, " (", length(vcvals), ")."), call. = FALSE)
   }
   for (id in unique(ids)) vcvals[ids == id] <- mean(vcvals[ids == 
                                                              id], na.rm = TRUE)
@@ -2150,9 +2149,9 @@ stop(paste0("Cannot find the object/variable ('",
          call. = FALSE)
   if (is.logical(x)) {
     if (length(x) != k) 
-      stop(mstyle$stop(paste0("Length of the '", argname, 
+      stop(paste0("Length of the '", argname, 
                               "' argument (", length(x), ") is not of length k = ", 
-                              k, ".")), call. = FALSE)
+                              k, "."), call. = FALSE)
     if (anyNA(x)) 
       x[is.na(x)] <- FALSE
   }
@@ -2162,19 +2161,19 @@ stop(paste0("Cannot find the object/variable ('",
     x <- as.integer(round(x))
     x <- x[x != 0L]
     if (any(x > 0L) && any(x < 0L)) 
-      stop(mstyle$stop(paste0("Cannot mix positive and negative values in '", 
-                              argname, "' argument.")), call. = FALSE)
+      stop(paste0("Cannot mix positive and negative values in '", 
+                              argname, "' argument."), call. = FALSE)
     if (all(x > 0L)) {
       if (any(x > k)) 
-        stop(mstyle$stop(paste0("Argument '", argname, 
-                                "' includes values larger than k = ", k, ".")), 
+        stop(paste0("Argument '", argname, 
+                                "' includes values larger than k = ", k, "."), 
              call. = FALSE)
       x <- is.element(seq_len(k), x)
     }
     else {
       if (any(x < -k)) 
-        stop(mstyle$stop(paste0("Argument '", argname, 
-                                "' includes values larger than k = ", k, ".")), 
+        stop(paste0("Argument '", argname, 
+                                "' includes values larger than k = ", k, "."), 
              call. = FALSE)
       x <- !is.element(seq_len(k), abs(x))
     }
@@ -2193,8 +2192,8 @@ stop(paste0("Cannot find the object/variable ('",
   k <- length(subset)
   if (is.matrix(x) || is.data.frame(x)) {
     if (nrow(x) != k) 
-      stop(mstyle$stop(paste0("Element '", xname, "' is not of length ", 
-                              k, ".")), call. = FALSE)
+      stop(paste0("Element '", xname, "' is not of length ", 
+                              k, "."), call. = FALSE)
     if (col) {
       x <- x[subset, subset, drop = drop]
     }
@@ -2204,8 +2203,8 @@ stop(paste0("Cannot find the object/variable ('",
   }
   else {
     if (length(x) != k) 
-      stop(mstyle$stop(paste0("Element '", xname, "' is not of length ", 
-                              k, ".")), call. = FALSE)
+      stop(paste0("Element '", xname, "' is not of length ", 
+                              k, "."), call. = FALSE)
     x <- x[subset]
   }
   return(x)
@@ -2282,9 +2281,9 @@ stop(paste0("Cannot find the object/variable ('",
             ddf <- dfs
             ddf <- .expand1(ddf, p)
             if (length(ddf) != p) 
-                stop(mstyle$stop(paste0("Length of the 'dfs' argument (", 
+                stop(paste0("Length of the 'dfs' argument (", 
                   length(dfs), ") does not match the number of model coefficient (", 
-                  p, ").")), call. = FALSE)
+                  p, ")."), call. = FALSE)
         }
         if (is.character(dfs) && dfs == "residual") 
             ddf <- rep(k - p, p)
