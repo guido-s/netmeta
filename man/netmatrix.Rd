@@ -56,9 +56,16 @@ data(smokingcessation)
 #
 smokingcessation$rob <- rep(1:2, 12)
 
+# Only consider first five studies (to reduce runtime of example)
+#
+smoke5 <- head(smokingcessation, n = 5)
+
+# Transform data from arm-based format to contrast-based format
+#
 pw <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
-  data = smokingcessation, sm = "OR")
+  data = smoke5, sm = "OR")
+
 nma <- netmeta(pw, common = FALSE, ref = "A")
 
 # Generate network graph with information on risk of bias
@@ -68,11 +75,11 @@ col.rob <- netmatrix(nma, rob, ties.method = "last",
 #
 netgraph(nma, col = col.rob, cex.points = 5,
   bg.points = "gray", adj = 0.5,
-  pos.number.of.studies = c(0.5, 0.25, 0.5, 0.5, 0.25, 0.5))
+  pos.number.of.studies = c(0.5, 0.5, 0.5, 0.25, 0.5))
 
 netgraph(nma, col = col.rob, cex.points = n.trts,
   bg.points = "blue", labels = paste0(trts, " (n=", n.trts, ")"),
-  pos.number.of.studies = c(0.5, 0.25, 0.5, 0.5, 0.25, 0.5),
+  pos.number.of.studies = c(0.5, 0.5, 0.5, 0.25, 0.5),
   offset = c(0.05, 0.035, 0.05, 0.025))
 
 }

@@ -126,14 +126,21 @@ iterative estimation algorithm. See help page of R function
 # 1) Smoking cessation example
 #
 data(smokingcessation)
+
 # Add variable with (fictitious) risk of bias values
 # with 1 = "low risk" and 2 = "high risk"
 #
 smokingcessation$rob <- rep(1:2, 12)
 
+# Only consider first five studies (to reduce runtime of example)
+#
+smoke5 <- head(smokingcessation, n = 5)
+
+# Transform data from arm-based format to contrast-based format
+#
 pw1 <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
-  data = smokingcessation, sm = "OR")
+  data = smoke5, sm = "OR")
 
 # Run network meta-analysis (NMA)
 nma1 <- netmeta(pw1, common = FALSE, ref = "A")
@@ -246,7 +253,7 @@ Preprint available at \emph{Research Square},
 \doi{10.21203/rs.3.rs-8235913/v1}
 
 Viechtbauer W (2010):
-Conducting Meta-Analyses in R with the Metafor Package.
+Conducting meta-analyses in R with the metafor package.
 \emph{Journal of Statistical Software},
 \bold{36}, 1--48
 }

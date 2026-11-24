@@ -42,18 +42,24 @@ data(smokingcessation)
 #
 smokingcessation$rob <- rep(1:2, 12)
 
+# Only consider first five studies (to reduce runtime of example)
+#
+smoke5 <- head(smokingcessation, n = 5)
+
+# Transform data from arm-based format to contrast-based format
+#
 pw <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
-  data = smokingcessation, sm = "OR")
+  data = smoke5, sm = "OR")
 
 nma <- netmeta(pw, common = FALSE, ref = "A")
 
 # Network meta-regression with continuous covariate and assumption of
 # independent slopes
-nr <- netmetareg(nma, rob)
-nr
+nmr <- netmetareg(nma, rob)
+nmr
 
-summary(nr1)
+summary(nmr)
 }
 
 }

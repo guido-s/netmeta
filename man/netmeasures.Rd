@@ -90,11 +90,15 @@ prespecified by argument \code{tau.preset} in function
 \examples{
 data(smokingcessation)
 
+# Only consider first five studies (to reduce runtime of example)
+#
+smoke5 <- head(smokingcessation, n = 5)
+
 # Transform data from arm-based format to contrast-based format
 #
 pw <- pairwise(list(treat1, treat2, treat3),
   event = list(event1, event2, event3), n = list(n1, n2, n3),
-  data = smokingcessation, sm = "OR")
+  data = smoke5, sm = "OR")
 
 # Conduct network meta-analysis
 #
