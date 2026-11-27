@@ -9,18 +9,12 @@ rankings <- function(x) {
   #
   rnk <- apply(x, 1, rank, ties.method = "random")
   #
-  tab <- apply(rnk, 1, table)
+  rankogram <- matrix(0, nrow = n.trts, ncol = n.trts)
+  rownames(rankogram) <- colnames(x)
+  colnames(rankogram) <- seq_len(n.trts)
   #
-  if (is.list(tab)) {
-    rankogram <- matrix(0, nrow = n.trts, ncol = n.trts)
-    rownames(rankogram) <- names(tab)
-    colnames(rankogram) <- seq_len(n.trts)
-    ##
-    for (i in names(tab))
-      rankogram[i, names(tab[[i]])] <- tab[[i]][names(tab[[i]])]
-  }
-  else
-    rankogram <- t(as.data.frame(tab))
+  for (i in seq_len(n.trts))
+    rankogram[i, ] <- tabulate(rnk[i, ], nbins = n.trts)
   #
   rankogram <- rankogram / nsim
   
@@ -29,13 +23,13 @@ rankings <- function(x) {
   #
   
   cumrank <- t(apply(rankogram, 1, cumsum))
-  sucras <- apply(cumrank[, -n.trts], 1, sum) / (n.trts - 1)
+  sucras <- rowSums(cumrank[, -n.trts, drop = FALSE]) / (n.trts - 1)
   
   #
   # Mean and median ranks
   #
   
-  meanranks <- apply(col(rankogram) * rankogram, 1, sum)
+  meanranks <- rowSums(col(rankogram) * rankogram)
   #
   getmed <- function(x) which(x >= 0.5)[1]
   medianranks <- apply(cumrank, 1, getmed)
